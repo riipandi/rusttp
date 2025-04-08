@@ -17,7 +17,6 @@ edition = "2021"
 
 [workspace.dependencies]
 anyhow = { version = "1.0.97" }
-chrono = { version = "0.4.40", default-features = false, features = ["clock", "serde"] }
 hyper = { version = "1.6.0", features = ["full"] }
 once_cell = { version = "1.21.3" }
 rand = { version = "0.9.0" }
@@ -32,7 +31,7 @@ uuid = { version = "1.16.0", features = ["serde", "v4"] }
 
 [workspace.dependencies.sqlx]
 version = "0.8.3"
-features = ["postgres", "runtime-tokio", "tls-rustls", "migrate", "macros", "chrono", "json", "uuid"]
+features = ["postgres", "runtime-tokio", "tls-rustls", "migrate", "macros", "json", "uuid"]
 
 # Optimized for bundle size. If you want faster builds comment out/delete this section.
 [profile.release]

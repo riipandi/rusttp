@@ -24,5 +24,5 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 uuid = { workspace = true }
 
-# Local dependencies
+# Private crates
 sha1 = { version = "0.10.6", default-features = false }

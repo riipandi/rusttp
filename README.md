@@ -30,7 +30,7 @@ cargo generate riipandi/rusttp -b main -n myapp-name
 
 ### Up and Running
 
-1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [cargo-watch][cargo-watch], and [just][just].
+1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [watchexec][watchexec], and [just][just].
 2. Create `.env` file or copy from `.env.example`, then configure required variables.
 3. Generate application secret key, use this command: `just generate-key`
 4. Run project in development mode: `just dev`
@@ -172,7 +172,6 @@ See the [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) file
 
 [![Made by](https://badgen.net/badge/icon/Made%20by%20Aris%20Ripandi?icon=bitcoin-lightning&label&color=black&labelColor=black)][riipandi-twitter]
 
-[cargo-watch]: https://github.com/watchexec/cargo-watch
 [docker]: https://docs.docker.com/engine/install/
 [install-rust]: https://www.rust-lang.org/tools/install
 [just]: https://just.systems/man/en/
@@ -182,3 +181,4 @@ See the [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) file
 [sqlx-cli]: https://github.com/launchbadge/sqlx/tree/main/sqlx-cli
 [sqlx-github]: https://github.com/launchbadge/sqlx
 [sqlx-not-orm]: https://github.com/launchbadge/sqlx?tab=readme-ov-file#sqlx-is-not-an-orm
+[watchexec]: https://github.com/watchexec/watchexec

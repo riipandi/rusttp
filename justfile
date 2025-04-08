@@ -9,15 +9,22 @@ default:
 
 [doc('Start development')]
 dev:
-  @cargo watch -i lib -x 'run --features reload'
+  @watchexec -r -e rs -- cargo run
+
+[no-exit-message]
+[doc('Start the server')]
+start *args:
+  @target/release/rusttp {{args}}
 
 [doc('Build release mode')]
 build:
   @cargo build --release
+  @ls -lh target/release
 
 [doc('Build debug mode')]
 build-debug:
   @cargo build
+  @ls -lh target/debug
 
 [doc('Generate a random secret key')]
 generate-key:
@@ -25,11 +32,11 @@ generate-key:
 
 [doc('Format the code')]
 format:
-  @cargo fmt --manifest-path Cargo.toml --verbose
+  @cargo fmt --all -- --check
 
 [doc('Check the code')]
 check:
-  @cargo fmt --manifest-path Cargo.toml --verbose
+  @cargo check --manifest-path Cargo.toml --verbose
 
 [doc('Update dependencies')]
 deps:

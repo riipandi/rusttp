@@ -1,4 +1,4 @@
-# This file used by cargo watch
+# This file used by watchexec
 
 .*ignore
 *.md
