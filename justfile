@@ -8,39 +8,33 @@ default:
   @just --list --unsorted
 
 [doc('Start development')]
-dev:
-  @watchexec -r -e rs -- cargo run
+dev *args:
+  @watchexec -r -e rs -- cargo run {{args}}
 
 [no-exit-message]
-[doc('Start the server')]
-start *args:
+[doc('Run the application')]
+run *args:
   @target/release/rusttp {{args}}
 
-[doc('Build release mode')]
-build:
-  @cargo build --release
-  @ls -lh target/release
-
-[doc('Build debug mode')]
-build-debug:
-  @cargo build
-  @ls -lh target/debug
-
-[doc('Generate a random secret key')]
-generate-key:
-  @openssl rand -base64 500 | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1
+[doc('Build the application')]
+build *args:
+  @cargo build {{args}}
 
 [doc('Format the code')]
-format:
-  @cargo fmt --all -- --check
+format *args:
+  @cargo fmt --all -- --check {{args}}
 
 [doc('Check the code')]
-check:
-  @cargo check --manifest-path Cargo.toml --verbose
+check *args:
+  @cargo check --manifest-path Cargo.toml {{args}}
 
 [doc('Update dependencies')]
-deps:
-  @cargo update
+deps *args:
+  @cargo update {{args}}
+
+[doc('Generate secret key')]
+generate-key:
+  @openssl rand -base64 500 | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1
 
 [doc('Clean up artifacts')]
 [confirm("Are you sure you want to cleanup the artifacts?")]
