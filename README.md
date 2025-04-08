@@ -1,6 +1,6 @@
 # 🦀 Rusttp
 
-[![(Rust)](https://img.shields.io/badge/rust-v1.80-orange.svg?logo=rust)](https://www.rust-lang.org/)
+[![(Rust)](https://img.shields.io/badge/rust-v1.82-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/riipandi/rusttp?logo=rust)](https://github.com/riipandi/rusttp/releases)
 [![CI Test](https://github.com/riipandi/rusttp/actions/workflows/test.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/test.yml)
 [![CI Release](https://github.com/riipandi/rusttp/actions/workflows/release.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/release.yml)
@@ -16,7 +16,7 @@ Minimal Rust starter project template for building application with Axum and Cla
 
 ## Quick Start
 
-You will need `Rust >=1.80`, `Docker >= 27.5`, and `Docker Compose >= 2.32` installed on your machine.
+You will need `Rust >=1.82`, `Docker >= 27.5`, and `Docker Compose >= 2.32` installed on your machine.
 
 ### Create New Project
 
