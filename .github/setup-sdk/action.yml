@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+
+# @reference: https://stackoverflow.com/questions/59813998/github-actions-splitting-workflow-file
+# @reference: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+
+name: setup-sdk
+description: Prepare Rust development environment
+
+inputs:
+  rustToolChain:
+    description: 'Rust toolchain version'
+    required: false
+    default: 'stable'
+  rustTargets:
+    description: 'Make Rust compile to our target'
+    required: true
+  workspacePath:
+    description: 'Specify workspaces path'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Rust Toolchan
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ inputs.rustToolChain }}
+        targets: ${{ inputs.rustTargets }}
+        components: clippy, rustfmt
+
+    - name: Setup Rust cache
+      uses: swatinem/rust-cache@v2
+      with:
+        workspaces: ${{ inputs.workspacePath }}
+        prefix-key: ${{ runner.os }}-rust
+        cache-targets: true
+        cache-all-crates: false
+        save-if: true
+        cache-provider: github
+
+    - name: Verify SDK versions
+      shell: bash
+      run: |
+        rustc --version
+        rustup --version
+        cargo --version

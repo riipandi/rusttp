@@ -3,8 +3,8 @@
 [![(Rust)](https://img.shields.io/badge/rust-v1.80-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/riipandi/rusttp?logo=rust)](https://github.com/riipandi/rusttp/releases)
 [![Contribution welcome](https://img.shields.io/badge/Contributions-welcome-gray.svg)](https://github.com/riipandi/rusttp/graphs/contributors)
-<!-- [![CI Test](https://github.com/riipandi/rusttp/actions/workflows/ci-test.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/ci-test.yml) -->
-<!-- [![CI Build](https://github.com/riipandi/rusttp/actions/workflows/ci-build.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/ci-build.yml) -->
+[![CI Test](https://github.com/riipandi/rusttp/actions/workflows/test.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/test.yml)
+<!-- [![CI Build](https://github.com/riipandi/rusttp/actions/workflows/release.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/release.yml) -->
 
 ---
 
