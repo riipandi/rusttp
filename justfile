@@ -31,6 +31,10 @@ format:
 check:
   @cargo fmt --manifest-path Cargo.toml --verbose
 
+[doc('Update dependencies')]
+deps:
+  @cargo update
+
 [doc('Clean up artifacts')]
 [confirm("Are you sure you want to cleanup the artifacts?")]
 cleanup:
