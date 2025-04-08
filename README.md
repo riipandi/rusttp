@@ -8,7 +8,7 @@
 
 ---
 
-Rust starter project template for building REST API (or full-stack application). [Built-in features](#built-in-features).
+Minimal Rust starter project template for building application with Axum and Clap.
 
 > [!NOTE]
 > _This is a template for [cargo-generate](https://cargo-generate.github.io/cargo-generate/)._
@@ -30,74 +30,12 @@ cargo generate riipandi/rusttp -b main -n myapp-name
 
 ### Up and Running
 
-1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [watchexec][watchexec], and [just][just].
+1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [watchexec][watchexec], [just][just], and [lefthook][lefthook].
 2. Create `.env` file or copy from `.env.example`, then configure required variables.
 3. Generate application secret key, use this command: `just generate-key`
 4. Run project in development mode: `just dev`
 
 Type `just` on your terminal to see available tasks.
-
-### Auto Reload
-
-Whenever the source code changes, the app is recompiled and restarted.
-
-Optionally you can pass additional args to the server, example:
-
-```sh
-cargo watch -cx 'run -- --address 127.0.0.1'
-```
-
-That command equivalent to: `rusttp --address 127.0.0.1` in release build.
-
-### Built-in features
-
-- [ ] Database integration
-  - [ ] SQLx with Postgres
-  - [ ] Connection Pooling
-  - [ ] Database migration
-- [ ] Basic authentication
-  - [ ] Signin with email
-  - [ ] User registration
-  - [ ] Password recovery
-  - [ ] Signup email confirmation
-- [ ] OAuth2 authentication
-  - [ ] Signin with GitHub
-  - [ ] Signin with Google
-  - [ ] OAuth account linking
-- [ ] Configuration from environment variables
-- [ ] GitHub actions for CI tests and release
-- [ ] Docker build configuration
-
-## Database Migration
-
-This project does not use an ORM, instead using SQLx to interact with database. [SQLx is not an ORM!][sqlx-not-orm]
-SQLx also manages and applies changes to the database schema using files called migrations.
-If you have multiple developers contributing migrations at the same time, you will need to
-install [`sqlx-cli`][sqlx-cli]. Please refer to the [SQLx project page][sqlx-github] for the installation guide.
-
-Using `sqlx-cli` to create database migration file:
-
-```sh
-sqlx migrate add -t create_example_table -r --source ./crates/entity/migrations
-```
-
-Apply the database migrations:
-
-```sh
-sqlx migrate run --source ./crates/entity/migrations/up
-```
-
-Revert or reset the database migrations:
-
-```sh
-sqlx migrate revert --target-version 0 --source ./crates/entity/migrations/down
-```
-
-To ensure the database schema is always reproducible, SQLx also stores the content hash
-of applied migrations and checks them against the current contents of the files, so you
-must not change migrations that have already been applied.
-
-For more detailed information about the SQLx command type: `sqlx --help`
 
 ## Docker Container
 
@@ -114,14 +52,19 @@ docker-compose -f compose.yaml down --remove-orphans
 ### Build Container
 
 ```sh
-docker build -f Dockerfile . -t rusttp
-docker image list | grep rusttp
+docker build -f Dockerfile . -t rusttp:latest
+```
+
+### List Docker Image
+
+```sh
+docker image list --filter reference=rusttp:latest
 ```
 
 ### Testing Container
 
 ```sh
-docker run --rm -it -p 8000:8000 --env-file .env.docker --name rusttp rusttp
+docker run --network=host --rm -it --env-file .env --name rusttp rusttp:latest
 ```
 
 ### Push Images
@@ -149,12 +92,6 @@ Read [DEPLOY.md](./DEPLOY.md) for detailed documentation.
 Welcome, and thank you for your interest in contributing to this project! There are many ways in which you can contribute,
 beyond writing code. You can read this repository’s [Contributing Guidelines](./CONTRIBUTING.md) to learn how to contribute.
 
-## References
-
-- [Realworld Axum with SQLx](https://github.com/launchbadge/realworld-axum-sqlx)
-- [Back to the server with Rust, Axum, and htmx](https://joeymckenzie.tech/blog/templates-with-rust-axum-htmx-askama)
-- [Automated distribution with cargo dist](https://opensource.axo.dev/cargo-dist)
-
 ## License
 
 Licensed under either of [Apache License 2.0][license-apache] or [MIT license][license-mit] at your option.
@@ -170,15 +107,13 @@ See the [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) file
 
 <sub>🤫 Psst! If you like my work you can support me via [GitHub sponsors](https://github.com/sponsors/riipandi).</sub>
 
-[![Made by](https://badgen.net/badge/icon/Made%20by%20Aris%20Ripandi?icon=bitcoin-lightning&label&color=black&labelColor=black)][riipandi-twitter]
+[![Creator Badge](https://badgen.net/badge/icon/Crafted%20by%20Aris%20Ripandi?label&color=black&labelColor=black)][riipandi-x]
 
 [docker]: https://docs.docker.com/engine/install/
 [install-rust]: https://www.rust-lang.org/tools/install
 [just]: https://just.systems/man/en/
+[lefthook]: https://lefthook.dev/installation/index.html
 [license-apache]: https://choosealicense.com/licenses/apache-2.0/
 [license-mit]: https://choosealicense.com/licenses/mit/
-[riipandi-twitter]: https://twitter.com/intent/follow?original_referer=https://ripandis.com&screen_name=riipandi
-[sqlx-cli]: https://github.com/launchbadge/sqlx/tree/main/sqlx-cli
-[sqlx-github]: https://github.com/launchbadge/sqlx
-[sqlx-not-orm]: https://github.com/launchbadge/sqlx?tab=readme-ov-file#sqlx-is-not-an-orm
+[riipandi-x]: https://x.com/intent/follow?screen_name=riipandi
 [watchexec]: https://github.com/watchexec/watchexec

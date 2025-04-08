@@ -12,6 +12,7 @@ console_command = "/bin/sh"
 
   [build.args]
     PLATFORM = "linux/amd64"
+    RUST_VERSION = "1.86"
 
 [deploy]
   # https://fly.io/docs/apps/deploy/#deployment-strategy
