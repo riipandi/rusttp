@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = ["lib"]
+
+[package]
+name = "rusttp"
+authors = ["Aris Ripandi <aris@duck.com>"]
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+lib = { path = "./lib" }
+hot-lib-reloader = { version = "^0.6", optional = true }
+
+[features]
+default = []
+reload = ["dep:hot-lib-reloader"]

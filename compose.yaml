@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+services:
+  pgsql:
+    # image: pgduckdb/pgduckdb:${PGSQL_VERSION:-17-main}
+    image: postgres:${PGSQL_VERSION:-17-alpine}
+    container_name: rusttp_pgsql
+    hostname: postgres
+    restart: unless-stopped
+    ports: ['5432:5432']
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+      # - ./scripts/pgsql-multidb.sh:/docker-entrypoint-initdb.d/multidb.sh
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: pgadmin
+      POSTGRES_PASSWORD: securedb
+      PG_EXTRA_DATABASE: extradb1,extradb2
+    command: ['postgres', '-c', 'wal_level=logical']
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pgadmin -d default']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: rusttp_pgweb
+    restart: unless-stopped
+    ports: ['54321:8081']
+    environment:
+      PGWEB_DATABASE_URL: 'postgresql://pgadmin:securedb@pgsql:5432/default?sslmode=disable'
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "127.0.0.1", "8081"]
+      interval: 5s
+    depends_on:
+      pgsql:
+        condition: service_started
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: rusttp_mailpit
+    restart: unless-stopped
+    volumes: ['mailpit_data:/data']
+    ports: ['1025:1025', '8025:8025']
+    environment:
+      # @ref: https://mailpit.axllent.org/docs/configuration
+      TZ: Asia/Jakarta
+
+volumes:
+  pgsql_data:
+    driver: local
+  mailpit_data:
+    driver: local
