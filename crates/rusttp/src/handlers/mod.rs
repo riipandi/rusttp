@@ -11,6 +11,7 @@ pub async fn index() -> Html<&'static str> {
 pub async fn health() -> Json<Value> {
     Json(json!({
         "status": "ok",
-        "version": crate::version(),
+        "version": crate::APP_VERSION,
+        "build_time": crate::BUILD_TIME,
     }))
 }

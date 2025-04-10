@@ -8,12 +8,7 @@ mod server;
 /// Return the ready-to-use Axum router
 pub use server::create_app;
 
-/// Application identifier
-pub fn identifier() -> &'static str {
-    env!("CARGO_CRATE_NAME")
-}
-
-/// Version of the application
-pub fn version() -> &'static str {
-    env!("CARGO_PKG_VERSION")
-}
+// The application name and version, extracted from Cargo metadata.
+pub const APP_NAME: &'static str = core::env!("CARGO_PKG_NAME");
+pub const APP_VERSION: &'static str = core::env!("CARGO_PKG_VERSION");
+pub const BUILD_TIME: &'static str = build_time::build_time_utc!("%Y-%m-%d %H:%M:%S UTC");

@@ -24,13 +24,24 @@ prepare:
   @lefthook install || true
 
 [doc('Start development')]
+[no-exit-message]
 dev *args:
   @watchexec -r -e rs -- cargo run {{args}}
 
-[no-exit-message]
 [doc('Run the application')]
+[no-exit-message]
 run *args:
+  @cargo run -q -- {{args}}
+
+[doc('Run from the build')]
+[no-exit-message]
+start *args:
   @target/release/rusttp {{args}}
+
+[doc('Run from the build (debug mode)')]
+[no-exit-message]
+start-debug *args:
+  @target/debug/rusttp {{args}}
 
 [doc('Build the application')]
 build *args:
