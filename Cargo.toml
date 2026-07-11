@@ -1,43 +1,32 @@
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [workspace]
 resolver = "2"
-members = [ "crates/*" ]
+members = [
+    "src-app",
+    "crates/lib-mailer",
+    "crates/lib-queue",
+    "crates/identity",
+]
 
 [workspace.package]
 version = "0.0.0"
-authors = ["Aris Ripandi <aris@duck.com>"]
-repository = "http://github.com/riipandi/rusttp"
-documentation = "https://github.com/riipandi/rusttp"
-categories = ["command-line-utilities", "web-programming"]
-keywords = ["axum", "api", "application", "rest", "sqlx"]
-license = "MIT OR Apache-2.0"
-rust-version = "1.82"
-edition = "2021"
+edition = "2024"
+homepage = "https://github.com/riipandi/rusttp"
+repository = "https://github.com/riipandi/rusttp"
+rust-version = "1.85"
 
 [workspace.dependencies]
-anyhow = { version = "1.0.97" }
-hyper = { version = "1.6.0", features = ["full"] }
-once_cell = { version = "1.21.3" }
-rand = { version = "0.9.0" }
-reqwest = { version = "0.12.15", default-features = false , features = ["rustls-tls", "json", "blocking"] }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = { version = "1.0.140" }
-tokio = { version = "1.44.2", features = ["full"] }
-tracing = { version = "0.1.41" }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-url = { version = "2.5.4", features = ["serde"] }
-uuid = { version = "1.16.0", features = ["serde", "v4"] }
-
-[workspace.dependencies.sqlx]
-version = "0.8.3"
-features = ["postgres", "runtime-tokio", "tls-rustls", "migrate", "macros", "json", "uuid"]
-
-# Optimized for bundle size. If you want faster builds comment out/delete this section.
-[profile.release]
-lto = true         # Enable Link Time Optimization
-opt-level = "z"    # Optimize for binary size, but also turn off loop vectorization..
-codegen-units = 1  # Reduce number of codegen units to increase optimizations.
-panic = "abort"    # Abort on panic
-strip = true       # Automatically strip symbols from the binary.
-debug = false      # Disable debug on production build.
+anyhow = "1"
+axum = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive", "env"] }
+rust-embed = "8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+tower = { version = "0.5", default-features = false, features = ["util"] }
+tower-http = { version = "0.6", features = ["catch-panic", "fs"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["chrono", "env-filter", "json", "registry"] }
+tracing-appender = "0.2"
+uuid = { version = "1", features = ["v4", "serde"] }

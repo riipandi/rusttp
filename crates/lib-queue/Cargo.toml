@@ -1,0 +1,16 @@
+[package]
+name = "lib-queue"
+version.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+description = "Job queue utilities"
+keywords = ["queue", "jobs", "rusttp"]
+categories = ["web-programming", "database"]
+homepage.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true

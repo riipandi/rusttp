@@ -1,0 +1,36 @@
+[package]
+name = "rusttp"
+version.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+description = "Rusttp v2 — Axum web application"
+keywords = ["axum", "web", "api", "rusttp"]
+categories = ["web-programming", "web-programming::http-server"]
+homepage.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[[bin]]
+name = "rusttp"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+clap.workspace = true
+rust-embed.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
+chrono.workspace = true
+
+[dev-dependencies]
+tower.workspace = true
+
+[build-dependencies]
+chrono.workspace = true

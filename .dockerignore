@@ -1,32 +1,49 @@
-/.cache
-/build
-/dist
-/docs
-/temp
-/tmp
-.data
-.output
-.github
-.vscode
-.DS_Store
-.DS_Store?
-.dockerignore
-.sentryclirc
-.git/
+# Rust build cache
+/target
+
+# Git
+.git
+.gitattributes
 .gitignore
-*.sqlite*
-*.db*
-*.md
-Dockerfile
-node_modules
-npm-debug.log
-compose.env*
+.gitmodules
+
+# Frontend sources (not needed for Docker build — only pre-built assets in src-app/web)
+node_modules/
+.pnpm-store
+package.json
+pnpm-lock.yaml
+tsconfig.json
+tsconfig.app.json
+tsconfig.node.json
+vite.config.ts
+vitest.config.ts
+index.html
+src-web/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Docs
 README.md
-DEPLOY.md
-*.log
-.env*
-docker-compose*.yaml
-compose*.yaml
-/storage/
-/specs/
-target/
+CONTRIBUTING.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Misc
+Makefile
+.dockerignore
+.editorconfig
+/prettier*
+/eslint*
+*.bak
+*.orig
+/storage
