@@ -41,7 +41,9 @@ mod tests {
     #[tokio::test]
     async fn find_by_user_id_returns_not_found() {
         let repo = SessionsRepository::new();
-        let result = repo.find_by_user_id(Uuid::new_v4()).await;
+        let result = repo
+            .find_by_user_id(Uuid::new_v7(uuid::Timestamp::now(uuid::NoContext)))
+            .await;
         assert!(result.is_err());
         assert!(matches!(result.unwrap_err(), Error::NotFound));
     }

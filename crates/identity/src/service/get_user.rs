@@ -32,7 +32,9 @@ mod tests {
     #[tokio::test]
     async fn by_id_delegates_to_repo() {
         let svc = GetUserService::new(UsersRepository::new());
-        let result = svc.by_id(Uuid::new_v4()).await;
+        let result = svc
+            .by_id(Uuid::new_v7(uuid::Timestamp::now(uuid::NoContext)))
+            .await;
         assert!(matches!(result.unwrap_err(), Error::NotFound));
     }
 }
