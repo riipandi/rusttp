@@ -5,6 +5,7 @@ members = [
   "crates/lib-mailer",
   "crates/lib-queue",
   "crates/identity",
+  "crates/lib-telemetry",
 ]
 
 [workspace.package]
@@ -19,6 +20,14 @@ anyhow = "1"
 axum = "0.8"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "env"] }
+fastrace = "0.7"
+fastrace-axum = "0.2"
+fastrace-opentelemetry = "0.18"
+log = { version = "0.4", features = ["std"] }
+opentelemetry = "0.32"
+opentelemetry_sdk = "0.32"
+opentelemetry-otlp = "0.32"
+rand = "0.8"
 rust-embed = "8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -27,11 +36,15 @@ tokio = { version = "1", features = ["full"] }
 tower = { version = "0.5", default-features = false, features = ["util"] }
 tower-http = { version = "0.6", features = ["catch-panic", "fs"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-fastrace = "0.7"
-fastrace-axum = "0.2"
-fastrace-opentelemetry = "0.18"
-opentelemetry = "0.32"
-opentelemetry-otlp = "0.32"
-opentelemetry_sdk = "0.32"
-log = { version = "0.4", features = ["std"] }
-rand = "0.8"
+
+[profile.release]
+opt-level = 2 # Optimization level: 2 = balanced runtime perf vs compile time
+lto = "thin" # Thin LTO: cross-crate inlining without full-program analysis cost
+codegen-units = 16 # Parallel codegen: 16 units = faster compile, minimal optimization loss
+panic = "abort" # panic=abort: removes unwind tables — smaller binary, cannot catch panics
+strip = "symbols" # Strip all symbols from final binary
+debug = false # No debug symbols in release
+
+[profile.dev]
+incremental = true # Incremental: rebuild only changed code — much faster iteration
+debug = "limited" # Limited debug info: line numbers only, no type/variable debug

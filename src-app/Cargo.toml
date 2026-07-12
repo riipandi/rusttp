@@ -18,23 +18,18 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 axum.workspace = true
-clap.workspace = true
-rust-embed.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-tokio.workspace = true
-tower-http.workspace = true
 chrono.workspace = true
-
-# tracing → fastrace migration
+clap.workspace = true
 fastrace = { workspace = true, features = ["enable"] }
 fastrace-axum.workspace = true
-fastrace-opentelemetry.workspace = true
-opentelemetry.workspace = true
-opentelemetry-otlp.workspace = true
-opentelemetry_sdk.workspace = true
+lib-telemetry = { path = "../crates/lib-telemetry" }
 log.workspace = true
 rand.workspace = true
+rust-embed.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
 
 [dev-dependencies]
 tower.workspace = true
