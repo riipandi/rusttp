@@ -29,17 +29,14 @@ fn log_request(method: &Method, path: &str, query: &str, status: StatusCode, lat
     let outcome = request_outcome(status_code);
 
     match status_code {
-        500.. => tracing::error!(
-            %method, path, query, status = status_code, latency_ms, outcome,
-            "request failed"
+        500.. => log::error!(
+            "request failed: method={method}, path={path}, query={query}, status={status_code}, latency_ms={latency_ms}, outcome={outcome}"
         ),
-        400..=499 => tracing::warn!(
-            %method, path, query, status = status_code, latency_ms, outcome,
-            "request rejected"
+        400..=499 => log::warn!(
+            "request rejected: method={method}, path={path}, query={query}, status={status_code}, latency_ms={latency_ms}, outcome={outcome}"
         ),
-        _ => tracing::info!(
-            %method, path, query, status = status_code, latency_ms, outcome,
-            "request completed"
+        _ => log::info!(
+            "request completed: method={method}, path={path}, query={query}, status={status_code}, latency_ms={latency_ms}, outcome={outcome}"
         ),
     }
 }

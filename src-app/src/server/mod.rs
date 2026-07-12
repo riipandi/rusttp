@@ -42,7 +42,7 @@ pub async fn run_with_shutdown(
     let addr = config.socket_addr()?;
     let app = build();
     let listener = TcpListener::bind(addr).await?;
-    tracing::info!(%addr, "server ready");
+    log::info!("server ready on {addr}");
     serve(listener, app)
         .with_graceful_shutdown(shutdown)
         .await?;
@@ -79,7 +79,7 @@ async fn shutdown_signal() {
         () = terminate => {},
     }
 
-    tracing::info!("server shutting down");
+    log::info!("server shutting down");
 }
 
 #[cfg(test)]

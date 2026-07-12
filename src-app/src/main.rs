@@ -2,13 +2,11 @@ use std::ffi::OsString;
 use std::fs::{self, OpenOptions};
 use std::io::{self, BufWriter, Write};
 use std::path::PathBuf;
+use std::sync::mpsc;
 
 use chrono::Local;
 use clap::Parser;
 use rusttp::cmd;
-use tracing_subscriber::fmt::time::ChronoLocal;
-use tracing_subscriber::fmt::writer::MakeWriter;
-use tracing_subscriber::prelude::*;
 
 #[derive(Clone, Copy)]
 enum Rotation {
@@ -18,7 +16,7 @@ enum Rotation {
     Daily,
 }
 
-/// Single file writer with rotation. Runs inside a tracing_appender background thread.
+/// Single file writer with rotation.
 struct RollingFileWriter {
     dir: PathBuf,
     rotation: Rotation,
@@ -100,38 +98,103 @@ impl Write for RollingFileWriter {
     }
 }
 
-/// Fan-out writer for multi-output. Only used when both stderr + file are active.
-struct MultiWriter {
-    writers: Vec<tracing_appender::non_blocking::NonBlocking>,
+// ── Non-blocking channel-based logger ──────────────────────────────────────
+
+/// Messages sent from the logger frontend to the background writer thread.
+enum LogMsg {
+    Line(String),
+    Flush(mpsc::Sender<()>),
 }
 
-struct MultiLog {
-    writers: Vec<tracing_appender::non_blocking::NonBlocking>,
+/// The background writer thread: drains the channel and writes to outputs.
+fn spawn_writer_thread(rx: mpsc::Receiver<LogMsg>) {
+    // Writers are built inside the thread — no Mutex needed, no contention.
+    // They are NOT Send because RollingFileWriter lives in this thread only.
+    let console_enabled = std::env::var("LOG_CONSOLE")
+        .ok()
+        .map(|v| v == "true" || v == "1")
+        .unwrap_or(true);
+    let file_enabled = std::env::var("LOG_TRANSPORT").as_deref() == Ok("file");
+    let emit_console = console_enabled || !file_enabled;
+
+    let rotation =
+        parse_rotation(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "hourly".into()));
+
+    // Local writer collection — single-threaded, no Mutex
+    struct Writers {
+        file: Option<RollingFileWriter>,
+        console: Option<io::Stderr>,
+    }
+    let mut writers = Writers {
+        file: file_enabled.then(|| RollingFileWriter::new("storage/logs".into(), rotation)),
+        console: emit_console.then(io::stderr),
+    };
+    // Fallback: if both disabled, still write to stderr
+    if !file_enabled && !emit_console {
+        writers.console = Some(io::stderr());
+    }
+
+    std::thread::spawn(move || {
+        for msg in rx {
+            match msg {
+                LogMsg::Line(line) => {
+                    if let Some(ref mut w) = writers.file {
+                        let _ = w.write_all(line.as_bytes());
+                    }
+                    if let Some(ref mut w) = writers.console {
+                        let _ = w.write_all(line.as_bytes());
+                    }
+                }
+                LogMsg::Flush(tx) => {
+                    if let Some(ref mut w) = writers.file {
+                        let _ = w.flush();
+                    }
+                    if let Some(ref mut w) = writers.console {
+                        let _ = w.flush();
+                    }
+                    // Signal completion
+                    let _ = tx.send(());
+                }
+            }
+        }
+    });
 }
 
-impl Write for MultiLog {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        for w in &mut self.writers {
-            let _ = w.write(buf);
-        }
-        Ok(buf.len())
+/// Logger frontend — fast path: format JSON, push to channel, return.
+struct JsonLogger {
+    tx: mpsc::SyncSender<LogMsg>,
+    level: log::LevelFilter,
+}
+
+impl log::Log for JsonLogger {
+    fn enabled(&self, metadata: &log::Metadata) -> bool {
+        metadata.level() <= self.level
     }
-    fn flush(&mut self) -> io::Result<()> {
-        for w in &mut self.writers {
-            let _ = w.flush();
+
+    fn log(&self, record: &log::Record) {
+        if !self.enabled(record.metadata()) {
+            return;
         }
-        Ok(())
+        let entry = serde_json::json!({
+            "timestamp": Local::now().format("%Y-%m-%dT%H:%M:%S%.3f%:z").to_string(),
+            "level": record.level().to_string(),
+            "target": record.target(),
+            "message": record.args().to_string(),
+        });
+        let line = serde_json::to_string(&entry).unwrap_or_default() + "\n";
+        // Non-blocking push — drops line if buffer is full (backpressure)
+        let _ = self.tx.try_send(LogMsg::Line(line));
+    }
+
+    fn flush(&self) {
+        let (tx, rx) = mpsc::channel();
+        // Use send() not try_send() — flush is supposed to block until complete
+        let _ = self.tx.send(LogMsg::Flush(tx));
+        let _ = rx.recv();
     }
 }
 
-impl<'a> MakeWriter<'a> for MultiWriter {
-    type Writer = MultiLog;
-    fn make_writer(&'a self) -> Self::Writer {
-        MultiLog {
-            writers: self.writers.clone(),
-        }
-    }
-}
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 fn parse_rotation(s: &str) -> Rotation {
     match s {
@@ -142,22 +205,30 @@ fn parse_rotation(s: &str) -> Rotation {
     }
 }
 
-fn build_layer<W>(
-    writer: W,
-    use_local: bool,
-) -> Box<dyn tracing_subscriber::Layer<tracing_subscriber::Registry> + Send + Sync>
-where
-    W: for<'a> MakeWriter<'a> + Send + Sync + 'static,
-{
-    let base = tracing_subscriber::fmt::layer().json().with_target(true);
-    if use_local {
-        base.with_timer(ChronoLocal::default())
-            .with_writer(writer)
-            .boxed()
-    } else {
-        base.with_writer(writer).boxed()
+fn parse_log_level() -> log::LevelFilter {
+    let level_str = std::env::var("LOG_LEVEL")
+        .or_else(|_| std::env::var("RUST_LOG"))
+        .unwrap_or_else(|_| "info".into());
+    match level_str.to_lowercase().as_str() {
+        "trace" => log::LevelFilter::Trace,
+        "debug" => log::LevelFilter::Debug,
+        "info" => log::LevelFilter::Info,
+        "warn" => log::LevelFilter::Warn,
+        "error" => log::LevelFilter::Error,
+        "off" => log::LevelFilter::Off,
+        _ => log::LevelFilter::Info,
     }
 }
+
+fn init_channel_logger() -> JsonLogger {
+    let level = parse_log_level();
+    // Bounded channel: 65536 entries ≈ protects memory under burst without dropping too many
+    let (tx, rx) = mpsc::sync_channel::<LogMsg>(65536);
+    spawn_writer_thread(rx);
+    JsonLogger { tx, level }
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────
 
 /// Run the application with explicit CLI args (testable).
 async fn run_main_with_args<I>(args: I) -> i32
@@ -165,57 +236,21 @@ where
     I: IntoIterator,
     I::Item: Into<OsString> + Clone,
 {
-    let mut _guards: Vec<Box<dyn std::any::Any>> = Vec::new();
-
-    let level = std::env::var("LOG_LEVEL")
-        .or_else(|_| std::env::var("RUST_LOG"))
-        .unwrap_or_else(|_| "info".into());
-    let env_filter =
-        tracing_subscriber::EnvFilter::try_new(&level).unwrap_or_else(|_| "info".into());
-
-    let console_enabled = std::env::var("LOG_CONSOLE")
-        .ok()
-        .map(|v| v == "true" || v == "1")
-        .unwrap_or(true);
-    let file_enabled = std::env::var("LOG_TRANSPORT").as_deref() == Ok("file");
-    let emit_console = console_enabled || !file_enabled;
-
-    let rotation =
-        parse_rotation(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "hourly".into()));
-    let use_local = std::env::var("APP_TIMEZONE").is_ok() || std::env::var("TZ").is_ok();
-
-    let mut writers: Vec<tracing_appender::non_blocking::NonBlocking> = Vec::new();
-
-    if file_enabled {
-        let w = RollingFileWriter::new("storage/logs".into(), rotation);
-        let (w, g) = tracing_appender::non_blocking(w);
-        _guards.push(Box::new(g));
-        writers.push(w);
+    // Fastrace: only install a reporter when explicitly configured.
+    // Without a reporter, spans are collected in a thread-local ring buffer
+    // and silently evicted — near-zero overhead in the hot path.
+    if std::env::var("TRACING_REPORTER").as_deref() == Ok("console") {
+        fastrace::set_reporter(
+            fastrace::collector::ConsoleReporter,
+            fastrace::collector::Config::default(),
+        );
     }
 
-    if emit_console {
-        let (w, g) = tracing_appender::non_blocking(std::io::stderr());
-        _guards.push(Box::new(g));
-        writers.push(w);
-    }
-
-    if writers.is_empty() {
-        let (w, g) = tracing_appender::non_blocking(std::io::stderr());
-        _guards.push(Box::new(g));
-        writers.push(w);
-    }
-
-    let layer = if writers.len() == 1 {
-        let w = writers.into_iter().next().unwrap();
-        build_layer(w, use_local)
-    } else {
-        build_layer(MultiWriter { writers }, use_local)
-    };
-
-    let _ = tracing_subscriber::registry()
-        .with(layer)
-        .with(env_filter)
-        .try_init();
+    // Channel-based JSON logger (non-blocking, background thread)
+    let logger = init_channel_logger();
+    let max_level = logger.level;
+    let _ = log::set_boxed_logger(Box::new(logger));
+    log::set_max_level(max_level);
 
     let cli = match cmd::Cli::try_parse_from(args) {
         Ok(cli) => cli,
@@ -225,16 +260,24 @@ where
         }
     };
 
-    cmd::dispatch(&cli).await.unwrap_or_else(|e| {
-        tracing::error!(error = %e, "command failed");
+    let exit_code = cmd::dispatch(&cli).await.unwrap_or_else(|e| {
+        log::error!("command failed: {e}");
         1
-    })
+    });
+
+    // Flush remaining traces and logs before exit
+    fastrace::flush();
+    log::logger().flush();
+
+    exit_code
 }
 
 #[tokio::main]
 async fn main() {
     std::process::exit(run_main_with_args(std::env::args_os()).await);
 }
+
+// ── Tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
@@ -360,17 +403,25 @@ mod tests {
     }
 
     #[test]
-    fn build_layer_returns_boxed_layer() {
-        let (nb, _g) = tracing_appender::non_blocking(std::io::sink());
-        let layer = build_layer(nb, false);
-        let _s = tracing_subscriber::registry().with(layer);
-    }
+    fn parse_log_level_parses_env_vars() {
+        unsafe { std::env::set_var("LOG_LEVEL", "debug") };
+        assert_eq!(parse_log_level(), log::LevelFilter::Debug);
+        unsafe { std::env::remove_var("LOG_LEVEL") };
 
-    #[test]
-    fn build_layer_with_local_timer() {
-        let (nb, _g) = tracing_appender::non_blocking(std::io::sink());
-        let layer = build_layer(nb, true);
-        let _s = tracing_subscriber::registry().with(layer);
+        unsafe { std::env::set_var("RUST_LOG", "warn") };
+        assert_eq!(parse_log_level(), log::LevelFilter::Warn);
+        unsafe { std::env::remove_var("RUST_LOG") };
+
+        unsafe { std::env::remove_var("LOG_LEVEL") };
+        unsafe { std::env::remove_var("RUST_LOG") };
+        assert_eq!(parse_log_level(), log::LevelFilter::Info);
+
+        unsafe { std::env::set_var("LOG_LEVEL", "bogus") };
+        assert_eq!(parse_log_level(), log::LevelFilter::Info);
+        unsafe { std::env::remove_var("LOG_LEVEL") };
+
+        unsafe { std::env::remove_var("LOG_LEVEL") };
+        unsafe { std::env::remove_var("RUST_LOG") };
     }
 
     #[tokio::test]
@@ -405,14 +456,21 @@ mod tests {
     }
 
     #[test]
-    fn multi_writer_fan_out() {
-        let (w1, _g1) = tracing_appender::non_blocking(std::io::sink());
-        let (w2, _g2) = tracing_appender::non_blocking(std::io::sink());
-        let mw = MultiWriter {
-            writers: vec![w1, w2],
+    fn init_channel_logger_does_not_panic() {
+        // Smoke test: creating the logger should not panic
+        let _logger = init_channel_logger();
+    }
+
+    #[test]
+    fn json_logger_enabled_checks_level() {
+        use log::Log;
+        let logger = JsonLogger {
+            tx: mpsc::sync_channel(16).0,
+            level: log::LevelFilter::Warn,
         };
-        let mut ml = mw.make_writer();
-        ml.write_all(b"fan-out test\n").unwrap();
-        ml.flush().unwrap();
+        let info_md = log::Record::builder().level(log::Level::Info).build();
+        let err_md = log::Record::builder().level(log::Level::Error).build();
+        assert!(!logger.enabled(info_md.metadata()));
+        assert!(logger.enabled(err_md.metadata()));
     }
 }
