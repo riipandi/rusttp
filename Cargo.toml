@@ -24,12 +24,7 @@ fastrace = "0.7.18"
 fastrace-axum = "0.2.0"
 fastrace-opentelemetry = "0.18.1"
 log = { version = "0.4.33", features = ["std"] }
-logforth = { version = "0.30.1", features = [
-  "starter-log",
-  "append-file",
-  "append-async",
-  "layout-json",
-] }
+logforth = { version = "0.30.1", features = ["starter-log", "append-async"] }
 opentelemetry = "0.32.0"
 opentelemetry-otlp = "0.32.0"
 opentelemetry_sdk = "0.32.1"
@@ -39,9 +34,17 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.150"
 tempfile = "3.27.0"
 thiserror = "2.0.18"
-tokio = { version = "1.52.3", features = ["full"] }
+tokio = { version = "1.52.3", features = [
+  "rt",
+  "rt-multi-thread",
+  "macros",
+  "net",
+  "signal",
+  "sync",
+  "time",
+] }
 tower = { version = "0.5.3", default-features = false, features = ["util"] }
-tower-http = { version = "0.7.0", features = ["catch-panic", "fs"] }
+tower-http = { version = "0.7.0", features = ["catch-panic"] }
 uuid = { version = "1.23.4", features = ["v7", "serde"] }
 
 [profile.release]

@@ -207,14 +207,14 @@ impl logforth::Append for RollingFileAppender {
 // ── Async wrapper ──────────────────────────────────────────────────────────
 
 /// Wrap an appender with a non-blocking background thread.
-/// Uses a bounded channel (capacity 8192) — on overflow new messages are
+/// Uses a bounded channel (capacity 1024) — on overflow new messages are
 /// dropped instead of queuing in unbounded memory.
 fn non_blocking<A: logforth::Append + Send + 'static>(
     name: &str,
     appender: A,
 ) -> append::asynchronous::Async {
     append::asynchronous::AsyncBuilder::new(name)
-        .buffered_lines_limit(Some(8192))
+        .buffered_lines_limit(Some(1024))
         .overflow_drop_incoming()
         .append(appender)
         .build()

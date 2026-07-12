@@ -6,6 +6,7 @@ mod web_assets;
 pub use error::AppError;
 pub use router::build;
 use std::net::SocketAddr;
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 use axum::serve;
@@ -39,6 +40,7 @@ pub async fn run_with_shutdown(
     config: ServerConfig,
     shutdown: impl std::future::Future<Output = ()> + Send + 'static,
 ) -> Result<()> {
+    let _collector_handle = spawn_memory_collector();
     let addr = config.socket_addr()?;
     let app = build();
     let listener = TcpListener::bind(addr).await?;
@@ -78,8 +80,30 @@ async fn shutdown_signal() {
         () = ctrl_c => {},
         () = terminate => {},
     }
-
     log::info!("server shutting down");
+}
+
+/// Spawn a background task that periodically returns idle memory pages to the OS.
+/// Uses mimalloc's `mi_collect(false)` which is cheap enough to run every 30s.
+fn spawn_memory_collector() -> Option<tokio::task::JoinHandle<()>> {
+    #[cfg(not(target_env = "msvc"))]
+    {
+        use libmimalloc_sys::mi_collect;
+        Some(tokio::spawn(async {
+            let mut interval = tokio::time::interval(Duration::from_secs(30));
+            interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+            loop {
+                interval.tick().await;
+                // SAFETY: mi_collect is thread-safe and can be called from any thread.
+                // It returns pages from mimalloc's internal caches back to the OS.
+                unsafe { mi_collect(false) };
+            }
+        }))
+    }
+    #[cfg(target_env = "msvc")]
+    {
+        None
+    }
 }
 
 #[cfg(test)]

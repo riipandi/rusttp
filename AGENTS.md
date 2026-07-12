@@ -71,4 +71,14 @@ Uses clap derive. Subcommands: `serve` (alias `s`), `health` (alias `hc`). Globa
 - **`unsafe { std::env::set_var() }`** is used in tests and startup. This is intentional — env vars are set before any concurrent access. Don't "fix" these to safe alternatives.
 - **LSP diagnostics in `lib-observer`** may show false positives for chrono/logforth trait methods. These resolve at compile time with the correct feature flags. Trust `make check` over IDE diagnostics for that crate.
 - **sccache** is auto-enabled if installed (Makefile sets `RUSTC_WRAPPER`). Speeds up rebuilds significantly.
-- **Default port is 3080**, not 3000 or 8080. Vite dev proxy targets this port.
+
+## Dependencies
+
+- **Single source of truth**: Root `Cargo.toml` `[workspace.dependencies]` is the single source of truth for all dependency versions and features.
+- **Explicit versions**: Every dependency must use explicit `major.minor.patch` version (no `"0.7"` or `"^0.7"`).
+- **Explicit features**: Every used feature must be declared in root's entry, not scattered across member crates.
+- **Member crates**: Use `foo.workspace = true` — never repeat version or features in member `Cargo.toml`.
+- **Exceptions**:
+  - Conditional per-target deps (e.g. `[target.'cfg(not(target_env = "msvc"))'.dependencies]` for `mimalloc`).
+  - Features that only apply to the binary crate (e.g. `fastrace = { workspace = true, features = ["enable"] }` in `src-app`, where the library crates must NOT enable the collector).
+- **Verify**: `cd src-app && cargo tree -e features --depth 0` to inspect resolved features per crate.

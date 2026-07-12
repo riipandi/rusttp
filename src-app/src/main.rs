@@ -1,3 +1,10 @@
+#[cfg(not(target_env = "msvc"))]
+use mimalloc::MiMalloc;
+
+#[cfg(not(target_env = "msvc"))]
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
+
 use clap::Parser;
 use rusttp::cmd;
 use std::ffi::OsString;
