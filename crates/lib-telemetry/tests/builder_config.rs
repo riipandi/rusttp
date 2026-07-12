@@ -78,7 +78,7 @@ fn builder_reporter_file() {
         dir: tmp_dir().into(),
         prefix: "test".into(),
         suffix: "trace".into(),
-        rotation: Rotation::Minutely,
+        rotation: Rotation::Hourly,
     });
 }
 
@@ -107,13 +107,13 @@ fn builder_default_compiles() {
 #[test]
 fn rotation_all_variants_compile() {
     assert_eq!(Rotation::parse("never"), Rotation::Never);
-    assert_eq!(Rotation::parse("minutely"), Rotation::Minutely);
     assert_eq!(Rotation::parse("hourly"), Rotation::Hourly);
     assert_eq!(Rotation::parse("daily"), Rotation::Daily);
+    assert_eq!(Rotation::parse("weekly"), Rotation::Weekly);
 }
 
 #[test]
 fn rotation_fallback() {
-    assert_eq!(Rotation::parse("bogus"), Rotation::Hourly);
-    assert_eq!(Rotation::parse(""), Rotation::Hourly);
+    assert_eq!(Rotation::parse("bogus"), Rotation::Daily);
+    assert_eq!(Rotation::parse(""), Rotation::Daily);
 }

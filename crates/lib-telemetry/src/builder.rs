@@ -7,20 +7,21 @@ use crate::logger::{FileConfig, LoggerConfig};
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Rotation {
     Never,
-    Minutely,
     Hourly,
     Daily,
+    Weekly,
 }
 
 impl Rotation {
-    /// Parse from a string (lowercase): `never`, `minutely`, `hourly`, `daily`.
-    /// Falls back to `Hourly` for unknown input.
+    /// Parse from a string (lowercase): `never`, `hourly`, `daily`, `weekly`.
+    /// Falls back to `Daily` for unknown input.
     pub fn parse(s: &str) -> Self {
         match s {
             "daily" => Rotation::Daily,
-            "minutely" => Rotation::Minutely,
+            "hourly" => Rotation::Hourly,
+            "weekly" => Rotation::Weekly,
             "never" => Rotation::Never,
-            _ => Rotation::Hourly,
+            _ => Rotation::Daily,
         }
     }
 }
@@ -31,8 +32,8 @@ impl Rotation {
 pub enum LogOutput {
     /// Write JSON log lines to stderr.
     StdErr,
-    /// Write JSON log lines to a rotated file at `{base_dir}/{prefix}_{suffix}.jsonl`
-    /// (or `{base_dir}/{prefix}_{slot}_{suffix}.jsonl` when rotation is active).
+    /// Write JSON log lines to a rotated file at `{base_dir}/{prefix}_{slot}.{suffix}.jsonl`
+    /// (or `{base_dir}/{prefix}_{suffix}.jsonl` when rotation is Never).
     File {
         dir: PathBuf,
         prefix: String,
@@ -68,23 +69,21 @@ pub enum TracingReporter {
 
 /// Builder for initializing the telemetry stack (logger + tracer).
 ///
-/// # Example
+/// # Examples
 ///
 /// ```ignore
-/// use lib_telemetry::{TelemetryBuilder, LogOutput, TracingReporter, Rotation};
+/// use lib_telemetry::TelemetryBuilder;
 ///
+/// // Quick start with production defaults (file + tracing)
+/// TelemetryBuilder::new().with_defaults().init();
+///
+/// // Custom configuration
 /// TelemetryBuilder::new()
 ///     .log_level(log::LevelFilter::Info)
 ///     .log_output(LogOutput::StdErr)
-///     .log_output(LogOutput::File {
-///         dir: "storage/logs".into(),
-///         prefix: "rusttp".into(),
-///         suffix: "log".into(),
-///         rotation: Rotation::Hourly,
-///     })
+///     .with_log_file("storage/logs")
 ///     .tracing_enabled(true)
-///     .tracing_sampling(0.7)
-///     .tracing_reporter(TracingReporter::Console)
+///     .with_trace_file("storage/traces")
 ///     .init();
 /// ```
 pub struct TelemetryBuilder {
@@ -106,10 +105,13 @@ impl TelemetryBuilder {
     ///
     /// Defaults:
     /// - log level: `Info`
-    /// - log outputs: none (must be added explicitly)
+    /// - log outputs: none (console emitted as fallback)
     /// - tracing: disabled
     /// - sampling: 0.7
     /// - reporter: None
+    ///
+    /// Use `with_defaults()` to apply sensible production defaults
+    /// (file logging to `storage/logs` + tracing to `storage/traces`).
     pub fn new() -> Self {
         TelemetryBuilder {
             log_level: log::LevelFilter::Info,
@@ -149,6 +151,44 @@ impl TelemetryBuilder {
     pub fn tracing_reporter(mut self, reporter: TracingReporter) -> Self {
         self.tracing_reporter = reporter;
         self
+    }
+
+    /// Add a file log output with sensible defaults.
+    ///
+    /// Writes JSON log lines to `{dir}/rusttp_{slot}.log.jsonl` with daily rotation.
+    /// The prefix and suffix follow the project convention.
+    pub fn with_log_file(mut self, dir: impl Into<PathBuf>) -> Self {
+        self.log_outputs.push(LogOutput::File {
+            dir: dir.into(),
+            prefix: "rusttp".into(),
+            suffix: "log".into(),
+            rotation: Rotation::Daily,
+        });
+        self
+    }
+
+    /// Enable tracing with a file reporter using sensible defaults.
+    ///
+    /// Writes spans to `{dir}/rusttp_{slot}.trace.jsonl` with daily rotation.
+    pub fn with_trace_file(mut self, dir: impl Into<PathBuf>) -> Self {
+        self.tracing_enabled = true;
+        self.tracing_reporter = TracingReporter::File {
+            dir: dir.into(),
+            prefix: "rusttp".into(),
+            suffix: "trace".into(),
+            rotation: Rotation::Daily,
+        };
+        self
+    }
+
+    /// Apply sensible production defaults.
+    ///
+    /// Equivalent to:
+    /// - `with_log_file("storage/logs")` — daily rotated JSONL logs
+    /// - `with_trace_file("storage/traces")` — daily rotated trace JSONL
+    pub fn with_defaults(self) -> Self {
+        self.with_log_file("storage/logs")
+            .with_trace_file("storage/traces")
     }
 
     /// Initialise the logger and tracer, consuming the builder.
@@ -230,17 +270,16 @@ mod tests {
     #[test]
     fn rotation_parse_all_variants() {
         assert_eq!(Rotation::parse("never"), Rotation::Never);
-        assert_eq!(Rotation::parse("minutely"), Rotation::Minutely);
         assert_eq!(Rotation::parse("hourly"), Rotation::Hourly);
         assert_eq!(Rotation::parse("daily"), Rotation::Daily);
+        assert_eq!(Rotation::parse("weekly"), Rotation::Weekly);
     }
 
     #[test]
-    fn rotation_parse_defaults_to_hourly() {
-        assert_eq!(Rotation::parse(""), Rotation::Hourly);
-        assert_eq!(Rotation::parse("bogus"), Rotation::Hourly);
+    fn rotation_parse_defaults_to_daily() {
+        assert_eq!(Rotation::parse(""), Rotation::Daily);
+        assert_eq!(Rotation::parse("bogus"), Rotation::Daily);
     }
-
     #[test]
     fn rotation_derive_clone_copy() {
         let r = Rotation::Hourly;

@@ -9,11 +9,12 @@ fn main() {
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
         .unwrap_or_else(|| "unknown".into());
+
     println!("cargo:rustc-env=GIT_HASH={git_hash}");
 
     let build_time = chrono::Utc::now().format("%Y-%m-%d").to_string();
-    println!("cargo:rustc-env=BUILD_TIME={build_time}");
 
+    println!("cargo:rustc-env=BUILD_TIME={build_time}");
     println!("cargo:rustc-env=BUILD_OS={}", std::env::consts::OS);
     println!("cargo:rustc-env=BUILD_ARCH={}", std::env::consts::ARCH);
 }

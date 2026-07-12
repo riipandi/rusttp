@@ -28,7 +28,7 @@ where
         .unwrap_or(true);
     let file_enabled = std::env::var("LOG_TRANSPORT").as_deref() == Ok("file");
     let rotation =
-        Rotation::parse(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "hourly".into()));
+        Rotation::parse(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "daily".into()));
 
     let mut builder = TelemetryBuilder::new()
         .log_level(parse_log_level(&log_level_str))

@@ -18,7 +18,7 @@ struct RollingLogWriter {
     suffix: String,
     rotation: Rotation,
     slot: Option<String>,
-    file: Option<std::io::BufWriter<std::fs::File>>,
+    file: Option<std::fs::File>,
     write_count: u64,
 }
 
@@ -38,9 +38,9 @@ impl RollingLogWriter {
 
     fn slot(&self, dt: &chrono::DateTime<chrono::Local>) -> String {
         match self.rotation {
-            Rotation::Minutely => dt.format("%y%m%d%H%M").to_string(),
-            Rotation::Hourly => dt.format("%y%m%d%H").to_string(),
-            Rotation::Daily => dt.format("%y%m%d").to_string(),
+            Rotation::Hourly => dt.format("%Y%m%d%H").to_string(),
+            Rotation::Daily => dt.format("%Y%m%d").to_string(),
+            Rotation::Weekly => dt.format("%GW%V").to_string(),
             Rotation::Never => String::new(),
         }
     }
@@ -52,7 +52,7 @@ impl RollingLogWriter {
                 .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
             _ => self
                 .dir
-                .join(format!("{}_{}_{}.jsonl", self.prefix, slot, self.suffix)),
+                .join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
         }
     }
 
@@ -76,14 +76,29 @@ impl RollingLogWriter {
         if !need_new && self.file.is_some() {
             return Ok(());
         }
+
+        // Flush the previous file before rotating to a new one
+        if let Some(ref mut f) = self.file {
+            let _ = f.flush();
+        }
+
         let path = self.filename(self.slot.as_deref().unwrap_or(""));
         let _ = std::fs::create_dir_all(&self.dir);
         let file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
             .open(&path)?;
-        self.file = Some(std::io::BufWriter::new(file));
+        self.file = Some(file);
         Ok(())
+    }
+}
+
+/// Flush file contents on drop to minimise data loss.
+impl Drop for RollingLogWriter {
+    fn drop(&mut self) {
+        if let Some(ref mut f) = self.file {
+            let _ = f.flush();
+        }
     }
 }
 
@@ -95,6 +110,7 @@ impl Write for RollingLogWriter {
             .ok_or_else(|| std::io::Error::other("log file not opened"))?
             .write(buf)
     }
+
     fn flush(&mut self) -> std::io::Result<()> {
         if let Some(ref mut f) = self.file {
             f.flush()

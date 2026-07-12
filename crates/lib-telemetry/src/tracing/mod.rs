@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 use std::fs::{self, OpenOptions};
-use std::io::{self, BufWriter, Write};
+use std::io::{self, Write};
 use std::path::PathBuf;
 
 use chrono::Local;
@@ -16,7 +16,7 @@ struct RollingFileWriter {
     suffix: String,
     rotation: Rotation,
     slot: Option<String>,
-    file: Option<BufWriter<std::fs::File>>,
+    file: Option<std::fs::File>,
     write_count: u64,
 }
 
@@ -36,9 +36,9 @@ impl RollingFileWriter {
 
     fn slot(&self, dt: &chrono::DateTime<Local>) -> String {
         match self.rotation {
-            Rotation::Minutely => dt.format("%y%m%d%H%M").to_string(),
-            Rotation::Hourly => dt.format("%y%m%d%H").to_string(),
-            Rotation::Daily => dt.format("%y%m%d").to_string(),
+            Rotation::Hourly => dt.format("%Y%m%d%H").to_string(),
+            Rotation::Daily => dt.format("%Y%m%d").to_string(),
+            Rotation::Weekly => dt.format("%GW%V").to_string(),
             Rotation::Never => String::new(),
         }
     }
@@ -50,7 +50,7 @@ impl RollingFileWriter {
                 .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
             _ => self
                 .dir
-                .join(format!("{}_{}_{}.jsonl", self.prefix, slot, self.suffix)),
+                .join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
         }
     }
 
@@ -74,11 +74,26 @@ impl RollingFileWriter {
         if !need_new && self.file.is_some() {
             return Ok(());
         }
+
+        // Flush the previous file before rotating
+        if let Some(ref mut f) = self.file {
+            let _ = f.flush();
+        }
+
         let path = self.filename(self.slot.as_deref().unwrap_or(""));
         let _ = fs::create_dir_all(&self.dir);
         let file = OpenOptions::new().create(true).append(true).open(&path)?;
-        self.file = Some(BufWriter::new(file));
+        self.file = Some(file);
         Ok(())
+    }
+}
+
+/// Flush file contents on drop to minimise data loss.
+impl Drop for RollingFileWriter {
+    fn drop(&mut self) {
+        if let Some(ref mut f) = self.file {
+            let _ = f.flush();
+        }
     }
 }
 
@@ -90,6 +105,7 @@ impl Write for RollingFileWriter {
             .ok_or_else(|| io::Error::other("log file not opened"))?
             .write(buf)
     }
+
     fn flush(&mut self) -> io::Result<()> {
         if let Some(ref mut f) = self.file {
             f.flush()
@@ -289,8 +305,8 @@ mod tests {
     fn rolling_file_writer_filename_rotated() {
         let w = RollingFileWriter::new("/tmp".into(), "rusttp", "trace", Rotation::Hourly);
         assert_eq!(
-            w.filename("26071220"),
-            PathBuf::from("/tmp/rusttp_26071220_trace.jsonl")
+            w.filename("2026071220"),
+            PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl")
         );
     }
 }

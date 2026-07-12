@@ -4,12 +4,10 @@ use lib_telemetry::Rotation;
 fn rotation_parse_never() {
     assert_eq!(Rotation::parse("never"), Rotation::Never);
 }
-
 #[test]
-fn rotation_parse_minutely() {
-    assert_eq!(Rotation::parse("minutely"), Rotation::Minutely);
+fn rotation_parse_weekly() {
+    assert_eq!(Rotation::parse("weekly"), Rotation::Weekly);
 }
-
 #[test]
 fn rotation_parse_hourly() {
     assert_eq!(Rotation::parse("hourly"), Rotation::Hourly);
@@ -22,9 +20,9 @@ fn rotation_parse_daily() {
 
 #[test]
 fn rotation_parse_fallback() {
-    assert_eq!(Rotation::parse(""), Rotation::Hourly);
-    assert_eq!(Rotation::parse("monthly"), Rotation::Hourly);
-    assert_eq!(Rotation::parse("bogus"), Rotation::Hourly);
+    assert_eq!(Rotation::parse(""), Rotation::Daily);
+    assert_eq!(Rotation::parse("monthly"), Rotation::Daily);
+    assert_eq!(Rotation::parse("bogus"), Rotation::Daily);
 }
 
 #[test]
