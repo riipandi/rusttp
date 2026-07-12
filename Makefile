@@ -64,10 +64,13 @@ install: build ## Install binary to ~/.local/bin
 	@cp "$(BUILD_DIR)/$(APP_BIN)" "$(HOME)/.local/bin/$(APP_BIN)-next"
 	@echo "$(APP_BIN)-next installed at: $(HOME)/.local/bin/$(APP_BIN)-next"
 
-run: ## Run dev server (cargo run)
-	@-ARGS='$(or $(_RESIDUAL_),$(ARGS))'; \
-	if [ -n "$$ARGS" ]; then \
-		$(CARGO) run -q -p $(APP_BIN) -- $$ARGS; \
+run: ## Run dev server (loads .env.local if present)
+	@_args='$(or $(_RESIDUAL_),$(ARGS))'; \
+	if [ -f .env.local ]; then \
+		_args="--env-file .env.local $$_args"; \
+	fi; \
+	if [ -n "$$_args" ]; then \
+		$(CARGO) run -q -p $(APP_BIN) -- $$_args; \
 	else \
 		$(CARGO) run -q -p $(APP_BIN); \
 	fi

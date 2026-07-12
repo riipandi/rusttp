@@ -17,10 +17,14 @@ const VERSION: &str = concat!(
     ")"
 );
 
-/// Rusttp v2 — Axum web application
+/// Rusttp — Axum web application
 #[derive(Parser)]
 #[command(name = "rusttp", about, version = VERSION)]
 pub struct Cli {
+    /// Load env file, will override system envars
+    #[arg(long = "env-file", global = true)]
+    pub env_file: Option<String>,
+
     #[command(subcommand)]
     pub command: Option<Commands>,
 }

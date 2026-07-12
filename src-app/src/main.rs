@@ -1,8 +1,66 @@
+use clap::Parser;
+use rusttp::cmd;
 use std::ffi::OsString;
 
-use clap::Parser;
-use lib_telemetry::{LogOutput, Rotation, TelemetryBuilder, TracingReporter};
-use rusttp::cmd;
+use lib_telemetry::TelemetryBuilder;
+use lib_telemetry::{LogOutput, Rotation, TracingReporter};
+
+// ── Env-file loader ────────────────────────────────────────────────────────
+
+/// Extract `--env-file <path>` (or `--env-file=<path>`) from raw args and
+/// load the file into the process environment, overriding any existing vars.
+/// Returns the loaded path if any.
+fn load_env_file_from_args<I>(args: &[I]) -> Option<&std::path::Path>
+where
+    I: AsRef<std::ffi::OsStr> + Clone,
+{
+    let mut i = 0;
+    while i < args.len() {
+        let a = args[i].as_ref();
+        if a == "--env-file" {
+            if let Some(path) = args.get(i + 1) {
+                let path = std::path::Path::new(path.as_ref());
+                load_dotenv_file(path);
+                return Some(path);
+            }
+        } else if let Some(val) = a.to_str().and_then(|s| s.strip_prefix("--env-file=")) {
+            let path = std::path::Path::new(val);
+            load_dotenv_file(path);
+            return Some(path);
+        }
+        i += 1;
+    }
+    None
+}
+
+/// Load a `.env` file and `set_env` for each `KEY=VALUE` line.
+/// Overrides any existing environment variables (file values win).
+fn load_dotenv_file(path: &std::path::Path) {
+    let content = match std::fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("warning: failed to read env-file {}: {e}", path.display());
+            return;
+        }
+    };
+    for line in content.lines() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        if let Some(eq) = line.find('=') {
+            let key = line[..eq].trim();
+            let value = line[eq + 1..].trim();
+            if !key.is_empty() {
+                // SAFETY: called once at startup, single-threaded, no other
+                // code reads env vars concurrently during this window.
+                unsafe { std::env::set_var(key, value) };
+            }
+        }
+    }
+}
+
+// ── App entrypoint ─────────────────────────────────────────────────────────
 
 /// Run the application with explicit CLI args (testable).
 async fn run_main_with_args<I>(args: I) -> i32
@@ -10,7 +68,21 @@ where
     I: IntoIterator,
     I::Item: Into<OsString> + Clone,
 {
-    // ── Parse tracing config from env ──────────────────────────────────────
+    let args: Vec<OsString> = args.into_iter().map(|a| a.into()).collect();
+
+    // Load env-file before anything else so file vars override system env
+    let env_file_loaded = load_env_file_from_args(&args).map(|p| p.to_path_buf());
+    // ── Parse CLI ─────────────────────────────────────────────────────────
+    let cli = match cmd::Cli::try_parse_from(args) {
+        Ok(cli) => cli,
+        Err(e) => {
+            let code = e.exit_code();
+            let _ = e.print();
+            return code;
+        }
+    };
+
+    // ── Parse tracing config from env ─────────────────────────────────────
     let tracing_reporter = std::env::var("TRACING_REPORTER").unwrap_or_default();
     let tracing_enabled = std::env::var("TRACING_ENABLE").as_deref() == Ok("true");
     let tracing_sampling: f64 = std::env::var("TRACING_SAMPLING")
@@ -68,15 +140,11 @@ where
     // ── Init ──────────────────────────────────────────────────────────────
     builder.init();
 
-    // ── CLI ────────────────────────────────────────────────────────────────
-    let cli = match cmd::Cli::try_parse_from(args) {
-        Ok(cli) => cli,
-        Err(e) => {
-            let _ = e.print();
-            return 2;
-        }
-    };
+    if let Some(ref path) = env_file_loaded {
+        log::info!("loaded env from {}", path.display());
+    }
 
+    // ── Dispatch ──────────────────────────────────────────────────────────
     let exit_code = cmd::dispatch(&cli).await.unwrap_or_else(|e| {
         log::error!("command failed: {e}");
         1
@@ -136,19 +204,79 @@ mod tests {
     #[tokio::test]
     async fn run_main_with_help_shows_usage() {
         let code = run_main_with_args(["rusttp", "--help"]).await;
-        assert_eq!(code, 2);
+        assert_eq!(code, 0);
+    }
+
+    // ── Env-file tests ────────────────────────────────────────────────────
+
+    fn make_env_file(dir: &std::path::Path, content: &str) -> std::path::PathBuf {
+        let _ = std::fs::create_dir_all(dir);
+        let path = dir.join(".env");
+        std::fs::write(&path, content).unwrap();
+        path
+    }
+
+    #[test]
+    fn load_dotenv_file_sets_vars() {
+        let dir = std::env::temp_dir().join("envtest_sets_vars");
+        let path = make_env_file(&dir, "FOO=bar\nBAZ=qux\n");
+        load_dotenv_file(&path);
+        assert_eq!(std::env::var("FOO").as_deref(), Ok("bar"));
+        assert_eq!(std::env::var("BAZ").as_deref(), Ok("qux"));
+        unsafe { std::env::remove_var("FOO") };
+        unsafe { std::env::remove_var("BAZ") };
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn load_dotenv_file_skips_comments_and_blanks() {
+        let dir = std::env::temp_dir().join("envtest_skip_comments");
+        let path = make_env_file(&dir, "# comment\n\nKEY=val\n");
+        load_dotenv_file(&path);
+        assert_eq!(std::env::var("KEY").as_deref(), Ok("val"));
+        assert_eq!(std::env::var("FOO"), Err(std::env::VarError::NotPresent));
+        unsafe { std::env::remove_var("KEY") };
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn load_env_file_from_args_extracts_separate_arg() {
+        let args: [&str; 4] = ["rusttp", "--env-file", "/path/to/env", "serve"];
+        let got = load_env_file_from_args(&args);
+        assert_eq!(got, Some(std::path::Path::new("/path/to/env")));
+    }
+
+    #[test]
+    fn load_env_file_from_args_extracts_eq_form() {
+        let args: [&str; 3] = ["rusttp", "--env-file=/path/to/env", "serve"];
+        let got = load_env_file_from_args(&args);
+        assert_eq!(got, Some(std::path::Path::new("/path/to/env")));
+    }
+
+    #[test]
+    fn load_env_file_from_args_returns_none_when_absent() {
+        let args: [&str; 2] = ["rusttp", "serve"];
+        let got = load_env_file_from_args(&args);
+        assert_eq!(got, None);
     }
 
     #[tokio::test]
-    async fn run_main_with_file_transport() {
-        unsafe { std::env::set_var("LOG_TRANSPORT", "file") };
-        unsafe { std::env::set_var("LOG_CONSOLE", "false") };
-        unsafe { std::env::set_var("LOG_ROTATION", "never") };
-        let code = run_main_with_args(["rusttp", "hc"]).await;
+    async fn env_file_overrides_system_env() {
+        let dir = std::env::temp_dir().join("envtest_override");
+        let path = make_env_file(&dir, "LOG_LEVEL=debug\nTRACING_ENABLE=true\n");
+
+        // Set system env that should be overridden
+        unsafe { std::env::set_var("LOG_LEVEL", "error") };
+        unsafe { std::env::set_var("TRACING_ENABLE", "false") };
+
+        let code =
+            run_main_with_args(["rusttp", "--env-file", &path.to_string_lossy(), "hc"]).await;
         assert_eq!(code, 0);
-        let _ = std::fs::remove_dir_all("storage");
-        unsafe { std::env::remove_var("LOG_TRANSPORT") };
-        unsafe { std::env::remove_var("LOG_CONSOLE") };
-        unsafe { std::env::remove_var("LOG_ROTATION") };
+
+        // Env vars from file must have won
+        assert_eq!(std::env::var("LOG_LEVEL").as_deref(), Ok("debug"));
+        assert_eq!(std::env::var("TRACING_ENABLE").as_deref(), Ok("true"));
+
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

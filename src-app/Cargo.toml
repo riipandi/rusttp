@@ -2,7 +2,7 @@
 name = "rusttp"
 version.workspace = true
 license = "Apache-2.0"
-description = "Rusttp v2 — Axum web application"
+description = "Rusttp — Axum web application"
 keywords = ["axum", "web", "api", "rusttp"]
 categories = ["web-programming", "web-programming::http-server"]
 homepage.workspace = true
