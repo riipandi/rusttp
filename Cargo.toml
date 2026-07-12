@@ -49,11 +49,15 @@ uuid = { version = "1.23.4", features = ["v7", "serde"] }
 
 [profile.release]
 opt-level = 2 # Optimization level: 2 = balanced runtime perf vs compile time
-lto = "thin" # Thin LTO: cross-crate inlining without full-program analysis cost
-codegen-units = 16 # Parallel codegen: 16 units = faster compile, minimal optimization loss
-panic = "abort" # panic=abort: removes unwind tables — smaller binary, cannot catch panics
+lto = true # Full LTO: max cross-crate inlining, smaller & faster binary
+codegen-units = 1 # Single unit per crate: LLVM optimises whole crate at once
+panic = "abort" # Removes unwind tables — smaller binary, cannot catch panics
 strip = "symbols" # Strip all symbols from final binary
 debug = false # No debug symbols in release
+
+[profile.release.build-override]
+opt-level = 0 # build.rs only — no need to optimise
+codegen-units = 16 # Keep build script fast
 
 [profile.dev]
 incremental = true # Incremental: rebuild only changed code — much faster iteration
