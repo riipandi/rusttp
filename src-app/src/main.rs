@@ -239,12 +239,19 @@ where
     // Fastrace: only install a reporter when explicitly configured.
     // Without a reporter, spans are collected in a thread-local ring buffer
     // and silently evicted — near-zero overhead in the hot path.
-    if std::env::var("TRACING_REPORTER").as_deref() == Ok("console") {
+    let tracing_reporter = std::env::var("TRACING_REPORTER").unwrap_or_default();
+    if tracing_reporter == "console" {
         fastrace::set_reporter(
             fastrace::collector::ConsoleReporter,
             fastrace::collector::Config::default(),
         );
     }
+    let tracing_enabled = std::env::var("TRACING_ENABLE").as_deref() == Ok("true");
+    let tracing_sampling: f64 = std::env::var("TRACING_SAMPLING")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(0.7);
+    let tracing_sampling = tracing_sampling.clamp(0.0, 1.0);
 
     // Channel-based JSON logger (non-blocking, background thread)
     let logger = init_channel_logger();
@@ -252,6 +259,17 @@ where
     let _ = log::set_boxed_logger(Box::new(logger));
     log::set_max_level(max_level);
 
+    // Startup status
+    {
+        let log_level = std::env::var("LOG_LEVEL")
+            .or_else(|_| std::env::var("RUST_LOG"))
+            .unwrap_or_else(|_| "info".into());
+        let log_console = std::env::var("LOG_CONSOLE").unwrap_or_else(|_| "true".into());
+        let log_transport = std::env::var("LOG_TRANSPORT").unwrap_or_else(|_| "stderr".into());
+        log::info!(
+            "startup: tracing_enabled={tracing_enabled} tracing_sampling={tracing_sampling} tracing_reporter={tracing_reporter} log_level={log_level} log_console={log_console} log_transport={log_transport}"
+        );
+    }
     let cli = match cmd::Cli::try_parse_from(args) {
         Ok(cli) => cli,
         Err(e) => {

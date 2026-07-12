@@ -32,3 +32,4 @@ uuid = { version = "1", features = ["v4", "serde"] }
 fastrace = "0.7"
 fastrace-axum = "0.2"
 log = { version = "0.4", features = ["std"] }
+rand = "0.8"

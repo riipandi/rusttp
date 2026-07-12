@@ -30,6 +30,7 @@ chrono.workspace = true
 fastrace = { workspace = true, features = ["enable"] }
 fastrace-axum.workspace = true
 log.workspace = true
+rand.workspace = true
 
 [dev-dependencies]
 tower.workspace = true
