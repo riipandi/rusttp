@@ -8,7 +8,7 @@
 
 ---
 
-Minimal Rust starter project template for building application with Axum and Clap.
+Minimal monolith Rust starter project template for building application with Axum, Clap, Vite, and TypeScript.
 
 > [!NOTE]
 > This project just a template that I use for my personal use, so you may encounter bugs.
