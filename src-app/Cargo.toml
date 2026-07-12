@@ -29,6 +29,10 @@ chrono.workspace = true
 # tracing → fastrace migration
 fastrace = { workspace = true, features = ["enable"] }
 fastrace-axum.workspace = true
+fastrace-opentelemetry.workspace = true
+opentelemetry.workspace = true
+opentelemetry-otlp.workspace = true
+opentelemetry_sdk.workspace = true
 log.workspace = true
 rand.workspace = true
 

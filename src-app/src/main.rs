@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::ffi::OsString;
 use std::fs::{self, OpenOptions};
 use std::io::{self, BufWriter, Write};
@@ -16,9 +17,11 @@ enum Rotation {
     Daily,
 }
 
-/// Single file writer with rotation.
+/// Single file writer with rotation and configurable prefix.
 struct RollingFileWriter {
     dir: PathBuf,
+    prefix: String,
+    suffix: String,
     rotation: Rotation,
     slot: Option<String>,
     file: Option<BufWriter<std::fs::File>>,
@@ -26,10 +29,12 @@ struct RollingFileWriter {
 }
 
 impl RollingFileWriter {
-    fn new(dir: PathBuf, rotation: Rotation) -> Self {
+    fn new(dir: PathBuf, prefix: &str, suffix: &str, rotation: Rotation) -> Self {
         let _ = fs::create_dir_all(&dir);
         RollingFileWriter {
             dir,
+            prefix: prefix.into(),
+            suffix: suffix.into(),
             rotation,
             slot: None,
             file: None,
@@ -39,17 +44,21 @@ impl RollingFileWriter {
 
     fn slot(&self, dt: &chrono::DateTime<Local>) -> String {
         match self.rotation {
-            Rotation::Minutely => dt.format("%Y%m%d_%H%M").to_string(),
-            Rotation::Hourly => dt.format("%Y%m%d_%H00").to_string(),
-            Rotation::Daily => dt.format("%Y%m%d").to_string(),
+            Rotation::Minutely => dt.format("%y%m%d%H%M").to_string(),
+            Rotation::Hourly => dt.format("%y%m%d%H").to_string(),
+            Rotation::Daily => dt.format("%y%m%d").to_string(),
             Rotation::Never => String::new(),
         }
     }
 
     fn filename(&self, slot: &str) -> PathBuf {
         match self.rotation {
-            Rotation::Never => self.dir.join("rusttp.jsonl"),
-            _ => self.dir.join(format!("rusttp-{}.jsonl", slot)),
+            Rotation::Never => self
+                .dir
+                .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
+            _ => self
+                .dir
+                .join(format!("{}_{}_{}.jsonl", self.prefix, slot, self.suffix)),
         }
     }
 
@@ -100,16 +109,13 @@ impl Write for RollingFileWriter {
 
 // ── Non-blocking channel-based logger ──────────────────────────────────────
 
-/// Messages sent from the logger frontend to the background writer thread.
 enum LogMsg {
     Line(String),
     Flush(mpsc::Sender<()>),
 }
 
-/// The background writer thread: drains the channel and writes to outputs.
+/// Background writer thread: drains the channel and writes to outputs.
 fn spawn_writer_thread(rx: mpsc::Receiver<LogMsg>) {
-    // Writers are built inside the thread — no Mutex needed, no contention.
-    // They are NOT Send because RollingFileWriter lives in this thread only.
     let console_enabled = std::env::var("LOG_CONSOLE")
         .ok()
         .map(|v| v == "true" || v == "1")
@@ -120,16 +126,15 @@ fn spawn_writer_thread(rx: mpsc::Receiver<LogMsg>) {
     let rotation =
         parse_rotation(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "hourly".into()));
 
-    // Local writer collection — single-threaded, no Mutex
     struct Writers {
         file: Option<RollingFileWriter>,
         console: Option<io::Stderr>,
     }
     let mut writers = Writers {
-        file: file_enabled.then(|| RollingFileWriter::new("storage/logs".into(), rotation)),
+        file: file_enabled
+            .then(|| RollingFileWriter::new("storage/logs".into(), "rusttp", "log", rotation)),
         console: emit_console.then(io::stderr),
     };
-    // Fallback: if both disabled, still write to stderr
     if !file_enabled && !emit_console {
         writers.console = Some(io::stderr());
     }
@@ -152,7 +157,6 @@ fn spawn_writer_thread(rx: mpsc::Receiver<LogMsg>) {
                     if let Some(ref mut w) = writers.console {
                         let _ = w.flush();
                     }
-                    // Signal completion
                     let _ = tx.send(());
                 }
             }
@@ -182,16 +186,75 @@ impl log::Log for JsonLogger {
             "message": record.args().to_string(),
         });
         let line = serde_json::to_string(&entry).unwrap_or_default() + "\n";
-        // Non-blocking push — drops line if buffer is full (backpressure)
         let _ = self.tx.try_send(LogMsg::Line(line));
     }
 
     fn flush(&self) {
         let (tx, rx) = mpsc::channel();
-        // Use send() not try_send() — flush is supposed to block until complete
         let _ = self.tx.send(LogMsg::Flush(tx));
         let _ = rx.recv();
     }
+}
+
+// ── File reporter for fastrace spans ───────────────────────────────────────
+
+/// Writes span records as JSONL to a rotated file.
+struct FileReporter {
+    writer: RollingFileWriter,
+}
+
+impl fastrace::collector::Reporter for FileReporter {
+    fn report(&mut self, spans: Vec<fastrace::collector::SpanRecord>) {
+        for span in spans {
+            let entry = span_to_json(&span);
+            let line = serde_json::to_string(&entry).unwrap_or_default() + "\n";
+            let _ = self.writer.write_all(line.as_bytes());
+        }
+    }
+}
+
+fn span_to_json(span: &fastrace::collector::SpanRecord) -> serde_json::Value {
+    let properties: serde_json::Value = span
+        .properties
+        .iter()
+        .map(|(k, v)| {
+            (
+                k.as_ref().to_string(),
+                serde_json::Value::String(v.to_string()),
+            )
+        })
+        .collect();
+    let events: Vec<serde_json::Value> = span
+        .events
+        .iter()
+        .map(|e| {
+            let ev_props: serde_json::Value = e
+                .properties
+                .iter()
+                .map(|(k, v)| {
+                    (
+                        k.as_ref().to_string(),
+                        serde_json::Value::String(v.to_string()),
+                    )
+                })
+                .collect();
+            serde_json::json!({
+                "name": e.name,
+                "timestamp_unix_ns": e.timestamp_unix_ns,
+                "properties": ev_props,
+            })
+        })
+        .collect();
+    serde_json::json!({
+        "trace_id": span.trace_id.to_string(),
+        "span_id": span.span_id.to_string(),
+        "parent_id": span.parent_id.to_string(),
+        "begin_time_unix_ns": span.begin_time_unix_ns,
+        "duration_ns": span.duration_ns,
+        "name": span.name,
+        "properties": properties,
+        "events": events,
+    })
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -222,10 +285,51 @@ fn parse_log_level() -> log::LevelFilter {
 
 fn init_channel_logger() -> JsonLogger {
     let level = parse_log_level();
-    // Bounded channel: 65536 entries ≈ protects memory under burst without dropping too many
     let (tx, rx) = mpsc::sync_channel::<LogMsg>(65536);
     spawn_writer_thread(rx);
     JsonLogger { tx, level }
+}
+
+fn setup_console_reporter() {
+    fastrace::set_reporter(
+        fastrace::collector::ConsoleReporter,
+        fastrace::collector::Config::default(),
+    );
+}
+
+fn setup_file_reporter() {
+    let rotation =
+        parse_rotation(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "hourly".into()));
+    let writer = RollingFileWriter::new("storage/traces".into(), "rusttp", "trace", rotation);
+    fastrace::set_reporter(
+        FileReporter { writer },
+        fastrace::collector::Config::default(),
+    );
+}
+
+fn setup_otel_reporter() {
+    let exporter = match opentelemetry_otlp::SpanExporter::builder()
+        .with_http()
+        .build()
+    {
+        Ok(exporter) => exporter,
+        Err(e) => {
+            log::warn!("otel exporter init failed (tracing disabled): {e}");
+            return;
+        }
+    };
+    let resource = opentelemetry_sdk::Resource::builder()
+        .with_attributes([opentelemetry::KeyValue::new(
+            "service.name",
+            std::env::var("OTEL_SERVICE_NAME").unwrap_or_else(|_| "rusttp".into()),
+        )])
+        .build();
+    let scope = opentelemetry::InstrumentationScope::builder("rusttp")
+        .with_version(env!("CARGO_PKG_VERSION"))
+        .build();
+    let reporter =
+        fastrace_opentelemetry::OpenTelemetryReporter::new(exporter, Cow::Owned(resource), scope);
+    fastrace::set_reporter(reporter, fastrace::collector::Config::default());
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
@@ -236,16 +340,15 @@ where
     I: IntoIterator,
     I::Item: Into<OsString> + Clone,
 {
-    // Fastrace: only install a reporter when explicitly configured.
-    // Without a reporter, spans are collected in a thread-local ring buffer
-    // and silently evicted — near-zero overhead in the hot path.
+    // Fastrace reporter: console | file | otel | (unset = no reporter)
     let tracing_reporter = std::env::var("TRACING_REPORTER").unwrap_or_default();
-    if tracing_reporter == "console" {
-        fastrace::set_reporter(
-            fastrace::collector::ConsoleReporter,
-            fastrace::collector::Config::default(),
-        );
+    match tracing_reporter.as_str() {
+        "console" => setup_console_reporter(),
+        "file" => setup_file_reporter(),
+        "otel" => setup_otel_reporter(),
+        _ => {} // no reporter — spans collected in ring buffer, silently evicted
     }
+
     let tracing_enabled = std::env::var("TRACING_ENABLE").as_deref() == Ok("true");
     let tracing_sampling: f64 = std::env::var("TRACING_SAMPLING")
         .ok()
@@ -270,6 +373,7 @@ where
             "startup: tracing_enabled={tracing_enabled} tracing_sampling={tracing_sampling} tracing_reporter={tracing_reporter} log_level={log_level} log_console={log_console} log_transport={log_transport}"
         );
     }
+
     let cli = match cmd::Cli::try_parse_from(args) {
         Ok(cli) => cli,
         Err(e) => {
@@ -325,44 +429,44 @@ mod tests {
 
     #[test]
     fn slot_never() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Never);
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Never);
         let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
         assert_eq!(w.slot(&dt), "");
     }
 
     #[test]
     fn slot_minutely() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Minutely);
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Minutely);
         let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
-        assert_eq!(w.slot(&dt), "20260712_2038");
+        assert_eq!(w.slot(&dt), "2607122038");
     }
 
     #[test]
     fn slot_hourly() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Hourly);
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Hourly);
         let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
-        assert_eq!(w.slot(&dt), "20260712_2000");
+        assert_eq!(w.slot(&dt), "26071220");
     }
 
     #[test]
     fn slot_daily() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Daily);
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Daily);
         let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
-        assert_eq!(w.slot(&dt), "20260712");
+        assert_eq!(w.slot(&dt), "260712");
     }
 
     #[test]
     fn filename_never() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Never);
-        assert_eq!(w.filename(""), PathBuf::from("/tmp/rusttp.jsonl"));
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Never);
+        assert_eq!(w.filename(""), PathBuf::from("/tmp/rusttp_log.jsonl"));
     }
 
     #[test]
     fn filename_rotated() {
-        let w = RollingFileWriter::new("/tmp".into(), Rotation::Hourly);
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "log", Rotation::Hourly);
         assert_eq!(
-            w.filename("20260712_2000"),
-            PathBuf::from("/tmp/rusttp-20260712_2000.jsonl")
+            w.filename("26071220"),
+            PathBuf::from("/tmp/rusttp_26071220_log.jsonl")
         );
     }
 
@@ -370,10 +474,10 @@ mod tests {
     fn write_creates_file_never() {
         let dir = std::env::temp_dir().join("rusttp-test-never");
         let _ = std::fs::remove_dir_all(&dir);
-        let mut w = RollingFileWriter::new(dir.clone(), Rotation::Never);
+        let mut w = RollingFileWriter::new(dir.clone(), "rusttp", "log", Rotation::Never);
         w.write_all(b"hello\n").unwrap();
         w.flush().unwrap();
-        let path = dir.join("rusttp.jsonl");
+        let path = dir.join("rusttp_log.jsonl");
         assert!(path.exists(), "file should exist after write");
         let content = std::fs::read_to_string(&path).unwrap();
         assert_eq!(content, "hello\n");
@@ -384,11 +488,11 @@ mod tests {
     fn write_appends_to_existing_file() {
         let dir = std::env::temp_dir().join("rusttp-test-append");
         let _ = std::fs::remove_dir_all(&dir);
-        let mut w = RollingFileWriter::new(dir.clone(), Rotation::Never);
+        let mut w = RollingFileWriter::new(dir.clone(), "rusttp", "log", Rotation::Never);
         w.write_all(b"first\n").unwrap();
         w.write_all(b"second\n").unwrap();
         w.flush().unwrap();
-        let content = std::fs::read_to_string(dir.join("rusttp.jsonl")).unwrap();
+        let content = std::fs::read_to_string(dir.join("rusttp_log.jsonl")).unwrap();
         assert_eq!(content, "first\nsecond\n");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -397,10 +501,10 @@ mod tests {
     fn flush_after_write_persists_data() {
         let dir = std::env::temp_dir().join("rusttp-test-flush");
         let _ = std::fs::remove_dir_all(&dir);
-        let mut w = RollingFileWriter::new(dir.clone(), Rotation::Never);
+        let mut w = RollingFileWriter::new(dir.clone(), "rusttp", "log", Rotation::Never);
         w.write_all(b"data\n").unwrap();
         w.flush().unwrap();
-        let content = std::fs::read_to_string(dir.join("rusttp.jsonl")).unwrap();
+        let content = std::fs::read_to_string(dir.join("rusttp_log.jsonl")).unwrap();
         assert_eq!(content, "data\n");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -409,14 +513,14 @@ mod tests {
     fn write_hourly_creates_timestamped_file() {
         let dir = std::env::temp_dir().join("rusttp-test-hourly");
         let _ = std::fs::remove_dir_all(&dir);
-        let mut w = RollingFileWriter::new(dir.clone(), Rotation::Hourly);
+        let mut w = RollingFileWriter::new(dir.clone(), "rusttp", "log", Rotation::Hourly);
         w.write_all(b"line\n").unwrap();
         let entries: Vec<_> = std::fs::read_dir(&dir).unwrap().collect();
         assert_eq!(entries.len(), 1);
         let fname = entries[0].as_ref().unwrap().file_name();
         let fname = fname.to_str().unwrap();
-        assert!(fname.starts_with("rusttp-"));
-        assert!(fname.ends_with(".jsonl"));
+        assert!(fname.starts_with("rusttp_"));
+        assert!(fname.ends_with("_log.jsonl"));
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -475,7 +579,6 @@ mod tests {
 
     #[test]
     fn init_channel_logger_does_not_panic() {
-        // Smoke test: creating the logger should not panic
         let _logger = init_channel_logger();
     }
 
