@@ -11,12 +11,14 @@
 Minimal Rust starter project template for building application with Axum and Clap.
 
 > [!NOTE]
+> This project just a template that I use for my personal use, so you may encounter bugs.
+> Please review the release notes thoroughly before updating, as breaking changes can occur!
 > _This is a template for [cargo-generate](https://cargo-generate.github.io/cargo-generate/)._
 > _Read the [documentation](#quick-start) to get started._
 
 ## Quick Start
 
-You will need `Rust >=1.82`, `Docker >= 27.5`, and `Docker Compose >= 2.32` installed on your machine.
+You will need `Rust >=1.97`, `Docker >= 27.5`, and `Docker Compose >= 2.32` installed on your machine.
 
 ### Create New Project
 
@@ -107,13 +109,14 @@ See the [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) file
 
 <sub>🤫 Psst! If you like my work you can support me via [GitHub sponsors](https://github.com/sponsors/riipandi).</sub>
 
-[![Creator Badge](https://badgen.net/badge/icon/Crafted%20by%20Aris%20Ripandi?label&color=black&labelColor=black)][riipandi-x]
+[![CreatorBadge](https://badgen.net/badge/icon/Aris%20Ripandi?label=Made+by&color=black&labelColor=black)](https://x.com/intent/follow?screen_name=riipandi)
+
+<!-- References -->
 
 [docker]: https://docs.docker.com/engine/install/
 [install-rust]: https://www.rust-lang.org/tools/install
 [just]: https://just.systems/man/en/
 [lefthook]: https://lefthook.dev/installation/index.html
-[license-apache]: https://choosealicense.com/licenses/apache-2.0/
-[license-mit]: https://choosealicense.com/licenses/mit/
-[riipandi-x]: https://x.com/intent/follow?screen_name=riipandi
+[license-apache]: https://www.tldrlegal.com/license/apache-license-2-0-apache-2-0
+[license-mit]: https://www.tldrlegal.com/license/mit-license
 [watchexec]: https://github.com/watchexec/watchexec

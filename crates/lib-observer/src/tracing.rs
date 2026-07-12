@@ -45,12 +45,8 @@ impl RollingFileWriter {
 
     fn filename(&self, slot: &str) -> PathBuf {
         match self.rotation {
-            Rotation::Never => self
-                .dir
-                .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
-            _ => self
-                .dir
-                .join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
+            Rotation::Never => self.dir.join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
+            _ => self.dir.join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
         }
     }
 
@@ -136,12 +132,7 @@ fn span_to_json(span: &fastrace::collector::SpanRecord) -> serde_json::Value {
     let properties: serde_json::Value = span
         .properties
         .iter()
-        .map(|(k, v)| {
-            (
-                k.as_ref().to_string(),
-                serde_json::Value::String(v.to_string()),
-            )
-        })
+        .map(|(k, v)| (k.as_ref().to_string(), serde_json::Value::String(v.to_string())))
         .collect();
     let events: Vec<serde_json::Value> = span
         .events
@@ -150,12 +141,7 @@ fn span_to_json(span: &fastrace::collector::SpanRecord) -> serde_json::Value {
             let ev_props: serde_json::Value = e
                 .properties
                 .iter()
-                .map(|(k, v)| {
-                    (
-                        k.as_ref().to_string(),
-                        serde_json::Value::String(v.to_string()),
-                    )
-                })
+                .map(|(k, v)| (k.as_ref().to_string(), serde_json::Value::String(v.to_string())))
                 .collect();
             serde_json::json!({
                 "name": e.name,
@@ -180,28 +166,19 @@ fn span_to_json(span: &fastrace::collector::SpanRecord) -> serde_json::Value {
 
 /// Install the fastrace `ConsoleReporter`.
 pub fn setup_console_reporter() {
-    fastrace::set_reporter(
-        fastrace::collector::ConsoleReporter,
-        fastrace::collector::Config::default(),
-    );
+    fastrace::set_reporter(fastrace::collector::ConsoleReporter, fastrace::collector::Config::default());
 }
 
 /// Install a file-based reporter that writes JSONL spans.
 pub fn setup_file_reporter(dir: PathBuf, prefix: &str, suffix: &str, rotation: Rotation) {
     let writer = RollingFileWriter::new(dir, prefix, suffix, rotation);
-    fastrace::set_reporter(
-        FileReporter { writer },
-        fastrace::collector::Config::default(),
-    );
+    fastrace::set_reporter(FileReporter { writer }, fastrace::collector::Config::default());
 }
 
 /// Install an OpenTelemetry reporter via OTLP HTTP.
 pub fn setup_otel_reporter(service_name: &str) {
     let name: Cow<'static, str> = Cow::Owned(service_name.to_string());
-    let exporter = match opentelemetry_otlp::SpanExporter::builder()
-        .with_http()
-        .build()
-    {
+    let exporter = match opentelemetry_otlp::SpanExporter::builder().with_http().build() {
         Ok(exporter) => exporter,
         Err(e) => {
             log::warn!("otel exporter init failed (tracing disabled): {e}");
@@ -209,16 +186,12 @@ pub fn setup_otel_reporter(service_name: &str) {
         }
     };
     let resource = opentelemetry_sdk::Resource::builder()
-        .with_attributes([opentelemetry::KeyValue::new(
-            "service.name",
-            service_name.to_string(),
-        )])
+        .with_attributes([opentelemetry::KeyValue::new("service.name", service_name.to_string())])
         .build();
     let scope = opentelemetry::InstrumentationScope::builder(name)
         .with_version(env!("CARGO_PKG_VERSION"))
         .build();
-    let reporter =
-        fastrace_opentelemetry::OpenTelemetryReporter::new(exporter, Cow::Owned(resource), scope);
+    let reporter = fastrace_opentelemetry::OpenTelemetryReporter::new(exporter, Cow::Owned(resource), scope);
     fastrace::set_reporter(reporter, fastrace::collector::Config::default());
 }
 
@@ -227,10 +200,7 @@ mod tests {
     use super::*;
     use fastrace::collector::Reporter;
 
-    fn make_span(
-        name: &'static str,
-        properties: Vec<(&'static str, &'static str)>,
-    ) -> fastrace::collector::SpanRecord {
+    fn make_span(name: &'static str, properties: Vec<(&'static str, &'static str)>) -> fastrace::collector::SpanRecord {
         fastrace::collector::SpanRecord {
             trace_id: fastrace::collector::TraceId(42),
             span_id: fastrace::collector::SpanId(1),
@@ -261,10 +231,7 @@ mod tests {
 
     #[test]
     fn span_to_json_renders_properties() {
-        let span = make_span(
-            "props",
-            vec![("http.method", "GET"), ("http.status", "200")],
-        );
+        let span = make_span("props", vec![("http.method", "GET"), ("http.status", "200")]);
         let json = span_to_json(&span);
         assert_eq!(json["properties"]["http.method"], "GET");
         assert_eq!(json["properties"]["http.status"], "200");
@@ -283,10 +250,7 @@ mod tests {
         span.events = vec![fastrace::collector::EventRecord {
             name: std::borrow::Cow::Borrowed("db.query"),
             timestamp_unix_ns: 1200,
-            properties: vec![(
-                std::borrow::Cow::Borrowed("query"),
-                std::borrow::Cow::Borrowed("SELECT 1"),
-            )],
+            properties: vec![(std::borrow::Cow::Borrowed("query"), std::borrow::Cow::Borrowed("SELECT 1"))],
         }];
         let json = span_to_json(&span);
         assert_eq!(json["events"][0]["name"], "db.query");
@@ -305,14 +269,8 @@ mod tests {
     #[test]
     fn rolling_file_writer_filename_rotated() {
         let w = RollingFileWriter::new("/tmp".into(), "rusttp", "trace", Rotation::Hourly);
-        assert_eq!(
-            w.filename("2026071220"),
-            PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl")
-        );
-        assert_eq!(
-            w.filename("2026071220"),
-            PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl")
-        );
+        assert_eq!(w.filename("2026071220"), PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl"));
+        assert_eq!(w.filename("2026071220"), PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl"));
     }
 
     #[test]
@@ -332,8 +290,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("rusttp_trace.jsonl");
         {
-            let mut w =
-                RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
+            let mut w = RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
             w.write_all(b"drop-data").unwrap();
         }
         let content = std::fs::read_to_string(&path).unwrap_or_default();

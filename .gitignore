@@ -1,50 +1,72 @@
-# Rust
-/target
-*.rs.bk
-
-# Node / frontend
-node_modules/
-/src-app/web/*
-!/src-app/web/index.html
-.pnpm-debug.log*
-npm-debug.log*
-
-# Build output
-/dist
-
-# Env files
-.env
-.env.*
-!.env.example
-
-# Logs & storage
-/storage
-*.log
-
-# IDE & editors
-.idea/
-.vscode/
-*.swp
-*.swo
-*.swn
-*.bak
-*.orig
-*~
-
-# OS files
+/.docs
+/.idea
+/.pnp
+/.husky
+/.snippets
+.pnp.js
 .DS_Store
 .DS_Store?
-._*
+.compose/
+/coverage
+/[Tt]emp/
+/[Tt]mp/
+/storage/
+/target/
+/vendor/
 Thumbs.db
 ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+node_modules/
+*tsbuildinfo
+npm-debug.log*
+coverage.*
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/mcp.json
+!.vscode/tasks.json
+*.bak
+*.pid
+*~
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
+# SQLite
+*.sqlite*
+*.sqlite3*
+*.db
+
+# Output
+_data/
+build/
+dist/
+output/
+release/
+.build/
+.data/
+.cache
+.output
+.wrangler
+.netlify
+.temp
+.tmp
+
+# Envars
+.env.*
+!.env.example
+compose.env*
+!compose.env.example
+.*.vars
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate*
+terraform.tfvars*
+!terraform.tfvars.example
 
 # Misc
-/.direnv
-.envrc
-*.pid
-.secrets
+.agents/*
+!.agents/skills/
+/src-app/web/*
+!/src-app/web/index.html

@@ -16,12 +16,7 @@ async fn root_returns_200() {
 async fn health_returns_200() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/api/health")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/api/health").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::OK);
@@ -31,12 +26,7 @@ async fn health_returns_200() {
 async fn healthz_returns_200() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/api/healthz")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/api/healthz").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::OK);
@@ -45,12 +35,7 @@ async fn healthz_returns_200() {
 async fn api_unknown_returns_json_404() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/api/nope")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/api/nope").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -60,12 +45,7 @@ async fn api_unknown_returns_json_404() {
 async fn rpc_unknown_returns_json_404() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/rpc/foo")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/rpc/foo").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -100,12 +80,7 @@ async fn root_returns_304_redirect_on_trailing_slash() {
 async fn api_error_returns_json() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/api/404")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/api/404").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -117,12 +92,7 @@ async fn api_error_returns_json() {
 async fn rpc_error_returns_json() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/rpc/nonexistent")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/rpc/nonexistent").body(Body::empty()).unwrap())
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -150,17 +120,10 @@ async fn method_not_allowed_on_api_get() {
 async fn health_returns_json_ok() {
     let app = rusttp::server::build();
     let res = app
-        .oneshot(
-            Request::builder()
-                .uri("/api/health")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/api/health").body(Body::empty()).unwrap())
         .await
         .unwrap();
-    let bytes = axum::body::to_bytes(res.into_body(), usize::MAX)
-        .await
-        .unwrap();
+    let bytes = axum::body::to_bytes(res.into_body(), usize::MAX).await.unwrap();
     let body: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(body["status"], "ok");
 }
@@ -175,9 +138,7 @@ async fn rpc_index_returns_json_status() {
     assert_eq!(res.status(), StatusCode::OK);
     let ct = res.headers().get("content-type").unwrap().to_str().unwrap();
     assert!(ct.starts_with("application/json"));
-    let bytes = axum::body::to_bytes(res.into_body(), usize::MAX)
-        .await
-        .unwrap();
+    let bytes = axum::body::to_bytes(res.into_body(), usize::MAX).await.unwrap();
     let body: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(body["status"], "rpc ready");
 }

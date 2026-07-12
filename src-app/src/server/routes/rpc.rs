@@ -9,9 +9,7 @@ pub struct RpcStatus {
 }
 
 async fn index() -> Json<RpcStatus> {
-    Json(RpcStatus {
-        status: "rpc ready",
-    })
+    Json(RpcStatus { status: "rpc ready" })
 }
 
 pub fn router() -> Router {

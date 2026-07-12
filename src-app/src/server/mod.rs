@@ -45,9 +45,7 @@ pub async fn run_with_shutdown(
     let app = build();
     let listener = TcpListener::bind(addr).await?;
     log::info!("server ready on {addr}");
-    serve(listener, app)
-        .with_graceful_shutdown(shutdown)
-        .await?;
+    serve(listener, app).with_graceful_shutdown(shutdown).await?;
     Ok(())
 }
 

@@ -18,3 +18,6 @@ path = "src/lib.rs"
 [dependencies]
 serde.workspace = true
 thiserror.workspace = true
+
+[lints.rust]
+linker_messages = "allow"

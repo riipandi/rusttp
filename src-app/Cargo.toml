@@ -40,3 +40,6 @@ tower.workspace = true
 
 [build-dependencies]
 chrono.workspace = true
+
+[lints.rust]
+linker_messages = "allow"

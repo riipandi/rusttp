@@ -78,23 +78,11 @@ mod tests {
 
     #[test]
     fn log_request_4xx_calls_warn() {
-        log_request(
-            &Method::POST,
-            "/bad",
-            "",
-            StatusCode::BAD_REQUEST,
-            Duration::from_millis(1),
-        );
+        log_request(&Method::POST, "/bad", "", StatusCode::BAD_REQUEST, Duration::from_millis(1));
     }
 
     #[test]
     fn log_request_2xx_calls_info() {
-        log_request(
-            &Method::GET,
-            "/ok",
-            "q=1",
-            StatusCode::OK,
-            Duration::from_millis(0),
-        );
+        log_request(&Method::GET, "/ok", "q=1", StatusCode::OK, Duration::from_millis(0));
     }
 }

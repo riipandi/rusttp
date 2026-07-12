@@ -59,7 +59,7 @@ Uses clap derive. Subcommands: `serve` (alias `s`), `health` (alias `hc`). Globa
 - **Error responses**: All API/RPC errors return JSON via `server::error::ErrorResponse`. Use `AppError` enum for handler-level errors. Never return plain text from API routes.
 - **Tracing**: fastrace, not opentelemetry SDK directly. Gated by `TRACING_ENABLE=true` env var at runtime. Sampling rate via `TRACING_SAMPLING` (0.0–1.0). Reporter modes: console, file, otel.
 - **Env vars**: Documented in `.env.example`. The app reads config exclusively from env vars (no config files). `--env-file` overrides system env.
-- **Tests**: Inline `#[cfg(test)] mod tests` in every module. Integration tests in `src-app/tests/`. Tests use `tower::ServiceExt::oneshot` against `server::build()` — no HTTP client needed. Server smoke tests bind port 0 and abort the handle.
+- **Tests**: Keep tests small and focused. Inline `#[cfg(test)] mod tests` in every module. Integration tests in `src-app/tests/`. Tests use `tower::ServiceExt::oneshot` against `server::build()` — no HTTP client needed. Server smoke tests bind port 0 and abort the handle.
 - **UUIDs**: v7 only (time-sortable). Configured via workspace dependency features.
 - **Panic handling**: Release profile uses `panic = "abort"`. CatchPanicLayer wraps all routes to return JSON 500 instead of dropping the connection.
 
@@ -79,6 +79,6 @@ Uses clap derive. Subcommands: `serve` (alias `s`), `health` (alias `hc`). Globa
 - **Explicit features**: Every used feature must be declared in root's entry, not scattered across member crates.
 - **Member crates**: Use `foo.workspace = true` — never repeat version or features in member `Cargo.toml`.
 - **Exceptions**:
-  - Conditional per-target deps (e.g. `[target.'cfg(not(target_env = "msvc"))'.dependencies]` for `mimalloc`).
-  - Features that only apply to the binary crate (e.g. `fastrace = { workspace = true, features = ["enable"] }` in `src-app`, where the library crates must NOT enable the collector).
+    - Conditional per-target deps (e.g. `[target.'cfg(not(target_env = "msvc"))'.dependencies]` for `mimalloc`).
+    - Features that only apply to the binary crate (e.g. `fastrace = { workspace = true, features = ["enable"] }` in `src-app`, where the library crates must NOT enable the collector).
 - **Verify**: `cd src-app && cargo tree -e features --depth 0` to inspect resolved features per crate.

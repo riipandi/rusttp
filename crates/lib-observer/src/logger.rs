@@ -91,12 +91,8 @@ impl RollingLogWriter {
 
     fn filename(&self, slot: &str) -> PathBuf {
         match self.rotation {
-            Rotation::Never => self
-                .dir
-                .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
-            _ => self
-                .dir
-                .join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
+            Rotation::Never => self.dir.join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
+            _ => self.dir.join(format!("{}_{}.{}.jsonl", self.prefix, slot, self.suffix)),
         }
     }
 
@@ -128,10 +124,7 @@ impl RollingLogWriter {
 
         let path = self.filename(self.slot.as_deref().unwrap_or(""));
         let _ = std::fs::create_dir_all(&self.dir);
-        let file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&path)?;
+        let file = std::fs::OpenOptions::new().create(true).append(true).open(&path)?;
         self.file = Some(file);
         Ok(())
     }
@@ -185,21 +178,13 @@ impl logforth::Append for RollingFileAppender {
         let layout = CompactJsonLayout;
         let mut bytes = layout.format(record, diags)?;
         bytes.push(b'\n');
-        let mut writer = self
-            .writer
-            .lock()
-            .map_err(|_| logforth::Error::new("lock"))?;
-        writer
-            .write_all(&bytes)
-            .map_err(logforth::Error::from_io_error)?;
+        let mut writer = self.writer.lock().map_err(|_| logforth::Error::new("lock"))?;
+        writer.write_all(&bytes).map_err(logforth::Error::from_io_error)?;
         Ok(())
     }
 
     fn flush(&self) -> Result<(), logforth::Error> {
-        let mut writer = self
-            .writer
-            .lock()
-            .map_err(|_| logforth::Error::new("lock"))?;
+        let mut writer = self.writer.lock().map_err(|_| logforth::Error::new("lock"))?;
         writer.flush().map_err(logforth::Error::from_io_error)
     }
 }
@@ -209,10 +194,7 @@ impl logforth::Append for RollingFileAppender {
 /// Wrap an appender with a non-blocking background thread.
 /// Uses a bounded channel (capacity 1024) — on overflow new messages are
 /// dropped instead of queuing in unbounded memory.
-fn non_blocking<A: logforth::Append + Send + 'static>(
-    name: &str,
-    appender: A,
-) -> append::asynchronous::Async {
+fn non_blocking<A: logforth::Append + Send + 'static>(name: &str, appender: A) -> append::asynchronous::Async {
     append::asynchronous::AsyncBuilder::new(name)
         .buffered_lines_limit(Some(1024))
         .overflow_drop_incoming()
@@ -290,12 +272,7 @@ mod tests {
     #[test]
     fn rolling_writer_new_creates_dir() {
         let dir = tempfile::tempdir().unwrap();
-        let _w = RollingLogWriter::new(
-            dir.path().into(),
-            "pre".into(),
-            "suf".into(),
-            Rotation::Daily,
-        );
+        let _w = RollingLogWriter::new(dir.path().into(), "pre".into(), "suf".into(), Rotation::Daily);
         assert!(dir.path().exists());
     }
 
@@ -303,9 +280,7 @@ mod tests {
     fn rolling_writer_slot_hourly() {
         use chrono::TimeZone;
         let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Hourly);
-        let dt = chrono::Local
-            .with_ymd_and_hms(2026, 7, 12, 20, 38, 0)
-            .unwrap();
+        let dt = chrono::Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
         assert_eq!(w.slot(&dt), "2026071220");
     }
 
@@ -313,9 +288,7 @@ mod tests {
     fn rolling_writer_slot_daily() {
         use chrono::TimeZone;
         let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Daily);
-        let dt = chrono::Local
-            .with_ymd_and_hms(2026, 7, 12, 0, 0, 0)
-            .unwrap();
+        let dt = chrono::Local.with_ymd_and_hms(2026, 7, 12, 0, 0, 0).unwrap();
         assert_eq!(w.slot(&dt), "20260712");
     }
 
@@ -323,9 +296,7 @@ mod tests {
     fn rolling_writer_slot_weekly() {
         use chrono::TimeZone;
         let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Weekly);
-        let dt = chrono::Local
-            .with_ymd_and_hms(2026, 7, 12, 0, 0, 0)
-            .unwrap();
+        let dt = chrono::Local.with_ymd_and_hms(2026, 7, 12, 0, 0, 0).unwrap();
         assert_eq!(w.slot(&dt), "2026W28");
     }
 
@@ -333,9 +304,7 @@ mod tests {
     fn rolling_writer_slot_never() {
         use chrono::TimeZone;
         let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Never);
-        let dt = chrono::Local
-            .with_ymd_and_hms(2026, 7, 12, 20, 38, 0)
-            .unwrap();
+        let dt = chrono::Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
         assert_eq!(w.slot(&dt), "");
     }
 
@@ -348,21 +317,13 @@ mod tests {
     #[test]
     fn rolling_writer_filename_rotated() {
         let w = RollingLogWriter::new("/tmp".into(), "app".into(), "log".into(), Rotation::Daily);
-        assert_eq!(
-            w.filename("20260712"),
-            PathBuf::from("/tmp/app_20260712.log.jsonl")
-        );
+        assert_eq!(w.filename("20260712"), PathBuf::from("/tmp/app_20260712.log.jsonl"));
     }
 
     #[test]
     fn rolling_writer_write_creates_file() {
         let dir = tempfile::tempdir().unwrap();
-        let mut w = RollingLogWriter::new(
-            dir.path().into(),
-            "app".into(),
-            "log".into(),
-            Rotation::Never,
-        );
+        let mut w = RollingLogWriter::new(dir.path().into(), "app".into(), "log".into(), Rotation::Never);
         w.write_all(b"hello\n").unwrap();
         w.flush().unwrap();
         let path = dir.path().join("app_log.jsonl");
@@ -374,31 +335,17 @@ mod tests {
     #[test]
     fn rolling_writer_write_with_rotation_creates_slotted_file() {
         let dir = tempfile::tempdir().unwrap();
-        let mut w = RollingLogWriter::new(
-            dir.path().into(),
-            "app".into(),
-            "log".into(),
-            Rotation::Daily,
-        );
+        let mut w = RollingLogWriter::new(dir.path().into(), "app".into(), "log".into(), Rotation::Daily);
         w.write_all(b"line1\n").unwrap();
         w.flush().unwrap();
         // Should write to a daily-slotted file
         let today = chrono::Local::now().format("%Y%m%d").to_string();
         let pattern = format!("app_{}.log.jsonl", today);
         let entries: Vec<_> = std::fs::read_dir(dir.path()).unwrap().collect();
-        let found = entries.iter().any(|e| {
-            e.as_ref()
-                .unwrap()
-                .file_name()
-                .to_string_lossy()
-                .contains(&pattern)
-        });
-        assert!(
-            found,
-            "expected file matching {} in {:?}",
-            pattern,
-            dir.path()
-        );
+        let found = entries
+            .iter()
+            .any(|e| e.as_ref().unwrap().file_name().to_string_lossy().contains(&pattern));
+        assert!(found, "expected file matching {} in {:?}", pattern, dir.path());
     }
 
     #[test]
@@ -406,12 +353,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("drop_test_jsonl.jsonl");
         {
-            let mut w = RollingLogWriter::new(
-                dir.path().into(),
-                "drop_test".into(),
-                "jsonl".into(),
-                Rotation::Never,
-            );
+            let mut w = RollingLogWriter::new(dir.path().into(), "drop_test".into(), "jsonl".into(), Rotation::Never);
             w.write_all(b"data").unwrap();
             // Drop happens here, should flush
         }
@@ -462,8 +404,7 @@ mod tests {
     #[test]
     fn rolling_file_appender_debug_format() {
         let dir = tempfile::tempdir().unwrap();
-        let writer =
-            RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
+        let writer = RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
         let appender = RollingFileAppender {
             writer: Mutex::new(writer),
         };
@@ -475,8 +416,7 @@ mod tests {
     fn rolling_file_appender_flush_no_panic() {
         use logforth::Append;
         let dir = tempfile::tempdir().unwrap();
-        let writer =
-            RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
+        let writer = RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
         let appender = RollingFileAppender {
             writer: Mutex::new(writer),
         };
@@ -502,10 +442,7 @@ mod tests {
             emit_console: false,
             file: None,
         };
-        assert!(matches!(
-            cfg.level_to_logforth(),
-            LevelFilter::MoreSevereEqual(Level::Error)
-        ));
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::MoreSevereEqual(Level::Error)));
     }
 
     #[test]
@@ -515,10 +452,7 @@ mod tests {
             emit_console: false,
             file: None,
         };
-        assert!(matches!(
-            cfg.level_to_logforth(),
-            LevelFilter::MoreSevereEqual(Level::Warn)
-        ));
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::MoreSevereEqual(Level::Warn)));
     }
 
     #[test]
@@ -528,10 +462,7 @@ mod tests {
             emit_console: false,
             file: None,
         };
-        assert!(matches!(
-            cfg.level_to_logforth(),
-            LevelFilter::MoreSevereEqual(Level::Info)
-        ));
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::MoreSevereEqual(Level::Info)));
     }
 
     #[test]
@@ -541,10 +472,7 @@ mod tests {
             emit_console: false,
             file: None,
         };
-        assert!(matches!(
-            cfg.level_to_logforth(),
-            LevelFilter::MoreSevereEqual(Level::Debug)
-        ));
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::MoreSevereEqual(Level::Debug)));
     }
 
     #[test]

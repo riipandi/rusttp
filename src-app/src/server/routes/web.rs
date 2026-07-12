@@ -20,11 +20,7 @@ pub async fn serve_fallback(uri: axum::http::Uri) -> Response {
 
 async fn serve(path: &str) -> Response {
     try_serve(path).unwrap_or_else(|| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("embedded asset `{path}` not found"),
-        )
-            .into_response()
+        (StatusCode::INTERNAL_SERVER_ERROR, format!("embedded asset `{path}` not found")).into_response()
     })
 }
 

@@ -106,8 +106,7 @@ where
         .map(|v| v == "true" || v == "1")
         .unwrap_or(true);
     let file_enabled = std::env::var("LOG_TRANSPORT").as_deref() == Ok("file");
-    let rotation =
-        Rotation::parse(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "daily".into()));
+    let rotation = Rotation::parse(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "daily".into()));
 
     let mut builder = ObserverBuilder::new()
         .log_level(parse_log_level(&log_level_str))
@@ -275,8 +274,7 @@ mod tests {
         unsafe { std::env::set_var("LOG_LEVEL", "error") };
         unsafe { std::env::set_var("TRACING_ENABLE", "false") };
 
-        let code =
-            run_main_with_args(["rusttp", "--env-file", &path.to_string_lossy(), "hc"]).await;
+        let code = run_main_with_args(["rusttp", "--env-file", &path.to_string_lossy(), "hc"]).await;
         assert_eq!(code, 0);
 
         // Env vars from file must have won

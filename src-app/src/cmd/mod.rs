@@ -95,8 +95,7 @@ mod tests {
 
     #[test]
     fn cli_serve_parses_host_and_port() {
-        let cli = Cli::try_parse_from(["rusttp", "serve", "--host", "127.0.0.1", "--port", "9090"])
-            .unwrap();
+        let cli = Cli::try_parse_from(["rusttp", "serve", "--host", "127.0.0.1", "--port", "9090"]).unwrap();
         if let Some(Commands::Serve { host, port }) = &cli.command {
             assert_eq!(host, "127.0.0.1");
             assert_eq!(*port, 9090);

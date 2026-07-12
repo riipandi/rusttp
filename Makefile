@@ -1,14 +1,12 @@
 .DEFAULT_GOAL := help
 
-APP_BIN    := $(shell grep '^name ' src-app/Cargo.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
-CARGO      := $$(which cargo)
-PNPM       := $$(which pnpm)
+APP_BIN  := $(shell grep '^name ' src-app/Cargo.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+CARGO    := $$(which cargo)
+PNPM     := $$(which pnpm)
 
 APP_VERSION := $(shell grep '^version = ' Cargo.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
 BUILD_HASH  := $(shell git rev-parse --short HEAD 2>/dev/null || echo "dev")
 BUILD_DIR   := ./target/release
-
-UNAME_S := $(shell uname -s)
 
 # ─── Compiler cache ───────────────────────────────────────────────────────────
 SCCACHE_BIN := $(shell command -v sccache 2>/dev/null)
@@ -20,9 +18,9 @@ endif
 # ─── Args ───────────────────────────────────────────────────────────────────
 
 # Pass program args via ARGS or after -- (before build):
-#   make run -- --help           or   make run ARGS="--help"
+#   make run -- --help            or   make run ARGS="--help"
 #   make run -- --host 127.0.0.1  or   make run ARGS="--host 127.0.0.1"
-ARGS         :=
+ARGS :=
 # Help is in KNOWN_TARGETS so override skips it (no warning) but _RESIDUAL_ still passes it to binary
 KNOWN_TARGETS := build check run start watch test lint fmt clean help install prepare coverage web-deps web-dev web-build web-test docker-build
 # Residuals passed to binary — does NOT filter KNOWN_TARGETS

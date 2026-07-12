@@ -187,8 +187,7 @@ impl ObserverBuilder {
     /// - `with_log_file("storage/logs")` — daily rotated JSONL logs
     /// - `with_trace_file("storage/traces")` — daily rotated trace JSONL
     pub fn with_defaults(self) -> Self {
-        self.with_log_file("storage/logs")
-            .with_trace_file("storage/traces")
+        self.with_log_file("storage/logs").with_trace_file("storage/traces")
     }
 
     /// Initialise the logger and tracer, consuming the builder.
@@ -204,14 +203,8 @@ impl ObserverBuilder {
         // Guard: logforth::starter_log::builder().apply() panics on second call.
         static INIT: std::sync::Once = std::sync::Once::new();
         INIT.call_once(|| {
-            let has_file = self
-                .log_outputs
-                .iter()
-                .any(|o| matches!(o, LogOutput::File { .. }));
-            let has_console = self
-                .log_outputs
-                .iter()
-                .any(|o| matches!(o, LogOutput::StdErr));
+            let has_file = self.log_outputs.iter().any(|o| matches!(o, LogOutput::File { .. }));
+            let has_console = self.log_outputs.iter().any(|o| matches!(o, LogOutput::StdErr));
             let emit_console = has_console || !has_file;
 
             let file = self.log_outputs.iter().find_map(|o| {

@@ -66,24 +66,14 @@ impl IntoResponse for AppError {
 }
 
 pub async fn not_found(OriginalUri(original_uri): OriginalUri, _req: Request<Body>) -> Response {
-    ErrorResponse::new(
-        StatusCode::NOT_FOUND,
-        format!("route `{}` not found", original_uri.path()),
-    )
-    .into_response(StatusCode::NOT_FOUND)
+    ErrorResponse::new(StatusCode::NOT_FOUND, format!("route `{}` not found", original_uri.path()))
+        .into_response(StatusCode::NOT_FOUND)
 }
 
-pub async fn method_not_allowed(
-    OriginalUri(original_uri): OriginalUri,
-    req: Request<Body>,
-) -> Response {
+pub async fn method_not_allowed(OriginalUri(original_uri): OriginalUri, req: Request<Body>) -> Response {
     ErrorResponse::new(
         StatusCode::METHOD_NOT_ALLOWED,
-        format!(
-            "method `{}` not allowed for `{}`",
-            req.method(),
-            original_uri.path()
-        ),
+        format!("method `{}` not allowed for `{}`", req.method(), original_uri.path()),
     )
     .into_response(StatusCode::METHOD_NOT_ALLOWED)
 }
@@ -101,13 +91,9 @@ mod tests {
 
     #[test]
     fn error_response_into_response_has_json_content_type() {
-        let res = ErrorResponse::new(StatusCode::BAD_REQUEST, "bad")
-            .into_response(StatusCode::BAD_REQUEST);
+        let res = ErrorResponse::new(StatusCode::BAD_REQUEST, "bad").into_response(StatusCode::BAD_REQUEST);
         let headers = res.headers();
-        assert_eq!(
-            headers.get("content-type").unwrap().to_str().unwrap(),
-            "application/json"
-        );
+        assert_eq!(headers.get("content-type").unwrap().to_str().unwrap(), "application/json");
         assert_eq!(res.status(), StatusCode::BAD_REQUEST);
     }
 
@@ -116,10 +102,7 @@ mod tests {
         let res = panic_response();
         assert_eq!(res.status(), StatusCode::INTERNAL_SERVER_ERROR);
         let headers = res.headers();
-        assert_eq!(
-            headers.get("content-type").unwrap().to_str().unwrap(),
-            "application/json"
-        );
+        assert_eq!(headers.get("content-type").unwrap().to_str().unwrap(), "application/json");
     }
 
     #[test]
