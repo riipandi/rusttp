@@ -343,4 +343,25 @@ mod tests {
         let b: ObserverBuilder = Default::default();
         assert!(!b.tracing_enabled);
     }
+    #[test]
+    fn builder_with_log_file_adds_file_output() {
+        let b = ObserverBuilder::new().with_log_file("/tmp/logs");
+        assert_eq!(b.log_outputs.len(), 1);
+        assert!(matches!(b.log_outputs[0], LogOutput::File { .. }));
+    }
+
+    #[test]
+    fn builder_with_trace_file_enables_tracing() {
+        let b = ObserverBuilder::new().with_trace_file("/tmp/traces");
+        assert!(b.tracing_enabled);
+        assert!(matches!(b.tracing_reporter, TracingReporter::File { .. }));
+    }
+
+    #[test]
+    fn builder_with_defaults_sets_log_file_and_trace() {
+        let b = ObserverBuilder::new().with_defaults();
+        assert_eq!(b.log_outputs.len(), 1);
+        assert!(b.tracing_enabled);
+        assert!(matches!(b.tracing_reporter, TracingReporter::File { .. }));
+    }
 }

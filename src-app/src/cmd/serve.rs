@@ -30,4 +30,20 @@ mod tests {
         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         handle.abort();
     }
+
+    #[tokio::test]
+    async fn handle_with_env_vars_and_port_zero() {
+        unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+        unsafe { std::env::set_var("TRACING_REPORTER", "console") };
+        unsafe { std::env::set_var("LOG_CONSOLE", "true") };
+        let h = tokio::spawn(async {
+            let _ = super::handle("127.0.0.1".into(), 0).await;
+            0i32
+        });
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        h.abort();
+        unsafe { std::env::remove_var("TRACING_ENABLE") };
+        unsafe { std::env::remove_var("TRACING_REPORTER") };
+        unsafe { std::env::remove_var("LOG_CONSOLE") };
+    }
 }

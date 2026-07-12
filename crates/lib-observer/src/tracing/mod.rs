@@ -225,6 +225,7 @@ pub fn setup_otel_reporter(service_name: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fastrace::collector::Reporter;
 
     fn make_span(
         name: &'static str,
@@ -308,5 +309,86 @@ mod tests {
             w.filename("2026071220"),
             PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl")
         );
+        assert_eq!(
+            w.filename("2026071220"),
+            PathBuf::from("/tmp/rusttp_2026071220.trace.jsonl")
+        );
+    }
+
+    #[test]
+    fn rolling_file_writer_write_creates_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
+        w.write_all(b"line1\n").unwrap();
+        w.flush().unwrap();
+        let path = dir.path().join("rusttp_trace.jsonl");
+        assert!(path.exists());
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(content, "line1\n");
+    }
+
+    #[test]
+    fn rolling_file_writer_drop_flushes() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("rusttp_trace.jsonl");
+        {
+            let mut w =
+                RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
+            w.write_all(b"drop-data").unwrap();
+        }
+        let content = std::fs::read_to_string(&path).unwrap_or_default();
+        assert_eq!(content, "drop-data");
+    }
+
+    #[test]
+    fn file_reporter_report_writes_jsonl() {
+        let dir = tempfile::tempdir().unwrap();
+        let writer = RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
+        let mut reporter = FileReporter { writer };
+        let span = make_span("report-test", vec![("key", "val")]);
+        reporter.report(vec![span]);
+        let path = dir.path().join("rusttp_trace.jsonl");
+        assert!(path.exists());
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert!(content.contains("report-test"));
+        assert!(content.contains("key"));
+        assert!(content.contains("val"));
+    }
+
+    #[test]
+    fn file_reporter_report_multiple_spans() {
+        let dir = tempfile::tempdir().unwrap();
+        let writer = RollingFileWriter::new(dir.path().into(), "rusttp", "trace", Rotation::Never);
+        let mut reporter = FileReporter { writer };
+        let s1 = make_span("span1", vec![]);
+        let s2 = make_span("span2", vec![]);
+        reporter.report(vec![s1, s2]);
+        let content = std::fs::read_to_string(dir.path().join("rusttp_trace.jsonl")).unwrap();
+        let lines: Vec<&str> = content.lines().collect();
+        assert_eq!(lines.len(), 2);
+    }
+
+    #[test]
+    fn setup_console_reporter_installs() {
+        // Should not panic
+        setup_console_reporter();
+    }
+
+    #[test]
+    fn rolling_file_writer_filename_never() {
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "trace", Rotation::Never);
+        assert_eq!(w.filename(""), PathBuf::from("/tmp/rusttp_trace.jsonl"));
+    }
+
+    #[test]
+    fn rolling_file_writer_slot_all_variants() {
+        use chrono::TimeZone;
+        let w_hourly = RollingFileWriter::new("/tmp".into(), "t", "s", Rotation::Hourly);
+        let w_daily = RollingFileWriter::new("/tmp".into(), "t", "s", Rotation::Daily);
+        let w_weekly = RollingFileWriter::new("/tmp".into(), "t", "s", Rotation::Weekly);
+        let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
+        assert_eq!(w_hourly.slot(&dt), "2026071220");
+        assert_eq!(w_daily.slot(&dt), "20260712");
+        assert_eq!(w_weekly.slot(&dt), "2026W28");
     }
 }

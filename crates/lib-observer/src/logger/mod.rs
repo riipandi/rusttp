@@ -279,3 +279,281 @@ impl LoggerConfig {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    // ── RollingLogWriter tests ─────────────────────────────────────────
+
+    #[test]
+    fn rolling_writer_new_creates_dir() {
+        let dir = tempfile::tempdir().unwrap();
+        let _w = RollingLogWriter::new(
+            dir.path().into(),
+            "pre".into(),
+            "suf".into(),
+            Rotation::Daily,
+        );
+        assert!(dir.path().exists());
+    }
+
+    #[test]
+    fn rolling_writer_slot_hourly() {
+        use chrono::TimeZone;
+        let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Hourly);
+        let dt = chrono::Local
+            .with_ymd_and_hms(2026, 7, 12, 20, 38, 0)
+            .unwrap();
+        assert_eq!(w.slot(&dt), "2026071220");
+    }
+
+    #[test]
+    fn rolling_writer_slot_daily() {
+        use chrono::TimeZone;
+        let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Daily);
+        let dt = chrono::Local
+            .with_ymd_and_hms(2026, 7, 12, 0, 0, 0)
+            .unwrap();
+        assert_eq!(w.slot(&dt), "20260712");
+    }
+
+    #[test]
+    fn rolling_writer_slot_weekly() {
+        use chrono::TimeZone;
+        let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Weekly);
+        let dt = chrono::Local
+            .with_ymd_and_hms(2026, 7, 12, 0, 0, 0)
+            .unwrap();
+        assert_eq!(w.slot(&dt), "2026W28");
+    }
+
+    #[test]
+    fn rolling_writer_slot_never() {
+        use chrono::TimeZone;
+        let w = RollingLogWriter::new("/tmp".into(), "t".into(), "s".into(), Rotation::Never);
+        let dt = chrono::Local
+            .with_ymd_and_hms(2026, 7, 12, 20, 38, 0)
+            .unwrap();
+        assert_eq!(w.slot(&dt), "");
+    }
+
+    #[test]
+    fn rolling_writer_filename_never() {
+        let w = RollingLogWriter::new("/tmp".into(), "app".into(), "log".into(), Rotation::Never);
+        assert_eq!(w.filename(""), PathBuf::from("/tmp/app_log.jsonl"));
+    }
+
+    #[test]
+    fn rolling_writer_filename_rotated() {
+        let w = RollingLogWriter::new("/tmp".into(), "app".into(), "log".into(), Rotation::Daily);
+        assert_eq!(
+            w.filename("20260712"),
+            PathBuf::from("/tmp/app_20260712.log.jsonl")
+        );
+    }
+
+    #[test]
+    fn rolling_writer_write_creates_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingLogWriter::new(
+            dir.path().into(),
+            "app".into(),
+            "log".into(),
+            Rotation::Never,
+        );
+        w.write_all(b"hello\n").unwrap();
+        w.flush().unwrap();
+        let path = dir.path().join("app_log.jsonl");
+        assert!(path.exists());
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(content, "hello\n");
+    }
+
+    #[test]
+    fn rolling_writer_write_with_rotation_creates_slotted_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingLogWriter::new(
+            dir.path().into(),
+            "app".into(),
+            "log".into(),
+            Rotation::Daily,
+        );
+        w.write_all(b"line1\n").unwrap();
+        w.flush().unwrap();
+        // Should write to a daily-slotted file
+        let today = chrono::Local::now().format("%Y%m%d").to_string();
+        let pattern = format!("app_{}.log.jsonl", today);
+        let entries: Vec<_> = std::fs::read_dir(dir.path()).unwrap().collect();
+        let found = entries.iter().any(|e| {
+            e.as_ref()
+                .unwrap()
+                .file_name()
+                .to_string_lossy()
+                .contains(&pattern)
+        });
+        assert!(
+            found,
+            "expected file matching {} in {:?}",
+            pattern,
+            dir.path()
+        );
+    }
+
+    #[test]
+    fn rolling_writer_drop_flushes() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("drop_test_jsonl.jsonl");
+        {
+            let mut w = RollingLogWriter::new(
+                dir.path().into(),
+                "drop_test".into(),
+                "jsonl".into(),
+                Rotation::Never,
+            );
+            w.write_all(b"data").unwrap();
+            // Drop happens here, should flush
+        }
+        let content = std::fs::read_to_string(&path).unwrap_or_default();
+        assert_eq!(content, "data");
+    }
+
+    // ── CompactJsonLayout tests ────────────────────────────────────────
+
+    #[test]
+    fn compact_json_layout_formats_info_without_meta() {
+        use logforth::Layout;
+        // Format a log record at INFO level — should omit file/line
+        let layout = CompactJsonLayout;
+        let record = logforth::record::Record::builder()
+            .level(logforth::record::Level::Info)
+            .payload(format_args!("test message"))
+            .target("test_target")
+            .build();
+        let bytes = layout.format(&record, &[]).unwrap();
+        let output: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(output["message"], "test message");
+        assert_eq!(output["level"], "INFO");
+        assert!(output.get("file").is_none());
+    }
+
+    #[test]
+    fn compact_json_layout_formats_debug_with_meta() {
+        use logforth::Layout;
+        let layout = CompactJsonLayout;
+        let record = logforth::record::Record::builder()
+            .level(logforth::record::Level::Debug)
+            .payload(format_args!("debug msg"))
+            .target("test_target")
+            .file(Some("test.rs"))
+            .line(Some(42))
+            .build();
+        let bytes = layout.format(&record, &[]).unwrap();
+        let output: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(output["message"], "debug msg");
+        assert_eq!(output["level"], "DEBUG");
+        assert!(output.get("file").is_some());
+        assert!(output.get("line").is_some());
+    }
+
+    // ── RollingFileAppender tests ──────────────────────────────────────
+
+    #[test]
+    fn rolling_file_appender_debug_format() {
+        let dir = tempfile::tempdir().unwrap();
+        let writer =
+            RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
+        let appender = RollingFileAppender {
+            writer: Mutex::new(writer),
+        };
+        let s = format!("{:?}", appender);
+        assert_eq!(s, "RollingFileAppender");
+    }
+
+    #[test]
+    fn rolling_file_appender_flush_no_panic() {
+        use logforth::Append;
+        let dir = tempfile::tempdir().unwrap();
+        let writer =
+            RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
+        let appender = RollingFileAppender {
+            writer: Mutex::new(writer),
+        };
+        appender.flush().unwrap();
+    }
+
+    // ── LoggerConfig level_to_logforth tests ───────────────────────────
+
+    #[test]
+    fn logger_config_level_to_logforth_off() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Off,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::Off));
+    }
+
+    #[test]
+    fn logger_config_level_to_logforth_error() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Error,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(
+            cfg.level_to_logforth(),
+            LevelFilter::MoreSevereEqual(Level::Error)
+        ));
+    }
+
+    #[test]
+    fn logger_config_level_to_logforth_warn() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Warn,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(
+            cfg.level_to_logforth(),
+            LevelFilter::MoreSevereEqual(Level::Warn)
+        ));
+    }
+
+    #[test]
+    fn logger_config_level_to_logforth_info() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Info,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(
+            cfg.level_to_logforth(),
+            LevelFilter::MoreSevereEqual(Level::Info)
+        ));
+    }
+
+    #[test]
+    fn logger_config_level_to_logforth_debug() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Debug,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(
+            cfg.level_to_logforth(),
+            LevelFilter::MoreSevereEqual(Level::Debug)
+        ));
+    }
+
+    #[test]
+    fn logger_config_level_to_logforth_trace() {
+        let cfg = LoggerConfig {
+            log_level: log::LevelFilter::Trace,
+            emit_console: false,
+            file: None,
+        };
+        assert!(matches!(cfg.level_to_logforth(), LevelFilter::All));
+    }
+}

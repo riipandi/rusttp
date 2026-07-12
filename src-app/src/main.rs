@@ -278,4 +278,9 @@ mod tests {
 
         let _ = std::fs::remove_dir_all(&dir);
     }
+    #[test]
+    fn load_dotenv_file_missing_file_does_not_panic() {
+        load_dotenv_file(std::path::Path::new("/nonexistent_dir/.env"));
+        // Test passes if no panic
+    }
 }

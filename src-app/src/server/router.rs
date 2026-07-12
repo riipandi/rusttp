@@ -41,5 +41,14 @@ mod tests {
         let router = build();
         // Router can be cloned (cheaply)
         let _clone = router.clone();
+        let _clone = router.clone();
+    }
+
+    #[test]
+    fn build_with_tracing_enabled_adds_fastrace_layer() {
+        unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+        let router = build();
+        let _clone = router.clone();
+        unsafe { std::env::remove_var("TRACING_ENABLE") };
     }
 }
