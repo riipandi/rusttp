@@ -11,10 +11,8 @@
 Minimal monolith Rust starter project template for building application with Axum, Clap, Vite, and TypeScript.
 
 > [!NOTE]
-> This project just a template that I use for my personal use, so you may encounter bugs.
-> Please review the release notes thoroughly before updating, as breaking changes can occur!
-> _This is a template for [cargo-generate](https://cargo-generate.github.io/cargo-generate/)._
-> _Read the [documentation](#quick-start) to get started._
+> This is a personal-use template that may contain bugs. Breaking changes are possible, please review the release notes carefully.
+> This template is designed for [cargo-generate](https://cargo-generate.github.io/cargo-generate/); consult the documentation to begin.
 
 ## Quick Start
 
