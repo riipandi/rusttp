@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::file_writer::RollingFileWriter;
+use crate::logger::{FileConfig, LoggerConfig};
 
 // ── Rotation ───────────────────────────────────────────────────────────────
 
@@ -31,8 +31,8 @@ impl Rotation {
 pub enum LogOutput {
     /// Write JSON log lines to stderr.
     StdErr,
-    /// Write JSON log lines to a rotated file at `{dir}/{prefix}_{suffix}.jsonl`
-    /// (or `{dir}/{prefix}_{slot}_{suffix}.jsonl` when rotation is active).
+    /// Write JSON log lines to a rotated file at `{base_dir}/{prefix}_{suffix}.jsonl`
+    /// (or `{base_dir}/{prefix}_{slot}_{suffix}.jsonl` when rotation is active).
     File {
         dir: PathBuf,
         prefix: String,
@@ -153,58 +153,58 @@ impl TelemetryBuilder {
 
     /// Initialise the logger and tracer, consuming the builder.
     ///
-    /// This registers the global `log::Log` implementation and optionally
-    /// installs the fastrace reporter.
+    /// This registers the global `log::Log` implementation via logforth and
+    /// optionally installs the fastrace reporter.
     pub fn init(self) {
         self.init_logger();
         self.init_tracer();
     }
 
     fn init_logger(&self) {
-        let has_file = self
-            .log_outputs
-            .iter()
-            .any(|o| matches!(o, LogOutput::File { .. }));
-        let has_console = self
-            .log_outputs
-            .iter()
-            .any(|o| matches!(o, LogOutput::StdErr));
+        // Guard: logforth::starter_log::builder().apply() panics on second call.
+        static INIT: std::sync::Once = std::sync::Once::new();
+        INIT.call_once(|| {
+            let has_file = self
+                .log_outputs
+                .iter()
+                .any(|o| matches!(o, LogOutput::File { .. }));
+            let has_console = self
+                .log_outputs
+                .iter()
+                .any(|o| matches!(o, LogOutput::StdErr));
+            let emit_console = has_console || !has_file;
 
-        let file_writer: Option<RollingFileWriter> = self.log_outputs.iter().find_map(|o| {
-            if let LogOutput::File {
-                dir,
-                prefix,
-                suffix,
-                rotation,
-            } = o
-            {
-                Some(RollingFileWriter::new(
-                    dir.clone(),
+            let file = self.log_outputs.iter().find_map(|o| {
+                if let LogOutput::File {
+                    dir,
                     prefix,
                     suffix,
-                    *rotation,
-                ))
-            } else {
-                None
-            }
+                    rotation,
+                } = o
+                {
+                    Some(FileConfig {
+                        dir: dir.clone(),
+                        prefix: prefix.clone(),
+                        suffix: suffix.clone(),
+                        rotation: *rotation,
+                    })
+                } else {
+                    None
+                }
+            });
+
+            crate::logger::init(&LoggerConfig {
+                log_level: self.log_level,
+                emit_console,
+                file,
+            });
         });
-
-        let emit_console = has_console || !has_file;
-
-        let (tx, rx) = crate::logger::JsonLogger::create_channel(65536);
-        crate::logger::spawn_writer(rx, file_writer, emit_console);
-
-        let logger = crate::logger::JsonLogger::new(tx, self.log_level);
-        let level = logger.level();
-        let _ = log::set_boxed_logger(Box::new(logger));
-        log::set_max_level(level);
     }
 
     fn init_tracer(&self) {
         if !self.tracing_enabled {
             return;
         }
-
         match &self.tracing_reporter {
             TracingReporter::None => {}
             TracingReporter::Console => crate::tracing::setup_console_reporter(),
@@ -214,8 +214,7 @@ impl TelemetryBuilder {
                 suffix,
                 rotation,
             } => {
-                let writer = RollingFileWriter::new(dir.clone(), prefix, suffix, *rotation);
-                crate::tracing::setup_file_reporter(writer);
+                crate::tracing::setup_file_reporter(dir.clone(), prefix, suffix, *rotation);
             }
             TracingReporter::Otel { service_name } => {
                 crate::tracing::setup_otel_reporter(service_name);
@@ -255,7 +254,7 @@ mod tests {
         assert_eq!(b.log_level, log::LevelFilter::Info);
         assert!(b.log_outputs.is_empty());
         assert!(!b.tracing_enabled);
-        assert_eq!(b.tracing_sampling, 0.7);
+        assert!((b.tracing_sampling - 0.7).abs() < f64::EPSILON);
         assert!(matches!(b.tracing_reporter, TracingReporter::None));
     }
 

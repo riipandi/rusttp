@@ -1,4 +1,5 @@
 mod health;
+mod serve;
 
 use anyhow::Result;
 use clap::{CommandFactory, Parser, Subcommand};
@@ -51,11 +52,7 @@ pub async fn dispatch(cli: &Cli) -> Result<i32> {
             println!();
             Ok(0)
         }
-        Some(Commands::Serve { host, port }) => {
-            let config = crate::server::ServerConfig::new(host.clone(), *port);
-            crate::server::run(config).await?;
-            Ok(0)
-        }
+        Some(Commands::Serve { host, port }) => serve::handle(host.clone(), *port).await,
         Some(Commands::Health) => Ok(health::handle()),
     }
 }

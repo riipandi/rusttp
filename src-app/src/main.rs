@@ -68,12 +68,6 @@ where
     // ── Init ──────────────────────────────────────────────────────────────
     builder.init();
 
-    // ── Startup status ────────────────────────────────────────────────────
-    log::info!(
-        "startup: tracing_enabled={tracing_enabled} tracing_sampling={tracing_sampling} tracing_reporter={tracing_reporter} log_level={log_level_str} log_console={console_enabled} log_transport={}",
-        if file_enabled { "file" } else { "stderr" }
-    );
-
     // ── CLI ────────────────────────────────────────────────────────────────
     let cli = match cmd::Cli::try_parse_from(args) {
         Ok(cli) => cli,

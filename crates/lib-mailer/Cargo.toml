@@ -1,7 +1,6 @@
 [package]
 name = "lib-mailer"
 version.workspace = true
-edition.workspace = true
 license = "Apache-2.0"
 description = "Email sending utilities"
 keywords = ["email", "mailer", "rusttp"]
@@ -9,7 +8,12 @@ categories = ["email", "web-programming"]
 homepage.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+edition.workspace = true
 publish = false
+
+[lib]
+name = "lib_mailer"
+path = "src/lib.rs"
 
 [dependencies]
 serde.workspace = true

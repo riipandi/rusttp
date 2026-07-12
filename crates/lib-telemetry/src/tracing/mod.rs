@@ -1,13 +1,109 @@
 use std::borrow::Cow;
-use std::io::Write;
+use std::fs::{self, OpenOptions};
+use std::io::{self, BufWriter, Write};
+use std::path::PathBuf;
 
-use crate::file_writer::RollingFileWriter;
+use chrono::Local;
+
+use crate::Rotation;
+
+// ── Rolling file writer (shared by FileReporter) ───────────────────────────
+
+/// Single file writer with rotation and configurable prefix + suffix.
+struct RollingFileWriter {
+    dir: PathBuf,
+    prefix: String,
+    suffix: String,
+    rotation: Rotation,
+    slot: Option<String>,
+    file: Option<BufWriter<std::fs::File>>,
+    write_count: u64,
+}
+
+impl RollingFileWriter {
+    fn new(dir: PathBuf, prefix: &str, suffix: &str, rotation: Rotation) -> Self {
+        let _ = fs::create_dir_all(&dir);
+        RollingFileWriter {
+            dir,
+            prefix: prefix.into(),
+            suffix: suffix.into(),
+            rotation,
+            slot: None,
+            file: None,
+            write_count: 0,
+        }
+    }
+
+    fn slot(&self, dt: &chrono::DateTime<Local>) -> String {
+        match self.rotation {
+            Rotation::Minutely => dt.format("%y%m%d%H%M").to_string(),
+            Rotation::Hourly => dt.format("%y%m%d%H").to_string(),
+            Rotation::Daily => dt.format("%y%m%d").to_string(),
+            Rotation::Never => String::new(),
+        }
+    }
+
+    fn filename(&self, slot: &str) -> PathBuf {
+        match self.rotation {
+            Rotation::Never => self
+                .dir
+                .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
+            _ => self
+                .dir
+                .join(format!("{}_{}_{}.jsonl", self.prefix, slot, self.suffix)),
+        }
+    }
+
+    fn maybe_rotate(&mut self) -> io::Result<()> {
+        self.write_count += 1;
+        let check_exists = self.write_count.is_multiple_of(100);
+        let now = Local::now();
+
+        let need_new = match self.rotation {
+            Rotation::Never => self.file.is_none() || (check_exists && !self.filename("").exists()),
+            _ => {
+                let s = self.slot(&now);
+                if self.slot.as_ref() != Some(&s) {
+                    self.slot = Some(s);
+                    true
+                } else {
+                    check_exists && !self.filename(self.slot.as_deref().unwrap_or("")).exists()
+                }
+            }
+        };
+        if !need_new && self.file.is_some() {
+            return Ok(());
+        }
+        let path = self.filename(self.slot.as_deref().unwrap_or(""));
+        let _ = fs::create_dir_all(&self.dir);
+        let file = OpenOptions::new().create(true).append(true).open(&path)?;
+        self.file = Some(BufWriter::new(file));
+        Ok(())
+    }
+}
+
+impl Write for RollingFileWriter {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.maybe_rotate()?;
+        self.file
+            .as_mut()
+            .ok_or_else(|| io::Error::other("log file not opened"))?
+            .write(buf)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        if let Some(ref mut f) = self.file {
+            f.flush()
+        } else {
+            Ok(())
+        }
+    }
+}
 
 // ── File reporter for fastrace spans ───────────────────────────────────────
 
 /// Writes span records as JSONL to a rotated file.
 pub struct FileReporter {
-    pub(crate) writer: RollingFileWriter,
+    writer: RollingFileWriter,
 }
 
 impl fastrace::collector::Reporter for FileReporter {
@@ -75,7 +171,8 @@ pub fn setup_console_reporter() {
 }
 
 /// Install a file-based reporter that writes JSONL spans.
-pub fn setup_file_reporter(writer: RollingFileWriter) {
+pub fn setup_file_reporter(dir: PathBuf, prefix: &str, suffix: &str, rotation: Rotation) {
+    let writer = RollingFileWriter::new(dir, prefix, suffix, rotation);
     fastrace::set_reporter(
         FileReporter { writer },
         fastrace::collector::Config::default(),
@@ -83,13 +180,8 @@ pub fn setup_file_reporter(writer: RollingFileWriter) {
 }
 
 /// Install an OpenTelemetry reporter via OTLP HTTP.
-///
-/// Uses `SpanExporter::builder().with_http()` which respects standard
-/// `OTEL_EXPORTER_OTLP_*` environment variables for endpoint configuration.
-/// On init failure the error is logged and tracing continues without a reporter
-/// (graceful degradation).
 pub fn setup_otel_reporter(service_name: &str) {
-    let name: std::borrow::Cow<'static, str> = std::borrow::Cow::Owned(service_name.to_string());
+    let name: Cow<'static, str> = Cow::Owned(service_name.to_string());
     let exporter = match opentelemetry_otlp::SpanExporter::builder()
         .with_http()
         .build()
@@ -183,5 +275,22 @@ mod tests {
         assert_eq!(json["events"][0]["name"], "db.query");
         assert_eq!(json["events"][0]["timestamp_unix_ns"], 1200);
         assert_eq!(json["events"][0]["properties"]["query"], "SELECT 1");
+    }
+
+    #[test]
+    fn rolling_file_writer_slot_never() {
+        use chrono::TimeZone;
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "trace", Rotation::Never);
+        let dt = Local.with_ymd_and_hms(2026, 7, 12, 20, 38, 0).unwrap();
+        assert_eq!(w.slot(&dt), "");
+    }
+
+    #[test]
+    fn rolling_file_writer_filename_rotated() {
+        let w = RollingFileWriter::new("/tmp".into(), "rusttp", "trace", Rotation::Hourly);
+        assert_eq!(
+            w.filename("26071220"),
+            PathBuf::from("/tmp/rusttp_26071220_trace.jsonl")
+        );
     }
 }

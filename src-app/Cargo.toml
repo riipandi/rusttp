@@ -1,7 +1,6 @@
 [package]
 name = "rusttp"
 version.workspace = true
-edition.workspace = true
 license = "Apache-2.0"
 description = "Rusttp v2 — Axum web application"
 keywords = ["axum", "web", "api", "rusttp"]
@@ -9,6 +8,7 @@ categories = ["web-programming", "web-programming::http-server"]
 homepage.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+edition.workspace = true
 publish = false
 
 [[bin]]

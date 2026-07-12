@@ -1,7 +1,6 @@
 [package]
 name = "lib-telemetry"
 version.workspace = true
-edition.workspace = true
 license = "Apache-2.0"
 description = "Telemetry: logging, tracing, and metrics"
 keywords = ["telemetry", "logging", "tracing", "fastrace", "rusttp"]
@@ -9,17 +8,23 @@ categories = ["development-tools::debugging"]
 homepage.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+edition.workspace = true
 publish = false
+
+[lib]
+name = "lib_telemetry"
+path = "src/lib.rs"
 
 [dependencies]
 chrono.workspace = true
-serde_json.workspace = true
-fastrace.workspace = true
 fastrace-opentelemetry.workspace = true
-opentelemetry.workspace = true
-opentelemetry-otlp.workspace = true
-opentelemetry_sdk.workspace = true
+fastrace.workspace = true
 log.workspace = true
+logforth.workspace = true
+opentelemetry-otlp.workspace = true
+opentelemetry.workspace = true
+opentelemetry_sdk.workspace = true
+serde_json.workspace = true
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true

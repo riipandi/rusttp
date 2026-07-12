@@ -1,133 +1,218 @@
-use std::io::{self, Write};
-use std::sync::mpsc;
+use std::fmt;
+use std::io::Write;
+use std::path::PathBuf;
+use std::sync::Mutex;
 
-use chrono::Local;
+use logforth::Layout;
+use logforth::append;
+use logforth::layout::JsonLayout;
+use logforth::record::{Level, LevelFilter};
 
-use crate::file_writer::RollingFileWriter;
+use crate::Rotation;
 
-// ── Messages ───────────────────────────────────────────────────────────────
+// ── Custom rolling file appender ───────────────────────────────────────────
 
-pub(crate) enum LogMsg {
-    Line(String),
-    Flush(mpsc::Sender<()>),
+struct RollingLogWriter {
+    dir: PathBuf,
+    prefix: String,
+    suffix: String,
+    rotation: Rotation,
+    slot: Option<String>,
+    file: Option<std::io::BufWriter<std::fs::File>>,
+    write_count: u64,
 }
 
-// ── Background writer thread ───────────────────────────────────────────────
-
-struct Writers {
-    file: Option<RollingFileWriter>,
-    console: Option<io::Stderr>,
-}
-
-/// Spawn a background thread that drains log lines from the channel
-/// and writes them to the configured outputs.
-pub(crate) fn spawn_writer(
-    rx: mpsc::Receiver<LogMsg>,
-    file_writer: Option<RollingFileWriter>,
-    emit_console: bool,
-) {
-    let mut writers = Writers {
-        file: file_writer,
-        console: emit_console.then(io::stderr),
-    };
-    if writers.file.is_none() && !emit_console {
-        writers.console = Some(io::stderr());
+impl RollingLogWriter {
+    fn new(dir: PathBuf, prefix: String, suffix: String, rotation: Rotation) -> Self {
+        let _ = std::fs::create_dir_all(&dir);
+        RollingLogWriter {
+            dir,
+            prefix,
+            suffix,
+            rotation,
+            slot: None,
+            file: None,
+            write_count: 0,
+        }
     }
 
-    std::thread::spawn(move || {
-        for msg in rx {
-            match msg {
-                LogMsg::Line(line) => {
-                    if let Some(ref mut w) = writers.file {
-                        let _ = w.write_all(line.as_bytes());
-                    }
-                    if let Some(ref mut w) = writers.console {
-                        let _ = w.write_all(line.as_bytes());
-                    }
-                }
-                LogMsg::Flush(tx) => {
-                    if let Some(ref mut w) = writers.file {
-                        let _ = w.flush();
-                    }
-                    if let Some(ref mut w) = writers.console {
-                        let _ = w.flush();
-                    }
-                    let _ = tx.send(());
+    fn slot(&self, dt: &chrono::DateTime<chrono::Local>) -> String {
+        match self.rotation {
+            Rotation::Minutely => dt.format("%y%m%d%H%M").to_string(),
+            Rotation::Hourly => dt.format("%y%m%d%H").to_string(),
+            Rotation::Daily => dt.format("%y%m%d").to_string(),
+            Rotation::Never => String::new(),
+        }
+    }
+
+    fn filename(&self, slot: &str) -> PathBuf {
+        match self.rotation {
+            Rotation::Never => self
+                .dir
+                .join(format!("{}_{}.jsonl", self.prefix, self.suffix)),
+            _ => self
+                .dir
+                .join(format!("{}_{}_{}.jsonl", self.prefix, slot, self.suffix)),
+        }
+    }
+
+    fn maybe_rotate(&mut self) -> std::io::Result<()> {
+        self.write_count += 1;
+        let check_exists = self.write_count.is_multiple_of(100);
+        let now = chrono::Local::now();
+
+        let need_new = match self.rotation {
+            Rotation::Never => self.file.is_none() || (check_exists && !self.filename("").exists()),
+            _ => {
+                let s = self.slot(&now);
+                if self.slot.as_ref() != Some(&s) {
+                    self.slot = Some(s);
+                    true
+                } else {
+                    check_exists && !self.filename(self.slot.as_deref().unwrap_or("")).exists()
                 }
             }
+        };
+        if !need_new && self.file.is_some() {
+            return Ok(());
         }
-    });
-}
-
-// ── Logger frontend ────────────────────────────────────────────────────────
-
-/// Logger that formats messages as JSON and pushes to a background writer.
-pub struct JsonLogger {
-    tx: mpsc::SyncSender<LogMsg>,
-    level: log::LevelFilter,
-}
-
-impl JsonLogger {
-    pub(crate) fn new(tx: mpsc::SyncSender<LogMsg>, level: log::LevelFilter) -> Self {
-        JsonLogger { tx, level }
-    }
-
-    pub fn level(&self) -> log::LevelFilter {
-        self.level
-    }
-
-    pub(crate) fn create_channel(
-        capacity: usize,
-    ) -> (mpsc::SyncSender<LogMsg>, mpsc::Receiver<LogMsg>) {
-        mpsc::sync_channel(capacity)
+        let path = self.filename(self.slot.as_deref().unwrap_or(""));
+        let _ = std::fs::create_dir_all(&self.dir);
+        let file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)?;
+        self.file = Some(std::io::BufWriter::new(file));
+        Ok(())
     }
 }
 
-impl log::Log for JsonLogger {
-    fn enabled(&self, metadata: &log::Metadata) -> bool {
-        metadata.level() <= self.level
+impl Write for RollingLogWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.maybe_rotate()?;
+        self.file
+            .as_mut()
+            .ok_or_else(|| std::io::Error::other("log file not opened"))?
+            .write(buf)
     }
-
-    fn log(&self, record: &log::Record) {
-        if !self.enabled(record.metadata()) {
-            return;
+    fn flush(&mut self) -> std::io::Result<()> {
+        if let Some(ref mut f) = self.file {
+            f.flush()
+        } else {
+            Ok(())
         }
-        let entry = serde_json::json!({
-            "timestamp": Local::now().format("%Y-%m-%dT%H:%M:%S%.3f%:z").to_string(),
-            "level": record.level().to_string(),
-            "target": record.target(),
-            "message": record.args().to_string(),
-        });
-        let line = serde_json::to_string(&entry).unwrap_or_default() + "\n";
-        let _ = self.tx.try_send(LogMsg::Line(line));
-    }
-
-    fn flush(&self) {
-        let (tx, rx) = mpsc::channel();
-        let _ = self.tx.send(LogMsg::Flush(tx));
-        let _ = rx.recv();
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+/// A logforth appender that writes JSON lines to a rolling file with
+/// `{prefix}_{slot}_{suffix}.jsonl` naming.
+struct RollingFileAppender {
+    writer: Mutex<RollingLogWriter>,
+}
 
-    #[test]
-    fn json_logger_enabled_checks_level() {
-        use log::Log;
-        let (tx, _rx) = JsonLogger::create_channel(16);
-        let logger = JsonLogger::new(tx, log::LevelFilter::Warn);
-        let info_md = log::Record::builder().level(log::Level::Info).build();
-        let err_md = log::Record::builder().level(log::Level::Error).build();
-        assert!(!logger.enabled(info_md.metadata()));
-        assert!(logger.enabled(err_md.metadata()));
+impl fmt::Debug for RollingFileAppender {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("RollingFileAppender").finish()
+    }
+}
+
+impl logforth::Append for RollingFileAppender {
+    fn append(
+        &self,
+        record: &logforth::record::Record<'_>,
+        diags: &[Box<dyn logforth::Diagnostic>],
+    ) -> Result<(), logforth::Error> {
+        let layout = JsonLayout::default();
+        let mut bytes = layout.format(record, diags)?;
+        bytes.push(b'\n');
+        let mut writer = self
+            .writer
+            .lock()
+            .map_err(|_| logforth::Error::new("lock"))?;
+        writer
+            .write_all(&bytes)
+            .map_err(logforth::Error::from_io_error)?;
+        Ok(())
     }
 
-    #[test]
-    fn json_logger_level_getter() {
-        let (tx, _rx) = JsonLogger::create_channel(16);
-        let logger = JsonLogger::new(tx, log::LevelFilter::Debug);
-        assert_eq!(logger.level(), log::LevelFilter::Debug);
+    fn flush(&self) -> Result<(), logforth::Error> {
+        let mut writer = self
+            .writer
+            .lock()
+            .map_err(|_| logforth::Error::new("lock"))?;
+        writer.flush().map_err(logforth::Error::from_io_error)
+    }
+}
+
+// ── Async wrapper ──────────────────────────────────────────────────────────
+
+/// Wrap an appender with a non-blocking background thread.
+fn non_blocking<A: logforth::Append + Send + 'static>(
+    name: &str,
+    appender: A,
+) -> append::asynchronous::Async {
+    append::asynchronous::AsyncBuilder::new(name)
+        .overflow_drop_incoming()
+        .append(appender)
+        .build()
+}
+
+// ── Initialisation ─────────────────────────────────────────────────────────
+
+/// Initialise the global logger via logforth with non-blocking appenders.
+pub fn init(config: &LoggerConfig) {
+    let mut builder = logforth::starter_log::builder();
+
+    // Stderr dispatch (non-blocking)
+    if config.emit_console {
+        let stderr = append::Stderr::default().with_layout(JsonLayout::default());
+        let stderr = non_blocking("stderr", stderr);
+        builder = builder.dispatch(|d| d.filter(config.level_to_logforth()).append(stderr));
+    }
+
+    // File dispatch with custom rolling-writer appender (non-blocking)
+    if let Some(ref file_cfg) = config.file {
+        let writer = RollingLogWriter::new(
+            file_cfg.dir.clone(),
+            file_cfg.prefix.clone(),
+            file_cfg.suffix.clone(),
+            file_cfg.rotation,
+        );
+        let appender = RollingFileAppender {
+            writer: Mutex::new(writer),
+        };
+        let appender = non_blocking("file", appender);
+        builder = builder.dispatch(|d| d.filter(config.level_to_logforth()).append(appender));
+    }
+
+    builder.apply();
+    log::set_max_level(config.log_level);
+}
+
+// ── Configuration ──────────────────────────────────────────────────────────
+
+pub struct LoggerConfig {
+    pub log_level: log::LevelFilter,
+    pub emit_console: bool,
+    pub file: Option<FileConfig>,
+}
+
+pub struct FileConfig {
+    pub dir: PathBuf,
+    pub prefix: String,
+    pub suffix: String,
+    pub rotation: Rotation,
+}
+
+impl LoggerConfig {
+    fn level_to_logforth(&self) -> LevelFilter {
+        match self.log_level {
+            log::LevelFilter::Off => LevelFilter::Off,
+            log::LevelFilter::Error => LevelFilter::MoreSevereEqual(Level::Error),
+            log::LevelFilter::Warn => LevelFilter::MoreSevereEqual(Level::Warn),
+            log::LevelFilter::Info => LevelFilter::MoreSevereEqual(Level::Info),
+            log::LevelFilter::Debug => LevelFilter::MoreSevereEqual(Level::Debug),
+            log::LevelFilter::Trace => LevelFilter::All,
+        }
     }
 }
