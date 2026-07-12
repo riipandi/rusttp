@@ -1,4 +1,4 @@
-use lib_telemetry::Rotation;
+use lib_observer::Rotation;
 
 #[test]
 fn rotation_parse_never() {

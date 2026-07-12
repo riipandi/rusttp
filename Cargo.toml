@@ -5,7 +5,7 @@ members = [
   "crates/lib-mailer",
   "crates/lib-queue",
   "crates/identity",
-  "crates/lib-telemetry",
+  "crates/lib-observer",
 ]
 
 [workspace.package]

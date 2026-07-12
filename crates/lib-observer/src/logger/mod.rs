@@ -5,10 +5,54 @@ use std::sync::Mutex;
 
 use logforth::Layout;
 use logforth::append;
-use logforth::layout::JsonLayout;
 use logforth::record::{Level, LevelFilter};
 
 use crate::Rotation;
+
+// ── Custom JSON layout ───────────────────────────────────────────────────
+
+/// JSON layout that omits `file` and `line` for INFO-level and above.
+/// File paths only appear in DEBUG/TRACE output.
+#[derive(Debug, Clone)]
+struct CompactJsonLayout;
+
+impl Layout for CompactJsonLayout {
+    fn format(
+        &self,
+        record: &logforth::record::Record<'_>,
+        _diags: &[Box<dyn logforth::Diagnostic>],
+    ) -> Result<Vec<u8>, logforth::Error> {
+        let system_time = record.time();
+        let dt: chrono::DateTime<chrono::Utc> = system_time.into();
+        let timestamp = dt.format("%Y-%m-%dT%H:%M:%S%.6f%:z").to_string();
+
+        #[derive(serde::Serialize)]
+        struct Line<'a> {
+            timestamp: &'a str,
+            level: &'a str,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            target: Option<&'a str>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            file: Option<&'a str>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            line: Option<u32>,
+            message: String,
+        }
+
+        let show_meta = matches!(record.level(), Level::Debug | Level::Trace);
+
+        let line = Line {
+            timestamp: &timestamp,
+            level: record.level().name(),
+            target: show_meta.then(|| record.target()),
+            file: show_meta.then(|| record.file()).flatten(),
+            line: show_meta.then(|| record.line()).flatten(),
+            message: format!("{}", record.payload()),
+        };
+
+        Ok(serde_json::to_vec(&line).unwrap())
+    }
+}
 
 // ── Custom rolling file appender ───────────────────────────────────────────
 
@@ -138,7 +182,7 @@ impl logforth::Append for RollingFileAppender {
         record: &logforth::record::Record<'_>,
         diags: &[Box<dyn logforth::Diagnostic>],
     ) -> Result<(), logforth::Error> {
-        let layout = JsonLayout::default();
+        let layout = CompactJsonLayout;
         let mut bytes = layout.format(record, diags)?;
         bytes.push(b'\n');
         let mut writer = self
@@ -184,7 +228,7 @@ pub fn init(config: &LoggerConfig) {
 
     // Stderr dispatch (non-blocking)
     if config.emit_console {
-        let stderr = append::Stderr::default().with_layout(JsonLayout::default());
+        let stderr = append::Stderr::default().with_layout(CompactJsonLayout);
         let stderr = non_blocking("stderr", stderr);
         builder = builder.dispatch(|d| d.filter(config.level_to_logforth()).append(stderr));
     }

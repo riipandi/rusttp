@@ -65,20 +65,20 @@ pub enum TracingReporter {
     },
 }
 
-// ── TelemetryBuilder ───────────────────────────────────────────────────────
+// ── ObserverBuilder ───────────────────────────────────────────────────────
 
 /// Builder for initializing the telemetry stack (logger + tracer).
 ///
 /// # Examples
 ///
 /// ```ignore
-/// use lib_telemetry::TelemetryBuilder;
+/// use lib_observer::ObserverBuilder;
 ///
 /// // Quick start with production defaults (file + tracing)
-/// TelemetryBuilder::new().with_defaults().init();
+/// ObserverBuilder::new().with_defaults().init();
 ///
 /// // Custom configuration
-/// TelemetryBuilder::new()
+/// ObserverBuilder::new()
 ///     .log_level(log::LevelFilter::Info)
 ///     .log_output(LogOutput::StdErr)
 ///     .with_log_file("storage/logs")
@@ -86,7 +86,7 @@ pub enum TracingReporter {
 ///     .with_trace_file("storage/traces")
 ///     .init();
 /// ```
-pub struct TelemetryBuilder {
+pub struct ObserverBuilder {
     log_level: log::LevelFilter,
     log_outputs: Vec<LogOutput>,
     tracing_enabled: bool,
@@ -94,13 +94,13 @@ pub struct TelemetryBuilder {
     tracing_reporter: TracingReporter,
 }
 
-impl Default for TelemetryBuilder {
+impl Default for ObserverBuilder {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl TelemetryBuilder {
+impl ObserverBuilder {
     /// Create a new builder with default values.
     ///
     /// Defaults:
@@ -113,7 +113,7 @@ impl TelemetryBuilder {
     /// Use `with_defaults()` to apply sensible production defaults
     /// (file logging to `storage/logs` + tracing to `storage/traces`).
     pub fn new() -> Self {
-        TelemetryBuilder {
+        ObserverBuilder {
             log_level: log::LevelFilter::Info,
             log_outputs: Vec::new(),
             tracing_enabled: false,
@@ -289,7 +289,7 @@ mod tests {
 
     #[test]
     fn builder_defaults() {
-        let b = TelemetryBuilder::new();
+        let b = ObserverBuilder::new();
         assert_eq!(b.log_level, log::LevelFilter::Info);
         assert!(b.log_outputs.is_empty());
         assert!(!b.tracing_enabled);
@@ -299,13 +299,13 @@ mod tests {
 
     #[test]
     fn builder_log_level() {
-        let b = TelemetryBuilder::new().log_level(log::LevelFilter::Debug);
+        let b = ObserverBuilder::new().log_level(log::LevelFilter::Debug);
         assert_eq!(b.log_level, log::LevelFilter::Debug);
     }
 
     #[test]
     fn builder_log_output() {
-        let b = TelemetryBuilder::new()
+        let b = ObserverBuilder::new()
             .log_output(LogOutput::StdErr)
             .log_output(LogOutput::File {
                 dir: "/tmp".into(),
@@ -318,29 +318,29 @@ mod tests {
 
     #[test]
     fn builder_tracing_enabled() {
-        let b = TelemetryBuilder::new().tracing_enabled(true);
+        let b = ObserverBuilder::new().tracing_enabled(true);
         assert!(b.tracing_enabled);
     }
 
     #[test]
     fn builder_tracing_sampling_clamps() {
-        let b = TelemetryBuilder::new().tracing_sampling(1.5);
+        let b = ObserverBuilder::new().tracing_sampling(1.5);
         assert_eq!(b.tracing_sampling, 1.0);
-        let b = TelemetryBuilder::new().tracing_sampling(-0.5);
+        let b = ObserverBuilder::new().tracing_sampling(-0.5);
         assert_eq!(b.tracing_sampling, 0.0);
-        let b = TelemetryBuilder::new().tracing_sampling(0.5);
+        let b = ObserverBuilder::new().tracing_sampling(0.5);
         assert_eq!(b.tracing_sampling, 0.5);
     }
 
     #[test]
     fn builder_tracing_reporter() {
-        let b = TelemetryBuilder::new().tracing_reporter(TracingReporter::Console);
+        let b = ObserverBuilder::new().tracing_reporter(TracingReporter::Console);
         assert!(matches!(b.tracing_reporter, TracingReporter::Console));
     }
 
     #[test]
     fn builder_default_impl() {
-        let b: TelemetryBuilder = Default::default();
+        let b: ObserverBuilder = Default::default();
         assert!(!b.tracing_enabled);
     }
 }

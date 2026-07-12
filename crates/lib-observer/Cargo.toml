@@ -1,8 +1,8 @@
 [package]
-name = "lib-telemetry"
+name = "lib-observer"
 version.workspace = true
 license = "Apache-2.0"
-description = "Telemetry: logging, tracing, and metrics"
+description = "Observer: logging, tracing, and metrics"
 keywords = ["telemetry", "logging", "tracing", "fastrace", "rusttp"]
 categories = ["development-tools::debugging"]
 homepage.workspace = true
@@ -12,7 +12,7 @@ edition.workspace = true
 publish = false
 
 [lib]
-name = "lib_telemetry"
+name = "lib_observer"
 path = "src/lib.rs"
 
 [dependencies]
@@ -24,6 +24,7 @@ logforth.workspace = true
 opentelemetry-otlp.workspace = true
 opentelemetry.workspace = true
 opentelemetry_sdk.workspace = true
+serde.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]

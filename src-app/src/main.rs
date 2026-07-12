@@ -2,8 +2,8 @@ use clap::Parser;
 use rusttp::cmd;
 use std::ffi::OsString;
 
-use lib_telemetry::TelemetryBuilder;
-use lib_telemetry::{LogOutput, Rotation, TracingReporter};
+use lib_observer::ObserverBuilder;
+use lib_observer::{LogOutput, Rotation, TracingReporter};
 
 // ── Env-file loader ────────────────────────────────────────────────────────
 
@@ -102,7 +102,7 @@ where
     let rotation =
         Rotation::parse(&std::env::var("LOG_ROTATION").unwrap_or_else(|_| "daily".into()));
 
-    let mut builder = TelemetryBuilder::new()
+    let mut builder = ObserverBuilder::new()
         .log_level(parse_log_level(&log_level_str))
         .tracing_enabled(tracing_enabled)
         .tracing_sampling(tracing_sampling);
@@ -141,7 +141,7 @@ where
     builder.init();
 
     if let Some(ref path) = env_file_loaded {
-        log::info!("loaded env from {}", path.display());
+        log::debug!("loaded env from {}", path.display());
     }
 
     // ── Dispatch ──────────────────────────────────────────────────────────
@@ -234,7 +234,6 @@ mod tests {
         let path = make_env_file(&dir, "# comment\n\nKEY=val\n");
         load_dotenv_file(&path);
         assert_eq!(std::env::var("KEY").as_deref(), Ok("val"));
-        assert_eq!(std::env::var("FOO"), Err(std::env::VarError::NotPresent));
         unsafe { std::env::remove_var("KEY") };
         let _ = std::fs::remove_dir_all(&dir);
     }

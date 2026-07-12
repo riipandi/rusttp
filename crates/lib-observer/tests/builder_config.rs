@@ -1,4 +1,4 @@
-use lib_telemetry::{LogOutput, Rotation, TelemetryBuilder, TracingReporter};
+use lib_observer::{LogOutput, ObserverBuilder, Rotation, TracingReporter};
 
 /// Helper: create a TempDir path string for use in test values.
 fn tmp_dir() -> String {
@@ -10,23 +10,23 @@ fn tmp_dir() -> String {
 }
 
 #[test]
-fn builder_new_returns_telemetry_builder() {
-    let _b: TelemetryBuilder = TelemetryBuilder::new();
+fn builder_new_returns_observer_builder() {
+    let _b: ObserverBuilder = ObserverBuilder::new();
 }
 
 #[test]
 fn builder_log_level_chainable() {
-    let _b = TelemetryBuilder::new().log_level(log::LevelFilter::Debug);
+    let _b = ObserverBuilder::new().log_level(log::LevelFilter::Debug);
 }
 
 #[test]
 fn builder_log_output_stderr_chainable() {
-    let _b = TelemetryBuilder::new().log_output(LogOutput::StdErr);
+    let _b = ObserverBuilder::new().log_output(LogOutput::StdErr);
 }
 
 #[test]
 fn builder_log_output_file_chainable() {
-    let _b = TelemetryBuilder::new().log_output(LogOutput::File {
+    let _b = ObserverBuilder::new().log_output(LogOutput::File {
         dir: tmp_dir().into(),
         prefix: "test".into(),
         suffix: "log".into(),
@@ -37,7 +37,7 @@ fn builder_log_output_file_chainable() {
 #[test]
 fn builder_multiple_outputs() {
     let dir = tmp_dir();
-    let _b = TelemetryBuilder::new()
+    let _b = ObserverBuilder::new()
         .log_output(LogOutput::StdErr)
         .log_output(LogOutput::File {
             dir: dir.clone().into(),
@@ -49,32 +49,32 @@ fn builder_multiple_outputs() {
 
 #[test]
 fn builder_tracing_enabled_chainable() {
-    let _b = TelemetryBuilder::new().tracing_enabled(true);
+    let _b = ObserverBuilder::new().tracing_enabled(true);
 }
 
 #[test]
 fn builder_tracing_disabled_chainable() {
-    let _b = TelemetryBuilder::new().tracing_enabled(false);
+    let _b = ObserverBuilder::new().tracing_enabled(false);
 }
 
 #[test]
 fn builder_sampling_chainable() {
-    let _b = TelemetryBuilder::new().tracing_sampling(0.5);
+    let _b = ObserverBuilder::new().tracing_sampling(0.5);
 }
 
 #[test]
 fn builder_reporter_none() {
-    let _b = TelemetryBuilder::new().tracing_reporter(TracingReporter::None);
+    let _b = ObserverBuilder::new().tracing_reporter(TracingReporter::None);
 }
 
 #[test]
 fn builder_reporter_console() {
-    let _b = TelemetryBuilder::new().tracing_reporter(TracingReporter::Console);
+    let _b = ObserverBuilder::new().tracing_reporter(TracingReporter::Console);
 }
 
 #[test]
 fn builder_reporter_file() {
-    let _b = TelemetryBuilder::new().tracing_reporter(TracingReporter::File {
+    let _b = ObserverBuilder::new().tracing_reporter(TracingReporter::File {
         dir: tmp_dir().into(),
         prefix: "test".into(),
         suffix: "trace".into(),
@@ -84,14 +84,14 @@ fn builder_reporter_file() {
 
 #[test]
 fn builder_reporter_otel() {
-    let _b = TelemetryBuilder::new().tracing_reporter(TracingReporter::Otel {
+    let _b = ObserverBuilder::new().tracing_reporter(TracingReporter::Otel {
         service_name: "my-app".into(),
     });
 }
 
 #[test]
 fn builder_full_chain() {
-    let _b = TelemetryBuilder::new()
+    let _b = ObserverBuilder::new()
         .log_level(log::LevelFilter::Warn)
         .log_output(LogOutput::StdErr)
         .tracing_enabled(true)
@@ -101,7 +101,7 @@ fn builder_full_chain() {
 
 #[test]
 fn builder_default_compiles() {
-    let _b: TelemetryBuilder = Default::default();
+    let _b: ObserverBuilder = Default::default();
 }
 
 #[test]

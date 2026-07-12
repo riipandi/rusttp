@@ -22,7 +22,7 @@ chrono.workspace = true
 clap.workspace = true
 fastrace = { workspace = true, features = ["enable"] }
 fastrace-axum.workspace = true
-lib-telemetry = { path = "../crates/lib-telemetry" }
+lib-observer = { path = "../crates/lib-observer" }
 log.workspace = true
 rand.workspace = true
 rust-embed.workspace = true

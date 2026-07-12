@@ -895,15 +895,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib-queue"
-version = "0.0.0"
-dependencies = [
- "serde",
- "thiserror",
-]
-
-[[package]]
-name = "lib-telemetry"
+name = "lib-observer"
 version = "0.0.0"
 dependencies = [
  "chrono",
@@ -914,8 +906,17 @@ dependencies = [
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry_sdk",
+ "serde",
  "serde_json",
  "tempfile",
+]
+
+[[package]]
+name = "lib-queue"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
@@ -1478,7 +1479,7 @@ dependencies = [
  "clap",
  "fastrace",
  "fastrace-axum",
- "lib-telemetry",
+ "lib-observer",
  "log",
  "rand 0.10.2",
  "rust-embed",
