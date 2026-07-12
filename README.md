@@ -1,6 +1,6 @@
 # 🦀 Rusttp
 
-[![(Rust)](https://img.shields.io/badge/rust-v1.82-orange.svg?logo=rust)](https://www.rust-lang.org/)
+[![(Rust)](https://img.shields.io/badge/rust-v1.97-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/riipandi/rusttp?logo=rust)](https://github.com/riipandi/rusttp/releases)
 [![CI Test](https://github.com/riipandi/rusttp/actions/workflows/test.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/test.yml)
 [![CI Release](https://github.com/riipandi/rusttp/actions/workflows/release.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/release.yml)
