@@ -100,6 +100,21 @@ mod tests {
     fn content_type_returns_png_for_png() {
         assert_eq!(content_type("img.png"), "image/png");
     }
+
+    #[test]
+    fn content_type_returns_ico_for_ico() {
+        assert_eq!(content_type("favicon.ico"), "image/x-icon");
+    }
+
+    #[test]
+    fn content_type_returns_txt_for_txt() {
+        assert_eq!(content_type("robots.txt"), "text/plain; charset=utf-8");
+    }
+
+    #[test]
+    fn content_type_returns_js_for_mjs() {
+        assert_eq!(content_type("app.mjs"), "application/javascript");
+    }
 }
 
 #[test]
@@ -123,5 +138,13 @@ async fn serve_returns_500_for_missing() {
     let uri = axum::http::Uri::from_static("/test.unknown");
     let res = serve_fallback(uri).await;
     // Unknown SPA routes fall back to index.html -> 200
+    assert_eq!(res.status(), StatusCode::OK);
+}
+
+#[tokio::test]
+async fn serve_fallback_returns_known_asset() {
+    // Direct asset match in serve_fallback — exercises early return
+    let uri = axum::http::Uri::from_static("/index.html");
+    let res = serve_fallback(uri).await;
     assert_eq!(res.status(), StatusCode::OK);
 }

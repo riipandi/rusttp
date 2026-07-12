@@ -348,4 +348,44 @@ mod tests {
         assert_eq!(w_daily.slot(&dt), "20260712");
         assert_eq!(w_weekly.slot(&dt), "2026W28");
     }
+
+    #[test]
+    fn setup_file_reporter_installs() {
+        let dir = tempfile::tempdir().unwrap();
+        setup_file_reporter(dir.path().into(), "rusttp", "trace", Rotation::Daily);
+        // Should not panic — reporter is installed
+    }
+
+    #[test]
+    fn setup_otel_reporter_fallback_gracefully() {
+        // OTLP exporter will fail to connect, but should log a warning and return
+        setup_otel_reporter("rusttp-test");
+    }
+
+    #[test]
+    fn rolling_file_writer_second_write_skips_rotation() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingFileWriter::new(dir.path().into(), "multi", "trace", Rotation::Never);
+        w.write_all(b"line1\n").unwrap();
+        w.write_all(b"line2\n").unwrap();
+        w.flush().unwrap();
+        let content = std::fs::read_to_string(dir.path().join("multi_trace.jsonl")).unwrap();
+        assert_eq!(content, "line1\nline2\n");
+    }
+
+    #[test]
+    fn rolling_file_writer_slot_change_triggers_rotation() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingFileWriter::new(dir.path().into(), "rot", "trace", Rotation::Hourly);
+        w.write_all(b"first\n").unwrap();
+        assert!(w.slot.is_some(), "slot should be set after first write");
+        // Force old slot to trigger rotation on next write
+        w.slot = Some("2000010100".into());
+        w.write_all(b"second\n").unwrap();
+        w.flush().unwrap();
+        let today = chrono::Local::now().format("%Y%m%d%H").to_string();
+        let path = dir.path().join(format!("rot_{}.trace.jsonl", today));
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(content, "first\nsecond\n");
+    }
 }

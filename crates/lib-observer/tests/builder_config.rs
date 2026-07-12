@@ -85,7 +85,7 @@ fn builder_reporter_file() {
 #[test]
 fn builder_reporter_otel() {
     let _b = ObserverBuilder::new().tracing_reporter(TracingReporter::Otel {
-        service_name: "my-app".into(),
+        service_name: "rusttp".into(),
     });
 }
 
@@ -116,4 +116,62 @@ fn rotation_all_variants_compile() {
 fn rotation_fallback() {
     assert_eq!(Rotation::parse("bogus"), Rotation::Daily);
     assert_eq!(Rotation::parse(""), Rotation::Daily);
+}
+
+// ── Init tests (each runs in its own process via nextest) ────────────
+
+#[test]
+fn builder_init_with_file_log_and_console_reporter() {
+    let dir = tempfile::TempDir::new().unwrap();
+    ObserverBuilder::new()
+        .log_level(log::LevelFilter::Debug)
+        .log_output(LogOutput::File {
+            dir: dir.path().into(),
+            prefix: "rusttp".into(),
+            suffix: "log".into(),
+            rotation: Rotation::Daily,
+        })
+        .log_output(LogOutput::StdErr)
+        .tracing_enabled(true)
+        .tracing_reporter(TracingReporter::Console)
+        .init();
+    log::info!("builder_init_with_file_log_and_console_reporter");
+}
+
+#[test]
+fn builder_init_with_file_reporter() {
+    let dir = tempfile::TempDir::new().unwrap();
+    ObserverBuilder::new()
+        .log_output(LogOutput::StdErr)
+        .tracing_enabled(true)
+        .tracing_reporter(TracingReporter::File {
+            dir: dir.path().into(),
+            prefix: "rusttp".into(),
+            suffix: "trace".into(),
+            rotation: Rotation::Daily,
+        })
+        .init();
+    log::info!("builder_init_with_file_reporter");
+}
+
+#[test]
+fn builder_init_with_otel_reporter() {
+    ObserverBuilder::new()
+        .log_output(LogOutput::StdErr)
+        .tracing_enabled(true)
+        .tracing_reporter(TracingReporter::Otel {
+            service_name: "rusttp-test".into(),
+        })
+        .init();
+    // OTLP exporter init will log a warning and fall back — that's fine
+    log::info!("builder_init_with_otel_reporter");
+}
+
+#[test]
+fn builder_init_no_tracing() {
+    ObserverBuilder::new()
+        .log_output(LogOutput::StdErr)
+        .tracing_enabled(false)
+        .init();
+    log::info!("builder_init_no_tracing");
 }

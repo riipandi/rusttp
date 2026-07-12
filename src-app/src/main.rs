@@ -288,4 +288,67 @@ mod tests {
         load_dotenv_file(std::path::Path::new("/nonexistent_dir/.env"));
         // Test passes if no panic
     }
+
+    #[test]
+    fn load_dotenv_file_empty_key() {
+        let dir = std::env::temp_dir().join("envtest_empty_key");
+        let path = make_env_file(&dir, "=orphan\nKEY=val\n");
+        load_dotenv_file(&path);
+        assert_eq!(std::env::var("KEY").as_deref(), Ok("val"));
+        unsafe { std::env::remove_var("KEY") };
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn load_env_file_from_args_last_arg_no_value() {
+        let args: [&str; 2] = ["rusttp", "--env-file"];
+        let got = load_env_file_from_args(&args);
+        assert_eq!(got, None);
+    }
+
+    #[tokio::test]
+    async fn run_main_with_file_logging() {
+        unsafe { std::env::set_var("LOG_TRANSPORT", "file") };
+        let code = run_main_with_args(["rusttp", "hc"]).await;
+        assert_eq!(code, 0);
+        unsafe { std::env::remove_var("LOG_TRANSPORT") };
+    }
+
+    #[tokio::test]
+    async fn run_main_with_file_reporter() {
+        unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+        unsafe { std::env::set_var("TRACING_REPORTER", "file") };
+        let code = run_main_with_args(["rusttp", "hc"]).await;
+        assert_eq!(code, 0);
+        unsafe { std::env::remove_var("TRACING_ENABLE") };
+        unsafe { std::env::remove_var("TRACING_REPORTER") };
+    }
+
+    #[tokio::test]
+    async fn run_main_with_otel_reporter() {
+        unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+        unsafe { std::env::set_var("TRACING_REPORTER", "otel") };
+        // OTLP init will log a warning and disable tracing — that's fine
+        let code = run_main_with_args(["rusttp", "hc"]).await;
+        assert_eq!(code, 0);
+        unsafe { std::env::remove_var("TRACING_ENABLE") };
+        unsafe { std::env::remove_var("TRACING_REPORTER") };
+    }
+
+    #[tokio::test]
+    async fn run_main_with_tracing_console_reporter() {
+        unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+        unsafe { std::env::set_var("TRACING_REPORTER", "console") };
+        let code = run_main_with_args(["rusttp", "hc"]).await;
+        assert_eq!(code, 0);
+        unsafe { std::env::remove_var("TRACING_ENABLE") };
+        unsafe { std::env::remove_var("TRACING_REPORTER") };
+    }
+
+    #[tokio::test]
+    async fn run_main_with_dispatch_error() {
+        // Invalid host causes socket_addr() to fail -> dispatch error path
+        let code = run_main_with_args(["rusttp", "serve", "--host", "!", "--port", "0"]).await;
+        assert_eq!(code, 1);
+    }
 }

@@ -165,3 +165,43 @@ async fn trim_trailing_slash_non_root() {
     let location = res.headers().get("location").unwrap().to_str().unwrap();
     assert_eq!(location, "/api");
 }
+
+#[tokio::test]
+async fn trim_trailing_slash_with_query_string() {
+    let app = rusttp::server::build();
+    let res = app
+        .oneshot(Request::builder().uri("/api/?q=1").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::PERMANENT_REDIRECT);
+    let location = res.headers().get("location").unwrap().to_str().unwrap();
+    assert_eq!(location, "/api?q=1");
+}
+
+#[tokio::test]
+async fn fastrace_layer_with_sampling_all() {
+    unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+    unsafe { std::env::set_var("TRACING_SAMPLING", "1.0") };
+    let app = rusttp::server::build();
+    let res = app
+        .oneshot(Request::builder().uri("/api/health").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    unsafe { std::env::remove_var("TRACING_ENABLE") };
+    unsafe { std::env::remove_var("TRACING_SAMPLING") };
+}
+
+#[tokio::test]
+async fn fastrace_layer_with_sampling_none() {
+    unsafe { std::env::set_var("TRACING_ENABLE", "true") };
+    unsafe { std::env::set_var("TRACING_SAMPLING", "0.0") };
+    let app = rusttp::server::build();
+    let res = app
+        .oneshot(Request::builder().uri("/api/health").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    unsafe { std::env::remove_var("TRACING_ENABLE") };
+    unsafe { std::env::remove_var("TRACING_SAMPLING") };
+}

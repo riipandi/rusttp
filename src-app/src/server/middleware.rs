@@ -85,4 +85,21 @@ mod tests {
     fn log_request_2xx_calls_info() {
         log_request(&Method::GET, "/ok", "q=1", StatusCode::OK, Duration::from_millis(0));
     }
+
+    #[tokio::test]
+    async fn trim_trailing_slash_with_query() {
+        use axum::Router;
+        use axum::body::Body;
+        use tower::ServiceExt;
+        let app = Router::new()
+            .route("/path", axum::routing::get(|| async { "ok" }))
+            .layer(axum::middleware::from_fn(super::trim_trailing_slash));
+        let res = app
+            .oneshot(Request::builder().uri("/path/?q=1").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(res.status(), StatusCode::PERMANENT_REDIRECT);
+        let loc = res.headers().get("location").unwrap().to_str().unwrap();
+        assert_eq!(loc, "/path?q=1");
+    }
 }

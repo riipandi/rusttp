@@ -484,4 +484,59 @@ mod tests {
         };
         assert!(matches!(cfg.level_to_logforth(), LevelFilter::All));
     }
+
+    // ── RollingFileAppender append test ─────────────────────────────
+
+    #[test]
+    fn rolling_file_appender_append_writes_log() {
+        use logforth::Append;
+        let dir = tempfile::tempdir().unwrap();
+        let writer = RollingLogWriter::new(dir.path().into(), "t".into(), "s".into(), Rotation::Never);
+        let appender = RollingFileAppender {
+            writer: Mutex::new(writer),
+        };
+        let record = logforth::record::Record::builder()
+            .level(logforth::record::Level::Info)
+            .payload(format_args!("test from appender"))
+            .target("test_target")
+            .build();
+        appender.append(&record, &[]).unwrap();
+        appender.flush().unwrap();
+        let content = std::fs::read_to_string(dir.path().join("t_s.jsonl")).unwrap();
+        assert!(content.contains("test from appender"));
+    }
+
+    // ── RollingLogWriter rotation edge cases ─────────────────────────
+
+    #[test]
+    fn rolling_writer_second_write_skips_rotation() {
+        // Two writes within the same slot — second triggers early return
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingLogWriter::new(dir.path().into(), "multi".into(), "log".into(), Rotation::Never);
+        w.write_all(b"line1\n").unwrap();
+        w.write_all(b"line2\n").unwrap();
+        w.flush().unwrap();
+        let content = std::fs::read_to_string(dir.path().join("multi_log.jsonl")).unwrap();
+        assert_eq!(content, "line1\nline2\n");
+    }
+
+    #[test]
+    fn rolling_writer_slot_change_triggers_rotation() {
+        // Force a slot change to exercise the flush-before-rotate path.
+        // Both writes use the same current-time filename (slot updated before filename),
+        // but the rotation detection + file reopen is exercised.
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = RollingLogWriter::new(dir.path().into(), "rot".into(), "log".into(), Rotation::Hourly);
+        w.write_all(b"first\n").unwrap();
+        assert!(w.slot.is_some(), "slot should be set after first write");
+        // Manually force an old slot so the next write triggers rotation
+        w.slot = Some("2000010100".into());
+        w.write_all(b"second\n").unwrap();
+        w.flush().unwrap();
+        // Content should be complete from both writes
+        let today = chrono::Local::now().format("%Y%m%d%H").to_string();
+        let path = dir.path().join(format!("rot_{}.log.jsonl", today));
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(content, "first\nsecond\n");
+    }
 }
