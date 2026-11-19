@@ -26,7 +26,7 @@ Development runs through `just` recipes (`just dev` serves the Rust server with 
 
 - The frontend is a client-rendered SPA served by the Rust server; there is no server-side React rendering.
 - Components are StyleX and Base UI; the theme is light, dark, or system, applied through `data-theme` on the root element.
-- The sign-in form is a placeholder: there is no sign-in endpoint yet.
+- The sign-in form is a placeholder: there is no sign-in endpoint yet, and submitting it opens the dashboard sample (`/dashboard`, dummy library-loan data).
 - Sample data in fixtures, stories, and placeholder copy is drawn from Dan Brown's novels and Harry Potter (`.agents/docs/rules.md`, "Sample data").
 
 ## Brand Commitments
