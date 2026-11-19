@@ -43,7 +43,7 @@ export default defineConfig({
           timeout: 300_000,
           env: {
             BIND_ADDR: new URL(ENV.baseURL).host,
-            RUST_LOG: 'warn'
+            LOG_LEVEL: 'warn'
           }
         }
       ]
