@@ -1,22 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+# The development infrastructure: backing services in compose-dev.yaml,
+# the observability stack in compose-sre.yaml. Credentials are development-only.
+
 name: rusttp
 
-services:
-  pgsql:
-    image: postgres:18-alpine
-    environment:
-      # Development-only credentials.
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: rusttp
-    ports:
-      - "${PGSQL_PORT:-5432}:5432"
-    volumes:
-      - pgsql-data:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+include:
+  - ./compose-dev.yaml
+  - ./compose-sre.yaml
 
-volumes:
-  pgsql-data:
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false

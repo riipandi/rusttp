@@ -1,0 +1,120 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cpus: 1.0
+  healthcheck:
+    start_period: 10s
+    interval: 1m30s
+    timeout: 10s
+    retries: 3
+
+services:
+  pgsql:
+    <<: *common
+    image: docker.io/postgres:${PGSQL_VERSION:-18-alpine}
+    hostname: pgsql
+    ports: ["${PGSQL_PORT:-5432}:5432"]
+    volumes: ["pgsql_data:/var/lib/postgresql:rw"]
+    environment:
+      POSTGRES_DB: rusttp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: securedb
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      # Extra databases created on first start (comma-separated), see the pgsql_multidb config.
+      POSTGRES_DATABASES: rusttp_test
+    configs: [{ source: pgsql_multidb, target: /docker-entrypoint-initdb.d/multidb.sh }]
+    shm_size: 256m
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+
+  redis:
+    <<: *common
+    image: docker.io/redis:${REDIS_VERSION:-8-alpine}
+    hostname: redis
+    ports: ["${REDIS_PORT:-6379}:6379"]
+    volumes: ["redis_data:/data:rw"]
+    command: "--appendonly yes --appendfsync everysec --requirepass securedb"
+    shm_size: 32m
+    mem_limit: 64m
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a securedb ping | grep PONG"]
+    ulimits:
+      memlock: -1
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # S3-compatible object storage; the console is on :9101.
+  silo:
+    <<: *common
+    image: docker.io/pgsty/silo:${SILO_VERSION:-latest}
+    hostname: silo
+    ports: ["9100:9100", "9101:9101"]
+    environment:
+      MINIO_BROWSER_LOGIN_ANIMATION: off
+      MINIO_DOMAIN: localhost
+      MINIO_ROOT_USER: s3admin
+      MINIO_ROOT_PASSWORD: s3passw0rd
+      MC_HOST_local: http://s3admin:s3passw0rd@localhost:9100
+    volumes: ["silo_data:/data:rw"]
+    command: server /data --address "0.0.0.0:9100" --console-address "0.0.0.0:9101"
+    post_start:
+      - command: sh -c "/usr/bin/mc mb local/devbucket --ignore-existing"
+      - command: sh -c "/usr/bin/mc mb local/otelbucket --ignore-existing"
+      - command: sh -c "/usr/bin/mc mb local/testbucket --ignore-existing"
+      - command: sh -c "/usr/bin/mc anonymous set download local/devbucket"
+      - command: sh -c "/usr/bin/mc anonymous set download local/testbucket"
+    shm_size: 256m
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "/usr/bin/silo", "healthcheck", "ready", "--address", "127.0.0.1:9100"]
+
+  # SMTP sink on :1025, web UI on :8025.
+  mailpit:
+    <<: *common
+    image: docker.io/axllent/mailpit:${MAILPIT_VERSION:-latest}
+    hostname: mailpit
+    ports: ["1025:1025", "8025:8025"]
+    volumes: ["mailpit_data:/data:rw"]
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_TAGS_USERNAME: true
+      MP_DISABLE_VERSION_CHECK: true
+      MP_ALLOW_UNTRUSTED_TLS: true
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+      MP_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+      MP_SMTP_AUTH: "maileruser:mailerpass"
+    shm_size: 32m
+    mem_limit: 64m
+    healthcheck:
+      test: ["CMD-SHELL", "nc -vz 127.0.0.1 8025 || exit 1"]
+
+configs:
+  pgsql_multidb:
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      [ -z "$${POSTGRES_DATABASES:-}" ] && exit 0
+      IFS=',' read -ra databases <<<"$$POSTGRES_DATABASES"
+      for db in "$${databases[@]}"; do
+        echo "Creating database '$$db' owned by '$$POSTGRES_USER'"
+        psql -v ON_ERROR_STOP=1 --username "$$POSTGRES_USER" --dbname "$$POSTGRES_DB" \
+          -c "CREATE DATABASE \"$$db\" WITH OWNER = \"$$POSTGRES_USER\" ENCODING = 'UTF8' TEMPLATE = template0;"
+      done
+
+volumes:
+  pgsql_data:
+  redis_data:
+  silo_data:
+  mailpit_data:
+
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false

@@ -1,0 +1,147 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+###
+# - ClickStack (gRPC is not published on purpose)
+#   -> address  : http://localhost:8080
+#   -> email    : admin@example.com
+#   -> password : @Password123!
+#
+# The collector accepts the ingestion key `rusttp-dev-ingestion-key`:
+#   OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+#   OTEL_EXPORTER_OTLP_HEADERS=authorization=rusttp-dev-ingestion-key
+#
+# `clickstack-init` registers the account, provisions clickstack/dashboards and
+# clickstack/searches as favorites, and clickstack/alerts, which email the
+# Mailpit inbox (plus CLICKSTACK_ALERT_WEBHOOK_URL when set); `cadvisor`
+# and `redis-exporter` are scraped by the collector (clickstack/otel-collector.yaml).
+###
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  shm_size: 32m
+  mem_limit: 64m
+  cpus: 1.0
+  healthcheck:
+    start_period: 15s
+    interval: 30s
+    timeout: 10s
+    retries: 5
+
+# ClickHouse connection and four sources HyperDX creates on first start.
+# Explicit settings avoid image defaults that break dashboard queries.
+# Provisioning also applies them to existing stacks on restart.
+x-clickstack-connection: &clickstack-connection >-
+  [{"name":"Local ClickHouse","host":"http://localhost:8123","username":"${CLICKHOUSE_USER:-default}","password":"${CLICKSTACK_DB_PASSWORD:-securedb}"}]
+x-clickstack-sources: &clickstack-sources >-
+  [{"from":{"databaseName":"default","tableName":"otel_logs"},"kind":"log","timestampValueExpression":"Timestamp","name":"Logs","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","traceIdExpression":"TraceId","spanIdExpression":"SpanId","metadataMaterializedViews":{"kvRollupTable":"otel_logs_kv_rollup_15m","granularity":"15 minute"},"connection":"Local ClickHouse","traceSourceId":"Traces","metricSourceId":"Metrics"},
+  {"from":{"databaseName":"default","tableName":"otel_traces"},"kind":"trace","timestampValueExpression":"Timestamp","name":"Traces","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"SpanName","serviceNameExpression":"ServiceName","eventAttributesExpression":"SpanAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,StatusCode,round(Duration/1e6),SpanName","traceIdExpression":"TraceId","spanIdExpression":"SpanId","durationExpression":"Duration","durationPrecision":9,"parentSpanIdExpression":"ParentSpanId","spanNameExpression":"SpanName","spanKindExpression":"SpanKind","statusCodeExpression":"StatusCode","statusMessageExpression":"StatusMessage","metadataMaterializedViews":{"kvRollupTable":"otel_traces_kv_rollup_15m","granularity":"15 minute"},"connection":"Local ClickHouse","logSourceId":"Logs","sessionSourceId":"Sessions","metricSourceId":"Metrics"},
+  {"from":{"databaseName":"default","tableName":""},"kind":"metric","timestampValueExpression":"TimeUnix","name":"Metrics","resourceAttributesExpression":"ResourceAttributes","metricTables":{"gauge":"otel_metrics_gauge","histogram":"otel_metrics_histogram","sum":"otel_metrics_sum","summary":"otel_metrics_summary"},"connection":"Local ClickHouse","logSourceId":"Logs"},
+  {"from":{"databaseName":"default","tableName":"hyperdx_sessions"},"kind":"session","timestampValueExpression":"TimestampTime","name":"Sessions","displayedTimestampValueExpression":"Timestamp","implicitColumnExpression":"Body","serviceNameExpression":"ServiceName","bodyExpression":"Body","eventAttributesExpression":"LogAttributes","resourceAttributesExpression":"ResourceAttributes","defaultTableSelectExpression":"Timestamp,ServiceName,SeverityText,Body","severityTextExpression":"SeverityText","traceIdExpression":"TraceId","spanIdExpression":"SpanId","connection":"Local ClickHouse","traceSourceId":"Traces"}]
+
+services:
+  clickstack:
+    <<: *common
+    # All-in-one: HyperDX app + API, ClickHouse, MongoDB and the OpenTelemetry collector
+    # in one container. Fine for development; production runs them as separate services.
+    # @ref: https://clickhouse.com/docs/clickstack/managing/config
+    image: docker.io/hyperdx/hyperdx-all-in-one:${CLICKSTACK_VERSION:-2}
+    hostname: clickstack
+    ports:
+      - "127.0.0.1:${CLICKSTACK_UI_PORT:-8080}:8080" # HyperDX UI
+      - "127.0.0.1:${OTLP_HTTP_PORT:-4318}:4318" # OTLP over HTTP
+    volumes:
+      - "clickstack_db:/data/db:rw"
+      - "clickstack_ch_data:/var/lib/clickhouse:rw"
+      - "clickstack_ch_logs:/var/log/clickhouse-server:rw"
+      - "./clickstack/otel-collector.yaml:/etc/otel/extra-config.yaml:ro"
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKSTACK_DB_PASSWORD:-securedb}
+      CUSTOM_OTELCOL_CONFIG_FILE: /etc/otel/extra-config.yaml
+      DEFAULT_CONNECTIONS: *clickstack-connection
+      DEFAULT_SOURCES: *clickstack-sources
+      FRONTEND_URL: http://localhost:${CLICKSTACK_UI_PORT:-8080}
+      HYPERDX_API_KEY: ${CLICKSTACK_INGESTION_KEY:-rusttp-dev-ingestion-key}
+      HYPERDX_LOG_LEVEL: ${HYPERDX_LOG_LEVEL:-debug}
+      INGESTION_API_KEY: ${CLICKSTACK_INGESTION_KEY:-rusttp-dev-ingestion-key}
+      OTLP_AUTH_TOKEN: ${CLICKSTACK_INGESTION_KEY:-rusttp-dev-ingestion-key}
+      USAGE_STATS_ENABLED: false
+      # Webhooks to private addresses are blocked unless the host is allowlisted.
+      WEBHOOK_HOSTNAME_ALLOWLIST: mailpit
+    shm_size: 512m
+    mem_limit: 2g
+    cpus: 2.0
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/api/health || exit 1"]
+      start_period: 30s
+
+  clickstack-init:
+    <<: *common
+    image: docker.io/badouralix/curl-jq:${CURLJQ_VERSION:-alpine}
+    restart: no
+    entrypoint: ["/bin/sh", "/clickstack/provision.sh"]
+    volumes:
+      - "./clickstack/provision.sh:/clickstack/provision.sh:ro"
+      - "./clickstack/dashboards:/dashboards:ro"
+      - "./clickstack/searches:/searches:ro"
+      - "./clickstack/alerts:/alerts:ro"
+    environment:
+      CLICKSTACK_ACCESS_KEY: ${CLICKSTACK_ACCESS_KEY:-}
+      CLICKHOUSE_PASSWORD: ${CLICKSTACK_DB_PASSWORD:-securedb}
+      CLICKSTACK_ALERT_WEBHOOK_URL: ${CLICKSTACK_ALERT_WEBHOOK_URL:-}
+      CLICKSTACK_RETENTION_DAYS: ${CLICKSTACK_RETENTION_DAYS:-30}
+      DEFAULT_CONNECTIONS: *clickstack-connection
+      DEFAULT_SOURCES: *clickstack-sources
+      HYPERDX_EMAIL: ${HYPERDX_EMAIL:-admin@example.com}
+      HYPERDX_PASSWORD: ${HYPERDX_PASSWORD:-@Password123!}
+    healthcheck:
+      disable: true
+    depends_on:
+      clickstack: { condition: service_started }
+
+  # Per-container resource metrics, scraped into the same pipeline.
+  cadvisor:
+    <<: *common
+    image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:-0.60}
+    hostname: cadvisor
+    expose: ["8080"]
+    devices: ["/dev/kmsg"]
+    volumes:
+      - "/:/rootfs:ro"
+      - "/sys:/sys:ro"
+      - "/var/run:/var/run:ro"
+      - "/var/lib/docker:/var/lib/docker:ro"
+    command: ["--housekeeping_interval=30s", "--docker_only=true"]
+    mem_limit: 128m
+    cpus: 0.5
+    privileged: true
+    healthcheck:
+      test: ["CMD-SHELL", "nc -vz 127.0.0.1 8080 || exit 1"]
+
+  redis-exporter:
+    <<: *common
+    image: docker.io/oliver006/redis_exporter:${REDIS_EXPORTER_VERSION:-v1.95.0}
+    hostname: redis-exporter
+    expose: ["9121"]
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: securedb
+      REDIS_EXPORTER_LOG_FORMAT: json
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "/redis_exporter", "--version"]
+    depends_on:
+      redis: { condition: service_started }
+
+volumes:
+  clickstack_db:
+  clickstack_ch_data:
+  clickstack_ch_logs:
+
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false

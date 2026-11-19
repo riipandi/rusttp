@@ -1,0 +1,12 @@
+{
+    "name": "Panics",
+    "source": "Logs",
+    "select": "Timestamp,ServiceName,SeverityText,Body",
+    "where": "Body ILIKE '%panicked at%' AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Timestamp DESC",
+    "tags": [
+        "rusttp",
+        "logs"
+    ]
+}

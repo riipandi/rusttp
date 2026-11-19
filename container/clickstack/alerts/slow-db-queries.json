@@ -1,0 +1,14 @@
+{
+    "name": "rusttp slow db queries",
+    "displayName": "Slow database queries (10m)",
+    "savedSearch": "Slow database queries (> 100ms)",
+    "interval": "5m",
+    "threshold": 20,
+    "thresholdType": "above",
+    "numConsecutiveWindows": 2,
+    "message": "At least 20 database queries took longer than 100ms in each of two consecutive 5-minute windows.",
+    "note": "Look for a missing index or a lock; the saved search shows the query text.",
+    "tags": [
+        "rusttp"
+    ]
+}

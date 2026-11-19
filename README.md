@@ -42,7 +42,7 @@ Type `just` on your terminal to see available tasks.
 ### Development Services
 
 ```sh
-# Start the development services (Postgres)
+# Start the development services (Postgres, Redis, S3, Mailpit, ClickStack)
 just compose-up
 
 # Stop the development services

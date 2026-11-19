@@ -1,0 +1,14 @@
+{
+    "name": "rusttp error logs",
+    "displayName": "Error logs (5m)",
+    "savedSearch": "Errors",
+    "interval": "5m",
+    "threshold": 10,
+    "thresholdType": "above",
+    "numConsecutiveWindows": 1,
+    "message": "At least 10 error or fatal log lines in 5 minutes.",
+    "note": "Open the Errors saved search to see which service and message dominate.",
+    "tags": [
+        "rusttp"
+    ]
+}

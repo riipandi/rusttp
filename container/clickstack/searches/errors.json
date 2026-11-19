@@ -1,0 +1,12 @@
+{
+    "name": "Errors",
+    "source": "Logs",
+    "select": "Timestamp,ServiceName,SeverityText,Body",
+    "where": "lower(SeverityText) IN ('error', 'fatal') AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Timestamp DESC",
+    "tags": [
+        "rusttp",
+        "logs"
+    ]
+}

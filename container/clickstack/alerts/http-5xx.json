@@ -1,0 +1,14 @@
+{
+    "name": "rusttp http 5xx",
+    "displayName": "HTTP 5xx responses (5m)",
+    "savedSearch": "HTTP 5xx responses",
+    "interval": "5m",
+    "threshold": 5,
+    "thresholdType": "above",
+    "numConsecutiveWindows": 1,
+    "message": "The server answered at least 5 requests with a 5xx status in 5 minutes.",
+    "note": "Group the HTTP 5xx saved search by route to find the failing handler.",
+    "tags": [
+        "rusttp"
+    ]
+}

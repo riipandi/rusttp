@@ -1,0 +1,14 @@
+{
+    "name": "rusttp slow requests",
+    "displayName": "Slow requests (10m)",
+    "savedSearch": "Slow requests (> 1s)",
+    "interval": "5m",
+    "threshold": 10,
+    "thresholdType": "above",
+    "numConsecutiveWindows": 2,
+    "message": "At least 10 requests took longer than 1s in each of two consecutive 5-minute windows.",
+    "note": "Two windows filter out a single burst; check Slow database queries for the cause.",
+    "tags": [
+        "rusttp"
+    ]
+}
