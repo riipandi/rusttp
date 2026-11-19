@@ -47,7 +47,8 @@ cert-generate:
     command -v mkcert >/dev/null || { echo "mkcert is not installed (brew install mkcert)" >&2; exit 1; }
     mkdir -p storage/config
     mkcert -key-file storage/config/localhost_key.pem -cert-file storage/config/localhost_crt.pem \
-        localhost 127.0.0.1 ::1 host.docker.internal
+        localhost 127.0.0.1 ::1 host.docker.internal mock-oauth2.localhost
+    cp "$(mkcert -CAROOT)/rootCA.pem" storage/config/rootCA.pem
 
 [doc('Install the mkcert local CA into the system and browser trust stores')]
 [group('utility')]

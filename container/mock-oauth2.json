@@ -11,7 +11,7 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": false,
                         "given_name": "${subject}",
                         "family_name": "Hogwarts"
@@ -23,7 +23,7 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": true
                     }
                 },
@@ -33,7 +33,7 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": true,
                         "given_name": "${subject}",
                         "family_name": "Hogwarts"
@@ -51,7 +51,7 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": false,
                         "name": "${subject} Hogwarts"
                     }
@@ -62,7 +62,7 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": true
                     }
                 },
@@ -72,9 +72,44 @@
                     "claims": {
                         "sub": "${subject}",
                         "aud": ["${clientId}"],
-                        "email": "${subject}@hogwarts.example",
+                        "email": "${subject}@example.com",
                         "email_verified": true,
                         "name": "${subject} Hogwarts"
+                    }
+                }
+            ]
+        },
+        {
+            "issuerId": "silo",
+            "tokenExpiry": 3600,
+            "requestMappings": [
+                {
+                    "requestParam": "subject",
+                    "match": "^s3admin$",
+                    "claims": {
+                        "sub": "${subject}",
+                        "aud": ["${clientId}"],
+                        "email": "${subject}@example.com",
+                        "policy": "consoleAdmin"
+                    }
+                },
+                {
+                    "requestParam": "subject",
+                    "match": "^s3user$",
+                    "claims": {
+                        "sub": "${subject}",
+                        "aud": ["${clientId}"],
+                        "email": "${subject}@example.com",
+                        "policy": "readonly"
+                    }
+                },
+                {
+                    "requestParam": "subject",
+                    "match": ".*",
+                    "claims": {
+                        "sub": "${subject}",
+                        "aud": ["${clientId}"],
+                        "email": "${subject}@example.com"
                     }
                 }
             ]

@@ -9,7 +9,7 @@ app_version := `sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1`
 
 [private]
 _cert-ensure:
-    @test -f storage/config/localhost_crt.pem || just cert-generate
+    @test -f storage/config/rootCA.pem || just cert-generate
 
 [doc('Start dev services')]
 [group('container')]
