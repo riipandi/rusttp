@@ -36,6 +36,7 @@
         "**/*.yml",
         "**/*.yaml",
         "**/*.toml",
-        "**/index.html"
+        "**/index.html",
+        "**/*.svg"
     ]
 }

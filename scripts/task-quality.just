@@ -33,6 +33,12 @@ test *args:
 test-api url="http://127.0.0.1:3000":
     @hurl --test --variable base_url={{ url }} --glob 'api/specs/**/*.hurl'
 
+[doc('Run the Playwright E2E suite (starts the server and the built SPA unless E2E_BASE_URL is set)')]
+[group('quality')]
+[positional-arguments]
+test-e2e *args:
+    @pnpm --filter e2e test "$@"
+
 [doc('Run every gate: format, check, lint, test')]
 [group('quality')]
 verify: format-check check lint test
