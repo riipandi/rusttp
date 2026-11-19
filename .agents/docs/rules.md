@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T23:12:52+07:00
+updated: 2026-11-19T23:17:21+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -103,7 +103,7 @@ Every made-up value — test fixtures, seed rows, email `previewProps`, stories,
 - `just dev` opens the server's port, not Vite's: the `rust-server` plugin starts the debug server with `VITE_DEV_SERVER`, and vixum then proxies everything but navigations and the HMR socket (which connects to `127.0.0.1:5173` directly) to Vite. A rebuild starts the new server beside the old one (debug builds bind with `SO_REUSEPORT`, `transport/server.rs`) and retires the old one with SIGINT once the new one logs `listening`, so the port never goes dark; a failed build or a failed start leaves the old server running.
 - In dev, only `Accept: text/html` makes a request a navigation; in an embedded build a path without an extension does too. A path with a dot (`/report.pdf`) is never a document.
 - `/assets/*` answers `cache-control: immutable` (Vite content-hashes everything there, `spa.rs`); other public files keep memory-serve's revalidating default.
-- `deploy/Dockerfile` is multi-stage: a Node stage builds the SPA, a Rust stage builds the server with `apps/server/frontend` copied in (and strips it), and the runner is `gcr.io/distroless/cc-debian13:nonroot` with tini as PID 1: no shell, no package manager, uid `nonroot`. `.dockerignore` keeps the host's `node_modules` and `apps/server/frontend` out so the image never embeds a stale build. There is no `HEALTHCHECK` until `rusttp-server health` lands (the image has no curl); `just docker-shell` builds the `debug-nonroot` variant, which adds busybox at `/busybox/sh`.
+- `deploy/Dockerfile` is multi-stage: `base` (Rust, plus Node.js and pnpm installed through Vite+ at the versions its `ARG`s pin, which follow `packageManager`, and tini), `builder` (a frozen pnpm install, the SPA build, then the stripped release build that embeds it), `pruner` (the binary in `/srv` and the `/srv/storage` data directories), and the runner, `gcr.io/distroless/cc-debian13:nonroot` with tini as PID 1: no shell, no package manager, uid `nonroot`. `.dockerignore` keeps the host's `node_modules` and `apps/server/frontend` out so the image never embeds a stale build. There is no `HEALTHCHECK` until `rusttp-server health` lands (the image has no curl); `just docker-shell` builds the `debug-nonroot` variant, which adds busybox at `/busybox/sh`.
 - On a platform without `SO_REUSEPORT` (Windows) the new dev server cannot bind beside the old one; the plugin then stops the old one first and restarts, accepting a short gap.
 - `vite build` never builds Rust; `just build` runs the SPA build before `cargo build --release` because the release binary embeds `apps/server/frontend` at compile time.
 - An axum `nest` with its own fallback owns every path under its prefix; that is what keeps `/api/*` and `/rpc/*` misses away from the SPA fallback, so a nested router never drops its fallback.
