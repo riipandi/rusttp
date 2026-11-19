@@ -1,6 +1,6 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 
-export const mfaSchema = z.object({
-  code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code.'),
-  trust: z.boolean()
+export const mfaSchema = v.object({
+  code: v.pipe(v.string(), v.regex(/^\d{6}$/, 'Enter the 6-digit code.')),
+  trust: v.boolean()
 })

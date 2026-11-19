@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { email } from './fields.schema'
 
-export const forgotPasswordSchema = z.object({ email })
+export const forgotPasswordSchema = v.object({ email })

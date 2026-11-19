@@ -92,7 +92,7 @@ const messageOf = (error: unknown): string | undefined => {
   return undefined
 }
 
-/** The messages a Standard Schema validator (zod) left on the field, shaped for `FieldError`. */
+/** The messages a Standard Schema validator (Valibot) left on the field, shaped for `FieldError`. */
 function useMessages<T>() {
   const field = useFieldContext<T>()
   // One message at a time: the first rule that failed, the next one shows once it is fixed.
@@ -107,7 +107,7 @@ interface TextFieldProps {
   label: string
   description?: string
   autoComplete?: string
-  /** Not `type='email'`: native type validity would block the submit before zod can speak. */
+  /** Not `type='email'`: native type validity would block the submit before Valibot can speak. */
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
 }
 

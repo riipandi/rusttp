@@ -10,7 +10,7 @@ import {
 import { fieldContext, formContext } from '#/libraries/form-context'
 
 /**
- * The app's form hook: TanStack Form for state, zod (a Standard Schema) for the rules, and the
+ * The app's form hook: TanStack Form for state, Valibot (a Standard Schema) for the rules, and the
  * `uilibs` fields, built on Base UI's Field, as its typed field components:
  *
  *     const form = useAppForm({ ...formDefaults, defaultValues, validators: { onDynamic: schema }, onSubmit })

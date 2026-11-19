@@ -1,8 +1,8 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { captcha, email } from './fields.schema'
 
-export const loginSchema = z.object({
+export const loginSchema = v.object({
   email,
-  password: z.string().min(1, 'Enter your password.'),
+  password: v.pipe(v.string(), v.nonEmpty('Enter your password.')),
   captcha
 })

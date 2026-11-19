@@ -20,7 +20,7 @@
         "react": "catalog:",
         "react-dom": "catalog:",
         "uilibs": "workspace:*",
-        "zod": "^4.6.7"
+        "valibot": "catalog:"
     },
     "devDependencies": {
         "@tanstack/devtools-vite": "catalog:",
