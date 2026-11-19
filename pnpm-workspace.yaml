@@ -1,2 +1,38 @@
+# yaml-language-server: $schema=https://www.schemastore.org/pnpm-workspace.json
+
 packages:
   - packages/*
+
+allowBuilds:
+  esbuild: true
+
+verifyDepsBeforeRun: false
+
+minimumReleaseAge: 0
+
+# One Vite for every package, whatever a plugin asks for.
+overrides:
+  vite@*: "catalog:"
+
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: "*"
+
+catalogMode: prefer
+
+catalog:
+  '@tanstack/devtools-vite': ^0.8.6
+  '@tanstack/react-devtools': ^0.10.14
+  '@tanstack/react-query-devtools': ^5.108.0
+  '@tanstack/react-router-devtools': ^1.167.4
+  "@types/node": ^26.6.6
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
+  "@vitejs/plugin-react": ^6.3.0
+  react: ^19.3.1
+  react-dom: ^19.3.1
+  typescript: ^7.0.2
+  vite: ^8.3.8
+  vite-plugin-devtools-json: ^1.1.2

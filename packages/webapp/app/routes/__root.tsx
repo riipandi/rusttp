@@ -1,6 +1,7 @@
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Outlet, createRootRouteWithContext, useMatches } from '@tanstack/react-router'
 import { GlobalError, GlobalNotFound } from './-boundaries'
+import DevTools from './-devtools'
 
 export interface GlobalContext {
   queryClient: QueryClient
@@ -21,6 +22,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <title>{pageTitle ? `${pageTitle} - Rusttp` : 'Rusttp'}</title>
       <Outlet />
+      <DevTools queryClient={queryClient} />
     </QueryClientProvider>
   )
 }
