@@ -43,11 +43,8 @@ This skill is stack-agnostic. Detect the language, framework, and database from 
 
 Stop and ask when you hit: ambiguous scope, system design or architecture decisions, trade-offs that change behavior (breaking changes, schema/data migrations), deletions with inconclusive evidence, or changes touching high-risk areas (authentication, payments, production data).
 
-Question format:
+Question format: follow "Ambiguous decisions" in the root `AGENTS.md` (concrete options, exactly one `recommended`, a final free-input option). Use an interactive question tool when the runtime has one. Additionally:
 
-- Use an interactive question tool when available (e.g. `ask_user_input_v0`, `AskUserQuestion`); otherwise a numbered list.
-- Offer 2-4 concrete options, mark exactly one **(Recommended)** with a one-sentence reason, and state each option's trade-off.
-- Always include a final **"Other - free input"** option so the user can decide on their own.
 - One decision per question; at most 3 questions per turn. Batch small matters instead of interrupting repeatedly.
 - Do not ask what can be answered by reading the code or repo.
 - Write the questions in the user's current chat language.
@@ -99,7 +96,7 @@ Write the report using `references/report-template.md`. It starts with YAML fron
 
 **Output location and naming**
 
-- Save the report to `.agents/docs/audit/audit-<nnnnn>-<topic>.md` relative to the repository root (create the directories if missing). `<nnnnn>` is the next five-digit number: the highest existing `audit-` number across `.agents/docs/audit/` and `.agents/docs/archive/`, plus one, never reused. `<topic>` is the audited scope in lowercase kebab-case (`auth`, `whole-system`). Read `created_at` from the system clock (e.g. `date +%Y-%m-%dT%H:%M:00%z`), never guess it.
+- Save the report to `.agents/docs/audit/audit-<nnnnn>-<topic>.md` relative to the repository root (create the directories if missing). `<nnnnn>` is the next five-digit number: the highest existing `audit-` number across `.agents/docs/audit/` and `.agents/docs/archive/`, plus one, never reused. `<topic>` is the audited scope in lowercase kebab-case (`auth`, `whole-system`). Read `created_at` from the system clock (e.g. `date -Iseconds`), never guess it.
 - Create the file early (end of Phase 1) with `status: draft` and fill it in as phases complete, so progress survives an interrupted session.
 - If a report for the same scope already exists and the user is continuing it, update that file (keep `created_at`, refresh `updated_at`) instead of creating a new one. If unsure whether to continue or start fresh, ask. Never overwrite another report.
 - Do not edit `.gitignore` or commit the report unless asked. If `.agents/docs/` is not ignored by git, mention it in one line and let the user decide.

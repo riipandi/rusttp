@@ -1,9 +1,9 @@
 ---
 status: open
 created: 2026-11-19T16:20:00+07:00
-updated: 2026-11-19T16:20:00+07:00
-summary: "Workspace hygiene gaps: workspace membership, needless axum dependencies, version pinning outside the workspace, README claims without files, empty task recipes, and the undecided location of domain modules."
-count: 6
+updated: 2026-11-19T16:39:00+07:00
+summary: "Workspace hygiene gaps: workspace membership, needless axum dependencies, version pinning outside the workspace, README claims without files, empty task recipes, a missing lefthook config, and the undecided location of domain modules."
+count: 7
 ---
 
 # Workspace hygiene gaps
@@ -54,3 +54,11 @@ count: 6
   area: workspace layout
   summary: the docs assume top-level `modules/<name>/`; the owner asked on 2026-11-19 why not `apps/server/modules/`. Options as analysed then: top-level `modules/` (recommended — keeps `apps/` for binaries and stays neutral for a second binary) or crates under `apps/server/modules/` (equivalent technically, ties modules to one app). A plain `mod` inside the server crate was rejected (no compile-time boundaries).
   trigger: creating the first crate under either path.
+
+## Lefthook is installed but not configured
+
+- status: open
+  area: tooling
+  summary: `lefthook` is listed as a developer tool in `.agents/docs/shape.md` and in `README.md`, but the repository has no `lefthook.yml` (or any name lefthook looks for); every commit prints "No config files ... have been found".
+  plan: none yet
+  trigger: when the just recipes land — wire the pre-commit hook to the format and lint gates in the same change.

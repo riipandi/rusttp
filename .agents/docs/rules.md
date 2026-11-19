@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T16:18:00+07:00
+updated: 2026-11-19T16:39:00+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -66,7 +66,6 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 ## Traps
 
 - `-D warnings` turns the workspace's `missing_docs = "warn"` into an error under clippy: document public items instead of silencing the lint.
-- `Cargo.toml:3` lists `members = ["apps/*", "crates/corelib"]`, so `crates/libmailer` and `crates/observer` are outside the workspace and no gate touches them until the list changes.
 - `sqlx::migrate::Migrator`'s fields are `#[doc(hidden)]` and semver-exempt; use its methods only.
 - `Migrator::dangerous_set_table_name` on an existing production database re-runs migrations; it is safe here only because a set's table name is fixed from its first run.
 - Cargo resolves every optional dependency into `Cargo.lock` even when its feature is off; an optional dependency must always be resolvable.

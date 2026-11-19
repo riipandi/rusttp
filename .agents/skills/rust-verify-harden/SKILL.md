@@ -10,7 +10,7 @@ description: >-
 
 # Rust Verify & Harden
 
-Run the quality gates, fix what fails, then do a focused safety and performance pass on the code the change touched. The project rules in `AGENTS.md` (layout, dependency direction, migrations, conventions) win over anything here.
+Run the quality gates, fix what fails, then do a focused safety and performance pass on the code the change touched. The project's contracts in `.agents/docs/rules.md` (dependency direction, modules, data, migrations, Rust code) win over anything here.
 
 ## Sources of truth
 
@@ -20,15 +20,7 @@ Run the quality gates, fix what fails, then do a focused safety and performance 
 
 ## Phase 1 — Quality gates
 
-Prefer the `just` recipe when `scripts/*.just` defines it; otherwise run the cargo command. If neither exists for a gate, say so and skip it — never invent a replacement.
-
-| Gate           | Command                                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Format         | `cargo fmt --all --check` (apply with `cargo fmt --all`)                                                          |
-| Check          | `cargo check --workspace --all-targets`                                                                           |
-| Lint           | `cargo clippy --workspace --all-targets -- -D warnings`                                                           |
-| Test           | `cargo nextest run --workspace` (fallback `cargo test --workspace`)                                               |
-| Feature combos | `cargo hack check --each-feature -p rusttp-server`, only if `cargo-hack` is installed — do not install it unasked |
+Run the gates listed in `.agents/docs/shape.md` ("Commands"): format, check, lint, test, and feature combinations when `cargo-hack` is installed. If a gate has no command there, say so and skip it — never invent a replacement, and do not install a tool unasked.
 
 Fixing rules:
 
@@ -53,7 +45,7 @@ Scope: files changed in Phase 1 plus their direct callers and callees.
 2. **Deadlocks** — a `std::sync::Mutex` / `RwLock` guard held across `.await`; nested locks taken in inconsistent order; a lock held while calling back into code that may take it again; blocking I/O or CPU-heavy work on the async executor (use `spawn_blocking`).
 3. **Races** — `unsafe impl Send/Sync` without proof; `static mut`; check-then-act on shared state or on the database (prefer a single SQL statement, a row lock, or a unique constraint over read-then-write). Run `cargo miri test` only on crates with `unsafe` and only if miri is installed. Use `loom` only if it is already a dev-dependency.
 4. **Database** — a transaction held across unrelated `.await`s or external calls; a pool connection acquired and kept for the life of a task; N+1 queries in a loop.
-5. **Module boundaries** (see `AGENTS.md`) — a module importing another module's non-`api` items; a framework crate depending on a module; a query touching another module's schema; DDL inside a domain module.
+5. **Module boundaries** (see `.agents/docs/rules.md`) — a module importing another module's non-`api` items; a framework crate depending on a module; a query touching another module's schema; DDL inside a domain module.
 
 Apply a fix only when it is local and low-risk, with one line of reasoning. Report instead of fixing anything that changes behavior, ownership structure, or public API.
 

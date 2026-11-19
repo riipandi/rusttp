@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-19T16:20:00+07:00
+updated: 2026-11-19T16:39:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -30,7 +30,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `issue-00001-workspace-hygiene.md` | open (5 open, 1 considering) | Workspace hygiene gaps: workspace members, needless axum deps, unpinned server deps, README claims, empty just recipes, module location. |
+| `issue-00001-workspace-hygiene.md` | open (6 open, 1 considering) | Workspace hygiene gaps: workspace members, needless axum deps, unpinned server deps, README claims, empty just recipes, missing lefthook config, module location. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 

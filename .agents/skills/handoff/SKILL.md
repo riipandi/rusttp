@@ -8,7 +8,7 @@ disable-model-invocation: true
 Write a handover so a fresh agent can continue without re-reading this session. The `agent-docs` skill owns the ledger rules; this skill only applies them to handovers.
 
 1. **Name it.** `.agents/docs/handover/handover-<nnnnn>-<topic>.md`, numbered and titled per `agent-docs` ("File naming"): next number across `.agents/docs/handover/` and `.agents/docs/archive/`, topic in short kebab-case.
-2. **Shape it** after `.agents/skills/agent-docs/references/handover-example.md`. Frontmatter: `status` (`done` or `partial`), `created` (from `date +%Y-%m-%dT%H:%M:00%z`), `plan` and `wave` only when the session had them — omit a key rather than guess it.
+2. **Shape it** after `.agents/skills/agent-docs/references/handover-example.md`. Frontmatter: `status` (`done` or `partial`), `created` (from `date -Iseconds`), `plan` and `wave` only when the session had them — omit a key rather than guess it.
 3. **Fill it** in English:
     - What the session did and decided, with dates.
     - Ledger moves: plans, issues, roadmap entries, audits created or flipped, by file name.
