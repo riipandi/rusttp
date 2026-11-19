@@ -2,8 +2,8 @@ import { ChevronDown, ChevronLeft, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import type { StyleXStyles } from '@stylexjs/stylex'
 import * as React from 'react'
-import { DayPicker, getDefaultClassNames } from 'react-day-picker'
-import type { DayButton, DropdownOption, Locale } from 'react-day-picker'
+import { DateLib, DayPicker, getDefaultClassNames, labelDayButton } from 'react-day-picker'
+import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-picker'
 import { buttonStyles, buttonVariants } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
@@ -88,10 +88,16 @@ const CalendarRoot = ({
   <div data-slot='calendar' ref={rootRef} className={rootCn} {...rootProps} />
 )
 
-const CalendarWeekNumber = ({ children, ...weekNumProps }: React.ComponentProps<'td'>) => (
-  <td {...weekNumProps}>
+// react-day-picker hands the whole `week` object over (not a DOM attribute) and a `scope='row'`
+// that is only valid on a header cell, so the week number is a `<th>`.
+const CalendarWeekNumber = ({
+  children,
+  week,
+  ...weekNumProps
+}: React.ComponentProps<typeof WeekNumber>) => (
+  <th data-week-number={week.weekNumber} {...weekNumProps}>
     <div {...stylex.props(calendarStyles.weekNumberCell)}>{children}</div>
-  </td>
+  </th>
 )
 
 /**
@@ -183,6 +189,15 @@ const CalendarDayButtonWrapper = (
   )
 }
 
+/**
+ * A day button's name starts with the number it shows (WCAG 2.5.3): the default label,
+ * "Sunday, November 1st, 2026", does not contain the visible "1" at all.
+ */
+const labelDayWithNumber: NonNullable<
+  React.ComponentProps<typeof DayPicker>['labels']
+>['labelDayButton'] = (date, modifiers, options, dateLib) =>
+  `${(dateLib ?? new DateLib(options)).format(date, 'd')}, ${labelDayButton(date, modifiers, options, dateLib)}`
+
 type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: keyof typeof buttonVariants
   className?: string
@@ -199,6 +214,7 @@ export function Calendar({
   locale,
   formatters,
   components,
+  labels,
   startMonth = new Date(1900, 0),
   endMonth = new Date(2100, 11),
   ...props
@@ -226,6 +242,7 @@ export function Calendar({
       style={rootStyleProps.style}
       captionLayout={captionLayout}
       locale={locale}
+      labels={{ labelDayButton: labelDayWithNumber, ...labels }}
       startMonth={startMonth}
       endMonth={endMonth}
       formatters={{

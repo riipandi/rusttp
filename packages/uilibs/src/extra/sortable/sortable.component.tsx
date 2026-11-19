@@ -34,6 +34,7 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
+  type DraggableAttributes,
   type DraggableSyntheticListeners
 } from '@dnd-kit/core'
 import {
@@ -57,6 +58,7 @@ import {
   isValidElement,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
   useState,
   useSyncExternalStore
@@ -87,6 +89,10 @@ function isSortableChild(node: ReactNode): node is ReactElement<SortableChildPro
 /** Per-item drag plumbing shared between `SortableItem` and its handle. */
 export const SortableItemContext = createContext<{
   listeners?: DraggableSyntheticListeners | undefined
+  attributes?: DraggableAttributes | undefined
+  setActivatorNodeRef?: (element: HTMLElement | null) => void
+  /** A handle calls this while mounted; the item then leaves the drag controls to it. */
+  registerHandle?: () => () => void
   isDragging?: boolean
   disabled?: boolean
 }>({ listeners: undefined, isDragging: false, disabled: false })
@@ -94,12 +100,26 @@ export const SortableItemContext = createContext<{
 /** Marks a `SortableItem` clone rendered inside `DragOverlay`. */
 const IsOverlayContext = createContext(false)
 
+export interface SortableLabels {
+  /** Name of an item's drag handle. Defaults to `Drag to reorder`. */
+  handle: string
+}
+
+const defaultLabels: SortableLabels = { handle: 'Drag to reorder' }
+
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null
   modifiers?: Modifiers
   activeWidth: number | undefined
   setActiveWidth: (width: number | undefined) => void
-}>({ activeId: null, modifiers: undefined, activeWidth: undefined, setActiveWidth: () => {} })
+  labels: SortableLabels
+}>({
+  activeId: null,
+  modifiers: undefined,
+  activeWidth: undefined,
+  setActiveWidth: () => {},
+  labels: defaultLabels
+})
 
 // ---------------------------------------------------------------------------
 // dnd-kit configuration
@@ -158,6 +178,7 @@ export interface SortableRootProps<T>
     StyleProp {
   value: T[]
   onValueChange: (value: T[]) => void
+  /** The id of an item. Ids must be unique, or drag and drop misbehaves. */
   getItemValue: (item: T) => string
   children: ReactNode
   onMove?: (event: { event: DragEndEvent; activeIndex: number; overIndex: number }) => void
@@ -168,6 +189,8 @@ export interface SortableRootProps<T>
   onDragCancel?: (event: DragCancelEvent) => void
   accessibility?: React.ComponentProps<typeof DndContext>['accessibility']
   modifiers?: Modifiers
+  /** Accessible names of the list's controls; English by default. */
+  labels?: Partial<SortableLabels>
 }
 
 function Sortable<T>({
@@ -184,6 +207,7 @@ function Sortable<T>({
   onDragCancel,
   accessibility,
   modifiers,
+  labels,
   children,
   ...props
 }: SortableRootProps<T>) {
@@ -192,8 +216,14 @@ function Sortable<T>({
   const mounted = useSyncExternalStore(subscribeToNothing, getIsMounted, getIsMountedOnServer)
 
   const contextValue = useMemo(
-    () => ({ activeId, modifiers, activeWidth, setActiveWidth }),
-    [activeId, modifiers, activeWidth, setActiveWidth]
+    () => ({
+      activeId,
+      modifiers,
+      activeWidth,
+      setActiveWidth,
+      labels: { ...defaultLabels, ...labels }
+    }),
+    [activeId, modifiers, activeWidth, setActiveWidth, labels]
   )
 
   const sensors = useSensors(
@@ -250,24 +280,7 @@ function Sortable<T>({
     [onDragCancel]
   )
 
-  const itemIds = useMemo(() => {
-    const ids = value.map(getItemValue)
-
-    if (process.env.NODE_ENV !== 'production') {
-      const seen = new Set<string>()
-      for (const id of ids) {
-        if (seen.has(id)) {
-          console.warn(
-            `[Sortable] Duplicate item id "${id}". Item ids must be unique, or drag and drop will misbehave.`
-          )
-          break
-        }
-        seen.add(id)
-      }
-    }
-
-    return ids
-  }, [value, getItemValue])
+  const itemIds = useMemo(() => value.map(getItemValue), [value, getItemValue])
 
   // Find the active child for the overlay
   const overlayContent = useMemo(() => {
@@ -348,6 +361,7 @@ function SortableItem({ value, style, render, disabled, ...props }: SortableItem
     setNodeRef,
     transform,
     transition,
+    setActivatorNodeRef,
     attributes,
     listeners,
     isDragging: isSortableDragging,
@@ -357,6 +371,15 @@ function SortableItem({ value, style, render, disabled, ...props }: SortableItem
     disabled: disabled || isOverlay,
     animateLayoutChanges
   })
+
+  // With a handle in the item, the handle is the drag control and the item is only the row:
+  // an item that is itself a `button` could not hold the handle, a switch, or a link.
+  const [handleCount, setHandleCount] = useState(0)
+  const registerHandle = useCallback(() => {
+    setHandleCount((count) => count + 1)
+    return () => setHandleCount((count) => count - 1)
+  }, [])
+  const hasHandle = handleCount > 0
 
   // Translate only: `rectSortingStrategy` (grid/horizontal) also returns
   // scaleX/scaleY ratios that condense the dragged tile when cells differ in
@@ -394,7 +417,16 @@ function SortableItem({ value, style, render, disabled, ...props }: SortableItem
   }, [isSortableDragging, setActiveWidth, value])
 
   return (
-    <SortableItemContext.Provider value={{ listeners, isDragging: isSortableDragging, disabled }}>
+    <SortableItemContext.Provider
+      value={{
+        listeners,
+        attributes,
+        setActivatorNodeRef,
+        registerHandle,
+        isDragging: isSortableDragging,
+        disabled
+      }}
+    >
       {useRender({
         defaultTagName: 'div',
         render,
@@ -414,8 +446,8 @@ function SortableItem({ value, style, render, disabled, ...props }: SortableItem
             'data-dragging': isOverlay ? true : isSortableDragging,
             'data-disabled': isOverlay ? undefined : disabled,
             ref: isOverlay ? undefined : setNodeRef,
-            ...(!isOverlay ? attributes : {}),
-            ...(!isOverlay ? listeners : {}),
+            ...(!isOverlay && !hasHandle ? attributes : {}),
+            ...(!isOverlay && !hasHandle ? listeners : {}),
             children: props.children
           } as React.ComponentPropsWithRef<'div'>,
           props
@@ -434,14 +466,21 @@ export interface SortableItemHandleProps extends DivRenderProps {
 }
 
 function SortableItemHandle({ style, render, cursor = true, ...props }: SortableItemHandleProps) {
-  const { isDragging, disabled } = useContext(SortableItemContext)
-  const { activeId } = useContext(SortableInternalContext)
+  const { isDragging, disabled, attributes, listeners, setActivatorNodeRef, registerHandle } =
+    useContext(SortableItemContext)
+  const { activeId, labels } = useContext(SortableInternalContext)
+  const isOverlay = useContext(IsOverlayContext)
+
+  useLayoutEffect(() => (isOverlay ? undefined : registerHandle?.()), [isOverlay, registerHandle])
 
   return useRender({
     defaultTagName: 'div',
     render,
+    ref: isOverlay ? undefined : setActivatorNodeRef,
     props: mergeProps<'div'>(
       {
+        'aria-label': labels.handle,
+        ...(isOverlay ? {} : { ...attributes, ...listeners }),
         ...stylex.props(
           s.handle,
           cursor && isDragging && s.handleDragging,

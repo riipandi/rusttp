@@ -467,7 +467,7 @@ export const LocalizedLabels: Story = {
         },
         {
           accessorKey: 'item',
-          header: config.columns.customer,
+          header: config.columns.item,
           size: 180
         },
         {

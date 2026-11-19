@@ -803,7 +803,11 @@ export const StackedFrame: Story = {
                             <span {...stylex.props(styles.assigneeName)}>{task.assignee}</span>
                           </div>
                           <div {...stylex.props(styles.taskProgressRow)}>
-                            <Progress value={task.progress ?? 0} style={styles.taskProgress} />
+                            <Progress
+                              value={task.progress ?? 0}
+                              aria-label={`${task.title} progress`}
+                              style={styles.taskProgress}
+                            />
                             <span {...stylex.props(styles.taskProgressValue)}>
                               {task.progress}%
                             </span>
@@ -939,7 +943,11 @@ export const FeatureRoadmap: Story = {
                         )}
                         {task.progress != null && task.progress > 0 && (
                           <div {...stylex.props(styles.taskProgressRow)}>
-                            <Progress value={task.progress} style={styles.taskProgress} />
+                            <Progress
+                              value={task.progress}
+                              aria-label={`${task.title} progress`}
+                              style={styles.taskProgress}
+                            />
                             <span {...stylex.props(styles.taskProgressValue)}>
                               {task.progress}%
                             </span>

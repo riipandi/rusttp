@@ -388,6 +388,7 @@ export const CustomDays: Story = {
               // Example-level custom day button with a weekend price badge.
               DayButton: ({ children, modifiers, day, ...dayBtnProps }: DayButtonProps) => {
                 const isWeekend = day.date.getDay() === 0 || day.date.getDay() === 6
+                const price = isWeekend ? '$120' : '$100'
                 const isSelectedSingle =
                   modifiers.selected &&
                   !modifiers.range_start &&
@@ -413,6 +414,11 @@ export const CustomDays: Story = {
                       modifiers.outside && storyStyles.dayCustomOutside
                     )}
                     {...dayBtnProps}
+                    // The name starts with everything the button shows: the number, then the price.
+                    aria-label={[
+                      [day.date.getDate(), !modifiers.outside && price].filter(Boolean).join(' '),
+                      day.date.toLocaleDateString('default', { dateStyle: 'full' })
+                    ].join(', ')}
                   >
                     {children}
                     {!modifiers.outside && (
@@ -424,7 +430,7 @@ export const CustomDays: Story = {
                             : storyStyles.dayPriceMuted
                         )}
                       >
-                        {isWeekend ? '$120' : '$100'}
+                        {price}
                       </span>
                     )}
                   </button>

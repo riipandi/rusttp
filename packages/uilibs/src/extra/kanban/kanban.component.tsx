@@ -63,6 +63,13 @@ import { kanbanStyles } from './kanban.stylex'
 // Contexts
 // ---------------------------------------------------------------------------
 
+export interface KanbanLabels {
+  /** Name of a column's drag handle. Defaults to `Reorder column`. */
+  columnHandle: string
+}
+
+const defaultLabels: KanbanLabels = { columnHandle: 'Reorder column' }
+
 interface KanbanContextProps<T> {
   columns: Record<string, T[]>
   // Method syntax keeps the callbacks bivariant, so a provider typed with a
@@ -75,6 +82,7 @@ interface KanbanContextProps<T> {
   findContainer(id: UniqueIdentifier): string | undefined
   isColumn(id: UniqueIdentifier): boolean
   modifiers?: Modifiers
+  labels: KanbanLabels
 }
 
 const KanbanContext = createContext<KanbanContextProps<unknown>>({
@@ -86,7 +94,8 @@ const KanbanContext = createContext<KanbanContextProps<unknown>>({
   setActiveId: () => {},
   findContainer: () => undefined,
   isColumn: () => false,
-  modifiers: undefined
+  modifiers: undefined,
+  labels: defaultLabels
 })
 
 const ColumnContext = createContext<{
@@ -175,6 +184,7 @@ export interface KanbanRootProps<T> extends Omit<
 > {
   value: Record<string, T[]>
   onValueChange: (value: Record<string, T[]>) => void
+  /** The id of an item. Ids must be unique across every column, or drag and drop misbehaves. */
   getItemValue: (item: T) => string
   children: ReactNode
   onMove?: (event: KanbanMoveEvent) => void
@@ -185,6 +195,8 @@ export interface KanbanRootProps<T> extends Omit<
   onDragCancel?: (event: DragCancelEvent) => void
   accessibility?: React.ComponentProps<typeof DndContext>['accessibility']
   modifiers?: Modifiers
+  /** Accessible names of the board's controls; English by default. */
+  labels?: Partial<KanbanLabels>
 }
 
 // ---------------------------------------------------------------------------
@@ -205,6 +217,7 @@ function Kanban<T>({
   onDragCancel,
   accessibility,
   modifiers,
+  labels,
   children,
   ...props
 }: KanbanRootProps<T>) {
@@ -235,26 +248,8 @@ function Kanban<T>({
   )
 
   const columnIds = useMemo(() => {
-    const keys = Object.keys(columns)
-    if (process.env.NODE_ENV !== 'production') {
-      const seen = new Set<string>()
-      for (const key of keys) {
-        const items = columns[key]
-        if (!items) continue
-        for (const item of items) {
-          const itemId = getItemValue(item)
-          if (seen.has(itemId)) {
-            console.warn(
-              `[Kanban] Duplicate item id "${itemId}". Item ids must be unique across all columns, or drag and drop will misbehave.`
-            )
-            break
-          }
-          seen.add(itemId)
-        }
-      }
-    }
-    return keys
-  }, [columns, getItemValue])
+    return Object.keys(columns)
+  }, [columns])
 
   const isColumn = useCallback(
     (id: UniqueIdentifier): id is string => typeof id === 'string' && columnIds.includes(id),
@@ -526,9 +521,20 @@ function Kanban<T>({
       setActiveId,
       findContainer,
       isColumn,
-      modifiers
+      modifiers,
+      labels: { ...defaultLabels, ...labels }
     }),
-    [columns, setColumns, getItemValue, columnIds, activeId, findContainer, isColumn, modifiers]
+    [
+      columns,
+      setColumns,
+      getItemValue,
+      columnIds,
+      activeId,
+      findContainer,
+      isColumn,
+      modifiers,
+      labels
+    ]
   )
 
   return (
@@ -574,9 +580,7 @@ function Kanban<T>({
 // KanbanBoard
 // ---------------------------------------------------------------------------
 
-export type KanbanBoardProps = useRender.ComponentProps<'div'> & {
-  style?: stylex.StyleXStyles
-}
+export type KanbanBoardProps = DivRenderProps
 
 function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
   const { columnIds } = useContext(KanbanContext)
@@ -588,7 +592,6 @@ function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
         render,
         props: mergeProps<'div'>(
           {
-            // @ts-ignore - stylex.props return type is not recognized by TS in this context
             ...stylex.props(kanbanStyles.board, style),
             'data-slot': 'kanban-board',
             children: props.children
@@ -684,13 +687,15 @@ export interface KanbanColumnHandleProps extends DivRenderProps {
 
 function KanbanColumnHandle({ style, render, cursor = true, ...props }: KanbanColumnHandleProps) {
   const { attributes, listeners, isDragging, disabled } = useContext(ColumnContext)
-  const { activeId } = useContext(KanbanContext)
+  const { activeId, labels } = useContext(KanbanContext)
 
   return useRender({
     defaultTagName: 'div',
     render,
     props: mergeProps<'div'>(
       {
+        // The drag attributes make the handle a button; without a name it is an unlabelled one.
+        'aria-label': labels.columnHandle,
         ...stylex.props(
           stylex.defaultMarker(),
           kanbanStyles.columnHandle,

@@ -191,15 +191,15 @@ export const Render: Story = {
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Text render={<h1 />}>The Da Vinci Code</Text>
-      <Text variant='featured-3'>Chapter 1: The Louvre</Text>
-      <Text variant={{ s: 'featured-3', m: 'featured-4' }}>Chapter 2: The Vatican</Text>
+      <Text variant='featured-2'>Chapter 1: The Louvre</Text>
+      <Text variant={{ s: 'featured-2', m: 'featured-3' }}>Chapter 2: The Vatican</Text>
     </div>
   ),
   play: async ({ canvas }) => {
     const els = canvas.getAllByRole('heading')
 
     await expect(els[0]?.tagName).toEqual('H1')
-    await expect(els[1]?.tagName).toBe('H3')
-    await expect(els[2]?.tagName).toBe('H4')
+    await expect(els[1]?.tagName).toBe('H2')
+    await expect(els[2]?.tagName).toBe('H3')
   }
 }

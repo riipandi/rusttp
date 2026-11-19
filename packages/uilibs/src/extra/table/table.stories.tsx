@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import {
   Table,
   TableBody,
@@ -149,7 +150,9 @@ export const Actions: Story = {
           <TableRow>
             <TableHead>Scholar</TableHead>
             <TableHead>Title</TableHead>
-            <TableHead style={styles.right} />
+            <TableHead style={styles.right}>
+              <span {...stylex.props(visuallyHidden.root)}>Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

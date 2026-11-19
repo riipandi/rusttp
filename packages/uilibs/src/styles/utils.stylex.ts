@@ -33,3 +33,23 @@ export const ring = ({
   color = colors.borderNeutralFaded,
   shadow: drop = null
 }: RingOptions = {}) => recipes.boxShadow(`0 0 0 ${width} ${color}${drop ? `, ${drop}` : ''}`)
+
+/**
+ * Text for assistive technology only: out of sight and out of the layout, still read. Name an
+ * icon-only control or an empty table header with it:
+ *
+ *   <span {...stylex.props(visuallyHidden.root)}>Actions</span>
+ */
+export const visuallyHidden = stylex.create({
+  root: {
+    borderWidth: 0,
+    clipPath: 'inset(50%)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    whiteSpace: 'nowrap',
+    width: 1
+  }
+})

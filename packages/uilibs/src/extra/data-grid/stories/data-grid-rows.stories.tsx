@@ -33,6 +33,7 @@ import {
 import { Avatar, AvatarFallback } from '../../../base/avatar'
 import { Button } from '../../../base/button'
 import { unit } from '../../../styles/tokens.stylex'
+import { visuallyHidden } from '../../../styles/utils.stylex'
 import { Badge } from '../../badge'
 import { Card, CardContent, CardFooter, CardHeader } from '../../card'
 import { demoData, type IBook } from './_mocks'
@@ -219,7 +220,7 @@ function ExpandableColumns(): ColumnDef<DataGridFeatures, IDetail>[] {
   return [
     {
       id: 'expander',
-      header: () => null,
+      header: () => <span {...stylex.props(visuallyHidden.root)}>Expand</span>,
       cell: ({ row }) =>
         row.getCanExpand() ? (
           <Button
@@ -464,6 +465,7 @@ export const DraggableRows: Story = {
         {
           id: 'drag',
           size: 40,
+          header: () => <span {...stylex.props(visuallyHidden.root)}>Reorder</span>,
           cell: () => <DataGridTableDndRowHandle />
         },
         {
@@ -554,7 +556,7 @@ export const RowPinningSupport: Story = {
         {
           id: 'pin',
           size: 40,
-          header: () => null,
+          header: () => <span {...stylex.props(visuallyHidden.root)}>Pin</span>,
           cell: ({ row }) => <DataGridTableRowPin row={row} table={tableHolder.current!} />
         },
         {

@@ -140,6 +140,9 @@ function CanvasControls({
         type='button'
         onClick={onToggleDirection}
         style={buttonCss}
+        // Not a tab stop: Base UI hides this overlay while a popup is open, and a focusable
+        // element inside an aria-hidden one fails axe.
+        tabIndex={-1}
         aria-label={`Toggle direction, currently ${direction}`}
       >
         {direction.toUpperCase()}

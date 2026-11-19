@@ -38,19 +38,38 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
+export interface NavigationMenuLabels {
+  /** Name of the menu's `nav` landmark. Defaults to `Main`. */
+  menu: string
+  /** Name of the popup's `nav` landmark, which is a second landmark while it is open. Defaults to `Main details`. */
+  popup: string
+}
+
+const defaultLabels: NavigationMenuLabels = { menu: 'Main', popup: 'Main details' }
+
+const NavigationMenuLabelsContext = React.createContext(defaultLabels)
+
+/** Two `nav` landmarks exist while a popup is open, so each needs its own name. */
 export function NavigationMenu({
   style,
   children,
   align = 'start',
+  labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseNavigationMenu.Root>, 'className' | 'style'> &
   Pick<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'align'> &
-  StyleProp) {
+  StyleProp & {
+    /** Accessible names of the landmarks; English by default. */
+    labels?: Partial<NavigationMenuLabels>
+  }) {
+  const merged = React.useMemo(() => ({ ...defaultLabels, ...labels }), [labels])
   return (
-    <BaseNavigationMenu.Root {...props} {...stylex.props(s.root, style)}>
-      {children}
-      <NavigationMenuPositioner align={align} />
-    </BaseNavigationMenu.Root>
+    <NavigationMenuLabelsContext.Provider value={merged}>
+      <BaseNavigationMenu.Root aria-label={merged.menu} {...props} {...stylex.props(s.root, style)}>
+        {children}
+        <NavigationMenuPositioner align={align} />
+      </BaseNavigationMenu.Root>
+    </NavigationMenuLabelsContext.Provider>
   )
 }
 
@@ -119,6 +138,7 @@ export function NavigationMenuPositioner({
   ...props
 }: Omit<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'className' | 'style'> &
   StyleProp) {
+  const labels = React.useContext(NavigationMenuLabelsContext)
   return (
     <BaseNavigationMenu.Portal>
       <BaseNavigationMenu.Positioner
@@ -129,7 +149,10 @@ export function NavigationMenuPositioner({
         {...props}
         {...stylex.props(s.positioner, style)}
       >
-        <BaseNavigationMenu.Popup {...stylex.props(s.popup, ring({ shadow: shadow.raised }))}>
+        <BaseNavigationMenu.Popup
+          aria-label={labels.popup}
+          {...stylex.props(s.popup, ring({ shadow: shadow.raised }))}
+        >
           <BaseNavigationMenu.Viewport {...stylex.props(s.viewport)} />
         </BaseNavigationMenu.Popup>
       </BaseNavigationMenu.Positioner>

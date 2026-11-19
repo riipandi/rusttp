@@ -194,6 +194,11 @@ const styles = stylex.create({
   groupContainer: {
     width: '100%'
   },
+  groupRow: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: unit.x2
+  },
   groupHeader: {
     alignItems: 'center',
     backgroundColor: colors.backgroundElevationBase,
@@ -558,32 +563,36 @@ export const NestedGroups: Story = {
             <SortableItem key={group.id} value={group.id}>
               <div style={styles.groupContainer}>
                 <Collapsible defaultOpen={group.id === '1'}>
-                  <CollapsibleTrigger
-                    render={(props, state) => (
-                      <button
-                        type='button'
-                        {...props}
-                        {...stylex.props(styles.groupHeader, state.open && styles.groupHeaderOpen)}
-                      >
-                        <div {...stylex.props(styles.metaRow)}>
-                          <Handle />
+                  {/* The handle sits beside the trigger: a button cannot hold another control. */}
+                  <div {...stylex.props(styles.groupRow)}>
+                    <Handle />
+                    <CollapsibleTrigger
+                      render={(props, state) => (
+                        <button
+                          type='button'
+                          {...props}
+                          {...stylex.props(
+                            styles.groupHeader,
+                            state.open && styles.groupHeaderOpen
+                          )}
+                        >
                           <span {...stylex.props(styles.groupTitle)}>{group.name}</span>
-                        </div>
-                        <div {...stylex.props(styles.groupHeaderRight)}>
-                          <Badge variant='outline' style={styles.groupBadge}>
-                            {group.values.length}
-                          </Badge>
-                          <ChevronRight
-                            size={14}
-                            {...stylex.props(
-                              styles.groupChevron,
-                              state.open && styles.groupChevronOpen
-                            )}
-                          />
-                        </div>
-                      </button>
-                    )}
-                  />
+                          <div {...stylex.props(styles.groupHeaderRight)}>
+                            <Badge variant='outline' style={styles.groupBadge}>
+                              {group.values.length}
+                            </Badge>
+                            <ChevronRight
+                              size={14}
+                              {...stylex.props(
+                                styles.groupChevron,
+                                state.open && styles.groupChevronOpen
+                              )}
+                            />
+                          </div>
+                        </button>
+                      )}
+                    />
+                  </div>
                   <CollapsibleContent>
                     <div {...stylex.props(styles.groupPanel)}>
                       <Sortable

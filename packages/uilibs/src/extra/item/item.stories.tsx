@@ -64,7 +64,7 @@ export const Playground: Story = {
           <ItemDescription>Add an extra layer of protection to the Burrow.</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Switch defaultChecked />
+          <Switch defaultChecked aria-label='Protego Totalum' />
         </ItemActions>
       </Item>
       <Item variant='muted'>

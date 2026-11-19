@@ -12,12 +12,27 @@ interface StyleProp {
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
+/** True inside an `ItemGroup`, whose `list` role needs `listitem` children. */
+const ItemGroupContext = React.createContext(false)
+
 export function ItemGroup({ style, ...props }: DivProps) {
-  return <div role='list' {...props} {...stylex.props(s.group, style)} />
+  return (
+    <ItemGroupContext.Provider value>
+      <div role='list' {...props} {...stylex.props(s.group, style)} />
+    </ItemGroupContext.Provider>
+  )
 }
 
 export function ItemSeparator({ ...props }: React.ComponentProps<typeof Separator>) {
-  return <Separator orientation='horizontal' {...props} />
+  // In a list, a separator is not an item: it is only the line between two.
+  const inGroup = React.useContext(ItemGroupContext)
+  return (
+    <Separator
+      orientation='horizontal'
+      {...(inGroup ? { role: 'none', 'aria-orientation': undefined } : {})}
+      {...props}
+    />
+  )
 }
 
 export type ItemVariant = 'default' | 'outline' | 'muted'
@@ -30,9 +45,11 @@ export interface ItemProps
 }
 
 export function Item({ variant = 'default', size = 'md', style, render, ...props }: ItemProps) {
+  const inGroup = React.useContext(ItemGroupContext)
   return useRender({
     defaultTagName: 'div',
     props: mergeProps<'div'>(
+      inGroup ? { role: 'listitem' } : {},
       stylex.props(s.root, itemVariants[variant], itemSizes[size], style),
       props
     ),

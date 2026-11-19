@@ -92,7 +92,7 @@ export const Controlled: Story = {
 
     return (
       <div {...stylex.props(styles.wrap)}>
-        <Progress value={value} locale='en-US'>
+        <Progress value={value} locale='en-US' aria-label='Cryptex decryption'>
           <ProgressValue />
         </Progress>
         <Button

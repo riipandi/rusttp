@@ -275,7 +275,9 @@ export const calendarStyles = stylex.create({
   },
   weekNumber: {
     color: colors.foregroundNeutralFaded,
+    // A `<th>` is bold by default.
     fontSize: fontSize.caption1,
+    fontWeight: 'normal',
     lineHeight: fontLineHeight.caption1,
     userSelect: 'none'
   },
