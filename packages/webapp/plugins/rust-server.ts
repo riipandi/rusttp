@@ -9,8 +9,17 @@ export interface RustServerOptions {
   pkg: string
   /** Arguments the binary starts with. */
   args: string[]
-  /** Directories under `root` whose `.rs` and `.toml` changes trigger a rebuild. */
+  /** Directories under `root` whose changes trigger a rebuild. */
   watch: string[]
+  /** Directories under `root` to leave out of the watch (build output the server embeds). */
+  ignore: string[]
+  /** Extensions that trigger a rebuild: sources, manifests, and files the binary embeds. */
+  extensions: string[]
+  /**
+   * The tracing target that logs `listening`; the plugin forces it to `info` whatever `RUST_LOG`
+   * says, because that line is how it knows the new server took the port.
+   */
+  readyTarget: string
 }
 
 const tag = '\x1b[33m[rust]\x1b[0m'
@@ -36,6 +45,9 @@ export function rustServer(opts: RustServerOptions): Plugin {
   const targetDir = process.env.CARGO_TARGET_DIR ?? path.join(opts.root, 'target')
   const bin = path.join(targetDir, 'debug', opts.pkg)
   const watched = opts.watch.map((dir) => path.join(opts.root, dir))
+  const ignored = [targetDir, ...opts.ignore.map((dir) => path.join(opts.root, dir))]
+  const extensions = new Set(opts.extensions.map((ext) => `.${ext}`))
+  const rustLog = `${process.env.RUST_LOG ?? 'info,memory_serve=warn'},${opts.readyTarget}=info`
   const appUrl = `http://${process.env.BIND_ADDR ?? '127.0.0.1:3000'}`
 
   let child: ChildProcess | null = null
@@ -64,7 +76,7 @@ export function rustServer(opts: RustServerOptions): Plugin {
     new Promise<ChildProcess | null>((resolve) => {
       const proc = spawn(bin, opts.args, {
         cwd: opts.root,
-        env: { ...process.env, VITE_DEV_SERVER: viteOrigin },
+        env: { ...process.env, RUST_LOG: rustLog, VITE_DEV_SERVER: viteOrigin },
         stdio: ['ignore', 'pipe', 'inherit']
       })
       let ready = false
@@ -133,7 +145,8 @@ export function rustServer(opts: RustServerOptions): Plugin {
 
       server.watcher.add(watched)
       const onChange = (file: string) => {
-        if (!/\.(rs|toml)$/.test(file) || file.startsWith(targetDir)) return
+        if (!extensions.has(path.extname(file))) return
+        if (ignored.some((dir) => file.startsWith(dir))) return
         if (!watched.some((dir) => file.startsWith(dir))) return
         clearTimeout(timer)
         timer = setTimeout(() => void rebuild(viteOrigin), 200)

@@ -31,14 +31,21 @@ pub(super) fn router() -> Result<Router, vixum::Error> {
     Ok(Vixum::embedded(shell(), manifest, routes, assets)?.into_router(page))
 }
 
-/// The head and status for each navigation. A path TanStack Router has no route for answers 404
-/// (the SPA still renders its not-found page); match on `route` or `parts.uri` here (and load
-/// data) to give a page its own title and description.
+/// The head and status for each navigation. The title and description are the route's
+/// `staticData` (`pageTitle`, `pageDescription`) from the SPA, with the same template
+/// `__root.tsx` uses, so a crawler reads what the browser shows; a path TanStack Router has no
+/// route for answers 404 (the SPA still renders its not-found page). For data-driven pages,
+/// match on `route.pattern` and load by `route.param(...)` here.
 async fn page(_parts: Parts, route: Route) -> Page {
-    let page = Page::new("Rusttp").description("Rusttp web application").noindex(true);
+    let title = route
+        .title()
+        .map_or_else(|| "Rusttp".to_owned(), |title| format!("{title} - Rusttp"));
+    let page = Page::new(title)
+        .description(route.description().unwrap_or("Rusttp web application"))
+        .noindex(true);
     match route {
         Route::NotFound => page.status(StatusCode::NOT_FOUND),
-        Route::Matched(_) | Route::Unknown => page,
+        Route::Matched { .. } | Route::Unknown => page,
     }
 }
 
@@ -77,7 +84,8 @@ mod tests {
         );
         let html = to_bytes(res.into_body(), usize::MAX).await.unwrap();
         let html = String::from_utf8_lossy(&html);
-        assert!(html.contains("<title>Rusttp</title>"));
+        // "Home - Rusttp" from the SPA's route table, or "Rusttp" from a stub build without one.
+        assert!(html.contains("<title>Home - Rusttp</title>") || html.contains("<title>Rusttp</title>"));
         assert!(html.contains("s-loader"));
         assert!(html.contains("<script type=\"module\""));
     }

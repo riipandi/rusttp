@@ -7,9 +7,10 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 import { rustServer } from './plugins/rust-server.ts'
 import { vixum } from './plugins/vixum.ts'
 
-// The Rust server is the only origin the browser opens (:3000, as in production): it renders
-// every document (there is no index.html; see plugins/vixum.ts) and proxies modules and assets here. Vite stays on IPv4 loopback, where the server's
-// proxy points, and the HMR socket connects to it directly so a server restart never drops it.
+// The Rust server is the only origin the browser opens (:3000, as in production):
+// it renders every document (there is no index.html; see plugins/vixum.ts) and proxies
+// modules and assets here. Vite stays on IPv4 loopback, where the server's proxy points,
+// and the HMR socket connects to it directly so a server restart never drops it.
 const vite = { host: '127.0.0.1', port: 5173 }
 
 export default defineConfig({
@@ -20,7 +21,11 @@ export default defineConfig({
       root: resolve('../..'),
       pkg: 'rusttp-server',
       args: ['serve'],
-      watch: ['apps', 'crates', 'Cargo.toml']
+      watch: ['apps', 'crates', 'Cargo.toml'],
+      ignore: ['apps/server/frontend'],
+      // `.html` and `.js`: the document shell and stub in apps/server/stub, which the binary embeds.
+      extensions: ['rs', 'toml', 'html', 'js', 'sql'],
+      readyTarget: 'rusttp_server::transport::server'
     }),
     devtoolsJson(),
     devtools({ logging: false }),

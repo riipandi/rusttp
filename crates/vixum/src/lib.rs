@@ -11,8 +11,9 @@
 //!   so the browser only ever talks to the server's port. The Vite side is the `vixum` plugin in
 //!   `packages/webapp/plugins/vixum.ts`.
 //!
-//! With a route table (TanStack Router's full paths), a navigation no route matches answers 404,
-//! while the body stays the SPA, which renders its own not-found page.
+//! With a route table (TanStack Router's navigable full paths, with each route's title and
+//! description from its `staticData`), a navigation no route matches answers 404 while the body
+//! stays the SPA, which renders its own not-found page; a match carries its path params.
 
 mod dev;
 mod page;
@@ -25,7 +26,7 @@ use std::sync::Arc;
 use axum::Router;
 use axum::body::Body;
 use axum::extract::Request;
-use axum::http::{HeaderValue, Method, header, request::Parts};
+use axum::http::{HeaderValue, Method, StatusCode, header, request::Parts};
 use axum::response::{IntoResponse, Response};
 use tower::ServiceExt;
 
@@ -52,8 +53,9 @@ enum Mode {
 
 impl Vixum {
     /// Renders with the entry tags from Vite's build `manifest` and serves other files from
-    /// `assets`. `routes` is the JSON array of route full paths the `vixum` Vite plugin writes
-    /// (`routes.json`); `null` means no route table, so every navigation answers 200.
+    /// `assets`. `routes` is the route table the `vixum` Vite plugin writes (`routes.json`: an
+    /// array of `{"path", "title"?, "description"?}`); `null` means no route table, so every
+    /// navigation answers 200.
     ///
     /// # Errors
     ///
@@ -103,9 +105,10 @@ impl Vixum {
         F: Fn(Parts, Route) -> Fut,
         Fut: Future<Output = Page>,
     {
-        let dev = matches!(self.mode, Mode::Dev(_));
-        if !is_navigation(&req, dev) {
+        if !is_navigation(&req) {
             return match &self.mode {
+                // The build's own bookkeeping is read at compile time, never served.
+                Mode::Embedded { .. } if is_build_metadata(req.uri().path()) => StatusCode::NOT_FOUND.into_response(),
                 Mode::Embedded { assets, .. } => match assets.clone().oneshot(req).await {
                     Ok(res) => res,
                     Err(never) => match never {},
@@ -134,10 +137,16 @@ impl Vixum {
     }
 }
 
-/// A navigation gets the document. In dev only an explicit `Accept: text/html` counts, because
-/// Vite's own paths (`/@vite/client`, `/@id/…`) have no extension either.
-fn is_navigation(req: &Request, dev: bool) -> bool {
+/// A navigation gets the document: a `GET`/`HEAD` that asks for HTML, or one for a path without
+/// a file extension (crawlers and `curl` send `*/*`). The same rule holds in both modes, so a
+/// request answers alike in dev and production; paths under `/@…` and `/__…` (Vite's modules,
+/// the dev endpoints) never count.
+fn is_navigation(req: &Request) -> bool {
     if req.method() != Method::GET && req.method() != Method::HEAD {
+        return false;
+    }
+    let path = req.uri().path();
+    if path.starts_with("/@") || path.starts_with("/__") {
         return false;
     }
     let accepts_html = req
@@ -145,8 +154,12 @@ fn is_navigation(req: &Request, dev: bool) -> bool {
         .get(header::ACCEPT)
         .and_then(|v| v.to_str().ok())
         .is_some_and(|v| v.contains("text/html"));
-    let no_extension = !req.uri().path().rsplit('/').next().unwrap_or_default().contains('.');
-    accepts_html || (!dev && no_extension)
+    let no_extension = !path.rsplit('/').next().unwrap_or_default().contains('.');
+    accepts_html || no_extension
+}
+
+fn is_build_metadata(path: &str) -> bool {
+    path.starts_with("/.vite/") || path == "/routes.json"
 }
 
 fn document(html: String, page: &Page) -> Response {
@@ -189,17 +202,17 @@ mod tests {
     fn app(routes: &str) -> Router {
         let assets = Router::new().route("/assets/main-abc.js", get(|| async { "console.log('lumos')" }));
         let shell = Shell::new("en").head("<meta charset=\"utf-8\">").body("<p>Loading</p>");
-        Vixum::embedded(shell, MANIFEST, routes, assets)
-            .unwrap()
-            .into_router(|parts: Parts, route: Route| async move {
+        Vixum::embedded(shell, MANIFEST, routes, assets).unwrap().into_router(
+            |_parts: Parts, route: Route| async move {
                 match route {
                     Route::NotFound => Page::new("Not Found").status(StatusCode::NOT_FOUND).noindex(true),
-                    _ if parts.uri.path() == "/vaults/713" => {
+                    _ if route.param("vaultId") == Some("713") => {
                         Page::new("Vault 713 - Gringotts").description("Where the Philosopher's Stone was kept.")
                     }
                     _ => Page::new("Gringotts"),
                 }
-            })
+            },
+        )
     }
 
     async fn get_body(app: Router, uri: &str, accept: &str) -> (StatusCode, String) {
@@ -219,7 +232,12 @@ mod tests {
 
     #[tokio::test]
     async fn navigation_renders_the_shell_page_head_and_entry() {
-        let (status, html) = get_body(app("null"), "/vaults/713", "text/html").await;
+        let (status, html) = get_body(
+            app(r#"[{"path": "/vaults/$vaultId", "title": "Vault"}]"#),
+            "/vaults/713",
+            "text/html",
+        )
+        .await;
         assert_eq!(status, StatusCode::OK);
         assert!(html.starts_with(
             "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Vault 713 - Gringotts</title>"
@@ -231,7 +249,7 @@ mod tests {
 
     #[tokio::test]
     async fn an_unmatched_route_answers_404_with_the_spa() {
-        let routes = r#"["/", "/vaults/$vaultId"]"#;
+        let routes = r#"[{"path": "/"}, {"path": "/vaults/$vaultId"}]"#;
         let (status, _) = get_body(app(routes), "/vaults/713", "*/*").await;
         assert_eq!(status, StatusCode::OK);
         let (status, html) = get_body(app(routes), "/chamber-of-secrets", "*/*").await;
@@ -247,6 +265,34 @@ mod tests {
         assert_eq!(body, "console.log('lumos')");
         let (status, _) = get_body(app("null"), "/assets/missing.js", "*/*").await;
         assert_eq!(status, StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn build_metadata_is_not_served() {
+        let assets = Router::new().route("/routes.json", get(|| async { "[]" }));
+        let app = Vixum::embedded(Shell::new("en"), MANIFEST, "null", assets)
+            .unwrap()
+            .into_router(|_: Parts, _: Route| async { Page::new("Rusttp") });
+        let (status, _) = get_body(app, "/routes.json", "*/*").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+    }
+
+    #[test]
+    fn navigation_is_the_same_rule_in_both_modes() {
+        let nav = |path: &str, accept: &str| {
+            is_navigation(
+                &Request::get(path)
+                    .header(header::ACCEPT, accept)
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+        };
+        assert!(nav("/vaults/713", "*/*"));
+        assert!(nav("/vaults/v1.2", "text/html"));
+        assert!(!nav("/assets/main-abc.js", "*/*"));
+        assert!(!nav("/@vite/client", "*/*"));
+        assert!(!nav("/@react-refresh", "text/html"));
+        assert!(!nav("/__vixum/routes.json", "*/*"));
     }
 
     #[test]
