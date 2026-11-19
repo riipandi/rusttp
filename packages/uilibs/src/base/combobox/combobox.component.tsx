@@ -32,9 +32,10 @@ import {
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
-import { comboboxStyles as s } from './combobox.stylex'
+import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
@@ -67,18 +68,24 @@ function TriggerChevron() {
 // ComboboxContent instead of the default input+trigger row (see ComboboxInput
 // `showTrigger`).
 export function ComboboxTrigger({
+  size = 'md',
   style,
   children,
   showChevron = true,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
   StyleProp & {
+    /** Control height and type; `md` (36px) by default. */
+    size?: ControlSize
     /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
      * InputPhone country flag). Defaults to `true`. */
     showChevron?: boolean
   }) {
   return (
-    <BaseCombobox.Trigger {...props} {...stylex.props(s.trigger, style)}>
+    <BaseCombobox.Trigger
+      {...props}
+      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+    >
       {children}
       {showChevron ? (
         <BaseCombobox.Icon {...stylex.props(s.triggerIcon)}>
@@ -89,14 +96,27 @@ export function ComboboxTrigger({
   )
 }
 
+export interface ComboboxInputLabels {
+  /** Name of the clear button. Defaults to `Clear value`. */
+  clear: string
+  /** Name of the dropdown trigger button. Defaults to `Open list`. */
+  open: string
+}
+
 export function ComboboxInput({
+  size = 'md',
   style,
   inputStyle,
   showTrigger = true,
   showClear = false,
+  labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style' | 'size'> &
   StyleProp & {
+    /** Control height and type; `md` (36px) by default. */
+    size?: ControlSize
+    /** Accessible names of the built-in buttons. */
+    labels?: Partial<ComboboxInputLabels>
     /** Style applied directly to the inner input element. */
     inputStyle?: stylex.StyleXStyles
     /** Render the built-in dropdown trigger button. Set `false` when the
@@ -111,18 +131,18 @@ export function ComboboxInput({
       <BaseCombobox.Input
         {...props}
         {...stylex.props(
+          controlBase.root,
+          controlSizes[size],
           s.input,
           showTrigger && showClear
             ? s.inputPaddingButtons2
-            : showTrigger || showClear
-              ? s.inputPaddingButtons1
-              : s.inputPaddingNone,
+            : (showTrigger || showClear) && s.inputPaddingButtons1,
           inputStyle
         )}
       />
       {showClear && (
         <BaseCombobox.Clear
-          aria-label='Clear value'
+          aria-label={labels?.clear ?? 'Clear value'}
           tabIndex={-1}
           {...stylex.props(s.iconButton, showTrigger ? s.inputClearWithTrigger : s.inputClearAlone)}
         >
@@ -143,7 +163,7 @@ export function ComboboxInput({
       )}
       {showTrigger && (
         <BaseCombobox.Trigger
-          aria-label='Open list'
+          aria-label={labels?.open ?? 'Open list'}
           tabIndex={-1}
           {...stylex.props(s.iconButton, s.inputTrigger)}
         >
@@ -157,22 +177,42 @@ export function ComboboxInput({
 // Container for chips in a multi-select combobox — also serves as the popup
 // anchor (pass a ref to `ComboboxContent`'s `anchor`), so it forwards `ref`.
 export function ComboboxChips({
+  size = 'md',
   style,
   ...props
-}: Omit<React.ComponentPropsWithRef<typeof BaseCombobox.Chips>, 'className' | 'style'> &
-  StyleProp) {
-  return <BaseCombobox.Chips {...props} {...stylex.props(s.chips, style)} />
+}: Omit<React.ComponentProps<typeof BaseCombobox.Chips>, 'className' | 'style'> &
+  StyleProp & {
+    /** Minimum height and type; `md` (36px) by default. */
+    size?: ControlSize
+  }) {
+  return (
+    <BaseCombobox.Chips
+      {...props}
+      {...stylex.props(
+        controlBase.root,
+        controlBase.within,
+        comboboxChipsSizes[size],
+        s.chips,
+        style
+      )}
+    />
+  )
 }
 
 export function ComboboxChip({
   style,
   children,
+  removeLabel = 'Remove',
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Chip>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Chip>, 'className' | 'style'> &
+  StyleProp & {
+    /** Accessible name of the remove button. Defaults to `Remove`. */
+    removeLabel?: string
+  }) {
   return (
     <BaseCombobox.Chip {...props} {...stylex.props(s.chip, style)}>
       {children}
-      <BaseCombobox.ChipRemove aria-label='Remove' {...stylex.props(s.chipRemove)}>
+      <BaseCombobox.ChipRemove aria-label={removeLabel} {...stylex.props(s.chipRemove)}>
         <svg
           width='10'
           height='10'

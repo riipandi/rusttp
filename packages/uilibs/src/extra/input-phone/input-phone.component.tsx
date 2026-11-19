@@ -15,6 +15,7 @@ import flags from 'react-phone-number-input/flags'
 import { comboboxCreateItems } from '../../base/combobox'
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput } from '../../base/combobox'
 import { ComboboxItem, ComboboxList, ComboboxTrigger } from '../../base/combobox'
+import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
@@ -39,12 +40,31 @@ export interface InputPhoneProps extends Omit<
   /** Render the country selector. Set `false` for a digits-only field.
    * Defaults to `true`. */
   withCountrySelect?: boolean
+  /** Control height and type; `md` (36px) by default. */
+  size?: ControlSize
+  /** Visible and accessible strings; English by default. */
+  labels?: Partial<InputPhoneLabels>
   /** Marks the field visually as invalid. */
   invalid?: boolean
   /** Disables the entire component (input and country selector). */
   disabled?: boolean
   /** Sets the field into read-only mode. */
   readOnly?: boolean
+}
+
+export interface InputPhoneLabels {
+  /** Name of the country trigger. Defaults to `Select country`. */
+  selectCountry: string
+  /** Placeholder of the country search. Defaults to `Search country…`. */
+  searchCountry: string
+  /** Text shown when the search matches no country. Defaults to `No country found.` */
+  noCountry: string
+}
+
+const defaultLabels: InputPhoneLabels = {
+  selectCountry: 'Select country',
+  searchCountry: 'Search country…',
+  noCountry: 'No country found.'
 }
 
 interface CountryEntry {
@@ -60,9 +80,15 @@ interface CountrySelectProps {
   onChange: (country: Country) => void
 }
 
-const PhoneContainerRefContext = React.createContext<React.RefObject<HTMLDivElement | null> | null>(
-  null
-)
+interface PhoneContextValue {
+  containerRef: React.RefObject<HTMLDivElement | null>
+  size: ControlSize
+  labels: InputPhoneLabels
+}
+
+// The library renders the container, input, and country select as components of its own,
+// so what they share with `InputPhone` travels through context.
+const PhoneContext = React.createContext<PhoneContextValue | null>(null)
 
 /** Flag SVG from the library's bundled flags (no external requests). */
 function FlagComponent({ country, countryName }: BasePhoneInput.FlagProps) {
@@ -82,7 +108,9 @@ function CountrySelect({
   options: countryList,
   onChange
 }: CountrySelectProps) {
-  const containerRef = React.useContext(PhoneContainerRefContext)
+  const phone = React.useContext(PhoneContext)
+  const containerRef = phone?.containerRef
+  const labels = phone?.labels ?? defaultLabels
   const collection = React.useMemo(
     () =>
       comboboxCreateItems(countryList, {
@@ -102,7 +130,8 @@ function CountrySelect({
     >
       <ComboboxTrigger
         disabled={disabled || readOnly}
-        aria-label='Select country'
+        aria-label={labels.selectCountry}
+        size={phone?.size}
         showChevron={false}
         style={s.countryTrigger}
       >
@@ -116,14 +145,14 @@ function CountrySelect({
         <div {...stylex.props(s.searchWrap)}>
           <Search {...stylex.props(s.searchIcon)} />
           <ComboboxInput
-            placeholder='Search country…'
+            placeholder={labels.searchCountry}
             showTrigger={false}
             showClear={false}
             style={s.countrySearchWrap}
             inputStyle={s.countrySearchInput}
           />
         </div>
-        <ComboboxEmpty>No country found.</ComboboxEmpty>
+        <ComboboxEmpty>{labels.noCountry}</ComboboxEmpty>
         <ComboboxList>
           {(item: CountryEntry) =>
             item.value ? (
@@ -155,8 +184,21 @@ function PhoneInputContainer({
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
-  const containerRef = React.useContext(PhoneContainerRefContext)
-  return <div ref={containerRef} role='group' {...props} {...stylex.props(s.root, style)} />
+  const phone = React.useContext(PhoneContext)
+  return (
+    <div
+      ref={phone?.containerRef}
+      role='group'
+      {...props}
+      {...stylex.props(
+        controlBase.root,
+        controlBase.within,
+        controlSizes[phone?.size ?? 'md'],
+        s.root,
+        style
+      )}
+    />
+  )
 }
 
 function PhoneInput({
@@ -165,7 +207,10 @@ function PhoneInput({
 }: Omit<React.ComponentPropsWithRef<typeof BaseInput>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
-  return <BaseInput {...props} {...stylex.props(s.control, style)} />
+  const phone = React.useContext(PhoneContext)
+  return (
+    <BaseInput {...props} {...stylex.props(controlSizes[phone?.size ?? 'md'], s.control, style)} />
+  )
 }
 
 export function InputPhone({
@@ -175,6 +220,8 @@ export function InputPhone({
   onCountryChange,
   addInternationalOption = true,
   withCountrySelect = true,
+  size = 'md',
+  labels,
   invalid = false,
   disabled,
   readOnly,
@@ -182,9 +229,13 @@ export function InputPhone({
   ...props
 }: InputPhoneProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const context = React.useMemo(
+    () => ({ containerRef, size, labels: { ...defaultLabels, ...labels } }),
+    [size, labels]
+  )
 
   return (
-    <PhoneContainerRefContext.Provider value={containerRef}>
+    <PhoneContext.Provider value={context}>
       <BasePhoneInput.default
         {...props}
         disabled={disabled}
@@ -203,7 +254,7 @@ export function InputPhone({
         value={props.value || undefined}
         onChange={(next) => onChange(next || '')}
       />
-    </PhoneContainerRefContext.Provider>
+    </PhoneContext.Provider>
   )
 }
 

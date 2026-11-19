@@ -2,41 +2,30 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, container } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+
+/** Minimum height and type of the chips field, at the same heights as `controlSizes`. */
+export const comboboxChipsSizes = stylex.create({
+  sm: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x8 },
+  md: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x9 },
+  lg: { fontSize: fontSize.body1, lineHeight: fontLineHeight.body1, minHeight: unit.x10 }
+})
 
 export const comboboxStyles = stylex.create({
   inputWrap: {
     position: 'relative',
-    width: container.small
+    width: '100%'
   },
+  // The box, state model, and size come from `controlBase` and `controlSizes`.
   input: {
-    backgroundColor: colors.backgroundPage,
-    borderColor: { default: colors.borderNeutralFaded, ':focus-visible': colors.foregroundPrimary },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
-    height: unit.x9,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    paddingLeft: unit.x3,
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
     width: '100%',
     '::placeholder': { color: colors.foregroundNeutralFaded }
   },
-  // Right padding reserves room for the trigger/clear buttons overlaid on
-  // the input — one button width each, none when both are hidden.
-  inputPaddingNone: { paddingRight: unit.x3 },
-  inputPaddingButtons1: { paddingRight: unit.x8 },
-  inputPaddingButtons2: { paddingRight: unit.x16 },
+  // End padding reserves room for the trigger/clear buttons overlaid on the
+  // input — one button width each, none when both are hidden (the size's own
+  // padding then applies).
+  inputPaddingButtons1: { paddingInlineEnd: unit.x8 },
+  inputPaddingButtons2: { paddingInlineEnd: unit.x16 },
   // Shared box for the absolutely-positioned icon buttons overlaid on the
   // input (trigger, clear).
   iconButton: {
@@ -58,66 +47,39 @@ export const comboboxStyles = stylex.create({
     width: unit.x8
   },
   inputTrigger: {
-    right: 0
+    insetInlineEnd: 0
   },
   inputClearAlone: {
-    right: 0
+    insetInlineEnd: 0
   },
   inputClearWithTrigger: {
-    right: unit.x8
+    insetInlineEnd: unit.x8
   },
+  // The box, state model, and size come from `controlBase` and `controlSizes`.
   trigger: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundPage,
-    borderColor: colors.borderNeutralFaded,
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
-    display: 'inline-flex',
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
+    cursor: { default: 'pointer', ':disabled': 'not-allowed', '[data-disabled]': 'not-allowed' },
+    display: 'flex',
     gap: unit.x2,
-    height: unit.x9,
     justifyContent: 'space-between',
-    lineHeight: fontLineHeight.body2,
-    minWidth: container.xxsmall,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    paddingInline: unit.x3,
     userSelect: 'none',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    width: '100%'
   },
   triggerIcon: {
     color: colors.foregroundNeutralFaded,
     display: 'flex'
   },
+  // The box and state model come from `controlBase.root` and `.within`; the
+  // height is a minimum so wrapped chips grow the field.
   chips: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundPage,
-    borderColor: { default: colors.borderNeutralFaded, ':focus-within': colors.foregroundPrimary },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
     display: 'flex',
     flexWrap: 'wrap',
     gap: unit.x1,
-    minHeight: unit.x9,
-    outline: {
-      default: 'none',
-      ':focus-within': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
     paddingBlock: unit.x1,
     paddingInline: unit.x2,
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
-    width: container.small
+    width: '100%'
   },
   chip: {
     alignItems: 'center',
@@ -157,8 +119,8 @@ export const comboboxStyles = stylex.create({
     flexBasis: 0,
     flexGrow: 1,
     fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
+    fontSize: 'inherit',
+    lineHeight: 'inherit',
     minWidth: unit.x16,
     outline: 'none',
     padding: 0,

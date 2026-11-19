@@ -17,35 +17,16 @@ export const selectStyles = stylex.create({
     height: stroke.ring1,
     marginBlock: unit.x1
   },
+  // The box, state model, and size come from `controlBase` and `controlSizes`.
   trigger: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundPage,
-    borderColor: {
-      default: colors.borderNeutralFaded,
-      '[data-invalid]': colors.borderCritical
-    },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
-    display: 'inline-flex',
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
+    cursor: { default: 'pointer', ':disabled': 'not-allowed', '[data-disabled]': 'not-allowed' },
+    display: 'flex',
     gap: unit.x2,
-    height: unit.x9,
     justifyContent: 'space-between',
-    lineHeight: fontLineHeight.body2,
-    minWidth: container.xxsmall,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    paddingInline: unit.x3,
     userSelect: 'none',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    width: '100%'
   },
   icon: {
     color: colors.foregroundNeutralFaded,

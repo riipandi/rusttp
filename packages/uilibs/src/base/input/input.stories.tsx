@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontFamily, fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Button } from '../button'
@@ -134,4 +135,13 @@ export const WithButton: Story = {
     await expect(el).toHaveValue('plexiglass')
     await expect(canvas.getByRole('button', { name: 'Accio' })).toBeEnabled()
   }
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => <Input size={size} aria-label={`Spell ${size}`} placeholder='Spell' />}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

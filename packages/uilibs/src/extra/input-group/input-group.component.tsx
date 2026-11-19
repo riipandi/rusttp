@@ -2,20 +2,38 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button, type ButtonProps } from '../../base/button'
 import { Input } from '../../base/input'
+import { type ControlSize, controlBase } from '../../styles/control.stylex'
 import { Textarea } from '../textarea'
 import { inputGroupStyles as s } from './input-group.stylex'
 import { inputGroupAddonAligns as addonAligns } from './input-group.stylex'
 import { inputGroupButtonSizes as buttonSizes } from './input-group.stylex'
+import { inputGroupControlHeights as controlHeights } from './input-group.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
+/** The group's `size`, read by its input and textarea. */
+const InputGroupSizeContext = React.createContext<ControlSize>('md')
+
 export function InputGroup({
+  size = 'md',
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
-  return <div role='group' {...props} {...stylex.props(s.root, style)} />
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
+  StyleProp & {
+    /** Height and type of the input; `md` (36px) by default. */
+    size?: ControlSize
+  }) {
+  return (
+    <InputGroupSizeContext.Provider value={size}>
+      <div
+        role='group'
+        {...props}
+        {...stylex.props(controlBase.root, controlBase.within, s.root, style)}
+      />
+    </InputGroupSizeContext.Provider>
+  )
 }
 
 export type InputGroupAddonAlign = 'inline-start' | 'inline-end' | 'block-start' | 'block-end'
@@ -59,10 +77,17 @@ export function InputGroupText({
   return <span {...props} {...stylex.props(s.text, style)} />
 }
 
-export function InputGroupInput({ style, ...props }: React.ComponentProps<typeof Input>) {
-  return <Input {...props} style={[s.control, style]} />
+export function InputGroupInput({ size, style, ...props }: React.ComponentProps<typeof Input>) {
+  const groupSize = React.useContext(InputGroupSizeContext)
+  const inputSize = size ?? groupSize
+  return <Input {...props} size={inputSize} style={[s.control, controlHeights[inputSize], style]} />
 }
 
-export function InputGroupTextarea({ style, ...props }: React.ComponentProps<typeof Textarea>) {
-  return <Textarea {...props} style={[s.control, s.textarea, style]} />
+export function InputGroupTextarea({
+  size,
+  style,
+  ...props
+}: React.ComponentProps<typeof Textarea>) {
+  const groupSize = React.useContext(InputGroupSizeContext)
+  return <Textarea {...props} size={size ?? groupSize} style={[s.control, s.textarea, style]} />
 }

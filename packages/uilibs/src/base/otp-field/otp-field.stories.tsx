@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, radius } from '../../styles/tokens.stylex'
 import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-field.component'
@@ -164,5 +165,29 @@ export const Controlled: Story = {
     // Typing fills one character per slot and advances focus.
     await userEvent.type(first, '924')
     await expect(canvas.getByText('Vault code: 924')).toBeInTheDocument()
+  }
+}
+
+export const ControlSizes: Story = {
+  args: { length: 4 },
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <OTPField size={size} length={4} aria-label={`Code ${size}`}>
+          <OTPFieldGroup>
+            {[1, 2, 3, 4].map((position) => (
+              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+            ))}
+          </OTPFieldGroup>
+        </OTPField>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement)
+    // A slot is a square the height of the control.
+    for (const slot of canvasElement.querySelectorAll('input')) {
+      await expect(slot.getBoundingClientRect().width).toBe(slot.getBoundingClientRect().height)
+    }
   }
 }

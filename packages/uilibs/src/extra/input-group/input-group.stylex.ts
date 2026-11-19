@@ -2,39 +2,23 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontSize } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
+import { fontSize } from '../../styles/tokens.stylex'
 
 export const inputGroupStyles = stylex.create({
+  // The box and state model come from `controlBase.root` and `.within`; the
+  // height is each control's own, so a block-aligned addon can grow the group.
   root: {
     alignItems: {
       default: 'center',
       ':has([data-align^="block"])': 'stretch'
     },
-    backgroundColor: colors.backgroundPage,
-    borderColor: {
-      default: colors.borderNeutralFaded,
-      ':focus-within': colors.foregroundPrimary,
-      ':has([data-invalid])': colors.borderCritical
-    },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
     display: 'flex',
     flexDirection: {
       default: 'row',
       ':has([data-align^="block"])': 'column'
     },
-    fontFamily: fontFamily.body,
     minWidth: 0,
-    outline: {
-      default: 'none',
-      ':focus-within': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
     position: 'relative',
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
     width: '100%'
   },
   addon: {
@@ -59,7 +43,8 @@ export const inputGroupStyles = stylex.create({
     backgroundColor: 'transparent',
     borderStyle: 'none',
     flex: 1,
-    height: `calc(${unit.x9} - ${stroke.ring1} * 2)`,
+    // The group dims as a whole when its input is disabled.
+    opacity: 1,
     outline: 'none'
   },
   textarea: {
@@ -68,13 +53,23 @@ export const inputGroupStyles = stylex.create({
   }
 })
 
+/** An input fills the group's border box: the control height minus the two 1px borders. */
+export const inputGroupControlHeights = stylex.create({
+  sm: { height: `calc(${unit.x8} - ${stroke.ring1} * 2)` },
+  md: { height: `calc(${unit.x9} - ${stroke.ring1} * 2)` },
+  lg: { height: `calc(${unit.x10} - ${stroke.ring1} * 2)` }
+})
+
 export const inputGroupAddonAligns = stylex.create({
+  // An inline addon sits within the control's own height, so it adds no block padding.
   'inline-start': {
     order: -1,
+    paddingBlock: 0,
     paddingLeft: unit.x2
   },
   'inline-end': {
     order: 9,
+    paddingBlock: 0,
     paddingRight: unit.x2
   },
   'block-start': {

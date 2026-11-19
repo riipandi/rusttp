@@ -1,37 +1,35 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
-import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
+import { unit } from '../../styles/tokens.stylex'
+import { fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
-export const textareaStyles = stylex.create({
-  root: {
-    backgroundColor: colors.backgroundPage,
-    borderColor: {
-      default: colors.borderNeutralFaded,
-      ':focus-visible': colors.foregroundPrimary,
-      '[data-invalid]': colors.borderCritical
-    },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    fontFamily: fontFamily.body,
+/** Minimum height and type of a textarea; the single-line scale of `controlSizes` does not apply. */
+export const textareaSizes = stylex.create({
+  sm: {
+    fontSize: fontSize.body2,
+    lineHeight: fontLineHeight.body2,
+    minHeight: unit.x14,
+    paddingInline: unit.x3
+  },
+  md: {
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     minHeight: unit.x16,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
+    paddingInline: unit.x3
+  },
+  lg: {
+    fontSize: fontSize.body1,
+    lineHeight: fontLineHeight.body1,
+    minHeight: unit.x18,
+    paddingInline: unit.x4
+  }
+})
+
+// The box and state model come from `controlBase`.
+export const textareaStyles = stylex.create({
+  root: {
     paddingBlock: unit.x2,
-    paddingInline: unit.x3,
     resize: 'vertical',
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
     width: '100%',
     '::placeholder': { color: colors.foregroundNeutralFaded }
   },

@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
 import {
   Combobox,
@@ -295,4 +296,47 @@ export const AutoHighlight: Story = {
       </ComboboxContent>
     </Combobox>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <Combobox items={frameworks}>
+          <ComboboxInput size={size} aria-label={`School ${size}`} placeholder='School' />
+        </Combobox>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const TriggerControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <Combobox items={frameworks}>
+          <ComboboxTrigger size={size} aria-label={`School ${size}`}>
+            School
+          </ComboboxTrigger>
+        </Combobox>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const ChipsControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <Combobox items={frameworks} multiple>
+          <ComboboxChips size={size}>
+            <ComboboxChipsInput aria-label={`Schools ${size}`} placeholder='Schools' />
+          </ComboboxChips>
+        </Combobox>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

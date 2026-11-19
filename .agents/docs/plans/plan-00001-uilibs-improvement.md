@@ -13,8 +13,8 @@ phases:
       note: `src/styles/control.stylex.ts` exports `controlSizes`, `controlBase` (text entry) and `controlPress` (press targets; carries the outside focus ring and the disabled recipe) instead of one combined base; contrast measured with browser-style sRGB blending (`/tmp/audit/table.py`, not committed), so the border ratios differ from the audit's (1.32/1.20 light, 1.31/1.20 dark vs the audit's 1.13/1.08 and 3.03/2.47); gate-on failures 86 to 56 (dark) / 57 (light); one `color-contrast` failure is left, `input-phone` `ReadOnly` (opacity on a read-only phone field), to be fixed in phase 3
     - id: 3
       title: Form controls adopt the size scale and one state model
-      status: pending
-      note: —
+      status: committed
+      note: `controlBase.within` added for wrappers (focus via `:has(:focus-visible)`, invalid via `[data-invalid]` or `:has([data-invalid])`, disabled via `[data-disabled]` or a disabled input, so a disabled stepper alone does not dim the field); `size` lives on the root for NumberField, OTPField, InputGroup (context) and on the part for the rest; Textarea sizes are minimum heights 56/64/72 (rows=1), not the single-line scale; OTP default slot grows 32 to 36 px by D1; InputGroupButton keeps its own 24/32 px sizes (they fit every group size) so it does not derive from the group size; NumberField now fills its container (`100%`) like the other text controls; `InputGroup` inline addons lost their block padding (an addon at `sm` pushed the group to 34 px); the two new OTP stories fail the gate only on Base UI's unlabelled hidden input (phase 4); e2e ran with `--project Chromium` because Firefox and WebKit are not installed here (19/19)
     - id: 4
       title: Field wiring and accessible names
       status: pending

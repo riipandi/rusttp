@@ -36,6 +36,7 @@ import { Select as BaseSelect } from '@base-ui/react/select'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { selectStyles as s } from './select.stylex'
@@ -49,12 +50,20 @@ export const SelectValue = BaseSelect.Value
 export const SelectGroup = BaseSelect.Group
 
 export function SelectTrigger({
+  size = 'md',
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
+  StyleProp & {
+    /** Control height and type; `md` (36px) by default. */
+    size?: ControlSize
+  }) {
   return (
-    <BaseSelect.Trigger {...props} {...stylex.props(s.trigger, style)}>
+    <BaseSelect.Trigger
+      {...props}
+      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+    >
       {children}
       <BaseSelect.Icon {...stylex.props(s.icon)}>
         <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>

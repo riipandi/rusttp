@@ -2,42 +2,41 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontSize } from '../../styles/tokens.stylex'
+import { fontFamily } from '../../styles/tokens.stylex'
 import { duration } from '../../styles/tokens.stylex'
+
+/** Width of a side stepper: a square the height of the control, as in `controlSizes`. */
+export const numberFieldButtonSizes = stylex.create({
+  sm: { width: unit.x8 },
+  md: { width: unit.x9 },
+  lg: { width: unit.x10 }
+})
 
 export const numberFieldStyles = stylex.create({
   root: {
     fontFamily: fontFamily.body
   },
+  // The box, state model, and size come from `controlBase` (root and
+  // within) and `controlSizes`; padding stays on the input and buttons.
   group: {
     alignItems: 'stretch',
-    backgroundColor: colors.backgroundPage,
-    borderColor: { default: colors.borderNeutralFaded, ':focus-within': colors.foregroundPrimary },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
     display: 'flex',
-    height: unit.x9,
-    outline: {
-      default: 'none',
-      ':focus-within': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
-    width: 'fit-content'
+    paddingInline: 0,
+    width: '100%'
   },
   input: {
     backgroundColor: 'transparent',
     borderStyle: 'none',
     color: colors.foregroundNeutral,
+    flex: 1,
     fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
+    fontSize: 'inherit',
     fontVariantNumeric: 'tabular-nums',
+    lineHeight: 'inherit',
+    minWidth: 0,
     outline: 'none',
     padding: 0,
-    textAlign: 'center',
-    width: unit.x16
+    textAlign: 'center'
   },
   button: {
     alignItems: 'center',
@@ -53,12 +52,10 @@ export const numberFieldStyles = stylex.create({
     cursor: { default: 'pointer', ':disabled': 'not-allowed' },
     display: 'flex',
     justifyContent: 'center',
-    opacity: { default: 1, ':disabled': 0.5 },
     outline: 'none',
     padding: 0,
     transitionDuration: duration.fast,
-    transitionProperty: 'background-color, color',
-    width: unit.x9
+    transitionProperty: 'background-color, color'
   },
   decrement: {
     borderBottomLeftRadius: `calc(${radius.medium} - ${stroke.ring1})`,

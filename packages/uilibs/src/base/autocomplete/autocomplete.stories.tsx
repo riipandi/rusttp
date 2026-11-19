@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import {
   Autocomplete,
   AutocompleteContent,
@@ -112,4 +113,17 @@ export const AutoHighlight: Story = {
       </AutocompleteContent>
     </Autocomplete>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <Autocomplete items={['Hogwarts', 'Beauxbatons']}>
+          <AutocompleteInput size={size} aria-label={`School ${size}`} placeholder='School' />
+        </Autocomplete>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

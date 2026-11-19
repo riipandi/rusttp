@@ -69,6 +69,31 @@ export const controlBase = stylex.create({
     outlineOffset: `calc(-1 * ${stroke.ring1})`,
     transitionDuration: duration.fast,
     transitionProperty: 'background-color, border-color, color, opacity, outline-color'
+  },
+  /**
+   * The same state model for a wrapper that holds the real input (InputGroup,
+   * NumberField, InputPhone, Combobox chips): compose after `root`. Focus
+   * and invalid are read from the descendants, disabled from the wrapper's
+   * own `data-disabled` or a disabled input inside it; a disabled stepper or
+   * addon button alone does not dim the field.
+   */
+  within: {
+    borderColor: {
+      default: colors.borderControl,
+      ':has(:focus-visible)': colors.foregroundPrimary,
+      '[data-invalid]': colors.borderCritical,
+      ':has([data-invalid])': colors.borderCritical
+    },
+    opacity: {
+      default: 1,
+      '[data-disabled]': 0.5,
+      ':has(input:disabled)': 0.5,
+      ':has(textarea:disabled)': 0.5
+    },
+    outline: {
+      default: 'none',
+      ':has(:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    }
   }
 })
 

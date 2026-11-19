@@ -2,30 +2,12 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, container } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 export const autocompleteStyles = stylex.create({
+  // The box, state model, and size come from `controlBase` and `controlSizes`.
   input: {
-    backgroundColor: colors.backgroundPage,
-    borderColor: { default: colors.borderNeutralFaded, ':focus-visible': colors.foregroundPrimary },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
-    height: unit.x9,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    paddingInline: unit.x3,
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
-    width: container.small,
+    width: '100%',
     '::placeholder': { color: colors.foregroundNeutralFaded }
   },
   // Closed pose (Base UI's [data-starting-style]/[data-ending-style] frames):

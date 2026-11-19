@@ -4,6 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldDescription, FieldError, FieldLabel } from '../../base/field'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
 import { container, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
@@ -161,4 +162,14 @@ export const AutoResize: Story = {
     await userEvent.type(el, 'a'.repeat(20))
     await expect(canvas.getByText('28/280')).toBeInTheDocument()
   }
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => <Textarea size={size} rows={1} aria-label={`Prophecy ${size}`} />}
+    </ControlSizesColumn>
+  ),
+  // A textarea is not one line: its sizes are minimum heights.
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement, { sm: 56, md: 64, lg: 72 })
 }

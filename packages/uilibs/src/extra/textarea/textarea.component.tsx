@@ -1,18 +1,28 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
-import { textareaStyles as s } from './textarea.stylex'
+import { type ControlSize, controlBase } from '../../styles/control.stylex'
+import { textareaSizes, textareaStyles as s } from './textarea.stylex'
 
 export interface TextareaProps extends Omit<
   React.ComponentProps<'textarea'>,
   'className' | 'style'
 > {
+  /** Minimum height and type; `md` (64px) by default. */
+  size?: ControlSize
   style?: stylex.StyleXStyles
   /** Grow the textarea with its content instead of a fixed height. */
   autoResize?: boolean
 }
 
-export function Textarea({ style, autoResize = false, onChange, ref, ...props }: TextareaProps) {
+export function Textarea({
+  size = 'md',
+  style,
+  autoResize = false,
+  onChange,
+  ref,
+  ...props
+}: TextareaProps) {
   const resize = useCallback((element: HTMLTextAreaElement | null) => {
     if (!element) return
     element.style.height = 'auto'
@@ -38,7 +48,13 @@ export function Textarea({ style, autoResize = false, onChange, ref, ...props }:
       {...props}
       ref={setRef}
       onChange={handleChange}
-      {...stylex.props(s.root, autoResize && s.autoResize, style)}
+      {...stylex.props(
+        controlBase.root,
+        textareaSizes[size],
+        s.root,
+        autoResize && s.autoResize,
+        style
+      )}
     />
   )
 }

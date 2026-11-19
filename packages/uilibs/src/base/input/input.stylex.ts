@@ -1,34 +1,11 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
-import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
+import { fontFamily, fontWeight } from '../../styles/tokens.stylex'
+import { unit } from '../../styles/tokens.stylex'
 
+// The box, state model, and size come from `controlBase` and `controlSizes`.
 export const inputStyles = stylex.create({
   root: {
-    backgroundColor: colors.backgroundPage,
-    borderColor: {
-      default: colors.borderNeutralFaded,
-      ':focus-visible': colors.foregroundPrimary,
-      '[data-invalid]': colors.borderCritical
-    },
-    borderRadius: radius.medium,
-    borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
-    height: unit.x9,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: `calc(-1 * ${stroke.ring1})`,
-    paddingInline: unit.x3,
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color, outline-color',
     width: '100%',
     '::placeholder': { color: colors.foregroundNeutralFaded },
     // type="file": render the browser's picker button as quiet inline text,
@@ -38,7 +15,7 @@ export const inputStyles = stylex.create({
       borderStyle: 'none',
       color: colors.foregroundNeutral,
       fontFamily: fontFamily.body,
-      fontSize: fontSize.body2,
+      fontSize: 'inherit',
       fontWeight: fontWeight.medium,
       height: '100%',
       marginInlineEnd: unit.x3,

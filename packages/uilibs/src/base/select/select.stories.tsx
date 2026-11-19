@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
   Select,
@@ -241,4 +242,19 @@ export const Invalid: Story = {
       <FieldError>Please select a Gringotts plan to continue.</FieldError>
     </Field>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <Select items={fruits}>
+          <SelectTrigger size={size} aria-label={`Wand core ${size}`}>
+            <SelectValue placeholder='Wand core' />
+          </SelectTrigger>
+        </Select>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

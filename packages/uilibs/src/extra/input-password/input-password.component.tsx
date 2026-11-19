@@ -70,6 +70,7 @@ function useUncontrolledState(
 }
 
 export function InputPassword({
+  size,
   style,
   visible: visibleProp,
   defaultVisible = false,
@@ -94,7 +95,7 @@ export function InputPassword({
   const hideIconNode = hideIcon ?? defaultHideIcon
 
   return (
-    <InputGroup {...stylex.props(style)}>
+    <InputGroup size={size} style={style}>
       <InputGroupInput
         type={visible ? 'text' : 'password'}
         autoComplete='new-password'

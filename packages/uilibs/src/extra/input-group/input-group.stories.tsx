@@ -4,6 +4,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field } from '../../base/field'
+import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd } from '../kbd'
 import { Spinner } from '../spinner'
@@ -157,4 +158,23 @@ export const Invalid: Story = {
     const input = canvas.getByPlaceholderText('Search the restricted stacks…')
     await expect(input).toHaveAttribute('data-invalid')
   }
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <ControlSizesColumn>
+      {(size) => (
+        <InputGroup size={size}>
+          <InputGroupAddon>
+            <InputGroupText>@</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput aria-label={`Owl ${size}`} placeholder='Owl' />
+          <InputGroupAddon align='inline-end'>
+            <InputGroupButton variant='outline'>Send</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      )}
+    </ControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }
