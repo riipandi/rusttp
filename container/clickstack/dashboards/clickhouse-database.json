@@ -227,8 +227,8 @@
         },
         {
             "name": "Days of headroom",
-            "x": 0,
-            "y": 48,
+            "x": 12,
+            "y": 37,
             "w": 6,
             "h": 4,
             "config": {
@@ -241,6 +241,24 @@
                 "source": "Logs",
                 "connection": "Local ClickHouse",
                 "sqlTemplate": "SELECT round(space.free_space / greatest(qlog.rate, 1) / 86400, 0) AS days_headroom FROM system.disks AS space CROSS JOIN (SELECT sum(written_bytes) / greatest(dateDiff('second', min(event_time), max(event_time)), 1) AS rate FROM system.query_log WHERE event_time >= now() - INTERVAL 7 DAY AND type = 'QueryFinish') AS qlog"
+            }
+        },
+        {
+            "name": "Write throughput (MB/s)",
+            "x": 18,
+            "y": 37,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": {
+                    "output": "number",
+                    "mantissa": 2
+                },
+                "configType": "sql",
+                "source": "Logs",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT round(sum(written_bytes) / greatest(dateDiff('second', min(event_time), max(event_time)), 1) / 1048576, 2) AS mb_per_s FROM system.query_log WHERE type = 'QueryFinish' AND query_kind = 'Insert' AND $__timeFilter(event_time)"
             }
         },
         {

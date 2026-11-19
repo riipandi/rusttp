@@ -87,7 +87,7 @@
         {
             "name": "Traffic by service",
             "x": 0,
-            "y": 4,
+            "y": 8,
             "w": 12,
             "h": 7,
             "config": {
@@ -110,7 +110,7 @@
         {
             "name": "Latency percentiles (ms)",
             "x": 12,
-            "y": 4,
+            "y": 8,
             "w": 12,
             "h": 7,
             "config": {
@@ -147,7 +147,7 @@
         {
             "name": "Top routes",
             "x": 0,
-            "y": 11,
+            "y": 15,
             "w": 12,
             "h": 8,
             "config": {
@@ -183,7 +183,7 @@
         {
             "name": "Signal freshness",
             "x": 12,
-            "y": 11,
+            "y": 15,
             "w": 12,
             "h": 8,
             "config": {
@@ -197,7 +197,7 @@
         {
             "name": "Telemetry footprint",
             "x": 0,
-            "y": 19,
+            "y": 4,
             "w": 6,
             "h": 4,
             "config": {
@@ -215,7 +215,7 @@
         {
             "name": "Rows in range",
             "x": 6,
-            "y": 19,
+            "y": 4,
             "w": 6,
             "h": 4,
             "config": {
@@ -229,6 +229,46 @@
                 "source": "Traces",
                 "connection": "Local ClickHouse",
                 "sqlTemplate": "SELECT count() AS rows FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters"
+            }
+        },
+        {
+            "name": "Logs in range",
+            "x": 12,
+            "y": 4,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": {
+                    "output": "number",
+                    "mantissa": 0,
+                    "thousandSeparated": true
+                },
+                "alignDateRangeToGranularity": true,
+                "source": "Logs",
+                "select": [
+                    {
+                        "aggFn": "count"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Spans per trace",
+            "x": 18,
+            "y": 4,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": {
+                    "output": "number",
+                    "mantissa": 2
+                },
+                "configType": "sql",
+                "source": "Traces",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT if(count() = 0, 0, round(count() / greatest(uniqExact(TraceId), 1), 2)) AS spans_per_trace FROM $__sourceTable WHERE $__timeFilter(Timestamp) AND $__filters"
             }
         }
     ]

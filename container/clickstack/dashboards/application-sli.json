@@ -192,6 +192,24 @@
                 "connection": "Local ClickHouse",
                 "sqlTemplate": "SELECT signal, verdict, round(age, 0) AS age_seconds, toDateTime(now()) AS checked_at FROM (SELECT 'http_request_duration_seconds' AS signal, dateDiff('second', max(TimeUnix), now()) AS age, multiIf(age <= 120, 'fresh', age <= 600, 'stale', 'silent') AS verdict FROM $__sourceTable(histogram) WHERE TimeUnix >= now() - INTERVAL 6 HOUR AND MetricName = 'http_request_duration_seconds' UNION ALL SELECT 'http_requests' AS signal, dateDiff('second', max(TimeUnix), now()) AS age, multiIf(age <= 120, 'fresh', age <= 600, 'stale', 'silent') AS verdict FROM $__sourceTable(sum) WHERE TimeUnix >= now() - INTERVAL 6 HOUR AND MetricName = 'http_requests' UNION ALL SELECT 'otel_traces' AS signal, dateDiff('second', max(Timestamp), now()) AS age, multiIf(age <= 120, 'fresh', age <= 600, 'stale', 'silent') AS verdict FROM otel_traces WHERE Timestamp > toDateTime64(0, 9, 'UTC') AND Timestamp >= now() - INTERVAL 6 HOUR UNION ALL SELECT 'otel_logs' AS signal, dateDiff('second', max(Timestamp), now()) AS age, multiIf(age <= 120, 'fresh', age <= 600, 'stale', 'silent') AS verdict FROM otel_logs WHERE Timestamp > toDateTime64(0, 9, 'UTC') AND Timestamp >= now() - INTERVAL 6 HOUR) ORDER BY age_seconds ASC"
             }
+        },
+        {
+            "name": "5xx requests per second",
+            "x": 12,
+            "y": 25,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": {
+                    "output": "number",
+                    "mantissa": 2
+                },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, Attributes['status_code'] AS status_code, round((max(Value) - min(Value)) / $__interval_s, 2) AS rps FROM $__sourceTable(sum) WHERE $__timeFilter(TimeUnix) AND MetricName = 'http_requests' AND Attributes['status_code'] >= '500' AND Attributes['status_code'] <= '599' GROUP BY ts, status_code ORDER BY ts"
+            }
         }
     ]
 }
