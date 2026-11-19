@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# PostToolUse hook: formats the file Claude just edited (Rust with rustfmt, Markdown with rumdl).
+# PostToolUse hook: formats the file Claude just edited (Rust with rustfmt, Markdown with rumdl,
+# frontend sources under packages/ with oxfmt).
 # Formatting is best effort: a file that doesn't parse yet, or a missing formatter, never fails the edit.
 
 command -v jq >/dev/null || {
@@ -20,6 +21,10 @@ case "$file" in
     ;;
 *.md)
     command -v rumdl >/dev/null && (cd "$root" && rumdl fmt "$file" >/dev/null 2>&1)
+    ;;
+"$root"/packages/*.ts | "$root"/packages/*.tsx | "$root"/packages/*.js | "$root"/packages/*.jsx | "$root"/packages/*.json | "$root"/packages/*.css)
+    # The workspace-root oxfmt reads .oxfmtrc.json (and its ignorePatterns) from the root.
+    [[ -x "$root/node_modules/.bin/oxfmt" ]] && (cd "$root" && node_modules/.bin/oxfmt --write "$file" >/dev/null 2>&1)
     ;;
 esac
 exit 0

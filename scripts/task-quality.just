@@ -1,24 +1,27 @@
-[doc('Format Rust and Markdown')]
+[doc('Format Rust, Markdown, and the frontend packages')]
 [group('quality')]
 format:
     @cargo fmt --all
     @rumdl fmt --silent .
+    @pnpm --silent format
 
-[doc('Fail if Rust or Markdown is not formatted')]
+[doc('Fail if Rust, Markdown, or the frontend packages are not formatted')]
 [group('quality')]
 format-check:
     @cargo fmt --all --check
     @rumdl fmt --check --quiet .
+    @pnpm --silent format:check
 
 [doc('Type-check every crate and target')]
 [group('quality')]
 check *args:
     @cargo check --workspace --all-targets {{ args }}
 
-[doc('Run clippy with warnings as errors')]
+[doc('Run clippy with warnings as errors, then oxlint on the frontend packages')]
 [group('quality')]
 lint *args:
     @cargo clippy --workspace --all-targets {{ args }} -- -D warnings
+    @pnpm --silent lint
 
 [doc('Run the tests (nextest when installed)')]
 [group('quality')]

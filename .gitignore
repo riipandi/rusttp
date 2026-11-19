@@ -18,6 +18,9 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 node_modules/
+.pnpm-store/
+.tanstack/
+.vite/
 .rumdl_cache/
 *tsbuildinfo
 npm-debug.log*
