@@ -1,5 +1,5 @@
 {
-    "name": "ClickHouse Database",
+    "name": "Database ClickStack",
     "tags": ["rusttp", "infra", "clickhouse"],
     "tiles": [
         {

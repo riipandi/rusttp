@@ -1,5 +1,5 @@
 {
-    "name": "PostgreSQL Database",
+    "name": "Database Postgres",
     "tags": ["rusttp", "infra", "postgres"],
     "tiles": [
         {
