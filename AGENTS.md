@@ -12,7 +12,7 @@ This file holds the workflow rules, always in force; the detail — the reposito
 
 - Verify behavior in the code before documenting, testing, or building on it; a declared module, a file, or a doc entry is not proof that the behavior exists.
 - Do not add, remove, or rename a top-level directory unless asked; extend an existing crate or module.
-- Do not add a dependency without the owner's approval; when approved, declare it once in `[workspace.dependencies]`.
+- Do not add a dependency without the owner's approval; when approved, declare it once in `[workspace.dependencies]`, pinned exactly (`"=x.y.z"`), with only the features the code uses (no tokio `full`; `default-features = false` when the defaults pull in unused parts).
 - No self-evident comments: a comment must carry what the code cannot (a why, a contract, a trap), never restate what the next line already says.
 - Chat follows the user's language. Files, code, identifiers, and commit messages are English.
 - Sample data (fixtures, test values, previews, stories, placeholder copy and labels) is drawn from Dan Brown's novels and Harry Potter, never from `John Doe`, `foo`, or lorem ipsum; `.agents/docs/rules.md` ("Sample data") has the details.

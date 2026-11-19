@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T21:05:36+07:00
+updated: 2026-11-19T22:06:38+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -44,7 +44,8 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 
 ### Rust code
 
-- Versions are declared once in `[workspace.dependencies]`; members use `dep.workspace = true`. Every crate sets `[lints] workspace = true`.
+- Versions are declared once in `[workspace.dependencies]`, pinned exactly (`"=x.y.z"`, the version in `Cargo.lock`; never a caret `"x.y"` or a bare `"x.y.z"`, which Cargo reads as `^x.y.z`); members use `dep.workspace = true`. An upgrade is a deliberate edit of the pin. Every crate sets `[lints] workspace = true`.
+- Dependencies enable only the features the code uses (`Cargo.toml` `[workspace.dependencies]`): never an umbrella feature such as tokio `full`, and `default-features = false` with an explicit list wherever the defaults pull in unused parts (axum, tracing, tracing-subscriber). A member that needs one more feature adds it locally (`tokio = { workspace = true, features = ["fs"] }`; Cargo unions the lists), so the workspace entry stays the common minimum. The list is pruned when the last use of a feature goes; `cargo clippy --workspace --all-targets` is the check that the list still covers the code.
 - No `.unwrap()` / `.expect()` outside tests unless the panic is a true invariant, marked `// INVARIANT: ...`.
 - `unsafe` needs a `// SAFETY: ...` comment and is flagged for review; under edition 2024 every unsafe operation sits in an explicit `unsafe {}` block.
 - Never hold a lock guard across `.await`; blocking work goes to `spawn_blocking`.
