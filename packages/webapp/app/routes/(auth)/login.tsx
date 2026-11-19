@@ -1,16 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Home' }
+  staticData: { pageTitle: 'Sign in' }
 })
 
 function RouteComponent() {
   return (
     <main className='page'>
-      <h1>Rusttp</h1>
+      <h1>Sign in</h1>
       <p>
-        Edit <code>app/routes/index.tsx</code> to get started.
+        Edit <code>packages/webapp/app/routes/(auth)/login.tsx</code> to get started.
       </p>
       <footer>v{import.meta.env.PUBLIC_APP_VERSION}</footer>
     </main>
