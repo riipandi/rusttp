@@ -117,4 +117,31 @@ test.describe('auth pages', () => {
 
     await expect(page.getByText('Enter the 6-digit code.')).toBeVisible()
   })
+
+  test('a failed submit focuses the first invalid field, not the first field', async ({ page }) => {
+    await page.goto(routes.login)
+    await page.getByLabel('Email').fill('robert.langdon@example.com')
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click()
+
+    await expect(page.getByLabel('Password', { exact: true })).toBeFocused()
+  })
+
+  test('a failed submit focuses the captcha when it is the only invalid field', async ({
+    page
+  }) => {
+    await page.goto(routes.login)
+    await page.getByLabel('Email').fill('robert.langdon@example.com')
+    await page.getByLabel('Password', { exact: true }).fill('sangreal')
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click()
+
+    await expect(page.getByText('Confirm that you are not a robot.')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'I am not a robot' })).toBeFocused()
+  })
+
+  test('an empty code submit focuses the first slot', async ({ page }) => {
+    await page.goto(routes.mfa)
+    await page.getByRole('button', { name: 'Verify' }).click()
+
+    await expect(page.getByRole('textbox', { name: 'Authentication code' })).toBeFocused()
+  })
 })
