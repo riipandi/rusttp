@@ -28,8 +28,8 @@ None yet.
 
 Findings that outlive a turn. The directory lists only files with `open` or `considering` items.
 
-| File                               | Status                                              | Subject                                                                                                                                        |
-| ---------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| File                               | Status                                  | Subject                                                                                                              |
+| ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
 
 ## Roadmap (`.agents/docs/roadmap/`)
