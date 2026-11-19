@@ -99,7 +99,6 @@ const TAG_MAP: Partial<Record<TextVariant, 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h
 }
 
 /**
- * TODO: use StyleX dynamic values.
  * Resolves a mobile-first responsive value into one style per breakpoint.
  * `s` becomes the base style (all viewports); each wider breakpoint gets its
  * own media style only when its effective value (own value or inherited from

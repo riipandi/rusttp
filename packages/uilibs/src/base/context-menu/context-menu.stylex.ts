@@ -1,9 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke, container } from '../../styles/tokens.stylex'
+import { container } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
+import { fontFamily } from '../../styles/tokens.stylex'
 
+// The popup and the trigger are the context menu's own; its items are the dropdown's.
 export const contextMenuStyles = stylex.create({
   trigger: {
     userSelect: 'none'
@@ -31,92 +32,5 @@ export const contextMenuStyles = stylex.create({
   },
   subPopup: {
     width: 'max-content'
-  },
-  item: {
-    alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
-    borderRadius: radius.small,
-    color: {
-      default: null,
-      '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
-    },
-    cursor: 'default',
-    display: 'flex',
-    fontSize: fontSize.body2,
-    gap: unit.x2,
-    marginInline: unit.x1,
-    opacity: { default: 1, '[data-disabled]': 0.5 },
-    outline: 'none',
-    paddingBlock: unit.x1_5,
-    paddingInline: unit.x2,
-    userSelect: 'none'
-  },
-  // Submenu triggers also light up while their submenu is open.
-  subTrigger: {
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded,
-      '[data-popup-open]': colors.backgroundNeutralFaded
-    },
-    color: {
-      default: null,
-      '[data-highlighted]': colors.foregroundNeutral,
-      '[data-popup-open]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
-    }
-  },
-  itemInset: {
-    paddingLeft: unit.x7
-  },
-  indicatorItem: {
-    paddingRight: unit.x8,
-    position: 'relative'
-  },
-  indicator: {
-    alignItems: 'center',
-    display: 'flex',
-    height: unit.x4,
-    justifyContent: 'center',
-    pointerEvents: 'none',
-    position: 'absolute',
-    right: unit.x2,
-    width: unit.x4
-  },
-  itemDestructive: {
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundCriticalHighlightedFaded
-    },
-    color: {
-      default: colors.foregroundCritical,
-      '[data-disabled]': colors.foregroundNeutralFaded
-    }
-  },
-  subTriggerChevron: {
-    color: colors.foregroundNeutralFaded,
-    flexShrink: 0,
-    marginLeft: 'auto'
-  },
-  shortcut: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1,
-    letterSpacing: '0.1em',
-    marginLeft: 'auto'
-  },
-  separator: {
-    backgroundColor: colors.borderNeutralFaded,
-    height: stroke.ring1,
-    marginBlock: unit.x1
-  },
-  label: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1,
-    fontWeight: fontWeight.medium,
-    paddingBlock: unit.x1_5,
-    paddingInline: unit.x3
   }
 })

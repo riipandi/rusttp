@@ -28,6 +28,7 @@
  */
 
 import { NavigationMenu as BaseNavigationMenu } from '@base-ui/react/navigation-menu'
+import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
@@ -96,20 +97,7 @@ export function NavigationMenuTrigger({
   return (
     <BaseNavigationMenu.Trigger {...props} {...stylex.props(s.trigger, style)}>
       {children}
-      <svg
-        width='12'
-        height='12'
-        viewBox={`0 0 16 16`}
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='2'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        aria-hidden
-        {...stylex.props(s.triggerChevron)}
-      >
-        <path d={`m3 6 5 5 5-5`} />
-      </svg>
+      <ChevronDown size={12} strokeWidth={2} aria-hidden {...stylex.props(s.triggerChevron)} />
     </BaseNavigationMenu.Trigger>
   )
 }

@@ -15,6 +15,7 @@
  */
 
 import { Accordion as BaseAccordion } from '@base-ui/react/accordion'
+import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { accordionStyles as s } from './accordion.stylex'
@@ -49,20 +50,7 @@ export function AccordionTrigger({
     <BaseAccordion.Header {...stylex.props(s.header)}>
       <BaseAccordion.Trigger {...props} {...stylex.props(s.trigger, style)}>
         {children}
-        <svg
-          width='16'
-          height='16'
-          viewBox={`0 0 16 16`}
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          aria-hidden
-          {...stylex.props(s.chevron)}
-        >
-          <path d={`m3 6 5 5 5-5`} />
-        </svg>
+        <ChevronDown size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.chevron)} />
       </BaseAccordion.Trigger>
     </BaseAccordion.Header>
   )

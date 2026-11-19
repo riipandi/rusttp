@@ -29,6 +29,7 @@ import {
   Combobox as BaseCombobox,
   Combobox as BaseComboboxNamespace
 } from '@base-ui/react/combobox'
+import { Check, ChevronDown, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
@@ -47,21 +48,7 @@ export const ComboboxCollection = BaseCombobox.Collection
 export const comboboxCreateItems = BaseComboboxNamespace.createItems
 
 function TriggerChevron() {
-  return (
-    <svg
-      width='16'
-      height='16'
-      viewBox={`0 0 16 16`}
-      fill='none'
-      stroke='currentColor'
-      strokeWidth='1.5'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      aria-hidden
-    >
-      <path d={`m3 6 5 5 5-5`} />
-    </svg>
-  )
+  return <ChevronDown size={16} strokeWidth={1.5} aria-hidden />
 }
 
 // Select-like trigger button — anchors the popup when the input lives inside
@@ -151,19 +138,7 @@ export function ComboboxInput({
           tabIndex={-1}
           {...stylex.props(s.iconButton, showTrigger ? s.inputClearWithTrigger : s.inputClearAlone)}
         >
-          <svg
-            width='16'
-            height='16'
-            viewBox={`0 0 16 16`}
-            fill='none'
-            stroke='currentColor'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            aria-hidden
-          >
-            <path d={`m4 4 8 8M12 4l-8 8`} />
-          </svg>
+          <X size={16} strokeWidth={1.5} aria-hidden />
         </BaseCombobox.Clear>
       )}
       {showTrigger && (
@@ -218,19 +193,7 @@ export function ComboboxChip({
     <BaseCombobox.Chip {...props} {...stylex.props(s.chip, style)}>
       {children}
       <BaseCombobox.ChipRemove aria-label={removeLabel} {...stylex.props(s.chipRemove)}>
-        <svg
-          width='10'
-          height='10'
-          viewBox={`0 0 10 10`}
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          aria-hidden
-        >
-          <path d={`M2.5 2.5l5 5M7.5 2.5l-5 5`} />
-        </svg>
+        <X size={10} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ChipRemove>
     </BaseCombobox.Chip>
   )
@@ -307,19 +270,7 @@ export function ComboboxItem({
     <BaseCombobox.Item {...props} {...stylex.props(s.item, style)}>
       {children}
       <BaseCombobox.ItemIndicator render={<span {...stylex.props(s.indicator)} />}>
-        <svg
-          width='16'
-          height='16'
-          viewBox={`0 0 16 16`}
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          aria-hidden
-        >
-          <path d={`m3 8.5 3.5 3.5L13 4.5`} />
-        </svg>
+        <Check size={16} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ItemIndicator>
     </BaseCombobox.Item>
   )

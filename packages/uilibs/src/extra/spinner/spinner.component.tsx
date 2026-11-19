@@ -1,3 +1,4 @@
+import { LoaderCircle } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { spinnerStyles as s } from './spinner.stylex'
@@ -18,19 +19,14 @@ export interface SpinnerProps extends Omit<React.ComponentProps<'svg'>, 'classNa
 export function Spinner({ label = 'Loading', style, ...props }: SpinnerProps) {
   const decorative = React.useContext(LabelledControlContext)
   return (
-    <svg
-      {...(decorative ? { 'aria-hidden': true } : { role: 'status', 'aria-label': label })}
-      width='16'
-      height='16'
-      viewBox={`0 0 16 16`}
-      fill='none'
-      stroke='currentColor'
-      strokeWidth='1.5'
-      strokeLinecap='round'
+    <LoaderCircle
+      {...(decorative
+        ? { 'aria-hidden': true }
+        : { role: 'status', 'aria-label': label, 'aria-hidden': false })}
+      size={16}
+      strokeWidth={1.5}
       {...props}
       {...stylex.props(s.root, style)}
-    >
-      <path d={`M8 1.5a6.5 6.5 0 1 1-6.5 6.5`} />
-    </svg>
+    />
   )
 }

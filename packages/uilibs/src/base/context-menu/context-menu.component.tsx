@@ -35,6 +35,17 @@ import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
+import {
+  type DropdownMenuItemProps,
+  type DropdownMenuItemVariant,
+  DropdownMenuCheckboxItem,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSubTrigger
+} from '../dropdown-menu'
 import { contextMenuStyles as s } from './context-menu.stylex'
 
 interface StyleProp {
@@ -96,120 +107,17 @@ export function ContextMenuContent({
   )
 }
 
-export type ContextMenuItemVariant = 'default' | 'destructive'
-
-export interface ContextMenuItemProps
-  extends
-    Omit<React.ComponentProps<typeof BaseContextMenu.Item>, 'className' | 'style'>,
-    StyleProp {
-  variant?: ContextMenuItemVariant
-  /** Indents the item to align with checkbox/radio item labels. */
-  inset?: boolean
-}
-
-export function ContextMenuItem({
-  style,
-  variant = 'default',
-  inset,
-  ...props
-}: ContextMenuItemProps) {
-  return (
-    <BaseContextMenu.Item
-      {...props}
-      {...stylex.props(
-        s.item,
-        inset && s.itemInset,
-        variant === 'destructive' && s.itemDestructive,
-        style
-      )}
-    />
-  )
-}
-
-function IndicatorCheck() {
-  return (
-    <svg
-      width='16'
-      height='16'
-      viewBox={`0 0 16 16`}
-      fill='none'
-      stroke='currentColor'
-      strokeWidth='1.5'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      aria-hidden
-    >
-      <path d={`m3 8.5 3.5 3.5L13 4.5`} />
-    </svg>
-  )
-}
-
-export function ContextMenuCheckboxItem({
-  style,
-  children,
-  ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.CheckboxItem>, 'className' | 'style'> &
-  StyleProp) {
-  return (
-    <BaseContextMenu.CheckboxItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
-      <span {...stylex.props(s.indicator)}>
-        <BaseContextMenu.CheckboxItemIndicator>
-          <IndicatorCheck />
-        </BaseContextMenu.CheckboxItemIndicator>
-      </span>
-      {children}
-    </BaseContextMenu.CheckboxItem>
-  )
-}
-
-export function ContextMenuRadioItem({
-  style,
-  children,
-  ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.RadioItem>, 'className' | 'style'> &
-  StyleProp) {
-  return (
-    <BaseContextMenu.RadioItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
-      <span {...stylex.props(s.indicator)}>
-        <BaseContextMenu.RadioItemIndicator>
-          <IndicatorCheck />
-        </BaseContextMenu.RadioItemIndicator>
-      </span>
-      {children}
-    </BaseContextMenu.RadioItem>
-  )
-}
-
-export function ContextMenuSubTrigger({
-  style,
-  inset,
-  children,
-  ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.SubmenuTrigger>, 'className' | 'style'> &
-  StyleProp & { inset?: boolean }) {
-  return (
-    <BaseContextMenu.SubmenuTrigger
-      {...props}
-      {...stylex.props(s.item, s.subTrigger, inset && s.itemInset, style)}
-    >
-      {children}
-      <svg
-        width='16'
-        height='16'
-        viewBox={`0 0 16 16`}
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        aria-hidden
-        {...stylex.props(s.subTriggerChevron)}
-      >
-        <path d={`m6 3 5 5-5 5`} />
-      </svg>
-    </BaseContextMenu.SubmenuTrigger>
-  )
-}
+// The item parts are Base UI's own Menu parts (`ContextMenu.Item` is `Menu.Item`), styled the same
+// as a dropdown's, so they are the dropdown's.
+export type ContextMenuItemVariant = DropdownMenuItemVariant
+export type ContextMenuItemProps = DropdownMenuItemProps
+export const ContextMenuItem = DropdownMenuItem
+export const ContextMenuCheckboxItem = DropdownMenuCheckboxItem
+export const ContextMenuRadioItem = DropdownMenuRadioItem
+export const ContextMenuSubTrigger = DropdownMenuSubTrigger
+export const ContextMenuShortcut = DropdownMenuShortcut
+export const ContextMenuSeparator = DropdownMenuSeparator
+export const ContextMenuLabel = DropdownMenuLabel
 
 export function ContextMenuSubContent({
   style,
@@ -224,35 +132,6 @@ export function ContextMenuSubContent({
       alignOffset={alignOffset}
       {...props}
       style={[s.subPopup, style]}
-    />
-  )
-}
-
-export function ContextMenuShortcut({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
-  return <span {...props} {...stylex.props(s.shortcut, style)} />
-}
-
-export function ContextMenuSeparator({
-  style,
-  ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.Separator>, 'className' | 'style'> &
-  StyleProp) {
-  return <BaseContextMenu.Separator {...props} {...stylex.props(s.separator, style)} />
-}
-
-export function ContextMenuLabel({
-  style,
-  inset,
-  ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.GroupLabel>, 'className' | 'style'> &
-  StyleProp & { inset?: boolean }) {
-  return (
-    <BaseContextMenu.GroupLabel
-      {...props}
-      {...stylex.props(s.label, inset && s.itemInset, style)}
     />
   )
 }

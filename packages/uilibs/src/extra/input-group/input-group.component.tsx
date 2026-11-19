@@ -59,7 +59,7 @@ export function InputGroupAddon({
   )
 }
 
-export type InputGroupButtonSize = 'xs' | 'iconXs' | 'iconSm'
+export type InputGroupButtonSize = 'xs' | 'icon-xs' | 'icon-sm'
 
 export function InputGroupButton({
   variant = 'ghost',

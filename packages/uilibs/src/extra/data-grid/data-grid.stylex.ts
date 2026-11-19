@@ -1,6 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../../styles/colors.stylex'
 import {
+
+  // Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
+  // xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
+  // same file, so an open-ended query is written out.
   duration,
   fontFamily,
   fontSize,

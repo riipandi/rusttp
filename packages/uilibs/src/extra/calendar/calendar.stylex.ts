@@ -3,6 +3,10 @@ import { colors } from '../../styles/colors.stylex'
 import { radius, unit, stroke } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
 
+// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
+// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
+// same file, so an open-ended query is written out.
+
 export const calendarConsts = stylex.defineConsts({
   cellSize: '2rem'
 })

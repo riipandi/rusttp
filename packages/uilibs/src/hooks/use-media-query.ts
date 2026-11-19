@@ -2,10 +2,10 @@ import { use, useCallback, useSyncExternalStore } from 'react'
 import { browser } from 'react-dom'
 
 /**
- * Viewport breakpoints, aligned with the design-system media-query consts in
- * `#/styles/core/tokens.stylex.ts` (`breakpoints`: small <660, medium 660,
- * large 900, xlarge 1280). Values are restated here because hooks run at
- * runtime and cannot import StyleX compiled constants.
+ * Viewport breakpoints, aligned with `viewport` and `breakpoints` in
+ * `styles/tokens.stylex.ts` (small <660, medium 660, large 900, xlarge 1280). Values are
+ * restated here because hooks run at runtime and cannot import StyleX compiled constants.
+ * `small` is an upper bound only (`max-small` is `<660px`): as a lower bound it would equal `medium`.
  */
 const BREAKPOINTS = {
   small: 660,

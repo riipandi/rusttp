@@ -30,6 +30,7 @@
  */
 
 import { Menu as BaseMenu } from '@base-ui/react/menu'
+import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
@@ -119,21 +120,7 @@ export function DropdownMenuItem({
 }
 
 function IndicatorCheck() {
-  return (
-    <svg
-      width='16'
-      height='16'
-      viewBox={`0 0 16 16`}
-      fill='none'
-      stroke='currentColor'
-      strokeWidth='1.5'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      aria-hidden
-    >
-      <path d={`m3 8.5 3.5 3.5L13 4.5`} />
-    </svg>
-  )
+  return <Check size={16} strokeWidth={1.5} aria-hidden />
 }
 
 export function DropdownMenuCheckboxItem({
@@ -183,20 +170,12 @@ export function DropdownMenuSubTrigger({
       {...stylex.props(s.item, s.subTrigger, inset && s.itemInset, style)}
     >
       {children}
-      <svg
-        width='16'
-        height='16'
-        viewBox={`0 0 16 16`}
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-        strokeLinejoin='round'
+      <ChevronRight
+        size={16}
+        strokeWidth={1.5}
         aria-hidden
         {...stylex.props(s.subTriggerChevron)}
-      >
-        <path d={`m6 3 5 5-5 5`} />
-      </svg>
+      />
     </BaseMenu.SubmenuTrigger>
   )
 }

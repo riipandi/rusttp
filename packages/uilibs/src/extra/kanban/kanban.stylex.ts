@@ -4,6 +4,10 @@ import { easing, stroke, unit, zIndex } from '../../styles/tokens.stylex'
 import { container, duration, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
+// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
+// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
+// same file, so an open-ended query is written out.
+
 /**
  * Styles for the Kanban primitive set (dnd-kit based).
  *

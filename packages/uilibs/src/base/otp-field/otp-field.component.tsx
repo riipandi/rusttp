@@ -11,6 +11,7 @@
  */
 
 import { OTPField as BaseOTPField } from '@base-ui/react/otp-field'
+import { Minus } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
@@ -155,18 +156,7 @@ export function OTPFieldSeparator({
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
-      <svg
-        width='16'
-        height='16'
-        viewBox={`0 0 16 16`}
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-        aria-hidden
-      >
-        <path d={`M4 8h8`} />
-      </svg>
+      <Minus size={16} strokeWidth={1.5} aria-hidden />
     </div>
   )
 }

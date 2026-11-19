@@ -48,7 +48,7 @@ export interface InputPasswordProps extends Omit<
   hideAriaLabel?: string
   /** Toggle button variant. Defaults to `ghost`. */
   toggleVariant?: keyof typeof buttonVariants
-  /** Toggle button size. Defaults to `iconXs`. */
+  /** Toggle button size. Defaults to `icon-xs`. */
   toggleSize?: InputGroupButtonSize
 }
 
@@ -80,7 +80,7 @@ export function InputPassword({
   showAriaLabel = 'Show password',
   hideAriaLabel = 'Hide password',
   toggleVariant = 'ghost',
-  toggleSize = 'iconXs',
+  toggleSize = 'icon-xs',
   ...props
 }: InputPasswordProps) {
   const [visible, setVisible] = useUncontrolledState(visibleProp, defaultVisible)

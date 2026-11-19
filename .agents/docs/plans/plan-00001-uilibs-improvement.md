@@ -33,8 +33,8 @@ phases:
       note: Calendar day names start with the visible number (`labels.labelDayButton` default; a story that shows a price names it too) and the week number is a `<th>`; `visuallyHidden` (`styles/utils.stylex.ts`) names icon-only headers, used in the table and data-grid stories (the grid's own code needed no change: its stories supplied empty headers, and one used a wrong i18n key); `Item` gives `listitem` to its children inside an `ItemGroup`; Sortable's handle now owns the drag attributes when an item has one (so an item can hold a switch or a link) and a `labels.handle` name, Kanban handles get `labels.columnHandle`; the Kanban and Sortable duplicate-id `console.warn`s were deleted (the `getItemValue` doc says ids must be unique) and the Kanban `@ts-ignore` hid a real prop type, fixed; NavigationMenu names its two `nav` landmarks through `labels`; the Storybook overlay's direction button left the tab order; one story fails the gate now, `navigation-menu` `Playground`, on Base UI's focus guard (the phase 9 allowlist)
     - id: 8
       title: Icons, duplication, and hygiene
-      status: pending
-      note: —
+      status: committed
+      note: inline glyphs became `@keyline-icons/react` components directly (size and strokeWidth props), not the `Icon` wrapper, because the wrapper lives in `extra` and these are `base` parts; the Spinner is Keyline's `LoaderCircle` and the data grid's pin is Keyline's `Pin` (the filled one from `/fill`); the Select trigger glyph changed from two filled triangles to `ChevronsUpDown`; `ContextMenu` items are the DropdownMenu's (verified in Base UI 1.9: `ContextMenu.Item` is `Menu.Item`; only Trigger, Content, and SubContent stay its own); the raw `@media` mirrors carry one comment pointing at `viewport`; `InputGroupButtonSize` is now `icon-xs`/`icon-sm` like Button; the only `<svg` left outside `src/icons` is the Icon story's demonstration of a raw svg
     - id: 9
       title: Tests, the a11y gate, and the webapp consumer sweep
       status: pending

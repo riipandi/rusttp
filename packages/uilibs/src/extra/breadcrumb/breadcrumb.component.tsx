@@ -1,3 +1,4 @@
+import { ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { breadcrumbStyles as s } from './breadcrumb.stylex'
@@ -56,21 +57,7 @@ export function BreadcrumbSeparator({
 }: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
-      {children ?? (
-        <svg
-          width='14'
-          height='14'
-          viewBox={`0 0 16 16`}
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          aria-hidden
-        >
-          <path d={`m6 3 5 5-5 5`} />
-        </svg>
-      )}
+      {children ?? <ChevronRight size={14} strokeWidth={1.5} aria-hidden />}
     </li>
   )
 }
@@ -86,11 +73,7 @@ export function BreadcrumbEllipsis({
   }) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>
-        <circle cx='3' cy='8' r='1.25' />
-        <circle cx='8' cy='8' r='1.25' />
-        <circle cx='13' cy='8' r='1.25' />
-      </svg>
+      <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
       <span {...stylex.props(s.srOnly)}>{label}</span>
     </span>
   )

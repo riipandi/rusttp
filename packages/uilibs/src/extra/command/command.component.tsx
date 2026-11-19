@@ -1,4 +1,5 @@
 import { Autocomplete as BaseAutocomplete } from '@base-ui/react/autocomplete'
+import { Search } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../base/dialog'
@@ -60,20 +61,7 @@ export function CommandInput({
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style'> & StyleProp) {
   return (
     <div {...stylex.props(s.inputWrap, style)}>
-      <svg
-        width='16'
-        height='16'
-        viewBox={`0 0 16 16`}
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-        aria-hidden
-        {...stylex.props(s.inputIcon)}
-      >
-        <circle cx='7' cy='7' r='4.5' />
-        <path d={`m10.5 10.5 3 3`} />
-      </svg>
+      <Search size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.inputIcon)} />
       <BaseAutocomplete.Input {...props} {...stylex.props(s.input)} />
     </div>
   )

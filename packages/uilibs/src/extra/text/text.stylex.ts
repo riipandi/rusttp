@@ -3,7 +3,7 @@ import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontFamilyVar } from '../../styles/tokens.stylex'
 import { fontWeight, fontWeightVar, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
-// Mirror of `breakpoints` from `#/styles/core/tokens.stylex` (medium/large/
+// Mirror of `breakpoints` from `styles/tokens.stylex.ts` (medium/large/
 // xlarge). @stylexjs/babel-plugin 0.19 only inlines `defineConsts` media keys
 // declared in the SAME file, so these cannot be imported cross-file yet —
 // keep the values in sync.

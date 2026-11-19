@@ -95,13 +95,13 @@ export const inputGroupButtonSizes = stylex.create({
     height: unit.x6,
     paddingInline: unit.x1_5
   },
-  iconXs: {
+  'icon-xs': {
     borderRadius: radius.small,
     height: unit.x6,
     paddingInline: 0,
     width: unit.x6
   },
-  iconSm: {
+  'icon-sm': {
     height: unit.x8,
     paddingInline: 0,
     width: unit.x8

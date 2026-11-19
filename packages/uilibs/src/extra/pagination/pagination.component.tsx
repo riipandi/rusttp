@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LinkButton, type buttonSizes } from '../../base/button'
@@ -21,8 +22,11 @@ export function PaginationContent({
   return <ul {...props} {...stylex.props(s.content, style)} />
 }
 
-export function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
-  return <li {...props} />
+export function PaginationItem({
+  style,
+  ...props
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+  return <li {...props} {...stylex.props(style)} />
 }
 
 export interface PaginationLinkProps
@@ -90,30 +94,16 @@ export function PaginationEllipsis({
   }) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>
-        <circle cx='3' cy='8' r='1.25' />
-        <circle cx='8' cy='8' r='1.25' />
-        <circle cx='13' cy='8' r='1.25' />
-      </svg>
+      <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
       <span {...stylex.props(s.srOnly)}>{label}</span>
     </span>
   )
 }
 
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
-  return (
-    <svg
-      width='16'
-      height='16'
-      viewBox={`0 0 16 16`}
-      fill='none'
-      stroke='currentColor'
-      strokeWidth='1.5'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      aria-hidden
-    >
-      <path d={direction === 'left' ? `m10 3-5 5 5 5` : `m6 3 5 5-5 5`} />
-    </svg>
+  return direction === 'left' ? (
+    <ChevronLeft size={16} strokeWidth={1.5} aria-hidden />
+  ) : (
+    <ChevronRight size={16} strokeWidth={1.5} aria-hidden />
   )
 }
