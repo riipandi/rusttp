@@ -15,7 +15,6 @@
         "@keyline-icons/react": "^1.8.0",
         "@stylexjs/atoms": "^0.19.1",
         "@stylexjs/stylex": "^0.19.1",
-        "@tanstack/react-form": "^1.33.5",
         "@tanstack/react-query": "^5.108.0",
         "@tanstack/react-router": "^1.170.46",
         "react": "catalog:",

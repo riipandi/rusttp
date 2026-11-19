@@ -1,9 +1,10 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { SocialButtons } from '#/components/social-buttons'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
 import { loginSchema } from '#/schemas/login.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -14,13 +15,12 @@ export const Route = createFileRoute('/(auth)/login')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { email: '', password: '', captcha: false },
-    validators: { onDynamic: loginSchema },
-    // Demo only: there is no sign-in endpoint yet, so a valid form continues to the two-factor step.
-    onSubmit: () => void navigate({ to: '/mfa' })
+  const form = useForm({
+    schema: loginSchema,
+    initialInput: { email: '', password: '', captcha: false }
   })
+  // Demo only: there is no sign-in endpoint yet, so a valid form continues to the two-factor step.
+  const submit = handleSubmit(form, () => void navigate({ to: '/mfa' }))
 
   return (
     <>
@@ -33,17 +33,33 @@ function RouteComponent() {
         <SocialButtons />
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
         <div {...stylex.props(styles.fields)}>
-          <form.AppField name='email'>
+          <Field of={form} path={['email']}>
             {(field) => (
-              <field.TextField label='Email address' inputMode='email' autoComplete='email' />
+              <TextField
+                field={field}
+                label='Email address'
+                inputMode='email'
+                autoComplete='email'
+              />
             )}
-          </form.AppField>
-          <form.AppField name='password'>
-            {(field) => <field.PasswordField label='Password' autoComplete='current-password' />}
-          </form.AppField>
-          <form.AppField name='captcha'>{(field) => <field.CaptchaField />}</form.AppField>
+          </Field>
+          <Field of={form} path={['password']}>
+            {(field) => (
+              <PasswordField field={field} label='Password' autoComplete='current-password' />
+            )}
+          </Field>
+          <Field of={form} path={['captcha']}>
+            {(field) => <CaptchaField field={field} />}
+          </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
           Sign in

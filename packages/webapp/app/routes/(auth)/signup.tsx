@@ -1,9 +1,10 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { SocialButtons } from '#/components/social-buttons'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
 import { signupSchema } from '#/schemas/signup.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -14,13 +15,12 @@ export const Route = createFileRoute('/(auth)/signup')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { firstName: '', lastName: '', email: '', password: '', captcha: false },
-    validators: { onDynamic: signupSchema },
-    // Demo only: there is no sign-up endpoint yet, so a valid form continues to email verification.
-    onSubmit: () => void navigate({ to: '/verify-email' })
+  const form = useForm({
+    schema: signupSchema,
+    initialInput: { firstName: '', lastName: '', email: '', password: '', captcha: false }
   })
+  // Demo only: there is no sign-up endpoint yet, so a valid form continues to email verification.
+  const submit = handleSubmit(form, () => void navigate({ to: '/verify-email' }))
 
   return (
     <>
@@ -33,31 +33,46 @@ function RouteComponent() {
         <SocialButtons />
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
         <div {...stylex.props(styles.fields)}>
           <div {...stylex.props(styles.nameRow)}>
-            <form.AppField name='firstName'>
-              {(field) => <field.TextField label='First name' autoComplete='given-name' />}
-            </form.AppField>
-            <form.AppField name='lastName'>
-              {(field) => <field.TextField label='Last name' autoComplete='family-name' />}
-            </form.AppField>
+            <Field of={form} path={['firstName']}>
+              {(field) => <TextField field={field} label='First name' autoComplete='given-name' />}
+            </Field>
+            <Field of={form} path={['lastName']}>
+              {(field) => <TextField field={field} label='Last name' autoComplete='family-name' />}
+            </Field>
           </div>
-          <form.AppField name='email'>
+          <Field of={form} path={['email']}>
             {(field) => (
-              <field.TextField label='Email address' inputMode='email' autoComplete='email' />
+              <TextField
+                field={field}
+                label='Email address'
+                inputMode='email'
+                autoComplete='email'
+              />
             )}
-          </form.AppField>
-          <form.AppField name='password'>
+          </Field>
+          <Field of={form} path={['password']}>
             {(field) => (
-              <field.PasswordField
+              <PasswordField
+                field={field}
                 label='Password'
                 description='At least 12 characters.'
                 autoComplete='new-password'
               />
             )}
-          </form.AppField>
-          <form.AppField name='captcha'>{(field) => <field.CaptchaField />}</form.AppField>
+          </Field>
+          <Field of={form} path={['captcha']}>
+            {(field) => <CaptchaField field={field} />}
+          </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
           Create account

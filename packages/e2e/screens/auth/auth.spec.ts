@@ -24,9 +24,12 @@ test.describe('auth pages', () => {
   test('the fields and the submit button of a form are one height', async ({ page }) => {
     await page.goto(routes.login)
     const submit = await page.getByRole('button', { name: 'Sign in', exact: true }).boundingBox()
-    const email = await page.locator('#email').boundingBox()
+    const email = await page.getByLabel('Email').boundingBox()
     // The password field is a group: the input sits inside its bordered box.
-    const password = await page.locator('#password').locator('xpath=..').boundingBox()
+    const password = await page
+      .getByLabel('Password', { exact: true })
+      .locator('xpath=..')
+      .boundingBox()
 
     expect(submit?.height).toBe(40)
     expect(email?.height).toBe(submit?.height)
@@ -36,7 +39,7 @@ test.describe('auth pages', () => {
   test('the sign-in demo continues through two-factor to the dashboard', async ({ page }) => {
     await page.goto(routes.login)
     await page.getByLabel('Email').fill('robert.langdon@example.com')
-    await page.locator('#password').fill('sangreal')
+    await page.getByLabel('Password', { exact: true }).fill('sangreal')
     await page.getByRole('checkbox', { name: /not a robot/i }).click()
     await page.getByRole('button', { name: 'Sign in', exact: true }).click()
 
@@ -75,7 +78,7 @@ test.describe('auth pages', () => {
     await page.getByLabel('First name').fill('Sophie')
     await page.getByLabel('Last name').fill('Neveu')
     await page.getByLabel('Email').fill('sophie.neveu@example.com')
-    await page.locator('#password').fill('short')
+    await page.getByLabel('Password', { exact: true }).fill('short')
     await page.getByRole('button', { name: 'Create account' }).click()
 
     await expect(page.getByText('Use at least 12 characters.')).toBeVisible()
@@ -101,8 +104,8 @@ test.describe('auth pages', () => {
 
   test('reset password flags a mismatch', async ({ page }) => {
     await page.goto(routes.resetPassword)
-    await page.locator('#password').fill('correct horse battery')
-    await page.locator('#confirm').fill('correct horse batter')
+    await page.getByLabel('New password').fill('correct horse battery')
+    await page.getByLabel('Confirm password').fill('correct horse batter')
     await page.getByRole('button', { name: 'Reset password' }).click()
 
     await expect(page.getByText('The passwords do not match.')).toBeVisible()

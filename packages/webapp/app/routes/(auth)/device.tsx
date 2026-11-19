@@ -1,10 +1,11 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
+import { CodeField } from '#/components/form-fields'
 import { deviceSchema } from '#/schemas/device.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -15,13 +16,9 @@ export const Route = createFileRoute('/(auth)/device')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { code: '' },
-    validators: { onDynamic: deviceSchema },
-    // Demo only: there is no device-authorization endpoint yet, so a valid code opens the dashboard sample.
-    onSubmit: () => void navigate({ to: '/dashboard' })
-  })
+  const form = useForm({ schema: deviceSchema, initialInput: { code: '' } })
+  // Demo only: there is no device-authorization endpoint yet, so a valid code opens the dashboard sample.
+  const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 
   return (
     <>
@@ -32,10 +29,17 @@ function RouteComponent() {
         </p>
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
-        <form.AppField name='code'>
-          {(field) => <field.CodeField label='Device code' length={8} split />}
-        </form.AppField>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
+        <Field of={form} path={['code']}>
+          {(field) => <CodeField field={field} label='Device code' length={8} split />}
+        </Field>
         <Button type='submit' size='lg' style={styles.submit}>
           Continue
         </Button>

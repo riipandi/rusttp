@@ -1,3 +1,4 @@
+import type { FieldElementProps } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Checkbox } from 'uilibs/base/checkbox'
@@ -7,7 +8,6 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs
 import { InputPassword } from 'uilibs/extra/input-password'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
-import { useFieldContext } from '#/libraries/form-context'
 
 const styles = stylex.create({
   // Visually hidden but still the control's accessible name: the placeholder is the visible label.
@@ -84,25 +84,21 @@ const styles = stylex.create({
   }
 })
 
-const messageOf = (error: unknown): string | undefined => {
-  if (typeof error === 'string') return error
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    return typeof error.message === 'string' ? error.message : undefined
-  }
-  return undefined
+/** What a field component reads of a Formisch field store, by the type of value it edits. */
+interface FieldLike<T> {
+  /** `undefined` until the field has a value: Formisch types the input as partial. */
+  readonly input: T | undefined
+  readonly errors: [string, ...string[]] | null
+  readonly onChange: (value: T) => void
+  readonly props: FieldElementProps
 }
 
-/** The messages a Standard Schema validator (Valibot) left on the field, shaped for `FieldError`. */
-function useMessages<T>() {
-  const field = useFieldContext<T>()
-  // One message at a time: the first rule that failed, the next one shows once it is fixed.
-  const messages = field.state.meta.errors
-    .slice(0, 1)
-    .map((error: unknown) => ({ message: messageOf(error) }))
-  return { field, messages, invalid: messages.some((m) => m.message) }
-}
+/** One message at a time: the first rule that failed, the next one shows once it is fixed. */
+const messagesOf = (field: Pick<FieldLike<unknown>, 'errors'>) =>
+  field.errors ? [{ message: field.errors[0] }] : []
 
 interface TextFieldProps {
+  field: FieldLike<string>
   /** The accessible name; shown as the placeholder, not as a visible label. */
   label: string
   description?: string
@@ -111,26 +107,25 @@ interface TextFieldProps {
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
 }
 
-export function TextField({ label, description, autoComplete, inputMode }: TextFieldProps) {
-  const { field, messages, invalid } = useMessages<string>()
+export function TextField({ field, label, description, autoComplete, inputMode }: TextFieldProps) {
+  const id = React.useId()
+  const messages = messagesOf(field)
 
   return (
-    <Field name={field.name} invalid={invalid}>
-      <FieldLabel htmlFor={field.name} style={styles.srOnly}>
+    <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel htmlFor={id} style={styles.srOnly}>
         {label}
       </FieldLabel>
       <Input
-        id={field.name}
-        name={field.name}
+        {...field.props}
+        id={id}
         size='lg'
         inputMode={inputMode}
         autoComplete={autoComplete}
         placeholder={label}
-        value={field.state.value}
-        onChange={(event) => field.handleChange(event.target.value)}
-        onBlur={field.handleBlur}
+        value={field.input ?? ''}
       />
-      {invalid ? (
+      {messages.length > 0 ? (
         <FieldError errors={messages} style={styles.hint} />
       ) : (
         description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
@@ -140,34 +135,35 @@ export function TextField({ label, description, autoComplete, inputMode }: TextF
 }
 
 export function PasswordField({
+  field,
   label,
   description,
   autoComplete
 }: Omit<TextFieldProps, 'inputMode'>) {
-  const { field, messages, invalid } = useMessages<string>()
+  const id = React.useId()
+  const messages = messagesOf(field)
   const [capsLock, setCapsLock] = React.useState(false)
 
   return (
-    <Field name={field.name} invalid={invalid}>
-      <FieldLabel htmlFor={field.name} style={styles.srOnly}>
+    <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel htmlFor={id} style={styles.srOnly}>
         {label}
       </FieldLabel>
       <InputPassword
-        id={field.name}
-        name={field.name}
+        {...field.props}
+        id={id}
         size='lg'
         autoComplete={autoComplete}
         placeholder={label}
-        value={field.state.value}
-        onChange={(event) => field.handleChange(event.target.value)}
+        value={field.input ?? ''}
         onBlur={() => {
-          field.handleBlur()
+          field.props.onBlur()
           setCapsLock(false)
         }}
         onKeyDown={(event) => setCapsLock(event.getModifierState('CapsLock'))}
         onKeyUp={(event) => setCapsLock(event.getModifierState('CapsLock'))}
       />
-      {invalid ? (
+      {messages.length > 0 ? (
         <FieldError errors={messages} style={styles.hint} />
       ) : (
         description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
@@ -177,18 +173,27 @@ export function PasswordField({
   )
 }
 
-export function CheckboxField({ label }: { label: string }) {
-  const { field } = useMessages<boolean>()
+/** The checkbox control itself; `inputRef` lets a failed submit focus it. */
+function FieldCheckbox({ field, id }: { field: FieldLike<boolean>; id: string }) {
+  return (
+    <Checkbox
+      id={id}
+      name={field.props.name}
+      inputRef={field.props.ref}
+      checked={field.input ?? false}
+      onCheckedChange={field.onChange}
+      onFocus={field.props.onFocus}
+      onBlur={field.props.onBlur}
+    />
+  )
+}
+
+export function CheckboxField({ field, label }: { field: FieldLike<boolean>; label: string }) {
   const id = React.useId()
 
   return (
     <label htmlFor={id} {...stylex.props(styles.check)}>
-      <Checkbox
-        id={id}
-        name={field.name}
-        checked={field.state.value}
-        onCheckedChange={(checked) => field.handleChange(checked)}
-      />
+      <FieldCheckbox field={field} id={id} />
       {label}
     </label>
   )
@@ -196,20 +201,16 @@ export function CheckboxField({ label }: { label: string }) {
 
 // Placeholder for a captcha widget (Turnstile, hCaptcha, reCAPTCHA): a checkbox challenge with
 // nothing verifying it. Swap the body for the provider's widget; the schema already requires it.
-export function CaptchaField() {
-  const { field, messages, invalid } = useMessages<boolean>()
+export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
+  const messages = messagesOf(field)
+  const invalid = field.errors !== null
   const id = React.useId()
 
   return (
-    <Field name={field.name} invalid={invalid}>
+    <Field name={field.props.name} invalid={invalid}>
       <div {...stylex.props(styles.captcha, invalid && styles.captchaInvalid)}>
         <label htmlFor={id} {...stylex.props(styles.check)}>
-          <Checkbox
-            id={id}
-            name={field.name}
-            checked={field.state.value}
-            onCheckedChange={(checked) => field.handleChange(checked)}
-          />
+          <FieldCheckbox field={field} id={id} />
           I am not a robot
         </label>
         <span {...stylex.props(styles.captchaBadge)}>Captcha placeholder</span>
@@ -221,30 +222,39 @@ export function CaptchaField() {
 
 /** A one-time code in character slots: one group of `length`, or two halves when `split` is set. */
 export function CodeField({
+  field,
   label,
   length,
   split = false
 }: {
+  field: FieldLike<string>
   label: string
   length: number
   split?: boolean
 }) {
-  const { field, messages, invalid } = useMessages<string>()
+  const messages = messagesOf(field)
   const half = length / 2
+  // The first slot takes the ref, so a failed submit focuses the code.
   const slots = (from: number, to: number) =>
     Array.from({ length: to - from }, (_, index) => (
-      <OTPFieldSlot key={from + index} style={styles.slot} />
+      <OTPFieldSlot
+        key={from + index}
+        ref={from + index === 0 ? field.props.ref : undefined}
+        style={styles.slot}
+      />
     ))
 
   return (
-    <Field name={field.name} invalid={invalid}>
+    <Field name={field.props.name} invalid={field.errors !== null}>
       <OTPField
         size='lg'
         style={styles.code}
-        name={field.name}
+        name={field.props.name}
         length={length}
-        value={field.state.value}
-        onValueChange={(value) => field.handleChange(value)}
+        value={field.input ?? ''}
+        onValueChange={field.onChange}
+        onFocus={field.props.onFocus}
+        onBlur={field.props.onBlur}
         aria-label={label}
       >
         {split ? (
@@ -257,7 +267,7 @@ export function CodeField({
           <OTPFieldGroup style={styles.group}>{slots(0, length)}</OTPFieldGroup>
         )}
       </OTPField>
-      {invalid && <FieldError errors={messages} style={styles.hint} />}
+      {messages.length > 0 && <FieldError errors={messages} style={styles.hint} />}
     </Field>
   )
 }

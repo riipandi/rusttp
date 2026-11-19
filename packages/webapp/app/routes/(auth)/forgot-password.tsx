@@ -1,10 +1,11 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
+import { TextField } from '#/components/form-fields'
 import { forgotPasswordSchema } from '#/schemas/forgot-password.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -15,14 +16,13 @@ export const Route = createFileRoute('/(auth)/forgot-password')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { email: '' },
-    validators: { onDynamic: forgotPasswordSchema },
-    // Demo only: there is no mailer wired in yet, so a valid form opens the reset page the emailed
-    // link would, with a sample token (a spell, not a secret).
-    onSubmit: () => void navigate({ to: '/reset-password', search: { token: 'alohomora' } })
-  })
+  const form = useForm({ schema: forgotPasswordSchema, initialInput: { email: '' } })
+  // Demo only: there is no mailer wired in yet, so a valid form opens the reset page the emailed
+  // link would, with a sample token (a spell, not a secret).
+  const submit = handleSubmit(
+    form,
+    () => void navigate({ to: '/reset-password', search: { token: 'alohomora' } })
+  )
 
   return (
     <>
@@ -33,12 +33,19 @@ function RouteComponent() {
         </p>
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
-        <form.AppField name='email'>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
+        <Field of={form} path={['email']}>
           {(field) => (
-            <field.TextField label='Email address' inputMode='email' autoComplete='email' />
+            <TextField field={field} label='Email address' inputMode='email' autoComplete='email' />
           )}
-        </form.AppField>
+        </Field>
         <Button type='submit' size='lg' style={styles.submit}>
           Send reset link
         </Button>

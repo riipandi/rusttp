@@ -1,10 +1,11 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
+import { CheckboxField, CodeField } from '#/components/form-fields'
 import { mfaSchema } from '#/schemas/mfa.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -15,13 +16,9 @@ export const Route = createFileRoute('/(auth)/mfa')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { code: '', trust: false },
-    validators: { onDynamic: mfaSchema },
-    // Demo only: there is no verification endpoint yet, so a valid code opens the dashboard sample.
-    onSubmit: () => void navigate({ to: '/dashboard' })
-  })
+  const form = useForm({ schema: mfaSchema, initialInput: { code: '', trust: false } })
+  // Demo only: there is no verification endpoint yet, so a valid code opens the dashboard sample.
+  const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 
   return (
     <>
@@ -32,13 +29,20 @@ function RouteComponent() {
         </p>
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
-        <form.AppField name='code'>
-          {(field) => <field.CodeField label='Authentication code' length={6} />}
-        </form.AppField>
-        <form.AppField name='trust'>
-          {(field) => <field.CheckboxField label='Trust this device for 30 days' />}
-        </form.AppField>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
+        <Field of={form} path={['code']}>
+          {(field) => <CodeField field={field} label='Authentication code' length={6} />}
+        </Field>
+        <Field of={form} path={['trust']}>
+          {(field) => <CheckboxField field={field} label='Trust this device for 30 days' />}
+        </Field>
         <Button type='submit' size='lg' style={styles.submit}>
           Verify
         </Button>

@@ -1,10 +1,11 @@
+import { Field, handleSubmit, useForm } from '@formisch/react'
 import { CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { PasswordField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
-import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
 import { resetPasswordSchema, resetSearchSchema } from '#/schemas/reset-password.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -20,14 +21,13 @@ export const Route = createFileRoute('/(auth)/reset-password')({
 function RouteComponent() {
   const navigate = useNavigate()
   const { token } = Route.useSearch()
-  const form = useAppForm({
-    ...formDefaults,
-    defaultValues: { token, password: '', confirm: '' },
-    validators: { onDynamic: resetPasswordSchema },
-    // Demo only: there is no reset endpoint yet, so a valid form returns to sign in. The token travels
-    // with the new password in the submitted values.
-    onSubmit: () => void navigate({ to: '/login' })
+  const form = useForm({
+    schema: resetPasswordSchema,
+    initialInput: { token, password: '', confirm: '' }
   })
+  // Demo only: there is no reset endpoint yet, so a valid form returns to sign in. The token travels
+  // with the new password in the submitted values.
+  const submit = handleSubmit(form, () => void navigate({ to: '/login' }))
 
   return (
     <>
@@ -38,22 +38,30 @@ function RouteComponent() {
         </p>
       </div>
 
-      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
+      <Form
+        noValidate
+        style={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
+      >
         <div {...stylex.props(styles.fields)}>
-          <form.AppField name='password'>
+          <Field of={form} path={['password']}>
             {(field) => (
-              <field.PasswordField
+              <PasswordField
+                field={field}
                 label='New password'
                 description='At least 12 characters.'
                 autoComplete='new-password'
               />
             )}
-          </form.AppField>
-          <form.AppField name='confirm'>
+          </Field>
+          <Field of={form} path={['confirm']}>
             {(field) => (
-              <field.PasswordField label='Confirm password' autoComplete='new-password' />
+              <PasswordField field={field} label='Confirm password' autoComplete='new-password' />
             )}
-          </form.AppField>
+          </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
           Reset password
