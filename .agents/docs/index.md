@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-20T06:26:00+07:00
+updated: 2026-11-20T06:30:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -27,7 +27,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File                                       | Status            | Subject                                                                                                   |
 | ------------------------------------------ | ----------------- | --------------------------------------------------------------------------------------------------------- |
-| `plan-00002-webapp-forms-formisch.md`      | awaiting-approval | Move the webapp auth forms from TanStack Form + zod to Formisch + Valibot, in seven phases.               |
+| `plan-00002-webapp-forms-formisch.md`      | in-progress       | Move the webapp auth forms from TanStack Form + zod to Formisch + Valibot, in seven phases.               |
 
 `plan-00001-uilibs-improvement.md` (done, 2026-11-20) is in `.agents/docs/archive/`.
 
