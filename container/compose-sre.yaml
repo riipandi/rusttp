@@ -105,7 +105,7 @@ services:
   # Per-container resource metrics, scraped into the same pipeline.
   cadvisor:
     <<: *common
-    image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:-0.60}
+    image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:-0.61}
     hostname: cadvisor
     expose: ["8080"]
     devices: ["/dev/kmsg"]
@@ -123,7 +123,7 @@ services:
 
   redis-exporter:
     <<: *common
-    image: docker.io/oliver006/redis_exporter:${REDIS_EXPORTER_VERSION:-v1.95.0}
+    image: docker.io/oliver006/redis_exporter:${REDIS_EXPORTER_VERSION:-v1.97.0-alpine}
     hostname: redis-exporter
     expose: ["9121"]
     environment:

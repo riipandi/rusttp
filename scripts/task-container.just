@@ -35,6 +35,11 @@ compose-exec service *cmd="sh":
 compose-cleanup:
     @docker compose -f {{ compose_file }} down --remove-orphans --volumes
 
+[doc('Pull the container images')]
+[group('container')]
+compose-pull:
+    @docker compose -f {{ compose_file }} pull
+
 [doc('Build Docker image')]
 [group('container')]
 docker-build *args: && docker-images

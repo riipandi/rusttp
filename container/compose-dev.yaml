@@ -34,7 +34,7 @@ services:
 
   redis:
     <<: *common
-    image: docker.io/redis:${REDIS_VERSION:-8-alpine}
+    image: docker.io/redis:${REDIS_VERSION:-8.10-alpine}
     hostname: redis
     ports: ["${REDIS_PORT:-6379}:6379"]
     volumes: ["redis_data:/data:rw"]
@@ -52,7 +52,7 @@ services:
   # S3-compatible object storage; the console is on :9101.
   silo:
     <<: *common
-    image: docker.io/pgsty/silo:${SILO_VERSION:-latest}
+    image: docker.io/pgsty/silo:${SILO_VERSION:-distroless}
     hostname: silo
     ports: ["9100:9100", "9101:9101"]
     environment:
@@ -64,11 +64,11 @@ services:
     volumes: ["silo_data:/data:rw"]
     command: server /data --address "0.0.0.0:9100" --console-address "0.0.0.0:9101"
     post_start:
-      - command: sh -c "/usr/bin/mc mb local/devbucket --ignore-existing"
-      - command: sh -c "/usr/bin/mc mb local/otelbucket --ignore-existing"
-      - command: sh -c "/usr/bin/mc mb local/testbucket --ignore-existing"
-      - command: sh -c "/usr/bin/mc anonymous set download local/devbucket"
-      - command: sh -c "/usr/bin/mc anonymous set download local/testbucket"
+      - command: /usr/bin/mc mb local/devbucket --ignore-existing
+      - command: /usr/bin/mc mb local/otelbucket --ignore-existing
+      - command: /usr/bin/mc mb local/testbucket --ignore-existing
+      - command: /usr/bin/mc anonymous set download local/devbucket
+      - command: /usr/bin/mc anonymous set download local/testbucket
     shm_size: 256m
     mem_limit: 512m
     healthcheck:
