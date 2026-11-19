@@ -12,7 +12,7 @@ dev *args:
 [group('development')]
 [no-exit-message]
 [positional-arguments]
-run +args:
+run *args:
     @cargo run -q -- "$@"
 
 # ---- Build -------------------------------------------------------------------
