@@ -1,6 +1,6 @@
 ---
 status: done
-captured: 2026-11-20T00:01
+created: 2026-11-20T00:01:00+07:00
 ---
 
 # Handover — CLI scaffold, transport, vixum (server-rendered SPA), DX and Docker

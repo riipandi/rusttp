@@ -1,9 +1,9 @@
 ---
 title: "Audit: packages/uilibs (every UI component)"
-status: in_review
+status: completed
 created_at: 2026-11-20T02:54:53+07:00
-updated_at: 2026-11-20T02:54:53+07:00
-completed_at: null
+updated_at: 2026-11-20T06:09:00+07:00
+completed_at: 2026-11-20T06:09:00+07:00
 scope:
     type: feature
     feature: "uilibs"
@@ -30,13 +30,13 @@ baseline:
 findings:
     total: 26
     by_severity: { critical: 0, high: 3, medium: 15, low: 6, info: 2 }
-    by_status: { open: 26, fixed: 0, deferred: 0, wont_fix: 0, false_positive: 0 }
+    by_status: { open: 0, fixed: 25, deferred: 1, wont_fix: 0, false_positive: 0 }
     verified: 13
     unverified: 13
 cleanup_candidates: 9
 optimization_opportunities: 2
 open_questions: 2
-tests_added: 0
+tests_added: 60 # stories with `play` checks added by plan-00001, plus the a11y gate turned on
 standards: [WCAG 2.2 AA (1.4.3, 1.4.11, 2.5.3, 2.5.8, 4.1.2), WAI-ARIA 1.2 / APG]
 generated_by: deep-audit
 ---
@@ -80,32 +80,32 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 
 | ID | Severity | Category | Location | Title | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| F-01 | high | composition | `base/button/button.stylex.ts:83-86`, `base/input/input.stylex.ts:22` | Button has four sizes, form controls have one | verified | open |
-| F-02 | high | api / a11y | ~100 `React.ComponentPropsWithoutRef` sites, `extra/textarea/textarea.component.tsx:30` | Wrappers reject `ref`; Textarea drops it at runtime | verified | open |
-| F-03 | high | a11y / functionality | `extra/textarea/textarea.component.tsx` | Textarea is not a Field control | verified | open |
-| F-04 | medium | a11y (1.4.11) | `styles/colors.stylex.ts:54-55`, 42 stylex files | Control borders and the Switch track are 1.08:1 (light) / 2.47:1 (dark) | verified | open |
-| F-05 | medium | a11y (1.4.3) | `base/button/button.stylex.ts:39,76` | Primary and destructive hover drop white text to 4.29 / 4.04 | verified | open |
-| F-06 | medium | a11y (1.4.3) | `styles/colors.stylex.ts` (`foregroundNeutralFaded`) | Faded text on `backgroundNeutral` is 4.24:1 | verified | open |
-| F-07 | medium | a11y (4.1.2) | `extra/pagination/pagination.component.tsx:46` | Pagination links render with `role="button"` | verified | open |
-| F-08 | medium | composition / a11y | `base/{combobox,autocomplete,number-field,otp-field}`, `extra/input-phone` | Invalid and focus states are not uniform across controls | unverified | open |
-| F-09 | medium | composition | `base/combobox/combobox.stylex.ts:11,120`, `base/select`, `base/number-field` | Default widths differ per control | verified | open |
-| F-10 | medium | a11y (4.1.2, 2.5.8) | `base/slider/slider.component.tsx:47,64` | Slider thumbs cannot be labelled; 12px thumb; default is two thumbs | verified (axe) | open |
-| F-11 | medium | a11y (4.1.2) | `base/otp-field`, `base/select`, `base/combobox` | Controls without an accessible name by default | verified (axe) | open |
-| F-12 | medium | functionality | `base/alert-dialog/alert-dialog.component.tsx:104` | `AlertDialogAction` does not close the dialog | unverified | open |
-| F-13 | medium | functionality | `extra/button-group/button-group.component.tsx:33-50` | ButtonGroup drops non-elements, mishandles Fragments, joins filled buttons without a divider | unverified | open |
-| F-14 | medium | functionality / a11y | `extra/alert`, `extra/badge`, `base/toast` | Semantic colors are not exposed; Alert is always `role="alert"` | unverified | open |
-| F-15 | medium | a11y (2.5.3) | `extra/calendar/calendar.component.tsx:91` | Day buttons fail label-in-name; `week` object leaks onto `<td>` | verified (axe) | open |
-| F-16 | medium | a11y | `extra/table`, `extra/data-grid`, `extra/item`, `extra/kanban`, `extra/sortable` | Empty headers, list without items, unnamed progressbar and handles, nested interactive | verified (axe) | open |
-| F-17 | medium | a11y / i18n | 20 sites (see F-17) | Hard-coded English labels with no override | unverified | open |
-| F-18 | medium | composition | 25 `opacity: .5` sites, `outlineOffset` ×29 | Three focus-ring recipes and a disabled recipe that ignores its tokens | unverified | open |
-| F-19 | low | functionality | `extra/file-upload/file-upload.component.tsx:75,112` | Drop ignores `accept` and `multiple`; not a Field control; overrides StyleX inline style | unverified | open |
-| F-20 | low | functionality | `base/button`, `extra/spinner` | No `loading` state; Spinner announces inside a Button | unverified | open |
-| F-21 | low | consistency | 35 inline `<svg>` in 17 files | Inline icons beside `@keyline-icons`; close button copied three times | unverified | open |
-| F-22 | low | duplication | `base/{dropdown-menu,context-menu,menubar}` | Three parallel menu implementations | unverified | open |
-| F-23 | low | hygiene | see F-23 | Stale paths, story controls, `@ts-ignore`, `console.warn`, label casing | unverified | open |
-| F-24 | low | test quality | `.storybook/preview.tsx`, `aspect-ratio.stories.tsx:40` | a11y gate is `todo`, one flaky assertion, state stories missing | verified | open |
-| F-25 | info | consistency | 8 stylex files | Raw `@media (min-width: 660px)` beside the `breakpoints` tokens | unverified | open |
-| F-26 | info | coverage | `extra/data-grid/*` (9.4k lines) | Data grid audited by axe and grep only | n/a | open |
+| F-01 | high | composition | `base/button/button.stylex.ts:83-86`, `base/input/input.stylex.ts:22` | Button has four sizes, form controls have one | verified | fixed |
+| F-02 | high | api / a11y | ~100 `React.ComponentPropsWithoutRef` sites, `extra/textarea/textarea.component.tsx:30` | Wrappers reject `ref`; Textarea drops it at runtime | verified | fixed |
+| F-03 | high | a11y / functionality | `extra/textarea/textarea.component.tsx` | Textarea is not a Field control | verified | fixed |
+| F-04 | medium | a11y (1.4.11) | `styles/colors.stylex.ts:54-55`, 42 stylex files | Control borders and the Switch track are 1.08:1 (light) / 2.47:1 (dark) | verified | fixed |
+| F-05 | medium | a11y (1.4.3) | `base/button/button.stylex.ts:39,76` | Primary and destructive hover drop white text to 4.29 / 4.04 | verified | fixed |
+| F-06 | medium | a11y (1.4.3) | `styles/colors.stylex.ts` (`foregroundNeutralFaded`) | Faded text on `backgroundNeutral` is 4.24:1 | verified | fixed |
+| F-07 | medium | a11y (4.1.2) | `extra/pagination/pagination.component.tsx:46` | Pagination links render with `role="button"` | verified | fixed |
+| F-08 | medium | composition / a11y | `base/{combobox,autocomplete,number-field,otp-field}`, `extra/input-phone` | Invalid and focus states are not uniform across controls | unverified | fixed |
+| F-09 | medium | composition | `base/combobox/combobox.stylex.ts:11,120`, `base/select`, `base/number-field` | Default widths differ per control | verified | fixed |
+| F-10 | medium | a11y (4.1.2, 2.5.8) | `base/slider/slider.component.tsx:47,64` | Slider thumbs cannot be labelled; 12px thumb; default is two thumbs | verified (axe) | fixed |
+| F-11 | medium | a11y (4.1.2) | `base/otp-field`, `base/select`, `base/combobox` | Controls without an accessible name by default | verified (axe) | fixed |
+| F-12 | medium | functionality | `base/alert-dialog/alert-dialog.component.tsx:104` | `AlertDialogAction` does not close the dialog | unverified | fixed |
+| F-13 | medium | functionality | `extra/button-group/button-group.component.tsx:33-50` | ButtonGroup drops non-elements, mishandles Fragments, joins filled buttons without a divider | unverified | fixed |
+| F-14 | medium | functionality / a11y | `extra/alert`, `extra/badge`, `base/toast` | Semantic colors are not exposed; Alert is always `role="alert"` | unverified | fixed |
+| F-15 | medium | a11y (2.5.3) | `extra/calendar/calendar.component.tsx:91` | Day buttons fail label-in-name; `week` object leaks onto `<td>` | verified (axe) | fixed |
+| F-16 | medium | a11y | `extra/table`, `extra/data-grid`, `extra/item`, `extra/kanban`, `extra/sortable` | Empty headers, list without items, unnamed progressbar and handles, nested interactive | verified (axe) | fixed |
+| F-17 | medium | a11y / i18n | 20 sites (see F-17) | Hard-coded English labels with no override | unverified | fixed |
+| F-18 | medium | composition | 25 `opacity: .5` sites, `outlineOffset` ×29 | Three focus-ring recipes and a disabled recipe that ignores its tokens | unverified | fixed |
+| F-19 | low | functionality | `extra/file-upload/file-upload.component.tsx:75,112` | Drop ignores `accept` and `multiple`; not a Field control; overrides StyleX inline style | unverified | fixed |
+| F-20 | low | functionality | `base/button`, `extra/spinner` | No `loading` state; Spinner announces inside a Button | unverified | fixed |
+| F-21 | low | consistency | 35 inline `<svg>` in 17 files | Inline icons beside `@keyline-icons`; close button copied three times | unverified | fixed |
+| F-22 | low | duplication | `base/{dropdown-menu,context-menu,menubar}` | Three parallel menu implementations | unverified | fixed |
+| F-23 | low | hygiene | see F-23 | Stale paths, story controls, `@ts-ignore`, `console.warn`, label casing | unverified | fixed |
+| F-24 | low | test quality | `.storybook/preview.tsx`, `aspect-ratio.stories.tsx:40` | a11y gate is `todo`, one flaky assertion, state stories missing | verified | fixed |
+| F-25 | info | consistency | 8 stylex files | Raw `@media (min-width: 660px)` beside the `breakpoints` tokens | unverified | fixed |
+| F-26 | info | coverage | `extra/data-grid/*` (9.4k lines) | Data grid audited by axe and grep only | n/a | deferred |
 
 ### F-01 One control height scale is missing
 
@@ -117,7 +117,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified, measurement table above.
 - **Fix**: one `ControlSize` scale (`sm 32`, `md 36`, `lg 40`; `xs 28` for dense toolbars) in a shared `styles/control.stylex.ts` with height, inline padding, type size and radius per size; Button, every text control, Toggle, Tabs and Menubar read from it and accept `size`. Trade-off: the `lg` text controls grow to 16px type, so the auth forms pair `lg` inputs with `lg` buttons.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 2 `68d1d85`, phase 3 `3b6aeae`, phase 5 `6eebb6f`, phase 9 `0d90d4e`)
 
 ### F-02 Wrappers reject `ref`
 
@@ -129,7 +129,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified (typecheck probe).
 - **Fix**: type wrappers with `React.ComponentProps<...>` (keeps `ref`), merge the internal and external refs in Textarea. Mechanical codemod, no compatibility shim.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 1 `48fd962`)
 
 ### F-03 Textarea is not a Field control
 
@@ -141,7 +141,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified (`/tmp/audit/invalid.mjs`).
 - **Fix**: render through `Field.Control` (`render={<textarea />}`) so the Field context applies; keep `autoResize`.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 4 `1c6ee8b`)
 
 ### F-04 Control borders and the Switch track fail non-text contrast
 
@@ -152,7 +152,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified (`/tmp/audit/contrast.py`, OKLCH to sRGB).
 - **Fix**: a dedicated `borderControl` token at ≥3:1 on `backgroundPage` and `backgroundElevation*` in both themes, used only for control edges (decorative dividers stay faded). Trade-off: inputs look firmer; the owner decides the exact value (see Open questions).
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 2 `68d1d85`)
 
 ### F-05 Hover lowers button text contrast below AA
 
@@ -162,7 +162,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified (sRGB-space blend in `contrast.py`).
 - **Fix**: hover uses the `*Highlighted` tokens; retune the dark critical token.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 2 `68d1d85`)
 
 ### F-06 Faded text on the neutral surface is 4.24:1
 
@@ -171,7 +171,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified: axe `color-contrast` (`#6f6f6f` on `#ebebeb`, 4.21) on the avatar group count (`avatar.stylex.ts`), `kbd`, and the inactive tab (`tabs.stylex.ts` list background) in 29 stories; 0 in dark. Also `foregroundPositive` on `backgroundNeutral` 4.35.
 - **Fix**: lower the light `foregroundNeutralFaded` lightness until it clears 4.5 on `backgroundNeutral`; check `foregroundPositive`.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 2 `68d1d85`)
 
 ### F-07 Pagination links announce as buttons
 
@@ -181,7 +181,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified (`/tmp/audit/roles.mjs`). Also `base-components-button--as-link`.
 - **Fix**: lift the `role='link'` handling into the library (a `link` render path or a `LinkButton` in uilibs) and use it in Pagination; delete the webapp copy.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 5 `6eebb6f`)
 
 ### F-08 Invalid and focus states differ per control
 
@@ -191,7 +191,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: unverified at runtime (grep and reading); the Select and Input invalid probes confirm those two work.
 - **Fix**: the shared control recipe from F-01 carries focus, invalid and disabled once.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 3 `3b6aeae`)
 
 ### F-09 Default widths differ
 
@@ -201,7 +201,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Impact**: in a form column the controls do not align; Combobox cannot fill its Field.
 - **Fix**: text controls fill their container by default; fixed widths become an explicit prop or a `style` override.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 3 `3b6aeae`)
 
 ### F-10 Slider thumbs cannot be labelled
 
@@ -211,7 +211,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Impact**: screen readers announce an unnamed slider; a range slider cannot say "minimum" and "maximum"; the 12px thumb is below the 24px target size.
 - **Fix**: `getThumbLabel` or per-thumb `aria-label` passthrough, single-thumb default, enlarge the hit area as Checkbox and Switch already do with `::after`.
 - **Confidence**: medium (the two-thumb default is unverified at runtime)
-- **Status**: open
+- **Status**: fixed (phase 4 `1c6ee8b`)
 
 ### F-11 Controls ship without an accessible name
 
@@ -220,7 +220,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified: axe `label` in 16 stories and `button-name` in 6, light and dark.
 - **Fix**: OTP slots get `Character n of N` names; Select and Combobox document and accept a label (`aria-label` forwarded, or `SelectValue` + Field label wiring); stories always label. Added to the a11y gate in F-24.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 4 `1c6ee8b`)
 
 ### F-12 `AlertDialogAction` does not close the dialog
 
@@ -229,7 +229,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Fix**: render the action through `BaseAlertDialog.Close` with an `onClick` that can keep the dialog open by `preventDefault`, or document and test the controlled pattern.
 - **Evidence**: unverified (reading).
 - **Confidence**: medium
-- **Status**: open
+- **Status**: fixed (phase 5 `6eebb6f`)
 
 ### F-13 ButtonGroup clones children unsafely
 
@@ -238,7 +238,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Fix**: flatten Fragments, add a divider via ring/inset shadow independent of `borderWidth`, document the child contract, test with primary buttons.
 - **Evidence**: unverified (reading).
 - **Confidence**: medium
-- **Status**: open
+- **Status**: fixed (phase 5 `6eebb6f`)
 
 ### F-14 Semantic colors are not exposed; Alert is always assertive
 
@@ -247,7 +247,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Fix**: `tone` (`neutral | primary | positive | warning | critical`) on Alert, Badge, Toast; Alert gets `role='status'` by default and `role='alert'` by prop; title level configurable.
 - **Evidence**: unverified (reading).
 - **Confidence**: medium
-- **Status**: open
+- **Status**: fixed (phase 6 `29d356b`)
 
 ### F-15 Calendar day buttons fail label-in-name
 
@@ -255,14 +255,14 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Evidence**: verified: axe `label-content-name-mismatch` on 35 nodes in 11 stories (`aria-label="Sunday, November 1st, 2026"` over visible text `1`); `scope-attr-valid`: `<td week="[object Object]">` in `calendar--week-numbers`.
 - **Fix**: `labels.labelDayButton` that begins with the visible number; destructure `week` out of the `td` props.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 7 `2fe9e6a`)
 
 ### F-16 Structural semantics in composite components
 
 - **Evidence**: verified, axe on stories: `empty-table-header` (data grid expander and actions columns, `table--actions`), `aria-required-children` (`ItemGroup role='list'` at `item.component.tsx:16` holds non-`listitem` divs), `aria-progressbar-name` (Progress `controlled` and the Kanban column progress, 3 stories), `aria-command-name` (Kanban column handle, `role="button"` without a name, 6 stories), `nested-interactive` (Sortable items, 2 stories).
 - **Fix**: visually hidden header text for icon-only columns, `role="listitem"` on Item (or drop the role), name Progress and handles from the column title, make the Sortable item non-interactive or the handle the only interactive child.
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 7 `2fe9e6a`)
 
 ### F-17 Hard-coded English labels
 
@@ -271,7 +271,7 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Fix**: a `labels` prop with English defaults per component (no global locale context: YAGNI for a starter); chip remove names the item.
 - **Evidence**: unverified (grep).
 - **Confidence**: high
-- **Status**: open
+- **Status**: fixed (phase 3 `3b6aeae`, phase 6 `29d356b`, phase 7 `2fe9e6a`, follow-up `ff53548`)
 
 ### F-18 Focus and disabled recipes diverge
 
@@ -280,27 +280,27 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - **Fix**: one focus recipe and one disabled recipe in the shared control file; delete the unused disabled tokens or use them.
 - **Evidence**: unverified (grep counts).
 - **Confidence**: medium
-- **Status**: open
+- **Status**: fixed (phase 2 `68d1d85`, phase 3 `3b6aeae`)
 
 ### F-19 FileUpload
 
 - `file-upload.component.tsx:75`: `handleDrop` passes `dataTransfer.files` unfiltered, so a drop bypasses `accept` and `multiple` that `inputAttributes` enforce on the picker. Not a Field control (no `id` or label wiring, no invalid). `:112`: a literal `style` key after `...stylex.props(...)` overwrites any inline style StyleX produced and is the only raw `style` object in the library (contradicts the authoring rule).
-- Evidence: unverified. Confidence: medium. Status: open.
+- Evidence: unverified. Confidence: medium. Status: fixed (phase 4 `1c6ee8b`).
 
 ### F-20 No loading state
 
 - `Button` has no `loading` prop; the story composes `<Button disabled><Spinner/>…</Button>`. `Spinner` carries `role="status"` and `aria-label="Loading"` (`spinner.component.tsx:15`), so inside a labelled button it adds a second live announcement. Add `loading` (sets `aria-busy`, keeps the width, hides the Spinner from AT).
-- Evidence: unverified. Confidence: medium. Status: open.
+- Evidence: unverified. Confidence: medium. Status: fixed (phase 5 `6eebb6f`, phase 6 `29d356b`).
 
 ### F-21 Inline icons and a copied close button
 
 - 35 `<svg>` in 17 files (Combobox 4, Select 3, DataGrid 3, Pagination 2, Breadcrumb 2, menus 2 each) with mixed `strokeWidth` (1.5, 2); `@keyline-icons/react` is used in 10 files. The close button (`<BaseX.Close aria-label='Close'>` + the same `m3 3 10 10M13 3 3 13` path) is copied in Dialog, Sheet and Toast.
-- Evidence: unverified. Confidence: high. Status: open.
+- Evidence: unverified. Confidence: high. Status: fixed (phase 6 `29d356b`, phase 8 `0bcd28b`).
 
 ### F-22 Three menu implementations
 
 - `dropdown-menu.component.tsx` (247 lines) and `context-menu.component.tsx` (265) implement the same item, checkbox, radio, sub-trigger and indicator set against `Menu` and `ContextMenu`; each re-declares `IndicatorCheck`; `menubar` re-exports from dropdown. Shared parts belong in one internal module.
-- Evidence: unverified. Confidence: medium. Status: open.
+- Evidence: unverified. Confidence: medium. Status: fixed (phase 8 `0bcd28b`).
 
 ### F-23 Hygiene
 
@@ -309,20 +309,23 @@ Not run: dependency and secret scans (no new dependency surface, nothing to scan
 - `extra/kanban/kanban.component.tsx:591` `@ts-ignore`; `:247` and `sortable.component.tsx:260` `console.warn` in library code; `extra/text/text.component.tsx:102` TODO; `theme/theme.tsx:116` `@ts-expect-error`.
 - `pagination.component.tsx:15` `role='navigation'` on `<nav>` and `aria-label='pagination'`, `breadcrumb.component.tsx:13` `aria-label='breadcrumb'` (casing); both ellipses hide an sr-only caption inside an `aria-hidden` parent (`pagination.component.tsx:89`).
 - `PaginationItem` takes `className`/`style` raw (`pagination.component.tsx`), unlike every other part.
-- Evidence: unverified. Status: open.
+- Evidence: unverified. Status: fixed (phase 8 `0bcd28b`); `theme/theme.tsx` keeps its `@ts-expect-error`, which carries a reason.
 
 ### F-24 Test and gate quality
 
 - `.storybook/preview.tsx` sets `a11y.test: 'todo'`: the 81/53 real axe violations never fail CI. One assertion is flaky under parallel load (`aspect-ratio.stories.tsx:40`, expects a layout box immediately after render). No invalid-state story exists for Combobox, Autocomplete, NumberField, OTP; only 1 story has a `play` for Select; `table` has none; no story asserts size alignment.
-- Evidence: verified (suite run, axe sweep, coverage script). Confidence: high. Status: open.
+- Evidence: verified (suite run, axe sweep, coverage script). Confidence: high. Status: fixed (phase 9 `0d90d4e`).
 
 ### F-25 Raw media queries
 
 - `@media (min-width: 660px)` literals in alert-dialog, pagination, description-list, text, kanban, calendar. `defineConsts` media keys must be declared in the same file (authoring rule), which is why `text.stylex.ts` mirrors the table; acceptable, but the mirrors need a single comment convention. Info.
+- **Status**: fixed (phase 8 `0bcd28b`)
 
 ### F-26 Data grid coverage
 
 - About 9,400 lines (`data-grid*.tsx`) were audited through the axe sweep (`empty-table-header`) and the grep passes only. A dedicated review is out of this audit's depth; see the plan's out-of-scope list.
+
+- **Status**: deferred (a dedicated review of the data grid opens as its own issue when the webapp adopts the grid; only its axe findings were fixed in plan-00001 phase 7, `2fe9e6a`)
 
 ## Optimization opportunities
 
@@ -337,15 +340,15 @@ No runtime performance defects were found; the library is presentational and tre
 
 | Item | Type | Evidence of non-use | Confidence | Proposal | Status |
 | --- | --- | --- | --- | --- | --- |
-| `colors.backgroundDisabled`, `backgroundDisabledFaded` | dead token | 0 usages in `uilibs/src` and `webapp/app` | high | use in the disabled recipe, else delete | open |
-| `colors.backgroundElevationRaised` | dead token | 0 usages | high | delete | open |
-| `colors.borderPositive`, `borderWarning` | dead token | 0 usages | medium | keep for the tone work (F-14), else delete | open |
-| `shadow['outline-intense' / 'raised-intense' / 'overlay-intense']` | dead token | 0 usages | high | delete | open |
-| `colors.backgroundPrimaryHighlighted`, `backgroundCriticalHighlighted` | unused but needed | 0 usages | high | start using (F-05) | open |
-| Button story `argTypes.size` options | stale | names do not exist in `buttonSizes` | high | derive from `buttonSizes` | open |
-| `#/styles/core/tokens.stylex` comments | stale | path does not exist | high | fix | open |
-| `kanban` `@ts-ignore` and `console.warn` ×2 | legacy | reading | medium | remove or justify | open |
-| `base/dropdown-menu` vs `context-menu` duplicate parts | duplication | F-22 | medium | share | open |
+| `colors.backgroundDisabled`, `backgroundDisabledFaded` | dead token | 0 usages in `uilibs/src` and `webapp/app` | high | use in the disabled recipe, else delete | fixed |
+| `colors.backgroundElevationRaised` | dead token | 0 usages | high | delete | fixed |
+| `colors.borderPositive`, `borderWarning` | dead token | 0 usages | medium | keep for the tone work (F-14), else delete | fixed |
+| `shadow['outline-intense' / 'raised-intense' / 'overlay-intense']` | dead token | 0 usages | high | delete | fixed |
+| `colors.backgroundPrimaryHighlighted`, `backgroundCriticalHighlighted` | unused but needed | 0 usages | high | start using (F-05) | fixed |
+| Button story `argTypes.size` options | stale | names do not exist in `buttonSizes` | high | derive from `buttonSizes` | fixed |
+| `#/styles/core/tokens.stylex` comments | stale | path does not exist | high | fix | fixed |
+| `kanban` `@ts-ignore` and `console.warn` ×2 | legacy | reading | medium | remove or justify | fixed |
+| `base/dropdown-menu` vs `context-menu` duplicate parts | duplication | F-22 | medium | share | fixed |
 
 ## Decisions log
 
@@ -361,6 +364,8 @@ None yet. The plan (`plan-00001-uilibs-improvement`) records its decisions with 
 
 ## Open questions
 
+Both were answered at plan approval: option 1 each (`borderControl` at 3:1, D5; the `sm 32 / md 36 / lg 40` scale with `xs` on Button, Toggle, and Tabs only, D1).
+
 1. **Control border contrast (F-04).** Unclear: how firm the control edge may look — wrong pick means either a failing 1.4.11 or a visible identity change.
     1. Dedicated `borderControl` token at ≥3:1, used for control edges only [recommended: passes AA, leaves dividers soft]
     2. Raise `borderNeutral` and use it everywhere — simplest, but dividers and cards also get heavier
@@ -374,3 +379,4 @@ None yet. The plan (`plan-00001-uilibs-improvement`) records its decisions with 
 ## Change log
 
 - 2026-11-20T02:54:53+07:00: status draft -> in_review. Report written after the baseline, the axe sweep (light and dark), the measurement, the contrast calculation and the ref probe.
+- 2026-11-20T06:09:00+07:00: status in_review -> completed. Plan `plan-00001-uilibs-improvement` fixed 25 findings and deferred F-26; the finding statuses name each phase and commit. The report and the plan moved to `.agents/docs/archive/`.

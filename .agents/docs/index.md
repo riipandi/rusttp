@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-20T03:20:00+07:00
+updated: 2026-11-20T06:09:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -25,9 +25,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File                                  | Status            | Subject                                                                                                                       |
-| ------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `plan-00001-uilibs-improvement.md`    | awaiting-approval | `packages/uilibs`: one control size scale, `ref` and Field wiring, AA tokens, tones, a11y gate on; 13 phases (from audit-00001). |
+None live. `plan-00001-uilibs-improvement.md` (done, 2026-11-20) is in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -43,12 +41,18 @@ Parked improvements with a named unlock. None yet; the dual-edition idea is park
 
 ## Handovers (`.agents/docs/handover/`)
 
-Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five newest. None yet.
+Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five newest.
+
+| File                                     | Status | Subject                                                                                       |
+| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `handover-00001-cli-transport-vixum.md`  | done   | CLI scaffold, transport, vixum (server-rendered SPA), DX and Docker.                          |
+| `handover-00002-uilibs-audit-plan.md`    | done   | The `packages/uilibs` audit and the improvement plan, before any phase ran.                   |
+| `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` skill.
+Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
 
-| File                       | Status    | Subject                                                                                                       |
-| -------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
-| `audit-00001-uilibs.md`    | in_review | `packages/uilibs`, every component: 26 findings (3 high, 15 medium, 6 low, 2 info); the plan above fixes them. |
+## Archive (`.agents/docs/archive/`)
+
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `audit-00001-uilibs.md`.
