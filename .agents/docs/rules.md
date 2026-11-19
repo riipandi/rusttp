@@ -91,6 +91,17 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 - The a11y gate: `pnpm --filter uilibs test` runs axe on every story and fails on a violation, in light and dark. A new story passes it; the only allowlisted element is Base UI's focus guard (`[data-base-ui-focus-guard]`, `.storybook/preview.tsx`). `STORYBOOK_A11Y_GATE=todo` (or `off`) relaxes it for a local run only.
 - `.oxlintrc.json` switches off the React-compiler and several a11y rules for `packages/uilibs/**` (the ported data grid, kanban, and chart stories trip them); new code there should still satisfy them.
 
+### Webapp forms
+
+Forms in `packages/webapp` use Formisch (`@formisch/react`) with Valibot; the decision record is `architecture.md` ("Webapp forms are Formisch and Valibot"). The auth pages are the reference.
+
+- The Valibot schema in `app/schemas/` is the only place a rule lives: types, messages, and cross-field checks (`v.forward(v.partialCheck(…), ['confirm'])`). A field component and a route never validate; the Base UI `Field` `validate` prop and `validationMode` stay unused.
+- A route builds the form with `useForm({ schema, initialInput })` (validate on submit, revalidate on input, Formisch's defaults) and submits with `handleSubmit(form, onValid)` on a `uilibs` `<Form noValidate>`: `onSubmit={(event) => { event.preventDefault(); void submit() }}`, because the one-argument overload returns a function without an event parameter.
+- A field component in `app/components/form-fields.tsx` takes the Formisch field store (`field: FieldLike<T>`: `input`, `errors`, `onChange`, `props`) beside its own props, and wraps the control in the `uilibs` `Field` with `invalid={field.errors !== null}`. It shows `field.errors[0]` only, through `FieldError errors`. `input` is `T | undefined`, so a control reads `field.input ?? ''` or `?? false`.
+- A native input spreads `field.props` (`name`, `ref`, `autoFocus`, `onFocus`, `onChange`, `onBlur`). A composite control passes them by hand: Checkbox `inputRef={field.props.ref}`, `checked`, `onCheckedChange={field.onChange}`; the OTP field `value`, `onValueChange={field.onChange}`, and `field.props.ref` on its first slot.
+- `field.props.name` is the JSON of the path (`["password"]`), not an identifier: never use it as an `id` or `htmlFor` (use `React.useId()`), and a test finds a field by its label, not by `#id`.
+- Base UI's `Form` also moves focus to the first invalid control on a failed submit, so the E2E focus tests pass without a registered ref; the refs are kept because Formisch's own `focus()` and `shouldFocus` need them.
+
 ### Sample data
 
 Every made-up value — test fixtures, seed rows, email `previewProps`, stories, mock responses, placeholder copy and labels — names people, places, and things from Dan Brown's novels (Robert Langdon, Sophie Neveu, Leigh Teabing, Katherine Solomon, Vittoria Vetra, the Louvre, CERN) or Harry Potter (Hermione Granger, Harry Potter, Albus Dumbledore, Minerva McGonagall, Hogwarts, Gringotts, Diagon Alley). Never `John Doe`, `Jane`, `Alice`/`Bob`, `foo`/`bar`, `test@`, `dummy`, or lorem ipsum.

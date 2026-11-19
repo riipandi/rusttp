@@ -168,6 +168,27 @@ Alternatives considered:
 - Positive and warning Button variants — rejected: nothing in the repo needs them.
 - Committing the axe sweep script — rejected: it needs `axe-core` as a declared dependency.
 
+### Webapp forms are Formisch and Valibot
+
+Context: the webapp's forms ran on TanStack Form with zod through a `createFormHook` layer (`useAppForm`, a context module, `messageOf`, a `submitWith` wrapper, and a `querySelector` focus hack). None of it made Base UI's `Field` fit better, since neither library has a Base UI adapter, and the owner wanted a form library with a tighter fit.
+
+Decision (2026-11-20, owner, `plan-00002-webapp-forms-formisch`):
+
+- Formisch with Valibot replaces both. The schema is the single source of the form's types, rules, and shape; `field.errors` arrives as strings and `handleSubmit` validates and focuses.
+- The forms keep the `uilibs` `Form` and `Field`; field components take the Formisch field store and are rendered by Formisch's `Field` (`shape.md`, `rules.md` "Webapp forms").
+- zod and TanStack Form are removed outright, with no compatibility layer. zod remains in the lockfile only as a build-time dependency of `@tanstack/router-generator`; it does not reach the shipped SPA.
+
+Consequences:
+
+- (positive) the glue modules and the issue-to-string mapping are gone; cross-field rules need no wiring; Formisch reads signals per property, so a field re-renders alone.
+- (negative) the form layer depends on Valibot alone (no Standard Schema choice) and on a library that reached v1 on 2026-08-20 with one core maintainer; composite controls (Checkbox, OTP) are wired by hand; Formisch has no `canSubmit` flag, no debounce option, and no `createFormHook` equivalent (the field components fill that role).
+
+Alternatives considered:
+
+- TanStack Form with Valibot — rejected: keeps every piece of glue and gains nothing toward Base UI.
+- Base UI `Form` alone with `safeParse` in `onFormSubmit` — rejected: submitted values are untyped and every rule runs by hand.
+- Formisch's own `Form` component — rejected: a plain `<form>` with no StyleX `style` and no Base UI Form context.
+
 ## Parked
 
 - Community and enterprise editions (an `enterprise` Cargo feature, port overrides in the kernel, a license gate) — set aside by the owner on 2026-11-19. Revisit only when the owner raises it.
