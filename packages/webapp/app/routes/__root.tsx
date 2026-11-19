@@ -1,7 +1,9 @@
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Outlet, createRootRouteWithContext, useMatches } from '@tanstack/react-router'
-import { GlobalError, GlobalNotFound } from './-boundaries'
-import DevTools from './-devtools'
+import { UIProvider } from 'uilibs/base/provider'
+import { ThemeProvider } from 'uilibs/theme'
+import { GlobalError, GlobalNotFound } from '#/routes/-boundaries'
+import DevTools from '#/routes/-devtools'
 
 export interface GlobalContext {
   queryClient: QueryClient
@@ -20,9 +22,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <title>{pageTitle ? `${pageTitle} - Rusttp` : 'Rusttp'}</title>
-      <Outlet />
-      <DevTools queryClient={queryClient} />
+      <UIProvider>
+        <ThemeProvider attribute='data-theme' defaultTheme='system'>
+          <title>{pageTitle ? `${pageTitle} - Rusttp` : 'Rusttp'}</title>
+          <Outlet />
+          <DevTools queryClient={queryClient} />
+        </ThemeProvider>
+      </UIProvider>
     </QueryClientProvider>
   )
 }

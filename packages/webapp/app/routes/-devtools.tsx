@@ -3,7 +3,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 // Inlined rather than imported for side effects, so the styles drop out of production builds with the component.
-import triggerStyles from './-devtools.css?inline'
+import triggerStyles from '#/routes/-devtools.css?inline'
 
 // Shift+D toggles the panel. `@tanstack/devtools-vite` strips this component from production
 // builds. Settings saved from the devtools settings tab (localStorage `tanstack_devtools_settings`)

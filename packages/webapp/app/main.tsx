@@ -2,8 +2,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { queryClient } from '#/libraries/query-client'
-import { routeTree } from './routes.gen'
-import './assets/globals.css'
+import { routeTree } from '#/routes.gen'
+import 'uilibs/assets/globals.css'
 
 const router = createRouter({
   routeTree,

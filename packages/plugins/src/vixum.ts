@@ -1,9 +1,15 @@
 import type { IncomingMessage } from 'node:http'
-import { createServer, type Plugin, type ViteDevServer } from 'vite'
+import { createServer, type Plugin, type PluginOption, type ViteDevServer } from 'vite'
 
 export interface VixumOptions {
   /** The route tree TanStack Router generates (`generatedRouteTree` in tsr.config.json), from the root. */
   routeTree: string
+  /**
+   * Plugins for the throwaway server that reads the route table at build time. The routes import
+   * modules that need a transform to run at all (StyleX throws when called uncompiled), so the app's
+   * transforms go here. A factory: each server needs its own plugin instances.
+   */
+  plugins?: () => PluginOption[]
 }
 
 /** One navigable route: its full path and the page meta its `staticData` declares. */
@@ -108,6 +114,7 @@ export function vixum(opts: VixumOptions): Plugin {
         root,
         logLevel: 'silent',
         appType: 'custom',
+        plugins: opts.plugins?.(),
         resolve: { tsconfigPaths: true },
         server: { middlewareMode: true, hmr: false, ws: false }
       })

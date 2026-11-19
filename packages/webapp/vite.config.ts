@@ -3,6 +3,7 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { rustServer } from 'plugins/rust-server'
+import { stylexPlugin } from 'plugins/stylex'
 import { vixum } from 'plugins/vixum'
 import { defineConfig } from 'vite'
 import devtoolsJson from 'vite-plugin-devtools-json'
@@ -13,9 +14,11 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 // and the HMR socket connects to it directly so a server restart never drops it.
 const vite = { host: '127.0.0.1', port: 5173 }
 
-export default defineConfig({
+const stylex = (mode: string) => stylexPlugin({ enableDevClassNames: mode === 'development' })
+
+export default defineConfig(({ mode }) => ({
   plugins: [
-    vixum({ routeTree: resolve('app/routes.gen.ts') }),
+    vixum({ routeTree: resolve('app/routes.gen.ts'), plugins: () => [stylex(mode)] }),
     // Builds and runs the Rust server in `vite dev`, rebuilding on change.
     rustServer({
       root: resolve('../..'),
@@ -30,6 +33,7 @@ export default defineConfig({
     devtoolsJson(),
     devtools({ logging: false }),
     tanstackRouter(),
+    stylex(mode),
     react()
   ],
   envPrefix: ['VITE_', 'PUBLIC_'],
@@ -53,4 +57,4 @@ export default defineConfig({
     reportCompressedSize: false
   },
   server: { ...vite, strictPort: true, hmr: { host: vite.host, clientPort: vite.port } }
-})
+}))

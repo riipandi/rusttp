@@ -443,6 +443,12 @@ importers:
 
   packages/webapp:
     dependencies:
+      '@stylexjs/atoms':
+        specifier: ^0.19.1
+        version: 0.19.2(@stylexjs/stylex@0.19.2)
+      '@stylexjs/stylex':
+        specifier: ^0.19.1
+        version: 0.19.2
       '@tanstack/react-query':
         specifier: ^5.108.0
         version: 5.108.0(@types/react@19.3.0)(react@19.3.1)
@@ -455,6 +461,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
+      uilibs:
+        specifier: workspace:*
+        version: link:../uilibs
     devDependencies:
       '@tanstack/devtools-vite':
         specifier: 'catalog:'

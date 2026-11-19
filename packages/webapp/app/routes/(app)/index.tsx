@@ -1,4 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import * as stylex from '@stylexjs/stylex'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { Button } from 'uilibs/base/button'
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
+import { ThemeSwitcher } from 'uilibs/theme'
+import { Logo } from '#/components/logo'
+import { styles as layout } from '#/styles/element/layout.stylex'
+import { styles } from '#/styles/pages/home.stylex'
 
 export const Route = createFileRoute('/(app)/')({
   component: RouteComponent,
@@ -7,12 +14,57 @@ export const Route = createFileRoute('/(app)/')({
 
 function RouteComponent() {
   return (
-    <main className='page'>
-      <h1>Rusttp</h1>
-      <p>
-        Edit <code>packages/webapp/app/routes/(app)/index.tsx</code> to get started.
-      </p>
-      <footer>v{import.meta.env.PUBLIC_APP_VERSION}</footer>
-    </main>
+    <div {...stylex.props(layout.root)}>
+      <header {...stylex.props(layout.header)}>
+        <div {...stylex.props(layout.container, layout.headerRow)}>
+          <Link to='/' {...stylex.props(layout.brand)}>
+            <Logo />
+            Rusttp
+          </Link>
+          <ThemeSwitcher />
+        </div>
+      </header>
+
+      <main {...stylex.props(layout.main, layout.container)}>
+        <section {...stylex.props(styles.hero)}>
+          <h1 {...stylex.props(styles.title)}>
+            Rusttp serves its own React app from one Rust binary.
+          </h1>
+          <p {...stylex.props(styles.lead)}>
+            An axum server with Connect RPC and REST, a Vite and TanStack Router app, and a StyleX
+            component library, built and tested together.
+          </p>
+          <Button size='lg' nativeButton={false} render={<Link to='/login' />}>
+            Sign in
+          </Button>
+        </section>
+
+        <section {...stylex.props(styles.stack)}>
+          <h2 {...stylex.props(styles.sectionTitle)}>What is inside</h2>
+          <DescriptionList>
+            <DescriptionTerm>Server</DescriptionTerm>
+            <DescriptionDetails>
+              axum, with Connect RPC on /rpc and REST on /api.
+            </DescriptionDetails>
+            <DescriptionTerm>Web</DescriptionTerm>
+            <DescriptionDetails>
+              React, Vite, TanStack Router and Query, embedded into the binary at build time.
+            </DescriptionDetails>
+            <DescriptionTerm>Interface</DescriptionTerm>
+            <DescriptionDetails>
+              Base UI primitives styled with StyleX, in light and dark.
+            </DescriptionDetails>
+            <DescriptionTerm>Email</DescriptionTerm>
+            <DescriptionDetails>jsx-email templates, rendered to HTML and text.</DescriptionDetails>
+            <DescriptionTerm>Checks</DescriptionTerm>
+            <DescriptionDetails>Playwright end-to-end tests and Hurl API specs.</DescriptionDetails>
+          </DescriptionList>
+        </section>
+      </main>
+
+      <footer {...stylex.props(layout.footer)}>
+        <div {...stylex.props(layout.container)}>v{import.meta.env.PUBLIC_APP_VERSION}</div>
+      </footer>
+    </div>
   )
 }
