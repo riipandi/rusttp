@@ -5,10 +5,10 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "generate": "tsr generate",
-        "build": "tsr generate && tsrs --noEmit --fast && vite build",
+        "generate": "NODE_OPTIONS=--disable-warning=Warning tsr generate",
+        "build": "pnpm --silent generate && tsrs --noEmit --fast && vite build",
         "preview": "vite preview",
-        "typecheck": "tsr generate && tsrs --noEmit --fast"
+        "typecheck": "pnpm --silent generate && tsrs --noEmit --fast"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.108.0",

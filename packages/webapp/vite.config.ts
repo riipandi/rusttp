@@ -22,10 +22,8 @@ export default defineConfig({
       args: ['serve'],
       watch: ['apps', 'crates', 'Cargo.toml']
     }),
-    // Serves the Chrome DevTools workspace file, so edits in DevTools map back to the sources.
     devtoolsJson(),
-    devtools(),
-    // Reads tsr.config.json, the file `tsr generate` (build, typecheck) uses too.
+    devtools({ logging: false }),
     tanstackRouter(),
     react()
   ],
