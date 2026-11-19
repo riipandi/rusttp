@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = ["apps/*", "crates/corelib"]
+default-members = ["apps/server"]
+exclude = []
+
+[workspace.package]
+homepage = "https://github.com/riipandi/rusttp"
+repository = "https://github.com/riipandi/rusttp"
+readme = "README.md"
+license = "Apache-2.0"
+rust-version = "1.99"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace.lints.rust]
+missing_docs = "warn"
+unreachable_pub = "deny"
+private_interfaces = "deny"
+
+[workspace.dependencies]
+corelib = { path = "crates/corelib" }
+axum = "0.8.9"

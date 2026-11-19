@@ -1,0 +1,49 @@
+# Rust build cache
+/target
+
+# Git
+.git
+.gitattributes
+.gitignore
+.gitmodules
+
+# Frontend sources (not needed for Docker build — only pre-built assets in src-app/web)
+node_modules/
+.pnpm-store
+package.json
+pnpm-lock.yaml
+tsconfig.json
+tsconfig.app.json
+tsconfig.node.json
+vite.config.ts
+vitest.config.ts
+index.html
+src-web/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Docs
+README.md
+CONTRIBUTING.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Misc
+Makefile
+.dockerignore
+.editorconfig
+/prettier*
+/eslint*
+*.bak
+*.orig
+/storage
