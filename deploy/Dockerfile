@@ -56,6 +56,8 @@ FROM base AS builder
 COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY --link packages/e2e/package.json packages/e2e/
 COPY --link packages/emails/package.json packages/emails/
+COPY --link packages/plugins/package.json packages/plugins/
+COPY --link packages/uilibs/package.json packages/uilibs/
 COPY --link packages/webapp/package.json packages/webapp/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts \
     --frozen-lockfile --stream

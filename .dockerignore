@@ -8,7 +8,7 @@
 .gitmodules
 
 # Dependencies and build output: the image installs and builds its own
-node_modules/
+**/node_modules
 .pnpm-store
 /apps/server/frontend
 **/.output
