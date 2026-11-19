@@ -1,7 +1,6 @@
 [package]
 name = "rusttp-server"
 version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -16,11 +15,9 @@ name = "rusttp-server"
 path = "src/main.rs"
 
 [dependencies]
-axum = "0.8.9"
-clap = { version = "4.6.8", features = ["derive"] }
-serde = { version = "1.0.229", features = ["derive"] }
-serde_json = "1.0.154"
-tokio = { version = "1.54.1", features = ["full"] }
-tower-http = { version = "0.7.1", features = ["trace"] }
-tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+axum.workspace = true
+clap.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

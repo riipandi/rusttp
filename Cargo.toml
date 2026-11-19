@@ -1,13 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["apps/*", "crates/corelib"]
+members = ["apps/*", "crates/*"]
 default-members = ["apps/server"]
 exclude = []
 
 [workspace.package]
-homepage = "https://github.com/riipandi/rusttp"
 repository = "https://github.com/riipandi/rusttp"
-readme = "README.md"
 license = "Apache-2.0"
 rust-version = "1.100"
 version = "0.0.0"
@@ -20,10 +18,9 @@ unreachable_pub = "deny"
 private_interfaces = "deny"
 
 [workspace.dependencies]
-# Internal crates
-corelib = { path = "crates/corelib" }
-libmailer = { path = "crates/libmailer" }
-observer = { path = "crates/observer" }
-
-# External crates
 axum = "0.8.9"
+clap = { version = "4.6.8", features = ["derive"] }
+tokio = { version = "1.54.1", features = ["full"] }
+tower-http = { version = "0.7.1", features = ["trace"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
