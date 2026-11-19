@@ -9,7 +9,7 @@
 //! - [`Vixum::dev`] runs each document through the Vite dev server's `transformIndexHtml` (the
 //!   HMR client, the React preamble, other plugins' tags) and proxies every other request to it,
 //!   so the browser only ever talks to the server's port. The Vite side is the `vixum` plugin in
-//!   `packages/webapp/plugins/vixum.ts`.
+//!   `packages/plugins/src/vixum.ts`.
 //!
 //! With a route table (TanStack Router's navigable full paths, with each route's title and
 //! description from its `staticData`), a navigation no route matches answers 404 while the body

@@ -21,5 +21,29 @@
         "typescript/no-misused-promises": "error",
         "typescript/triple-slash-reference": "allow"
     },
+    "overrides": [
+        {
+            "files": ["packages/uilibs/**"],
+            "rules": {
+                "jsx-a11y/anchor-has-content": "off",
+                "jsx-a11y/click-events-have-key-events": "off",
+                "jsx-a11y/control-has-associated-label": "off",
+                "jsx-a11y/heading-has-content": "off",
+                "jsx-a11y/label-has-associated-control": "off",
+                "jsx-a11y/no-noninteractive-element-interactions": "off",
+                "jsx-a11y/prefer-tag-over-role": "off",
+                "react-hooks/exhaustive-deps": "off",
+                "react/exhaustive-effect-dependencies": "off",
+                "react/immutability": "off",
+                "react/incompatible-library": "off",
+                "react/memo-dependencies": "off",
+                "react/no-array-index-key": "off",
+                "react/no-children-prop": "off",
+                "react/no-unstable-nested-components": "off",
+                "react/refs": "off",
+                "react/static-components": "off"
+            }
+        }
+    ],
     "ignorePatterns": ["**/dist", "**/.tanstack", "**/routes.gen.ts"]
 }

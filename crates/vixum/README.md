@@ -51,7 +51,7 @@ The resolver is async and receives the request parts and the matched route (its 
 
 ## Vite side
 
-The webapp has no `index.html`. Vite's build input is the entry module with `build.manifest: true`, and the `vixum` plugin (`packages/webapp/plugins/vixum.ts`):
+The webapp has no `index.html`. Vite's build input is the entry module with `build.manifest: true`, and the `vixum` plugin (`packages/plugins/src/vixum.ts`):
 
 - serves `POST /__vixum/transform?url=…` (the document through `transformIndexHtml`) and `GET /__vixum/routes.json` in dev;
 - writes `routes.json` into the build output.

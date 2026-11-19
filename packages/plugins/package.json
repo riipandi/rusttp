@@ -1,0 +1,19 @@
+{
+    "name": "plugins",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./rust-server": "./src/rust-server.ts",
+        "./stylex": "./src/stylex.ts",
+        "./vixum": "./src/vixum.ts"
+    },
+    "scripts": {
+        "typecheck": "tsrs --noEmit --fast"
+    },
+    "devDependencies": {
+        "@stylexjs/unplugin": "^0.19.2",
+        "@types/node": "catalog:",
+        "tsrs": "catalog:",
+        "vite": "catalog:"
+    }
+}

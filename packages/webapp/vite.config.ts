@@ -2,13 +2,13 @@ import { devtools } from '@tanstack/devtools-vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
+import { rustServer } from 'plugins/rust-server'
+import { vixum } from 'plugins/vixum'
 import { defineConfig } from 'vite'
 import devtoolsJson from 'vite-plugin-devtools-json'
-import { rustServer } from './plugins/rust-server.ts'
-import { vixum } from './plugins/vixum.ts'
 
 // The Rust server is the only origin the browser opens (:3000, as in production):
-// it renders every document (there is no index.html; see plugins/vixum.ts) and proxies
+// it renders every document (there is no index.html; see packages/plugins/src/vixum.ts) and proxies
 // modules and assets here. Vite stays on IPv4 loopback, where the server's proxy points,
 // and the HMR socket connects to it directly so a server restart never drops it.
 const vite = { host: '127.0.0.1', port: 5173 }
