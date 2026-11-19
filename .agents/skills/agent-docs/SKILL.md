@@ -1,264 +1,112 @@
 ---
 name: agent-docs
 description: >
-    The documentation-ledger workflow: drafting plan documents
-    (.agents/docs/plans), filing and reconciling issues (.agents/docs/issues), curating
-    the roadmap (.agents/docs/roadmap), writing handovers and audits, keeping
-    .agents/docs/index.md and the .agents/docs core documents in sync, and maintaining
-    the human-facing docs/ tree. Use when the user asks for a plan, an
-    issue, a roadmap entry, a handover, an index update, or any docs/
-    change — and when the user runs /agent-docs.
+    The documentation-ledger workflow: drafting plans (.agents/docs/plans), filing and reconciling issues
+    (.agents/docs/issues), curating the roadmap (.agents/docs/roadmap), writing handovers, keeping
+    .agents/docs/index.md and the core documents (shape, rules, architecture) in sync, and maintaining the
+    human-facing docs/ tree. Use when the user asks for a plan, an issue, a roadmap entry, a handover, an index
+    update, or any docs/ change — and when the user runs /agent-docs.
 metadata:
     short-description: "The .agents/docs ledger and docs/ workflow"
 ---
 
 # Agent docs — the documentation ledger workflow
 
-The shapes in force are the exemplars in `references/` beside this file.
-Read the matching one before writing its kind; this file carries the
-rules, the reference carries the shape. The repository's own instruction
-files (AGENTS.md and the core documents it names) win over anything
-here. The exemplars are snapshots of one repository's ledger — their
-shape is the lesson; their content is not prescriptive.
+This file carries the rules; the exemplars in `references/` carry the shapes — read the matching one before writing that kind of document. The root `AGENTS.md` and the core documents win over anything here. The exemplars' shape is the lesson; their content is not prescriptive.
 
 ## The two audiences
 
-- **`.agents/docs/` is for agents** — English, technical, file:line evidence,
-  no prose padding. `index.md` is the map; `rules.md` holds contracts,
-  `architecture.md` holds reasoning and decision records.
-- **`docs/` is for humans** — no internals, no paths, no agent context;
-  orientation on the reader. When the `clarity` skill is available it is
-  **mandatory** before writing or rewriting any document in `.agents/docs/`
-  or `docs/`; without it, follow `references/docs-tone-example.md`. `docs/`
-  prose is concise GFM, one idea per paragraph, emoji only where an
-  admonition earns it.
+- **`.agents/docs/` is for agents** — English, technical, `file:line` evidence, no padding. `index.md` is the map; `shape.md` holds layout, toolchain, and commands; `rules.md` holds contracts and traps; `architecture.md` holds reasoning and decision records.
+- **`docs/` is for humans** — no paths, internals, or agent context. Concise GFM, one idea per paragraph. When the `clarity` skill is available it is mandatory before writing or rewriting any tree document; otherwise follow `references/docs-tone-example.md`.
 
-## First run — scaffolding the ledger
+## Building the ledger from nothing
 
-When the ledger does not exist yet, build it before using it — and
-build it on facts, not invention:
+When `.agents/docs/` is missing or incomplete, build it from facts, not invention:
 
-1. **Verify before creating.** Read the actual tree first: the top-level
-   layout, where the entry points and packages live, the build/test/lint
-   commands the task runner or package scripts actually define, the test
-   framework in use, any existing `docs/` or README content worth
-   keeping. Every claim a scaffold makes about the codebase must have
-   been seen in a file — a command not verified in a script, a package
-   not verified on disk, is not written down as fact.
-2. **Scaffold the minimum that the workflow needs**, no more:
-
-    ```text
-    .agents/docs/
-      index.md          — the map: what each document is, the recap table (empty to start)
-      rules.md          — Contracts / How to change it / Traps (only verified contracts; name the gaps)
-      architecture.md   — per-area reasoning and decision records (one stub entry per area, unverified areas marked so)
-      plans/  issues/  roadmap/  handover/  audit/  archive/   — empty directories
-    docs/               — an index page naming the human-facing surface (create only if the project has a human-facing surface)
-    ```
-
-3. **Stubs stay honest.** A scaffold document that has not earned its
-   content yet says so in one line at the top ("scaffold — no verified
-   content yet"); it never invents contracts, commands, or decisions to
-   look complete. The working rule — do not document a stub as working —
-   applies to the ledger itself.
-4. **Fill from evidence.** After scaffolding, the first real pass is
-   reading the codebase and replacing the stubs' disclaimers with
-   verified facts (file:line for contracts, commit or plan references
-   for decisions). A scaffold that never graduated past its disclaimer
-   is a finding for `.agents/docs/issues/`.
-5. The owner's instruction files (AGENTS.md and its kin) are read first
-   in this flow too: if they exist, the scaffold must not contradict
-   them, and their read-order references must resolve once the
-   scaffolding lands.
-
-## Status vocabulary and required metadata
-
-The ledger has four document kinds; each carries its frontmatter keys and
-its own status options — never a status from another kind's vocabulary.
-
-| Document                                                       | Frontmatter keys (required)                                                                                                                    | Document `status` options                                                                                                                                                 | Item/phase `status` options                                                                                                                                                                                                                            |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Plan — `.agents/docs/plans/plan-<nnnnn>-<topic>.md`            | `status`, `updated`, `phases:` (each: `id`, `title`, `status`, `note`)                                                                         | `awaiting-approval` (drafted, unstarted) · `in-progress` (phases running) · `done` (every phase landed, matrix green) · `cancelled` (owner closed it; the note names why) | `pending` (not started) · `in_progress` (active this turn) · `committed` (landed, commit hash in the note) · `partially-done` (the note names what moved and what parked) · `done`                                                                     |
-| Issue — `.agents/docs/issues/issue-<nnnnn>-<topic>.md`         | `status` (the rollup), `created`, `updated`, `summary`, `count` (items actually listed)                                                        | the rollup mirrors its items: `open` · `considering` · `resolved` · `wontfix`                                                                                             | `open` (work to do, nobody working it) · `considering` (a decision parked with a named trigger — act only when it fires) · `resolved` (landed, the resolution names the evidence) · `wontfix` (the owner declined; the trigger records when to reopen) |
-| Roadmap — `.agents/docs/roadmap/roadmap-<nnnnn>-<topic>.md`    | `status`, `updated`, `references` (source issues/plans)                                                                                        | `living` (updated in place, stamped)                                                                                                                                      | per entry: `parked (unlock: …)` · `taken (plan-<nnnnn>-<topic>)` · `opened (issue-<nnnnn>-<topic>)` · `landed (commit/plan)`                                                                                                                           |
-| Handover — `.agents/docs/handover/handover-<nnnnn>-<topic>.md` | `status`, `created` (read from the system clock when the file is created), `plan`, `wave` — a key the body cannot name is omitted, not guessed | `done` (the session closed its work) · `partial` (compacted mid-work; the open threads named)                                                                             | —                                                                                                                                                                                                                                                      |
-
-Shared conventions: `updated` is the last time the file's claims were
-true (a status flip without a fresh `updated` is a stale file); `count`
-on an issue matches the items actually listed; an archived file keeps
-its last status — the archive note carries where live content went.
-Audits use the same vocabulary as issues at document level (`resolved` /
-`open`) with `updated` and `reference`.
+1. Read the tree first — layout, entry points, the commands the task runner actually defines, the test framework, existing docs. A command not seen in a script and a package not seen on disk are not written down as fact.
+2. Create only `index.md`, `shape.md`, `rules.md`, and `architecture.md`. Directories (`plans/`, `issues/`, `roadmap/`, `handover/`, `audit/`, `archive/`) appear when their first file does.
+3. A section without verified content says so in one line; it never invents contracts, commands, or decisions.
+4. Never contradict `AGENTS.md`; every path it names must resolve once the ledger lands.
 
 ## File naming
 
-Every ledger file is named `<kind>-<nnnnn>-<topic>.md` — `plan-00001-workspace-cleanup.md`, `issue-00003-session-leak.md`, `handover-00012-module-kernel.md`, `audit-00002-auth.md`, `roadmap-00001-observability.md`.
+Every ledger file is `<kind>-<nnnnn>-<topic>.md` — e.g. `plan-00001-workspace-cleanup.md`, `issue-00003-session-leak.md`.
 
 - `<kind>` is `plan`, `issue`, `roadmap`, `handover`, or `audit`; each kind has its own counter.
-- `<nnnnn>` is five digits, zero-padded. The next number is the highest existing number of that kind **across the live directory and `.agents/docs/archive/`**, plus one — list both before creating (`ls .agents/docs/<dir>/ .agents/docs/archive/ | grep '^<kind>-'`). A number is never reused, even after its file is archived or deleted.
-- `<topic>` is a short title in lowercase kebab-case, two to five words, ASCII only, naming the subject rather than the action (`module-kernel`, not `implement-the-new-module-kernel`).
-- A file keeps its name for life: archiving moves it unchanged, and a topic that drifted is not renamed — the title inside the file carries the current wording.
-- References between documents use the full file name, or `<kind>-<nnnnn>` when the kind is obvious.
-- Timestamps live in the frontmatter (`created`, `updated`), read from the system clock (`date +%Y-%m-%dT%H:%M:00%z`), never guessed and never derived from the file name.
+- `<nnnnn>` is five digits, zero-padded: the highest existing number of that kind across the live directory and `.agents/docs/archive/`, plus one. Never reused.
+- `<topic>` is two to five words, lowercase kebab-case ASCII, naming the subject (`module-kernel`, not `implement-the-new-module-kernel`).
+- A file keeps its name for life; archiving moves it unchanged.
+- Reference other ledger files by full name, or `<kind>-<nnnnn>` when the kind is obvious.
+- Timestamps live in the frontmatter (`created`, `updated`), read with `date -Iseconds`, never guessed or derived from the name. `updated` is the last time the file's claims were true; any edit refreshes it.
 
-## Plans (`.agents/docs/plans/plan-<nnnnn>-<topic>.md`)
+## Document kinds
 
-A plan is a contract, written only on the owner's request. Shape:
-frontmatter (`status: awaiting-approval` → in progress → `done`,
-`updated`, `phases:` with `id`/`title`/`status`/`note`), then Objective,
-Current state (verified file:line facts — every claim checked in the
-tree first), Decisions (dated, each with its rejected alternatives),
-a shape/enforcement table, Execution rules, Phases (each with its own
-validation line and suggested commit message), Test matrix, Explicitly
-out of scope.
+| Kind | Required frontmatter | Document `status` | Item / phase `status` |
+| --- | --- | --- | --- |
+| Plan (`plans/`) | `status`, `created`, `updated`, `phases:` (each `id`, `title`, `status`, `note`) | `awaiting-approval` · `in-progress` · `done` · `cancelled` (note names why) | `pending` · `in_progress` · `committed` (hash in note) · `partially-done` (note names what moved) · `done` |
+| Issue (`issues/`) | `status` (rollup), `created`, `updated`, `summary`, `count` (items listed) | rollup of its items | `open` · `considering` (parked with a named trigger) · `resolved` (evidence named) · `wontfix` (owner declined; trigger to reopen) |
+| Roadmap (`roadmap/`) | `status`, `created`, `updated`, `references` | `living` | per entry: `parked (unlock: …)` · `taken (plan-<nnnnn>)` · `opened (issue-<nnnnn>)` · `landed (commit)` |
+| Handover (`handover/`) | `status`, `created`, `plan`, `wave` — omit a key the body cannot name | `done` · `partial` (open threads named) | — |
+| Audit (`audit/`) | owned by the `deep-audit` skill (`.agents/skills/deep-audit/references/report-template.md`) | as defined there | as defined there |
 
-Plan quality rules: a plan claiming `awaiting-approval` carries no
-placeholder — every decision is either made and dated or explicitly
-asked, never a `TBD`; each phase's validation is objectively checkable
-(a command, a probe, a count — not "works correctly"); a decision
-records its consequence, the cost the pick carries, not only why the
-alternatives lost. For code plans, sequence phases the safe order —
-contracts and types first, then implementations, then callers, then
-tests, then cleanup — and the riskiest phase names its undo (the
-revert or the in-place edit that backs it out).
+An archived file keeps its last status; the archive note says where live content went.
 
-Execution rules (the owner's standing template — mirror it in every
-plan): execution waits for the owner's explicit go-ahead per phase
-("continue with phase N"); atomic commit per phase with the plan-named
-message; self-serve commits allowed during the plan's working session;
-after the last phase, stop and recommend the closing commit message —
-never commit it unasked. The final-validation phase and the test matrix
-are mandatory; E2E is written only when relevant and recorded n/a
-otherwise.
+## Plans
 
-Project policies are the owner's, not this skill's: anything that
-shapes the code — backward compatibility, migration policy (in-place
-edits vs additive alters), database resets, deprecation windows — is
-restated in the plan's execution-rules block only as the owner's
-standing rules grant it. The safe defaults when nothing was said:
-migrations are additive and forward-only, no destructive operation
-(reset, drop, key rotation) runs without explicit consent in the turn,
-and compatibility is kept until the owner waives it. A plan that
-silently assumes "early stage" or grants itself a reset is wrong.
+A plan is a contract, written only on the owner's request. Shape (`references/plan-example.md`): Objective, Current state (verified `file:line` facts), Decisions (dated, with rejected alternatives and the cost of the pick), Execution rules, Phases (each with an objective validation line and a commit message), Test matrix, Explicitly out of scope.
 
-Ledger hygiene: a completed plan archives flat to
-`.agents/docs/archive/plan-<nnnnn>-<topic>.md` under its existing name; the live
-directory keeps only plans with open work. The index's plans preamble
-and rows move with it.
+- `awaiting-approval` carries no placeholder: every decision is made and dated, or explicitly asked. No `TBD`.
+- Validation is checkable — a command, a probe, a count — never "works correctly".
+- Code plans run in the safe order: contracts and types, implementations, callers, tests, cleanup (`references/refactor-sequence-example.md`). The riskiest phase names its undo.
+- Execution rules: a phase runs only on the owner's explicit go-ahead ("continue with phase N"). That go-ahead also authorises the phase's one atomic commit with the plan-named message; nothing else is committed unasked. After the last phase, recommend the closing commit message instead of committing it. The final-validation phase and the test matrix are mandatory; E2E is recorded n/a when irrelevant.
+- Project policy (migration style, resets, deprecation windows) comes from the owner's standing rules, not from this skill. Without a grant: migrations are additive and forward-only, and no destructive operation runs without consent in the turn.
+- A completed plan moves unchanged to `.agents/docs/archive/`; the index row moves with it.
 
-## Issues (`.agents/docs/issues/issue-<nnnnn>-<topic>.md`)
+## Issues
 
-A finding that outlives the turn lands here the moment it is found, not
-in chat memory. Frontmatter: `status` (the rollup), `created`,
-`updated`, `summary`, `count`. One file per capture; each item carries
-its own status line — `open`, `considering` (a decision parked with a
-named trigger), `resolved`, `wontfix` — plus `area`, `plan` references
-(source or record-to-honor), `summary`, `trigger`.
+A finding that outlives the turn lands here when found (`references/issue-example.md`). Each item carries `status`, `area`, `summary` with `file:line` evidence, `plan`, and `trigger`.
 
-Verify before writing, then verify adversarially: extract every claim
-the item makes, check each against the tree, and before repeating a
-claim — yours or an archived handover's — ask what would make it wrong
-and go look. A stale finding is worse than a missing one: the costliest
-reconciliation errors are claims repeated from an archived handover
-whose contradicting guard sat one search away. An audit record in
-`.agents/docs/audit/` is the format when the finding set is large.
+- Verify adversarially before writing: check every claim against the tree and ask what would make it wrong (`references/verification-example.md`). A stale finding is worse than a missing one.
+- A file whose items are all terminal moves to the archive. Live items may be re-homed into a new issue file, or moved to the roadmap when they are parked improvements; the archived copy names where they went.
 
-Hygiene: a file whose every item is terminal archives flat under its
-existing name; a rollup with live items may also archive after its open
-items are re-homed into a fresh issue file that names the source — or
-moved to the roadmap when they are parked improvements, not work items
-(`.agents/docs/roadmap/`). Annotate the archived copy with where its live
-content went. After any move, grep the live tree for dangling references
-to the old path.
+## Roadmap
 
-## Roadmap (`.agents/docs/roadmap/`)
+Parked improvements, not work items (`references/roadmap-example.md`). Each entry carries its status line, verified evidence, the unlock that fires it, and a first move. When the unlock fires, the entry becomes an issue or a plan.
 
-Parked future improvements and delivery analyses — not plans, not
-issues. Frontmatter per document: `status: living`, `updated`,
-`references` (source issues/plans). Each entry carries its own
-`- status: parked (unlock: …) · updated <date>` line, the verified
-evidence (file:line), the unlock that fires it, and a first move. When
-an unlock fires, the entry re-enters `.agents/docs/issues/` or goes straight to
-a plan — the roadmap is not a graveyard, it is a staging area.
+## Handovers
 
-## Handovers (`.agents/docs/handover/handover-<nnnnn>-<topic>.md`) and audits
+Session compactions (`references/handover-example.md`). Write one directly at a plan's close or when a session ends mid-work; the `handoff` skill does the same when the owner invokes it. The live directory keeps the five newest; older ones move to the archive.
 
-Handovers are session compactions: frontmatter `status` / `created` /
-`plan` / `wave` — a key the body cannot name is omitted, not guessed.
-The directory keeps the five newest; older history archives flat. Audits
-(`.agents/docs/audit/`) are point-in-time reviews with the same frontmatter
-convention; conclusions age, the tree wins.
+## Docs sync and the closing sweep
 
-## The docs-sync rule and the closing sweep
+A change that lands a behavior lands its documentation in the same change: contract or trap → `rules.md`; layout, toolchain, or command → `shape.md`; decision or reasoning → `architecture.md`; a shipped endpoint → `api/specs/<area>/*.hurl` (and `api/connect/*.proto` for RPC) and `docs/`; the map → `index.md`.
 
-A change that lands a behavior lands its documentation in the same turn
-and the same commit. Dispatch: a contract or invariant → the rules
-document; a reasoning/decision/library record → the architecture
-document; a shipped surface (endpoint, job, background delivery, guard
-rule, settings key) → the endpoint reference, the Hurl specs under
-`api/specs/<area>/` (and `api/connect/*.proto` for an RPC contract), and
-`docs/`. The index's rows move in the same
-commit — plans gained or archived, issues opened or closed, pointers
-(`Newest:`) updated. Outdated prose is a defect of the change, not a
-follow-up.
+When a task or plan phase completes, walk this checklist; each line is either synced or recorded n/a:
 
-**The closing sweep is mandatory** — every time a task or a plan phase
-completes (and again at a plan's final-validation phase), walk this
-checklist and sync each line the work touched, in the same commit:
+1. The plan — document and phase statuses; archive when done.
+2. Issues — every touched item flips with date and evidence; all-terminal files archive.
+3. Roadmap — entries taken or unlocked move their status line.
+4. `docs/` — every human-facing page whose subject the diff touched.
+5. Core documents — `shape.md`, `rules.md`, `architecture.md`, and the `index.md` rows.
+6. The handover — at a plan's close.
 
-1. **The plan itself** — frontmatter `status` and the phases' `status` /
-   `note` lines; a completed plan archives and its index rows move.
-2. **Issues** — every item the work touched flips its status line with
-   the date and the evidence; a rollup whose items are all terminal
-   archives (re-homing live items first).
-3. **Roadmap** — an entry a plan took, or whose unlock just fired, gets
-   its `status`/`updated` line moved (taken / opened as an issue); the
-   document's frontmatter `updated` stamps with it.
-4. **`docs/`** — sweep every human-facing document whose subject the
-   diff touched: the endpoint/API references, the behavior and feature
-   guides, the operations and deployment runbooks, the response-shape
-   docs, the user-facing guides. A `docs/` claim the diff made stale is
-   the diff's defect. When nothing applies, the n/a is recorded, not
-   assumed.
-5. **The core documents** — a contract → `rules.md`, a decision or
-   library record → `architecture.md`, the map rows → `index.md`.
-6. **The handover** — written at the plan's close (mandatory), not left
-   to the next session.
+## Mechanics
 
-The sweep is a checklist, not a vibe: each line is either synced or
-explicitly recorded n/a — silence is not a verdict.
-
-## Markdown mechanics
-
-- **No word-wrapping.** Write each paragraph, list item, and table row
-  as a single line — the soft wrap is the editor's job, not the file's.
-  Never reflow or hard-wrap a document whose lines already run long, and
-  never let a formatter introduce mid-sentence breaks: a wrapped line
-  makes every diff a noisier one and every `grep` a two-line problem.
-  One sentence of diff shows as one changed line.
-
-## Mechanical traps
-
-- Never batch multiple edit calls to the same file in one
-  parallel block — the writes race and one edit is silently lost. Same
-  file: sequential, one `old_string` at a time, verified after each.
-- Close every ledger batch with a count check (`grep -c` on the status
-  lines) and a dangling-reference grep after every move.
+- No hard wrapping: one paragraph, list item, or table row per line.
+- Never run parallel edits on the same file; edit sequentially.
+- After moving files, grep for dangling references; after a ledger batch, check that `count` and the index's status columns match the status lines (`grep -c '^- status'`).
 - Stage explicit paths; never `git add -A`.
 
-## Reference exemplars
+## References
 
-Two kinds live here: the **snapshots** — real ledger documents whose
-shape is the lesson — and the **cards** — one-page technique guides.
-
-| File                                        | Kind     | The shape it shows                                                                                                                                                |
-| ------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `references/plan-example.md`                | snapshot | A full plan: frontmatter phases, verified current state, decisions with rejected alternatives, the execution-rules block, per-phase commits, matrix, out-of-scope |
-| `references/issue-example.md`               | snapshot | An issue rollup: frontmatter rollup, per-item statuses with triggers, the settled-records section                                                                 |
-| `references/roadmap-example.md`             | snapshot | A roadmap document: frontmatter, per-entry `parked (unlock)` lines, evidence, first moves, source references                                                      |
-| `references/handover-example.md`            | snapshot | A handover: frontmatter convention, what the session did, the commits, what stayed open                                                                           |
-| `references/adr-example.md`                 | card     | The decision record: context, decision, consequences both sides, alternatives with evidence-backed rejections; scale — full ADR vs compact record                 |
-| `references/verification-example.md`        | card     | The adversarial claim check: extract, tree-check, break — the verdicts (verified / stale / unfounded / contradicted) and what each writes                         |
-| `references/refactor-sequence-example.md`   | card     | The safe sequence (contracts → implementations → callers → tests → cleanup), the affected-files table, the named undo                                             |
-| `references/acceptance-criteria-example.md` | card     | Requirements vs constraints vs guidelines; Given-When-Then criteria; the measurable bar; non-goals as a first-class section                                       |
-| `references/docs-tone-example.md`           | card     | The human-docs tone: lead with the why, one idea per paragraph, GFM and admonitions earned, examples over descriptions, no internals                              |
+| File | Shape it shows |
+| --- | --- |
+| `references/plan-example.md` | A full plan |
+| `references/issue-example.md` | An issue rollup with per-item statuses |
+| `references/roadmap-example.md` | A roadmap document with parked entries |
+| `references/handover-example.md` | A handover |
+| `references/adr-example.md` | A decision record: context, decision, consequences both sides, rejected alternatives |
+| `references/verification-example.md` | The adversarial claim check |
+| `references/refactor-sequence-example.md` | The safe change sequence and its undo |
+| `references/acceptance-criteria-example.md` | Requirements, constraints, Given-When-Then criteria, non-goals |
+| `references/docs-tone-example.md` | The human-docs tone |

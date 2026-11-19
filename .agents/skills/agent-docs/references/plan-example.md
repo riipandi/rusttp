@@ -1,5 +1,6 @@
 ---
 status: awaiting-approval
+created: YYYY-MM-DDTHH:MM:00+07:00
 updated: YYYY-MM-DDTHH:MM:00+07:00
 phases:
     - id: 1
@@ -54,7 +55,7 @@ phases:
 
 ## Execution rules
 
-- **Atomic commit per phase** is authorized; each phase's heading names its suggested commit message; self-serve commits are allowed during this plan's working session.
+- **Atomic commit per phase** is authorized; each phase's heading names its suggested commit message; the owner's per-phase go-ahead authorizes that phase's commit and nothing else.
 - **Execution waits for the owner's explicit "continue with phase N".** When the phases have all landed, the agent stops and recommends the closing commit message with its paths — it does not commit the closing state on its own.
 - <Project policies restated as the owner grants them — migration policy, reset consent, compatibility windows. Absent a grant: additive migrations, no destructive operation, compatibility kept.>
 - **The owner's parallel work is untouchable:** <the files and directories the owner named for this working session>.

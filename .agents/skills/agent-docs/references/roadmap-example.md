@@ -1,5 +1,6 @@
 ---
 status: living
+created: YYYY-MM-DDTHH:MM:00+07:00
 updated: YYYY-MM-DDTHH:MM:00+07:00
 references: <the issue and plan files the entries came from>
 ---

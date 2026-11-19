@@ -76,7 +76,7 @@ If the owner already chose in the same thread, do not re-ask. If new facts chang
 
 - Stage explicit paths. Check `git status`. Never `git add -A` or `git add .`.
 - Message: `{feat,fix,docs,refactor,test,chore}[(scope)]: <concise message>`. Do not push.
-- Do not commit unless this turn asked for it. When the work is finished, recommend the one-line message and list the paths.
+- Do not commit unless this turn asked for it; a plan's "continue with phase N" go-ahead covers that phase's one commit. When the work is finished, recommend the one-line message and list the paths.
 - Never run `git reset --hard`, `git checkout .`, `git clean -fd`, `git stash`, `git commit --no-verify`, or `git push --force`.
 
 ## Related docs
