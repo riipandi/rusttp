@@ -12,13 +12,10 @@ import { colors, shadow } from './colors.stylex'
 const darkColors = stylex.createTheme(colors, {
   backgroundCriticalFaded: 'oklch(0.24 0.0167 20.28)',
   backgroundCriticalHighlightedFaded: 'oklch(0.5842 0.164 20.28 / 0.08)',
-  backgroundCriticalHighlighted: 'oklch(0.6258 0.164 20.28)',
+  backgroundCriticalHighlighted: 'oklch(0.54 0.164 20.28)',
   backgroundCritical: 'oklch(0.5842 0.164 20.28)',
-  backgroundDisabledFaded: 'oklch(0.225 0 89.88)',
-  backgroundDisabled: 'oklch(0.28 0 89.88)',
   backgroundElevationBase: 'oklch(0.2 0 89.88)',
   backgroundElevationOverlay: 'oklch(0.24 0 89.88)',
-  backgroundElevationRaised: 'oklch(0.22 0 89.88)',
   backgroundNeutralFaded: 'oklch(1 0 89.88 / 0.04)',
   backgroundNeutralHighlightedFaded: 'oklch(1 0 0 / 0.05)',
   backgroundNeutralHighlighted: 'oklch(0.3608 0 89.88)',
@@ -27,7 +24,7 @@ const darkColors = stylex.createTheme(colors, {
   backgroundPage: 'oklch(0.16 0 89.88)',
   backgroundPositiveFaded: 'oklch(0.24 0.0106 151.8)',
   backgroundPositiveHighlightedFaded: 'oklch(0.527 0.104 151.8 / 0.08)',
-  backgroundPositiveHighlighted: 'oklch(0.5743 0.104 151.8)',
+  backgroundPositiveHighlighted: 'oklch(0.5 0.104 151.8)',
   backgroundPositive: 'oklch(0.527 0.104 151.8)',
   backgroundPrimaryFaded: 'oklch(0.24 0.018 39.4)',
   backgroundPrimaryHighlightedFaded: 'oklch(0.55 0.135 39.4 / 0.08)',
@@ -38,6 +35,7 @@ const darkColors = stylex.createTheme(colors, {
   backgroundWarningHighlighted: 'oklch(0.7297 0.176 80)',
   backgroundWarning: 'oklch(0.8108 0.176 80)',
   borderCriticalFaded: 'oklch(0.3 0.0167 20.28)',
+  borderControl: 'oklch(0.54 0 89.88)',
   borderCritical: 'oklch(0.6842 0.164 20.28)',
   borderDisabled: 'oklch(1 0 89.88 / 0.06)',
   borderNeutralFaded: 'oklch(1 0 89.88 / 0.08)',
@@ -61,15 +59,9 @@ const darkColors = stylex.createTheme(colors, {
 const darkShadows = stylex.createTheme(shadow, {
   outline:
     '0px -1px 2px -0.5px rgba(255, 255, 255, 0.06), 0px -1px 3px -1px rgba(255, 255, 255, 0.05)',
-  'outline-intense':
-    '0px -1px 2px -0.5px rgba(255, 255, 255, 0.12), 0px -1px 3px -1px rgba(255, 255, 255, 0.1)',
   raised: '0px 8px 12px -4px rgba(0, 0, 0, 0.08), 0px -1.5px 2px -1px rgba(255, 255, 255, 0.1)',
-  'raised-intense':
-    '0px 8px 12px -4px rgba(0, 0, 0, 0.16), 0px -1.5px 2px -1px rgba(255, 255, 255, 0.2)',
   overlay:
-    '0px 16px 24px -4px rgba(0, 0, 0, 0.06), 0px 8px 12px -4px rgba(0, 0, 0, 0.06), 0px 8px 6px -4px rgba(0, 0, 0, 0.06)',
-  'overlay-intense':
-    '0px 16px 24px -4px rgba(0, 0, 0, 0.12), 0px 8px 12px -4px rgba(0, 0, 0, 0.12), 0px 8px 6px -4px rgba(0, 0, 0, 0.12)'
+    '0px 16px 24px -4px rgba(0, 0, 0, 0.06), 0px 8px 12px -4px rgba(0, 0, 0, 0.06), 0px 8px 6px -4px rgba(0, 0, 0, 0.06)'
 })
 
 /**

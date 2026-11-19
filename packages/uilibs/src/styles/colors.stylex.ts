@@ -24,11 +24,8 @@ export const colors = stylex.defineVars({
   backgroundCriticalHighlightedFaded: 'oklch(0.59 0.205 20.28 / 0.06)',
   backgroundCriticalHighlighted: 'oklch(0.531 0.205 20.28)',
   backgroundCritical: 'oklch(0.59 0.205 20.28)',
-  backgroundDisabledFaded: 'oklch(0.98 0 89.88)',
-  backgroundDisabled: 'oklch(0.95 0 89.88)',
   backgroundElevationBase: 'oklch(1 0 89.88)',
   backgroundElevationOverlay: 'oklch(1 0 89.88)',
-  backgroundElevationRaised: 'oklch(1 0 89.88)',
   backgroundNeutralFaded: 'oklch(0 0 89.88 / 0.03)',
   backgroundNeutralHighlightedFaded: 'oklch(0 0 0 / 0.03)',
   backgroundNeutralHighlighted: 'oklch(0.9118 0 89.88)',
@@ -48,6 +45,7 @@ export const colors = stylex.defineVars({
   backgroundWarningHighlighted: 'oklch(0.738 0.22 80)',
   backgroundWarning: 'oklch(0.82 0.22 80)',
   borderCriticalFaded: 'oklch(0.94 0.02 20.28)',
+  borderControl: 'oklch(0.64 0 89.88)',
   borderCritical: 'oklch(0.55 0.205 20.28)',
   borderDisabled: 'oklch(0 0 89.88 / 0.06)',
   borderNeutralFaded: 'oklch(0 0 89.88 / 0.08)',
@@ -60,9 +58,9 @@ export const colors = stylex.defineVars({
   borderWarning: 'oklch(0.78 0.22 80)',
   foregroundCritical: 'oklch(0.52 0.205 20.28)',
   foregroundDisabled: 'oklch(0.65 0 89.88)',
-  foregroundNeutralFaded: 'oklch(0.54 0 89.88)',
+  foregroundNeutralFaded: 'oklch(0.51 0 89.88)',
   foregroundNeutral: 'oklch(0.24 0 89.88)',
-  foregroundPositive: 'oklch(0.52 0.13 151.8)',
+  foregroundPositive: 'oklch(0.5 0.13 151.8)',
   foregroundPrimary: 'oklch(0.52 0.128 39.4)',
   foregroundWarning: 'oklch(0.52 0.22 80)',
   onBackgroundNeutral: 'oklch(0 0 0)'
@@ -78,11 +76,7 @@ export const colors = stylex.defineVars({
  */
 export const shadow = stylex.defineVars({
   outline: '0px 1px 2px -0.5px rgba(0, 0, 0, 0.06), 0px 2px 3px -1px rgba(0, 0, 0, 0.06)',
-  'outline-intense': '0px 1px 2px -0.5px rgba(0, 0, 0, 0.12), 0px 2px 3px -1px rgba(0, 0, 0, 0.12)',
   raised: '0px 8px 12px -4px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.1)',
-  'raised-intense': '0px 8px 12px -4px rgba(0, 0, 0, 0.16), 0px 1px 2px 0px rgba(0, 0, 0, 0.2)',
   overlay:
-    '0px 16px 24px -4px rgba(0, 0, 0, 0.06), 0px 8px 12px -4px rgba(0, 0, 0, 0.06), 0px 4px 6px -2px rgba(0, 0, 0, 0.06)',
-  'overlay-intense':
-    '0px 16px 24px -4px rgba(0, 0, 0, 0.12), 0px 8px 12px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.12)'
+    '0px 16px 24px -4px rgba(0, 0, 0, 0.06), 0px 8px 12px -4px rgba(0, 0, 0, 0.06), 0px 4px 6px -2px rgba(0, 0, 0, 0.06)'
 })

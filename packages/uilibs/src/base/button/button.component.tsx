@@ -10,6 +10,7 @@
 import { Button as BaseButton } from '@base-ui/react/button'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { controlPress, controlSizes } from '../../styles/control.stylex'
 import { buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
 
 export interface ButtonProps extends Omit<
@@ -25,7 +26,14 @@ export function Button({ variant = 'primary', size = 'md', style, ...props }: Bu
   return (
     <BaseButton
       {...props}
-      {...stylex.props(buttonStyles.root, buttonVariants[variant], buttonSizes[size], style)}
+      {...stylex.props(
+        controlPress.root,
+        buttonStyles.root,
+        buttonVariants[variant],
+        (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
+        buttonSizes[size],
+        style
+      )}
     />
   )
 }

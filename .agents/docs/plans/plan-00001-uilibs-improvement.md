@@ -9,8 +9,8 @@ phases:
       note: ref contract story `src/contracts/ref.stories.tsx`; gate switch reads `import.meta.env.STORYBOOK_A11Y_GATE`; baseline with the gate on is 86 failing stories (light); the Storybook canvas overlay's dimmed breakpoint pills failed contrast on every story and were fixed in `.storybook/decorator.tsx`
     - id: 2
       title: Tokens and the shared control recipe
-      status: pending
-      note: —
+      status: committed
+      note: `src/styles/control.stylex.ts` exports `controlSizes`, `controlBase` (text entry) and `controlPress` (press targets; carries the outside focus ring and the disabled recipe) instead of one combined base; contrast measured with browser-style sRGB blending (`/tmp/audit/table.py`, not committed), so the border ratios differ from the audit's (1.32/1.20 light, 1.31/1.20 dark vs the audit's 1.13/1.08 and 3.03/2.47); gate-on failures 86 to 56 (dark) / 57 (light); one `color-contrast` failure is left, `input-phone` `ReadOnly` (opacity on a read-only phone field), to be fixed in phase 3
     - id: 3
       title: Form controls adopt the size scale and one state model
       status: pending
