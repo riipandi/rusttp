@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-20T06:26:00+07:00
-updated: 2026-11-20T06:30:00+07:00
+updated: 2026-11-20T06:38:00+07:00
 phases:
     - id: 1
       title: Port the schemas from zod to Valibot
@@ -9,28 +9,28 @@ phases:
       note: "b7dc7ff. Typecheck, lint, format clean; Chromium E2E 20/20. pnpm's `catalogMode: prefer` wrote `valibot: ^1.5.0` into the root catalog and `catalog:` into the webapp (D8 amended). Baseline build before the change (vite's minified sizes; the report has no gzip column): `form-*.js` 104.43 kB, `main-*.js` 283.79 kB, `login-*.js` 1.60 kB, `signup-*.js` 2.13 kB, `mfa-*.js` 1.56 kB."
     - id: 2
       title: Move the form layer from TanStack Form to Formisch
-      status: in_progress
-      note: "Started 2026-11-20, paused at the owner's request to update this plan. Uncommitted in the tree: `@formisch/react` added (`packages/webapp/package.json`, `pnpm-lock.yaml`, catalog `'@formisch/react': ^1.2.0` in `pnpm-workspace.yaml`). No source file changed yet."
+      status: committed
+      note: "0c15a90 (the dependency) and 6646fa6 (the move). D4 held with no fallback: the structural `FieldLike<T>` accepts Formisch's `FieldStore` under `tsrs`, with `input` typed `T | undefined`. Deviations: `field.props.name` is the JSON of the path, so ids come from `React.useId()` and the E2E locators moved from `#password` to labels; the one-argument `handleSubmit` overload has no event parameter, so the routes call `event.preventDefault()` then `void submit()`. Chunks after: `form-fields-*.js` 48.91 kB (the old `form-*.js` 104.43 kB), `main-*.js` 287.56 kB (+3.77 kB), `login` 1.62, `signup` 2.15, `mfa` 1.58 kB. `pnpm install --force` was needed once: `pnpm remove` left `tslib@2.9.1` unlinked and Storybook's build failed on it."
     - id: 3
       title: Pin the Formisch behavior with E2E
-      status: pending
-      note: —
+      status: committed
+      note: "3831b9c. Three tests added (first invalid field, captcha, first code slot); Chromium 23/23. The plan's check that each test fails without its ref did not hold: Base UI's `Form` also focuses the first invalid control on a failed submit (`Form.js` `focusFirstInvalid`), so the tests pass either way. The refs stay for Formisch's own `focus()`; `rules.md` records it."
     - id: 4
       title: Docs sync (human-facing)
-      status: pending
-      note: —
+      status: committed
+      note: "dd29b60. `@tanstack/react-form` removed from the Storybook intro; `docs/` names none of the libraries; `storybook:build` succeeds and the rebuilt output no longer lists it."
     - id: 5
       title: LLM docs sync (.agents/docs)
-      status: pending
-      note: —
+      status: committed
+      note: "d8d6279. `shape.md` webapp paragraph, a \"Webapp forms\" contract in `rules.md`, a decision record in `architecture.md`. `AGENTS.md` and `ui-components.md` named neither library."
     - id: 6
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "Typecheck, oxlint, oxfmt, rumdl clean; Chromium E2E 23/23; build succeeds with no zod in the SPA; `pnpm why @tanstack/react-form` empty and no `react-form` or `form-core` in the lockfile; zod only under `@tanstack/router-generator`. Firefox, Safari, and Mobile Safari n/a: the browsers are not installed. uilibs tests n/a: only an MDX changed. Rust gates n/a."
     - id: 7
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "Plan archived, index moved, handover-00004 written; the closing commit is the owner's."
 ---
 
 # Move the webapp forms to Formisch and Valibot: the auth forms, their field components, and their schemas

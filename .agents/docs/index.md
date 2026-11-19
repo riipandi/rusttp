@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-20T06:30:00+07:00
+updated: 2026-11-20T06:39:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -25,11 +25,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File                                       | Status            | Subject                                                                                                   |
-| ------------------------------------------ | ----------------- | --------------------------------------------------------------------------------------------------------- |
-| `plan-00002-webapp-forms-formisch.md`      | in-progress       | Move the webapp auth forms from TanStack Form + zod to Formisch + Valibot, in seven phases.               |
-
-`plan-00001-uilibs-improvement.md` (done, 2026-11-20) is in `.agents/docs/archive/`.
+None live. `plan-00001-uilibs-improvement.md` and `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -52,6 +48,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five
 | `handover-00001-cli-transport-vixum.md`  | done   | CLI scaffold, transport, vixum (server-rendered SPA), DX and Docker.                          |
 | `handover-00002-uilibs-audit-plan.md`    | done   | The `packages/uilibs` audit and the improvement plan, before any phase ran.                   |
 | `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
+| `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -59,4 +56,4 @@ Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `audit-00001-uilibs.md`.
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `audit-00001-uilibs.md`.
