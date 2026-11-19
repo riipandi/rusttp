@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T23:46:07+07:00
+updated: 2026-11-20T06:05:00+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -83,6 +83,12 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 - A component merges the caller's `style` (StyleX styles) last in `stylex.props(...)`; no `className`, no raw `style` object beside a `stylex.props` spread.
 - Inside the package use `#/*` (→ `src/*`) or a relative path; across packages use `uilibs/<path>`. `src/*` must stay importable without the Storybook config.
 - Every component carries a story; sample data in stories follows "Sample data" below. Docs pages (MDX) are wrapped by `.storybook/docs-container.tsx`, which follows the toolbar theme.
+- A wrapper is typed with `React.ComponentProps<…>` so `ref` is accepted as a prop; `ComponentPropsWithoutRef` and `forwardRef` are not used.
+- A form control takes `size` (`ControlSize`: `sm`, `md`, `lg`) and composes `controlSizes[size]` after `controlBase.root` (text entry; `controlBase.within` for a wrapper that holds the real input) or `controlPress.root` (press target) from `styles/control.stylex.ts`, then its own style, then the caller's `style`. A control that is a Field control renders through Base UI's `Field.Control` (or is a Base UI control), so `aria-invalid`, `data-invalid`, and the label and description wiring come from the Field. Text controls fill their container (`width: 100%`); a fixed width comes from `style`.
+- Control edges use `borderControl`; `borderNeutralFaded` is for dividers and cards. A text pair clears 4.5:1 and a control edge 3:1 in both themes.
+- A string a component renders or names (a close button, a stepper, an ellipsis, a slot) is a `labels` prop (or a prop of its own) with an English default; there is no locale context.
+- Alert, Badge, and Toast color through `tone`, not a `destructive` variant. An icon-only control or an empty table header carries `visuallyHidden` text or an `aria-label`. A glyph is an `@keyline-icons/react` component; a `base` component does not import from `extra`, except Button's `Spinner`.
+- The a11y gate: `pnpm --filter uilibs test` runs axe on every story and fails on a violation, in light and dark. A new story passes it; the only allowlisted element is Base UI's focus guard (`[data-base-ui-focus-guard]`, `.storybook/preview.tsx`). `STORYBOOK_A11Y_GATE=todo` (or `off`) relaxes it for a local run only.
 - `.oxlintrc.json` switches off the React-compiler and several a11y rules for `packages/uilibs/**` (the ported data grid, kanban, and chart stories trip them); new code there should still satisfy them.
 
 ### Sample data
@@ -122,3 +128,6 @@ Every made-up value — test fixtures, seed rows, email `previewProps`, stories,
 - `vite build` never builds Rust; `just build` runs the SPA build before `cargo build --release` because the release binary embeds `apps/server/frontend` at compile time.
 - An axum `nest` with its own fallback owns every path under its prefix; that is what keeps `/api/*` and `/rpc/*` misses away from the SPA fallback, so a nested router never drops its fallback.
 - `cargo test --workspace` unifies features across members, so it never proves a module can be unplugged; only `cargo hack --each-feature` does.
+- Base UI's `OTPField.Input` ignores `aria-label` on the first slot and names it from the root's label; `OTPField` turns a root `aria-label` into a hidden label for that reason. The Toast close button is `aria-hidden` until the stack is focused, so a test finds it by attribute, not by role.
+- Base UI's `Button` gives a non-native render `role="button"`: render links through `LinkButton`, not `Button render={<a />}`.
+- Storybook's canvas overlay (`.storybook/decorator.tsx`) sits inside the story root, so a story query for a role must scope to its own element (`within(...)`) or it finds the overlay's direction button.

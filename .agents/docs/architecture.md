@@ -1,6 +1,6 @@
 # Architecture
 
-updated: 2026-11-19T23:10:46+07:00
+updated: 2026-11-20T06:05:00+07:00
 
 The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`; this file keeps the why, so a settled decision is not re-litigated.
 
@@ -136,6 +136,37 @@ Alternatives considered:
 - `rust-embed` — rejected: cache headers, precompression, and the SPA fallback would be hand-written; `tower-http` `ServeDir` — rejected: the binary would need `dist/` beside it at runtime.
 - watchexec restarting `cargo run` (with `systemfd`/`listenfd` holding the socket) — rejected: the server is down for the whole compile and stays down when the build fails; the plugin keeps the old server answering in both cases, with one process to run.
 - vite-rs (Vite managed from Rust) — rejected after research: the Vite-first proxy gives the same single origin with less machinery.
+
+### The UI library composes through one control scale, shared recipes, and a failing a11y gate
+
+Context: `audit-00001-uilibs` found controls that did not compose (a `lg` Button above a 36 px Input), wrappers that rejected `ref`, controls that were not Field controls, token-level contrast failures, and 81 stories with real axe violations that a `todo` gate never failed.
+
+Decision (2026-11-20, `plan-00001-uilibs-improvement`):
+
+- One `ControlSize` scale, `sm` 32 / `md` 36 / `lg` 40, default `md`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xs` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
+- Two focus languages by kind: text entry takes the primary border and a 2px inset outline, press targets a 2px outside ring (an inset ring clips a short label, an outside ring collides with a field's neighbours). Disabled is one recipe, `opacity: 0.5` and the not-allowed cursor.
+- `borderControl`, a token at 3:1 or more on the page and elevation surfaces in both themes, is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
+- Wrappers are typed `React.ComponentProps<…>` (React 19 `ref` as a prop); no `forwardRef`. Built-in strings are per-component `labels` props with English defaults; no locale context.
+- Alert, Badge, and Toast take `tone` (`neutral | primary | positive | warning | critical`); `destructive` variants became `tone='critical'`. Alert is a polite `status` unless given `role='alert'`.
+- `LinkButton` lives in `base/button` and takes `render` (`<a href>` or a router `<Link to>`), so the library does not depend on the router; it puts `role='link'` back on the rendered element, which Base UI turns into `button`. A loading Button is disabled but focusable and reports `aria-busy`.
+- Glyphs are `@keyline-icons/react` components used directly (`size`, `strokeWidth`); the `Icon` wrapper stays in `extra`, so `base` parts do not import it. `ContextMenu` items are the DropdownMenu's: Base UI 1.9 exports the same Menu parts under both names.
+- The a11y gate fails by default (`.storybook/preview.tsx`); `STORYBOOK_A11Y_GATE=todo|off` relaxes it locally. The one allowlist entry is Base UI's focus guard (`[data-base-ui-focus-guard]`).
+
+Consequences:
+
+- (positive) one place changes every control's height, focus, invalid, and disabled behavior; a mixed row is correct by construction and the composition story asserts equal heights; every story passes axe in light and dark; no dependency was added.
+- (negative) the defaults grew where the scale moved them (Toggle `md` 32 to 36, Menubar 32 to 36, OTP slot 32 to 36, the `lg` text controls take 16 px type); there is no backward compatibility, so a renamed prop was renamed in the webapp too; Base UI behavior the library works around (OTP's first-slot label, the Toast close button's `aria-hidden`, no accordion arrow keys) is pinned by stories, not by types.
+
+Alternatives considered:
+
+- Drop Button `xs` and `lg` instead of scaling the controls — rejected: breaks toolbars and the webapp's `lg` buttons.
+- `xs` on every control — rejected: a 28 px text field is a cramped target.
+- A `--control-height` variable or a `<Control>` wrapper component — rejected: the first hides the size from the type system, the second cannot wrap Base UI parts that each render their own element.
+- Raising `borderNeutral` globally — rejected: heavier cards, tables, and separators everywhere.
+- `forwardRef` wrappers — rejected: deprecated in React 19 and a second code path.
+- A locale context — rejected: one English consumer, and it breaks the one-folder-per-component anatomy.
+- Positive and warning Button variants — rejected: nothing in the repo needs them.
+- Committing the axe sweep script — rejected: it needs `axe-core` as a declared dependency.
 
 ## Parked
 

@@ -41,8 +41,8 @@ phases:
       note: `error` is the default gate (`STORYBOOK_A11Y_GATE=todo|off` relaxes it locally); the one allowlist entry is Base UI's focus guard (`[data-base-ui-focus-guard]`, a context exclude); 433/433 stories in light and in dark, three green runs in a row; the aspect-ratio assertion waits for layout; new keyboard stories for Tabs, Toggle, Accordion, Select, Combobox, OTP, NumberField (Base UI's accordion has no arrow-key navigation, so its story tabs between triggers); the webapp's text and password fields and the auth buttons are `lg`; the `LinkButton` copy was already deleted in phase 5; a new e2e test asserts the login fields and the submit button are 40 px; e2e 20/20 on Chromium
     - id: 10
       title: Docs sync
-      status: pending
-      note: —
+      status: committed
+      note: `docs/` n/a (it covers running and deploying the product; the library is source-shared inside the repo and its guidance lives in the agent docs and Storybook); `rules.md` (UI library contract and traps), `shape.md` (the gate, `src/contracts/`; the stale `src/types/` was removed), `architecture.md` (one decision record for D1 to D13, with the deviations); one unverified claim about `Field.Control` and `ref` was dropped before commit
     - id: 11
       title: LLM docs sync
       status: pending
