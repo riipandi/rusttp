@@ -1,24 +1,58 @@
-//! The SPA. The server renders its document through vixum so each page carries its own head and
-//! status; in a debug build started by the Vite plugin (`VITE_DEV_SERVER` set) everything else is
-//! proxied to Vite, otherwise it is served from `apps/server/frontend` (see `build.rs`).
+//! The SPA. The server renders the whole document through vixum (the shell in `stub/head.html`
+//! and `stub/body.html`, each page's head and status, the entry's tags); in a debug build started
+//! by the Vite plugin (`VITE_DEV_SERVER` set) modules and assets are proxied to Vite, otherwise
+//! they are served from `apps/server/frontend` (see `build.rs`).
 
 use axum::Router;
+use axum::extract::Request;
 use axum::http::request::Parts;
-use vixum::{Page, Vixum};
+use axum::http::{HeaderValue, StatusCode, header};
+use axum::middleware::{self, Next};
+use axum::response::Response;
+use vixum::{Page, Route, Shell, Vixum};
+
+fn shell() -> Shell {
+    Shell::new("en")
+        .head(include_str!("../../stub/head.html"))
+        .body(include_str!("../../stub/body.html"))
+}
 
 pub(super) fn router() -> Result<Router, vixum::Error> {
     #[cfg(debug_assertions)]
     if let Ok(origin) = std::env::var("VITE_DEV_SERVER") {
-        return Ok(Vixum::dev(&origin)?.into_router(page));
+        return Ok(Vixum::dev(shell(), &origin, "/app/main.tsx")?.into_router(page));
     }
-    let assets = memory_serve::load!().index_file(None).into_router();
-    Ok(Vixum::embedded(include_str!("../../frontend/index.html"), assets)?.into_router(page))
+    let assets = memory_serve::load!()
+        .index_file(None)
+        .into_router()
+        .layer(middleware::from_fn(immutable_assets));
+    let manifest = include_str!("../../frontend/.vite/manifest.json");
+    let routes = include_str!("../../frontend/routes.json");
+    Ok(Vixum::embedded(shell(), manifest, routes, assets)?.into_router(page))
 }
 
-/// The head for each path. Every path answers the SPA, so the default is the app's own page;
-/// match on `parts.uri` here (and load data) to give a route its title, description, and status.
-async fn page(_parts: Parts) -> Page {
-    Page::new("Rusttp").description("Rusttp web application").noindex(true)
+/// The head and status for each navigation. A path TanStack Router has no route for answers 404
+/// (the SPA still renders its not-found page); match on `route` or `parts.uri` here (and load
+/// data) to give a page its own title and description.
+async fn page(_parts: Parts, route: Route) -> Page {
+    let page = Page::new("Rusttp").description("Rusttp web application").noindex(true);
+    match route {
+        Route::NotFound => page.status(StatusCode::NOT_FOUND),
+        Route::Matched(_) | Route::Unknown => page,
+    }
+}
+
+/// Vite content-hashes everything under `/assets/`, so a file there never changes.
+async fn immutable_assets(req: Request, next: Next) -> Response {
+    let hashed = req.uri().path().starts_with("/assets/");
+    let mut res = next.run(req).await;
+    if hashed && res.status().is_success() {
+        res.headers_mut().insert(
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("public, max-age=31536000, immutable"),
+        );
+    }
+    res
 }
 
 #[cfg(test)]
@@ -28,10 +62,10 @@ mod tests {
     use tower::ServiceExt;
 
     #[tokio::test]
-    async fn unknown_page_renders_the_spa_document() {
+    async fn a_page_renders_the_server_document() {
         let res = crate::transport::router()
             .unwrap()
-            .oneshot(Request::get("/vatican/archives").body(Body::empty()).unwrap())
+            .oneshot(Request::get("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
         assert_eq!(res.status(), StatusCode::OK);
@@ -42,6 +76,9 @@ mod tests {
                 .starts_with("text/html")
         );
         let html = to_bytes(res.into_body(), usize::MAX).await.unwrap();
-        assert!(String::from_utf8_lossy(&html).contains("<title>Rusttp</title>"));
+        let html = String::from_utf8_lossy(&html);
+        assert!(html.contains("<title>Rusttp</title>"));
+        assert!(html.contains("s-loader"));
+        assert!(html.contains("<script type=\"module\""));
     }
 }

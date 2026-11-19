@@ -1,18 +1,23 @@
-//! A server-rendered document shell for a Vite SPA on axum.
+//! A server-rendered document for a Vite SPA on axum.
 //!
-//! The server owns the HTML document, so every page answers with its own `<head>` (title,
-//! description, Open Graph, canonical, JSON-LD) and status code for crawlers, while the body
-//! stays the SPA's. The document is Vite's own `index.html` with the page's head written in
-//! before `</head>`:
+//! The server owns the HTML document: the app's [`Shell`] (shared head markup, the loader inside
+//! the root element), each page's own head and status from a [`Page`], and the entry's tags.
+//! Vite only compiles and serves modules and assets.
 //!
-//! - [`Vixum::embedded`] renders from the built `index.html` (the hashed script and style tags
-//!   Vite wrote) and serves every other file from the given assets router.
-//! - [`Vixum::dev`] fetches the transformed `index.html` from the Vite dev server per navigation
-//!   (the HMR client and React preamble included) and proxies every other request to it, so the
-//!   browser only ever talks to the server's port.
+//! - [`Vixum::embedded`] takes the entry's script, stylesheet, and modulepreload tags from the
+//!   build manifest and serves every other file from the given assets router.
+//! - [`Vixum::dev`] runs each document through the Vite dev server's `transformIndexHtml` (the
+//!   HMR client, the React preamble, other plugins' tags) and proxies every other request to it,
+//!   so the browser only ever talks to the server's port. The Vite side is the `vixum` plugin in
+//!   `packages/webapp/plugins/vixum.ts`.
+//!
+//! With a route table (TanStack Router's full paths), a navigation no route matches answers 404,
+//! while the body stays the SPA, which renders its own not-found page.
 
 mod dev;
 mod page;
+mod routes;
+mod shell;
 
 use std::fmt;
 use std::sync::Arc;
@@ -25,50 +30,64 @@ use axum::response::{IntoResponse, Response};
 use tower::ServiceExt;
 
 pub use page::Page;
+pub use routes::Route;
+pub use shell::Shell;
 
-/// The document shell and the files around it.
+use routes::Routes;
+
+/// The document renderer and the files around it.
 pub struct Vixum {
+    shell: Shell,
     mode: Mode,
 }
 
 enum Mode {
     Embedded {
-        before: &'static str,
-        after: &'static str,
+        tags: String,
+        routes: Option<Routes>,
         assets: Router,
     },
     Dev(Box<dev::Dev>),
 }
 
 impl Vixum {
-    /// Renders from a built `index.html` and serves other files from `assets`.
+    /// Renders with the entry tags from Vite's build `manifest` and serves other files from
+    /// `assets`. `routes` is the JSON array of route full paths the `vixum` Vite plugin writes
+    /// (`routes.json`); `null` means no route table, so every navigation answers 200.
     ///
     /// # Errors
     ///
-    /// When `index_html` has no `</head>` to write the page's head before.
-    pub fn embedded(index_html: &'static str, assets: Router) -> Result<Self, Error> {
-        let (before, after) = split_head(index_html)?;
+    /// When the manifest has no entry chunk, or either JSON document does not parse.
+    pub fn embedded(shell: Shell, manifest: &str, routes: &str, assets: Router) -> Result<Self, Error> {
         Ok(Self {
-            mode: Mode::Embedded { before, after, assets },
+            shell,
+            mode: Mode::Embedded {
+                tags: shell::entry_tags(manifest)?,
+                routes: routes::parse(routes)?,
+                assets,
+            },
         })
     }
 
-    /// Renders from, and proxies to, the Vite dev server at `origin` (e.g. `http://127.0.0.1:5173`).
+    /// Renders through, and proxies to, the Vite dev server at `origin` (e.g.
+    /// `http://127.0.0.1:5173`); `entry` is the module the document loads (e.g. `/app/main.tsx`).
     ///
     /// # Errors
     ///
     /// When `origin` is not an absolute `http` URL.
-    pub fn dev(origin: &str) -> Result<Self, Error> {
+    pub fn dev(shell: Shell, origin: &str, entry: &str) -> Result<Self, Error> {
         Ok(Self {
-            mode: Mode::Dev(Box::new(dev::Dev::new(origin)?)),
+            shell,
+            mode: Mode::Dev(Box::new(dev::Dev::new(origin, entry)?)),
         })
     }
 
     /// A router that answers every request: a navigation with the document for the page
-    /// `resolve` returns, anything else with the asset (or the dev server's answer).
+    /// `resolve` returns (given the request and its [`Route`]), anything else with the asset (or
+    /// the dev server's answer).
     pub fn into_router<F, Fut>(self, resolve: F) -> Router
     where
-        F: Fn(Parts) -> Fut + Clone + Send + Sync + 'static,
+        F: Fn(Parts, Route) -> Fut + Clone + Send + Sync + 'static,
         Fut: Future<Output = Page> + Send + 'static,
     {
         let this = Arc::new(self);
@@ -81,7 +100,7 @@ impl Vixum {
 
     async fn handle<F, Fut>(&self, req: Request, resolve: F) -> Response
     where
-        F: Fn(Parts) -> Fut,
+        F: Fn(Parts, Route) -> Fut,
         Fut: Future<Output = Page>,
     {
         let dev = matches!(self.mode, Mode::Dev(_));
@@ -97,17 +116,21 @@ impl Vixum {
 
         let (parts, _body) = req.into_parts();
         let uri = parts.uri.clone();
-        let page = resolve(parts).await;
-        match &self.mode {
-            Mode::Embedded { before, after, .. } => document(before, after, &page),
-            Mode::Dev(dev) => match dev.index_html(&uri).await {
-                Ok(html) => match split_head(&html) {
-                    Ok((before, after)) => document(before, after, &page),
-                    Err(err) => dev::unavailable(&err.0),
-                },
-                Err(reason) => dev::unavailable(&reason),
+        let route = match &self.mode {
+            Mode::Embedded { routes, .. } => routes.as_ref().map_or(Route::Unknown, |r| r.find(uri.path())),
+            Mode::Dev(dev) => dev.routes().await.map_or(Route::Unknown, |r| r.find(uri.path())),
+        };
+        let page = resolve(parts, route).await;
+        let mut head = String::new();
+        page.write_head(&mut head);
+        let html = match &self.mode {
+            Mode::Embedded { tags, .. } => self.shell.render(&head, tags),
+            Mode::Dev(dev) => match dev.transform(&uri, &self.shell.render(&head, &dev.entry_tag())).await {
+                Ok(html) => html,
+                Err(reason) => return dev::unavailable(&reason),
             },
-        }
+        };
+        document(html, &page)
     }
 }
 
@@ -126,21 +149,7 @@ fn is_navigation(req: &Request, dev: bool) -> bool {
     accepts_html || (!dev && no_extension)
 }
 
-/// Splits at the last `</head>` before `<body`, so the text `</head>` in an earlier comment or
-/// script does not move the page's head out of the real one.
-fn split_head(html: &str) -> Result<(&str, &str), Error> {
-    let body = html.find("<body").unwrap_or(html.len());
-    html[..body]
-        .rfind("</head>")
-        .map(|at| html.split_at(at))
-        .ok_or_else(|| Error("index.html has no </head>".into()))
-}
-
-fn document(before: &str, after: &str, page: &Page) -> Response {
-    let mut html = String::with_capacity(before.len() + after.len() + 1024);
-    html.push_str(before);
-    page.write_head(&mut html);
-    html.push_str(after);
+fn document(html: String, page: &Page) -> Response {
     (
         page.status_code(),
         [
@@ -153,7 +162,8 @@ fn document(before: &str, after: &str, page: &Page) -> Response {
         .into_response()
 }
 
-/// A shell that cannot be set up: a missing `</head>`, or a dev server origin that does not parse.
+/// A document that cannot be set up: a build manifest or route table that does not parse, or a
+/// dev server origin that does not.
 #[derive(Debug)]
 pub struct Error(String);
 
@@ -174,24 +184,26 @@ mod tests {
 
     use super::*;
 
-    const INDEX: &str =
-        "<html><head><script src=\"/assets/index-abc.js\"></script></head><body><div id=\"root\"></div></body></html>";
+    const MANIFEST: &str = r#"{"app/main.tsx": {"file": "assets/main-abc.js", "isEntry": true}}"#;
 
-    fn app() -> Router {
-        let assets = Router::new().route("/assets/index-abc.js", get(|| async { "console.log('lumos')" }));
-        Vixum::embedded(INDEX, assets)
+    fn app(routes: &str) -> Router {
+        let assets = Router::new().route("/assets/main-abc.js", get(|| async { "console.log('lumos')" }));
+        let shell = Shell::new("en").head("<meta charset=\"utf-8\">").body("<p>Loading</p>");
+        Vixum::embedded(shell, MANIFEST, routes, assets)
             .unwrap()
-            .into_router(|parts: Parts| async move {
-                if parts.uri.path() == "/vault/713" {
-                    Page::new("Vault 713 - Gringotts").description("Where the Philosopher's Stone was kept.")
-                } else {
-                    Page::new("Not Found").status(StatusCode::NOT_FOUND).noindex(true)
+            .into_router(|parts: Parts, route: Route| async move {
+                match route {
+                    Route::NotFound => Page::new("Not Found").status(StatusCode::NOT_FOUND).noindex(true),
+                    _ if parts.uri.path() == "/vaults/713" => {
+                        Page::new("Vault 713 - Gringotts").description("Where the Philosopher's Stone was kept.")
+                    }
+                    _ => Page::new("Gringotts"),
                 }
             })
     }
 
-    async fn get_body(uri: &str, accept: &str) -> (StatusCode, String) {
-        let res = app()
+    async fn get_body(app: Router, uri: &str, accept: &str) -> (StatusCode, String) {
+        let res = app
             .oneshot(
                 Request::get(uri)
                     .header(header::ACCEPT, accept)
@@ -206,42 +218,41 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn navigation_renders_the_page_head_before_vites_tags_close() {
-        let (status, html) = get_body("/vault/713", "text/html").await;
+    async fn navigation_renders_the_shell_page_head_and_entry() {
+        let (status, html) = get_body(app("null"), "/vaults/713", "text/html").await;
         assert_eq!(status, StatusCode::OK);
-        assert!(html.contains("<title>Vault 713 - Gringotts</title>"));
+        assert!(html.starts_with(
+            "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Vault 713 - Gringotts</title>"
+        ));
         assert!(html.contains("Philosopher&#39;s Stone"));
-        assert!(html.contains("index-abc.js\"></script><title>"));
-        assert!(html.ends_with("</head><body><div id=\"root\"></div></body></html>"));
+        assert!(html.contains("<script type=\"module\" crossorigin src=\"/assets/main-abc.js\"></script></head>"));
+        assert!(html.ends_with("<div id=\"root\"><p>Loading</p></div></body></html>"));
     }
 
     #[tokio::test]
-    async fn the_resolver_sets_the_status() {
-        let (status, html) = get_body("/chamber-of-secrets", "*/*").await;
+    async fn an_unmatched_route_answers_404_with_the_spa() {
+        let routes = r#"["/", "/vaults/$vaultId"]"#;
+        let (status, _) = get_body(app(routes), "/vaults/713", "*/*").await;
+        assert_eq!(status, StatusCode::OK);
+        let (status, html) = get_body(app(routes), "/chamber-of-secrets", "*/*").await;
         assert_eq!(status, StatusCode::NOT_FOUND);
-        assert!(html.contains("<meta name=\"robots\" content=\"noindex, nofollow\">"));
+        assert!(html.contains("noindex, nofollow"));
+        assert!(html.contains("/assets/main-abc.js"));
     }
 
     #[tokio::test]
     async fn assets_bypass_the_document() {
-        let (status, body) = get_body("/assets/index-abc.js", "*/*").await;
+        let (status, body) = get_body(app("null"), "/assets/main-abc.js", "*/*").await;
         assert_eq!(status, StatusCode::OK);
         assert_eq!(body, "console.log('lumos')");
-        let (status, _) = get_body("/assets/missing.js", "*/*").await;
+        let (status, _) = get_body(app("null"), "/assets/missing.js", "*/*").await;
         assert_eq!(status, StatusCode::NOT_FOUND);
     }
 
     #[test]
-    fn the_real_head_end_wins_over_one_in_a_comment() {
-        let (before, after) =
-            split_head("<head><!-- ends at </head> --><script></script></head><body></body>").unwrap();
-        assert!(before.ends_with("<script></script>"));
-        assert_eq!(after, "</head><body></body>");
-    }
-
-    #[test]
-    fn an_index_without_head_is_refused() {
-        assert!(Vixum::embedded("<html><body></body></html>", Router::new()).is_err());
-        assert!(Vixum::dev("localhost:5173").is_err());
+    fn bad_inputs_are_refused() {
+        assert!(Vixum::embedded(Shell::new("en"), "{}", "null", Router::new()).is_err());
+        assert!(Vixum::embedded(Shell::new("en"), MANIFEST, "{", Router::new()).is_err());
+        assert!(Vixum::dev(Shell::new("en"), "localhost:5173", "/app/main.tsx").is_err());
     }
 }

@@ -16,12 +16,14 @@ export interface RustServerOptions {
 const tag = '\x1b[33m[rust]\x1b[0m'
 const log = (msg: string) => console.info(`${tag} ${msg}`)
 
-/** Ctrl-C semantics, so in-flight requests finish; forced after 5 s. */
-const retire = (proc: ChildProcess | null) => {
-  if (!proc || proc.exitCode !== null) return
-  proc.kill('SIGINT')
-  setTimeout(() => proc.exitCode === null && proc.kill('SIGKILL'), 5000).unref()
-}
+/** Ctrl-C semantics, so in-flight requests finish; forced after 5 s. Resolves once it exits. */
+const retire = (proc: ChildProcess | null) =>
+  new Promise<void>((resolve) => {
+    if (!proc || proc.exitCode !== null) return resolve()
+    proc.once('exit', () => resolve())
+    proc.kill('SIGINT')
+    setTimeout(() => proc.exitCode === null && proc.kill('SIGKILL'), 5000).unref()
+  })
 
 /**
  * Builds and runs the Rust server inside `vite dev`; the browser opens the server, which renders
@@ -92,11 +94,18 @@ export function rustServer(opts: RustServerOptions): Plugin {
     const ok = await build()
     if (ok && !closed) {
       const first = child === null
-      const next = await launch(viteOrigin)
+      let next = await launch(viteOrigin)
+      // Without SO_REUSEPORT (Windows) the new server cannot bind beside the old one: stop the
+      // old one first, accepting the gap, rather than never applying the change.
+      if (!next && child) {
+        await retire(child)
+        child = null
+        next = await launch(viteOrigin)
+      }
       if (next) {
         const old = child
         child = next
-        retire(old)
+        void retire(old)
         if (first) log(`open \x1b[36m${appUrl}\x1b[0m`)
       }
     }
@@ -110,7 +119,7 @@ export function rustServer(opts: RustServerOptions): Plugin {
   const shutdown = () => {
     closed = true
     clearTimeout(timer)
-    retire(child)
+    void retire(child)
   }
 
   return {

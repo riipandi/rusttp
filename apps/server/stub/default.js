@@ -1,11 +1,3 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rusttp</title>
-  </head>
-  <body style="font-family: system-ui, sans-serif; margin: 3rem">
-    <p>The web app is not built yet. Run <code>pnpm --filter webapp build</code>, then rebuild the server.</p>
-  </body>
-</html>
+// The entry a server built before the SPA loads (apps/server/build.rs writes it with a stub manifest).
+document.getElementById('root').innerHTML =
+  '<p style="font-family: system-ui, sans-serif; margin: 3rem">The web app is not built yet. Run <code>pnpm --filter webapp build</code>, then rebuild the server.</p>'
