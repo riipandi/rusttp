@@ -12,7 +12,7 @@ fn main() {
     let index = Path::new(FRONTEND_DIR).join("index.html");
     if !index.exists() {
         fs::create_dir_all(FRONTEND_DIR).expect("create the frontend directory");
-        fs::write(&index, include_str!("stub.html")).expect("write the frontend stub");
+        fs::write(&index, include_str!("stub/default.html")).expect("write the frontend stub");
     }
     // Release builds embed the files; debug builds read them from disk on each request.
     memory_serve::load_directory(FRONTEND_DIR);

@@ -1,5 +1,8 @@
 import { defineConfig, devices, type HtmlReporterOptions } from '@playwright/test'
-import { ENV } from './config.ts'
+
+const ENV = {
+  baseURL: process.env.E2E_BASE_URL || 'http://127.0.0.1:3000'
+}
 
 const htmlReporterOpts = {
   outputFolder: '.output/e2e-result',
@@ -28,22 +31,20 @@ export default defineConfig({
   ],
   // `E2E_BASE_URL` points the tests at servers that are already running. Otherwise the Rust
   // server and the built SPA (vite preview, proxying the API to the server) start here.
+  // The server embeds the built SPA (and serves it from disk in a debug build), so one process
+  // answers the documents, the assets, and the API, as in production.
   webServer: process.env['E2E_BASE_URL']
     ? []
     : [
         {
-          command: 'cargo run -q -p rusttp-server -- serve',
-          url: new URL('/healthz', ENV.backendURL).href,
+          command: 'pnpm --filter webapp build && cargo run -q -p rusttp-server -- serve',
+          url: new URL('/healthz', ENV.baseURL).href,
           reuseExistingServer: !process.env['CI'],
           timeout: 300_000,
-          env: { BIND_ADDR: new URL(ENV.backendURL).host, RUST_LOG: 'warn' }
-        },
-        {
-          command: 'pnpm --filter webapp build && pnpm --filter webapp preview',
-          url: ENV.baseURL,
-          reuseExistingServer: !process.env['CI'],
-          timeout: 120_000,
-          env: { BACKEND_URL: ENV.backendURL }
+          env: {
+            BIND_ADDR: new URL(ENV.baseURL).host,
+            RUST_LOG: 'warn'
+          }
         }
       ]
 })

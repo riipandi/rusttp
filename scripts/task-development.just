@@ -1,18 +1,11 @@
 [private]
 app_bin := "rusttp-server"
 
-[doc('Run the server and the Vite dev server, reload both on change')]
+[doc('Run the dev server with hot reload')]
 [group('development')]
 [no-exit-message]
-[positional-arguments]
-dev *args:
-    #!/usr/bin/env bash
-    set -uo pipefail
-    # One Ctrl-C (or either side exiting) stops both.
-    trap 'trap - EXIT; kill 0' INT TERM EXIT
-    watchexec -r -e rs,toml -w apps -w crates -w Cargo.toml -- cargo run -- serve "$@" &
-    pnpm --silent --filter webapp dev &
-    wait
+dev:
+    @pnpm --silent --filter webapp dev
 
 [doc('Run the app CLI, e.g. `just run serve --bind 0.0.0.0:3000`')]
 [group('development')]
@@ -23,9 +16,10 @@ run *args:
 
 # ---- Build -------------------------------------------------------------------
 
-[doc('Build the release binary')]
+[doc('Build the SPA, then the release binary that embeds it')]
 [group('development')]
 build *args:
+    @pnpm --silent --filter webapp build
     @cargo build --release {{ args }}
     @ls -lh target/release/{{ app_bin }} | awk '{printf "{{ BOLD + GREEN }}    %s{{ NORMAL }} %s (%s)\n", "Output", $5, $NF}'
 

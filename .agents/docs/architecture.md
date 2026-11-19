@@ -1,6 +1,6 @@
 # Architecture
 
-updated: 2026-11-19T22:18:41+07:00
+updated: 2026-11-19T22:54:41+07:00
 
 The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`; this file keeps the why, so a settled decision is not re-litigated.
 
@@ -119,7 +119,7 @@ Unverified: the behaviour of `create_schema` + `dangerous_set_table_name` agains
 
 Context: the SPA needs typed calls with one contract shared by server and client, while OAuth/OIDC providers, webhooks, and other external callers expect plain REST. In development the SPA runs on Vite's dev server; in production the server must ship as one binary.
 
-Decision (2026-11-19, owner): one axum router in `apps/server/src/transport/` serves Connect RPC (`connectrpc`) on `/rpc/<package.Service>/<Method>`, REST on `/api` (versioned under `/api/v1`), and the SPA on every other path through `memory-serve`, which embeds `apps/server/frontend` (the gitignored `vite build` output) in release builds and reads it from disk in debug. Development runs Vite on `:5173` and proxies `/api`, `/rpc`, and `/healthz` to the server, so the browser stays on one origin. Errors under `/api` and `/rpc` are JSON (`application/problem+json` for REST, the Connect error body for RPC); every other path falls back to the SPA's `index.html` (200, the client router renders not-found) or a static HTML page.
+Decision (2026-11-19, owner): one axum router in `apps/server/src/transport/` serves Connect RPC (`connectrpc`) on `/rpc/<package.Service>/<Method>`, REST on `/api` (versioned under `/api/v1`), and the SPA on every other path. The server owns the SPA document for SEO (2026-11-19, owner): `crates/vixum` writes each page's head and status into Vite's own `index.html` (embedded from `apps/server/frontend`, the gitignored `vite build` output, through `memory-serve`, which also serves the assets), so the hashed tags, the HMR client, and the React preamble stay Vite's. The browser opens the server's port in development as in production: a Vite plugin (`packages/webapp/plugins/rust-server.ts`) builds and runs the debug server, which fetches the transformed `index.html` from Vite per navigation and proxies modules and assets to it, while the HMR socket connects to Vite directly; on a Rust change the plugin rebuilds first and starts the new server beside the old one (`SO_REUSEPORT`, debug builds only) before retiring it. Errors under `/api` and `/rpc` are JSON (`application/problem+json` for REST, the Connect error body for RPC); every other path answers the document (status from the page resolver) or a static HTML page.
 
 Consequences:
 
@@ -130,7 +130,11 @@ Alternatives considered:
 
 - `axum-connect` — rejected: thinner protocol coverage and less active than `connectrpc`, which passes the Connect conformance suite.
 - Connect at the root (`/<package.Service>/<Method>`) — rejected: it shares the namespace with SPA routes and needs a proxy entry per package.
+- Porting vite-rs — rejected: it serves `index.html` as built (one head for every page; templating is out of its scope, its README says), and it runs Vite as a child of the Rust process, so every Rust restart restarts Vite. Its dev proxy is the one part kept, in vixum.
+- Rendering the document entirely in Rust from the build manifest (the Saka/olivere-vite shape) — rejected: the dev tags (HMR client, React preamble) would be re-created by hand; vixum reuses Vite's own `index.html` in both modes.
+- Vite in front with a proxy to the server — rejected: two ports between dev and production, and the head stays static.
 - `rust-embed` — rejected: cache headers, precompression, and the SPA fallback would be hand-written; `tower-http` `ServeDir` — rejected: the binary would need `dist/` beside it at runtime.
+- watchexec restarting `cargo run` (with `systemfd`/`listenfd` holding the socket) — rejected: the server is down for the whole compile and stays down when the build fails; the plugin keeps the old server answering in both cases, with one process to run.
 - vite-rs (Vite managed from Rust) — rejected after research: the Vite-first proxy gives the same single origin with less machinery.
 
 ## Parked

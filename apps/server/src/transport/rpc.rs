@@ -38,6 +38,7 @@ mod tests {
     #[tokio::test]
     async fn unknown_procedure_is_connect_json() {
         let res = crate::transport::router()
+            .unwrap()
             .oneshot(
                 Request::post("/rpc/gringotts.v1.VaultService/OpenVault")
                     .header(header::CONTENT_TYPE, "application/json")

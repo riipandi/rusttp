@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T22:18:41+07:00
+updated: 2026-11-19T22:54:41+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -40,7 +40,8 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 
 - Each module defines its errors with `thiserror` and maps them to the kernel's `AppError`, rendered as `application/problem+json`. Internal details go to the log with the trace id, never to the client.
 - Every router runs behind a timeout, a body limit, `CatchPanicLayer`, a request id, and a trace span carrying the module name.
-- Transport (`apps/server/src/transport/`): Connect on `/rpc`, REST on `/api`, the SPA on every other path; no other top-level prefix without the owner. Errors under `/api` are `application/problem+json` (`http::problem`), including the unmatched-route and wrong-method fallbacks; errors under `/rpc` are Connect error JSON (connectrpc renders them; the panic handler mirrors `{"code":"internal"}`). Everywhere else an error never answers JSON: an unknown path serves the SPA's `index.html` with 200, a panic serves `transport/internal-error.html`. Each of the three trees has its own `CatchPanicLayer`.
+- Transport (`apps/server/src/transport/`): Connect on `/rpc`, REST on `/api`, the SPA on every other path; no other top-level prefix without the owner. Errors under `/api` are `application/problem+json` (`http::problem`), including the unmatched-route and wrong-method fallbacks; errors under `/rpc` are Connect error JSON (connectrpc renders them; the panic handler mirrors `{"code":"internal"}`). Everywhere else an error never answers JSON: a navigation gets the SPA document with the status the page resolver in `transport/spa.rs` sets (200 by default), a missing asset a bare 404, a panic `apps/server/stub/error.html`. Each of the three trees has its own `CatchPanicLayer`.
+- The SPA document is the server's (`crates/vixum`): each page's head (title, description, Open Graph, canonical, robots, JSON-LD) and status come from the resolver in `transport/spa.rs`, written before Vite's `</head>`; `packages/webapp/index.html` therefore carries no `<title>`, description, or robots tag. Page values are HTML-escaped; `Page::head` is the one trusted-markup input and never carries request data.
 - REST is for external callers (OAuth/OIDC, webhooks); a feature the SPA calls goes through Connect.
 - Health: `/livez` reports the process; `/readyz` aggregates the database and each module's `readiness()`.
 
@@ -97,6 +98,10 @@ Every made-up value — test fixtures, seed rows, email `previewProps`, stories,
 - Feature unification hides a missing feature: a member that uses a feature another member enables still builds in the workspace. Check one crate alone with `cargo clippy -p <crate>` when its feature list changes.
 - clap panics (in debug, and in the `debug_assert` test) on a subcommand flag that repeats a global flag's long name; `generate:keys` therefore writes to the global `--env-file` instead of declaring its own.
 - `arg_required_else_help` prints the help to stderr and exits 2, so `just run` without arguments reports a failure.
-- `apps/server/build.rs` writes a stub `index.html` into `apps/server/frontend` when the SPA is not built, because memory-serve panics on a missing or empty directory; a release build embeds whatever the folder holds at compile time, so run `pnpm --filter webapp build` before `cargo build --release`. memory-serve's per-asset cargo warnings are silenced by `MEMORY_SERVE_QUIET` in `.cargo/config.toml`.
+- `apps/server/build.rs` writes `apps/server/stub/default.html` as `index.html` into `apps/server/frontend` when the SPA is not built, because memory-serve panics on a missing or empty directory; a release build embeds whatever the folder holds at compile time, so run `pnpm --filter webapp build` before `cargo build --release`. memory-serve's per-asset cargo warnings are silenced by `MEMORY_SERVE_QUIET` in `.cargo/config.toml`.
+- `just dev` opens the server's port, not Vite's: the `rust-server` plugin starts the debug server with `VITE_DEV_SERVER`, and vixum then proxies everything but navigations and the HMR socket (which connects to `127.0.0.1:5173` directly) to Vite. A rebuild starts the new server beside the old one (debug builds bind with `SO_REUSEPORT`, `transport/server.rs`) and retires the old one with SIGINT once the new one logs `listening`, so the port never goes dark; a failed build or a failed start leaves the old server running.
+- In dev, only `Accept: text/html` makes a request a navigation; in an embedded build a path without an extension does too. A path with a dot (`/report.pdf`) is never a document.
+- vixum splits the document at the last `</head>` before `<body`; the literal text in a head comment would otherwise move the page head into the comment.
+- `vite build` never builds Rust; `just build` runs the SPA build before `cargo build --release` because the release binary embeds `apps/server/frontend` at compile time.
 - An axum `nest` with its own fallback owns every path under its prefix; that is what keeps `/api/*` and `/rpc/*` misses away from the SPA fallback, so a nested router never drops its fallback.
 - `cargo test --workspace` unifies features across members, so it never proves a module can be unplugged; only `cargo hack --each-feature` does.

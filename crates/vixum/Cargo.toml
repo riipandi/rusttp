@@ -1,0 +1,21 @@
+[package]
+name = "vixum"
+description = "A server-rendered document shell for a Vite SPA on axum"
+version.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+license.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+axum.workspace = true
+hyper-util.workspace = true
+tower.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
