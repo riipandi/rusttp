@@ -14,7 +14,7 @@ export const checkboxStyles = stylex.create({
       '[data-indeterminate]': colors.backgroundPrimary
     },
     borderColor: {
-      default: colors.borderNeutralFaded,
+      default: colors.borderControl,
       '[data-checked]': colors.backgroundPrimary,
       '[data-indeterminate]': colors.backgroundPrimary,
       '[data-invalid]': colors.borderCritical

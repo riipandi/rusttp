@@ -7,7 +7,7 @@ import { duration, easing } from '../../styles/tokens.stylex'
 export const switchStyles = stylex.create({
   root: {
     backgroundColor: {
-      default: colors.borderNeutralFaded,
+      default: colors.borderControl,
       '[data-checked]': colors.backgroundPrimary,
       '[data-invalid]': colors.backgroundCritical
     },

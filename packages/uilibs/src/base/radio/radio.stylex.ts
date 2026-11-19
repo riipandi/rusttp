@@ -14,7 +14,7 @@ export const radioStyles = stylex.create({
     alignItems: 'center',
     backgroundColor: colors.backgroundPage,
     borderColor: {
-      default: colors.borderNeutralFaded,
+      default: colors.borderControl,
       '[data-checked]': colors.backgroundPrimary,
       '[data-invalid]': colors.borderCritical
     },
