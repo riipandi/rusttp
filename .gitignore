@@ -20,6 +20,7 @@ $RECYCLE.BIN/
 node_modules/
 .pnpm-store/
 .tanstack/
+routes.gen.ts
 .compiled/
 .rendered/
 .vite/

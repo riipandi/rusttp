@@ -17,12 +17,8 @@ export default defineConfig({
     // Serves the Chrome DevTools workspace file, so edits in DevTools map back to the sources.
     devtoolsJson(),
     devtools(),
-    tanstackRouter({
-      routesDirectory: resolve('./app/routes'),
-      generatedRouteTree: resolve('./app/routes.gen.ts'),
-      autoCodeSplitting: true,
-      target: 'react'
-    }),
+    // Reads tsr.config.json, the file `tsr generate` (build, typecheck) uses too.
+    tanstackRouter(),
     react()
   ],
   envPrefix: ['VITE_', 'PUBLIC_'],

@@ -5,9 +5,10 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsrs --noEmit --fast && vite build",
+        "generate": "tsr generate",
+        "build": "tsr generate && tsrs --noEmit --fast && vite build",
         "preview": "vite preview",
-        "typecheck": "tsrs --noEmit --fast"
+        "typecheck": "tsr generate && tsrs --noEmit --fast"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.108.0",
@@ -20,6 +21,7 @@
         "@tanstack/react-devtools": "catalog:",
         "@tanstack/react-query-devtools": "catalog:",
         "@tanstack/react-router-devtools": "catalog:",
+        "@tanstack/router-cli": "catalog:",
         "@tanstack/router-plugin": "^1.169.0",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
