@@ -12,7 +12,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 | `.agents/docs/index.md`        | The documentation map — this file.                                                                                                                          |
 | `.agents/docs/shape.md`        | The repository's shape: the layout, the toolchain, the commands.                                                                                            |
 | `.agents/docs/rules.md`        | The detailed rules behind `AGENTS.md`: contracts (dependency direction, modules, data, migrations, errors, Rust code, tests), how-to-change recipes, traps. |
-| `.agents/docs/ui-components-index.md` | The `packages/uilibs` inventory: every component's import path, parts, and primitive; how to use and extend the library. |
+| `.agents/docs/ui-components.md` | The `packages/uilibs` inventory: every component's import path, parts, and primitive; how to use and extend the library. |
 | `.agents/docs/stylex-authoring.md` | How to write StyleX styles: `create`, `props`, variables, themes, antipatterns. Read before touching any `*.stylex.ts`. |
 | `.agents/docs/stylex-installation.md` | StyleX build setup per bundler, options, TypeScript, troubleshooting. Read when changing the compiler pipeline. |
 | `.agents/docs/architecture.md` | The architecture: module anatomy, lifecycle, and the decision records with their rejected alternatives.                                                     |

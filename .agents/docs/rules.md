@@ -76,7 +76,7 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 
 ### UI library
 
-`packages/uilibs` is source-sharing: consumers import `uilibs/<path>` and compile the sources with their own Vite, so nothing in it is prebuilt. The inventory is `ui-components-index.md`; the style rules are `stylex-authoring.md`.
+`packages/uilibs` is source-sharing: consumers import `uilibs/<path>` and compile the sources with their own Vite, so nothing in it is prebuilt. The inventory is `ui-components.md`; the style rules are `stylex-authoring.md`.
 
 - A component is `<name>/{<name>.component.tsx, <name>.stylex.ts, <name>.stories.tsx, index.ts}` under `src/base` (Base UI wrappers) or `src/extra` (compositions); `index.ts` re-exports the component and its styles.
 - Style values come from `src/styles/` (`colors`, `tokens`, `popup`, `utils`); a literal color, size, or duration in a component is a defect. Dark mode is the `data-theme` attribute plus the variable overrides in `styles/themes.ts`, never a per-component media query.
@@ -100,7 +100,7 @@ Every made-up value — test fixtures, seed rows, email `previewProps`, stories,
 - **Add a framework crate with tables:** create `crates/<name>/migrations/`, expose `migrations() -> MigrationSet` with a set name you will never change, and register it in each app that uses it, before the app set.
 - **Add a CLI command:** write it into `docs/commandline.md` first; add its `Args` and `run` to the group's file under `apps/server/src/cmd/` (a new file only for a new group); add the variant with its doc comment and `#[command(name = "...")]` to `Command` and its arm to `Cli::run`; check `cargo test -p rusttp-server` (the clap `debug_assert`) and `--help`.
 - **Change a module's public `api`:** this is a contract change for every consumer — ask first (see `AGENTS.md`, "Ambiguous decisions").
-- **Add a UI component:** check `ui-components-index.md` for an existing one first; create `src/base/<name>/` (a Base UI part) or `src/extra/<name>/` with the four files above; add its row to the index in the same turn; run `just typecheck`, `just lint`, and `pnpm --filter uilibs test` (the stories run as Vitest browser tests; Chromium via `pnpm --filter e2e install-browsers`).
+- **Add a UI component:** check `ui-components.md` for an existing one first; create `src/base/<name>/` (a Base UI part) or `src/extra/<name>/` with the four files above; add its row to the index in the same turn; run `just typecheck`, `just lint`, and `pnpm --filter uilibs test` (the stories run as Vitest browser tests; Chromium via `pnpm --filter e2e install-browsers`).
 
 ## Traps
 

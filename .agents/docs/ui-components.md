@@ -2,7 +2,7 @@
 
 updated: 2026-11-20T01:30:00+07:00
 
-The inventory of `packages/uilibs/src`: what each component is, where it imports from, and what it is built on. Check it before writing a new component; extend an existing one when it already covers the need. The tree is a port of the shared library of the `saka` project; it is not consumed by `packages/webapp` yet (no `uilibs` dependency, no StyleX plugin in `webapp/vite.config.ts`, see `shape.md`).
+The inventory of `packages/uilibs/src`: what each component is, where it imports from, and what it is built on. Check it before writing a new component; extend an existing one when it already covers the need. The tree is a port of the shared library of the `saka` project; `packages/webapp` consumes it (`uilibs` dependency, StyleX plugin in its Vite config, `UIProvider` and `ThemeProvider` at the root; see `shape.md`).
 
 ## How to use and extend
 
@@ -25,7 +25,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Alert Dialog** | `uilibs/base/alert-dialog` | Dialog that needs a user response; for destructive or high-risk confirmations. |
 | **Autocomplete** | `uilibs/base/autocomplete` | Input that suggests options as you type. |
 | **Avatar** | `uilibs/base/avatar` | Image with a fallback. |
-| **Button** | `uilibs/base/button` | `variant` (default `primary`) and `size` (default `md`, plus `icon-xs`/`icon-sm`/`icon-md`/`icon-lg`); can render as another tag. |
+| **Button** | `uilibs/base/button` | `variant` (default `primary`) and `size` (default `md`, plus `icon-xs`/`icon-sm`/`icon-md`/`icon-lg`); can render as another tag, but then pass `nativeButton={false}` (`render={<Link />}`), or Base UI warns in dev. |
 | **Checkbox** | `uilibs/base/checkbox` | Checkbox and checkbox group. |
 | **Collapsible** | `uilibs/base/collapsible` | One expandable panel. |
 | **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. |
@@ -94,7 +94,7 @@ Compositions and components Base UI does not provide.
 | **Sortable** | `uilibs/extra/sortable` | dnd-kit reorderable list: `Sortable` (`value`, `onValueChange`, `getItemValue`), `SortableItem`, `SortableItemHandle`. |
 | **Spinner** | `uilibs/extra/spinner` | SVG busy indicator. |
 | **Table** | `uilibs/extra/table` | `Table`, `Header`, `Body`, `Footer`, `Row`, `Head`, `Cell`, `Caption`. |
-| **Text** | `uilibs/extra/text` | Typography: `h1` to `h6`, `body-1`, `body-2`; responsive values (a value, or one per breakpoint). |
+| **Text** | `uilibs/extra/text` | Typography: `variant` (`headline-1`..`3`, `featured-1`..`6` (render `h1`..`h6`; the rest render `div`), `body-1`/`2`, `caption-1`/`2`), `color`, `weight`, `align`, `maxLines`; `variant`, `weight`, and `align` take a value or one per breakpoint (`s`/`m`/`l`/`xl`). Renders the tag its variant implies unless `render` overrides it. |
 | **Textarea** | `uilibs/extra/textarea` | Multiline input. |
 
 ---

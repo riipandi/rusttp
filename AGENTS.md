@@ -7,7 +7,7 @@ This file holds the workflow rules, always in force; the detail — the reposito
 3. `.agents/docs/shape.md` — the repository's shape: the layout, the toolchain, the commands. Read once, return when a path or a command is needed.
 4. `.agents/docs/rules.md` — the detailed rules: contracts, how-to-change recipes, traps. Read the section a change touches before touching it.
 5. `.agents/docs/architecture.md` — the architecture and its decision records. Read the relevant section before changing a crate or module.
-6. `.agents/docs/ui-components-index.md` — the inventory of `packages/uilibs` (components, import paths, primitives). Read it before adding or changing a UI component.
+6. `.agents/docs/ui-components.md` — the inventory of `packages/uilibs` (components, import paths, primitives). Read it before adding or changing a UI component.
 7. `.agents/docs/stylex-authoring.md` — how to write StyleX styles; read it before writing or editing any `*.stylex.ts` or `stylex.props` call. `.agents/docs/stylex-installation.md` — StyleX build setup; read it only when changing the compiler pipeline (`packages/plugins/src/stylex.ts`, a consumer's Vite config).
 
 ## Working rules
@@ -68,7 +68,7 @@ If the owner already chose in the same thread, do not re-ask. If new facts chang
 
 - **Verify before claiming.** A claim about the codebase needs a file you read; a command needs a recipe or tool you saw. A plan's or doc's claim is a hypothesis until the tree confirms it.
 - **Issues.** A finding that outlives the turn goes to `.agents/docs/issues/issue-<nnnnn>-<topic>.md` (sequential per kind, see the `agent-docs` skill, "File naming") when found, not to chat memory. The `agent-docs` skill carries the shape and the status vocabulary.
-- **Docs sync.** A change that lands a behavior lands its documentation in the same turn: contract or invariant → `.agents/docs/rules.md`; reasoning or decision record → `.agents/docs/architecture.md`; layout, toolchain, or command → `.agents/docs/shape.md`; a UI component added, removed, or renamed in `packages/uilibs` → `.agents/docs/ui-components-index.md`; a shipped endpoint → `api/specs/<area>/*.hurl` (and `api/connect/*.proto` for RPC) and `docs/`. Outdated prose is a defect of the change. Every completed task runs the closing sweep the `agent-docs` skill carries.
+- **Docs sync.** A change that lands a behavior lands its documentation in the same turn: contract or invariant → `.agents/docs/rules.md`; reasoning or decision record → `.agents/docs/architecture.md`; layout, toolchain, or command → `.agents/docs/shape.md`; a UI component added, removed, or renamed in `packages/uilibs` → `.agents/docs/ui-components.md`; a shipped endpoint → `api/specs/<area>/*.hurl` (and `api/connect/*.proto` for RPC) and `docs/`. Outdated prose is a defect of the change. Every completed task runs the closing sweep the `agent-docs` skill carries.
 - **Validation.** Run the gates in `.agents/docs/shape.md` (format, check, clippy, tests) before claiming a change works; a green unit suite does not exercise the composition root, so a server change also needs a probe against a running binary.
 - **Plans.** A plan (`.agents/docs/plans/`) is a contract with a fixed shape; it executes only on the owner's explicit instruction, phase by phase.
 - **Prose.** `.agents/docs/` is for agents: English, technical, `file:line` evidence. `docs/` is for humans: no paths, internals, or agent context.
