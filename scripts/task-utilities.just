@@ -1,4 +1,4 @@
-[doc('Remove build artifacts (`--all` adds node_modules, `--dry-run` lists only)')]
+[doc('Remove artifacts (optionally `--all` or `--dry-run`)')]
 [group('utility')]
 [no-exit-message]
 [positional-arguments]

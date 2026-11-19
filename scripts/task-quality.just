@@ -17,6 +17,11 @@ format-check:
 check *args:
     @cargo check --workspace --all-targets {{ args }}
 
+[doc('Type-check every package under packages/')]
+[group('quality')]
+typecheck:
+    @pnpm --silent -r --workspace-concurrency=1 typecheck
+
 [doc('Lint with clippy and oxlint')]
 [group('quality')]
 lint *args:

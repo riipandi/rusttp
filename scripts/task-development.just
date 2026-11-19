@@ -55,3 +55,23 @@ email-build *args:
 [positional-arguments]
 email-check template *args:
     @t="$1"; shift; pnpm --filter emails check "./templates/$t.tsx" "$@"
+
+# ---- Storybook ---------------------------------------------------------------
+
+[doc('Serve Storybook for the UI library on :6006')]
+[group('storybook')]
+[no-exit-message]
+storybook:
+    @pnpm --silent --filter uilibs storybook
+
+[doc('Build Storybook into packages/uilibs/.output/storybook')]
+[group('storybook')]
+[no-exit-message]
+storybook-build:
+    @pnpm --silent --filter uilibs storybook:build
+
+[doc('Serve the built Storybook on :6006 (run `storybook-build` first)')]
+[group('storybook')]
+[no-exit-message]
+storybook-start:
+    @pnpm --silent --filter uilibs storybook:start
