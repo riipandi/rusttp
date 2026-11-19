@@ -18,6 +18,7 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 node_modules/
+.rumdl_cache/
 *tsbuildinfo
 npm-debug.log*
 coverage.*
@@ -51,6 +52,7 @@ release/
 .tmp
 
 # Envars
+.env
 .env.*
 !.env.example
 compose.env*
