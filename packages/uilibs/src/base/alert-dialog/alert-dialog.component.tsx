@@ -38,7 +38,7 @@ export const AlertDialogPortal = BaseAlertDialog.Portal
 export function AlertDialogOverlay({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Backdrop>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAlertDialog.Backdrop>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseAlertDialog.Backdrop {...props} {...stylex.props(s.overlay, style)} />
 }
@@ -49,7 +49,7 @@ export function AlertDialogContent({
   style,
   size = 'md',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Popup>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAlertDialog.Popup>, 'className' | 'style'> &
   StyleXStyleProps & { size?: AlertDialogSize }) {
   return (
     <BaseAlertDialog.Portal>
@@ -65,28 +65,28 @@ export function AlertDialogContent({
 export function AlertDialogHeader({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function AlertDialogMedia({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
   return <div {...props} {...stylex.props(s.media, style)} />
 }
 
 export function AlertDialogFooter({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function AlertDialogTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Title>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAlertDialog.Title>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseAlertDialog.Title {...props} {...stylex.props(s.title, style)} />
 }
@@ -94,7 +94,7 @@ export function AlertDialogTitle({
 export function AlertDialogDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Description>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAlertDialog.Description>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseAlertDialog.Description {...props} {...stylex.props(s.description, style)} />
 }
@@ -110,7 +110,7 @@ export function AlertDialogCancel({
   size = 'md',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Close>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAlertDialog.Close>, 'className' | 'style'> &
   Pick<ButtonProps, 'variant' | 'size'> &
   StyleXStyleProps) {
   return (

@@ -13,7 +13,7 @@ import * as React from 'react'
 import { buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
 
 export interface ButtonProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseButton>,
+  React.ComponentProps<typeof BaseButton>,
   'className' | 'style'
 > {
   variant?: keyof typeof buttonVariants

@@ -26,8 +26,7 @@ export function Progress({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseProgress.Root>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseProgress.Root>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <BaseProgress.Root {...props} {...stylex.props(s.root, style)}>
       {children}
@@ -41,7 +40,7 @@ export function Progress({
 export function ProgressTrack({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseProgress.Track>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseProgress.Track>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseProgress.Track {...props} {...stylex.props(s.track, style)} />
 }
@@ -49,7 +48,7 @@ export function ProgressTrack({
 export function ProgressIndicator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseProgress.Indicator>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseProgress.Indicator>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseProgress.Indicator {...props} {...stylex.props(s.indicator, style)} />
 }
@@ -57,7 +56,7 @@ export function ProgressIndicator({
 export function ProgressLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseProgress.Label>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseProgress.Label>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseProgress.Label {...props} {...stylex.props(s.label, style)} />
 }
@@ -65,7 +64,7 @@ export function ProgressLabel({
 export function ProgressValue({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseProgress.Value>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseProgress.Value>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseProgress.Value {...props} {...stylex.props(s.value, style)} />
 }

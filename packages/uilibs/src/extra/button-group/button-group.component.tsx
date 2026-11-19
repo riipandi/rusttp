@@ -14,7 +14,7 @@ function hasStyleProp(props: unknown): props is StyleProp {
 }
 
 export interface ButtonGroupProps
-  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'>, StyleProp {
+  extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
   orientation?: 'horizontal' | 'vertical'
 }
 
@@ -56,7 +56,7 @@ export function ButtonGroup({
 export function ButtonGroupText({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.text, style)} />
 }
 
@@ -64,6 +64,6 @@ export function ButtonGroupSeparator({
   orientation = 'vertical',
   style,
   ...props
-}: React.ComponentPropsWithoutRef<typeof Separator>) {
+}: React.ComponentProps<typeof Separator>) {
   return <Separator orientation={orientation} {...props} style={[s.separator, style]} />
 }

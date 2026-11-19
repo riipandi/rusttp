@@ -29,9 +29,9 @@ export const PreviewCardTrigger = BasePreviewCard.Trigger
 
 export interface PreviewCardContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BasePreviewCard.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BasePreviewCard.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BasePreviewCard.Positioner>,
+      React.ComponentProps<typeof BasePreviewCard.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     > {
   style?: stylex.StyleXStyles

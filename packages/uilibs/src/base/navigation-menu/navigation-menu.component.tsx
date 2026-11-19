@@ -43,8 +43,8 @@ export function NavigationMenu({
   children,
   align = 'start',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Root>, 'className' | 'style'> &
-  Pick<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>, 'align'> &
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Root>, 'className' | 'style'> &
+  Pick<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'align'> &
   StyleProp) {
   return (
     <BaseNavigationMenu.Root {...props} {...stylex.props(s.root, style)}>
@@ -57,16 +57,14 @@ export function NavigationMenu({
 export function NavigationMenuList({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.List>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.List>, 'className' | 'style'> & StyleProp) {
   return <BaseNavigationMenu.List {...props} {...stylex.props(s.list, style)} />
 }
 
 export function NavigationMenuItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Item>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Item>, 'className' | 'style'> & StyleProp) {
   return <BaseNavigationMenu.Item {...props} {...stylex.props(s.item, style)} />
 }
 
@@ -74,7 +72,7 @@ export function NavigationMenuTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Trigger>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Trigger>, 'className' | 'style'> &
   StyleProp) {
   return (
     <BaseNavigationMenu.Trigger {...props} {...stylex.props(s.trigger, style)}>
@@ -100,7 +98,7 @@ export function NavigationMenuTrigger({
 export function NavigationMenuContent({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Content>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Content>, 'className' | 'style'> &
   StyleProp) {
   return <BaseNavigationMenu.Content {...props} {...stylex.props(s.content, style)} />
 }
@@ -108,8 +106,7 @@ export function NavigationMenuContent({
 export function NavigationMenuLink({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Link>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Link>, 'className' | 'style'> & StyleProp) {
   return <BaseNavigationMenu.Link {...props} {...stylex.props(s.link, style)} />
 }
 
@@ -120,10 +117,7 @@ export function NavigationMenuPositioner({
   align = 'start',
   alignOffset = 0,
   ...props
-}: Omit<
-  React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>,
-  'className' | 'style'
-> &
+}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'className' | 'style'> &
   StyleProp) {
   return (
     <BaseNavigationMenu.Portal>

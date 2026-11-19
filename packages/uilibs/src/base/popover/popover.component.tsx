@@ -40,9 +40,9 @@ export const PopoverClose = BasePopover.Close
 
 export interface PopoverContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BasePopover.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BasePopover.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BasePopover.Positioner>,
+      React.ComponentProps<typeof BasePopover.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     > {
   style?: stylex.StyleXStyles
@@ -85,22 +85,20 @@ export function PopoverContent({
 export function PopoverHeader({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function PopoverTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BasePopover.Title>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BasePopover.Title>, 'className' | 'style'> & StyleProp) {
   return <BasePopover.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function PopoverDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BasePopover.Description>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BasePopover.Description>, 'className' | 'style'> & StyleProp) {
   return <BasePopover.Description {...props} {...stylex.props(s.description, style)} />
 }

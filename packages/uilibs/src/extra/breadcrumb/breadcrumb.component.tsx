@@ -9,35 +9,35 @@ interface StyleXStyleProps {
 export function Breadcrumb({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
   return <nav aria-label='breadcrumb' {...props} {...stylex.props(style)} />
 }
 
 export function BreadcrumbList({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'ol'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'ol'>, 'className' | 'style'> & StyleXStyleProps) {
   return <ol {...props} {...stylex.props(s.list, style)} />
 }
 
 export function BreadcrumbItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
   return <li {...props} {...stylex.props(s.item, style)} />
 }
 
 export function BreadcrumbLink({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'a'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'a'>, 'className' | 'style'> & StyleXStyleProps) {
   return <a {...props} {...stylex.props(s.link, style)} />
 }
 
 export function BreadcrumbPage({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <span
       role='link'
@@ -53,7 +53,7 @@ export function BreadcrumbSeparator({
   children,
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
       {children ?? (
@@ -78,7 +78,7 @@ export function BreadcrumbSeparator({
 export function BreadcrumbEllipsis({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <span role='presentation' aria-hidden {...props} {...stylex.props(s.ellipsis, style)}>
       <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>

@@ -28,7 +28,7 @@ import {
 } from '../input-group'
 
 export interface InputPasswordProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof InputGroupInput>,
+  React.ComponentProps<typeof InputGroupInput>,
   'type' | 'style'
 > {
   style?: stylex.StyleXStyles

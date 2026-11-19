@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { textareaStyles as s } from './textarea.stylex'
 
 export interface TextareaProps extends Omit<
-  React.ComponentPropsWithoutRef<'textarea'>,
+  React.ComponentProps<'textarea'>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles
@@ -12,12 +12,21 @@ export interface TextareaProps extends Omit<
   autoResize?: boolean
 }
 
-export function Textarea({ style, autoResize = false, onChange, ...props }: TextareaProps) {
+export function Textarea({ style, autoResize = false, onChange, ref, ...props }: TextareaProps) {
   const resize = useCallback((element: HTMLTextAreaElement | null) => {
     if (!element) return
     element.style.height = 'auto'
     element.style.height = `${element.scrollHeight}px`
   }, [])
+
+  const setRef = useCallback(
+    (element: HTMLTextAreaElement | null) => {
+      if (autoResize) resize(element)
+      if (typeof ref === 'function') return ref(element)
+      if (ref) ref.current = element
+    },
+    [autoResize, ref, resize]
+  )
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (autoResize) resize(event.currentTarget)
@@ -27,7 +36,7 @@ export function Textarea({ style, autoResize = false, onChange, ...props }: Text
   return (
     <textarea
       {...props}
-      ref={autoResize ? resize : undefined}
+      ref={setRef}
       onChange={handleChange}
       {...stylex.props(s.root, autoResize && s.autoResize, style)}
     />

@@ -19,7 +19,7 @@ import { switchThumbSizes as thumbSizes } from './switch.stylex'
 export type SwitchSize = 'sm' | 'md'
 
 export interface SwitchProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseSwitch.Root>,
+  React.ComponentProps<typeof BaseSwitch.Root>,
   'className' | 'style'
 > {
   size?: SwitchSize

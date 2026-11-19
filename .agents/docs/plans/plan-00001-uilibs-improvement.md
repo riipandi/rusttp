@@ -1,12 +1,12 @@
 ---
-status: awaiting-approval
+status: in-progress
 created: 2026-11-20T03:12:00+07:00
-updated: 2026-11-20T03:12:00+07:00
+updated: 2026-11-20T05:10:00+07:00
 phases:
     - id: 1
       title: Contracts — `ref` typing and the opt-in a11y gate switch
-      status: pending
-      note: —
+      status: committed
+      note: ref contract story `src/contracts/ref.stories.tsx`; gate switch reads `import.meta.env.STORYBOOK_A11Y_GATE`; baseline with the gate on is 86 failing stories (light); the Storybook canvas overlay's dimmed breakpoint pills failed contrast on every story and were fixed in `.storybook/decorator.tsx`
     - id: 2
       title: Tokens and the shared control recipe
       status: pending

@@ -135,10 +135,7 @@ export function Chart<
   )
 }
 
-export interface ChartLegendProps extends Omit<
-  React.ComponentPropsWithoutRef<'div'>,
-  'className' | 'style'
-> {
+export interface ChartLegendProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
   config?: ChartConfig
   /** Config keys to skip, e.g. series hidden by an application toggle. */
   hide?: readonly string[]

@@ -25,14 +25,14 @@ interface StyleProp {
 export function RadioGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseRadioGroup>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseRadioGroup>, 'className' | 'style'> & StyleProp) {
   return <BaseRadioGroup {...props} {...stylex.props(s.group, style)} />
 }
 
 export function RadioGroupItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof Radio.Root>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof Radio.Root>, 'className' | 'style'> & StyleProp) {
   return (
     <Radio.Root {...props} {...stylex.props(s.item, style)}>
       <Radio.Indicator {...stylex.props(s.indicator)} />

@@ -14,7 +14,7 @@ interface StyleProp {
 export function InputGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div role='group' {...props} {...stylex.props(s.root, style)} />
 }
 
@@ -24,7 +24,7 @@ export function InputGroupAddon({
   align = 'inline-start',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
   StyleProp & { align?: InputGroupAddonAlign }) {
   return (
     <div
@@ -55,17 +55,14 @@ export function InputGroupButton({
 export function InputGroupText({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
   return <span {...props} {...stylex.props(s.text, style)} />
 }
 
-export function InputGroupInput({ style, ...props }: React.ComponentPropsWithoutRef<typeof Input>) {
+export function InputGroupInput({ style, ...props }: React.ComponentProps<typeof Input>) {
   return <Input {...props} style={[s.control, style]} />
 }
 
-export function InputGroupTextarea({
-  style,
-  ...props
-}: React.ComponentPropsWithoutRef<typeof Textarea>) {
+export function InputGroupTextarea({ style, ...props }: React.ComponentProps<typeof Textarea>) {
   return <Textarea {...props} style={[s.control, s.textarea, style]} />
 }

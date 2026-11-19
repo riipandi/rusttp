@@ -30,7 +30,7 @@ export function Tabs({
   style,
   orientation = 'horizontal',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Root>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseTabs.Root>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseTabs.Root
       orientation={orientation}
@@ -44,7 +44,7 @@ export function TabsList({
   style,
   variant = 'default',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.List>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseTabs.List>, 'className' | 'style'> &
   StyleProp & { variant?: TabsVariant }) {
   return (
     <TabsVariantContext.Provider value={variant}>
@@ -59,7 +59,7 @@ export function TabsList({
 export function TabsTrigger({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Tab>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseTabs.Tab>, 'className' | 'style'> & StyleProp) {
   const variant = React.useContext(TabsVariantContext)
   return (
     <BaseTabs.Tab
@@ -72,6 +72,6 @@ export function TabsTrigger({
 export function TabsContent({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Panel>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseTabs.Panel>, 'className' | 'style'> & StyleProp) {
   return <BaseTabs.Panel {...props} {...stylex.props(s.content, style)} />
 }

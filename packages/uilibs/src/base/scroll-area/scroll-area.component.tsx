@@ -30,7 +30,7 @@ export function ScrollArea({
   children,
   fade = false,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseScrollArea.Root>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseScrollArea.Root>, 'className' | 'style'> &
   StyleXStyleProps & {
     /** Display a fade mask on the sides of the area that can be scrolled towards. */
     fade?: boolean
@@ -50,7 +50,7 @@ export function ScrollBar({
   orientation = 'vertical',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseScrollArea.Scrollbar>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseScrollArea.Scrollbar>, 'className' | 'style'> &
   StyleXStyleProps) {
   return (
     <BaseScrollArea.Scrollbar

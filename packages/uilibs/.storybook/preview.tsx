@@ -16,7 +16,8 @@ const preview: Preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: 'todo'
+      // STORYBOOK_A11Y_GATE=error opts in to the failing gate while violations are burned down
+      test: import.meta.env.STORYBOOK_A11Y_GATE === 'error' ? 'error' : 'todo'
     }
   },
   globalTypes: {

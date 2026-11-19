@@ -31,7 +31,7 @@ import {
 import { menubarStyles as s } from './menubar.stylex'
 
 export interface MenubarProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseMenubar>,
+  React.ComponentProps<typeof BaseMenubar>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles
@@ -58,7 +58,7 @@ export const MenubarSubContent = DropdownMenuSubContent
 export function MenubarTrigger({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof DropdownMenuTrigger>, 'className' | 'style'> & {
+}: Omit<React.ComponentProps<typeof DropdownMenuTrigger>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
   return <DropdownMenuTrigger {...props} {...stylex.props(s.trigger, style)} />

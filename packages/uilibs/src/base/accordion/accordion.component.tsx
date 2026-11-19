@@ -26,7 +26,7 @@ interface StyleXStyleProps {
 export function Accordion({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Root>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAccordion.Root>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseAccordion.Root {...props} {...stylex.props(s.root, style)} />
 }
@@ -34,7 +34,7 @@ export function Accordion({
 export function AccordionItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Item>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAccordion.Item>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseAccordion.Item {...props} {...stylex.props(s.item, style)} />
 }
@@ -43,7 +43,7 @@ export function AccordionTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Trigger>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAccordion.Trigger>, 'className' | 'style'> &
   StyleXStyleProps) {
   return (
     <BaseAccordion.Header {...stylex.props(s.header)}>
@@ -72,7 +72,7 @@ export function AccordionContent({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Panel>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAccordion.Panel>, 'className' | 'style'> &
   StyleXStyleProps) {
   return (
     <BaseAccordion.Panel {...props} {...stylex.props(s.panel)}>

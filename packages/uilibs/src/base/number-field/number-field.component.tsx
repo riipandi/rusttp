@@ -40,8 +40,7 @@ export const NumberFieldScrubAreaCursor = BaseNumberField.ScrubAreaCursor
 export function NumberField({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Root>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseNumberField.Root>, 'className' | 'style'> & StyleProp) {
   return <BaseNumberField.Root {...props} {...stylex.props(s.root, style)} />
 }
 
@@ -50,7 +49,7 @@ export function NumberFieldGroup({
   children,
   controls = 'stacked',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Group>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseNumberField.Group>, 'className' | 'style'> &
   StyleProp & { controls?: NumberFieldControls }) {
   return (
     <BaseNumberField.Group {...props} {...stylex.props(s.group, style)}>
@@ -80,8 +79,7 @@ export function NumberFieldGroup({
 export function NumberFieldInput({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Input>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseNumberField.Input>, 'className' | 'style'> & StyleProp) {
   return <BaseNumberField.Input {...props} {...stylex.props(s.input, style)} />
 }
 
@@ -91,7 +89,7 @@ export function NumberFieldDecrement({
   icon,
   controls = 'sides',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Decrement>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseNumberField.Decrement>, 'className' | 'style'> &
   StyleProp & {
     icon?: 'chevron-down' | 'minus'
     controls?: NumberFieldControls
@@ -120,7 +118,7 @@ export function NumberFieldIncrement({
   icon,
   controls = 'sides',
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Increment>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseNumberField.Increment>, 'className' | 'style'> &
   StyleProp & {
     icon?: 'chevron-up' | 'plus'
     controls?: NumberFieldControls

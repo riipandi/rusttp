@@ -17,7 +17,7 @@ export type ToggleVariant = 'default' | 'outline'
 export type ToggleSize = 'sm' | 'md' | 'lg'
 
 export interface ToggleProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseToggle>,
+  React.ComponentProps<typeof BaseToggle>,
   'className' | 'style'
 > {
   variant?: ToggleVariant

@@ -13,7 +13,7 @@ import * as React from 'react'
 import { inputStyles as s } from './input.stylex'
 
 export interface InputProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseInput>,
+  React.ComponentProps<typeof BaseInput>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles

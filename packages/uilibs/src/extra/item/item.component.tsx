@@ -10,13 +10,13 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
-type DivProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function ItemGroup({ style, ...props }: DivProps) {
   return <div role='list' {...props} {...stylex.props(s.group, style)} />
 }
 
-export function ItemSeparator({ ...props }: React.ComponentPropsWithoutRef<typeof Separator>) {
+export function ItemSeparator({ ...props }: React.ComponentProps<typeof Separator>) {
   return <Separator orientation='horizontal' {...props} />
 }
 
@@ -61,7 +61,7 @@ export function ItemTitle({ style, ...props }: DivProps) {
 export function ItemDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'p'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'p'>, 'className' | 'style'> & StyleProp) {
   return <p {...props} {...stylex.props(s.description, style)} />
 }
 

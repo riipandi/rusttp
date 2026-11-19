@@ -14,7 +14,7 @@ import { separatorStyles as s } from './separator.stylex'
 import { separatorOrientations as orientations } from './separator.stylex'
 
 export interface SeparatorProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseSeparator>,
+  React.ComponentProps<typeof BaseSeparator>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles

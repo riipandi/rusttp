@@ -50,7 +50,7 @@ export function Drawer({
   showSwipeHandle = false,
   swipeDirection = 'down',
   ...props
-}: React.ComponentPropsWithoutRef<typeof BaseDrawer.Root> & {
+}: React.ComponentProps<typeof BaseDrawer.Root> & {
   showSwipeHandle?: boolean
 }) {
   const contextValue = React.useMemo(
@@ -71,8 +71,7 @@ export const DrawerPortal = BaseDrawer.Portal
 export function DrawerOverlay({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDrawer.Backdrop>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseDrawer.Backdrop>, 'className' | 'style'> & StyleProp) {
   return <BaseDrawer.Backdrop {...props} {...stylex.props(s.overlay, style)} />
 }
 
@@ -80,8 +79,7 @@ export function DrawerContent({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDrawer.Popup>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseDrawer.Popup>, 'className' | 'style'> & StyleProp) {
   const { modal, showSwipeHandle, swipeDirection } = React.useContext(DrawerContext)
   return (
     <BaseDrawer.Portal>
@@ -99,7 +97,7 @@ export function DrawerContent({
 export function DrawerSwipeHandle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   const { swipeDirection } = React.useContext(DrawerContext)
   return (
     <div
@@ -113,7 +111,7 @@ export function DrawerSwipeHandle({
 export function DrawerHeader({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   const { swipeDirection } = React.useContext(DrawerContext)
   const vertical = swipeDirection === 'up' || swipeDirection === 'down'
   return <div {...props} {...stylex.props(s.header, vertical && s.headerCentered, style)} />
@@ -122,22 +120,20 @@ export function DrawerHeader({
 export function DrawerFooter({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function DrawerTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDrawer.Title>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseDrawer.Title>, 'className' | 'style'> & StyleProp) {
   return <BaseDrawer.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function DrawerDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDrawer.Description>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseDrawer.Description>, 'className' | 'style'> & StyleProp) {
   return <BaseDrawer.Description {...props} {...stylex.props(s.description, style)} />
 }

@@ -22,7 +22,7 @@ export const CollapsibleTrigger = BaseCollapsible.Trigger
 export function CollapsibleContent({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Panel>, 'className' | 'style'> & {
+}: Omit<React.ComponentProps<typeof BaseCollapsible.Panel>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
   return <BaseCollapsible.Panel {...props} {...stylex.props(s.panel, style)} />

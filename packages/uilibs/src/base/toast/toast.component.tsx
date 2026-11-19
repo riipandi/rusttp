@@ -71,14 +71,14 @@ export function useToast() {
 
 // Wired to the shared manager so the imperative `toast` reaches it; pass your
 // own `toastManager` to opt out.
-export function ToastProvider(props: React.ComponentPropsWithoutRef<typeof BaseToast.Provider>) {
+export function ToastProvider(props: React.ComponentProps<typeof BaseToast.Provider>) {
   return <BaseToast.Provider toastManager={toastManager} {...props} />
 }
 
 function ToastList({
   swipeDirection
 }: {
-  swipeDirection: React.ComponentPropsWithoutRef<typeof BaseToast.Root>['swipeDirection']
+  swipeDirection: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
 }) {
   const { toasts } = BaseToast.useToastManager()
   return toasts.map((t) => (
@@ -110,7 +110,7 @@ function ToastList({
 
 export interface ToasterProps {
   /** Direction(s) a toast can be swiped to dismiss. */
-  swipeDirection?: React.ComponentPropsWithoutRef<typeof BaseToast.Root>['swipeDirection']
+  swipeDirection?: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
   /** StyleX styles for the viewport, merged last. */
   style?: stylex.StyleXStyles
 }

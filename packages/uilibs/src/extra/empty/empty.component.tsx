@@ -6,7 +6,7 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
-type DivProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function Empty({ style, ...props }: DivProps) {
   return <div {...props} {...stylex.props(s.root, style)} />

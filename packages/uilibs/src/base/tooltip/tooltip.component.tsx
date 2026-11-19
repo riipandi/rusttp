@@ -28,7 +28,7 @@ import { tooltipStyles as s } from './tooltip.stylex'
 export function TooltipProvider({
   delay = 0,
   ...props
-}: React.ComponentPropsWithoutRef<typeof BaseTooltip.Provider>) {
+}: React.ComponentProps<typeof BaseTooltip.Provider>) {
   return <BaseTooltip.Provider delay={delay} {...props} />
 }
 
@@ -37,9 +37,9 @@ export const TooltipTrigger = BaseTooltip.Trigger
 
 export interface TooltipContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseTooltip.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseTooltip.Positioner>,
+      React.ComponentProps<typeof BaseTooltip.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     > {
   style?: stylex.StyleXStyles

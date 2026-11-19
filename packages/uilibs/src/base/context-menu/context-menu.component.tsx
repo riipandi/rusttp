@@ -50,16 +50,15 @@ export const ContextMenuRadioGroup = BaseContextMenu.RadioGroup
 export function ContextMenuTrigger({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Trigger>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseContextMenu.Trigger>, 'className' | 'style'> & StyleProp) {
   return <BaseContextMenu.Trigger {...props} {...stylex.props(s.trigger, style)} />
 }
 
 export interface ContextMenuContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseContextMenu.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseContextMenu.Positioner>,
+      React.ComponentProps<typeof BaseContextMenu.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     >,
     StyleProp {}
@@ -101,7 +100,7 @@ export type ContextMenuItemVariant = 'default' | 'destructive'
 
 export interface ContextMenuItemProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Item>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseContextMenu.Item>, 'className' | 'style'>,
     StyleProp {
   variant?: ContextMenuItemVariant
   /** Indents the item to align with checkbox/radio item labels. */
@@ -149,10 +148,7 @@ export function ContextMenuCheckboxItem({
   style,
   children,
   ...props
-}: Omit<
-  React.ComponentPropsWithoutRef<typeof BaseContextMenu.CheckboxItem>,
-  'className' | 'style'
-> &
+}: Omit<React.ComponentProps<typeof BaseContextMenu.CheckboxItem>, 'className' | 'style'> &
   StyleProp) {
   return (
     <BaseContextMenu.CheckboxItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
@@ -170,7 +166,7 @@ export function ContextMenuRadioItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.RadioItem>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseContextMenu.RadioItem>, 'className' | 'style'> &
   StyleProp) {
   return (
     <BaseContextMenu.RadioItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
@@ -189,10 +185,7 @@ export function ContextMenuSubTrigger({
   inset,
   children,
   ...props
-}: Omit<
-  React.ComponentPropsWithoutRef<typeof BaseContextMenu.SubmenuTrigger>,
-  'className' | 'style'
-> &
+}: Omit<React.ComponentProps<typeof BaseContextMenu.SubmenuTrigger>, 'className' | 'style'> &
   StyleProp & { inset?: boolean }) {
   return (
     <BaseContextMenu.SubmenuTrigger
@@ -238,14 +231,14 @@ export function ContextMenuSubContent({
 export function ContextMenuShortcut({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
   return <span {...props} {...stylex.props(s.shortcut, style)} />
 }
 
 export function ContextMenuSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Separator>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseContextMenu.Separator>, 'className' | 'style'> &
   StyleProp) {
   return <BaseContextMenu.Separator {...props} {...stylex.props(s.separator, style)} />
 }
@@ -254,7 +247,7 @@ export function ContextMenuLabel({
   style,
   inset,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.GroupLabel>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseContextMenu.GroupLabel>, 'className' | 'style'> &
   StyleProp & { inset?: boolean }) {
   return (
     <BaseContextMenu.GroupLabel

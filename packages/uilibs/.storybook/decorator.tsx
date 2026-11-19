@@ -76,7 +76,8 @@ const barCss: React.CSSProperties = {
 
 const groupCss: React.CSSProperties = {
   alignItems: 'center',
-  backgroundColor: 'rgba(0, 0, 0, 0.55)',
+  // Opaque enough that the dimmed pills stay readable (4.5:1) over a light page for axe.
+  backgroundColor: 'rgba(0, 0, 0, 0.85)',
   backdropFilter: 'blur(4px)',
   borderRadius: 999,
   boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.14)',
@@ -93,10 +94,9 @@ const pillCss = (active: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   minHeight: 18,
   minWidth: 22,
-  opacity: active ? 1 : 0.45,
   padding: '3px 6px',
   backgroundColor: active ? 'rgba(255, 255, 255, 0.92)' : 'transparent',
-  color: active ? 'rgba(0, 0, 0, 0.9)' : '#fff',
+  color: active ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.72)',
   fontWeight: active ? 700 : 400
 })
 

@@ -57,16 +57,15 @@ export const AutocompleteCollection = BaseAutocomplete.Collection
 export function AutocompleteInput({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Input>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Input {...props} {...stylex.props(s.input, style)} />
 }
 
 export interface AutocompleteContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseAutocomplete.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Positioner>,
+      React.ComponentProps<typeof BaseAutocomplete.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset' | 'anchor'
     >,
     StyleProp {}
@@ -109,13 +108,10 @@ export function AutocompleteContent({
 export function AutocompleteList({
   style,
   ...props
-}: Omit<
-  React.ComponentPropsWithoutRef<typeof BaseAutocomplete.List>,
-  'className' | 'style' | 'children'
-> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.List>, 'className' | 'style' | 'children'> &
   StyleProp & {
     /** Static items, or a render function over the filtered items. */
-    children?: React.ComponentPropsWithoutRef<typeof BaseAutocomplete.List>['children']
+    children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
   }) {
   return <BaseAutocomplete.List {...props} {...stylex.props(s.list, style)} />
 }
@@ -123,23 +119,21 @@ export function AutocompleteList({
 export function AutocompleteItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Item>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
 }
 
 export function AutocompleteGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Group>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Group>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Group {...props} {...stylex.props(style)} />
 }
 
 export function AutocompleteLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.GroupLabel>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.GroupLabel>, 'className' | 'style'> &
   StyleProp) {
   return <BaseAutocomplete.GroupLabel {...props} {...stylex.props(s.label, style)} />
 }
@@ -147,15 +141,14 @@ export function AutocompleteLabel({
 export function AutocompleteEmpty({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Empty>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Empty>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Empty {...props} {...stylex.props(s.empty, style)} />
 }
 
 export function AutocompleteSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
   StyleProp) {
   return <BaseAutocomplete.Separator {...props} {...stylex.props(s.separator, style)} />
 }

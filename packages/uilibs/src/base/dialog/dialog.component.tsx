@@ -38,7 +38,7 @@ export const DialogClose = BaseDialog.Close
 export function DialogOverlay({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseDialog.Backdrop {...props} {...stylex.props(s.overlay, style)} />
 }
@@ -48,7 +48,7 @@ export function DialogContent({
   children,
   showCloseButton = true,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
   StyleXStyleProps & { showCloseButton?: boolean }) {
   return (
     <BaseDialog.Portal>
@@ -82,29 +82,28 @@ export function DialogContent({
 export function DialogHeader({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function DialogFooter({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function DialogTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Title>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleXStyleProps) {
   return <BaseDialog.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function DialogDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Description>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> &
   StyleXStyleProps) {
   return <BaseDialog.Description {...props} {...stylex.props(s.description, style)} />
 }

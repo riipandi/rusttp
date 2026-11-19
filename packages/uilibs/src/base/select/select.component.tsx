@@ -52,8 +52,7 @@ export function SelectTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.Trigger>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseSelect.Trigger {...props} {...stylex.props(s.trigger, style)}>
       {children}
@@ -81,9 +80,9 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
 
 export interface SelectContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseSelect.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseSelect.Positioner>,
+      React.ComponentProps<typeof BaseSelect.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset' | 'alignItemWithTrigger'
     >,
     StyleProp {}
@@ -138,8 +137,7 @@ export function SelectItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.Item>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseSelect.Item>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseSelect.Item {...props} {...stylex.props(s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
@@ -165,15 +163,13 @@ export function SelectItem({
 export function SelectLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.GroupLabel>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseSelect.GroupLabel>, 'className' | 'style'> & StyleProp) {
   return <BaseSelect.GroupLabel {...props} {...stylex.props(s.label, style)} />
 }
 
 export function SelectSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseSelect.Separator>, 'className' | 'style'> & StyleProp) {
   return <BaseSelect.Separator {...props} {...stylex.props(s.separator, style)} />
 }

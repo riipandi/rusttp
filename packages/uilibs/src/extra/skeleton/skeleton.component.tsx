@@ -2,10 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { skeletonStyles as s } from './skeleton.stylex'
 
-export interface SkeletonProps extends Omit<
-  React.ComponentPropsWithoutRef<'div'>,
-  'className' | 'style'
-> {
+export interface SkeletonProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
   style?: stylex.StyleXStyles
 }
 

@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { cardStyles as s, cardSizes as sizes } from './card.stylex'
 
-interface DivProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> {
+interface DivProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
   style?: stylex.StyleXStyles
 }
 
@@ -19,7 +19,7 @@ export function CardHeader({ style, ...props }: DivProps) {
 export function CardTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'h3'>, 'className' | 'style'> & {
+}: Omit<React.ComponentProps<'h3'>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
   return <h3 {...props} {...stylex.props(s.title, style)} />
@@ -28,7 +28,7 @@ export function CardTitle({
 export function CardDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'p'>, 'className' | 'style'> & {
+}: Omit<React.ComponentProps<'p'>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
   return <p {...props} {...stylex.props(s.description, style)} />

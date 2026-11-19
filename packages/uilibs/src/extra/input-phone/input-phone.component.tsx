@@ -17,7 +17,7 @@ import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput } from '../../b
 import { ComboboxItem, ComboboxList, ComboboxTrigger } from '../../base/combobox'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
-type LibraryPhoneInputProps = React.ComponentPropsWithoutRef<typeof BasePhoneInput.default>
+type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
 
 export interface InputPhoneProps extends Omit<
   LibraryPhoneInputProps,
@@ -152,7 +152,7 @@ function NoCountrySelect() {
 function PhoneInputContainer({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
   const containerRef = React.useContext(PhoneContainerRefContext)

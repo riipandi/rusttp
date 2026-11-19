@@ -11,7 +11,7 @@ interface StyleProp {
 export interface CommandProps
   extends
     Omit<
-      React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Root>,
+      React.ComponentProps<typeof BaseAutocomplete.Root>,
       'className' | 'style' | 'inline' | 'open'
     >,
     StyleProp {
@@ -37,7 +37,7 @@ export function CommandDialog({
   children,
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof Dialog>, 'children'> &
+}: Omit<React.ComponentProps<typeof Dialog>, 'children'> &
   StyleProp & {
     title?: string
     description?: string
@@ -57,8 +57,7 @@ export function CommandDialog({
 export function CommandInput({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Input>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style'> & StyleProp) {
   return (
     <div {...stylex.props(s.inputWrap, style)}>
       <svg
@@ -83,13 +82,10 @@ export function CommandInput({
 export function CommandList({
   style,
   ...props
-}: Omit<
-  React.ComponentPropsWithoutRef<typeof BaseAutocomplete.List>,
-  'className' | 'style' | 'children'
-> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.List>, 'className' | 'style' | 'children'> &
   StyleProp & {
     /** Static items, or a render function over the filtered items. */
-    children?: React.ComponentPropsWithoutRef<typeof BaseAutocomplete.List>['children']
+    children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
   }) {
   return <BaseAutocomplete.List {...props} {...stylex.props(s.list, style)} />
 }
@@ -97,8 +93,7 @@ export function CommandList({
 export function CommandEmpty({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Empty>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Empty>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Empty {...props} {...stylex.props(s.empty, style)} />
 }
 
@@ -107,7 +102,7 @@ export function CommandGroup({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Group>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Group>, 'className' | 'style'> &
   StyleProp & { heading?: React.ReactNode }) {
   return (
     <BaseAutocomplete.Group {...props} {...stylex.props(style)}>
@@ -124,15 +119,14 @@ export function CommandGroup({
 export function CommandItem({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Item>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
   return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
 }
 
 export function CommandSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
   StyleProp) {
   return <BaseAutocomplete.Separator {...props} {...stylex.props(s.separator, style)} />
 }
@@ -140,6 +134,6 @@ export function CommandSeparator({
 export function CommandShortcut({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
   return <span {...props} {...stylex.props(s.shortcut, style)} />
 }

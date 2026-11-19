@@ -24,13 +24,13 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
-type DivProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function Avatar({
   size = 'md',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseAvatar.Root>, 'className' | 'style'> &
   StyleProp & { size?: AvatarSize }) {
   return <BaseAvatar.Root {...props} {...stylex.props(s.root, sizes[size], style)} />
 }
@@ -38,16 +38,14 @@ export function Avatar({
 export function AvatarImage({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Image>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAvatar.Image>, 'className' | 'style'> & StyleProp) {
   return <BaseAvatar.Image {...props} {...stylex.props(s.image, style)} />
 }
 
 export function AvatarFallback({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Fallback>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseAvatar.Fallback>, 'className' | 'style'> & StyleProp) {
   return <BaseAvatar.Fallback {...props} {...stylex.props(s.fallback, style)} />
 }
 
@@ -88,7 +86,6 @@ export function AvatarGroupCount({
   size = 'md',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> &
-  StyleProp & { size?: AvatarSize }) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & { size?: AvatarSize }) {
   return <span {...props} {...stylex.props(s.groupCount, sizes[size], style)} />
 }

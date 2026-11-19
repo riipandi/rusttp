@@ -33,23 +33,20 @@ export const ToolbarInput = BaseToolbar.Input
 export function Toolbar({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Root>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseToolbar.Root>, 'className' | 'style'> & StyleProp) {
   return <BaseToolbar.Root {...props} {...stylex.props(s.root, style)} />
 }
 
 export function ToolbarGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Group>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseToolbar.Group>, 'className' | 'style'> & StyleProp) {
   return <BaseToolbar.Group {...props} {...stylex.props(s.group, style)} />
 }
 
 export function ToolbarSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseToolbar.Separator>, 'className' | 'style'> & StyleProp) {
   return <BaseToolbar.Separator {...props} {...stylex.props(s.separator, style)} />
 }

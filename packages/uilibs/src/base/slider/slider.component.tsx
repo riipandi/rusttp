@@ -25,7 +25,7 @@ import { sliderTrackOrientations as trackOrientations } from './slider.stylex'
 import { sliderRangeOrientations as rangeOrientations } from './slider.stylex'
 
 export interface SliderProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseSlider.Root>,
+  React.ComponentProps<typeof BaseSlider.Root>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles

@@ -50,9 +50,9 @@ export const DropdownMenuRadioGroup = BaseMenu.RadioGroup
 
 export interface DropdownMenuContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseMenu.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseMenu.Positioner>,
+      React.ComponentProps<typeof BaseMenu.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     >,
     StyleProp {}
@@ -93,9 +93,7 @@ export function DropdownMenuContent({
 export type DropdownMenuItemVariant = 'default' | 'destructive'
 
 export interface DropdownMenuItemProps
-  extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.Item>, 'className' | 'style'>,
-    StyleProp {
+  extends Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style'>, StyleProp {
   variant?: DropdownMenuItemVariant
   /** Indents the item to align with checkbox/radio item labels. */
   inset?: boolean
@@ -142,8 +140,7 @@ export function DropdownMenuCheckboxItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.CheckboxItem>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMenu.CheckboxItem>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseMenu.CheckboxItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
       <span {...stylex.props(s.indicator)}>
@@ -160,8 +157,7 @@ export function DropdownMenuRadioItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.RadioItem>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMenu.RadioItem>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseMenu.RadioItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
       <span {...stylex.props(s.indicator)}>
@@ -179,7 +175,7 @@ export function DropdownMenuSubTrigger({
   inset,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.SubmenuTrigger>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseMenu.SubmenuTrigger>, 'className' | 'style'> &
   StyleProp & { inset?: boolean }) {
   return (
     <BaseMenu.SubmenuTrigger
@@ -225,15 +221,14 @@ export function DropdownMenuSubContent({
 export function DropdownMenuShortcut({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
   return <span {...props} {...stylex.props(s.shortcut, style)} />
 }
 
 export function DropdownMenuSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMenu.Separator>, 'className' | 'style'> & StyleProp) {
   return <BaseMenu.Separator {...props} {...stylex.props(s.separator, style)} />
 }
 
@@ -241,7 +236,7 @@ export function DropdownMenuLabel({
   style,
   inset,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.GroupLabel>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseMenu.GroupLabel>, 'className' | 'style'> &
   StyleProp & { inset?: boolean }) {
   return <BaseMenu.GroupLabel {...props} {...stylex.props(s.label, inset && s.itemInset, style)} />
 }

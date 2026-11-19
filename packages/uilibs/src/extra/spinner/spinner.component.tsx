@@ -2,10 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { spinnerStyles as s } from './spinner.stylex'
 
-export interface SpinnerProps extends Omit<
-  React.ComponentPropsWithoutRef<'svg'>,
-  'className' | 'style'
-> {
+export interface SpinnerProps extends Omit<React.ComponentProps<'svg'>, 'className' | 'style'> {
   style?: stylex.StyleXStyles
 }
 

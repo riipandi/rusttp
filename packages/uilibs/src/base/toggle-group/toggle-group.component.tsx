@@ -32,7 +32,7 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
 })
 
 export interface ToggleGroupProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseToggleGroup>,
+  React.ComponentProps<typeof BaseToggleGroup>,
   'className' | 'style'
 > {
   variant?: ToggleVariant

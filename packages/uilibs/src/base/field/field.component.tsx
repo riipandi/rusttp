@@ -32,13 +32,12 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
-type DivProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function FieldSet({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseFieldset.Root>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseFieldset.Root>, 'className' | 'style'> & StyleProp) {
   return <BaseFieldset.Root {...props} {...stylex.props(s.set, style)} />
 }
 
@@ -48,7 +47,7 @@ export function FieldLegend({
   variant = 'legend',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseFieldset.Legend>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseFieldset.Legend>, 'className' | 'style'> &
   StyleProp & { variant?: FieldLegendVariant }) {
   return (
     <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendVariants[variant], style)} />
@@ -71,7 +70,7 @@ export function Field({
   orientation = 'vertical',
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseField.Root>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseField.Root>, 'className' | 'style'> &
   StyleProp & { orientation?: FieldOrientation }) {
   return <BaseField.Root {...props} {...stylex.props(s.field, orientations[orientation], style)} />
 }
@@ -83,8 +82,7 @@ export function FieldContent({ style, ...props }: DivProps) {
 export function FieldLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseField.Label>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseField.Label>, 'className' | 'style'> & StyleProp) {
   return <BaseField.Label {...props} {...stylex.props(s.labelBase, s.label, style)} />
 }
 
@@ -95,8 +93,7 @@ export function FieldTitle({ style, ...props }: DivProps) {
 export function FieldDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseField.Description>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseField.Description>, 'className' | 'style'> & StyleProp) {
   return <BaseField.Description {...props} {...stylex.props(s.description, style)} />
 }
 
@@ -110,9 +107,7 @@ export function FieldSeparator({ children, style, ...props }: DivProps) {
 }
 
 export interface FieldErrorProps
-  extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseField.Error>, 'className' | 'style'>,
-    StyleProp {
+  extends Omit<React.ComponentProps<typeof BaseField.Error>, 'className' | 'style'>, StyleProp {
   /**
    * External errors to render directly (e.g. from react-hook-form or TanStack
    * Form). When set, the message renders unconditionally; otherwise the error

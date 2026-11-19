@@ -22,30 +22,28 @@ interface StyleProp {
 export function OTPField({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseOTPField.Root>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseOTPField.Root>, 'className' | 'style'> & StyleProp) {
   return <BaseOTPField.Root {...props} {...stylex.props(s.root, style)} />
 }
 
 export function OTPFieldGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.group, style)} />
 }
 
 export function OTPFieldSlot({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseOTPField.Input>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseOTPField.Input>, 'className' | 'style'> & StyleProp) {
   return <BaseOTPField.Input {...props} {...stylex.props(s.slot, style)} />
 }
 
 export function OTPFieldSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
       <svg

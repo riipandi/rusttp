@@ -71,7 +71,7 @@ export function ComboboxTrigger({
   children,
   showChevron = true,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
   StyleProp & {
     /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
      * InputPhone country flag). Defaults to `true`. */
@@ -95,7 +95,7 @@ export function ComboboxInput({
   showTrigger = true,
   showClear = false,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Input>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style'> &
   StyleProp & {
     /** Style applied directly to the inner input element. */
     inputStyle?: stylex.StyleXStyles
@@ -168,8 +168,7 @@ export function ComboboxChip({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Chip>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Chip>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseCombobox.Chip {...props} {...stylex.props(s.chip, style)}>
       {children}
@@ -197,16 +196,15 @@ export function ComboboxChip({
 export function ComboboxChipsInput({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Input>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.Input {...props} {...stylex.props(s.chipsInput, style)} />
 }
 
 export interface ComboboxContentProps
   extends
-    Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseCombobox.Popup>, 'className' | 'style'>,
     Pick<
-      React.ComponentPropsWithoutRef<typeof BaseCombobox.Positioner>,
+      React.ComponentProps<typeof BaseCombobox.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset' | 'anchor' | 'collisionAvoidance'
     >,
     StyleProp {}
@@ -251,8 +249,7 @@ export function ComboboxContent({
 export function ComboboxList({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.List>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.List>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.List {...props} {...stylex.props(s.list, style)} />
 }
 
@@ -260,8 +257,7 @@ export function ComboboxItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Item>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Item>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseCombobox.Item {...props} {...stylex.props(s.item, style)}>
       {children}
@@ -287,31 +283,27 @@ export function ComboboxItem({
 export function ComboboxGroup({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Group>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Group>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.Group {...props} {...stylex.props(style)} />
 }
 
 export function ComboboxLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.GroupLabel>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.GroupLabel>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.GroupLabel {...props} {...stylex.props(s.label, style)} />
 }
 
 export function ComboboxEmpty({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Empty>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Empty>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.Empty {...props} {...stylex.props(s.empty, style)} />
 }
 
 export function ComboboxSeparator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseCombobox.Separator>, 'className' | 'style'> & StyleProp) {
   return <BaseCombobox.Separator {...props} {...stylex.props(s.separator, style)} />
 }

@@ -29,7 +29,7 @@ export interface FileUploadProps extends Omit<
   /** Render inline making the component more compact */
   inline?: boolean
   /** Additional attributes for the input element */
-  inputAttributes?: React.ComponentPropsWithoutRef<'input'>
+  inputAttributes?: React.ComponentProps<'input'>
   style?: stylex.StyleXStyles
 }
 
@@ -139,7 +139,7 @@ export function FileUpload({
  * FileUpload area stays clickable through its label; this only keeps the
  * composition in the text flow.
  */
-export function FileUploadTrigger({ children, ...props }: React.ComponentPropsWithoutRef<'span'>) {
+export function FileUploadTrigger({ children, ...props }: React.ComponentProps<'span'>) {
   return (
     <span {...props} {...stylex.props(styles.trigger)}>
       {children}

@@ -10,7 +10,7 @@ import * as React from 'react'
 import { formStyles as s } from './form.stylex'
 
 export interface FormProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseForm>,
+  React.ComponentProps<typeof BaseForm>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles

@@ -26,7 +26,7 @@ export function Meter({
   style,
   children,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMeter.Root>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMeter.Root>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseMeter.Root {...props} {...stylex.props(s.root, style)}>
       {children}
@@ -40,31 +40,27 @@ export function Meter({
 export function MeterTrack({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMeter.Track>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMeter.Track>, 'className' | 'style'> & StyleProp) {
   return <BaseMeter.Track {...props} {...stylex.props(s.track, style)} />
 }
 
 export function MeterIndicator({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMeter.Indicator>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMeter.Indicator>, 'className' | 'style'> & StyleProp) {
   return <BaseMeter.Indicator {...props} {...stylex.props(s.indicator, style)} />
 }
 
 export function MeterLabel({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMeter.Label>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMeter.Label>, 'className' | 'style'> & StyleProp) {
   return <BaseMeter.Label {...props} {...stylex.props(s.label, style)} />
 }
 
 export function MeterValue({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<typeof BaseMeter.Value>, 'className' | 'style'> &
-  StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseMeter.Value>, 'className' | 'style'> & StyleProp) {
   return <BaseMeter.Value {...props} {...stylex.props(s.value, style)} />
 }

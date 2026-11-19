@@ -10,7 +10,7 @@ interface StyleXStyleProps {
 export function Pagination({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <nav role='navigation' aria-label='pagination' {...props} {...stylex.props(s.nav, style)} />
   )
@@ -19,16 +19,16 @@ export function Pagination({
 export function PaginationContent({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'ul'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'ul'>, 'className' | 'style'> & StyleXStyleProps) {
   return <ul {...props} {...stylex.props(s.content, style)} />
 }
 
-export function PaginationItem({ ...props }: React.ComponentPropsWithoutRef<'li'>) {
+export function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
   return <li {...props} />
 }
 
 export interface PaginationLinkProps
-  extends Omit<React.ComponentPropsWithoutRef<'a'>, 'className' | 'style'>, StyleXStyleProps {
+  extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleXStyleProps {
   isActive?: boolean
   size?: keyof typeof buttonSizes
 }
@@ -84,7 +84,7 @@ export function PaginationNext({
 export function PaginationEllipsis({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'span'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
   return (
     <span aria-hidden {...props} {...stylex.props(s.ellipsis, style)}>
       <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>

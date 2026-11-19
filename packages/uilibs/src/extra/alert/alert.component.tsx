@@ -9,7 +9,7 @@ interface StyleProp {
 }
 
 export interface AlertProps
-  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'>, StyleProp {
+  extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
   variant?: AlertVariant
 }
 
@@ -20,14 +20,14 @@ export function Alert({ variant = 'default', style, ...props }: AlertProps) {
 export function AlertTitle({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'h5'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'h5'>, 'className' | 'style'> & StyleProp) {
   return <h5 {...props} {...stylex.props(s.title, style)} />
 }
 
 export function AlertDescription({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.description, style)} />
 }
 
@@ -35,6 +35,6 @@ export function AlertDescription({
 export function AlertAction({
   style,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<'div'>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.action, style)} />
 }

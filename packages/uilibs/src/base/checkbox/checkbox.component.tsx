@@ -22,7 +22,7 @@ import * as React from 'react'
 import { checkboxStyles, checkboxGroupStyles } from './checkbox.stylex'
 
 export interface CheckboxProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseCheckbox.Root>,
+  React.ComponentProps<typeof BaseCheckbox.Root>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles
@@ -55,7 +55,7 @@ export function Checkbox({ style, ...props }: CheckboxProps) {
 }
 
 export interface CheckboxGroupProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof BaseCheckboxGroup>,
+  React.ComponentProps<typeof BaseCheckboxGroup>,
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles
