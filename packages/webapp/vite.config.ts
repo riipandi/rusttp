@@ -9,6 +9,7 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 const backend = process.env.BACKEND_URL ?? 'http://127.0.0.1:3000'
 const proxy: Record<string, ProxyOptions> = {
   '/api': { target: backend },
+  '/rpc': { target: backend },
   '/healthz': { target: backend }
 }
 
@@ -34,7 +35,8 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   build: {
     emptyOutDir: true,
-    outDir: resolve('dist'),
+    // The server embeds this folder (apps/server/build.rs); it is gitignored.
+    outDir: resolve('../../apps/server/frontend'),
     reportCompressedSize: false
   },
   server: { port: 5173, strictPort: true, proxy },

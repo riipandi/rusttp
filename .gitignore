@@ -74,3 +74,4 @@ terraform.tfvars*
 
 # Application
 apps/server/emails/*
+apps/server/frontend/

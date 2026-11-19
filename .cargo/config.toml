@@ -14,3 +14,7 @@ rustflags = ["-C", "link-args=-fuse-ld=lld"]
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]
+
+# memory-serve (apps/server/build.rs) otherwise prints a cargo warning per embedded asset.
+[env]
+MEMORY_SERVE_QUIET = "1"

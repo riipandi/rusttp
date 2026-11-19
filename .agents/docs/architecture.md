@@ -1,6 +1,6 @@
 # Architecture
 
-updated: 2026-11-19T16:39:00+07:00
+updated: 2026-11-19T22:18:41+07:00
 
 The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`; this file keeps the why, so a settled decision is not re-litigated.
 
@@ -114,6 +114,24 @@ Alternatives considered:
 - geni — rejected: CLI-first; the library API reads migrations from a folder at runtime (no embedding); pulls its own sqlx 0.8 plus libsql and turso unconditionally.
 
 Unverified: the behaviour of `create_schema` + `dangerous_set_table_name` against a live Postgres, and sqlx's advisory-lock scope across sets. Both are the first tests to write in the database crate.
+
+### Connect as the primary protocol, REST beside it, the SPA embedded
+
+Context: the SPA needs typed calls with one contract shared by server and client, while OAuth/OIDC providers, webhooks, and other external callers expect plain REST. In development the SPA runs on Vite's dev server; in production the server must ship as one binary.
+
+Decision (2026-11-19, owner): one axum router in `apps/server/src/transport/` serves Connect RPC (`connectrpc`) on `/rpc/<package.Service>/<Method>`, REST on `/api` (versioned under `/api/v1`), and the SPA on every other path through `memory-serve`, which embeds `apps/server/frontend` (the gitignored `vite build` output) in release builds and reads it from disk in debug. Development runs Vite on `:5173` and proxies `/api`, `/rpc`, and `/healthz` to the server, so the browser stays on one origin. Errors under `/api` and `/rpc` are JSON (`application/problem+json` for REST, the Connect error body for RPC); every other path falls back to the SPA's `index.html` (200, the client router renders not-found) or a static HTML page.
+
+Consequences:
+
+- (positive) one origin in development and production, so session cookies stay first-party and no CORS is needed; one binary to deploy; Connect speaks JSON as well as protobuf, so a browser or `curl` can call it.
+- (negative) a release build embeds whatever `apps/server/frontend` holds at compile time: build the SPA first, or the binary ships the stub page `build.rs` writes; connectrpc is pre-1.0, so a minor bump may change its API.
+
+Alternatives considered:
+
+- `axum-connect` — rejected: thinner protocol coverage and less active than `connectrpc`, which passes the Connect conformance suite.
+- Connect at the root (`/<package.Service>/<Method>`) — rejected: it shares the namespace with SPA routes and needs a proxy entry per package.
+- `rust-embed` — rejected: cache headers, precompression, and the SPA fallback would be hand-written; `tower-http` `ServeDir` — rejected: the binary would need `dist/` beside it at runtime.
+- vite-rs (Vite managed from Rust) — rejected after research: the Vite-first proxy gives the same single origin with less machinery.
 
 ## Parked
 

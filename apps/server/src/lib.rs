@@ -1,15 +1,15 @@
 //! HTTP application for the Rusttp server.
 
-use axum::{Router, routing::get};
-use tower_http::trace::TraceLayer;
+mod transport;
 
-/// Builds the application router.
+use axum::Router;
+
+/// Builds the application router: Connect RPC, REST, and the SPA.
 pub fn build_app() -> Router {
-    Router::new()
-        .route("/healthz", get(healthz))
-        .layer(TraceLayer::new_for_http())
+    transport::router()
 }
 
-async fn healthz() -> &'static str {
-    "ok"
+/// Binds `addr` and serves the application until Ctrl-C.
+pub async fn serve(addr: &str) -> std::io::Result<()> {
+    transport::server::serve(addr).await
 }
