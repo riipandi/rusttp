@@ -15,9 +15,9 @@ export const styles = stylex.create({
   container: {
     boxSizing: 'border-box',
     width: '100%',
-    maxWidth: '72rem',
+    maxWidth: '80rem',
     marginInline: 'auto',
-    paddingInline: unit.x6
+    paddingInline: 'clamp(1.5rem, 4vw, 3rem)'
   },
   header: {
     position: 'sticky',
