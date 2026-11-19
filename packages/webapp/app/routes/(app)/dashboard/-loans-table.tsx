@@ -1,7 +1,7 @@
 import { Badge, type BadgeVariant } from 'uilibs/extra/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { loans, type LoanStatus } from '../-data'
+import { loans, type LoanStatus } from './-data'
 
 const statusVariant: Record<LoanStatus, BadgeVariant> = {
   Borrowed: 'secondary',

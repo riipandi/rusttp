@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { summary } from '../-data'
+import { summary } from './-data'
 
 export function Summary() {
   return (

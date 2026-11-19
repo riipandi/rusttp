@@ -11,7 +11,8 @@ export interface Loan {
 export const summary = [
   { label: 'Active loans', value: '128' },
   { label: 'Overdue', value: '7' },
-  { label: 'New members this week', value: '12' }
+  { label: 'New members this week', value: '12' },
+  { label: 'Books available', value: '2,418' }
 ]
 
 export const loans: Loan[] = [

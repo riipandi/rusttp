@@ -2,9 +2,9 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { DashboardHeader } from './-components/dashboard-header'
-import { LoansTable } from './-components/loans-table'
-import { Summary } from './-components/summary'
+import { DashboardHeader } from './-header'
+import { LoansTable } from './-loans-table'
+import { Summary } from './-summary'
 
 export const Route = createFileRoute('/(app)/dashboard/')({
   component: RouteComponent,

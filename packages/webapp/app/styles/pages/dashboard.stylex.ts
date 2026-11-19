@@ -3,11 +3,6 @@ import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 
 export const styles = stylex.create({
-  account: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x2
-  },
   main: {
     display: 'flex',
     flexDirection: 'column',
@@ -34,7 +29,8 @@ export const styles = stylex.create({
     display: 'grid',
     gridTemplateColumns: {
       default: '1fr',
-      '@media (min-width: 660px)': 'repeat(3, 1fr)'
+      '@media (min-width: 660px)': 'repeat(2, 1fr)',
+      '@media (min-width: 900px)': 'repeat(4, 1fr)'
     },
     gap: unit.x6,
     margin: 0,
