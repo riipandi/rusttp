@@ -6,13 +6,13 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 ## Core documents
 
-| Path | Read it for |
-| --- | --- |
-| `/AGENTS.md` | The workflow rules: read order, ambiguous-decision protocol, skill map, workflow, git. |
-| `.agents/docs/index.md` | The documentation map — this file. |
-| `.agents/docs/shape.md` | The repository's shape: the layout, the toolchain, the commands. |
-| `.agents/docs/rules.md` | The detailed rules behind `AGENTS.md`: contracts (dependency direction, modules, data, migrations, errors, Rust code, tests), how-to-change recipes, traps. |
-| `.agents/docs/architecture.md` | The architecture: module anatomy, lifecycle, and the decision records with their rejected alternatives. |
+| Path                           | Read it for                                                                                                                                                 |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/AGENTS.md`                   | The workflow rules: read order, ambiguous-decision protocol, skill map, workflow, git.                                                                      |
+| `.agents/docs/index.md`        | The documentation map — this file.                                                                                                                          |
+| `.agents/docs/shape.md`        | The repository's shape: the layout, the toolchain, the commands.                                                                                            |
+| `.agents/docs/rules.md`        | The detailed rules behind `AGENTS.md`: contracts (dependency direction, modules, data, migrations, errors, Rust code, tests), how-to-change recipes, traps. |
+| `.agents/docs/architecture.md` | The architecture: module anatomy, lifecycle, and the decision records with their rejected alternatives.                                                     |
 
 ## Docs sync
 
@@ -28,9 +28,9 @@ None yet.
 
 Findings that outlive a turn. The directory lists only files with `open` or `considering` items.
 
-| File | Status | Subject |
-| --- | --- | --- |
-| `issue-00001-workspace-hygiene.md` | open (6 open, 1 considering) | Workspace hygiene gaps: workspace members, needless axum deps, unpinned server deps, README claims, empty just recipes, missing lefthook config, module location. |
+| File                               | Status                       | Subject                                                                                                                                                           |
+| ---------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `issue-00001-workspace-hygiene.md` | open (7 open, 1 considering) | Workspace hygiene gaps: workspace members, needless axum deps, unpinned server deps, README claims, empty just recipes, missing lefthook config, workspace clippy failure, module location. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 

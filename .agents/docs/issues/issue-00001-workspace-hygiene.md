@@ -1,9 +1,9 @@
 ---
 status: open
 created: 2026-11-19T16:20:00+07:00
-updated: 2026-11-19T16:39:00+07:00
+updated: 2026-11-19T16:43:00+07:00
 summary: "Workspace hygiene gaps: workspace membership, needless axum dependencies, version pinning outside the workspace, README claims without files, empty task recipes, a missing lefthook config, and the undecided location of domain modules."
-count: 7
+count: 8
 ---
 
 # Workspace hygiene gaps
@@ -62,3 +62,11 @@ count: 7
   summary: `lefthook` is listed as a developer tool in `.agents/docs/shape.md` and in `README.md`, but the repository has no `lefthook.yml` (or any name lefthook looks for); every commit prints "No config files ... have been found".
   plan: none yet
   trigger: when the just recipes land — wire the pre-commit hook to the format and lint gates in the same change.
+
+## Workspace clippy fails on empty framework crates
+
+- status: open
+  area: crates
+  summary: `cargo clippy --workspace --all-targets -- -D warnings` fails on `crates/corelib` because its empty `src/lib.rs` has no crate doc (`missing_docs`, promoted by `-D warnings`); cargo also warns about unused dependencies (`axum` in `crates/corelib/Cargo.toml:19`, `clap` and `tower-http` in `apps/server/Cargo.toml`). Verified 2026-11-19 with cargo 1.100.0.
+  plan: none yet
+  trigger: the workspace cleanup; until then gate the server alone with `-p rusttp-server`.
