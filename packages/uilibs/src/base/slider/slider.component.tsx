@@ -29,6 +29,11 @@ export interface SliderProps extends Omit<
   'className' | 'style'
 > {
   style?: stylex.StyleXStyles
+  /**
+   * Accessible name of each thumb, in order (`['Minimum', 'Maximum']` for a range). A slider with
+   * one thumb takes its `aria-label` when this is not given.
+   */
+  thumbLabels?: string[]
 }
 
 export function Slider({
@@ -38,13 +43,15 @@ export function Slider({
   min = 0,
   max = 100,
   orientation = 'horizontal',
+  thumbLabels,
   ...props
 }: SliderProps) {
-  const values = Array.isArray(value)
-    ? value
+  // One thumb unless the value says otherwise.
+  const thumbCount = Array.isArray(value)
+    ? value.length
     : Array.isArray(defaultValue)
-      ? defaultValue
-      : [min, max]
+      ? defaultValue.length
+      : 1
 
   return (
     <BaseSlider.Root
@@ -61,8 +68,14 @@ export function Slider({
         <BaseSlider.Track {...stylex.props(s.track, trackOrientations[orientation])}>
           <BaseSlider.Indicator {...stylex.props(s.range, rangeOrientations[orientation])} />
         </BaseSlider.Track>
-        {Array.from({ length: values.length }, (_, index) => (
-          <BaseSlider.Thumb key={index} {...stylex.props(s.thumb)} />
+        {Array.from({ length: thumbCount }, (_, index) => (
+          <BaseSlider.Thumb
+            key={index}
+            aria-label={
+              thumbLabels?.[index] ?? (thumbCount === 1 ? props['aria-label'] : undefined)
+            }
+            {...stylex.props(s.thumb)}
+          />
         ))}
       </BaseSlider.Control>
     </BaseSlider.Root>

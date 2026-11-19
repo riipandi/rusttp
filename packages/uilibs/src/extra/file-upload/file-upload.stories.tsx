@@ -4,6 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
 import { Button } from '../../base/button'
+import { Field, FieldError, FieldLabel } from '../../base/field'
 import { colors } from '../../styles/colors.stylex'
 import { FileUpload, FileUploadTrigger } from './file-upload.component'
 
@@ -198,5 +199,56 @@ export const Disabled: Story = {
   play: async ({ canvas }) => {
     const input = canvas.getByTestId('root').querySelector('input')
     await expect(input).toBeDisabled()
+  }
+}
+
+export const Invalid: Story = {
+  args: { name: 'owl-license' },
+  render: (args) => (
+    <Field invalid style={styles.width}>
+      <FieldLabel>Owl license</FieldLabel>
+      <FileUpload {...args} inputAttributes={{ accept: 'image/*' }}>
+        Drop the license here
+      </FileUpload>
+      <FieldError match>The Owl Office needs a photo of the license.</FieldError>
+    </Field>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const input = canvasElement.querySelector('input[type="file"]')
+    if (!input) throw new Error('File input not found')
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAttribute('data-invalid')
+    await expect(canvas.getByLabelText('Owl license')).toBe(input)
+  }
+}
+
+/** A drop bypasses the input, so `accept` and `multiple` are applied to it by hand. */
+export const DropRespectsAccept: Story = {
+  name: 'Drop respects accept',
+  args: { name: 'photos', onChange: fn() },
+  render: (args) => (
+    <FileUpload {...args} inputAttributes={{ accept: 'image/*,.pdf' }} style={styles.width}>
+      Drop photos here
+    </FileUpload>
+  ),
+  play: async ({ args, canvasElement }) => {
+    const area = canvasElement.querySelector('input[type="file"]')?.closest('label')?.parentElement
+    if (!area) throw new Error('Drop area not found')
+    const files = [
+      new File(['x'], 'sirius.png', { type: 'image/png' }),
+      new File(['x'], 'howler.txt', { type: 'text/plain' }),
+      new File(['x'], 'map.pdf', { type: 'application/pdf' })
+    ]
+    const dataTransfer = new DataTransfer()
+    for (const file of files) dataTransfer.items.add(file)
+    area.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }))
+    // `multiple` is not set, so only the first accepted file is kept.
+    await expect(args.onChange).toHaveBeenCalledTimes(1)
+    await expect(args.onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'photos',
+        value: [expect.objectContaining({ name: 'sirius.png' })]
+      })
+    )
   }
 }

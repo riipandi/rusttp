@@ -36,6 +36,18 @@ export const otpFieldStyles = stylex.create({
     textAlign: 'center',
     zIndex: { default: 0, ':focus': 1 }
   },
+  // Names the field for its first slot without taking space in the row.
+  hiddenLabel: {
+    borderWidth: 0,
+    clipPath: 'inset(50%)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    whiteSpace: 'nowrap',
+    width: 1
+  },
   separator: {
     alignItems: 'center',
     color: colors.foregroundNeutralFaded,

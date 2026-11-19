@@ -6,6 +6,7 @@ import { expect, userEvent } from 'storybook/test'
 import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, radius } from '../../styles/tokens.stylex'
+import { Field, FieldError, FieldLabel } from '../field'
 import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-field.component'
 
 const meta = {
@@ -59,7 +60,7 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { length: 6 },
+  args: { length: 6, 'aria-label': 'Verification code' },
   render: (args) => (
     <OTPField {...args}>
       <OTPFieldSlot style={styles.standalone} />
@@ -74,7 +75,7 @@ export const Playground: Story = {
 
 export const Joined: Story = {
   name: 'Joined slots',
-  args: { length: 6 },
+  args: { length: 6, 'aria-label': 'Verification code' },
   render: (args) => (
     <OTPField {...args}>
       <OTPFieldGroup>
@@ -90,7 +91,7 @@ export const Joined: Story = {
 }
 
 export const Separator: Story = {
-  args: { length: 8 },
+  args: { length: 8, 'aria-label': 'Verification code' },
   render: (args) => (
     <OTPField {...args}>
       <OTPFieldGroup>
@@ -111,7 +112,7 @@ export const Separator: Story = {
 }
 
 export const Disabled: Story = {
-  args: { length: 6, disabled: true, defaultValue: '123456' },
+  args: { length: 6, disabled: true, defaultValue: '123456', 'aria-label': 'Verification code' },
   render: (args) => (
     <OTPField {...args}>
       <OTPFieldGroup>
@@ -135,13 +136,13 @@ export const Disabled: Story = {
 }
 
 export const Controlled: Story = {
-  args: { length: 6 },
+  args: { length: 6, 'aria-label': 'Verification code' },
   render: () => {
     const [value, setValue] = React.useState('')
 
     return (
       <div {...stylex.props(styles.col)}>
-        <OTPField length={6} value={value} onValueChange={setValue}>
+        <OTPField aria-label='Verification code' length={6} value={value} onValueChange={setValue}>
           <OTPFieldGroup>
             <OTPFieldSlot />
             <OTPFieldSlot />
@@ -189,5 +190,50 @@ export const ControlSizes: Story = {
     for (const slot of canvasElement.querySelectorAll('input')) {
       await expect(slot.getBoundingClientRect().width).toBe(slot.getBoundingClientRect().height)
     }
+  }
+}
+
+export const Invalid: Story = {
+  args: { length: 6, defaultValue: '123456' },
+  render: (args) => (
+    <Field invalid>
+      <FieldLabel>Verification code</FieldLabel>
+      <OTPField {...args}>
+        <OTPFieldGroup>
+          {[0, 1, 2, 3, 4, 5].map((slot) => (
+            <OTPFieldSlot key={slot} />
+          ))}
+        </OTPFieldGroup>
+      </OTPField>
+      <FieldError match>That code has expired. Ask the Owl Office for a new one.</FieldError>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const slots = canvas.getAllByRole('textbox')
+    await expect(slots).toHaveLength(6)
+    for (const slot of slots) await expect(slot).toHaveAttribute('data-invalid')
+    // The first slot takes the field's label, the others their position.
+    await expect(slots[0]).toHaveAccessibleName('Verification code')
+    await expect(slots[1]).toHaveAccessibleName('Character 2 of 6')
+  }
+}
+
+/** An `aria-label` on the root names the first slot too. */
+export const NamedByAriaLabel: Story = {
+  name: 'Named by aria-label',
+  args: { length: 4, 'aria-label': 'Verification code' },
+  render: (args) => (
+    <OTPField {...args}>
+      <OTPFieldGroup>
+        {[0, 1, 2, 3].map((slot) => (
+          <OTPFieldSlot key={slot} />
+        ))}
+      </OTPFieldGroup>
+    </OTPField>
+  ),
+  play: async ({ canvas }) => {
+    const slots = canvas.getAllByRole('textbox')
+    await expect(slots[0]).toHaveAccessibleName('Verification code')
+    await expect(slots[3]).toHaveAccessibleName('Character 4 of 4')
   }
 }

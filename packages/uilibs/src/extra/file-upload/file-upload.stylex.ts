@@ -23,6 +23,7 @@ import {
  *   button participate in text flow without breaking the label click.
  */
 export const fileUploadStyles = stylex.create({
+  height: (value: string | number) => ({ height: value }),
   root: {
     display: 'block',
     borderRadius: radius.large,
@@ -62,7 +63,10 @@ export const fileUploadStyles = stylex.create({
   },
   outline: {
     backgroundColor: 'transparent',
-    borderColor: colors.borderNeutral,
+    borderColor: {
+      default: colors.borderNeutral,
+      ':has([data-invalid])': colors.borderCritical
+    },
     borderStyle: 'dashed',
     borderWidth: stroke.ring1,
     cursor: 'pointer',

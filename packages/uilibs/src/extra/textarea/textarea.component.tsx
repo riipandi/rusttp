@@ -1,3 +1,4 @@
+import { Field as BaseField } from '@base-ui/react/field'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
@@ -15,12 +16,19 @@ export interface TextareaProps extends Omit<
   autoResize?: boolean
 }
 
+/** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */
 export function Textarea({
   size = 'md',
   style,
   autoResize = false,
   onChange,
   ref,
+  id,
+  name,
+  value,
+  defaultValue,
+  disabled,
+  autoFocus,
   ...props
 }: TextareaProps) {
   const resize = useCallback((element: HTMLTextAreaElement | null) => {
@@ -30,13 +38,17 @@ export function Textarea({
   }, [])
 
   const setRef = useCallback(
-    (element: HTMLTextAreaElement | null) => {
-      if (autoResize) resize(element)
-      if (typeof ref === 'function') return ref(element)
-      if (ref) ref.current = element
+    (element: HTMLElement | null) => {
+      const textarea = element instanceof HTMLTextAreaElement ? element : null
+      if (autoResize) resize(textarea)
+      if (typeof ref === 'function') return ref(textarea)
+      if (ref) ref.current = textarea
     },
     [autoResize, ref, resize]
   )
+
+  // What the Field control owns: its id, name, value, disabled and autofocus state.
+  const fieldProps = { id, name, value, defaultValue, disabled, autoFocus }
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (autoResize) resize(event.currentTarget)
@@ -44,17 +56,22 @@ export function Textarea({
   }
 
   return (
-    <textarea
-      {...props}
+    <BaseField.Control
       ref={setRef}
-      onChange={handleChange}
-      {...stylex.props(
-        controlBase.root,
-        textareaSizes[size],
-        s.root,
-        autoResize && s.autoResize,
-        style
-      )}
+      {...fieldProps}
+      render={
+        <textarea
+          {...props}
+          onChange={handleChange}
+          {...stylex.props(
+            controlBase.root,
+            textareaSizes[size],
+            s.root,
+            autoResize && s.autoResize,
+            style
+          )}
+        />
+      }
     />
   )
 }

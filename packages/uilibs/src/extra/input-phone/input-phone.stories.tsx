@@ -48,7 +48,7 @@ export default meta
 export const Playground: Story = {
   render: (args) => (
     <div {...stylex.props(styles.wrap)}>
-      <InputPhone {...args} />
+      <InputPhone aria-label='Phone number' {...args} />
     </div>
   ),
   argTypes: {
@@ -91,7 +91,7 @@ export const WithDefaultValue: Story = {
   name: 'With default value',
   render: () => (
     <div {...stylex.props(styles.wrap)}>
-      <InputPhone value='+12135551234' onChange={() => {}} />
+      <InputPhone aria-label='Phone number' value='+12135551234' onChange={() => {}} />
     </div>
   ),
   play: async ({ canvas }) => {
@@ -162,7 +162,7 @@ export const ReadOnly: Story = {
 export const Interaction: Story = {
   render: () => (
     <div {...stylex.props(styles.wrap)}>
-      <InputPhone id='phone-typing' defaultCountry='US' />
+      <InputPhone id='phone-typing' aria-label='Phone number' defaultCountry='US' />
     </div>
   ),
   play: async ({ canvas }) => {

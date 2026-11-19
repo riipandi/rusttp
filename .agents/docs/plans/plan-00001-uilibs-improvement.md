@@ -17,8 +17,8 @@ phases:
       note: `controlBase.within` added for wrappers (focus via `:has(:focus-visible)`, invalid via `[data-invalid]` or `:has([data-invalid])`, disabled via `[data-disabled]` or a disabled input, so a disabled stepper alone does not dim the field); `size` lives on the root for NumberField, OTPField, InputGroup (context) and on the part for the rest; Textarea sizes are minimum heights 56/64/72 (rows=1), not the single-line scale; OTP default slot grows 32 to 36 px by D1; InputGroupButton keeps its own 24/32 px sizes (they fit every group size) so it does not derive from the group size; NumberField now fills its container (`100%`) like the other text controls; `InputGroup` inline addons lost their block padding (an addon at `sm` pushed the group to 34 px); the two new OTP stories fail the gate only on Base UI's unlabelled hidden input (phase 4); e2e ran with `--project Chromium` because Firefox and WebKit are not installed here (19/19)
     - id: 4
       title: Field wiring and accessible names
-      status: pending
-      note: —
+      status: committed
+      note: Textarea and FileUpload render through `Field.Control`; OTP slots name themselves (the root's `aria-label` becomes a hidden label for the first slot, because Base UI ignores `aria-label` there, and slot position comes from the DOM since Base UI keeps its index internal); Slider takes `thumbLabels` and defaults to one thumb (a numeric `value` used to render two); `label` and `button-name` are 0 under the gate, 34 stories still fail (86 at the start; the flaky `aspect-ratio` `Square` aside)
     - id: 5
       title: Actions — buttons, links, groups, toggles, tabs, menus
       status: pending

@@ -8,6 +8,7 @@ import {
   expectControlHeights
 } from '../../contracts/control-sizes'
 import { Label } from '../../extra/label'
+import { Field, FieldError, FieldLabel } from '../field'
 import { NumberField, NumberFieldGroup } from './number-field.component'
 
 const meta = {
@@ -142,4 +143,21 @@ export const SideControlSizes: Story = {
     </ControlSizesColumn>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const Invalid: Story = {
+  render: () => (
+    <Field invalid>
+      <NumberField defaultValue={-3} min={0}>
+        <FieldLabel>Galleons</FieldLabel>
+        <NumberFieldGroup />
+      </NumberField>
+      <FieldError match>A vault cannot hold fewer than zero galleons.</FieldError>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('textbox', { name: 'Galleons' })
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input.closest('[role="group"]')).toHaveAttribute('data-invalid')
+  }
 }

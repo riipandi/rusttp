@@ -89,7 +89,11 @@ export const Icon: Story = {
 export const Button: Story = {
   render: () => (
     <InputGroup style={styles.group}>
-      <InputGroupInput readOnly defaultValue='https://dailyprophet.co.uk/howlers' />
+      <InputGroupInput
+        aria-label='Howler address'
+        readOnly
+        defaultValue='https://dailyprophet.co.uk/howlers'
+      />
       <InputGroupAddon align='inline-end'>
         <InputGroupButton aria-label='Copy howler address'>
           <Copy {...stylex.props(styles.icon)} />

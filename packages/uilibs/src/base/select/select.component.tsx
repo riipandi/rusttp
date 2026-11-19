@@ -49,6 +49,10 @@ export const Select = BaseSelect.Root
 export const SelectValue = BaseSelect.Value
 export const SelectGroup = BaseSelect.Group
 
+/**
+ * The button that opens the list. Inside a `Field` it is named by the `FieldLabel`; on its own it
+ * shows only the value or placeholder, so give it an `aria-label` (or `aria-labelledby`).
+ */
 export function SelectTrigger({
   size = 'md',
   style,

@@ -69,7 +69,7 @@ export const VisibleByDefault: Story = {
   name: 'Visible by default',
   render: () => (
     <div {...stylex.props(styles.field)}>
-      <InputPassword defaultVisible defaultValue='alohomora-2024' />
+      <InputPassword defaultVisible defaultValue='alohomora-2024' aria-label='Password' />
     </div>
   )
 }
@@ -80,6 +80,7 @@ export const Controlled: Story = {
     return (
       <div {...stylex.props(styles.field)}>
         <InputPassword
+          aria-label='Password'
           visible={visible}
           onVisibleChange={setVisible}
           defaultValue='expecto-patronum'

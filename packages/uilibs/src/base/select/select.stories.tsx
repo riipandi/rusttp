@@ -108,7 +108,7 @@ export const Playground: Story = {
   args: { items: fruits },
   render: (args) => (
     <Select {...args}>
-      <SelectTrigger>
+      <SelectTrigger aria-label='Wand core'>
         <SelectValue placeholder='Select a wand core' />
       </SelectTrigger>
       <SelectContent>
@@ -147,7 +147,7 @@ export const Groups: Story = {
   args: { items },
   render: (args) => (
     <Select {...args}>
-      <SelectTrigger>
+      <SelectTrigger aria-label='Ingredient'>
         <SelectValue placeholder='Select an ingredient' />
       </SelectTrigger>
       <SelectContent>
@@ -171,7 +171,7 @@ export const Scrollable: Story = {
   args: { items: timezones },
   render: (args) => (
     <Select {...args}>
-      <SelectTrigger>
+      <SelectTrigger aria-label='City'>
         <SelectValue placeholder='Select a city' />
       </SelectTrigger>
       <SelectContent alignItemWithTrigger>
@@ -190,7 +190,7 @@ export const DisabledOptions: Story = {
   args: { items: plansWithOptions, defaultValue: 'pro' },
   render: (args) => (
     <Select {...args}>
-      <SelectTrigger>
+      <SelectTrigger aria-label='Wand core'>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -208,7 +208,7 @@ export const Disabled: Story = {
   args: { items: disabledFruits, disabled: true },
   render: (args) => (
     <Select {...args}>
-      <SelectTrigger>
+      <SelectTrigger aria-label='Wand core'>
         <SelectValue placeholder='Disabled' />
       </SelectTrigger>
       <SelectContent>
@@ -239,9 +239,14 @@ export const Invalid: Story = {
           ))}
         </SelectContent>
       </Select>
-      <FieldError>Please select a Gringotts plan to continue.</FieldError>
+      <FieldError match>Please select a Gringotts plan to continue.</FieldError>
     </Field>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('combobox', { name: 'Gringotts plan' })
+    await expect(trigger).toHaveAttribute('aria-invalid', 'true')
+    await expect(trigger).toHaveAttribute('data-invalid')
+  }
 }
 
 export const ControlSizes: Story = {

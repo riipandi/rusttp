@@ -5,6 +5,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
 import { colors } from '../../styles/colors.stylex'
+import { Field, FieldError, FieldLabel } from '../field'
 import {
   Combobox,
   ComboboxChip,
@@ -162,7 +163,7 @@ export const Multiple: Story = {
 export const Popup: Story = {
   render: () => (
     <Combobox items={fruits}>
-      <ComboboxTrigger>
+      <ComboboxTrigger aria-label='Drink'>
         <ComboboxValue placeholder='Select a drink' />
       </ComboboxTrigger>
       <ComboboxContent>
@@ -339,4 +340,33 @@ export const ChipsControlSizes: Story = {
     </ControlSizesColumn>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const Invalid: Story = {
+  args: { items: frameworks },
+  render: (args) => (
+    <Field invalid>
+      <FieldLabel>School</FieldLabel>
+      <Combobox {...args}>
+        <ComboboxInput placeholder='Choose a school' />
+        <ComboboxContent>
+          <ComboboxEmpty>No school found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+      <FieldError match>Pick the school that sent your letter.</FieldError>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('combobox', { name: 'School' })
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAttribute('data-invalid')
+    await expect(input).toHaveAccessibleDescription('Pick the school that sent your letter.')
+  }
 }

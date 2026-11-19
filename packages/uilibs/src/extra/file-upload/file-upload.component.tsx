@@ -1,3 +1,4 @@
+import { Field as BaseField } from '@base-ui/react/field'
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
@@ -33,6 +34,25 @@ export interface FileUploadProps extends Omit<
   style?: stylex.StyleXStyles
 }
 
+/** Whether `file` matches an `accept` list the way the native picker reads it: `.ext`, `type/*`, `type/subtype`. */
+function acceptsFile(file: File, accept: string | undefined) {
+  const tokens = accept
+    ?.split(',')
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean)
+  if (!tokens?.length) return true
+  const name = file.name.toLowerCase()
+  const type = file.type.toLowerCase()
+  return tokens.some((token) =>
+    token.startsWith('.')
+      ? name.endsWith(token)
+      : token.endsWith('/*')
+        ? type.startsWith(token.slice(0, -1))
+        : type === token
+  )
+}
+
+/** A file input and drop area that is a `Field` control: inside a `Field` it takes the label, error, and invalid state. */
 export function FileUpload({
   name,
   children,
@@ -72,7 +92,12 @@ export function FileUpload({
     event.preventDefault()
     if (disabled) return
     setHighlighted(false)
-    onChange?.({ name, value: Array.from(event.dataTransfer.files), event })
+    // A drop bypasses the input's own `accept` and `multiple`, so apply them here.
+    const dropped = Array.from(event.dataTransfer.files).filter((file) =>
+      acceptsFile(file, inputAttributes?.accept)
+    )
+    const files = inputAttributes?.multiple ? dropped : dropped.slice(0, 1)
+    if (files.length > 0) onChange?.({ name, value: files, event })
     otherProps.onDrop?.(event)
   }
 
@@ -83,7 +108,7 @@ export function FileUpload({
   }
 
   const inputNode = (
-    <input
+    <BaseField.Control
       {...inputAttributes}
       {...stylex.props(styles.input)}
       type='file'
@@ -107,9 +132,9 @@ export function FileUpload({
           inline && styles.inline,
           highlighted && styles.highlighted,
           disabled && styles.disabled,
+          height != null && styles.height(height),
           style
         ),
-        style: height != null ? { height } : undefined,
         onDragOver: handleDragOver,
         onDragEnter: handleDragEnter,
         onDragLeave: handleDragLeave,

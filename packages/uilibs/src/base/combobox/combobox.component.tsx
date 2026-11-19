@@ -66,7 +66,8 @@ function TriggerChevron() {
 
 // Select-like trigger button — anchors the popup when the input lives inside
 // ComboboxContent instead of the default input+trigger row (see ComboboxInput
-// `showTrigger`).
+// `showTrigger`). Inside a `Field` the `FieldLabel` names it; on its own, give it
+// an `aria-label`, since the value or placeholder is its only text.
 export function ComboboxTrigger({
   size = 'md',
   style,
@@ -103,6 +104,10 @@ export interface ComboboxInputLabels {
   open: string
 }
 
+/**
+ * Input with a dropdown trigger and an optional clear button. Inside a `Field` the `FieldLabel`
+ * names it; on its own, give it an `aria-label`: a placeholder is not a name.
+ */
 export function ComboboxInput({
   size = 'md',
   style,

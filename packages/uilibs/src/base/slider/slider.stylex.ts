@@ -50,7 +50,14 @@ export const sliderStyles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: 'box-shadow',
     userSelect: 'none',
-    width: unit.x3
+    width: unit.x3,
+    // The visible thumb is 12px; the pointer target is 24px (WCAG 2.5.8).
+    '::after': {
+      content: '""',
+      insetBlock: `calc(-1 * ${unit.x1_5})`,
+      insetInline: `calc(-1 * ${unit.x1_5})`,
+      position: 'absolute'
+    }
   }
 })
 

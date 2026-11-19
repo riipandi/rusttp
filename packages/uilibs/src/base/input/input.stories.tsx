@@ -103,9 +103,14 @@ export const Invalid: Story = {
     <Field invalid style={styles.narrow}>
       <FieldLabel htmlFor='input-invalid-email'>Owl post address</FieldLabel>
       <Input id='input-invalid-email' type='email' defaultValue='ron.weasley@hogwarts' />
-      <FieldError>That owl address is not registered with the Owl Office.</FieldError>
+      <FieldError match>That owl address is not registered with the Owl Office.</FieldError>
     </Field>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('textbox', { name: 'Owl post address' })
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAttribute('data-invalid')
+  }
 }
 
 export const File: Story = {

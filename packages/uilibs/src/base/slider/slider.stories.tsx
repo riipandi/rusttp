@@ -65,7 +65,7 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { defaultValue: 50 },
+  args: { defaultValue: 50, 'aria-label': 'Volume' },
   render: (args) => <Slider {...args} style={styles.root} />,
   play: async ({ canvas }) => {
     // Base UI exposes more than one slider element; pick the value thumb.
@@ -86,17 +86,18 @@ export const Playground: Story = {
 }
 
 export const Range: Story = {
-  args: { defaultValue: [25, 75] },
+  args: { defaultValue: [25, 75], thumbLabels: ['Minimum price', 'Maximum price'] },
   render: (args) => <Slider {...args} style={styles.root} />,
   play: async ({ canvas }) => {
-    const [min, max] = canvas.getAllByRole('slider')
+    const min = canvas.getByRole('slider', { name: 'Minimum price' })
+    const max = canvas.getByRole('slider', { name: 'Maximum price' })
     await expect(min).toHaveAttribute('aria-valuenow', '25')
     await expect(max).toHaveAttribute('aria-valuenow', '75')
   }
 }
 
 export const Vertical: Story = {
-  args: { orientation: 'vertical', defaultValue: [40] },
+  args: { orientation: 'vertical', defaultValue: [40], 'aria-label': 'Volume' },
   render: (args) => (
     <div {...stylex.props(styles.verticalRow)}>
       <Slider {...args} />
@@ -112,6 +113,7 @@ export const Controlled: Story = {
     return (
       <div {...stylex.props(styles.row)}>
         <Slider
+          aria-label='Volume'
           value={value}
           onValueChange={(next) => setValue(typeof next === 'number' ? [next] : [...next])}
           style={styles.slider}
@@ -123,6 +125,6 @@ export const Controlled: Story = {
 }
 
 export const Disabled: Story = {
-  args: { disabled: true, defaultValue: [40] },
+  args: { disabled: true, defaultValue: [40], 'aria-label': 'Volume' },
   render: (args) => <Slider {...args} style={styles.root} />
 }

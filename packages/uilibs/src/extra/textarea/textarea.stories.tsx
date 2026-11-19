@@ -77,11 +77,8 @@ export const WithField: Story = {
   name: 'With field',
   render: () => (
     <Field style={styles.wrap}>
-      <FieldLabel htmlFor='textarea-with-field-bio'>Symbologist bio</FieldLabel>
-      <Textarea
-        id='textarea-with-field-bio'
-        placeholder='Tell us about your strangest symbol discovery'
-      />
+      <FieldLabel>Symbologist bio</FieldLabel>
+      <Textarea placeholder='Tell us about your strangest symbol discovery' />
       <FieldDescription>
         You can @mention other wizards and wizarding organizations.
       </FieldDescription>
@@ -106,11 +103,19 @@ export const Disabled: Story = {
 export const Invalid: Story = {
   render: () => (
     <Field invalid style={styles.wrap}>
-      <FieldLabel htmlFor='textarea-invalid-bio'>Symbologist bio</FieldLabel>
-      <Textarea id='textarea-invalid-bio' defaultValue='Dear Editor,' />
-      <FieldError>Your letter must be at least 10 characters.</FieldError>
+      <FieldLabel>Symbologist bio</FieldLabel>
+      <Textarea defaultValue='Dear Editor,' />
+      <FieldError match>Your letter must be at least 10 characters.</FieldError>
     </Field>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const textarea = canvas.getByRole('textbox', { name: 'Symbologist bio' })
+    await expect(textarea).toHaveAttribute('aria-invalid', 'true')
+    await expect(textarea).toHaveAttribute('data-invalid')
+    await expect(textarea).toHaveAccessibleDescription(
+      'Your letter must be at least 10 characters.'
+    )
+  }
 }
 
 const MAX_CHARS = 280

@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { Field, FieldError, FieldLabel } from '../field'
 import {
   Autocomplete,
   AutocompleteContent,
@@ -126,4 +127,33 @@ export const ControlSizes: Story = {
     </ControlSizesColumn>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const Invalid: Story = {
+  args: { items: tags },
+  render: (args) => (
+    <Field invalid>
+      <FieldLabel>Spell</FieldLabel>
+      <Autocomplete {...args}>
+        <AutocompleteInput placeholder='Search spells…' />
+        <AutocompleteContent>
+          <AutocompleteEmpty>No spells found.</AutocompleteEmpty>
+          <AutocompleteList>
+            {(tag) => (
+              <AutocompleteItem key={tag} value={tag}>
+                {tag}
+              </AutocompleteItem>
+            )}
+          </AutocompleteList>
+        </AutocompleteContent>
+      </Autocomplete>
+      <FieldError match>Name a spell from the Restricted Section.</FieldError>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('combobox', { name: 'Spell' })
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAttribute('data-invalid')
+    await expect(input).toHaveAccessibleDescription('Name a spell from the Restricted Section.')
+  }
 }
