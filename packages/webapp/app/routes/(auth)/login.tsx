@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Field, FieldLabel } from 'uilibs/base/field'
 import { Form } from 'uilibs/base/form'
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/(auth)/login')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   return (
     <div {...stylex.props(styles.split)}>
       <aside {...stylex.props(styles.panel)}>
@@ -50,8 +52,11 @@ function RouteComponent() {
 
           <Form
             style={styles.form}
-            // Demo only: there is no sign-in endpoint yet.
-            onSubmit={(event) => event.preventDefault()}
+            // Demo only: there is no sign-in endpoint yet, so submitting opens the dashboard sample.
+            onSubmit={(event) => {
+              event.preventDefault()
+              void navigate({ to: '/dashboard' })
+            }}
           >
             <div {...stylex.props(styles.fields)}>
               <Field>
