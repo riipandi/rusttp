@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
-import { UserMenu } from '#/routes/(app)/-user-menu'
+import { UserMenu } from '#/components/user-menu'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 

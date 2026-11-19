@@ -7,7 +7,7 @@ import { Logo } from '#/components/logo'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/home.stylex'
 
-export const Route = createFileRoute('/(app)/')({
+export const Route = createFileRoute('/')({
   component: RouteComponent,
   staticData: { pageTitle: 'Home' }
 })
