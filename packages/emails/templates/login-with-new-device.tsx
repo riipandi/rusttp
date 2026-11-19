@@ -1,5 +1,4 @@
-import { Heading } from 'jsx-email'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Details } from '../components/details.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
@@ -40,15 +39,12 @@ export const Template = ({
   device,
   dateTime
 }: LoginWithNewDeviceProps) => (
-  <Layout appName={appName} preview='New sign-in to your account'>
-    <CardHeader title='New sign-in detected' warning />
+  <Layout appName={appName} preview={`New sign-in to your ${appName} account`}>
+    <CardHeader title='New sign-in to your account' warning />
     <Text>
-      Your {appName} account was recently accessed from a new IP address or browser. If you
-      recognize this activity, no further action is required.
+      Someone signed in to your {appName} account from a device or location we haven&apos;t seen
+      before:
     </Text>
-    <Heading as='h2' style={{ fontSize: '16px', fontWeight: 'bold', margin: '16px 0 8px' }}>
-      Details
-    </Heading>
     <Details
       items={[
         { label: 'Location', value: location },
@@ -57,6 +53,9 @@ export const Template = ({
         { label: 'Time', value: dateTime }
       ]}
     />
-    <AccountNotice appName={appName} />
+    <Text>
+      If this was you, there&apos;s nothing to do. If it wasn&apos;t, change your password right
+      away and sign out of any sessions you don&apos;t recognize.
+    </Text>
   </Layout>
 )

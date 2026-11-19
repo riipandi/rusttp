@@ -1,4 +1,4 @@
-import { CardFooter, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
 import { Text } from '../components/text.tsx'
@@ -28,27 +28,25 @@ export const templateProps = {
 } satisfies OauthSignInCodeProps
 
 export const Template = ({ appName, providerName, code, expiresIn }: OauthSignInCodeProps) => (
-  <Layout appName={appName} preview='Your sign-in code'>
+  <Layout
+    appName={appName}
+    preview={`Your code to finish signing in with ${providerName}`}
+    footer={
+      <>
+        You&apos;re receiving this email because a sign-in to {appName} through {providerName} used
+        this address.
+      </>
+    }
+  >
     <CardHeader title='Finish signing in' />
     <Text>
-      A sign-in with {providerName} named this email address. Enter this one-time code on the
-      sign-in screen to prove it is yours and continue.
+      Someone is signing in to {appName} with {providerName} using this email address. Enter this
+      code on the sign-in screen to confirm it&apos;s you:
     </Text>
     <OneTimeCode>{code}</OneTimeCode>
     <Text>
-      <strong>Important:</strong> this code expires in {expiresIn}.
+      The code expires in {expiresIn} and works once. If you didn&apos;t try to sign in, you can
+      ignore this email: no one can finish signing in without this code.
     </Text>
-    <Text>
-      If you did not make this request, no action is needed: the sign-in cannot continue without
-      this code.
-    </Text>
-    <CardFooter>
-      <Text size='sm' muted>
-        You&apos;re receiving this email because a {appName} sign-in through {providerName} carried
-        this address.
-        <br />
-        If you are not sure why you&apos;re receiving this, please contact us.
-      </Text>
-    </CardFooter>
   </Layout>
 )

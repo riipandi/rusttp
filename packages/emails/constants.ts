@@ -16,12 +16,13 @@ export const fontFamily = 'Inter, Aptos, Arial, Helvetica, sans-serif'
 
 export const colors = {
   brand: '#d9531e',
-  text: '#1a1a1a',
+  heading: '#111827',
+  text: '#374151',
   muted: '#6b7280',
   border: '#e5e7eb',
-  page: '#fbfbfb',
+  page: '#f6f7f9',
   card: '#ffffff',
-  panel: '#f6f6f6',
-  link: '#433eaf',
-  button: '#0f172a'
+  panel: '#f9fafb',
+  link: '#c2410c',
+  button: '#111827'
 } as const

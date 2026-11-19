@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { When } from '../components/when.tsx'
@@ -31,18 +31,17 @@ export const templateProps = {
 } satisfies PasskeyRemovedNoticeProps
 
 export const Template = ({ appName, name, email, credentialName }: PasskeyRemovedNoticeProps) => (
-  <Layout appName={appName} preview='A passkey was removed'>
-    <CardHeader title='A passkey was removed' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='A passkey was removed from your account'>
+    <CardHeader title='A passkey was removed from your account' />
+    <Text>Hi {name},</Text>
     <Text>
       The passkey
-      <When value={credentialName}> named &ldquo;{credentialName}&rdquo;</When> was removed from the
-      account <strong>{email}</strong>. It can no longer sign in.
+      <When value={credentialName}> named &ldquo;{credentialName}&rdquo;</When> was removed from{' '}
+      <strong>{email}</strong> and can no longer be used to sign in.
     </Text>
     <Alert variant='warning'>
-      <strong>Security notice:</strong> If you did <strong>not</strong> remove this passkey, someone
-      may have access to the account. Please contact support immediately.
+      Didn&apos;t remove this passkey? Someone else may have access to your account. Change your
+      password and contact support right away.
     </Alert>
-    <AccountNotice appName={appName} />
   </Layout>
 )

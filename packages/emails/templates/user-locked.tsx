@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { When } from '../components/when.tsx'
@@ -31,24 +31,19 @@ export const templateProps = {
 } satisfies UserLockedProps
 
 export const Template = ({ appName, name, email, expiresAt }: UserLockedProps) => (
-  <Layout appName={appName} preview='Your account was locked'>
-    <CardHeader title='Your account was locked' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='Your account is temporarily locked'>
+    <CardHeader title='Your account is locked' />
+    <Text>Hi {name},</Text>
     <Text>
-      The account <strong>{email}</strong> was locked{' '}
+      We locked <strong>{email}</strong> after too many failed sign-in attempts. It stays locked{' '}
       <When value={expiresAt} otherwise='until an administrator unlocks it'>
         until {expiresAt}
-      </When>{' '}
-      after too many failed sign-in attempts with the password.
+      </When>
+      .
     </Text>
     <Alert variant='warning'>
-      <strong>Security notice:</strong> if you tried to sign in just now, wait for the lock to pass
-      and try again, or reset your password to regain access sooner.
+      If this was you, wait until the lock ends, or reset your password to get back in sooner.
     </Alert>
-    <Text>
-      If you did <strong>not</strong> try to sign in, someone may have your password. Please reset
-      it now.
-    </Text>
-    <AccountNotice appName={appName} />
+    <Text>If it wasn&apos;t you, someone may know your password. Reset it as soon as you can.</Text>
   </Layout>
 )

@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
 import { Text } from '../components/text.tsx'
@@ -26,20 +26,17 @@ export const templateProps = {
 } satisfies PasswordResetProps
 
 export const Template = ({ appName, email, resetCode }: PasswordResetProps) => (
-  <Layout appName={appName} preview='Your password reset code'>
+  <Layout appName={appName} preview={`Your ${appName} password reset code`}>
     <CardHeader title='Reset your password' />
-    <Text>Hello,</Text>
+    <Text>Hi,</Text>
     <Text>
-      You requested to reset your password for <strong>{email}</strong>.
-    </Text>
-    <Text>
-      Use the code below to reset your password. Type it on the reset screen; the code works once.
+      We received a request to reset the password for <strong>{email}</strong>. Enter this code on
+      the reset screen to choose a new password:
     </Text>
     <OneTimeCode>{resetCode}</OneTimeCode>
     <Alert variant='warning'>
-      <strong>Important:</strong> this code expires in 1 hour. If you did not request this change,
-      please ignore this email.
+      The code expires in 1 hour and works once. If you didn&apos;t ask for a reset, ignore this
+      email and your password stays the same.
     </Alert>
-    <AccountNotice appName={appName} />
   </Layout>
 )

@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { When } from '../components/when.tsx'
@@ -31,18 +31,17 @@ export const templateProps = {
 } satisfies PasskeyAddedNoticeProps
 
 export const Template = ({ appName, name, email, credentialName }: PasskeyAddedNoticeProps) => (
-  <Layout appName={appName} preview='A passkey was added'>
-    <CardHeader title='A passkey was added' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='A new passkey was added to your account'>
+    <CardHeader title='A passkey was added to your account' />
+    <Text>Hi {name},</Text>
     <Text>
       A new passkey
-      <When value={credentialName}> named &ldquo;{credentialName}&rdquo;</When> was added to the
-      account <strong>{email}</strong>. You can now sign in with it.
+      <When value={credentialName}> named &ldquo;{credentialName}&rdquo;</When> was added to{' '}
+      <strong>{email}</strong>. You can now use it to sign in.
     </Text>
     <Alert variant='warning'>
-      <strong>Security notice:</strong> If you did <strong>not</strong> add this passkey, someone
-      may have access to the account. Please remove the passkey and contact support immediately.
+      Didn&apos;t add this passkey? Someone else may have access to your account. Remove it in your
+      security settings and contact support right away.
     </Alert>
-    <AccountNotice appName={appName} />
   </Layout>
 )

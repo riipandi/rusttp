@@ -1,5 +1,5 @@
 import { Markdown } from 'jsx-email'
-import { CardFooter, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { markdownStyles } from '../components/markdown.ts'
 import { Text } from '../components/text.tsx'
@@ -35,24 +35,23 @@ export const templateProps = {
 } satisfies AnnouncementProps
 
 export const Template = ({ appName, name, topic, title, body }: AnnouncementProps) => (
-  <Layout appName={appName} preview={title}>
-    <CardHeader title='Announcement' />
-    <Text>Hello {name},</Text>
-    <Text>
-      <strong>{title}</strong>
-    </Text>
+  <Layout
+    appName={appName}
+    preview={title}
+    footer={
+      <>
+        You&apos;re receiving this announcement because you have an account with {appName}. You can
+        also find it in your notification inbox after you sign in.
+      </>
+    }
+  >
     <When value={topic}>
-      <Text>
-        Topic: <strong>{topic}</strong>
+      <Text size='sm' muted style={{ margin: '0 0 4px' }}>
+        {topic}
       </Text>
     </When>
+    <CardHeader title={title} />
+    <Text>Hi {name},</Text>
     <Markdown markdownCustomStyles={markdownStyles}>{body}</Markdown>
-    <CardFooter>
-      <Text size='sm' muted>
-        You&apos;re receiving this email because you have an account in {appName}.
-        <br />
-        You can read the announcement in your notification inbox after signing in.
-      </Text>
-    </CardFooter>
   </Layout>
 )

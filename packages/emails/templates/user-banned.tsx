@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { When } from '../components/when.tsx'
@@ -30,12 +30,10 @@ export const templateProps = {
 } satisfies UserBannedProps
 
 export const Template = ({ appName, name, reason, expiresAt }: UserBannedProps) => (
-  <Layout appName={appName} preview='Your account was suspended'>
-    <CardHeader title='Account suspended' warning />
-    <Text>Hello {name},</Text>
-    <Text>
-      Your account has been suspended by an administrator and can no longer be used to sign in.
-    </Text>
+  <Layout appName={appName} preview='Your account has been suspended'>
+    <CardHeader title='Your account has been suspended' warning />
+    <Text>Hi {name},</Text>
+    <Text>An administrator suspended your account, so you can&apos;t sign in right now.</Text>
     <Text>
       Reason: <strong>{reason}</strong>
     </Text>
@@ -43,15 +41,13 @@ export const Template = ({ appName, name, reason, expiresAt }: UserBannedProps) 
       value={expiresAt}
       otherwise={
         <Text>
-          This suspension does not lift on its own. If you believe it was applied in error, please
-          contact us.
+          This suspension has no end date. If you think it&apos;s a mistake, contact support.
         </Text>
       }
     >
       <Text>
-        The suspension lifts on <strong>{expiresAt}</strong>, after which you can sign in again.
+        The suspension ends on <strong>{expiresAt}</strong>. You can sign in again after that.
       </Text>
     </When>
-    <AccountNotice appName={appName} />
   </Layout>
 )

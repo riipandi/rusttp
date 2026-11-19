@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 import { Text } from './text.tsx'
 
 const variants = {
-  info: { backgroundColor: '#d1ecf1', borderLeft: '4px solid #17a2b8' },
-  warning: { backgroundColor: '#fff3cd', borderLeft: '4px solid #ffc107' },
-  success: { backgroundColor: '#d4edda', borderLeft: '4px solid #28a745' }
+  info: { backgroundColor: '#eff6ff', borderLeft: '3px solid #3b82f6' },
+  warning: { backgroundColor: '#fffbeb', borderLeft: '3px solid #f59e0b' },
+  success: { backgroundColor: '#f0fdf4', borderLeft: '3px solid #22c55e' }
 } as const
 
 interface AlertProps {
@@ -12,16 +12,17 @@ interface AlertProps {
   children: ReactNode
 }
 
-/** A callout. Its colours stay the same in dark mode: the pale fills keep their dark text legible. */
+/** A callout. Its pale fills keep dark text legible, so it keeps its colours in dark mode. */
 export function Alert({ variant, children }: AlertProps) {
   return (
     <Text
       size='sm'
+      data-dm='alert'
       style={{
-        padding: '16px 18px',
-        margin: '20px 0 16px',
-        borderRadius: '8px',
-        color: '#1a1a1a',
+        margin: '0 0 16px',
+        padding: '12px 16px',
+        borderRadius: '6px',
+        color: '#1f2937',
         ...variants[variant]
       }}
     >

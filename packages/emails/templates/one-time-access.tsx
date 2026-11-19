@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
 import { Text } from '../components/text.tsx'
@@ -25,16 +25,13 @@ export const templateProps = {
 } satisfies OneTimeAccessProps
 
 export const Template = ({ appName, code, expiresIn }: OneTimeAccessProps) => (
-  <Layout appName={appName} preview='Your login code'>
-    <CardHeader title='Your login code' />
-    <Text>
-      Enter this one-time code on the sign-in screen to sign in to {appName}. The code works once.
-    </Text>
+  <Layout appName={appName} preview={`Your ${appName} sign-in code`}>
+    <CardHeader title='Your sign-in code' />
+    <Text>Enter this code on the sign-in screen to sign in to {appName}:</Text>
     <OneTimeCode>{code}</OneTimeCode>
     <Text>
-      <strong>Important:</strong> this code expires in {expiresIn}.
+      The code expires in {expiresIn} and works once. If you didn&apos;t request it, you can ignore
+      this email; your account stays secure.
     </Text>
-    <Text>If you did not make this request, please ignore this email.</Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

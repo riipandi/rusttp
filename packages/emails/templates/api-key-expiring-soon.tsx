@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
@@ -29,16 +29,16 @@ export const templateProps = {
 } satisfies ApiKeyExpiringSoonProps
 
 export const Template = ({ appName, name, apiKeyName, expiresAt }: ApiKeyExpiringSoonProps) => (
-  <Layout appName={appName} preview={`Your API key ${apiKeyName} expires soon`}>
-    <CardHeader title='API key expiring soon' warning />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview={`${apiKeyName} expires on ${expiresAt}`}>
+    <CardHeader title='Your API key expires soon' warning />
+    <Text>Hi {name},</Text>
     <Text>
-      This is a reminder that your API key <strong>{apiKeyName}</strong> will expire soon.
+      Your API key <strong>{apiKeyName}</strong> expires on <strong>{expiresAt}</strong>. After
+      that, requests that use it will be rejected.
     </Text>
     <Text>
-      Expiration date: <strong>{expiresAt}</strong>
+      To avoid interruptions, create a new key and update your integrations before then. If you no
+      longer use this key, you can ignore this email.
     </Text>
-    <Text>Please generate a new API key if you need continued access.</Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

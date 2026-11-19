@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Details } from '../components/details.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
@@ -29,21 +29,24 @@ export const templateProps = {
 } satisfies EmailChangeNoticeProps
 
 export const Template = ({ appName, name, oldEmail, newEmail }: EmailChangeNoticeProps) => (
-  <Layout appName={appName} preview='Your email address was changed'>
-    <CardHeader title='Email change confirmation' />
-    <Text>Hello {name},</Text>
-    <Text>This is to confirm that your email address has been changed:</Text>
+  <Layout appName={appName} preview='The email address on your account was changed'>
+    <CardHeader title='Your email address was changed' />
+    <Text>Hi {name},</Text>
+    <Text>
+      The email address on your account was changed. Use the new address the next time you sign in.
+    </Text>
     <Details
       items={[
-        { label: 'Old email', value: oldEmail },
+        { label: 'Previous email', value: oldEmail },
         { label: 'New email', value: newEmail }
       ]}
     />
     <Alert variant='info'>
-      <strong>Security notice:</strong> all your sessions have been signed out. Please sign in again
-      with your new email address.
+      For your security, we signed you out on every device. Sign in again with your new email
+      address.
     </Alert>
-    <Text>If you did not make this change, please contact support immediately.</Text>
-    <AccountNotice appName={appName} />
+    <Text>
+      Didn&apos;t make this change? Contact support right away so we can secure your account.
+    </Text>
   </Layout>
 )

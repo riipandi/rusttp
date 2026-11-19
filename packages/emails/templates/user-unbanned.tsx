@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
@@ -21,13 +21,11 @@ export const templateProps = {
 } satisfies UserUnbannedProps
 
 export const Template = ({ appName, name }: UserUnbannedProps) => (
-  <Layout appName={appName} preview='Your account was reinstated'>
-    <CardHeader title='Account reinstated' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='Your account has been restored'>
+    <CardHeader title='Your account has been restored' />
+    <Text>Hi {name},</Text>
     <Text>
-      Your account has been reinstated by an administrator. You can sign in again with your usual
-      credentials.
+      An administrator lifted the suspension on your account. You can sign in again as usual.
     </Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

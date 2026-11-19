@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
@@ -25,25 +25,19 @@ export const templateProps = {
 } satisfies SignupAttemptExistingEmailProps
 
 export const Template = ({ appName, name, email }: SignupAttemptExistingEmailProps) => (
-  <Layout appName={appName} preview='Someone tried to sign up with your email'>
-    <CardHeader title='Sign-up attempt for your email' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='Someone tried to sign up with your email address'>
+    <CardHeader title='Someone tried to sign up with your email' />
+    <Text>Hi {name},</Text>
     <Text>
-      Someone just tried to create an account using <strong>{email}</strong>, the address already on
-      an account in {appName}.
+      Someone tried to create a new {appName} account with <strong>{email}</strong>, but that
+      address already belongs to your account.
     </Text>
     <Alert variant='info'>
-      <strong>No action is needed.</strong> Nothing was created, nothing was changed, and this
-      message grants nothing.
+      Nothing has changed: no new account was created and your account is untouched.
     </Alert>
     <Text>
-      If you tried to sign up just now: you already have an account here. Sign in instead, or reset
-      your password if you have lost it.
+      If it was you, sign in instead, or reset your password if you&apos;ve forgotten it. If it
+      wasn&apos;t, there&apos;s nothing you need to do.
     </Text>
-    <Text>
-      If this wasn&apos;t you, no response is required. We&apos;ll keep notifying you of attempts on
-      your address.
-    </Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

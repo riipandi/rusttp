@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
@@ -25,18 +25,18 @@ export const templateProps = {
 } satisfies EmailChangeSuccessProps
 
 export const Template = ({ appName, name, newEmail }: EmailChangeSuccessProps) => (
-  <Layout appName={appName} preview='Your email address change is complete'>
-    <CardHeader title='Email change successful' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='Your new email address is now active'>
+    <CardHeader title='Your email address was updated' />
+    <Text>Hi {name},</Text>
     <Text>
-      Your email address has been changed to <strong>{newEmail}</strong>.
+      Your account now uses <strong>{newEmail}</strong>. Use this address the next time you sign in.
     </Text>
     <Alert variant='success'>
-      <strong>Security notice:</strong> all your sessions have been signed out.
-      <br />
-      Please sign in again with your new email address.
+      For your security, we signed you out on every device. Sign in again with your new email
+      address.
     </Alert>
-    <Text>If you did not make this change, please contact support immediately.</Text>
-    <AccountNotice appName={appName} />
+    <Text>
+      Didn&apos;t make this change? Contact support right away so we can secure your account.
+    </Text>
   </Layout>
 )

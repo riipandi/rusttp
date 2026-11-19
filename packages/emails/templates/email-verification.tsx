@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
 import { Text } from '../components/text.tsx'
@@ -25,18 +25,17 @@ export const templateProps = {
 } satisfies EmailVerificationProps
 
 export const Template = ({ appName, name, verificationCode }: EmailVerificationProps) => (
-  <Layout appName={appName} preview='Your email verification code'>
-    <CardHeader title='Email verification' />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview={`Your ${appName} verification code`}>
+    <CardHeader title='Verify your email address' />
+    <Text>Hi {name},</Text>
     <Text>
-      Use the code below to verify your email address for {appName}. Type it on the verification
-      screen; the code works once.
+      Enter this code on the verification screen to confirm your email address and finish setting up
+      your {appName} account:
     </Text>
     <OneTimeCode>{verificationCode}</OneTimeCode>
     <Text>
-      <strong>Important:</strong> this code expires in 1 hour.
+      The code expires in 1 hour and works once. If you didn&apos;t create an account, you can
+      safely ignore this email.
     </Text>
-    <Text>If you did not create an account, please ignore this email.</Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

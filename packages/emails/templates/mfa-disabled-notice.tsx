@@ -1,4 +1,4 @@
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
 import { When } from '../components/when.tsx'
@@ -27,25 +27,21 @@ export const templateProps = {
 } satisfies MfaDisabledNoticeProps
 
 export const Template = ({ appName, name, reason }: MfaDisabledNoticeProps) => (
-  <Layout appName={appName} preview='Two-factor authentication was removed'>
-    <CardHeader title='Two-factor authentication removed' warning />
-    <Text>Hello {name},</Text>
+  <Layout appName={appName} preview='Two-factor authentication was turned off for your account'>
+    <CardHeader title='Two-factor authentication was turned off' warning />
+    <Text>Hi {name},</Text>
     <Text>
-      Two-factor authentication has been removed from your account by an administrator. You can now
-      sign in with your password alone.
+      An administrator turned off two-factor authentication for your account. You can now sign in
+      with your password alone.
     </Text>
-    <When
-      value={reason}
-      otherwise={<Text>If you are not sure why this was done, please contact us.</Text>}
-    >
+    <When value={reason} otherwise={<Text>No reason was given.</Text>}>
       <Text>
         Reason: <strong>{reason}</strong>
       </Text>
     </When>
     <Text>
-      If you did not expect this, your account may be at risk. Please change your password and
-      contact us immediately.
+      We recommend turning it back on in your security settings. If you didn&apos;t expect this,
+      change your password and contact support right away.
     </Text>
-    <AccountNotice appName={appName} />
   </Layout>
 )

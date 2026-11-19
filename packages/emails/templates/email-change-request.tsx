@@ -1,5 +1,5 @@
 import { Alert } from '../components/alert.tsx'
-import { AccountNotice, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Details } from '../components/details.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
@@ -39,24 +39,21 @@ export const Template = ({
   newEmail,
   confirmCode
 }: EmailChangeRequestProps) => (
-  <Layout appName={appName} preview='Confirm your new email address'>
-    <CardHeader title='Email change request' />
-    <Text>Hello {name},</Text>
-    <Text>You requested to change your email address:</Text>
+  <Layout appName={appName} preview='Confirm the change to your email address'>
+    <CardHeader title='Confirm your new email address' />
+    <Text>Hi {name},</Text>
+    <Text>We received a request to change the email address on your account:</Text>
     <Details
       items={[
         { label: 'Current email', value: oldEmail },
         { label: 'New email', value: newEmail }
       ]}
     />
-    <Text>
-      Use the code below to confirm this change. Type it on the change screen; the code works once.
-    </Text>
+    <Text>Enter this code on the confirmation screen to finish the change:</Text>
     <OneTimeCode>{confirmCode}</OneTimeCode>
     <Alert variant='warning'>
-      <strong>Important:</strong> this code expires in 24 hours. If you did not request this change,
-      please ignore this email.
+      The code expires in 24 hours and works once. If you didn&apos;t request this change, ignore
+      this email and your current address stays the same.
     </Alert>
-    <AccountNotice appName={appName} />
   </Layout>
 )

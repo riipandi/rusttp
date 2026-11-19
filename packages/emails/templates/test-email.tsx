@@ -1,8 +1,8 @@
 import { Code } from 'jsx-email'
-import { CardFooter, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { Text } from '../components/text.tsx'
-import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
+import { colors, sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface TestEmailProps {
   appName: string
@@ -31,22 +31,39 @@ export const templateProps = {
 } satisfies TestEmailProps
 
 export const Template = ({ appName, email, smtpHost, smtpPort, sender }: TestEmailProps) => (
-  <Layout appName={appName} preview='Your mailer works'>
-    <CardHeader title='SMTP test successful' />
-    <Text>This is a test email to verify that your SMTP configuration is working correctly.</Text>
+  <Layout
+    appName={appName}
+    preview={`${appName} can send email`}
+    footer={
+      <>
+        You&apos;re receiving this email because someone sent a test message from the email settings
+        of {appName}.
+      </>
+    }
+  >
+    <CardHeader title='Your email settings work' />
     <Text>
-      <strong>Recipient:</strong> {email}
+      This test message confirms that {appName} can send email with the current SMTP settings. It
+      was delivered to <strong>{email}</strong>.
     </Text>
     <Text size='sm' muted style={{ marginBottom: '4px' }}>
-      Sent with:
+      Settings used:
     </Text>
-    <Code language='ini' theme='github-light'>
+    <Code
+      language='ini'
+      theme='github-light'
+      style={{
+        margin: 0,
+        padding: '12px 16px',
+        borderRadius: '8px',
+        border: `1px solid ${colors.border}`,
+        // github-light paints its own white background inside.
+        backgroundColor: '#ffffff',
+        fontSize: '13px',
+        lineHeight: '20px'
+      }}
+    >
       {`host = ${smtpHost}\nport = ${smtpPort}\nfrom = ${sender}`}
     </Code>
-    <CardFooter>
-      <Text size='sm' muted>
-        If you received this email, your mailer is properly configured.
-      </Text>
-    </CardFooter>
   </Layout>
 )

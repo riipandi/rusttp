@@ -1,4 +1,4 @@
-import { CardFooter, CardHeader } from '../components/card.tsx'
+import { CardHeader } from '../components/card.tsx'
 import { Layout } from '../components/layout.tsx'
 import { OneTimeCode } from '../components/one-time-code.tsx'
 import { Text } from '../components/text.tsx'
@@ -25,26 +25,25 @@ export const templateProps = {
 } satisfies ReauthenticationCodeProps
 
 export const Template = ({ appName, code, expiresIn }: ReauthenticationCodeProps) => (
-  <Layout appName={appName} preview='Confirm it is you'>
-    <CardHeader title='Confirm it is you' />
+  <Layout
+    appName={appName}
+    preview='Your confirmation code'
+    footer={
+      <>
+        You&apos;re receiving this email because a sensitive action on your {appName} account needed
+        confirmation.
+      </>
+    }
+  >
+    <CardHeader title="Confirm it's you" />
     <Text>
-      Enter this one-time code on the confirmation screen to continue. The code works once.
+      You&apos;re about to make a sensitive change to your {appName} account. Enter this code on the
+      confirmation screen to continue:
     </Text>
     <OneTimeCode>{code}</OneTimeCode>
     <Text>
-      <strong>Important:</strong> this code expires in {expiresIn}.
+      The code expires in {expiresIn} and works once. If you didn&apos;t start this, change your
+      password and sign out of your other sessions.
     </Text>
-    <Text>
-      If you did not make this request, please protect your account and sign out of your other
-      sessions.
-    </Text>
-    <CardFooter>
-      <Text size='sm' muted>
-        You&apos;re receiving this email because a sensitive action on your {appName} account asked
-        for a confirmation.
-        <br />
-        If you are not sure why you&apos;re receiving this, please contact us.
-      </Text>
-    </CardFooter>
   </Layout>
 )

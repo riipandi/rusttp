@@ -2,19 +2,19 @@ import { Button as BaseButton } from 'jsx-email'
 import type { ReactNode } from 'react'
 import { colors } from '../constants.ts'
 
-/** A centred call to action; jsx-email's `Button` adds the VML fallback Outlook needs. */
+/** A call to action; jsx-email's `Button` adds the VML fallback Outlook needs. */
 export function Button({ href, children }: { href: string; children: ReactNode }) {
   return (
     <BaseButton
       href={href}
-      align='center'
-      width={220}
+      align='left'
+      width={200}
       height={44}
       backgroundColor={colors.button}
       textColor='#ffffff'
       borderRadius={8}
-      fontSize={14}
-      style={{ margin: '20px auto', fontWeight: 500 }}
+      fontSize={15}
+      style={{ margin: '8px 0 24px', fontWeight: 600 }}
     >
       {children}
     </BaseButton>
