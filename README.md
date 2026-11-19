@@ -1,6 +1,6 @@
 # 🦀 Rusttp
 
-[![(Rust)](https://img.shields.io/badge/rust-v1.99-orange.svg?logo=rust)](https://www.rust-lang.org/)
+[![(Rust)](https://img.shields.io/badge/rust-v1.100-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![Release SemVer](https://img.shields.io/github/v/release/riipandi/rusttp?logo=docker)](https://github.com/riipandi/rusttp/releases)
 [![CI Test](https://github.com/riipandi/rusttp/actions/workflows/test.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/test.yml)
 [![CI Release](https://github.com/riipandi/rusttp/actions/workflows/release.yml/badge.svg)](https://github.com/riipandi/rusttp/actions/workflows/release.yml)
@@ -16,7 +16,7 @@ Monolith Rust starter project template for building application with Axum, Clap,
 
 ## Quick Start
 
-You will need `Rust >=1.99`, `Docker >= 29.0`, and `Docker Compose >= 5.6` installed on your machine.
+You will need `Rust >=1.100`, `Docker >= 29.0`, and `Docker Compose >= 5.6` installed on your machine.
 
 ### Create New Project
 

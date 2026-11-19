@@ -10,7 +10,7 @@
 # rustup target add wasm32-wasip2
 
 [toolchain]
-channel = "1.99.0"
+channel = "1.100.0"
 components = ["clippy", "rustfmt", "rust-analysis", "rust-analyzer"]
 # targets = [
 #   "aarch64-apple-darwin",
