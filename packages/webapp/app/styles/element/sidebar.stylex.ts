@@ -1,50 +1,91 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { unit } from 'uilibs/styles/tokens.stylex'
+import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 
-const breakpoints = { narrow: '@media (max-width: 767px)' }
+const narrow = '@media (max-width: 767px)'
 
-// The admin sidebar: a column on wide screens, a block above the page on narrow ones.
+// The admin sidebar: brand, navigation, account. A column beside the page on wide screens; on
+// narrow ones the brand and account share a row above the navigation.
 export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x6,
+    flexDirection: { default: 'column', [narrow]: 'row' },
+    flexWrap: { default: 'nowrap', [narrow]: 'wrap' },
+    alignItems: { default: 'stretch', [narrow]: 'center' },
+    gap: { default: unit.x4, [narrow]: unit.x2 },
     flexShrink: 0,
-    width: { default: '16rem', [breakpoints.narrow]: '100%' },
-    height: { default: '100dvh', [breakpoints.narrow]: 'auto' },
-    position: { default: 'sticky', [breakpoints.narrow]: 'static' },
+    width: { default: '15rem', [narrow]: '100%' },
+    height: { default: '100dvh', [narrow]: 'auto' },
+    position: { default: 'sticky', [narrow]: 'static' },
     top: 0,
-    padding: unit.x4,
-    backgroundColor: colors.backgroundPage,
-    borderInlineEndWidth: { default: 1, [breakpoints.narrow]: 0 },
+    padding: unit.x3,
+    backgroundColor: colors.backgroundPageFaded,
+    borderInlineEndWidth: { default: 1, [narrow]: 0 },
     borderInlineEndStyle: 'solid',
     borderInlineEndColor: colors.borderNeutralFaded,
-    borderBlockEndWidth: { default: 0, [breakpoints.narrow]: 1 },
+    borderBlockEndWidth: { default: 0, [narrow]: 1 },
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: colors.borderNeutralFaded
   },
+  brand: {
+    flex: { default: 'none', [narrow]: 1 },
+    height: unit.x10,
+    paddingInline: unit.x2
+  },
   nav: {
+    flex: { default: 1, [narrow]: 'none' },
+    order: { default: 0, [narrow]: 2 },
+    width: { default: 'auto', [narrow]: '100%' }
+  },
+  list: {
     display: 'flex',
-    flexDirection: { default: 'column', [breakpoints.narrow]: 'row' },
+    flexDirection: { default: 'column', [narrow]: 'row' },
     flexWrap: 'wrap',
-    gap: unit.x1,
-    flex: 1
+    gap: unit.x0_5,
+    margin: 0,
+    padding: 0,
+    listStyle: 'none'
   },
   item: {
-    justifyContent: { default: 'flex-start', [breakpoints.narrow]: 'center' },
-    width: { default: '100%', [breakpoints.narrow]: 'auto' }
+    justifyContent: 'flex-start',
+    width: { default: '100%', [narrow]: 'auto' }
   },
   itemCurrent: {
     color: colors.foregroundNeutral,
-    backgroundColor: colors.backgroundNeutralFaded
+    backgroundColor: colors.backgroundNeutralFaded,
+    fontWeight: fontWeight.medium
   },
   itemIdle: {
     color: colors.foregroundNeutralFaded
   },
-  footer: {
+  account: {
     display: 'flex',
-    justifyContent: 'flex-start'
+    alignItems: 'center',
+    gap: unit.x2,
+    minWidth: 0,
+    paddingBlockStart: { default: unit.x3, [narrow]: 0 },
+    borderBlockStartWidth: { default: 1, [narrow]: 0 },
+    borderBlockStartStyle: 'solid',
+    borderBlockStartColor: colors.borderNeutralFaded
+  },
+  identity: {
+    display: { default: 'flex', [narrow]: 'none' },
+    flexDirection: 'column',
+    minWidth: 0,
+    fontSize: fontSize.caption1
+  },
+  name: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: colors.foregroundNeutral,
+    fontWeight: fontWeight.medium
+  },
+  email: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: colors.foregroundNeutralFaded
   }
 })
