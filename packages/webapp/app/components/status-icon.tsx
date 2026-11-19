@@ -10,6 +10,7 @@ const styles = stylex.create({
     justifyContent: 'center',
     width: unit.x12,
     height: unit.x12,
+    marginBlockEnd: unit.x2,
     borderRadius: '50%'
   },
   primary: {

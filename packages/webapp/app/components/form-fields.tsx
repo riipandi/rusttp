@@ -37,13 +37,21 @@ const styles = stylex.create({
     color: colors.foregroundWarning,
     fontSize: fontSize.caption1
   },
+  // The code fills the form column: the slots share its width and stand taller than a text field.
+  code: {
+    width: '100%'
+  },
   group: {
-    justifyContent: 'center'
+    flex: 1,
+    minWidth: 0
   },
   slot: {
-    width: unit.x9,
+    flexBasis: 0,
+    flexGrow: 1,
+    minWidth: 0,
+    width: 'auto',
     height: unit.x12,
-    fontSize: fontSize.featured6
+    fontSize: fontSize.featured5
   },
   check: {
     display: 'flex',
@@ -57,12 +65,13 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: unit.x3,
-    paddingBlock: unit.x3,
+    minHeight: unit.x10,
+    paddingBlock: unit.x2,
     paddingInline: unit.x4,
     backgroundColor: colors.backgroundPageFaded,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: colors.borderNeutral,
+    borderColor: colors.borderControl,
     borderRadius: radius.medium
   },
   captchaInvalid: {
@@ -230,6 +239,8 @@ export function CodeField({
   return (
     <Field name={field.name} invalid={invalid}>
       <OTPField
+        size='lg'
+        style={styles.code}
         name={field.name}
         length={length}
         value={field.state.value}

@@ -46,9 +46,9 @@ function RouteComponent() {
 
       <div {...stylex.props(styles.links)}>
         {/* Placeholder: recovery codes need the backend. */}
-        <Button variant='ghost' size='sm'>
+        <button type='button' {...stylex.props(styles.link, styles.linkButton)}>
           Use a recovery code
-        </Button>
+        </button>
         <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
           <span {...stylex.props(styles.backIcon)}>
             <Icon svg={ArrowLeft} size={14} />
