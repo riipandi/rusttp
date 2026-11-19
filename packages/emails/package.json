@@ -4,6 +4,22 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "email preview ./templates --port 3030 --no-open",
+        "build": "node build.ts",
+        "check": "email check",
+        "typecheck": "tsrs --noEmit --fast"
+    },
+    "devDependencies": {
+        "@jsx-email/plugin-clean": "catalog:",
+        "@jsx-email/plugin-inline": "catalog:",
+        "@jsx-email/plugin-minify": "catalog:",
+        "@jsx-email/plugin-pretty": "catalog:",
+        "@jsx-email/plugin-url": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "jsx-email": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tsrs": "catalog:"
     }
 }

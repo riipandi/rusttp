@@ -20,6 +20,8 @@ $RECYCLE.BIN/
 node_modules/
 .pnpm-store/
 .tanstack/
+.compiled/
+.rendered/
 .vite/
 .rumdl_cache/
 *tsbuildinfo

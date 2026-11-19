@@ -5,6 +5,8 @@ packages:
 
 allowBuilds:
   esbuild: true
+  # Ships prebuilt binaries per platform; the install script only compiles a missing one.
+  '@parcel/watcher': false
 
 verifyDepsBeforeRun: false
 
@@ -17,8 +19,13 @@ overrides:
 peerDependencyRules:
   allowAny:
     - vite
+    # jsx-email ships its own esbuild, older than the one Vite's optional peer names.
+    - esbuild
   allowedVersions:
     vite: "*"
+    # jsx-email pins exact React type versions; any React 19 typings work.
+    "@types/react": "19"
+    "@types/react-dom": "19"
 
 catalogMode: prefer
 
@@ -27,13 +34,19 @@ catalog:
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
   "@vitejs/plugin-react": ^6.3.0
+  '@jsx-email/plugin-clean': ^1.0.0
+  '@jsx-email/plugin-inline': ^2.0.0
+  '@jsx-email/plugin-minify': ^2.0.0
+  '@jsx-email/plugin-pretty': ^2.0.0
+  '@jsx-email/plugin-url': ^1.0.0
   '@playwright/test': ^1.65.1
   '@tanstack/devtools-vite': ^0.8.6
   '@tanstack/react-devtools': ^0.10.14
   '@tanstack/react-query-devtools': ^5.108.0
   '@tanstack/react-router-devtools': ^1.167.4
+  jsx-email: ^3.2.1
   react-dom: ^19.3.1
   react: ^19.3.1
+  tsrs: 7.1.0-beta.tsrs3
   vite-plugin-devtools-json: ^1.1.2
   vite: ^8.3.8
-  tsrs: 7.1.0-beta.tsrs3

@@ -15,6 +15,8 @@ dev *args:
 run +args:
     @cargo run -q -- "$@"
 
+# ---- Build -------------------------------------------------------------------
+
 [doc('Build the release binary')]
 [group('development')]
 build *args:
@@ -32,3 +34,23 @@ start *args:
 [group('development')]
 deps *args:
     @cargo update {{ args }}
+
+# ---- Email development -------------------------------------------------------
+
+[doc('Preview email templates')]
+[group('email')]
+[no-exit-message]
+email-dev:
+    @pnpm --silent --filter emails dev
+
+[doc('Build email templates')]
+[group('email')]
+email-build:
+    @pnpm --silent --filter emails build
+
+[doc('Check email client support, e.g. `just email-check password-reset`')]
+[group('email')]
+[no-exit-message]
+[positional-arguments]
+email-check template *args:
+    @t="$1"; shift; pnpm --filter emails check "./templates/$t.tsx" "$@"

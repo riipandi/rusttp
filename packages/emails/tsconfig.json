@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "lib": ["ESNext", "DOM"],
+        "module": "esnext",
+        "moduleDetection": "force",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "esnext",
+        "types": ["node"],
+        "verbatimModuleSyntax": true
+    },
+    "include": ["**/*.ts", "**/*.tsx"],
+    "exclude": [".compiled", "node_modules"]
+}
