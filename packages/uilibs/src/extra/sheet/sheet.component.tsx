@@ -1,6 +1,7 @@
 import { Dialog as BaseDialog } from '@base-ui/react/dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
 
 interface StyleXStyleProps {
@@ -27,29 +28,22 @@ export function SheetContent({
   children,
   side = 'right',
   showCloseButton = true,
+  labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleXStyleProps & { side?: SheetSide; showCloseButton?: boolean }) {
+  StyleXStyleProps & {
+    side?: SheetSide
+    showCloseButton?: boolean
+    /** Accessible names of the built-in close button; English by default. */
+    labels?: Partial<CloseLabels>
+  }) {
   return (
     <BaseDialog.Portal>
       <SheetOverlay />
       <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
         {children}
         {showCloseButton && (
-          <BaseDialog.Close aria-label='Close' {...stylex.props(s.close)}>
-            <svg
-              width='16'
-              height='16'
-              viewBox={`0 0 16 16`}
-              fill='none'
-              stroke='currentColor'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              aria-hidden
-            >
-              <path d={`m3 3 10 10M13 3 3 13`} />
-            </svg>
-          </BaseDialog.Close>
+          <BaseDialog.Close render={<CloseButton label={labels?.close} style={s.close} />} />
         )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>

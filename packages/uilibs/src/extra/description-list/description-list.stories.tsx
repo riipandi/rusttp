@@ -101,7 +101,7 @@ export const WithBadges: Story = {
       </DescriptionDetails>
       <DescriptionTerm>Priority</DescriptionTerm>
       <DescriptionDetails>
-        <Badge variant='destructive'>High</Badge>
+        <Badge tone='critical'>High</Badge>
       </DescriptionDetails>
       <DescriptionTerm>Shipping</DescriptionTerm>
       <DescriptionDetails>

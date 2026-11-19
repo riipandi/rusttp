@@ -63,11 +63,23 @@ export const Playground: Story = {
       <Spinner /> Divining…
     </Button>
   ),
-  // The spinner svg announces itself, so the button name combines both labels.
+  // Inside a Button the spinner is decoration: the button keeps its own name and there is no
+  // second live region.
   play: async ({ canvas }) => {
-    const button = canvas.getByRole('button', { name: /Divining/ })
+    const button = canvas.getByRole('button', { name: 'Divining…' })
     await expect(button).toBeDisabled()
-    await expect(button.querySelector('svg')).not.toBeNull()
+    await expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    await expect(canvas.queryByRole('status')).toBeNull()
+  }
+}
+
+export const Alone: Story = {
+  render: () => <Spinner label='Consulting the Marauder’s Map' />,
+  // On its own it is a polite live region with the given name.
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('status', { name: 'Consulting the Marauder’s Map' })
+    ).toBeInTheDocument()
   }
 }
 

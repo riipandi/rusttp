@@ -228,7 +228,7 @@ export const CardContainer: Story = {
             row.original.status === 'inPrint' ? (
               <Badge variant='primary'>In print</Badge>
             ) : (
-              <Badge variant='destructive'>Out of print</Badge>
+              <Badge tone='critical'>Out of print</Badge>
             ),
           size: 200,
           enableSorting: true,
@@ -668,7 +668,7 @@ export const ServerSidePagination: Story = {
             row.original.status === 'inPrint' ? (
               <Badge variant='secondary'>In print</Badge>
             ) : (
-              <Badge variant='destructive'>Out of print</Badge>
+              <Badge tone='critical'>Out of print</Badge>
             ),
           size: 130,
           meta: { skeleton: <Skeleton style={skeletonStyles.chip} /> }

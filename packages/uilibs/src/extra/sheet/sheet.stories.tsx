@@ -99,6 +99,27 @@ export const Playground: Story = {
   }
 }
 
+export const CloseButton: Story = {
+  name: 'Close button',
+  render: () => (
+    <Sheet>
+      <SheetTrigger render={<Button variant='outline' />}>Open the ledger</SheetTrigger>
+      <SheetContent labels={{ close: 'Shut the ledger' }}>
+        <SheetHeader>
+          <SheetTitle>Vault ledger</SheetTitle>
+          <SheetDescription>Every withdrawal since 1991.</SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Open the ledger' }))
+    await userEvent.click(await body.findByRole('button', { name: 'Shut the ledger' }))
+    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+  }
+}
+
 export const Sides: Story = {
   render: () => (
     <div {...stylex.props(styles.row)}>

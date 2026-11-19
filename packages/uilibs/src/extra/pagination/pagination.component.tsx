@@ -11,9 +11,7 @@ export function Pagination({
   style,
   ...props
 }: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
-  return (
-    <nav role='navigation' aria-label='pagination' {...props} {...stylex.props(s.nav, style)} />
-  )
+  return <nav aria-label='Pagination' {...props} {...stylex.props(s.nav, style)} />
 }
 
 export function PaginationContent({
@@ -82,17 +80,22 @@ export function PaginationNext({
 }
 
 export function PaginationEllipsis({
+  label = 'More pages',
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> &
+  StyleXStyleProps & {
+    /** Text for assistive technology; the dots are decoration. Defaults to `More pages`. */
+    label?: string
+  }) {
   return (
-    <span aria-hidden {...props} {...stylex.props(s.ellipsis, style)}>
+    <span {...props} {...stylex.props(s.ellipsis, style)}>
       <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>
         <circle cx='3' cy='8' r='1.25' />
         <circle cx='8' cy='8' r='1.25' />
         <circle cx='13' cy='8' r='1.25' />
       </svg>
-      <span {...stylex.props(s.srOnly)}>More pages</span>
+      <span {...stylex.props(s.srOnly)}>{label}</span>
     </span>
   )
 }

@@ -1,8 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { alertStyles as s, alertVariants as variants } from './alert.stylex'
-
-export type AlertVariant = 'default' | 'destructive'
+import type { Tone } from '../../styles/tone'
+import { alertStyles as s, alertTones as tones } from './alert.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
@@ -10,18 +9,30 @@ interface StyleProp {
 
 export interface AlertProps
   extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
-  variant?: AlertVariant
+  /** The color role of the notice; `neutral` by default. */
+  tone?: Tone
 }
 
-export function Alert({ variant = 'default', style, ...props }: AlertProps) {
-  return <div role='alert' {...props} {...stylex.props(s.root, variants[variant], style)} />
+/**
+ * A notice. It is a polite live region (`role='status'`): a screen reader announces it when it
+ * changes, without interrupting. Pass `role='alert'` for an error the user must act on at once, or
+ * `role={undefined}` for a notice that is static on load and should not be announced.
+ */
+export function Alert({ tone = 'neutral', style, ...props }: AlertProps) {
+  return <div role='status' {...props} {...stylex.props(s.root, tones[tone], style)} />
 }
 
+export type AlertTitleLevel = 1 | 2 | 3 | 4 | 5 | 6
+
+/** The title is a heading: `level` is its `<h1>` to `<h6>`, `5` by default; match the page's outline. */
 export function AlertTitle({
+  level = 5,
   style,
   ...props
-}: Omit<React.ComponentProps<'h5'>, 'className' | 'style'> & StyleProp) {
-  return <h5 {...props} {...stylex.props(s.title, style)} />
+}: Omit<React.ComponentProps<'h5'>, 'className' | 'style'> &
+  StyleProp & { level?: AlertTitleLevel }) {
+  const Heading = `h${level}` as const
+  return <Heading {...props} {...stylex.props(s.title, style)} />
 }
 
 export function AlertDescription({

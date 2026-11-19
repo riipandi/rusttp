@@ -10,7 +10,7 @@
 import { Button as BaseButton } from '@base-ui/react/button'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { Spinner } from '../../extra/spinner'
+import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
 import { buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
 
@@ -55,18 +55,20 @@ export function Button({
         style
       )}
     >
-      {loading ? (
-        <>
-          <span {...stylex.props(buttonStyles.content, buttonStyles.contentHidden)}>
-            {children}
-          </span>
-          <span {...stylex.props(buttonStyles.spinner)}>
-            <Spinner aria-hidden />
-          </span>
-        </>
-      ) : (
-        children
-      )}
+      <LabelledControlContext.Provider value>
+        {loading ? (
+          <>
+            <span {...stylex.props(buttonStyles.content, buttonStyles.contentHidden)}>
+              {children}
+            </span>
+            <span {...stylex.props(buttonStyles.spinner)}>
+              <Spinner />
+            </span>
+          </>
+        ) : (
+          children
+        )}
+      </LabelledControlContext.Provider>
     </BaseButton>
   )
 }

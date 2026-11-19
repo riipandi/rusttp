@@ -25,8 +25,8 @@ phases:
       note: `LinkButton` takes `render={<a href />}` or `render={<Link to />}` (no router coupling in the library) and the webapp copy was deleted here, not in phase 9; Button `loading` imports `Spinner` from `extra`, the first base-to-extra import (no cycle); a loading Button is disabled but focusable and shows `aria-busy`; Toggle sizes moved to xs 28 / sm 32 / md 36 / lg 40 (the old sm 28, md 32, lg 36 shifted up, so a default Toggle grows 32 to 36) and Menubar defaults to 36 (was 32); Tabs `size` is on `TabsList`; ButtonGroup draws dividers for filled Buttons only (detected as `Button` with variant primary, secondary, destructive); `AlertDialogAction` closes, `event.preventBaseUIHandler()` keeps it open; e2e 19/19 on Chromium
     - id: 6
       title: Overlays and feedback — close parts, tones, spinner, labels
-      status: pending
-      note: —
+      status: committed
+      note: `CloseButton` (`base/dialog/close-button.tsx`, not exported from the index) is rendered through Dialog, Sheet, and Toast's own Close parts with a `labels.close`; Badge keeps its four variants and gains `tone` (default `primary` for the solid `primary` variant, `neutral` for the rest), `destructive` is `tone='critical'` (webapp loans table updated); Toast tone comes from `toast(title, { tone })` and from the type (`success` positive, `error` critical); a toast without a title (a `toast.promise` outcome set as a string) is named `Notification` by `labels.notification` so the dialog has a name; Spinner reads a `LabelledControlContext` that Button sets; Base UI keeps the Toast close button `aria-hidden`, so its story finds it by attribute; Pagination and Breadcrumb labels are proper case and their ellipsis text is no longer inside an `aria-hidden` parent; 33 stories still fail the gate, `color-contrast` is 0 in light and dark
     - id: 7
       title: Content and composite widgets — calendar, tables, items, kanban, sortable
       status: pending

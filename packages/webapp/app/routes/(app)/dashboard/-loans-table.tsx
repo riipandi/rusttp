@@ -1,13 +1,13 @@
-import { Badge, type BadgeVariant } from 'uilibs/extra/badge'
+import { Badge, type BadgeProps } from 'uilibs/extra/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { loans, type LoanStatus } from './-data'
 
-const statusVariant: Record<LoanStatus, BadgeVariant> = {
-  Borrowed: 'secondary',
-  'Due soon': 'outline',
-  Overdue: 'destructive',
-  Returned: 'ghost'
+const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
+  Borrowed: { variant: 'secondary' },
+  'Due soon': { variant: 'outline' },
+  Overdue: { tone: 'critical' },
+  Returned: { variant: 'ghost' }
 }
 
 export function LoansTable() {
@@ -28,7 +28,7 @@ export function LoansTable() {
             <TableCell style={styles.muted}>{loan.book}</TableCell>
             <TableCell style={styles.muted}>{loan.due}</TableCell>
             <TableCell>
-              <Badge variant={statusVariant[loan.status]}>{loan.status}</Badge>
+              <Badge {...statusBadge[loan.status]}>{loan.status}</Badge>
             </TableCell>
           </TableRow>
         ))}

@@ -386,7 +386,7 @@ function PriorityBadge({ priority }: { priority: NonNullable<Task['priority']> }
   // item body, which would otherwise stretch it full width.
   if (priority === 'high') {
     return (
-      <Badge variant='destructive' style={styles.badgePriority}>
+      <Badge tone='critical' style={styles.badgePriority}>
         {priority}
       </Badge>
     )

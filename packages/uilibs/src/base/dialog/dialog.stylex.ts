@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke, container } from '../../styles/tokens.stylex'
+import { container } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
@@ -52,31 +52,11 @@ export const dialogStyles = stylex.create({
     width: container.xxlarge,
     zIndex: zIndex.absolute
   },
+  // Position only: the look is `CloseButton`.
   close: {
-    alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': colors.backgroundNeutralFaded
-    },
-    borderRadius: radius.small,
-    borderStyle: 'none',
-    color: {
-      default: colors.foregroundNeutralFaded,
-      ':hover': colors.foregroundNeutral
-    },
-    cursor: 'pointer',
-    display: 'inline-flex',
-    height: unit.x7,
-    justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    padding: 0,
     position: 'absolute',
     right: unit.x3,
-    top: unit.x3,
-    width: unit.x7
+    top: unit.x3
   },
   header: {
     display: 'flex',

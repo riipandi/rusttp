@@ -24,6 +24,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { type CloseLabels, CloseButton } from './close-button'
 import { dialogStyles as s } from './dialog.stylex'
 
 interface StyleXStyleProps {
@@ -47,9 +48,14 @@ export function DialogContent({
   style,
   children,
   showCloseButton = true,
+  labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleXStyleProps & { showCloseButton?: boolean }) {
+  StyleXStyleProps & {
+    showCloseButton?: boolean
+    /** Accessible names of the built-in close button; English by default. */
+    labels?: Partial<CloseLabels>
+  }) {
   return (
     <BaseDialog.Portal>
       <DialogOverlay />
@@ -59,20 +65,7 @@ export function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <BaseDialog.Close aria-label='Close' {...stylex.props(s.close)}>
-            <svg
-              width='16'
-              height='16'
-              viewBox={`0 0 16 16`}
-              fill='none'
-              stroke='currentColor'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              aria-hidden
-            >
-              <path d={`m3 3 10 10M13 3 3 13`} />
-            </svg>
-          </BaseDialog.Close>
+          <BaseDialog.Close render={<CloseButton label={labels?.close} style={s.close} />} />
         )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>

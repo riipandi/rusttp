@@ -37,6 +37,11 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
+  grid: {
+    display: 'grid',
+    gap: 8,
+    gridTemplateColumns: 'repeat(5, max-content)'
+  },
   icon: { height: 14, width: 14 },
   spinner: { height: 12, width: 12 },
   row: {
@@ -59,9 +64,34 @@ export const Variants: Story = {
     <div {...stylex.props(styles.row)}>
       <Badge variant='secondary'>Hufflepuff</Badge>
       <Badge variant='outline'>Ravenclaw</Badge>
-      <Badge variant='destructive'>Azkaban</Badge>
+      <Badge tone='critical'>Azkaban</Badge>
     </div>
   )
+}
+
+const tones = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+const variantNames = ['primary', 'secondary', 'outline', 'ghost'] as const
+
+/** Every variant in every tone; the a11y gate checks the contrast of each pair. */
+export const Tones: Story = {
+  render: () => (
+    <div {...stylex.props(styles.grid)}>
+      {variantNames.map((variant) =>
+        tones.map((tone) => (
+          <Badge key={`${variant}-${tone}`} variant={variant} tone={tone}>
+            {`${variant} ${tone}`}
+          </Badge>
+        ))
+      )}
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    for (const variant of variantNames) {
+      for (const tone of tones) {
+        await expect(canvas.getByText(`${variant} ${tone}`)).toBeInTheDocument()
+      }
+    }
+  }
 }
 
 export const Icon: Story = {

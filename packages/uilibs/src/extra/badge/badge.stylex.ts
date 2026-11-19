@@ -25,27 +25,57 @@ export const badgeStyles = stylex.create({
   }
 })
 
+// The shape of each variant; its colors come from the tone maps below.
 export const badgeVariants = stylex.create({
-  primary: {
-    backgroundColor: colors.backgroundPrimary,
-    color: colors.onBrand
-  },
-  secondary: {
-    backgroundColor: colors.backgroundNeutral,
-    color: colors.foregroundNeutral
-  },
+  primary: {},
+  secondary: {},
   outline: {
-    borderColor: colors.borderNeutralFaded,
     borderStyle: 'solid',
-    borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral
+    borderWidth: stroke.ring1
   },
   ghost: {
-    backgroundColor: 'transparent',
-    color: colors.foregroundNeutral
+    backgroundColor: 'transparent'
+  }
+})
+
+// `primary` is a solid fill, `secondary` a faded one, `outline` an edge, `ghost` text only.
+export const badgeSolidTones = stylex.create({
+  neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
+  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBrand },
+  positive: {
+    backgroundColor: colors.backgroundPositive,
+    color: colors.onBackgroundPositive
   },
-  destructive: {
+  warning: {
+    backgroundColor: colors.backgroundWarning,
+    color: colors.onBackgroundWarning
+  },
+  critical: {
     backgroundColor: colors.backgroundCritical,
     color: colors.onBackgroundCritical
   }
+})
+
+export const badgeFadedTones = stylex.create({
+  neutral: { backgroundColor: colors.backgroundNeutral, color: colors.foregroundNeutral },
+  primary: { backgroundColor: colors.backgroundPrimaryFaded, color: colors.foregroundPrimary },
+  positive: { backgroundColor: colors.backgroundPositiveFaded, color: colors.foregroundPositive },
+  warning: { backgroundColor: colors.backgroundWarningFaded, color: colors.foregroundWarning },
+  critical: { backgroundColor: colors.backgroundCriticalFaded, color: colors.foregroundCritical }
+})
+
+export const badgeOutlineTones = stylex.create({
+  neutral: { borderColor: colors.borderNeutralFaded, color: colors.foregroundNeutral },
+  primary: { borderColor: colors.borderPrimary, color: colors.foregroundPrimary },
+  positive: { borderColor: colors.borderPositive, color: colors.foregroundPositive },
+  warning: { borderColor: colors.borderWarning, color: colors.foregroundWarning },
+  critical: { borderColor: colors.borderCritical, color: colors.foregroundCritical }
+})
+
+export const badgeGhostTones = stylex.create({
+  neutral: { color: colors.foregroundNeutral },
+  primary: { color: colors.foregroundPrimary },
+  positive: { color: colors.foregroundPositive },
+  warning: { color: colors.foregroundWarning },
+  critical: { color: colors.foregroundCritical }
 })

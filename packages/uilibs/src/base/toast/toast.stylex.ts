@@ -19,12 +19,8 @@ export const toastStyles = stylex.create({
     '--toast-gap': unit.x2,
     alignItems: 'flex-start',
     backgroundColor: colors.backgroundElevationOverlay,
-    // Error toasts get a critical accent; other types render neutrally
-    // (matches sonner's default look — no per-type colors without opt-in).
-    borderColor: {
-      default: colors.borderNeutralFaded,
-      '[data-type="error"]': colors.borderCritical
-    },
+    // The accent is `toastTones`; a neutral toast has the quiet edge.
+    borderColor: colors.borderNeutralFaded,
     borderRadius: radius.medium,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
@@ -127,25 +123,17 @@ export const toastStyles = stylex.create({
     },
     paddingInline: unit.x2
   },
+  // Smaller than the shared `CloseButton`, which supplies the look.
   close: {
-    alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': colors.backgroundNeutralFaded
-    },
-    borderRadius: radius.small,
-    borderStyle: 'none',
-    color: colors.foregroundNeutralFaded,
-    cursor: 'pointer',
-    display: 'inline-flex',
-    flexShrink: 0,
     height: unit.x6,
-    justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    padding: 0,
     width: unit.x6
   }
+})
+
+export const toastTones = stylex.create({
+  neutral: {},
+  primary: { borderColor: colors.borderPrimary },
+  positive: { borderColor: colors.borderPositive },
+  warning: { borderColor: colors.borderWarning },
+  critical: { borderColor: colors.borderCritical }
 })

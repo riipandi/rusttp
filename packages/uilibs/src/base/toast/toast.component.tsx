@@ -37,20 +37,41 @@
 import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { toastStyles as s } from './toast.stylex'
+import type { Tone } from '../../styles/tone'
+import { type CloseLabels, CloseButton } from '../dialog/close-button'
+import { toastStyles as s, toastTones as tones } from './toast.stylex'
 
 /** The manager behind the imperative `toast` API — pass to `useToast` consumers if needed. */
 export const toastManager = BaseToast.createToastManager()
 
-type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title'>
+type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
+  /** The color role of the toast's accent; `neutral` unless the type implies one. */
+  tone?: Tone
+}
 
-function addToast(title: React.ReactNode, options?: ToastAddOptions & { type?: string }) {
-  return toastManager.add({ title, ...options })
+const toneNames: readonly string[] = ['neutral', 'primary', 'positive', 'warning', 'critical']
+
+// `success` and `error` toasts (the helpers, and `toast.promise` outcomes) have a tone of their own.
+const typeTones: Record<string, Tone> = { success: 'positive', error: 'critical' }
+
+function toneOf(data: unknown, type: string | undefined): Tone {
+  if (typeof data === 'object' && data !== null && 'tone' in data) {
+    const { tone } = data
+    const named = toneNames.find((name): name is Tone => name === tone)
+    if (named) return named
+  }
+  return (type && typeTones[type]) || 'neutral'
+}
+
+function addToast(title: React.ReactNode, options?: ToastAddOptions) {
+  const { tone, ...rest } = options ?? {}
+  return toastManager.add({ title, ...rest, data: tone ? { tone } : undefined })
 }
 
 /**
  * Imperative API, callable anywhere — event handlers, stores, outside React:
  * `toast('Saved')`, `toast.error('Failed', { description: '…' })`,
+ * `toast('Heads up', { tone: 'warning' })`,
  * `toast.promise(save(), { loading: '…', success: '…', error: '…' })`.
  * Requires `ToastProvider` + `Toaster` to be mounted (e.g. in the root layout).
  */
@@ -75,34 +96,35 @@ export function ToastProvider(props: React.ComponentProps<typeof BaseToast.Provi
   return <BaseToast.Provider toastManager={toastManager} {...props} />
 }
 
+export interface ToasterLabels extends CloseLabels {
+  /** Name of a toast that has no title (a `toast.promise` outcome set as a description). Defaults to `Notification`. */
+  notification: string
+}
+
 function ToastList({
-  swipeDirection
+  swipeDirection,
+  labels
 }: {
   swipeDirection: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
+  labels?: Partial<ToasterLabels>
 }) {
   const { toasts } = BaseToast.useToastManager()
   return toasts.map((t) => (
-    <BaseToast.Root key={t.id} toast={t} swipeDirection={swipeDirection} {...stylex.props(s.root)}>
+    <BaseToast.Root
+      key={t.id}
+      toast={t}
+      swipeDirection={swipeDirection}
+      // A toast is a dialog and needs a name; the title gives it one when there is a title.
+      aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
+      {...stylex.props(s.root, tones[toneOf(t.data, t.type)])}
+    >
       <div {...stylex.props(s.content)}>
         <div {...stylex.props(s.text)}>
           <BaseToast.Title {...stylex.props(s.title)} />
           <BaseToast.Description {...stylex.props(s.description)} />
         </div>
         <BaseToast.Action {...stylex.props(s.action)} />
-        <BaseToast.Close aria-label='Close' {...stylex.props(s.close)}>
-          <svg
-            width='12'
-            height='12'
-            viewBox={`0 0 12 12`}
-            fill='none'
-            stroke='currentColor'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-            aria-hidden
-          >
-            <path d={`m2 2 8 8M10 2l-8 8`} />
-          </svg>
-        </BaseToast.Close>
+        <BaseToast.Close render={<CloseButton label={labels?.close} style={s.close} />} />
       </div>
     </BaseToast.Root>
   ))
@@ -111,6 +133,8 @@ function ToastList({
 export interface ToasterProps {
   /** Direction(s) a toast can be swiped to dismiss. */
   swipeDirection?: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
+  /** Accessible names of the close button and of a toast without a title; English by default. */
+  labels?: Partial<ToasterLabels>
   /** StyleX styles for the viewport, merged last. */
   style?: stylex.StyleXStyles
 }
@@ -120,11 +144,11 @@ export interface ToasterProps {
  * behind the newest one; hovering or focusing the stack expands it. Swipe
  * down/right (touch or mouse) to dismiss.
  */
-export function Toaster({ swipeDirection = ['down', 'right'], style }: ToasterProps) {
+export function Toaster({ swipeDirection = ['down', 'right'], labels, style }: ToasterProps) {
   return (
     <BaseToast.Portal>
       <BaseToast.Viewport {...stylex.props(s.viewport, style)}>
-        <ToastList swipeDirection={swipeDirection} />
+        <ToastList swipeDirection={swipeDirection} labels={labels} />
       </BaseToast.Viewport>
     </BaseToast.Portal>
   )

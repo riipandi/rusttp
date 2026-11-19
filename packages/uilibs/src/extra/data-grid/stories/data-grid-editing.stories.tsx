@@ -139,7 +139,7 @@ export const CrudFeatures: Story = {
             row.original.status === 'inPrint' ? (
               <Badge variant='secondary'>In print</Badge>
             ) : (
-              <Badge variant='destructive'>Out of print</Badge>
+              <Badge tone='critical'>Out of print</Badge>
             ),
           size: 120
         }

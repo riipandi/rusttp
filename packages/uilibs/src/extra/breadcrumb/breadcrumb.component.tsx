@@ -10,7 +10,7 @@ export function Breadcrumb({
   style,
   ...props
 }: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <nav aria-label='breadcrumb' {...props} {...stylex.props(style)} />
+  return <nav aria-label='Breadcrumb' {...props} {...stylex.props(style)} />
 }
 
 export function BreadcrumbList({
@@ -76,17 +76,22 @@ export function BreadcrumbSeparator({
 }
 
 export function BreadcrumbEllipsis({
+  label = 'More',
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> &
+  StyleXStyleProps & {
+    /** Text for assistive technology; the dots are decoration. Defaults to `More`. */
+    label?: string
+  }) {
   return (
-    <span role='presentation' aria-hidden {...props} {...stylex.props(s.ellipsis, style)}>
+    <span {...props} {...stylex.props(s.ellipsis, style)}>
       <svg width='16' height='16' viewBox={`0 0 16 16`} fill='currentColor' aria-hidden>
         <circle cx='3' cy='8' r='1.25' />
         <circle cx='8' cy='8' r='1.25' />
         <circle cx='13' cy='8' r='1.25' />
       </svg>
-      <span {...stylex.props(s.srOnly)}>More</span>
+      <span {...stylex.props(s.srOnly)}>{label}</span>
     </span>
   )
 }

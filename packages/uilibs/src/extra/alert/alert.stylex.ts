@@ -40,9 +40,21 @@ export const alertStyles = stylex.create({
   }
 })
 
-export const alertVariants = stylex.create({
-  default: {},
-  destructive: {
+export const alertTones = stylex.create({
+  neutral: {},
+  primary: {
+    borderColor: colors.borderPrimary,
+    color: colors.foregroundPrimary
+  },
+  positive: {
+    borderColor: colors.borderPositive,
+    color: colors.foregroundPositive
+  },
+  warning: {
+    borderColor: colors.borderWarning,
+    color: colors.foregroundWarning
+  },
+  critical: {
     borderColor: colors.borderCritical,
     color: colors.foregroundCritical
   }

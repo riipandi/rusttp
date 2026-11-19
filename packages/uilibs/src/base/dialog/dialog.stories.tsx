@@ -102,6 +102,28 @@ export const Playground: Story = {
   }
 }
 
+export const CloseButton: Story = {
+  name: 'Close button',
+  render: () => (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Open the vault</DialogTrigger>
+      <DialogContent labels={{ close: 'Seal the vault' }}>
+        <DialogHeader>
+          <DialogTitle>Gringotts vault 713</DialogTitle>
+          <DialogDescription>Only the goblins may enter.</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  ),
+  // The built-in close button is named by `labels` and dismisses the dialog.
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Open the vault' }))
+    await userEvent.click(await body.findByRole('button', { name: 'Seal the vault' }))
+    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+  }
+}
+
 export const Custom: Story = {
   name: 'Custom width',
   render: () => (

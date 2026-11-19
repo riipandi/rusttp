@@ -192,3 +192,62 @@ export const Position: Story = {
     </ToastProvider>
   )
 }
+
+const toneNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+export const Tones: Story = {
+  render: () => (
+    <ToastProvider>
+      <div {...stylex.props(styles.row)}>
+        {toneNames.map((tone) => (
+          <Button
+            key={tone}
+            variant='outline'
+            onClick={() => toast(`Owl post: ${tone}`, { tone, timeout: 0 })}
+          >
+            {tone}
+          </Button>
+        ))}
+      </div>
+      <Toaster />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const edge = async (tone: (typeof toneNames)[number]) => {
+      await userEvent.click(canvas.getByRole('button', { name: tone }))
+      const title = await body.findByText(`Owl post: ${tone}`)
+      const root = title.closest('[role="dialog"]')
+      if (!root) throw new Error('Toast root not found')
+      const color = getComputedStyle(root).borderTopColor
+      toast.close()
+      await waitFor(() => expect(body.queryByText(`Owl post: ${tone}`)).toBeNull())
+      return color
+    }
+    // A toned toast has its own accent; the neutral one keeps the quiet edge.
+    const neutral = await edge('neutral')
+    for (const tone of toneNames.slice(1)) {
+      await expect(await edge(tone)).not.toBe(neutral)
+    }
+  }
+}
+
+export const CloseLabel: Story = {
+  name: 'Close label',
+  render: () => (
+    <ToastProvider>
+      <Button variant='outline' onClick={() => toast('Howler silenced', { timeout: 0 })}>
+        Silence
+      </Button>
+      <Toaster labels={{ close: 'Dismiss' }} />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Silence' }))
+    const body = within(document.body)
+    const toastRoot = (await body.findByText('Howler silenced')).closest('[role="dialog"]')
+    // Base UI keeps the close button out of the accessibility tree until the stack is focused,
+    // so it is found by its attribute, not by role.
+    await expect(toastRoot?.querySelector('button')).toHaveAttribute('aria-label', 'Dismiss')
+  }
+}
