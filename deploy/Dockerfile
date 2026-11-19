@@ -62,8 +62,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts 
 
 COPY --link . .
 
-# The SPA first: the server embeds frontend (the build manifest, the route table, the assets) at compile time.
-RUN NODE_ENV=production pnpm --filter webapp build
+# Emails and the SPA first: the server reads apps/server/emails and embeds apps/server/frontend.
+RUN NODE_ENV=production pnpm --filter emails build \
+    && NODE_ENV=production pnpm --filter webapp build
+
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=cargo-target,target=/usr/src/target \
     cargo build --release --locked -p rusttp-server \
@@ -90,8 +92,8 @@ LABEL org.opencontainers.image.licenses="Apache-2.0 OR MIT"
 COPY --from=base --chown=root:root --chmod=0755 /usr/bin/tini /usr/bin/tini
 COPY --from=pruner --chown=nonroot:nonroot /srv /srv
 
-ARG BIND_ADDR=0.0.0.0:3000 RUST_LOG=info,memory_serve=warn TZ=UTC
-ENV BIND_ADDR=$BIND_ADDR RUST_LOG=$RUST_LOG TZ=$TZ TINI_SUBREAPER=true
+ARG BIND_ADDR=0.0.0.0:3000 LOG_LEVEL=info TZ=UTC
+ENV BIND_ADDR=$BIND_ADDR LOG_LEVEL=$LOG_LEVEL TZ=$TZ TINI_SUBREAPER=true
 ENV PATH="/srv:/usr/bin:/busybox:$PATH"
 
 WORKDIR /srv

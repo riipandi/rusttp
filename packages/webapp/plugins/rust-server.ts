@@ -16,7 +16,7 @@ export interface RustServerOptions {
   /** Extensions that trigger a rebuild: sources, manifests, and files the binary embeds. */
   extensions: string[]
   /**
-   * The tracing target that logs `listening`; the plugin forces it to `info` whatever `RUST_LOG`
+   * The tracing target that logs `listening`; the plugin forces it to `info` whatever `LOG_LEVEL`
    * says, because that line is how it knows the new server took the port.
    */
   readyTarget: string
@@ -47,7 +47,7 @@ export function rustServer(opts: RustServerOptions): Plugin {
   const watched = opts.watch.map((dir) => path.join(opts.root, dir))
   const ignored = [targetDir, ...opts.ignore.map((dir) => path.join(opts.root, dir))]
   const extensions = new Set(opts.extensions.map((ext) => `.${ext}`))
-  const rustLog = `${process.env.RUST_LOG ?? 'info,memory_serve=warn'},${opts.readyTarget}=info`
+  const logLevel = `${process.env.LOG_LEVEL || 'info'},${opts.readyTarget}=info`
   const appUrl = `http://${process.env.BIND_ADDR ?? '127.0.0.1:3000'}`
 
   let child: ChildProcess | null = null
@@ -59,6 +59,7 @@ export function rustServer(opts: RustServerOptions): Plugin {
   const build = () =>
     new Promise<boolean>((resolve) => {
       const started = Date.now()
+      log(`building ${opts.pkg}…`)
       spawn('cargo', ['build', '-p', opts.pkg], {
         cwd: opts.root,
         stdio: ['ignore', 'inherit', 'inherit']
@@ -74,9 +75,10 @@ export function rustServer(opts: RustServerOptions): Plugin {
   /** Starts the binary; resolves once it logs `listening`, or with null when it exits first. */
   const launch = (viteOrigin: string) =>
     new Promise<ChildProcess | null>((resolve) => {
+      log(child ? 'starting the new server beside the running one…' : 'starting the server…')
       const proc = spawn(bin, opts.args, {
         cwd: opts.root,
-        env: { ...process.env, RUST_LOG: rustLog, VITE_DEV_SERVER: viteOrigin },
+        env: { ...process.env, LOG_LEVEL: logLevel, VITE_DEV_SERVER: viteOrigin },
         stdio: ['ignore', 'pipe', 'inherit']
       })
       let ready = false
@@ -118,7 +120,7 @@ export function rustServer(opts: RustServerOptions): Plugin {
         const old = child
         child = next
         void retire(old)
-        if (first) log(`open \x1b[36m${appUrl}\x1b[0m`)
+        log(first ? `open \x1b[36m${appUrl}\x1b[0m` : 'the new server took over')
       }
     }
     building = false
@@ -149,7 +151,10 @@ export function rustServer(opts: RustServerOptions): Plugin {
         if (ignored.some((dir) => file.startsWith(dir))) return
         if (!watched.some((dir) => file.startsWith(dir))) return
         clearTimeout(timer)
-        timer = setTimeout(() => void rebuild(viteOrigin), 200)
+        timer = setTimeout(() => {
+          log(`${path.relative(opts.root, file)} changed`)
+          void rebuild(viteOrigin)
+        }, 200)
       }
       server.watcher.on('change', onChange)
       server.watcher.on('add', onChange)

@@ -4,7 +4,7 @@ app_bin := "rusttp-server"
 [doc('Run the dev server with hot reload')]
 [group('development')]
 [no-exit-message]
-dev:
+dev: email-build
     @pnpm --silent --filter webapp dev
 
 [doc('Run the app CLI, e.g. `just run serve --bind 0.0.0.0:3000`')]
@@ -18,7 +18,7 @@ run *args:
 
 [doc('Build the SPA, then the release binary that embeds it')]
 [group('development')]
-build *args:
+build *args: email-build
     @pnpm --silent --filter webapp build
     @cargo build --release {{ args }}
     @ls -lh target/release/{{ app_bin }} | awk '{printf "{{ BOLD + GREEN }}    %s{{ NORMAL }} %s (%s)\n", "Output", $5, $NF}'
@@ -41,12 +41,13 @@ deps *args:
 [group('email')]
 [no-exit-message]
 email-dev:
-    @pnpm --silent --filter emails dev
+    @pnpm --silent -C packages/emails dev
 
-[doc('Build email templates')]
+[doc('Build email templates (`--verbose` lists each)')]
 [group('email')]
-email-build:
-    @pnpm --silent --filter emails build
+[no-exit-message]
+email-build *args:
+    @pnpm --silent -C packages/emails build {{ args }}
 
 [doc('Check email client support, e.g. `just email-check password-reset`')]
 [group('email')]

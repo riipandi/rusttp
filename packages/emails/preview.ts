@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { readdir } from 'node:fs/promises'
 import { createInterface } from 'node:readline'
 
 /**
@@ -14,6 +15,13 @@ const noise = [
   /^\s*$/
 ]
 
+const tag = '\x1b[35m[emails]\x1b[0m'
+const templates = (await readdir(new URL('templates', import.meta.url))).filter((file) =>
+  file.endsWith('.tsx')
+).length
+
+console.log(`${tag} starting the preview server for ${templates} templates…`)
+
 const child = spawn('email', ['preview', './templates', '--no-open', ...process.argv.slice(2)], {
   env: { ...process.env, DOT_LOG_LEVEL: process.env.DOT_LOG_LEVEL ?? 'warn', FORCE_COLOR: '1' },
   stdio: ['inherit', 'pipe', 'pipe']
@@ -28,7 +36,13 @@ for (const [stream, out] of [
 ] as const) {
   createInterface({ input: stream }).on('line', (line) => {
     const plain = line.replace(ansi, '')
-    if (!noise.some((pattern) => pattern.test(plain))) out.write(`${line}\n`)
+    // The preview server's own URL line becomes one that says what it serves.
+    const url = /Local:\s+(\S+)/.exec(plain)?.[1]
+    if (url)
+      out.write(
+        `${tag} previewing ${templates} templates at \x1b[36m${url}\x1b[0m (reloads on save)\n`
+      )
+    else if (!noise.some((pattern) => pattern.test(plain))) out.write(`${line}\n`)
   })
 }
 

@@ -21,6 +21,12 @@ interface TemplateModule {
 
 process.env.NODE_ENV = 'production'
 
+// `--verbose` lists every template; by default only failures and the summary print.
+const verbose = process.argv.includes('--verbose')
+const tag = '\x1b[35m[emails]\x1b[0m'
+const red = (text: string) => `\x1b[31m${text}\x1b[0m`
+const seconds = (ms: number) => `${(ms / 1000).toFixed(1)}s`
+
 const root = resolve(import.meta.dirname, '../..')
 const templatesDir = resolve(import.meta.dirname, 'templates')
 const compiledDir = resolve(import.meta.dirname, '.compiled')
@@ -58,6 +64,7 @@ const started = performance.now()
 const files = (await readdir(templatesDir))
   .filter((file) => file.endsWith('.tsx'))
   .map((file) => join(templatesDir, file))
+console.log(`${tag} rendering ${files.length} templates…`)
 
 await rm(compiledDir, { recursive: true, force: true })
 const compiled = await compile({ files, hashFiles: false, outDir: compiledDir })
@@ -81,17 +88,23 @@ for (const { path, entryPoint } of compiled) {
     const text = await render(element, { plainText })
     await writeFile(join(outputDir, `${mod.templateName}.html`), html)
     await writeFile(join(outputDir, `${mod.templateName}.txt`), text)
-    console.log(`  ✓ ${mod.templateName}`)
+    if (verbose) console.log(`${tag} rendered ${mod.templateName}`)
   } catch (error) {
     failed++
-    console.error(`  ✗ ${source}: ${error instanceof Error ? error.message : String(error)}`)
+    console.error(
+      `${tag} ${red('✗')} ${source}: ${error instanceof Error ? error.message : String(error)}`
+    )
   }
 }
 
 await rm(compiledDir, { recursive: true, force: true })
 
-const elapsed = Math.round(performance.now() - started)
-console.log(
-  `built ${compiled.length - failed}/${compiled.length} template(s) → ${relative(root, outputDir)} in ${elapsed}ms`
-)
-if (failed > 0) process.exit(1)
+const elapsed = seconds(performance.now() - started)
+const target = relative(root, outputDir)
+if (failed > 0) {
+  console.error(
+    `${tag} ${red(`${failed} of ${compiled.length} templates failed`)}; the other ${compiled.length - failed} are in ${target} (${elapsed})`
+  )
+  process.exit(1)
+}
+console.log(`${tag} rendered ${compiled.length} templates → ${target} (html + text) in ${elapsed}`)
