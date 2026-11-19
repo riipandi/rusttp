@@ -37,8 +37,8 @@ phases:
       note: inline glyphs became `@keyline-icons/react` components directly (size and strokeWidth props), not the `Icon` wrapper, because the wrapper lives in `extra` and these are `base` parts; the Spinner is Keyline's `LoaderCircle` and the data grid's pin is Keyline's `Pin` (the filled one from `/fill`); the Select trigger glyph changed from two filled triangles to `ChevronsUpDown`; `ContextMenu` items are the DropdownMenu's (verified in Base UI 1.9: `ContextMenu.Item` is `Menu.Item`; only Trigger, Content, and SubContent stay its own); the raw `@media` mirrors carry one comment pointing at `viewport`; `InputGroupButtonSize` is now `icon-xs`/`icon-sm` like Button; the only `<svg` left outside `src/icons` is the Icon story's demonstration of a raw svg
     - id: 9
       title: Tests, the a11y gate, and the webapp consumer sweep
-      status: pending
-      note: —
+      status: committed
+      note: `error` is the default gate (`STORYBOOK_A11Y_GATE=todo|off` relaxes it locally); the one allowlist entry is Base UI's focus guard (`[data-base-ui-focus-guard]`, a context exclude); 433/433 stories in light and in dark, three green runs in a row; the aspect-ratio assertion waits for layout; new keyboard stories for Tabs, Toggle, Accordion, Select, Combobox, OTP, NumberField (Base UI's accordion has no arrow-key navigation, so its story tabs between triggers); the webapp's text and password fields and the auth buttons are `lg`; the `LinkButton` copy was already deleted in phase 5; a new e2e test asserts the login fields and the submit button are 40 px; e2e 20/20 on Chromium
     - id: 10
       title: Docs sync
       status: pending

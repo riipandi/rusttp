@@ -127,3 +127,22 @@ export const Disabled: Story = {
     </Toggle>
   )
 }
+
+export const Keyboard: Story = {
+  render: () => (
+    <Toggle aria-label='Toggle hex'>
+      <Bold {...stylex.props(styles.icon)} />
+    </Toggle>
+  ),
+  play: async ({ canvas }) => {
+    const el = canvas.getByRole('button', { name: 'Toggle hex' })
+
+    // Tab reaches it; Space and Enter both press it.
+    await userEvent.tab()
+    await expect(el).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(el).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.keyboard('{Enter}')
+    await expect(el).toHaveAttribute('aria-pressed', 'false')
+  }
+}

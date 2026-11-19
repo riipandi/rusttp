@@ -237,3 +237,30 @@ export const NamedByAriaLabel: Story = {
     await expect(slots[3]).toHaveAccessibleName('Character 4 of 4')
   }
 }
+
+export const Keyboard: Story = {
+  args: { length: 4, 'aria-label': 'Verification code' },
+  render: (args) => (
+    <OTPField {...args}>
+      <OTPFieldGroup>
+        {[0, 1, 2, 3].map((slot) => (
+          <OTPFieldSlot key={slot} />
+        ))}
+      </OTPFieldGroup>
+    </OTPField>
+  ),
+  play: async ({ canvas }) => {
+    const slots = canvas.getAllByRole('textbox')
+
+    // Typing fills the slots in order and moves focus along; Backspace steps back and clears.
+    await userEvent.tab()
+    await expect(slots[0]).toHaveFocus()
+    await userEvent.keyboard('12')
+    await expect(slots[0]).toHaveValue('1')
+    await expect(slots[1]).toHaveValue('2')
+    await expect(slots[2]).toHaveFocus()
+    await userEvent.keyboard('{Backspace}')
+    await expect(slots[1]).toHaveValue('')
+    await expect(slots[1]).toHaveFocus()
+  }
+}

@@ -157,3 +157,27 @@ export const Invalid: Story = {
     await expect(input).toHaveAccessibleDescription('Name a spell from the Restricted Section.')
   }
 }
+
+export const Disabled: Story = {
+  args: { items: tags, disabled: true },
+  render: (args) => (
+    <Autocomplete {...args}>
+      <AutocompleteInput aria-label='Spell' placeholder='Sealed by the Ministry' />
+      <AutocompleteContent>
+        <AutocompleteList>
+          {(tag) => (
+            <AutocompleteItem key={tag} value={tag}>
+              {tag}
+            </AutocompleteItem>
+          )}
+        </AutocompleteList>
+      </AutocompleteContent>
+    </Autocomplete>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('combobox', { name: 'Spell' })
+    await expect(input).toBeDisabled()
+    await userEvent.type(input, 'lumos')
+    await expect(input).toHaveValue('')
+  }
+}

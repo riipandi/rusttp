@@ -21,6 +21,18 @@ test.describe('auth pages', () => {
     })
   }
 
+  test('the fields and the submit button of a form are one height', async ({ page }) => {
+    await page.goto(routes.login)
+    const submit = await page.getByRole('button', { name: 'Sign in', exact: true }).boundingBox()
+    const email = await page.locator('#email').boundingBox()
+    // The password field is a group: the input sits inside its bordered box.
+    const password = await page.locator('#password').locator('xpath=..').boundingBox()
+
+    expect(submit?.height).toBe(40)
+    expect(email?.height).toBe(submit?.height)
+    expect(password?.height).toBe(submit?.height)
+  })
+
   test('the sign-in demo continues through two-factor to the dashboard', async ({ page }) => {
     await page.goto(routes.login)
     await page.getByLabel('Email').fill('robert.langdon@example.com')

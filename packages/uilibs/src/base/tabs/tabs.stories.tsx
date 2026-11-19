@@ -188,3 +188,37 @@ export const LineControlSizes: Story = {
     await expectControlHeights(canvasElement, denseControlHeights)
   }
 }
+
+export const Keyboard: Story = {
+  args: { defaultValue: 'account' },
+  render: (args) => (
+    <Tabs {...args} style={styles.tabs}>
+      <TabsList aria-label='Vault settings'>
+        <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
+        <TabsTrigger value='password'>Vault Password</TabsTrigger>
+        <TabsTrigger value='keys'>Vault Keys</TabsTrigger>
+      </TabsList>
+      <TabsContent value='account'>Manage your vault at Gringotts.</TabsContent>
+      <TabsContent value='password'>Change the password to your vault.</TabsContent>
+      <TabsContent value='keys'>Count the keys in your vault.</TabsContent>
+    </Tabs>
+  ),
+  play: async ({ canvas }) => {
+    const account = canvas.getByRole('tab', { name: 'Gringotts Vault' })
+    const password = canvas.getByRole('tab', { name: 'Vault Password' })
+    const keys = canvas.getByRole('tab', { name: 'Vault Keys' })
+
+    // Tab enters the list on the selected tab; the arrow keys move focus along it.
+    await userEvent.tab()
+    await expect(account).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    await expect(password).toHaveFocus()
+    // Focus moves first; Enter selects.
+    await userEvent.keyboard('{Enter}')
+    await expect(password).toHaveAttribute('aria-selected', 'true')
+    await userEvent.keyboard('{End}')
+    await expect(keys).toHaveFocus()
+    await userEvent.keyboard('{Home}')
+    await expect(account).toHaveFocus()
+  }
+}

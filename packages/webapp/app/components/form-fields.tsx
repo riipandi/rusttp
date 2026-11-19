@@ -26,7 +26,7 @@ const styles = stylex.create({
   // the text inside it rather than with its border.
   hint: {
     marginBlockStart: `calc(-1 * ${unit.x1})`,
-    paddingInline: unit.x3,
+    paddingInline: unit.x4,
     // The same size for a hint and a message, so one replaces the other without the line shifting.
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2
@@ -113,6 +113,7 @@ export function TextField({ label, description, autoComplete, inputMode }: TextF
       <Input
         id={field.name}
         name={field.name}
+        size='lg'
         inputMode={inputMode}
         autoComplete={autoComplete}
         placeholder={label}
@@ -145,6 +146,7 @@ export function PasswordField({
       <InputPassword
         id={field.name}
         name={field.name}
+        size='lg'
         autoComplete={autoComplete}
         placeholder={label}
         value={field.state.value}

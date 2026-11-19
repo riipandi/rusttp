@@ -190,3 +190,37 @@ export const MultiplePlay: Story = {
     await expect(second).toHaveAttribute('aria-expanded', 'true')
   }
 }
+
+export const Keyboard: Story = {
+  args: { multiple: false },
+  render: (args) => (
+    <Accordion {...args}>
+      <AccordionItem value='item-1'>
+        <AccordionTrigger>Is the vault accessible?</AccordionTrigger>
+        <AccordionContent>Yes, with a spoken Alohomora.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value='item-2'>
+        <AccordionTrigger>Is it enchanted?</AccordionTrigger>
+        <AccordionContent>Yes, with the default charms.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
+  play: async ({ canvas }) => {
+    const first = canvas.getByRole('button', { name: 'Is the vault accessible?' })
+    const second = canvas.getByRole('button', { name: 'Is it enchanted?' })
+
+    // Tab lands on the first trigger; Enter opens it, Space closes it.
+    await userEvent.tab()
+    await expect(first).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await expect(first).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.keyboard(' ')
+    await expect(first).toHaveAttribute('aria-expanded', 'false')
+
+    // Every trigger is a tab stop: Base UI's accordion has no arrow-key navigation.
+    await userEvent.tab()
+    await expect(second).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await expect(second).toHaveAttribute('aria-expanded', 'true')
+  }
+}

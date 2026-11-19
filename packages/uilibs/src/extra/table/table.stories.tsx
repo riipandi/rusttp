@@ -2,6 +2,7 @@ import { MoreVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import { expect, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   DropdownMenu,
@@ -108,7 +109,17 @@ export const Playground: Story = {
         </TableFooter>
       </Table>
     </div>
-  )
+  ),
+  play: async ({ canvas }) => {
+    // A real table: named by its caption, with column headers and one row per ledger entry.
+    const table = canvas.getByRole('table', {
+      name: 'A list of your recent Gringotts vault transactions.'
+    })
+    await expect(within(table).getAllByRole('columnheader')).toHaveLength(4)
+    // The header row, the ledger rows, and the total row.
+    await expect(within(table).getAllByRole('row')).toHaveLength(invoices.length + 2)
+    await expect(within(table).getByRole('cell', { name: 'Total' })).toHaveAttribute('colspan', '3')
+  }
 }
 
 export const Footer: Story = {

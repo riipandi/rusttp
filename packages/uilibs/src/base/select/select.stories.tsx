@@ -219,7 +219,14 @@ export const Disabled: Story = {
         ))}
       </SelectContent>
     </Select>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('combobox', { name: 'Wand core' })
+    await expect(trigger).toBeDisabled()
+    // A disabled trigger is out of the tab order.
+    await userEvent.tab()
+    await expect(trigger).not.toHaveFocus()
+  }
 }
 
 export const Invalid: Story = {
@@ -262,4 +269,37 @@ export const ControlSizes: Story = {
     </ControlSizesColumn>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const Keyboard: Story = {
+  args: { items: fruits },
+  render: (args) => (
+    <Select {...args}>
+      <SelectTrigger aria-label='Wand core'>
+        <SelectValue placeholder='Select a wand core' />
+      </SelectTrigger>
+      <SelectContent>
+        {fruits.map(({ label, value }) => (
+          <SelectItem key={value} value={value}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('combobox', { name: 'Wand core' })
+
+    // Tab reaches the trigger; Enter opens the list, the arrows move through it, Enter picks.
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await body.findByRole('listbox')
+    await userEvent.keyboard('{ArrowDown}')
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await expect(trigger).toHaveTextContent(/Dragon heartstring|Unicorn hair/)
+    await expect(trigger).toHaveFocus()
+  }
 }

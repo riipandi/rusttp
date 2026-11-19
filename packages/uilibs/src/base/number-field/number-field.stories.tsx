@@ -161,3 +161,45 @@ export const Invalid: Story = {
     await expect(input.closest('[role="group"]')).toHaveAttribute('data-invalid')
   }
 }
+
+export const Disabled: Story = {
+  render: () => (
+    <NumberField defaultValue={7} disabled>
+      <Label>
+        Galleons
+        <NumberFieldGroup />
+      </Label>
+    </NumberField>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('textbox', { name: 'Galleons' })).toBeDisabled()
+    await expect(canvas.getByRole('button', { name: 'Increase' })).toBeDisabled()
+    await expect(canvas.getByRole('button', { name: 'Decrease' })).toBeDisabled()
+  }
+}
+
+export const Keyboard: Story = {
+  render: () => (
+    <NumberField defaultValue={7} min={0} max={9}>
+      <Label>
+        Galleons
+        <NumberFieldGroup />
+      </Label>
+    </NumberField>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('textbox', { name: 'Galleons' })
+
+    // The arrow keys step the value, Home and End jump to the limits.
+    await userEvent.tab()
+    await expect(input).toHaveFocus()
+    await userEvent.keyboard('{ArrowUp}')
+    await expect(input).toHaveValue('8')
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}')
+    await expect(input).toHaveValue('6')
+    await userEvent.keyboard('{End}')
+    await expect(input).toHaveValue('9')
+    await userEvent.keyboard('{Home}')
+    await expect(input).toHaveValue('0')
+  }
+}

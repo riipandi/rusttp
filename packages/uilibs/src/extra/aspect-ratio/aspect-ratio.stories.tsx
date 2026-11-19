@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
 import { container, radius } from '../../styles/tokens.stylex'
 import { AspectRatio } from './aspect-ratio.component'
@@ -72,11 +72,15 @@ export const Square: Story = {
       </AspectRatio>
     </div>
   ),
-  // The container keeps a square box regardless of content height.
+  // The container keeps a square box regardless of content height. The box is laid out after the
+  // first paint under load, so wait for it instead of reading it once.
   play: async ({ canvas }) => {
     const frame = canvas.getByTestId('ratio-frame')
-    const { width, height } = frame.getBoundingClientRect()
-    await expect(Math.abs(width - height)).toBeLessThan(1)
+    await waitFor(async () => {
+      const { width, height } = frame.getBoundingClientRect()
+      await expect(width).toBeGreaterThan(0)
+      await expect(Math.abs(width - height)).toBeLessThan(1)
+    })
   }
 }
 

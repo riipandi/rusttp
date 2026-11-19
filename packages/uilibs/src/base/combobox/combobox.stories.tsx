@@ -370,3 +370,41 @@ export const Invalid: Story = {
     await expect(input).toHaveAccessibleDescription('Pick the school that sent your letter.')
   }
 }
+
+export const Keyboard: Story = {
+  args: { items: frameworks },
+  render: (args) => (
+    <Combobox {...args}>
+      <ComboboxInput aria-label='School' placeholder='School' />
+      <ComboboxContent>
+        <ComboboxEmpty>No school found.</ComboboxEmpty>
+        <ComboboxList>
+          {(item) => (
+            <ComboboxItem key={item} value={item}>
+              {item}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const input = canvas.getByRole('combobox', { name: 'School' })
+
+    // Tab reaches the input, the arrow opens the list and moves through it, Enter picks.
+    await userEvent.tab()
+    await expect(input).toHaveFocus()
+    await userEvent.keyboard('{ArrowDown}')
+    await body.findByRole('listbox')
+    await userEvent.keyboard('{ArrowDown}')
+    const options = await body.findAllByRole('option')
+    const highlighted = options.find((option) => option.hasAttribute('data-highlighted'))
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    // The highlighted option is the one the input now shows.
+    await expect(highlighted).toBeDefined()
+    await waitFor(() => expect(input).toHaveValue(highlighted?.textContent ?? ''))
+    await expect(input).not.toHaveValue('')
+  }
+}
