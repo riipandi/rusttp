@@ -23,7 +23,7 @@ export default defineConfig({
   projects: [
     { name: 'Chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'Firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'Mobile Chrome', use: { ...devices['Pixel 7'] } },
+    { name: 'Mobile Safari', use: { ...devices['iPhone 16'] } },
     { name: 'Safari', use: { ...devices['Desktop Safari'] } }
   ],
   // `E2E_BASE_URL` points the tests at servers that are already running. Otherwise the Rust

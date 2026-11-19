@@ -8,6 +8,7 @@ import 'scripts/task-development.just'
 import 'scripts/task-quality.just'
 import 'scripts/task-container.just'
 import 'scripts/task-utilities.just'
+import 'scripts/task-e2e.just'
 
 [private]
 default:
