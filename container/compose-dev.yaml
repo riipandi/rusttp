@@ -49,12 +49,12 @@ services:
         soft: 262144
         hard: 262144
 
-  # S3-compatible object storage; the console is on :9101.
+  # S3-compatible object storage (API :9100, console :9101), reached through nginx.
   silo:
     <<: *common
     image: docker.io/pgsty/silo:${SILO_VERSION:-RELEASE.2026-11-12T00-00-00Z}
     hostname: silo
-    ports: ["9100:9100", "9101:9101"]
+    expose: ["9100", "9101"] # published through nginx, see compose.yaml
     environment:
       MINIO_BROWSER_LOGIN_ANIMATION: off
       MINIO_DOMAIN: localhost

@@ -37,3 +37,20 @@ cleanup *args:
     done
     if ((total == 0)); then echo "Nothing to clean"; exit 0; fi
     status "$($dry_run && echo "Would free" || echo "Freed")" "$(human "$total")"
+
+[doc('Generate local HTTPS certificates (mkcert) in storage/config')]
+[group('utility')]
+[no-exit-message]
+cert-generate:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v mkcert >/dev/null || { echo "mkcert is not installed (brew install mkcert)" >&2; exit 1; }
+    mkdir -p storage/config
+    mkcert -key-file storage/config/localhost_key.pem -cert-file storage/config/localhost_crt.pem \
+        localhost 127.0.0.1 ::1 host.docker.internal
+
+[doc('Install the mkcert local CA into the system and browser trust stores')]
+[group('utility')]
+[no-exit-message]
+cert-trust:
+    @mkcert -install

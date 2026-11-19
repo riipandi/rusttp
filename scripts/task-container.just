@@ -7,9 +7,13 @@ app_image := "ghcr.io/riipandi/rusttp"
 [private]
 app_version := `sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1`
 
+[private]
+_cert-ensure:
+    @test -f storage/config/localhost_crt.pem || just cert-generate
+
 [doc('Start dev services')]
 [group('container')]
-compose-up:
+compose-up: _cert-ensure
     @docker compose -f {{ compose_file }} up --detach --remove-orphans
 
 [doc('Stop dev services')]

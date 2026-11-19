@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+# Mock third parties the application talks to in development. Reached from the
+# host only through the nginx TLS front in compose.yaml.
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cpus: 1.0
+  healthcheck:
+    start_period: 10s
+    interval: 1m30s
+    timeout: 10s
+    retries: 3
+
+services:
+  # One mock-oauth2-server carries both identity providers as issuerIds. The
+  # login page's username becomes the subject, and its prefix picks the claims
+  # (see mock-oauth2.json): `unverified-*` carries an unverified address,
+  # `nonames-*` no given/family name, anything else the verified shape.
+  #
+  # https://localhost:3220/google/.well-known/openid-configuration
+  # https://localhost:3220/github/.well-known/openid-configuration
+  mock-oauth2:
+    <<: *common
+    image: ghcr.io/navikt/mock-oauth2-server:${MOCK_OAUTH2_SERVER_VERSION:-6.0}
+    platform: linux/amd64
+    hostname: mock-oauth2
+    expose: ["8080"]
+    volumes: ["./mock-oauth2.json:/app/config.json:ro"]
+    environment:
+      JSON_CONFIG_PATH: /app/config.json
+    shm_size: 256m
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8080/isalive || exit 1"]
