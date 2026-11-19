@@ -1,0 +1,22 @@
+name: rusttp
+
+services:
+  pgsql:
+    image: postgres:18-alpine
+    environment:
+      # Development-only credentials.
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rusttp
+    ports:
+      - "${PGSQL_PORT:-5432}:5432"
+    volumes:
+      - pgsql-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgsql-data:

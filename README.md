@@ -30,7 +30,7 @@ cargo generate riipandi/rusttp -b main -n myapp-name
 
 ### Up and Running
 
-1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [watchexec][watchexec], [just][just], and [lefthook][lefthook].
+1. Install the required toolchain & SDK: [Rust][install-rust], [Docker][docker], [watchexec][watchexec], and [just][just].
 2. Create `.env` file or copy from `.env.example`, then configure required variables.
 3. Generate application secret key, use this command: `just generate-key`
 4. Run project in development mode: `just dev`
@@ -39,32 +39,32 @@ Type `just` on your terminal to see available tasks.
 
 ## Docker Container
 
-### Development Server
+### Development Services
 
 ```sh
-# Start development server
-docker-compose -f compose.yaml up -d --remove-orphans
+# Start the development services (Postgres)
+just compose-up
 
-# Stop development server
-docker-compose -f compose.yaml down --remove-orphans
+# Stop the development services
+just compose-down
 ```
 
 ### Build Container
 
 ```sh
-docker build -f Dockerfile . -t rusttp:latest
+just docker-build
 ```
 
 ### List Docker Image
 
 ```sh
-docker image list --filter reference=rusttp:latest
+just docker-images
 ```
 
 ### Testing Container
 
 ```sh
-docker run --network=host --rm -it --env-file .env --name rusttp rusttp:latest
+just docker-run
 ```
 
 ### Push Images
@@ -114,7 +114,6 @@ See the [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) file
 [docker]: https://docs.docker.com/engine/install/
 [install-rust]: https://www.rust-lang.org/tools/install
 [just]: https://just.systems/man/en/
-[lefthook]: https://lefthook.dev/installation/index.html
 [license-apache]: https://www.tldrlegal.com/license/apache-license-2-0-apache-2-0
 [license-mit]: https://www.tldrlegal.com/license/mit-license
 [watchexec]: https://github.com/watchexec/watchexec

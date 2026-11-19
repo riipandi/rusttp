@@ -47,3 +47,7 @@ Makefile
 *.bak
 *.orig
 /storage
+
+# Host-only build settings (native CPU, lld) and the dev toolchain manifest
+.cargo/
+rust-toolchain.toml
