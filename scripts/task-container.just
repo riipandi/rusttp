@@ -52,11 +52,12 @@ docker-images:
 docker-run *args:
     @docker run --rm -it -p 3000:3000 --env-file .env -e BIND_ADDR=0.0.0.0:3000 {{ app_image }}:{{ app_version }} "$@"
 
-[doc('Shell into Docker image')]
+[doc('Shell into a debug build of the image')]
 [group('container')]
 [no-exit-message]
 docker-shell:
-    @docker run --rm -it --env-file .env --entrypoint /bin/sh {{ app_image }}:{{ app_version }}
+    @docker build -q -f deploy/Dockerfile . --build-arg DISTROLESS_TAG=debug-nonroot -t {{ app_image }}:debug > /dev/null
+    @docker run --rm -it --env-file .env --entrypoint /busybox/sh {{ app_image }}:debug
 
 [doc('Push Docker image')]
 [group('container')]

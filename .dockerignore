@@ -7,18 +7,11 @@
 .gitignore
 .gitmodules
 
-# Frontend sources (not needed for Docker build — only pre-built assets in src-app/web)
+# Dependencies and build output: the image installs and builds its own
 node_modules/
 .pnpm-store
-package.json
-pnpm-lock.yaml
-tsconfig.json
-tsconfig.app.json
-tsconfig.node.json
-vite.config.ts
-vitest.config.ts
-index.html
-src-web/
+/apps/server/frontend
+**/.output
 
 # Env
 .env
@@ -37,6 +30,7 @@ CONTRIBUTING.md
 
 # OS
 .DS_Store
+.DS_Store?
 
 # Misc
 Makefile
