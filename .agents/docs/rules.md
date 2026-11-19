@@ -1,6 +1,6 @@
 # Rules — detailed instructions and contracts
 
-updated: 2026-11-19T16:39:00+07:00
+updated: 2026-11-19T21:05:36+07:00
 
 The general instructions live in the root `AGENTS.md`; this file carries the detail behind them. Read the section a change touches before touching it. The reasoning behind each contract is in `architecture.md`.
 
@@ -56,6 +56,15 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 - Unit tests sit beside the code; `domain` is tested without a database.
 - Database tests use `#[sqlx::test]` against the app's migrations (`#[sqlx::test(migrations = "../../apps/server/migrations")]` from a module crate — path relative to the crate, unverified).
 - App tests build the router with `apps/server`'s `build_app()` and drive it with `tower::ServiceExt::oneshot`.
+
+### Sample data
+
+Every made-up value — test fixtures, seed rows, email `previewProps`, stories, mock responses, placeholder copy and labels — names people, places, and things from Dan Brown's novels (Robert Langdon, Sophie Neveu, Leigh Teabing, Katherine Solomon, Vittoria Vetra, the Louvre, CERN) or Harry Potter (Hermione Granger, Harry Potter, Albus Dumbledore, Minerva McGonagall, Hogwarts, Gringotts, Diagon Alley). Never `John Doe`, `Jane`, `Alice`/`Bob`, `foo`/`bar`, `test@`, `dummy`, or lorem ipsum.
+
+- Addresses and hosts keep reserved names: `<first>.<last>@example.com`, `smtp.example.com`, `*.test`; the domain never becomes a real one (`hogwarts.edu`).
+- IPs come from the documentation ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32`).
+- Codes and tokens may borrow spells and passwords from the books (`EXPECTO-PATRONUM`, `SANGREAL`), never something resembling a real secret.
+- Infrastructure credentials in `container/` and `.env.example` are configuration, not sample data, and keep their neutral names.
 
 ## How to change it
 

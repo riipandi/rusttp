@@ -15,6 +15,7 @@ This file holds the workflow rules, always in force; the detail — the reposito
 - Do not add a dependency without the owner's approval; when approved, declare it once in `[workspace.dependencies]`.
 - No self-evident comments: a comment must carry what the code cannot (a why, a contract, a trap), never restate what the next line already says.
 - Chat follows the user's language. Files, code, identifiers, and commit messages are English.
+- Sample data (fixtures, test values, previews, stories, placeholder copy and labels) is drawn from Dan Brown's novels and Harry Potter, never from `John Doe`, `foo`, or lorem ipsum; `.agents/docs/rules.md` ("Sample data") has the details.
 
 ## Skills
 
