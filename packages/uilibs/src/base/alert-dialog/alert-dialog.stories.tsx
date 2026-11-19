@@ -5,7 +5,6 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Icon } from '../../extra/icon'
-import { Spinner } from '../../extra/spinner'
 import { Button } from '../button'
 import {
   AlertDialog,
@@ -66,7 +65,7 @@ export const Playground: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogCancel variant='destructive'>Seal</AlertDialogCancel>
+          <AlertDialogAction variant='destructive'>Seal</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -109,7 +108,7 @@ export const Media: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogCancel variant='destructive'>Vanish</AlertDialogCancel>
+          <AlertDialogAction variant='destructive'>Vanish</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -131,7 +130,7 @@ export const Small: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Stay</AlertDialogCancel>
-          <AlertDialogCancel variant='destructive'>Disapparate</AlertDialogCancel>
+          <AlertDialogAction variant='destructive'>Disapparate</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -167,11 +166,14 @@ export const Destructive: Story = {
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               variant='destructive'
-              disabled={deleting}
-              onClick={() => void handleDelete()}
+              loading={deleting}
+              onClick={(event) => {
+                // Keep the dialog open until the work is done, then close it through `open`.
+                event.preventBaseUIHandler()
+                void handleDelete()
+              }}
             >
-              {deleting && <Spinner />}
-              {deleting ? 'Closing…' : 'Close the vault'}
+              Close the vault
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -186,8 +188,9 @@ export const Destructive: Story = {
 
     await userEvent.click(action)
 
-    // Pending state disables both actions while the promise runs.
-    await expect(within(document.body).getByRole('button', { name: /closing/i })).toBeDisabled()
+    // The action stays open and busy, under its own name, while the promise runs.
+    await expect(action).toHaveAttribute('aria-busy', 'true')
+    await expect(within(document.body).getByRole('alertdialog')).toBeInTheDocument()
     await expect(within(document.body).getByRole('button', { name: 'Cancel' })).toBeDisabled()
 
     // Resolving the action closes the dialog.

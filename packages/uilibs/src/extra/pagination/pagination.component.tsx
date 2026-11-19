@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { Button, buttonSizes } from '../../base/button'
+import { LinkButton, type buttonSizes } from '../../base/button'
 import { paginationStyles as s } from './pagination.stylex'
 
 interface StyleXStyleProps {
@@ -40,11 +40,11 @@ export function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   return (
-    <Button
+    <LinkButton
       variant={isActive ? 'outline' : 'ghost'}
       size={size}
-      nativeButton={false}
-      render={<a aria-current={isActive ? 'page' : undefined} {...props} />}
+      current={isActive}
+      render={<a {...props} />}
       style={style}
     />
   )

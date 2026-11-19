@@ -3,6 +3,11 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
+import {
+  DenseControlSizesColumn,
+  denseControlHeights,
+  expectControlHeights
+} from '../../contracts/control-sizes'
 import { Toggle } from './toggle.component'
 
 const meta = {
@@ -85,6 +90,9 @@ export const WithText: Story = {
 export const Sizes: Story = {
   render: () => (
     <div {...stylex.props(styles.row)}>
+      <Toggle size='xs' aria-label='Toggle pixie'>
+        Pixie
+      </Toggle>
       <Toggle size='sm' aria-label='Toggle imp'>
         Imp
       </Toggle>
@@ -96,6 +104,19 @@ export const Sizes: Story = {
       </Toggle>
     </div>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <DenseControlSizesColumn>
+      {(size) => (
+        <Toggle size={size} aria-label={`Toggle charm ${size}`}>
+          Charm
+        </Toggle>
+      )}
+    </DenseControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
 }
 
 export const Disabled: Story = {

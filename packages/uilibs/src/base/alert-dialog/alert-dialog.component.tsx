@@ -99,10 +99,30 @@ export function AlertDialogDescription({
   return <BaseAlertDialog.Description {...props} {...stylex.props(s.description, style)} />
 }
 
-// Action is a plain Button — wire your own onClick (and close
-// via the dialog's open state) so destructive actions can await work first.
-export function AlertDialogAction(props: ButtonProps) {
-  return <Button {...props} />
+type AlertDialogButtonProps = Omit<
+  React.ComponentProps<typeof BaseAlertDialog.Close>,
+  'className' | 'style'
+> &
+  Pick<ButtonProps, 'variant' | 'size' | 'loading'> &
+  StyleXStyleProps
+
+/**
+ * The confirming button: it closes the dialog like `AlertDialogCancel`, after its `onClick` runs.
+ * To keep the dialog open while work is pending (a failed request, a validation), call
+ * `event.preventBaseUIHandler()` in `onClick` and close through the dialog's `open` state later.
+ */
+export function AlertDialogAction({
+  variant = 'primary',
+  size = 'md',
+  style,
+  ...props
+}: AlertDialogButtonProps) {
+  return (
+    <BaseAlertDialog.Close
+      render={<Button variant={variant} size={size} style={style} />}
+      {...props}
+    />
+  )
 }
 
 export function AlertDialogCancel({
@@ -110,9 +130,7 @@ export function AlertDialogCancel({
   size = 'md',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAlertDialog.Close>, 'className' | 'style'> &
-  Pick<ButtonProps, 'variant' | 'size'> &
-  StyleXStyleProps) {
+}: AlertDialogButtonProps) {
   return (
     <BaseAlertDialog.Close
       render={<Button variant={variant} size={size} style={style} />}

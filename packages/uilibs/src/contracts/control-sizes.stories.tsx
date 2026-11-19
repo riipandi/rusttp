@@ -5,9 +5,13 @@ import { Autocomplete, AutocompleteInput } from '../base/autocomplete'
 import { Button } from '../base/button'
 import { Combobox, ComboboxInput, ComboboxTrigger } from '../base/combobox'
 import { Input } from '../base/input'
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '../base/menubar'
 import { NumberField, NumberFieldGroup } from '../base/number-field'
 import { OTPField, OTPFieldGroup, OTPFieldSlot } from '../base/otp-field'
 import { Select, SelectTrigger, SelectValue } from '../base/select'
+import { Tabs, TabsList, TabsTrigger } from '../base/tabs'
+import { Toggle } from '../base/toggle'
+import { ToggleGroup, ToggleGroupItem } from '../base/toggle-group'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../extra/input-group'
 import { InputPassword } from '../extra/input-password'
 import { InputPhone } from '../extra/input-phone'
@@ -35,7 +39,7 @@ const styles = stylex.create({
 
 const houses = [{ label: 'Gryffindor', value: 'gryffindor' }]
 
-/** Every text control beside a Button of the same size: one row of equal heights per size. */
+/** Every text control, Toggle, Tab list, and Menubar beside a Button of the same size: one row of equal heights per size. */
 export const BesideAButton: Story = {
   render: () => (
     <div {...stylex.props(styles.grid)}>
@@ -75,6 +79,27 @@ export const BesideAButton: Story = {
           </InputGroup>
           <InputPassword size={size} aria-label='Password' placeholder='Password' />
           <InputPhone size={size} aria-label='Phone' placeholder='Phone' />
+          <Toggle size={size} aria-label='Charm'>
+            Charm
+          </Toggle>
+          <ToggleGroup size={size} variant='outline' aria-label='Hexes'>
+            <ToggleGroupItem value='hex'>Hex</ToggleGroupItem>
+            <ToggleGroupItem value='jinx'>Jinx</ToggleGroupItem>
+          </ToggleGroup>
+          <Tabs defaultValue='charms'>
+            <TabsList size={size}>
+              <TabsTrigger value='charms'>Charms</TabsTrigger>
+              <TabsTrigger value='potions'>Potions</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Menubar size={size}>
+            <MenubarMenu>
+              <MenubarTrigger>Grimoire</MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem>New scroll</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
           <OTPField size={size} length={4} aria-label='Code'>
             <OTPFieldGroup>
               {[1, 2, 3, 4].map((position) => (

@@ -39,18 +39,17 @@ export const buttonGroupOrientations = stylex.create({
   }
 })
 
+// Corners only: which edge is shared is `buttonGroupEdges`.
 export const buttonGroupJoined = stylex.create({
   'horizontal-first': {
     borderBottomRightRadius: 0,
     borderTopRightRadius: 0
   },
   'horizontal-middle': {
-    borderLeftWidth: 0,
     borderRadius: radius.none
   },
   'horizontal-last': {
     borderBottomLeftRadius: radius.none,
-    borderLeftWidth: 0,
     borderTopLeftRadius: radius.none
   },
   'vertical-first': {
@@ -58,12 +57,34 @@ export const buttonGroupJoined = stylex.create({
     borderBottomRightRadius: radius.none
   },
   'vertical-middle': {
-    borderRadius: radius.none,
-    borderTopWidth: 0
+    borderRadius: radius.none
   },
   'vertical-last': {
     borderTopLeftRadius: radius.none,
-    borderTopRightRadius: radius.none,
-    borderTopWidth: 0
+    borderTopRightRadius: radius.none
+  }
+})
+
+// The leading edge of every child after the first. `shared`: the child's own
+// border is dropped so it does not double the neighbour's. `divider`: a child
+// with no border (a filled Button) gets a hairline in the text color at low
+// alpha, whatever `borderWidth` its variant sets.
+const dividerColor = 'color-mix(in srgb, currentColor 30%, transparent)'
+
+export const buttonGroupSharedEdges = stylex.create({
+  horizontal: { borderLeftWidth: 0 },
+  vertical: { borderTopWidth: 0 }
+})
+
+export const buttonGroupDividerEdges = stylex.create({
+  horizontal: {
+    borderLeftColor: dividerColor,
+    borderLeftStyle: 'solid',
+    borderLeftWidth: stroke.ring1
+  },
+  vertical: {
+    borderTopColor: dividerColor,
+    borderTopStyle: 'solid',
+    borderTopWidth: stroke.ring1
   }
 })

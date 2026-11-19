@@ -16,9 +16,34 @@ export const buttonStyles = stylex.create({
     gap: unit.x2,
     justifyContent: 'center',
     lineHeight: fontLineHeight.body2,
+    position: 'relative',
     textDecoration: 'none',
     userSelect: 'none',
     whiteSpace: 'nowrap'
+  },
+  // Loading: the label stays (it names the button and holds the width) but is
+  // hidden under a centered spinner, and the button reads as busy, not disabled.
+  loading: {
+    cursor: 'progress',
+    opacity: 1
+  },
+  content: {
+    alignItems: 'center',
+    display: 'inline-flex',
+    gap: 'inherit',
+    justifyContent: 'center'
+  },
+  contentHidden: {
+    opacity: 0
+  },
+  spinner: {
+    alignItems: 'center',
+    display: 'flex',
+    insetBlock: 0,
+    insetInline: 0,
+    justifyContent: 'center',
+    pointerEvents: 'none',
+    position: 'absolute'
   }
 })
 

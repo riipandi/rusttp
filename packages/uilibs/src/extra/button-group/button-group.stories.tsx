@@ -128,3 +128,47 @@ export const WithInput: Story = {
     </ButtonGroup>
   )
 }
+
+/** Filled buttons have no border to share, so the group draws a divider between them. */
+export const FilledDividers: Story = {
+  name: 'Filled buttons get dividers',
+  render: () => (
+    <ButtonGroup aria-label='Wand woods'>
+      <Button>Holly</Button>
+      <Button>Elder</Button>
+      <>
+        <Button variant='secondary'>Yew</Button>
+        <Button variant='destructive'>Vine</Button>
+      </>
+    </ButtonGroup>
+  ),
+  play: async ({ canvas }) => {
+    const [first, ...rest] = within(canvas.getByRole('group', { name: 'Wand woods' })).getAllByRole(
+      'button'
+    )
+    await expect(first && getComputedStyle(first).borderLeftWidth).toBe('0px')
+    // A Fragment's children are joined like the others: three dividers for four buttons.
+    await expect(rest).toHaveLength(3)
+    for (const button of rest) {
+      const style = getComputedStyle(button)
+      await expect(style.borderLeftWidth).toBe('1px')
+      await expect(style.borderLeftStyle).toBe('solid')
+    }
+  }
+}
+
+/** Text between children is kept, not dropped. */
+export const KeepsText: Story = {
+  name: 'Keeps text children',
+  render: () => (
+    <ButtonGroup aria-label='Choices'>
+      <Button variant='outline'>Accept</Button>
+      or
+      <Button variant='outline'>Decline</Button>
+    </ButtonGroup>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('Accept')
+    await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('or')
+  }
+}

@@ -10,6 +10,7 @@
 import { Menubar as BaseMenubar } from '@base-ui/react/menubar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type ControlSize, controlSizes } from '../../styles/control.stylex'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -34,11 +35,13 @@ export interface MenubarProps extends Omit<
   React.ComponentProps<typeof BaseMenubar>,
   'className' | 'style'
 > {
+  /** Bar height and type, as the control scale; `md` is 36px. */
+  size?: ControlSize
   style?: stylex.StyleXStyles
 }
 
-export function Menubar({ style, ...props }: MenubarProps) {
-  return <BaseMenubar {...props} {...stylex.props(s.root, style)} />
+export function Menubar({ size = 'md', style, ...props }: MenubarProps) {
+  return <BaseMenubar {...props} {...stylex.props(controlSizes[size], s.root, style)} />
 }
 
 export const MenubarMenu = DropdownMenu

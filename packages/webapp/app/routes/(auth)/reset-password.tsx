@@ -1,9 +1,8 @@
 import { CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button } from 'uilibs/base/button'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
-import { LinkButton } from '#/components/link-button'
 import { StatusIcon } from '#/components/status-icon'
 import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
 import { resetPasswordSchema, resetSearchSchema } from '#/schemas/reset-password.schema'
@@ -75,7 +74,7 @@ function InvalidLink() {
         </p>
       </div>
 
-      <LinkButton to='/forgot-password' size='lg'>
+      <LinkButton render={<Link to='/forgot-password' />} size='lg'>
         Request a new link
       </LinkButton>
     </>

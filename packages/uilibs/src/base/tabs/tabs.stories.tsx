@@ -3,6 +3,11 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
+import {
+  DenseControlSizesColumn,
+  denseControlHeights,
+  expectControlHeights
+} from '../../contracts/control-sizes'
 import { container } from '../../styles/tokens.stylex'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
 
@@ -144,4 +149,42 @@ export const Icons: Story = {
       <TabsContent value='notifications'>Manage your owl post preferences.</TabsContent>
     </Tabs>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <DenseControlSizesColumn>
+      {(size) => (
+        <Tabs defaultValue='one'>
+          <TabsList size={size}>
+            <TabsTrigger value='one'>Charms</TabsTrigger>
+            <TabsTrigger value='two'>Potions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+    </DenseControlSizesColumn>
+  ),
+  // The list, tab padding included, is as tall as a control of its size.
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement, denseControlHeights)
+  }
+}
+
+export const LineControlSizes: Story = {
+  render: () => (
+    <DenseControlSizesColumn>
+      {(size) => (
+        <Tabs defaultValue='one'>
+          <TabsList size={size} variant='line'>
+            <TabsTrigger value='one'>Charms</TabsTrigger>
+            <TabsTrigger value='two'>Potions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+    </DenseControlSizesColumn>
+  ),
+  // The active tab's bar overlaps the list's bottom border, so the list is as tall as the tab.
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement, denseControlHeights)
+  }
 }

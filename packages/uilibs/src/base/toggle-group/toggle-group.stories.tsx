@@ -3,6 +3,11 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
+import {
+  DenseControlSizesColumn,
+  denseControlHeights,
+  expectControlHeights
+} from '../../contracts/control-sizes'
 import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
 const meta = {
@@ -183,4 +188,22 @@ export const Disabled: Story = {
       </ToggleGroupItem>
     </ToggleGroup>
   )
+}
+
+export const ControlSizes: Story = {
+  render: () => (
+    <DenseControlSizesColumn>
+      {(size) => (
+        <ToggleGroup size={size} variant='outline' defaultValue={['bold']}>
+          <ToggleGroupItem value='bold' aria-label={`Toggle charm ${size}`}>
+            Charm
+          </ToggleGroupItem>
+          <ToggleGroupItem value='italic' aria-label={`Toggle hex ${size}`}>
+            Hex
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </DenseControlSizesColumn>
+  ),
+  play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
 }

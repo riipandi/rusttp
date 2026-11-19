@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import {
   Pagination,
   PaginationContent,
@@ -73,11 +73,12 @@ export const Playground: Story = {
     </Pagination>
   ),
   play: async ({ canvas }) => {
-    // Links render as buttons; the active page carries aria-current.
-    await expect(canvas.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page')
-    await expect(canvas.getByRole('button', { name: '1' }).getAttribute('aria-current')).toBeNull()
-    await expect(canvas.getByRole('button', { name: 'Go to previous page' })).toBeInTheDocument()
-    await expect(canvas.getByRole('button', { name: 'Go to next page' })).toBeInTheDocument()
+    // Links are links, not buttons; the active page carries aria-current.
+    await expect(canvas.getByRole('link', { name: '2' })).toHaveAttribute('aria-current', 'page')
+    await expect(canvas.getByRole('link', { name: '1' }).getAttribute('aria-current')).toBeNull()
+    await expect(canvas.getByRole('link', { name: 'Go to previous page' })).toBeInTheDocument()
+    await expect(canvas.getByRole('link', { name: 'Go to next page' })).toBeInTheDocument()
+    await expect(within(canvas.getByRole('navigation')).queryAllByRole('button')).toHaveLength(0)
   }
 }
 

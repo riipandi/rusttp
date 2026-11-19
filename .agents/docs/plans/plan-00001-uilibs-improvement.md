@@ -21,8 +21,8 @@ phases:
       note: Textarea and FileUpload render through `Field.Control`; OTP slots name themselves (the root's `aria-label` becomes a hidden label for the first slot, because Base UI ignores `aria-label` there, and slot position comes from the DOM since Base UI keeps its index internal); Slider takes `thumbLabels` and defaults to one thumb (a numeric `value` used to render two); `label` and `button-name` are 0 under the gate, 34 stories still fail (86 at the start; the flaky `aspect-ratio` `Square` aside)
     - id: 5
       title: Actions — buttons, links, groups, toggles, tabs, menus
-      status: pending
-      note: —
+      status: committed
+      note: `LinkButton` takes `render={<a href />}` or `render={<Link to />}` (no router coupling in the library) and the webapp copy was deleted here, not in phase 9; Button `loading` imports `Spinner` from `extra`, the first base-to-extra import (no cycle); a loading Button is disabled but focusable and shows `aria-busy`; Toggle sizes moved to xs 28 / sm 32 / md 36 / lg 40 (the old sm 28, md 32, lg 36 shifted up, so a default Toggle grows 32 to 36) and Menubar defaults to 36 (was 32); Tabs `size` is on `TabsList`; ButtonGroup draws dividers for filled Buttons only (detected as `Button` with variant primary, secondary, destructive); `AlertDialogAction` closes, `event.preventBaseUIHandler()` keeps it open; e2e 19/19 on Chromium
     - id: 6
       title: Overlays and feedback — close parts, tones, spinner, labels
       status: pending

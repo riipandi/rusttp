@@ -1,8 +1,7 @@
 import { Mail } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Button } from 'uilibs/base/button'
-import { LinkButton } from '#/components/link-button'
+import { Button, LinkButton } from 'uilibs/base/button'
 import { StatusIcon } from '#/components/status-icon'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -26,7 +25,7 @@ function RouteComponent() {
 
       <div {...stylex.props(styles.actions)}>
         {/* Demo only: there is no mailer yet, so this stands in for opening the link. */}
-        <LinkButton to='/email-verified' size='lg'>
+        <LinkButton render={<Link to='/email-verified' />} size='lg'>
           I have verified my email
         </LinkButton>
         {/* Placeholder: resending needs the mailer. */}

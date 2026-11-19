@@ -1,7 +1,7 @@
 import { CircleCheck } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute } from '@tanstack/react-router'
-import { LinkButton } from '#/components/link-button'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { LinkButton } from 'uilibs/base/button'
 import { StatusIcon } from '#/components/status-icon'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -21,7 +21,7 @@ function RouteComponent() {
         </p>
       </div>
 
-      <LinkButton to='/login' size='lg'>
+      <LinkButton render={<Link to='/login' />} size='lg'>
         Continue to sign in
       </LinkButton>
     </>

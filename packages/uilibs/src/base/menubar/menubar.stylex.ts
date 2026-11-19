@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
+import { fontFamily, fontWeight } from '../../styles/tokens.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 
@@ -14,11 +14,13 @@ export const menubarStyles = stylex.create({
     display: 'flex',
     fontFamily: fontFamily.body,
     gap: unit.x0_5,
-    height: unit.x8,
+    // The height comes from `controlSizes`: the triggers fill what the border and padding leave.
+    paddingBlock: unit.x0_5,
     paddingInline: unit.x0_5
   },
   trigger: {
     alignItems: 'center',
+    alignSelf: 'stretch',
     backgroundColor: {
       default: 'transparent',
       ':hover': colors.backgroundNeutral,
@@ -30,13 +32,12 @@ export const menubarStyles = stylex.create({
     cursor: 'default',
     display: 'flex',
     fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
+    fontSize: 'inherit',
     outline: {
       default: 'none',
       ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
     },
-    paddingBlock: unit.x0_5,
     paddingInline: unit.x1_5,
     userSelect: 'none'
   },

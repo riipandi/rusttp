@@ -3,7 +3,6 @@ import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
 
 export const toggleStyles = stylex.create({
   root: {
@@ -19,7 +18,6 @@ export const toggleStyles = stylex.create({
       default: colors.foregroundNeutral,
       ':hover:not(:disabled)': colors.foregroundNeutral
     },
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
     display: 'inline-flex',
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
@@ -27,14 +25,6 @@ export const toggleStyles = stylex.create({
     gap: unit.x1,
     justifyContent: 'center',
     lineHeight: fontLineHeight.body2,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: stroke.ring2,
-    transitionDuration: duration.fast,
-    transitionProperty: 'background-color, border-color, color, opacity',
     userSelect: 'none',
     whiteSpace: 'nowrap'
   }
@@ -49,21 +39,16 @@ export const toggleVariants = stylex.create({
   }
 })
 
+// sm, md, and lg take height and type from `controlSizes`; the toggle keeps its own padding and
+// is at least as wide as it is tall.
 export const toggleSizes = stylex.create({
-  sm: {
+  xs: {
     fontSize: fontSize.caption1,
     height: unit.x7,
     minWidth: unit.x7,
     paddingInline: unit.x2
   },
-  md: {
-    height: unit.x8,
-    minWidth: unit.x8,
-    paddingInline: unit.x2
-  },
-  lg: {
-    height: unit.x9,
-    minWidth: unit.x9,
-    paddingInline: unit.x2
-  }
+  sm: { minWidth: unit.x8, paddingInline: unit.x2 },
+  md: { minWidth: unit.x9, paddingInline: unit.x2 },
+  lg: { minWidth: unit.x10, paddingInline: unit.x2 }
 })

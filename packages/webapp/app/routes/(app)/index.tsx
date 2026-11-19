@@ -1,8 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { LinkButton } from 'uilibs/base/button'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
 import { ThemeSwitcher } from 'uilibs/theme'
-import { LinkButton } from '#/components/link-button'
 import { Logo } from '#/components/logo'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/home.stylex'
@@ -34,7 +34,7 @@ function RouteComponent() {
             An axum server with Connect RPC and REST, a Vite and TanStack Router app, and a StyleX
             component library, built and tested together.
           </p>
-          <LinkButton to='/login' size='lg'>
+          <LinkButton render={<Link to='/login' />} size='lg'>
             Sign in
           </LinkButton>
         </section>

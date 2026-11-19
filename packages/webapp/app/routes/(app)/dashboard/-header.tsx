@@ -1,7 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
-import { Button } from 'uilibs/base/button'
-import { LinkButton } from '#/components/link-button'
+import { Button, LinkButton } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { UserMenu } from '#/routes/(app)/-user-menu'
 import { styles as layout } from '#/styles/element/layout.stylex'
@@ -20,7 +19,13 @@ export function DashboardHeader() {
             Rusttp
           </Link>
           <nav aria-label='Dashboard' {...stylex.props(styles.nav)}>
-            <LinkButton to='/dashboard' current variant='ghost' size='sm' style={styles.navCurrent}>
+            <LinkButton
+              render={<Link to='/dashboard' />}
+              current
+              variant='ghost'
+              size='sm'
+              style={styles.navCurrent}
+            >
               Overview
             </LinkButton>
             {sections.map((label) => (

@@ -10,11 +10,12 @@
 import { Toggle as BaseToggle } from '@base-ui/react/toggle'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type DenseControlSize, controlPress, controlSizes } from '../../styles/control.stylex'
 import { toggleStyles as s } from './toggle.stylex'
 import { toggleVariants, toggleSizes } from './toggle.stylex'
 
 export type ToggleVariant = 'default' | 'outline'
-export type ToggleSize = 'sm' | 'md' | 'lg'
+export type ToggleSize = DenseControlSize
 
 export interface ToggleProps extends Omit<
   React.ComponentProps<typeof BaseToggle>,
@@ -30,7 +31,14 @@ export function Toggle({ variant = 'default', size = 'md', style, ...props }: To
   return (
     <BaseToggle
       {...props}
-      {...stylex.props(s.root, toggleVariants[variant], toggleSizes[size], style)}
+      {...stylex.props(
+        controlPress.root,
+        s.root,
+        toggleVariants[variant],
+        size !== 'xs' && controlSizes[size],
+        toggleSizes[size],
+        style
+      )}
     />
   )
 }

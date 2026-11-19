@@ -2,10 +2,11 @@ import { Plus } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
-import { Spinner } from '../../extra/spinner'
 import { radius } from '../../styles/tokens.stylex'
-import { Button } from './button.component'
+import { Button, LinkButton } from './button.component'
+import { buttonSizes } from './button.stylex'
 
 const meta = {
   title: 'Base Components/Button',
@@ -16,10 +17,7 @@ const meta = {
       control: 'radio',
       options: ['primary', 'secondary', 'outline', 'ghost', 'destructive']
     },
-    size: {
-      control: 'radio',
-      options: ['xs', 'sm', 'md', 'lg', 'icon', 'iconXs', 'iconSm', 'iconLg']
-    },
+    size: { control: 'radio', options: Object.keys(buttonSizes) },
     disabled: { control: 'boolean' }
   },
   tags: [], // ['autodocs']
@@ -140,12 +138,43 @@ export const IconSizes: Story = {
 }
 
 export const Loading: Story = {
-  render: () => (
-    <Button disabled>
-      <Spinner />
+  args: { onClick: fn() },
+  render: (args) => (
+    <Button {...args} loading>
       Apparating…
     </Button>
-  )
+  ),
+  play: async ({ args, canvas }) => {
+    const button = canvas.getByRole('button', { name: 'Apparating…' })
+    // Busy but not disabled: it keeps its name and stays in the tab order.
+    await expect(button).toHaveAttribute('aria-busy', 'true')
+    await userEvent.tab()
+    await expect(button).toHaveFocus()
+    await userEvent.click(button)
+    await expect(args.onClick).not.toHaveBeenCalled()
+    // The spinner is hidden from assistive technology: one name, no second live region.
+    await expect(canvas.queryByRole('status')).toBeNull()
+  }
+}
+
+/** The label holds the width, so a button does not change size when it starts loading. */
+export const LoadingKeepsWidth: Story = {
+  name: 'Loading keeps its width',
+  render: () => {
+    const [loading, setLoading] = React.useState(false)
+    return (
+      <Button loading={loading} onClick={() => setLoading(true)}>
+        Cast the spell
+      </Button>
+    )
+  },
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'Cast the spell' })
+    const width = button.getBoundingClientRect().width
+    await userEvent.click(button)
+    await expect(button).toHaveAttribute('aria-busy', 'true')
+    await expect(button.getBoundingClientRect().width).toBe(width)
+  }
 }
 
 export const Disabled: Story = {
@@ -168,10 +197,31 @@ export const Rounded: Story = {
 export const AsLink: Story = {
   name: 'as link',
   render: () => (
-    <Button variant='outline' render={<a href='#docs' />} nativeButton={false}>
+    <LinkButton variant='outline' render={<a href='#docs' />}>
       Read the Daily Prophet
-    </Button>
-  )
+    </LinkButton>
+  ),
+  play: async ({ canvas }) => {
+    // Base UI gives a non-native button role="button"; a link button is announced as a link.
+    const link = canvas.getByRole('link', { name: 'Read the Daily Prophet' })
+    await expect(link).toHaveAttribute('href', '#docs')
+    await expect(canvas.queryByRole('button', { name: 'Read the Daily Prophet' })).toBeNull()
+  }
+}
+
+export const CurrentLink: Story = {
+  name: 'as current link',
+  render: () => (
+    <LinkButton variant='ghost' size='sm' current render={<a href='#overview' />}>
+      Overview
+    </LinkButton>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    )
+  }
 }
 
 export const StyleOverride: Story = {
