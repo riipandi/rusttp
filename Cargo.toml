@@ -20,5 +20,10 @@ unreachable_pub = "deny"
 private_interfaces = "deny"
 
 [workspace.dependencies]
+# Internal crates
 corelib = { path = "crates/corelib" }
+libmailer = { path = "crates/libmailer" }
+observer = { path = "crates/observer" }
+
+# External crates
 axum = "0.8.9"

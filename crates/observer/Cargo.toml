@@ -1,0 +1,19 @@
+[package]
+name = "observer"
+version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+license.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "observer"
+path = "src/lib.rs"
+
+[dependencies]
+axum.workspace = true

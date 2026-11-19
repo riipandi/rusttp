@@ -63,3 +63,6 @@ compose.env*
 terraform.tfstate*
 terraform.tfvars*
 !terraform.tfvars.example
+
+# Application
+apps/server/emails/*
