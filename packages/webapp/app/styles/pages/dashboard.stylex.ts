@@ -3,6 +3,26 @@ import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 
 export const styles = stylex.create({
+  headerStart: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: unit.x6
+  },
+  nav: {
+    display: {
+      default: 'none',
+      '@media (min-width: 660px)': 'flex'
+    },
+    alignItems: 'center',
+    gap: unit.x1
+  },
+  navCurrent: {
+    color: colors.foregroundNeutral,
+    backgroundColor: colors.backgroundNeutralFaded
+  },
+  navItem: {
+    color: colors.foregroundNeutralFaded
+  },
   main: {
     display: 'flex',
     flexDirection: 'column',
