@@ -25,7 +25,7 @@ function RouteComponent() {
         </div>
       </header>
 
-      <main {...stylex.props(layout.main, layout.container)}>
+      <main {...stylex.props(layout.main, layout.container, styles.main)}>
         <section {...stylex.props(styles.hero)}>
           <h1 {...stylex.props(styles.title)}>
             Rusttp serves its own React app from one Rust binary.
@@ -39,7 +39,7 @@ function RouteComponent() {
           </Button>
         </section>
 
-        <section {...stylex.props(styles.stack)}>
+        <section>
           <h2 {...stylex.props(styles.sectionTitle)}>What is inside</h2>
           <DescriptionList>
             <DescriptionTerm>Server</DescriptionTerm>
@@ -54,10 +54,10 @@ function RouteComponent() {
             <DescriptionDetails>
               Base UI primitives styled with StyleX, in light and dark.
             </DescriptionDetails>
-            <DescriptionTerm>Email</DescriptionTerm>
-            <DescriptionDetails>jsx-email templates, rendered to HTML and text.</DescriptionDetails>
-            <DescriptionTerm>Checks</DescriptionTerm>
-            <DescriptionDetails>Playwright end-to-end tests and Hurl API specs.</DescriptionDetails>
+            <DescriptionTerm>Tooling</DescriptionTerm>
+            <DescriptionDetails>
+              jsx-email templates, Playwright end-to-end tests, and Hurl API specs.
+            </DescriptionDetails>
           </DescriptionList>
         </section>
       </main>
