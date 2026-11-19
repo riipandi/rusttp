@@ -560,6 +560,52 @@ const styles = stylex.create({
 
 ---
 
+## Controls (`packages/uilibs`)
+
+The library's controls share recipes from `src/styles/control.stylex.ts`; a new control composes them instead of restating a box, a focus ring, or a disabled state.
+
+Compose in this order, so the later style wins: the recipe, the size, the component's own style, the caller's `style`.
+
+```tsx
+// Text entry: Input, Select, Combobox, Autocomplete, NumberField, Textarea, OTP slot…
+<BaseInput {...stylex.props(controlBase.root, controlSizes[size], s.root, style)} />
+
+// A wrapper that holds the real input (InputGroup, NumberField group, InputPhone, Combobox chips):
+<div {...stylex.props(controlBase.root, controlBase.within, controlSizes[size], s.group, style)} />
+
+// Press target: Button, Toggle, Tab, menu trigger
+<BaseButton {...stylex.props(controlPress.root, s.root, controlSizes[size], s.size, style)} />
+```
+
+- **Sizes.** `controlSizes` is `sm` 32, `md` 36, `lg` 40 (height, inline padding, type); `DenseControlSize` adds `xs` 28 for Button, Toggle, and Tabs, whose own size styles carry it. A size style that needs a different padding or width overrides it after `controlSizes`. A textarea uses its own `textareaSizes` (minimum heights), because a fixed `height` would stop it growing.
+- **Two focus recipes.** `controlBase` (text entry) draws the primary border and a 2px outline offset inward; `controlPress` draws a 2px ring outside the box. A tab keeps its ring inside its pill (`outlineOffset` negative) because the pill would clip an outside ring. The 3px halo remains only on the Slider thumb.
+- **State model.** `controlBase` reads `:focus-visible`, `[data-invalid]` (the critical border), and `:disabled` or `[data-disabled]` (half opacity, not-allowed cursor); `.within` reads the same from descendants with `:has(:focus-visible)` and `:has([data-invalid])`, and dims for `[data-disabled]` or a disabled `input`/`textarea` inside, never for a disabled stepper or addon button alone. Disabled is `opacity: 0.5`, not the removed disabled color tokens.
+- **Control edge.** `colors.borderControl` is the edge of a text control, Checkbox, Radio, and the off Switch; dividers and cards use `borderNeutralFaded`.
+- **Do not set a fixed `height` on a Field-wrapped control beside others**: the size scale is what keeps a Button and an input equal, and the composition story in `src/contracts/control-sizes.stories.tsx` asserts it.
+
+### Contrast (measured, sRGB blending as a browser composites)
+
+Text pairs clear 4.5:1, control edges 3:1. Recompute with the OKLCH values in `colors.stylex.ts` and `themes.ts` when a token changes.
+
+| Pair | Light | Dark |
+| --- | --- | --- |
+| `foregroundNeutral` on `backgroundPage` | 16.45 | 17.28 |
+| `foregroundNeutralFaded` on `backgroundPage` | 5.75 | 8.42 |
+| `foregroundNeutralFaded` on `backgroundNeutral` | 4.82 | 5.50 |
+| `foregroundPositive` on `backgroundNeutral` | 4.73 | 5.96 |
+| `foregroundPrimary` on `backgroundPage` | 5.83 | 8.59 |
+| `foregroundCritical` on `backgroundPage` | 6.15 | 7.70 |
+| `foregroundWarning` on `backgroundPage` | 5.62 | 8.59 |
+| `onBrand` on `backgroundPrimary` | 5.15 | 5.15 |
+| `onBrand` on `backgroundPrimaryHighlighted` (Button hover) | 6.47 | 4.55 |
+| `onBackgroundCritical` on `backgroundCritical` | 4.57 | 4.57 |
+| `onBackgroundCritical` on `backgroundCriticalHighlighted` (Button hover) | 5.86 | 5.51 |
+| `foregroundNeutral` on `backgroundNeutralHighlighted` (secondary hover) | 12.66 | 9.64 |
+| `borderControl` on `backgroundPage` | 3.36 | 3.84 |
+| `borderControl` on `backgroundElevationOverlay` | 3.36 | 3.25 |
+
+---
+
 ## More resources
 
 - Official documentation: <https://stylexjs.com>

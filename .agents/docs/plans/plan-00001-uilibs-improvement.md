@@ -45,8 +45,8 @@ phases:
       note: `docs/` n/a (it covers running and deploying the product; the library is source-shared inside the repo and its guidance lives in the agent docs and Storybook); `rules.md` (UI library contract and traps), `shape.md` (the gate, `src/contracts/`; the stale `src/types/` was removed), `architecture.md` (one decision record for D1 to D13, with the deviations); one unverified claim about `Field.Control` and `ref` was dropped before commit
     - id: 11
       title: LLM docs sync
-      status: pending
-      note: —
+      status: committed
+      note: `ui-components.md` (every changed prop and the new `LinkButton`, `tone`, `loading`, `size`, `labels`, the removed tokens), `stylex-authoring.md` (a "Controls" section with the composition order, the focus recipes, and the measured contrast table), `AGENTS.md` (the UI rule), the `index.md` descriptions; the plan, audit, and handover rows wait for phase 12 because they move with the archive; `PROMPTS.txt` names no changed rule
     - id: 12
       title: Handover and ledger close
       status: pending
