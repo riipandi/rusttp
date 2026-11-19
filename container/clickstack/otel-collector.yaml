@@ -2,9 +2,10 @@
 # team and sources (CUSTOM_OTELCOL_CONFIG_FILE in the supervisor template).
 #
 # The generated config scrapes the collector itself and ClickHouse into its own
-# metrics pipeline; this adds a second receiver for the Redis exporter and a
-# third for cAdvisor, each with its own pipeline, so naming those scrapes
-# `redis`/`cadvisor` cannot relabel anything else.
+# metrics pipeline; this adds a second receiver for the Redis exporter, a third
+# for cAdvisor, and a fourth for the PostgreSQL exporter, each with its own
+# pipeline, so naming those scrapes `redis`/`cadvisor`/`postgres` cannot relabel
+# anything else.
 receivers:
   prometheus/redis:
     config:
@@ -22,6 +23,14 @@ receivers:
           static_configs:
             - targets: ["cadvisor:8080"]
 
+  prometheus/postgres:
+    config:
+      scrape_configs:
+        - job_name: postgres
+          scrape_interval: 30s
+          static_configs:
+            - targets: ["postgres-exporter:9187"]
+
 processors:
   # Dashboards group by ServiceName; without this every Redis series
   # would land under the collector's own service name.
@@ -37,6 +46,12 @@ processors:
         value: cadvisor
         action: upsert
 
+  resource/postgres:
+    attributes:
+      - key: service.name
+        value: postgres
+        action: upsert
+
 service:
   pipelines:
     metrics/redis:
@@ -46,4 +61,8 @@ service:
     metrics/cadvisor:
       receivers: [prometheus/cadvisor]
       processors: [memory_limiter, resource/cadvisor, batch]
+      exporters: [clickhouse]
+    metrics/postgres:
+      receivers: [prometheus/postgres]
+      processors: [memory_limiter, resource/postgres, batch]
       exporters: [clickhouse]

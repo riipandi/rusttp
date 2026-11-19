@@ -1,0 +1,184 @@
+{
+    "name": "PostgreSQL Database",
+    "tags": ["rusttp", "infra", "postgres"],
+    "tiles": [
+        {
+            "name": "Server up",
+            "x": 0,
+            "y": 0,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": { "output": "number", "mantissa": 0 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT if(count() = 0, 0, max(Value)) AS up FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_up'"
+            }
+        },
+        {
+            "name": "Database size",
+            "x": 6,
+            "y": 0,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": { "output": "byte", "mantissa": 1 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT sum(latest) AS bytes FROM (SELECT max(Value) AS latest FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_database_size_bytes' AND Attributes['datname'] NOT IN ('template0', 'template1') GROUP BY Attributes['datname'])"
+            }
+        },
+        {
+            "name": "Cache hit rate (%)",
+            "x": 12,
+            "y": 0,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": { "output": "number", "mantissa": 2 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT round(100 * maxIf(Value, MetricName = 'pg_stat_database_blks_hit') / greatest(maxIf(Value, MetricName = 'pg_stat_database_blks_hit') + maxIf(Value, MetricName = 'pg_stat_database_blks_read'), 1), 2) AS hit_pct FROM $__sourceTable(sum) WHERE $__timeFilter(TimeUnix) AND MetricName IN ('pg_stat_database_blks_hit', 'pg_stat_database_blks_read')"
+            }
+        },
+        {
+            "name": "Active backends",
+            "x": 18,
+            "y": 0,
+            "w": 6,
+            "h": 4,
+            "config": {
+                "displayType": "number",
+                "numberFormat": { "output": "number", "mantissa": 0 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT sum(latest) AS backends FROM (SELECT max(Value) AS latest FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_stat_database_numbackends' GROUP BY Attributes['datname'])"
+            }
+        },
+        {
+            "name": "Transactions per second",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "number", "mantissa": 2, "thousandSeparated": true },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, MetricName AS series, round((max(Value) - min(Value)) / $__interval_s, 2) AS per_s FROM $__sourceTable(sum) WHERE $__timeFilter(TimeUnix) AND MetricName IN ('pg_stat_database_xact_commit', 'pg_stat_database_xact_rollback') GROUP BY ts, series ORDER BY ts"
+            }
+        },
+        {
+            "name": "Connections by state",
+            "x": 12,
+            "y": 4,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "number", "mantissa": 0 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, Attributes['state'] AS series, max(Value) AS backends FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_stat_activity_count' AND Attributes['datname'] NOT IN ('template0', 'template1') GROUP BY ts, series ORDER BY ts"
+            }
+        },
+        {
+            "name": "Database size by database",
+            "x": 0,
+            "y": 11,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "byte", "mantissa": 1 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, Attributes['datname'] AS series, max(Value) AS bytes FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_database_size_bytes' AND Attributes['datname'] NOT IN ('template0', 'template1') GROUP BY ts, series ORDER BY ts"
+            }
+        },
+        {
+            "name": "Deadlocks and conflicts per minute",
+            "x": 12,
+            "y": 11,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "number", "mantissa": 0 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, MetricName AS series, round((max(Value) - min(Value)) * 60 / $__interval_s, 0) AS per_minute FROM $__sourceTable(sum) WHERE $__timeFilter(TimeUnix) AND MetricName IN ('pg_stat_database_deadlocks', 'pg_stat_database_conflicts') GROUP BY ts, series ORDER BY ts"
+            }
+        },
+        {
+            "name": "Locks by mode",
+            "x": 0,
+            "y": 18,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "number", "mantissa": 0 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, Attributes['mode'] AS series, max(Value) AS locks FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_locks_count' GROUP BY ts, series ORDER BY ts"
+            }
+        },
+        {
+            "name": "Longest running transaction (s)",
+            "x": 12,
+            "y": 18,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "line",
+                "numberFormat": { "output": "number", "mantissa": 1 },
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT $__timeInterval(TimeUnix) AS ts, round(max(Value), 1) AS seconds FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName = 'pg_stat_activity_max_tx_duration' GROUP BY ts ORDER BY ts"
+            }
+        },
+        {
+            "name": "Tuple throughput and temp I/O",
+            "x": 0,
+            "y": 25,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "table",
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT MetricName AS metric, round(max(Value), 0) AS value, max(TimeUnix) AS last_sample FROM $__sourceTable(sum) WHERE $__timeFilter(TimeUnix) AND MetricName IN ('pg_stat_database_tup_fetched', 'pg_stat_database_tup_inserted', 'pg_stat_database_tup_updated', 'pg_stat_database_tup_deleted', 'pg_stat_database_tup_returned', 'pg_stat_database_temp_bytes', 'pg_stat_database_temp_files') GROUP BY metric ORDER BY metric"
+            }
+        },
+        {
+            "name": "Scrape health",
+            "x": 12,
+            "y": 25,
+            "w": 12,
+            "h": 7,
+            "config": {
+                "displayType": "table",
+                "configType": "sql",
+                "source": "Metrics",
+                "connection": "Local ClickHouse",
+                "sqlTemplate": "SELECT MetricName AS metric, round(max(Value), 3) AS value, max(TimeUnix) AS last_sample FROM $__sourceTable(gauge) WHERE $__timeFilter(TimeUnix) AND MetricName IN ('pg_up', 'pg_exporter_last_scrape_error', 'pg_exporter_last_scrape_duration_seconds', 'pg_wal_size_bytes', 'up') GROUP BY metric ORDER BY metric"
+            }
+        }
+    ]
+}

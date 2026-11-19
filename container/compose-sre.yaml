@@ -12,8 +12,9 @@
 #
 # `clickstack-init` registers the account, provisions clickstack/dashboards and
 # clickstack/searches as favorites, and clickstack/alerts, which email the
-# Mailpit inbox (plus CLICKSTACK_ALERT_WEBHOOK_URL when set); `cadvisor`
-# and `redis-exporter` are scraped by the collector (clickstack/otel-collector.yaml).
+# Mailpit inbox (plus CLICKSTACK_ALERT_WEBHOOK_URL when set); `cadvisor`,
+# `postgres-exporter`, and `redis-exporter` are scraped by the collector
+# (clickstack/otel-collector.yaml).
 ###
 
 x-common: &common
@@ -120,6 +121,22 @@ services:
     privileged: true
     healthcheck:
       test: ["CMD-SHELL", "nc -vz 127.0.0.1 8080 || exit 1"]
+
+  # PostgreSQL metrics, scraped into the same pipeline.
+  postgres-exporter:
+    <<: *common
+    image: docker.io/prometheuscommunity/postgres-exporter:${POSTGRES_EXPORTER_VERSION:-v0.21.1}
+    hostname: postgres-exporter
+    expose: ["9187"]
+    environment:
+      DATA_SOURCE_URI: pgsql:5432/rusttp?sslmode=disable
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: securedb
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "/bin/postgres_exporter", "--version"]
+    depends_on:
+      pgsql: { condition: service_healthy }
 
   redis-exporter:
     <<: *common
