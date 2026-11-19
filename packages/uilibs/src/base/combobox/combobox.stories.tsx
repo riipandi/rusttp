@@ -157,6 +157,10 @@ export const Multiple: Story = {
         </ComboboxContent>
       </Combobox>
     )
+  },
+  // A chip's remove button names the chip it removes.
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Remove Hogwarts' })).toBeInTheDocument()
   }
 }
 

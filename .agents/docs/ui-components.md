@@ -29,7 +29,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Button** | `uilibs/base/button` | `variant` (default `primary`) and `size` (`xs`, `sm`, `md` default, `lg`, plus `icon-xs`/`icon-sm`/`icon-md`/`icon-lg`); `loading` shows a spinner over the label, keeps the width and the name, and sets `aria-busy` (disabled but focusable). A link is a `LinkButton` (`render={<a href='…' />}` or `render={<Link to='…' />}`, `current` for `aria-current='page'`), which restores `role='link'`; `Button` itself can render another tag with `nativeButton={false}`, but it is then announced as a button. |
 | **Checkbox** | `uilibs/base/checkbox` | Checkbox and checkbox group. |
 | **Collapsible** | `uilibs/base/collapsible` | One expandable panel. |
-| **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. `size` on `ComboboxInput`, `ComboboxTrigger`, and `ComboboxChips`; `labels` (`clear`, `open`) on the input and `removeLabel` on a chip. Name a standalone input or trigger with `aria-label`. |
+| **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. `size` on `ComboboxInput`, `ComboboxTrigger`, and `ComboboxChips`; `labels` (`clear`, `open`) on the input and `removeLabel` on a chip (default `Remove <chip text>`). Name a standalone input or trigger with `aria-label`. |
 | **Context Menu** | `uilibs/base/context-menu` | Menu at the pointer on right click or long press; its items are the dropdown menu's. |
 | **Dialog** | `uilibs/base/dialog` | Modal popup over the page; `labels.close` names the built-in close button (`showCloseButton={false}` removes it). |
 | **Drawer** | `uilibs/base/drawer` | Panel sliding in from an edge. |

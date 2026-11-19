@@ -182,17 +182,20 @@ export function ComboboxChips({
 export function ComboboxChip({
   style,
   children,
-  removeLabel = 'Remove',
+  removeLabel,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Chip>, 'className' | 'style'> &
   StyleProp & {
-    /** Accessible name of the remove button. Defaults to `Remove`. */
+    /** Accessible name of the remove button. Defaults to `Remove <chip text>` for a text chip, else `Remove`. */
     removeLabel?: string
   }) {
   return (
     <BaseCombobox.Chip {...props} {...stylex.props(s.chip, style)}>
       {children}
-      <BaseCombobox.ChipRemove aria-label={removeLabel} {...stylex.props(s.chipRemove)}>
+      <BaseCombobox.ChipRemove
+        aria-label={removeLabel ?? (typeof children === 'string' ? `Remove ${children}` : 'Remove')}
+        {...stylex.props(s.chipRemove)}
+      >
         <X size={10} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ChipRemove>
     </BaseCombobox.Chip>
