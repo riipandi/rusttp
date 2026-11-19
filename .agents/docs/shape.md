@@ -14,7 +14,7 @@ The repository's shape: the layout, the toolchain, and the commands. Read once; 
 | `api/connect/`          | Protobuf contracts.                                                                                                                                                                                             |
 | `api/specs/<area>/`     | Hurl HTTP specs, one directory per area.                                                                                                                                                                        |
 | `packages/`             | pnpm workspace: `webapp`, `emails`, `e2e`.                                                                                                                                                                      |
-| `scripts/*.just`        | Task recipes imported by `justfile` (`task-development`, `task-quality`, `task-container`).                                                                                                                 |
+| `scripts/*.just`        | Task recipes imported by `justfile` (`task-development`, `task-quality`, `task-container`).                                                                                                                     |
 | `container/`, `deploy/` | Compose and deployment templates.                                                                                                                                                                               |
 | `.agents/docs/`         | Agent ledger.                                                                                                                                                                                                   |
 | `docs/`                 | Human-facing documentation.                                                                                                                                                                                     |
@@ -32,14 +32,14 @@ The repository's shape: the layout, the toolchain, and the commands. Read once; 
 
 Run every gate through `just` (`justfile` imports `scripts/task-*.just`; `just` alone lists the recipes).
 
-| Gate | Recipe | Runs |
-| --- | --- | --- |
-| Format | `just format` / `just format-check` | `cargo fmt --all` + `rumdl fmt .` (`--check` for both; config in `.rumdl.toml`) |
-| Check | `just check` | `cargo check --workspace --all-targets` |
-| Lint | `just lint` | `cargo clippy --workspace --all-targets -- -D warnings` |
-| Test | `just test` | `cargo nextest run --workspace` (falls back to `cargo test --workspace`) |
-| All of the above | `just verify` | format-check, check, lint, test |
-| API specs | `just test-api [url]` | `hurl --test` over `api/specs/**/*.hurl`, `base_url` defaults to `http://127.0.0.1:3000`; needs a running server |
-| Feature combinations | — | `cargo hack check --each-feature -p rusttp-server`, only when `cargo-hack` is installed |
+| Gate                 | Recipe                              | Runs                                                                                                             |
+| -------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Format               | `just format` / `just format-check` | `cargo fmt --all` + `rumdl fmt .` (`--check` for both; config in `.rumdl.toml`)                                  |
+| Check                | `just check`                        | `cargo check --workspace --all-targets`                                                                          |
+| Lint                 | `just lint`                         | `cargo clippy --workspace --all-targets -- -D warnings`                                                          |
+| Test                 | `just test`                         | `cargo nextest run --workspace` (falls back to `cargo test --workspace`)                                         |
+| All of the above     | `just verify`                       | format-check, check, lint, test                                                                                  |
+| API specs            | `just test-api [url]`               | `hurl --test` over `api/specs/**/*.hurl`, `base_url` defaults to `http://127.0.0.1:3000`; needs a running server |
+| Feature combinations | —                                   | `cargo hack check --each-feature -p rusttp-server`, only when `cargo-hack` is installed                          |
 
-Other recipes: `dev` (runs `serve` in a watchexec restart loop), `run <command>` (any app CLI command, e.g. `just run serve --bind 0.0.0.0:3000`), `build` (release) and `start` (runs `serve` from the release build), `deps`, and the `compose-*` (up, down, restart, exec, cleanup) / `docker-*` (build, images, run, shell, push) container tasks (`container/compose.yaml`, `deploy/Dockerfile`). Utility: `generate-key`, `cleanup`.
+Other recipes: `dev` (runs `serve` in a watchexec restart loop), `run <command>` (any app CLI command, e.g. `just run serve --bind 0.0.0.0:3000`), `build` (release, then prints the binary size) and `start` (runs `serve` from the release build), `deps`, and the `compose-*` (up, down, restart, exec, cleanup) / `docker-*` (build, images, run, shell, push) container tasks (`container/compose.yaml`, `deploy/Dockerfile`). Utility: `generate-key`, `cleanup`.

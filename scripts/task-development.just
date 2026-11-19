@@ -19,6 +19,7 @@ run +args:
 [group('development')]
 build *args:
     @cargo build --release {{ args }}
+    @ls -lh target/release/{{ app_bin }} | awk '{printf "{{ BOLD + GREEN }}    %s{{ NORMAL }} %s (%s)\n", "Output", $5, $NF}'
 
 [doc('Start the server from the release build')]
 [group('development')]
