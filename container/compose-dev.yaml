@@ -15,7 +15,7 @@ x-common: &common
 services:
   pgsql:
     <<: *common
-    image: docker.io/postgres:${PGSQL_VERSION:-18-alpine}
+    image: docker.io/postgres:${PGSQL_VERSION:-19rc2-alpine}
     hostname: pgsql
     ports: ["${PGSQL_PORT:-5432}:5432"]
     volumes: ["pgsql_data:/var/lib/postgresql:rw"]

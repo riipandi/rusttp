@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-19T17:15:00+07:00
+updated: 2026-11-20T03:20:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -25,7 +25,9 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-None yet.
+| File                                  | Status            | Subject                                                                                                                       |
+| ------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `plan-00001-uilibs-improvement.md`    | awaiting-approval | `packages/uilibs`: one control size scale, `ref` and Field wiring, AA tokens, tones, a11y gate on; 13 phases (from audit-00001). |
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -45,4 +47,8 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` skill. None yet.
+Point-in-time reviews written by the `deep-audit` skill.
+
+| File                       | Status    | Subject                                                                                                       |
+| -------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| `audit-00001-uilibs.md`    | in_review | `packages/uilibs`, every component: 26 findings (3 high, 15 medium, 6 low, 2 info); the plan above fixes them. |

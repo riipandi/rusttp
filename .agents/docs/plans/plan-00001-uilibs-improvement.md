@@ -1,0 +1,172 @@
+---
+status: awaiting-approval
+created: 2026-11-20T03:12:00+07:00
+updated: 2026-11-20T03:12:00+07:00
+phases:
+    - id: 1
+      title: Contracts — `ref` typing and the opt-in a11y gate switch
+      status: pending
+      note: —
+    - id: 2
+      title: Tokens and the shared control recipe
+      status: pending
+      note: —
+    - id: 3
+      title: Form controls adopt the size scale and one state model
+      status: pending
+      note: —
+    - id: 4
+      title: Field wiring and accessible names
+      status: pending
+      note: —
+    - id: 5
+      title: Actions — buttons, links, groups, toggles, tabs, menus
+      status: pending
+      note: —
+    - id: 6
+      title: Overlays and feedback — close parts, tones, spinner, labels
+      status: pending
+      note: —
+    - id: 7
+      title: Content and composite widgets — calendar, tables, items, kanban, sortable
+      status: pending
+      note: —
+    - id: 8
+      title: Icons, duplication, and hygiene
+      status: pending
+      note: —
+    - id: 9
+      title: Tests, the a11y gate, and the webapp consumer sweep
+      status: pending
+      note: —
+    - id: 10
+      title: Docs sync
+      status: pending
+      note: —
+    - id: 11
+      title: LLM docs sync
+      status: pending
+      note: —
+    - id: 12
+      title: Handover and ledger close
+      status: pending
+      note: —
+    - id: 13
+      title: Final validation
+      status: pending
+      note: —
+---
+
+# Make the UI library compose, read, and operate consistently — `packages/uilibs` improvement
+
+## Objective
+
+`audit-00001-uilibs` found 26 defects in the UI library: no shared control size scale (an `lg` Button sits on a 36px Input), `ref` rejected by every wrapper, controls that are not Field controls, three token-level contrast failures, and 81 stories with real axe violations that the `todo` gate never fails. This plan fixes composition, accessibility, and functionality across every component in thirteen atomic phases and turns the a11y gate on. It does not change the design language (color roles, radius, type, StyleX architecture) or the Base UI primitives, and it keeps no backward compatibility: renamed props and tokens are renamed everywhere, including `packages/webapp`.
+
+## Current state (verified in the tree, 2026-11-20, `e39decb`)
+
+- **Button has four sizes, text controls have one** — `packages/uilibs/src/base/button/button.stylex.ts:83-86` (28/32/36/40, `lg` at 16px); `base/input/input.stylex.ts:22`, `base/select/select.stylex.ts:36`, `base/combobox/combobox.stylex.ts:22,82,110`, `base/autocomplete/autocomplete.stylex.ts:18`, `base/number-field/number-field.stylex.ts:20`, `extra/input-phone/input-phone.stylex.ts:22`, `extra/input-group/input-group.stylex.ts:62` are fixed at `unit.x9`; `base/otp-field/otp-field.stylex.ts:37` is 32px. `packages/webapp/app/components/social-buttons.tsx:27` pairs `size='lg'` buttons with those inputs (audit F-01).
+- **No wrapper accepts `ref`** — `React.ComponentPropsWithoutRef` is used ~100 times (`grep -rc`, `src`), `ComponentPropsWithRef` once; a `<Input ref>` probe fails `tsrs` (audit F-02); `extra/textarea/textarea.component.tsx:30` overwrites a spread `ref`.
+- **Textarea is a plain `<textarea>`** — inside `<Field invalid>` it gets no `data-invalid`, `aria-invalid`, or `aria-describedby` (probe, audit F-03).
+- **Contrast** — `styles/colors.stylex.ts:54-55` borders are 1.08:1 and 1.13:1 in light, 2.47:1 and 3.03:1 in dark; `base/button/button.stylex.ts:39,76` hover mixes to 4.29:1 and 4.04:1; `foregroundNeutralFaded` on `backgroundNeutral` is 4.24:1 (audit F-04 to F-06). `backgroundPrimaryHighlighted` and `backgroundCriticalHighlighted` have no usages (`grep -rn "colors\.<token>"` over `uilibs/src` and `webapp/app`: 0).
+- **The a11y gate is off** — `packages/uilibs/.storybook/preview.tsx` sets `a11y.test: 'todo'`; the axe sweep over 385 stories finds 81 (light) and 53 (dark) real violations (audit baseline).
+- **Baseline** — `just typecheck`, `pnpm lint`, `pnpm format:check` pass; `pnpm --filter uilibs test` is 384/385 with one flaky layout assertion (`extra/aspect-ratio/aspect-ratio.stories.tsx:40`).
+- **The webapp already patches two library faults** — `packages/webapp/app/components/link-button.tsx` (`role='link'` over `Button`, commit `aa48bb5`) and the form fields' hint and error layout.
+- **Absence claims** — no `size` prop exists on Input, Select, Combobox, Autocomplete, NumberField, InputGroup, InputPhone, Textarea, OTP (`grep -n "size" <component>.component.tsx`: no hit); no `loading` prop on Button; no `tone` on Alert, Badge, Toast.
+
+## Decisions
+
+- **D1 (2026-11-20): one `ControlSize` scale, `sm 32 / md 36 / lg 40`, default `md`, shared by Button, Input, Select, Combobox, Autocomplete, NumberField, InputGroup (+ Password, Phone), Textarea (min height), OTP slot, Toggle, ToggleGroup, Tabs, and Menubar triggers; `xs 28` exists only on Button, Toggle, and Tabs.** The defaults do not change (`md` stays 36), so only mixed-size rows move. The cost: `lg` text controls take the 16px type `lg` Button already uses, so the auth forms switch to `lg` inputs and `lg` buttons together.
+  Rejected: drop Button `xs` and `lg` — breaks toolbars and the webapp's `lg` buttons for no gain.
+  Rejected: `xs` on every control — a 28px text field is a cramped target and no consumer asks for it. (This is audit open question 2; flip it at approval by editing the `ControlSize` union only.)
+- **D2 (2026-11-20): the shared recipe is a StyleX module, `src/styles/control.stylex.ts`, exporting `controlSizes` (height, inline padding, type size) and `controlBase` (surface, border, radius, focus, invalid, disabled); components compose it before their own style, the way `popupFx` is composed.** One place changes all controls; it uses only compile-time StyleX, no runtime.
+  Rejected: a `--control-height` CSS variable — hides the size from the type system and tree-shakes per size no better.
+  Rejected: a `<Control>` wrapper component — Base UI parts each render their own element and cannot all be children of one wrapper.
+- **D3 (2026-11-20): two focus recipes, by control kind — text-entry controls get the primary border plus the 2px inset outline; press targets (Button, Toggle, Tab, Checkbox, Radio, Switch, menu triggers) get the 2px outside ring. The 3px halo is kept only as the Slider thumb hover feedback.** An inset ring on a 32px button clips its label; an outside ring on a field collides with its neighbours.
+  Rejected: a single recipe — both clip or collide somewhere in the audit's matrix (F-18).
+- **D4 (2026-11-20): disabled is one recipe (`opacity: 0.5` and the not-allowed cursor) in the shared file.** It matches the 25 existing sites, so no visual change; unused disabled tokens (`backgroundDisabled`, `backgroundDisabledFaded`) are deleted.
+  Rejected: switch to the disabled color tokens — a color change on every control for no consumer need, and the contrast rules exempt disabled controls.
+- **D5 (2026-11-20): a new `borderControl` token at ≥3:1 against `backgroundPage` and `backgroundElevation*` in both themes, used for control edges only (Input family, Checkbox, Radio, the off Switch track); dividers and cards keep `borderNeutralFaded`.** Fixes WCAG 1.4.11 without making the whole page heavier. This is audit open question 1; the owner may pick another option at approval, and only phase 2's token value changes.
+  Rejected: raise `borderNeutral` globally — heavier cards, tables, and separators everywhere.
+  Rejected: leave it — a known AA failure under every form.
+- **D6 (2026-11-20): wrappers are typed with `React.ComponentProps<typeof X>` (React 19 `ref` as a prop); no `forwardRef`.** Base UI 1.9 already takes `ref` as a prop; a mechanical codemod, one commit, no shim.
+  Rejected: `forwardRef` wrappers — deprecated in React 19 and a second code path.
+- **D7 (2026-11-20): visible and accessible strings are per-component `labels` props with English defaults; no locale context.** The only consumer is English; `data-grid-i18n.tsx` stays as it is.
+  Rejected: a `UIProvider` locale context — a global mechanism for no second locale, and it breaks the one-folder-per-component anatomy.
+- **D8 (2026-11-20): Alert, Badge, and Toast take a `tone` (`neutral | primary | positive | warning | critical`); `destructive` variants become `tone='critical'`; Alert defaults to `role='status'` and takes `role='alert'` explicitly; Button gains no new variants.** The color roles already exist in the tokens and in 6 to 7 usages each.
+  Rejected: add positive and warning Button variants — nothing in the repo needs them.
+- **D9 (2026-11-20): `LinkButton` moves into `uilibs/base/button` (a link render path with `role='link'`), Pagination uses it, and the webapp copy is deleted.** One implementation of the workaround for Base UI's `role="button"` on non-native renders.
+  Rejected: leave it in the webapp — Pagination needs it too and the library would keep the fault.
+- **D10 (2026-11-20): every inline `<svg>` glyph becomes `Icon` + `@keyline-icons/react` (already a dependency); the close button is one internal part used by Dialog, Sheet, and Toast.** Brand icons in `src/icons` stay as they are.
+  Rejected: keep tiny glyphs inline — the audit counts 35 copies with two stroke widths.
+- **D11 (2026-11-20): `ContextMenu` reuses the `DropdownMenu` item parts, as `Menubar` already does, but only after phase 8 verifies in the locked Base UI source that the two item components are the same.** If they differ, the duplication stays and is recorded.
+  Rejected: a new shared menu module — a third copy of the same parts.
+- **D12 (2026-11-20): the a11y gate is switched, not rewritten: phase 1 makes `a11y.test` read an env switch (`todo` default, `error` opt-in) so each phase can burn violations down against the real runner; phase 9 makes `error` the default with a documented allowlist (Base UI focus guards).** No new dependency; the audit's standalone axe script stays outside the tree.
+  Rejected: commit the sweep script — it needs `axe-core` as a declared dependency, which needs the owner's approval.
+- **D13 (2026-11-20): no new top-level directory and no new dependency.** The shared recipe lives in `src/styles/`, the link button in `base/button`, the close part inside `base/dialog`.
+
+## Shape and enforcement points
+
+| What                                                       | Where                                                  | The record                                                                       |
+| ---------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `ControlSize`, `controlSizes`, `controlBase`, `borderControl` | `ui-components.md` (How to use and extend), `stylex-authoring.md` (a "Controls" section) | The size scale, the recipe composition order, which controls take `size`         |
+| The `ref` contract and the `labels` convention             | `rules.md` (a "UI components" contract)                | Wrappers take `ref` as a prop; every built-in string has a `labels` override     |
+| The a11y gate                                              | `shape.md` (Commands), `rules.md`                      | `pnpm --filter uilibs test` fails on axe violations; the allowlist and why       |
+| `tone`, `LinkButton`, `loading`                            | `ui-components.md` inventory rows                      | The renamed and new props, per component                                         |
+| Reasoning for D1 to D13                                    | `architecture.md` (UI library decision record)         | The rejected alternatives above, condensed                                       |
+| The closed findings                                        | `audit-00001-uilibs.md` statuses, then the audit moves to the archive | Each finding's `fixed` status names its phase and commit                         |
+
+## Execution rules
+
+- **Atomic commit per phase** is authorized; each phase's entry below names its commit message. The owner granted autonomous commits for the working session of this plan on 2026-11-20, so once execution starts each green phase commits itself, with explicit paths (never `git add -A`) and without `--no-verify`.
+- **Execution waits for the owner's explicit start** ("continue with phase 1"). When all phases have landed, the agent stops and recommends the closing commit message with its paths; it does not commit the closing state (the audit and plan archive moves) on its own.
+- **No backward compatibility.** A renamed prop, token, or story control is renamed in the library, its stories, the webapp, and the docs in the same phase; no alias, shim, or deprecated export remains.
+- **No new dependency and no new top-level directory** (D13). Sample data in stories stays Dan Brown and Harry Potter (`rules.md`, "Sample data").
+- **Every phase reads its docs first**: `ui-components.md` and `stylex-authoring.md` before editing a component or a `*.stylex.ts`.
+- **The owner's parallel work is untouchable:** none named for this plan; `git status` is checked at the start of each phase and any file the agent did not edit is left alone.
+- **Per-phase validation runs before each phase's commit**: `just typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm --filter uilibs test`, plus the phase's own line below. From phase 1 on, `STORYBOOK_A11Y_GATE=error pnpm --filter uilibs test` lists the remaining a11y failures; the count must not rise.
+- **E2E only when relevant**: phases 3, 5, and 9 change components the webapp renders and run `just e2e-test`; other phases record E2E n/a.
+- **The riskiest phase is 3** (every text control's box changes). Undo: `git revert` of that one commit; phases 1 and 2 stay valid because they add contracts without changing a rendered pixel.
+
+## Phases
+
+1. **Contracts — `ref` typing and the opt-in a11y gate switch** (F-02, F-24 in part). Type every wrapper with `React.ComponentProps<…>` instead of `ComponentPropsWithoutRef` (D6); merge the internal and external ref in `Textarea`; make `.storybook/preview.tsx` read `STORYBOOK_A11Y_GATE` (`todo` default, `error` opt-in; D12) and record the failing-story count. Validation: `just typecheck` with a committed type-level story or test that `ref` is accepted on Input, Button, Textarea, Select trigger; `grep -rc "ComponentPropsWithoutRef" packages/uilibs/src` returns 0 outside stories; the `ref` probe from the audit compiles; `STORYBOOK_A11Y_GATE=error pnpm --filter uilibs test` reports a failing set near the audit's 81. _Commit: `refactor(uilibs): accept ref on every wrapper and add an opt-in a11y gate switch`._
+2. **Tokens and the shared control recipe** (F-01 contract, F-04, F-05, F-06, F-18). Add `src/styles/control.stylex.ts` (`ControlSize`, `controlSizes`, `controlBase`, the two focus recipes, the disabled recipe; D1 to D4); add `borderControl` (D5) and retune `foregroundNeutralFaded` and the dark `backgroundCriticalHighlighted` so every pair in the audit's contrast table clears 4.5:1 (text) or 3:1 (control edges); Button hover uses the `*Highlighted` tokens; delete unused tokens (`backgroundDisabled`, `backgroundDisabledFaded`, `backgroundElevationRaised`, the three `*-intense` shadows). Nothing consumes the recipe yet except Button (its sizes now come from `controlSizes`). Validation: `python3 /tmp/audit/contrast.py` equivalent run over the new values shows no text pair below 4.5 and every control edge at or above 3.0 in both themes (the values and ratios are pasted into `stylex-authoring.md` in phase 11); the Button stories pass; axe `color-contrast` count is 0 in light and dark. _Commit: `feat(uilibs): add the control size scale, shared control recipe, and AA-safe tokens`._
+3. **Form controls adopt the size scale and one state model** (F-01, F-08, F-09, F-17 in part). Input, Select, Combobox (input, trigger, chips), Autocomplete, NumberField, InputGroup (+ `InputGroupButton` derives from the group size), InputPassword, InputPhone (container reads `:has([data-invalid])`), Textarea, and OTP take `size` and compose `controlBase`; every one gets the same focus, invalid, and disabled behavior; default widths become `100%` for text controls (fixed widths only via `style`); OTP slots use the scale; `labels` props for Combobox, NumberField, and InputPhone strings (D7). Validation: a new `ControlSizes` story per control, plus a shared composition story that renders every control at each size beside a Button of the same size and asserts equal `getBoundingClientRect().height` (the audit's `measure.mjs` table becomes the assertion); `STORYBOOK_A11Y_GATE=error` shows no new failures; `just e2e-test` (auth pages use these controls). _Commit: `refactor(uilibs): give form controls one size scale and one state model`._
+4. **Field wiring and accessible names** (F-03, F-10, F-11, F-19). `Textarea` renders through `Field.Control` (autoResize kept); `FileUpload` joins the Field (id, label, invalid) and its drop handler filters by `accept` and `multiple` and drops the raw `style` key; `Slider` forwards per-thumb labels, defaults to one thumb, and enlarges the hit area (`::after`, as Checkbox does); OTP slots name themselves (`Character n of N`, from `labels`); Select and Combobox triggers accept and document an accessible name; the audit's stories gain labels. Validation: the textarea `Invalid` probe now shows `aria-invalid=true`, `data-invalid` and `aria-describedby`; stories for invalid Combobox, Autocomplete, NumberField, OTP, Textarea, FileUpload assert `aria-invalid`; `STORYBOOK_A11Y_GATE=error` shows 0 `label` and 0 `button-name` failures. _Commit: `fix(uilibs): wire Textarea, FileUpload, Slider, OTP, and triggers into Field and name them`._
+5. **Actions — buttons, links, groups, toggles, tabs, menus** (F-07, F-12, F-13, F-20, F-01 for these). Move `LinkButton` into `base/button` (D9) and use it in Pagination; `Button` gains `loading` (sets `aria-busy`, keeps its width, hides the Spinner from AT); `AlertDialogAction` renders through `Close`; `ButtonGroup` flattens Fragments, keeps non-element children, and draws a divider independent of `borderWidth`; Toggle, ToggleGroup, Tabs, and Menubar triggers take `ControlSize`; Button story controls derive from `buttonSizes`. Validation: Pagination links report `role=link` (the audit's `roles.mjs` assertion becomes a story `play`); a `ButtonGroup` story with primary buttons shows dividers (bounding-box and computed-style assertion); an AlertDialog story confirms the action closes; `just e2e-test` (the webapp's `LinkButton` is replaced). _Commit: `feat(uilibs): add LinkButton and Button loading, fix link roles, ButtonGroup, and AlertDialogAction`._
+6. **Overlays and feedback — close parts, tones, spinner, labels** (F-14, F-17, F-20, F-21 in part). One internal close button for Dialog, Sheet, and Toast, with `labels`; `tone` on Alert, Badge, and Toast and `role='status'` default on Alert (D8); Alert title level configurable; Spinner is `aria-hidden` when it sits inside a labelled control and keeps `role='status'` alone; Pagination and Breadcrumb `aria-label` become proper-case props. Validation: stories for every tone in both themes with axe `color-contrast` 0; an Alert story asserts the default role; Spinner-in-Button story asserts no second live region. _Commit: `feat(uilibs): add tones to Alert, Badge, and Toast and unify close parts and labels`._
+7. **Content and composite widgets — calendar, tables, items, kanban, sortable** (F-15, F-16, F-23 in part). Calendar day labels begin with the visible number and `week` is not spread onto `<td>`; icon-only table and data-grid headers get visually hidden text; `Item` drops `role='list'` or gives children `listitem`; Kanban progress and column handles get names and the `@ts-ignore` and `console.warn` go; Sortable items stop nesting interactive elements. Validation: `STORYBOOK_A11Y_GATE=error` shows 0 `label-content-name-mismatch`, `scope-attr-valid`, `empty-table-header`, `aria-required-children`, `aria-progressbar-name`, `aria-command-name`, `nested-interactive`; the existing Kanban and Sortable `play` tests still pass. _Commit: `fix(uilibs): fix calendar, table, item, kanban, and sortable accessibility`._
+8. **Icons, duplication, and hygiene** (F-21, F-22, F-23, F-25). Replace the remaining inline `<svg>` glyphs with `Icon` + `@keyline-icons` (D10); verify and, if identical, make `ContextMenu` reuse the `DropdownMenu` parts (D11); fix the stale `#/styles/core/tokens.stylex` comments, the `BREAKPOINTS.small` duplication note, the `PaginationItem` raw props, and the `TODO` in `text.component.tsx`; give the raw `@media` mirrors one comment convention. Validation: `grep -rn "<svg" packages/uilibs/src --include=*.tsx` lists only `src/icons/*`, `icon`, and charts; `grep -rn "console\.\|@ts-ignore" packages/uilibs/src` is empty outside stories; the full suite passes and no story's rendered height changes (the composition story from phase 3 still holds). _Commit: `refactor(uilibs): replace inline svgs with icons and remove duplicate menu parts`._
+9. **Tests, the a11y gate, and the webapp consumer sweep** (F-24, F-01 consumer). Make `error` the default a11y gate with the documented allowlist (Base UI focus guards); fix the flaky `aspect-ratio` assertion (wait for layout, not first paint); add the missing state stories (invalid and disabled for Combobox, Autocomplete, NumberField, OTP; `play` for Select and Table; keyboard stories for Tabs, Toggle, Accordion); in `packages/webapp` switch the auth forms and `SocialButtons` to matching `lg` sizes, delete `components/link-button.tsx` in favor of the library's, and update `packages/e2e` locators if roles changed. Validation: `pnpm --filter uilibs test` green with the gate on (0 violations); `pnpm --filter uilibs test` run 3 times in a row with no flake; `just typecheck`, `pnpm lint`; `just e2e-test` 19/19; a headless measurement of the login page shows Input and Button heights equal. _Commit: `test(uilibs): enforce the a11y gate, add state stories, and align the webapp controls`._
+10. **Docs sync** — the human-facing tree. `docs/` carries no UI library content today (`docs/index.md`, `commandline.md`, `deployment.md`: `grep -rni uilibs docs/` returns nothing, verified 2026-11-20); add a short "UI library" page only if phase 3 to 9 produced consumer-facing guidance a human needs (sizes, labels, `ref`), written with the `clarity` skill and no paths or internals; otherwise record n/a. Update `rules.md` ("UI components" contract: `ref`, `labels`, `size`, the a11y gate), `shape.md` (the gate and the `STORYBOOK_A11Y_GATE` switch), and `architecture.md` (the decision record for D1 to D13). Validation: every claim re-checked against the landed code (`grep`/`Read`); `rumdl` and `pnpm format:check` clean. _Commit: `docs: record the UI library contracts, the a11y gate, and the decisions`._
+11. **LLM docs sync** — `.agents/docs/ui-components.md` (every changed prop, the new `LinkButton`, `tone`, `loading`, `size`, `labels`, the removed tokens, the new inventory notes), `.agents/docs/stylex-authoring.md` (the "Controls" section: composition order, the two focus recipes, the contrast table), `AGENTS.md` (the UI working rule gains "controls take `size` and compose `controlBase`; labels via `labels`; run the a11y gate"), `.agents/docs/index.md` (the plan, audit, issue rows and the stale `Handovers: None yet` row), and `.agents/PROMPTS.txt` only if it names a changed rule. Validation: each path and command named in these files resolves (`ls`, `just --list`, `grep`); `AGENTS.md` still names every file it reads; the index status columns match the files. _Commit: `docs: sync the agent docs with the UI library contracts`._
+12. **Handover and ledger close** — write `handover-<nnnnn>-uilibs-improvement.md` (the decisions, the commits, what stayed open, the trap), set each finding's status in `audit-00001-uilibs.md` with its phase and commit, set the plan to `done`, move the plan and the audit to `.agents/docs/archive/`, update the index. The agent stops and recommends the closing commit message instead of committing it. Validation: `grep -c '^- status'`-style count checks (`count` equals the items, the index agrees with the tree); no dangling references after the move (`grep -rn "plan-00001\|audit-00001" .agents AGENTS.md`). _Commit: none by the agent; recommended: `docs: close the UI library improvement plan and archive its audit`._
+13. **Final validation** — the test matrix below over the tree as it stands. Validation: the matrix is green end to end. _Commit: none if green._
+
+## Test matrix
+
+| What                  | How                                                                                                         | Green                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Typecheck             | `just typecheck`                                                                                            | exit 0; the `ref` type-level checks included                                                   |
+| Lint and format       | `pnpm lint`, `pnpm format:check`, `just format-check`                                                       | 0 findings                                                                                     |
+| Component suite       | `pnpm --filter uilibs test`                                                                                 | all stories and `play` tests pass, run three times with no flake                               |
+| a11y gate             | `STORYBOOK_A11Y_GATE=error pnpm --filter uilibs test` per phase; default `error` from phase 9                         | 0 axe violations in light and dark (allowlist: Base UI focus guards only)                      |
+| Composition contract  | the shared size story: every text control, Toggle, Tab, and Menubar trigger beside a Button at `sm`, `md`, `lg` | equal bounding-box heights per size; inputs fill their container                               |
+| States                | stories per control: default, hover, focus-visible, invalid (via Field), disabled, read-only                | `aria-invalid`, `data-invalid`, border, and focus assertions hold                              |
+| Keyboard              | `play` with `userEvent.tab`/`keyboard` on Tabs, Toggle, Accordion, Select, Combobox, OTP, NumberField      | focus order and activation correct                                                             |
+| Contrast              | the audit's OKLCH calculation over the final tokens, both themes                                            | text pairs ≥ 4.5, control edges ≥ 3.0, hover states ≥ 4.5                                      |
+| Storybook build       | `just storybook-build`                                                                                      | builds without warnings                                                                        |
+| Webapp build and e2e  | `pnpm --filter webapp build` (via `just build` when the Rust toolchain is available), `just e2e-test`       | 19/19 pass; login, signup, and dashboard render with equal Input and Button heights            |
+| Dependency and secrets | `git diff --stat -- '**/package.json' pnpm-lock.yaml`                                                      | empty (no dependency added, D13)                                                               |
+| Docs                  | `rumdl` via `just format-check`; every named path and command resolves                                      | clean                                                                                          |
+| Rust gates            | n/a — no Rust file changes                                                                                  | —                                                                                              |
+| API specs, migrations | n/a — no endpoint or schema                                                                                 | —                                                                                              |
+
+## Explicitly out of scope
+
+- **A deep review of `extra/data-grid`** (about 9,400 lines, audit F-26) — only its axe findings (empty headers) are fixed; a dedicated audit opens as its own issue if the grid is adopted by the webapp.
+- **Charts (`src/charts`)** — visual only, not audited; opens with the first consumer.
+- **Positive and warning Button variants, a locale context, a visual-regression tool, and a committed axe sweep** — no consumer needs them (D7, D8, D12); each needs the owner's approval for its dependency or scope.
+- **Screen-reader, forced-colors, RTL, and non-Chromium passes** — need tools and devices this environment lacks; recorded as the audit's coverage limits.
+- **A redesign of the visual language** (palette, radius, type scale, StyleX architecture) — this plan keeps the design and fixes consistency, contrast, and function.
