@@ -1,12 +1,18 @@
 [private]
 app_bin := "rusttp-server"
 
-[doc('Run the server, restart on change (watch mode)')]
+[doc('Run the server and the Vite dev server, reload both on change')]
 [group('development')]
 [no-exit-message]
 [positional-arguments]
 dev *args:
-    @watchexec -r -e rs,toml -- cargo run -- serve "$@"
+    #!/usr/bin/env bash
+    set -uo pipefail
+    # One Ctrl-C (or either side exiting) stops both.
+    trap 'trap - EXIT; kill 0' INT TERM EXIT
+    watchexec -r -e rs,toml -w apps -w crates -w Cargo.toml -- cargo run -- serve "$@" &
+    pnpm --silent --filter webapp dev &
+    wait
 
 [doc('Run the app CLI, e.g. `just run serve --bind 0.0.0.0:3000`')]
 [group('development')]
