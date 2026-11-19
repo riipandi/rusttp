@@ -1,20 +1,20 @@
 {
     "$schema": "https://json.schemastore.org/claude-code-settings.json",
-    "permissions": {
-        "allow": ["Bash(just)", "Bash(just *)", "Bash(cargo *)", "Bash(docker *)"],
-        "ask": ["Edit(/package.json)", "Edit(/rust-toolchain.toml)", "Bash(git push *)"]
-    },
     "hooks": {
         "PostToolUse": [
             {
-                "matcher": "Edit|Write",
                 "hooks": [
                     {
-                        "type": "command",
-                        "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh"
+                        "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh",
+                        "type": "command"
                     }
-                ]
+                ],
+                "matcher": "Edit|Write"
             }
         ]
+    },
+    "permissions": {
+        "allow": ["Bash(just)", "Bash(just *)", "Bash(cargo *)", "Bash(docker *)"],
+        "ask": ["Edit(/package.json)", "Edit(/rust-toolchain.toml)", "Bash(git push *)"]
     }
 }
