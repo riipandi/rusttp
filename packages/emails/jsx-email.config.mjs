@@ -21,7 +21,13 @@ export const config = defineConfig({
     clean({
       removeCSSComments: true,
       removeHTMLComments: true,
-      doNotRemoveHTMLCommentsWhoseOpeningTagContains: ['[if', '[endif', '{%', '<style']
+      doNotRemoveHTMLCommentsWhoseOpeningTagContains: [
+        '[if',
+        '[endif',
+        '{%',
+        '<style',
+        'rich-content'
+      ]
     })
   ],
   render: {

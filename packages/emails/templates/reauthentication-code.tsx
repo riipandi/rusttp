@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface ReauthenticationCodeProps {
   appName: string
+  supportUrl: string
   code: string
   expiresIn: string
 }
@@ -14,8 +15,8 @@ export const templateName = 'reauthentication-code'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  code: 'EXPECTOPATRONUM',
-  expiresIn: '15 minutes'
+  code: 'MISCHIEF-MANAGED',
+  expiresIn: '10 minutes'
 } satisfies ReauthenticationCodeProps
 
 export const templateProps = {
@@ -24,9 +25,10 @@ export const templateProps = {
   expiresIn: '{{expires_in}}'
 } satisfies ReauthenticationCodeProps
 
-export const Template = ({ appName, code, expiresIn }: ReauthenticationCodeProps) => (
+export const Template = ({ appName, supportUrl, code, expiresIn }: ReauthenticationCodeProps) => (
   <Layout
     appName={appName}
+    supportUrl={supportUrl}
     preview='Your confirmation code'
     footer={
       <>

@@ -7,6 +7,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface EmailChangeNoticeProps {
   appName: string
+  supportUrl: string
   name: string
   oldEmail: string
   newEmail: string
@@ -16,9 +17,9 @@ export const templateName = 'email-change-notice'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'John Doe',
-  oldEmail: 'old@example.com',
-  newEmail: 'new@example.com'
+  name: 'Sophie Neveu',
+  oldEmail: 'sophie.neveu@example.com',
+  newEmail: 'sophie.sauniere@example.com'
 } satisfies EmailChangeNoticeProps
 
 export const templateProps = {
@@ -28,8 +29,18 @@ export const templateProps = {
   newEmail: '{{new_email}}'
 } satisfies EmailChangeNoticeProps
 
-export const Template = ({ appName, name, oldEmail, newEmail }: EmailChangeNoticeProps) => (
-  <Layout appName={appName} preview='The email address on your account was changed'>
+export const Template = ({
+  appName,
+  supportUrl,
+  name,
+  oldEmail,
+  newEmail
+}: EmailChangeNoticeProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='The email address on your account was changed'
+  >
     <CardHeader title='Your email address was changed' />
     <Text>Hi {name},</Text>
     <Text>

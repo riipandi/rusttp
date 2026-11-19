@@ -6,6 +6,7 @@ import { colors, sharedPreviewProps, sharedTemplateProps } from '../constants.ts
 
 interface TestEmailProps {
   appName: string
+  supportUrl: string
   email: string
   smtpHost: string
   smtpPort: string
@@ -16,10 +17,10 @@ export const templateName = 'test-email'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  email: 'dummy@example.com',
+  email: 'albus.dumbledore@example.com',
   smtpHost: 'smtp.example.com',
   smtpPort: '587',
-  sender: 'Rusttp <noreply@example.com>'
+  sender: 'Hogwarts Owl Post <owlpost@example.com>'
 } satisfies TestEmailProps
 
 export const templateProps = {
@@ -30,9 +31,17 @@ export const templateProps = {
   sender: '{{sender}}'
 } satisfies TestEmailProps
 
-export const Template = ({ appName, email, smtpHost, smtpPort, sender }: TestEmailProps) => (
+export const Template = ({
+  appName,
+  supportUrl,
+  email,
+  smtpHost,
+  smtpPort,
+  sender
+}: TestEmailProps) => (
   <Layout
     appName={appName}
+    supportUrl={supportUrl}
     preview={`${appName} can send email`}
     footer={
       <>
@@ -53,7 +62,7 @@ export const Template = ({ appName, email, smtpHost, smtpPort, sender }: TestEma
       language='ini'
       theme='github-light'
       style={{
-        margin: 0,
+        margin: '0 0 16px',
         padding: '12px 16px',
         borderRadius: '8px',
         border: `1px solid ${colors.border}`,

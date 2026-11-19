@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface EmailVerificationProps {
   appName: string
+  supportUrl: string
   name: string
   verificationCode: string
 }
@@ -14,8 +15,8 @@ export const templateName = 'email-verification'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'John Doe',
-  verificationCode: 'GRYFFINDOR-EXPECTO'
+  name: 'Harry Potter',
+  verificationCode: 'ALOHOMORA'
 } satisfies EmailVerificationProps
 
 export const templateProps = {
@@ -24,8 +25,13 @@ export const templateProps = {
   verificationCode: '{{verification_code}}'
 } satisfies EmailVerificationProps
 
-export const Template = ({ appName, name, verificationCode }: EmailVerificationProps) => (
-  <Layout appName={appName} preview={`Your ${appName} verification code`}>
+export const Template = ({
+  appName,
+  supportUrl,
+  name,
+  verificationCode
+}: EmailVerificationProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview={`Your ${appName} verification code`}>
     <CardHeader title='Verify your email address' />
     <Text>Hi {name},</Text>
     <Text>

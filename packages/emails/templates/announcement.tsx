@@ -10,6 +10,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface AnnouncementProps {
   appName: string
+  supportUrl: string
   name: string
   topic: string
   title: string
@@ -22,8 +23,8 @@ export const previewProps = {
   ...sharedPreviewProps,
   name: 'Hermione Granger',
   topic: 'Maintenance',
-  title: 'Scheduled maintenance this weekend',
-  body: 'The service will be briefly unavailable on **Sunday morning** while we upgrade the database.'
+  title: 'The Room of Requirement closes this weekend',
+  body: 'Sign-ins pause on **Sunday morning** while the house-elves upgrade the database.'
 } satisfies AnnouncementProps
 
 export const templateProps = {
@@ -34,9 +35,10 @@ export const templateProps = {
   body: '{{body}}'
 } satisfies AnnouncementProps
 
-export const Template = ({ appName, name, topic, title, body }: AnnouncementProps) => (
+export const Template = ({ appName, supportUrl, name, topic, title, body }: AnnouncementProps) => (
   <Layout
     appName={appName}
+    supportUrl={supportUrl}
     preview={title}
     footer={
       <>

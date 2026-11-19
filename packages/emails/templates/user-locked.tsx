@@ -9,6 +9,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface UserLockedProps {
   appName: string
+  supportUrl: string
   name: string
   email: string
   expiresAt: string
@@ -18,8 +19,8 @@ export const templateName = 'user-locked'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'Robert Langdon',
-  email: 'langdon@example.com',
+  name: 'Bezu Fache',
+  email: 'bezu.fache@example.com',
   expiresAt: ''
 } satisfies UserLockedProps
 
@@ -30,8 +31,8 @@ export const templateProps = {
   expiresAt: '{{expires_at}}'
 } satisfies UserLockedProps
 
-export const Template = ({ appName, name, email, expiresAt }: UserLockedProps) => (
-  <Layout appName={appName} preview='Your account is temporarily locked'>
+export const Template = ({ appName, supportUrl, name, email, expiresAt }: UserLockedProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview='Your account is temporarily locked'>
     <CardHeader title='Your account is locked' />
     <Text>Hi {name},</Text>
     <Text>

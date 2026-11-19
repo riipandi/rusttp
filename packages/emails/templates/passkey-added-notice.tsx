@@ -9,6 +9,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface PasskeyAddedNoticeProps {
   appName: string
+  supportUrl: string
   name: string
   email: string
   credentialName: string
@@ -19,8 +20,8 @@ export const templateName = 'passkey-added-notice'
 export const previewProps = {
   ...sharedPreviewProps,
   name: 'Robert Langdon',
-  email: 'langdon@example.com',
-  credentialName: "Sophie's Laptop"
+  email: 'robert.langdon@example.com',
+  credentialName: 'Mickey Mouse watch'
 } satisfies PasskeyAddedNoticeProps
 
 export const templateProps = {
@@ -30,8 +31,18 @@ export const templateProps = {
   credentialName: '{{credential_name}}'
 } satisfies PasskeyAddedNoticeProps
 
-export const Template = ({ appName, name, email, credentialName }: PasskeyAddedNoticeProps) => (
-  <Layout appName={appName} preview='A new passkey was added to your account'>
+export const Template = ({
+  appName,
+  supportUrl,
+  name,
+  email,
+  credentialName
+}: PasskeyAddedNoticeProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='A new passkey was added to your account'
+  >
     <CardHeader title='A passkey was added to your account' />
     <Text>Hi {name},</Text>
     <Text>

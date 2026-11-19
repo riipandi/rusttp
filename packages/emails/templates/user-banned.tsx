@@ -8,6 +8,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface UserBannedProps {
   appName: string
+  supportUrl: string
   name: string
   reason: string
   expiresAt: string
@@ -17,9 +18,9 @@ export const templateName = 'user-banned'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'Hermione Granger',
-  reason: 'Repeated violations of the community guidelines',
-  expiresAt: 'October 7, 2024'
+  name: 'Draco Malfoy',
+  reason: 'Hexing other students in the corridors',
+  expiresAt: 'September 1, 2026'
 } satisfies UserBannedProps
 
 export const templateProps = {
@@ -29,8 +30,8 @@ export const templateProps = {
   expiresAt: '{{expires_at}}'
 } satisfies UserBannedProps
 
-export const Template = ({ appName, name, reason, expiresAt }: UserBannedProps) => (
-  <Layout appName={appName} preview='Your account has been suspended'>
+export const Template = ({ appName, supportUrl, name, reason, expiresAt }: UserBannedProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview='Your account has been suspended'>
     <CardHeader title='Your account has been suspended' warning />
     <Text>Hi {name},</Text>
     <Text>An administrator suspended your account, so you can&apos;t sign in right now.</Text>

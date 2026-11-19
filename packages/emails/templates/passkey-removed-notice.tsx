@@ -9,6 +9,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface PasskeyRemovedNoticeProps {
   appName: string
+  supportUrl: string
   name: string
   email: string
   credentialName: string
@@ -19,8 +20,8 @@ export const templateName = 'passkey-removed-notice'
 export const previewProps = {
   ...sharedPreviewProps,
   name: 'Robert Langdon',
-  email: 'langdon@example.com',
-  credentialName: "Sophie's Laptop"
+  email: 'robert.langdon@example.com',
+  credentialName: "Sophie's Smart Car"
 } satisfies PasskeyRemovedNoticeProps
 
 export const templateProps = {
@@ -30,8 +31,18 @@ export const templateProps = {
   credentialName: '{{credential_name}}'
 } satisfies PasskeyRemovedNoticeProps
 
-export const Template = ({ appName, name, email, credentialName }: PasskeyRemovedNoticeProps) => (
-  <Layout appName={appName} preview='A passkey was removed from your account'>
+export const Template = ({
+  appName,
+  supportUrl,
+  name,
+  email,
+  credentialName
+}: PasskeyRemovedNoticeProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='A passkey was removed from your account'
+  >
     <CardHeader title='A passkey was removed from your account' />
     <Text>Hi {name},</Text>
     <Text>

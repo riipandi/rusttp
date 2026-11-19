@@ -7,6 +7,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface ApiKeyExpiringSoonProps {
   appName: string
+  supportUrl: string
   name: string
   apiKeyName: string
   expiresAt: string
@@ -16,9 +17,9 @@ export const templateName = 'api-key-expiring-soon'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'Elias Schneider',
-  apiKeyName: 'My API Key',
-  expiresAt: 'September 30, 2024'
+  name: 'Katherine Solomon',
+  apiKeyName: 'Noetic lab',
+  expiresAt: 'October 7, 2026'
 } satisfies ApiKeyExpiringSoonProps
 
 export const templateProps = {
@@ -28,8 +29,18 @@ export const templateProps = {
   expiresAt: '{{expires_at}}'
 } satisfies ApiKeyExpiringSoonProps
 
-export const Template = ({ appName, name, apiKeyName, expiresAt }: ApiKeyExpiringSoonProps) => (
-  <Layout appName={appName} preview={`${apiKeyName} expires on ${expiresAt}`}>
+export const Template = ({
+  appName,
+  supportUrl,
+  name,
+  apiKeyName,
+  expiresAt
+}: ApiKeyExpiringSoonProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview={`${apiKeyName} expires on ${expiresAt}`}
+  >
     <CardHeader title='Your API key expires soon' warning />
     <Text>Hi {name},</Text>
     <Text>

@@ -14,7 +14,7 @@ export function Button({ href, children }: { href: string; children: ReactNode }
       textColor='#ffffff'
       borderRadius={8}
       fontSize={15}
-      style={{ margin: '8px 0 24px', fontWeight: 600 }}
+      style={{ margin: '0 0 16px', fontWeight: 600 }}
     >
       {children}
     </BaseButton>

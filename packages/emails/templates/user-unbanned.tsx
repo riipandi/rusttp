@@ -5,6 +5,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface UserUnbannedProps {
   appName: string
+  supportUrl: string
   name: string
 }
 
@@ -12,7 +13,7 @@ export const templateName = 'user-unbanned'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'Hermione Granger'
+  name: 'Sirius Black'
 } satisfies UserUnbannedProps
 
 export const templateProps = {
@@ -20,8 +21,8 @@ export const templateProps = {
   name: '{{name}}'
 } satisfies UserUnbannedProps
 
-export const Template = ({ appName, name }: UserUnbannedProps) => (
-  <Layout appName={appName} preview='Your account has been restored'>
+export const Template = ({ appName, supportUrl, name }: UserUnbannedProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview='Your account has been restored'>
     <CardHeader title='Your account has been restored' />
     <Text>Hi {name},</Text>
     <Text>

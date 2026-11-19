@@ -8,6 +8,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface EmailChangeRequestProps {
   appName: string
+  supportUrl: string
   name: string
   oldEmail: string
   newEmail: string
@@ -18,10 +19,10 @@ export const templateName = 'email-change-request'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'John Doe',
-  oldEmail: 'current@example.com',
-  newEmail: 'new@example.com',
-  confirmCode: 'CHAMBER-SECRETS'
+  name: 'Leigh Teabing',
+  oldEmail: 'leigh.teabing@example.com',
+  newEmail: 'sir.leigh@example.com',
+  confirmCode: 'SANGREAL'
 } satisfies EmailChangeRequestProps
 
 export const templateProps = {
@@ -34,12 +35,17 @@ export const templateProps = {
 
 export const Template = ({
   appName,
+  supportUrl,
   name,
   oldEmail,
   newEmail,
   confirmCode
 }: EmailChangeRequestProps) => (
-  <Layout appName={appName} preview='Confirm the change to your email address'>
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='Confirm the change to your email address'
+  >
     <CardHeader title='Confirm your new email address' />
     <Text>Hi {name},</Text>
     <Text>We received a request to change the email address on your account:</Text>

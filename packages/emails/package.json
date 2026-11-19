@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "email preview ./templates --port 3030 --no-open",
+        "dev": "node preview.ts --port 3030",
         "build": "node build.ts",
         "check": "email check",
         "typecheck": "tsrs --noEmit --fast"

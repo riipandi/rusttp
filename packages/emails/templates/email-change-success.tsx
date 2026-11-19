@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface EmailChangeSuccessProps {
   appName: string
+  supportUrl: string
   name: string
   newEmail: string
 }
@@ -14,8 +15,8 @@ export const templateName = 'email-change-success'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'John Doe',
-  newEmail: 'new@example.com'
+  name: 'Vittoria Vetra',
+  newEmail: 'vittoria.vetra@example.com'
 } satisfies EmailChangeSuccessProps
 
 export const templateProps = {
@@ -24,8 +25,8 @@ export const templateProps = {
   newEmail: '{{new_email}}'
 } satisfies EmailChangeSuccessProps
 
-export const Template = ({ appName, name, newEmail }: EmailChangeSuccessProps) => (
-  <Layout appName={appName} preview='Your new email address is now active'>
+export const Template = ({ appName, supportUrl, name, newEmail }: EmailChangeSuccessProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview='Your new email address is now active'>
     <CardHeader title='Your email address was updated' />
     <Text>Hi {name},</Text>
     <Text>

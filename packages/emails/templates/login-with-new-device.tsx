@@ -8,6 +8,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface LoginWithNewDeviceProps {
   appName: string
+  supportUrl: string
   location: string
   ipAddress: string
   device: string
@@ -18,10 +19,10 @@ export const templateName = 'login-with-new-device'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  location: 'San Francisco, USA',
-  ipAddress: '127.0.0.1',
-  device: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)',
-  dateTime: 'January 1, 2024 at 12:00 PM UTC'
+  location: 'Paris, France',
+  ipAddress: '203.0.113.42',
+  device: 'Safari on macOS',
+  dateTime: 'March 21, 2026 at 11:47 PM CET'
 } satisfies LoginWithNewDeviceProps
 
 export const templateProps = {
@@ -34,12 +35,17 @@ export const templateProps = {
 
 export const Template = ({
   appName,
+  supportUrl,
   location,
   ipAddress,
   device,
   dateTime
 }: LoginWithNewDeviceProps) => (
-  <Layout appName={appName} preview={`New sign-in to your ${appName} account`}>
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview={`New sign-in to your ${appName} account`}
+  >
     <CardHeader title='New sign-in to your account' warning />
     <Text>
       Someone signed in to your {appName} account from a device or location we haven&apos;t seen

@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface PasswordRemovedNoticeProps {
   appName: string
+  supportUrl: string
   name: string
   email: string
 }
@@ -14,8 +15,8 @@ export const templateName = 'password-removed-notice'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  name: 'Robert Langdon',
-  email: 'langdon@example.com'
+  name: 'Peter Solomon',
+  email: 'peter.solomon@example.com'
 } satisfies PasswordRemovedNoticeProps
 
 export const templateProps = {
@@ -24,8 +25,12 @@ export const templateProps = {
   email: '{{email}}'
 } satisfies PasswordRemovedNoticeProps
 
-export const Template = ({ appName, name, email }: PasswordRemovedNoticeProps) => (
-  <Layout appName={appName} preview='The password for your account was removed'>
+export const Template = ({ appName, supportUrl, name, email }: PasswordRemovedNoticeProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='The password for your account was removed'
+  >
     <CardHeader title='Your password was removed' />
     <Text>Hi {name},</Text>
     <Text>

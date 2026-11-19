@@ -7,6 +7,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface PasswordResetProps {
   appName: string
+  supportUrl: string
   email: string
   resetCode: string
 }
@@ -15,7 +16,7 @@ export const templateName = 'password-reset'
 
 export const previewProps = {
   ...sharedPreviewProps,
-  email: 'user@example.com',
+  email: 'hermione.granger@example.com',
   resetCode: 'EXPECTO-PATRONUM'
 } satisfies PasswordResetProps
 
@@ -25,8 +26,8 @@ export const templateProps = {
   resetCode: '{{reset_code}}'
 } satisfies PasswordResetProps
 
-export const Template = ({ appName, email, resetCode }: PasswordResetProps) => (
-  <Layout appName={appName} preview={`Your ${appName} password reset code`}>
+export const Template = ({ appName, supportUrl, email, resetCode }: PasswordResetProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview={`Your ${appName} password reset code`}>
     <CardHeader title='Reset your password' />
     <Text>Hi,</Text>
     <Text>

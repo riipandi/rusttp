@@ -7,16 +7,16 @@ export function OneTimeCode({ children }: { children: string }) {
     <Text
       data-dm='panel'
       style={{
-        margin: '8px 0 24px',
+        margin: '0 0 16px',
         padding: '16px',
         borderRadius: '8px',
         border: `1px solid ${colors.border}`,
         backgroundColor: colors.panel,
         color: colors.heading,
-        fontSize: '22px',
+        fontSize: '20px',
         lineHeight: '30px',
         fontWeight: 600,
-        letterSpacing: '6px',
+        letterSpacing: '4px',
         textAlign: 'center',
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
       }}

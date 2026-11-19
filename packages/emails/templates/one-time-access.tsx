@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface OneTimeAccessProps {
   appName: string
+  supportUrl: string
   code: string
   expiresIn: string
 }
@@ -24,8 +25,8 @@ export const templateProps = {
   expiresIn: '{{expires_in}}'
 } satisfies OneTimeAccessProps
 
-export const Template = ({ appName, code, expiresIn }: OneTimeAccessProps) => (
-  <Layout appName={appName} preview={`Your ${appName} sign-in code`}>
+export const Template = ({ appName, supportUrl, code, expiresIn }: OneTimeAccessProps) => (
+  <Layout appName={appName} supportUrl={supportUrl} preview={`Your ${appName} sign-in code`}>
     <CardHeader title='Your sign-in code' />
     <Text>Enter this code on the sign-in screen to sign in to {appName}:</Text>
     <OneTimeCode>{code}</OneTimeCode>

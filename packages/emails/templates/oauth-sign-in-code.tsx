@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface OauthSignInCodeProps {
   appName: string
+  supportUrl: string
   providerName: string
   code: string
   expiresIn: string
@@ -16,7 +17,7 @@ export const templateName = 'oauth-sign-in-code'
 export const previewProps = {
   ...sharedPreviewProps,
   providerName: 'Hogwarts',
-  code: 'EXPECTOPATRONUM',
+  code: 'EXPECTO-PATRONUM',
   expiresIn: '15 minutes'
 } satisfies OauthSignInCodeProps
 
@@ -27,9 +28,16 @@ export const templateProps = {
   expiresIn: '{{expires_in}}'
 } satisfies OauthSignInCodeProps
 
-export const Template = ({ appName, providerName, code, expiresIn }: OauthSignInCodeProps) => (
+export const Template = ({
+  appName,
+  supportUrl,
+  providerName,
+  code,
+  expiresIn
+}: OauthSignInCodeProps) => (
   <Layout
     appName={appName}
+    supportUrl={supportUrl}
     preview={`Your code to finish signing in with ${providerName}`}
     footer={
       <>

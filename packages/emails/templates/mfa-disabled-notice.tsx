@@ -8,6 +8,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface MfaDisabledNoticeProps {
   appName: string
+  supportUrl: string
   name: string
   reason: string
 }
@@ -17,7 +18,7 @@ export const templateName = 'mfa-disabled-notice'
 export const previewProps = {
   ...sharedPreviewProps,
   name: 'Hermione Granger',
-  reason: 'Lost authenticator device, verified over support'
+  reason: 'Lost Time-Turner; identity confirmed by Professor McGonagall'
 } satisfies MfaDisabledNoticeProps
 
 export const templateProps = {
@@ -26,8 +27,12 @@ export const templateProps = {
   reason: '{{reason}}'
 } satisfies MfaDisabledNoticeProps
 
-export const Template = ({ appName, name, reason }: MfaDisabledNoticeProps) => (
-  <Layout appName={appName} preview='Two-factor authentication was turned off for your account'>
+export const Template = ({ appName, supportUrl, name, reason }: MfaDisabledNoticeProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='Two-factor authentication was turned off for your account'
+  >
     <CardHeader title='Two-factor authentication was turned off' warning />
     <Text>Hi {name},</Text>
     <Text>

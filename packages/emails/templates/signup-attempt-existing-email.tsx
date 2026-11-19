@@ -6,6 +6,7 @@ import { sharedPreviewProps, sharedTemplateProps } from '../constants.ts'
 
 interface SignupAttemptExistingEmailProps {
   appName: string
+  supportUrl: string
   name: string
   email: string
 }
@@ -15,7 +16,7 @@ export const templateName = 'signup-attempt-existing-email'
 export const previewProps = {
   ...sharedPreviewProps,
   name: 'Sophie Neveu',
-  email: 'user@example.com'
+  email: 'sophie.neveu@example.com'
 } satisfies SignupAttemptExistingEmailProps
 
 export const templateProps = {
@@ -24,8 +25,12 @@ export const templateProps = {
   email: '{{email}}'
 } satisfies SignupAttemptExistingEmailProps
 
-export const Template = ({ appName, name, email }: SignupAttemptExistingEmailProps) => (
-  <Layout appName={appName} preview='Someone tried to sign up with your email address'>
+export const Template = ({ appName, supportUrl, name, email }: SignupAttemptExistingEmailProps) => (
+  <Layout
+    appName={appName}
+    supportUrl={supportUrl}
+    preview='Someone tried to sign up with your email address'
+  >
     <CardHeader title='Someone tried to sign up with your email' />
     <Text>Hi {name},</Text>
     <Text>
