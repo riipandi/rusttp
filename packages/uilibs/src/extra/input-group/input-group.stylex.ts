@@ -45,7 +45,7 @@ export const inputGroupStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x2,
     justifyContent: 'center',
-    paddingBlock: unit.x1_5,
+    paddingBlock: unit.x1,
     userSelect: 'none'
   },
   text: {
@@ -59,6 +59,7 @@ export const inputGroupStyles = stylex.create({
     backgroundColor: 'transparent',
     borderStyle: 'none',
     flex: 1,
+    height: `calc(${unit.x9} - ${stroke.ring1} * 2)`,
     outline: 'none'
   },
   textarea: {
