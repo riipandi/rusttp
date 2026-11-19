@@ -1,14 +1,11 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
-import { Field, FieldLabel } from 'uilibs/base/field'
 import { Form } from 'uilibs/base/form'
-import { Input } from 'uilibs/base/input'
-import { InputPassword } from 'uilibs/extra/input-password'
-import { ThemeSwitcher } from 'uilibs/theme'
-import { Logo } from '#/components/logo'
-import { styles as layout } from '#/styles/element/layout.stylex'
-import { styles } from '#/styles/pages/login.stylex'
+import { SocialButtons } from '#/components/social-buttons'
+import { formDefaults, submitWith, useAppForm } from '#/libraries/form'
+import { loginSchema } from '#/schemas/login.schema'
+import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
@@ -17,85 +14,50 @@ export const Route = createFileRoute('/(auth)/login')({
 
 function RouteComponent() {
   const navigate = useNavigate()
+  const form = useAppForm({
+    ...formDefaults,
+    defaultValues: { email: '', password: '', captcha: false },
+    validators: { onDynamic: loginSchema },
+    // Demo only: there is no sign-in endpoint yet, so a valid form continues to the two-factor step.
+    onSubmit: () => void navigate({ to: '/mfa' })
+  })
 
   return (
-    <div {...stylex.props(styles.split)}>
-      <aside {...stylex.props(styles.panel)}>
-        <Link to='/' {...stylex.props(layout.brand)}>
-          <Logo />
-          Rusttp
+    <>
+      <div {...stylex.props(styles.heading)}>
+        <h1 {...stylex.props(styles.title)}>Sign in</h1>
+        <p {...stylex.props(styles.subtitle)}>Use the account you registered with.</p>
+      </div>
+
+      <div {...stylex.props(styles.form)}>
+        <SocialButtons />
+      </div>
+
+      <Form noValidate style={styles.form} onSubmit={submitWith(form)}>
+        <div {...stylex.props(styles.fields)}>
+          <form.AppField name='email'>
+            {(field) => (
+              <field.TextField label='Email address' inputMode='email' autoComplete='email' />
+            )}
+          </form.AppField>
+          <form.AppField name='password'>
+            {(field) => <field.PasswordField label='Password' autoComplete='current-password' />}
+          </form.AppField>
+          <form.AppField name='captcha'>{(field) => <field.CaptchaField />}</form.AppField>
+        </div>
+        <Button type='submit' size='lg' style={styles.submit}>
+          Sign in
+        </Button>
+      </Form>
+
+      <div {...stylex.props(styles.links)}>
+        <Link to='/signup' {...stylex.props(styles.link)}>
+          Create an account
         </Link>
-        <div>
-          <p {...stylex.props(styles.panelTitle)}>One Rust binary, from server to screen.</p>
-          <p {...stylex.props(styles.panelText)}>
-            The server renders the document, the React app takes over, and both ship together.
-          </p>
-        </div>
-      </aside>
-
-      <main {...stylex.props(styles.formSide)}>
-        <div {...stylex.props(styles.topRow)}>
-          <Link to='/' {...stylex.props(layout.brand, styles.mobileBrand)}>
-            <Logo />
-            Rusttp
-          </Link>
-          <div {...stylex.props(styles.theme)}>
-            <ThemeSwitcher />
-          </div>
-        </div>
-
-        <div {...stylex.props(styles.formWrap)}>
-          <div {...stylex.props(styles.heading)}>
-            <h1 {...stylex.props(styles.title)}>Sign in</h1>
-            <p {...stylex.props(styles.subtitle)}>Use the account you registered with.</p>
-          </div>
-
-          <Form
-            style={styles.form}
-            // Demo only: there is no sign-in endpoint yet, so submitting opens the dashboard sample.
-            onSubmit={(event) => {
-              event.preventDefault()
-              void navigate({ to: '/dashboard' })
-            }}
-          >
-            <div {...stylex.props(styles.fields)}>
-              <Field>
-                <FieldLabel htmlFor='login-email'>Email</FieldLabel>
-                <Input
-                  id='login-email'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
-                  placeholder='robert.langdon@example.com'
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor='login-password'>Password</FieldLabel>
-                <InputPassword
-                  id='login-password'
-                  name='password'
-                  autoComplete='current-password'
-                  required
-                />
-              </Field>
-            </div>
-            <Button type='submit' size='lg' style={styles.submit}>
-              Sign in
-            </Button>
-          </Form>
-
-          <Button
-            variant='ghost'
-            size='sm'
-            nativeButton={false}
-            render={<Link to='/' />}
-            style={styles.back}
-          >
-            Back to home
-          </Button>
-        </div>
-      </main>
-    </div>
+        <Link to='/forgot-password' {...stylex.props(styles.link)}>
+          Forgot password?
+        </Link>
+      </div>
+    </>
   )
 }
