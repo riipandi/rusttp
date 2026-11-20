@@ -43,7 +43,7 @@ interface UserMenuItem {
 }
 
 const accountItems = [
-  { label: 'Profile', icon: User },
+  { label: 'Account', icon: User, to: '/admin/account' },
   { label: 'Settings', icon: Settings },
   { label: 'API keys', icon: Key }
 ] satisfies UserMenuItem[]
