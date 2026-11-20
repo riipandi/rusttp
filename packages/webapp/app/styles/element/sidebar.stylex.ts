@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 
 const narrow = '@media (max-width: 767px)'
 
@@ -15,12 +15,12 @@ export const styles = stylex.create({
     alignItems: { default: 'stretch', [narrow]: 'center' },
     gap: { default: unit.x4, [narrow]: unit.x2 },
     flexShrink: 0,
-    width: { default: '15rem', [narrow]: '100%' },
+    width: { default: '18rem', [narrow]: '100%' },
     height: { default: '100dvh', [narrow]: 'auto' },
     position: { default: 'sticky', [narrow]: 'static' },
     top: 0,
     padding: unit.x3,
-    backgroundColor: colors.backgroundPageFaded,
+    backgroundColor: colors.backgroundPage,
     borderInlineEndWidth: { default: 1, [narrow]: 0 },
     borderInlineEndStyle: 'solid',
     borderInlineEndColor: colors.borderNeutralFaded,
@@ -62,30 +62,10 @@ export const styles = stylex.create({
   account: {
     display: 'flex',
     alignItems: 'center',
-    gap: unit.x2,
     minWidth: 0,
     paddingBlockStart: { default: unit.x3, [narrow]: 0 },
     borderBlockStartWidth: { default: 1, [narrow]: 0 },
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: colors.borderNeutralFaded
-  },
-  identity: {
-    display: { default: 'flex', [narrow]: 'none' },
-    flexDirection: 'column',
-    minWidth: 0,
-    fontSize: fontSize.caption1
-  },
-  name: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    color: colors.foregroundNeutral,
-    fontWeight: fontWeight.medium
-  },
-  email: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    color: colors.foregroundNeutralFaded
   }
 })

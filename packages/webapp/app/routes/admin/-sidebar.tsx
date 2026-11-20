@@ -50,11 +50,7 @@ export function Sidebar() {
       </nav>
 
       <div {...stylex.props(styles.account)}>
-        <UserMenu />
-        <div {...stylex.props(styles.identity)}>
-          <span {...stylex.props(styles.name)}>Hermione Granger</span>
-          <span {...stylex.props(styles.email)}>hermione.granger@example.com</span>
-        </div>
+        <UserMenu variant='row' />
       </div>
     </aside>
   )
