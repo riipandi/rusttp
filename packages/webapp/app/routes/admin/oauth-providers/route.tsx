@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>OAuth providers</h1>
-        <p {...stylex.props(styles.subtitle)}>Connect external identity providers for social and federated sign-in.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Connect external identity providers for social and federated sign-in.
+        </p>
       </div>
     </main>
   )

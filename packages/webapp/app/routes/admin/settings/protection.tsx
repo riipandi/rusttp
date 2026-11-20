@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Protection settings</h1>
-        <p {...stylex.props(styles.subtitle)}>Rate limits, lockouts, and other safeguards against abuse.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Rate limits, lockouts, and other safeguards against abuse.
+        </p>
       </div>
     </main>
   )

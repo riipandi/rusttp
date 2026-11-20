@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>OIDC clients</h1>
-        <p {...stylex.props(styles.subtitle)}>Register applications that sign users in through this server.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Register applications that sign users in through this server.
+        </p>
       </div>
     </main>
   )

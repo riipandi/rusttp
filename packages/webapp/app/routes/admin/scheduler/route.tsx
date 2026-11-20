@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Scheduler</h1>
-        <p {...stylex.props(styles.subtitle)}>Inspect registered jobs and queues, pending work, and the dead archive.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Inspect registered jobs and queues, pending work, and the dead archive.
+        </p>
       </div>
     </main>
   )

@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Federation & OIDC settings</h1>
-        <p {...stylex.props(styles.subtitle)}>Configure issuer details and federation with external providers.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Configure issuer details and federation with external providers.
+        </p>
       </div>
     </main>
   )

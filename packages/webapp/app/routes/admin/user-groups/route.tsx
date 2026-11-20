@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Groups</h1>
-        <p {...stylex.props(styles.subtitle)}>Organize users into groups and manage their membership.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Organize users into groups and manage their membership.
+        </p>
       </div>
     </main>
   )

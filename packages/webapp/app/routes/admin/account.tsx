@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Account</h1>
-        <p {...stylex.props(styles.subtitle)}>Manage your admin profile, password, and sign-in details.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Manage your admin profile, password, and sign-in details.
+        </p>
       </div>
     </main>
   )

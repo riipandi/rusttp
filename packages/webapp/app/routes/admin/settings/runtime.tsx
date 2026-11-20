@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Runtime settings</h1>
-        <p {...stylex.props(styles.subtitle)}>Inspect and tune runtime behavior of the running server.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Inspect and tune runtime behavior of the running server.
+        </p>
       </div>
     </main>
   )

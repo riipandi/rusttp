@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Webhooks</h1>
-        <p {...stylex.props(styles.subtitle)}>Send event notifications to external endpoints and track deliveries.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Send event notifications to external endpoints and track deliveries.
+        </p>
       </div>
     </main>
   )

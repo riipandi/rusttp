@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { container, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints } from '#/styles/constants.stylex'
 
 // The page's inset, shared by the page and the small-screen top bar so the bar's menu and bell
@@ -67,5 +67,48 @@ export const styles = stylex.create({
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
+  },
+  // The settings pages: a secondary aside beside the page. Below the compact breakpoint the aside
+  // is gone and a select above the page stands in (`routes/admin/settings/-settings-nav.tsx`).
+  settings: {
+    display: 'flex',
+    flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
+    alignItems: { default: 'flex-start', [breakpoints.compact]: 'stretch' }
+  },
+  // Like the sidebar: a column the full height of the viewport with its own divider, items inset by
+  // the same step as the sidebar's nav, and the first item level with the page title.
+  settingsAside: {
+    boxSizing: 'border-box',
+    display: { default: 'block', [breakpoints.compact]: 'none' },
+    flexShrink: 0,
+    position: 'sticky',
+    top: 0,
+    width: container.xsmall,
+    height: '100dvh',
+    overflowY: 'auto',
+    overscrollBehavior: 'contain',
+    scrollbarWidth: 'thin',
+    paddingBlockStart: inset,
+    paddingBlockEnd: unit.x3,
+    paddingInline: unit.x3,
+    borderInlineEndWidth: 1,
+    borderInlineEndStyle: 'solid',
+    borderInlineEndColor: colors.borderNeutralFaded
+  },
+  // A strip under the top bar, divided from the page like the bar itself.
+  settingsPicker: {
+    boxSizing: 'border-box',
+    display: { default: 'none', [breakpoints.compact]: 'block' },
+    paddingBlock: unit.x3,
+    paddingInline: inset,
+    borderBlockEndWidth: 1,
+    borderBlockEndStyle: 'solid',
+    borderBlockEndColor: colors.borderNeutralFaded
+  },
+  // A readable measure for the forms that will fill the page, not the full width of a wide screen.
+  settingsContent: {
+    flex: 1,
+    minWidth: 0,
+    maxWidth: `calc(${container.xxlarge} * 2)`
   }
 })

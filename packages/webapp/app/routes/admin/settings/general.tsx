@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>General settings</h1>
-        <p {...stylex.props(styles.subtitle)}>Name, branding, and basic behavior of the instance.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Name, branding, and basic behavior of the instance.
+        </p>
       </div>
     </main>
   )

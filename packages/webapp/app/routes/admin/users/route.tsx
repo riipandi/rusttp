@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Users</h1>
-        <p {...stylex.props(styles.subtitle)}>Browse, invite, and manage the people who can sign in.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Browse, invite, and manage the people who can sign in.
+        </p>
       </div>
     </main>
   )

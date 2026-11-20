@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Notifications</h1>
-        <p {...stylex.props(styles.subtitle)}>Choose which events notify admins and where they are sent.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Choose which events notify admins and where they are sent.
+        </p>
       </div>
     </main>
   )

@@ -12,7 +12,9 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Multi-factor settings</h1>
-        <p {...stylex.props(styles.subtitle)}>Choose which second factors are offered and when they are required.</p>
+        <p {...stylex.props(styles.subtitle)}>
+          Choose which second factors are offered and when they are required.
+        </p>
       </div>
     </main>
   )
