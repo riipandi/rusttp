@@ -44,7 +44,8 @@ export const styles = stylex.create({
     flex: 1,
     flexDirection: 'column',
     minWidth: 0,
-    fontSize: fontSize.caption1
+    fontSize: fontSize.caption1,
+    lineHeight: 1.2
   },
   rowChevron: {
     display: { default: 'flex', [narrow]: 'none' },
