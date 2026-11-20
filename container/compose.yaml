@@ -23,8 +23,8 @@ x-common: &common
   cpus: 1.0
 
 services:
-  # Reverse proxy and local HTTPS front, see nginx-proxy.conf. Needs
-  # the mkcert pair `just cert-generate` writes to storage/config.
+  # Reverse proxy and local HTTPS front, see nginx-proxy.conf.
+  # Needs the mkcert pair `just cert-generate` writes to storage/config.
   #
   #   http://localhost:9100   Silo S3 API
   #   http://localhost:9101   Silo console
