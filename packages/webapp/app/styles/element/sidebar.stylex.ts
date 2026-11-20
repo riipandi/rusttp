@@ -1,6 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { container, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import {
+  container,
+  duration,
+  easing,
+  fontSize,
+  fontWeight,
+  unit
+} from 'uilibs/styles/tokens.stylex'
 import { breakpoints } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer, a column
@@ -16,23 +23,78 @@ export const styles = stylex.create({
     height: '100dvh',
     position: 'sticky',
     top: 0,
+    overflow: 'hidden',
+    transitionDuration: duration.medium,
+    transitionProperty: {
+      default: 'width',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard,
     backgroundColor: colors.backgroundPage,
     borderInlineEndWidth: 1,
     borderInlineEndStyle: 'solid',
     borderInlineEndColor: colors.borderNeutralFaded
   },
-  // The logo lines up with the icons below it: the nav's padding plus the item's own.
-  brand: {
+  // The icon rail: just wide enough for the items' 40px boxes between the nav's own padding.
+  rootCollapsed: {
+    width: unit.x16
+  },
+  // No divider under the header. The logo lines up with the icons below it (the header's inset plus
+  // none, the nav's padding plus the item's own), and the trigger's box with the items' right edge.
+  header: {
     boxSizing: 'border-box',
     display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     flex: 'none',
+    height: unit.x14,
+    paddingTop: unit.x1,
+    paddingInlineStart: unit.x6,
+    paddingInlineEnd: unit.x3
+  },
+  // Both longhands: a `paddingInline` shorthand would lose to the header's own start and end
+  // padding, and the logo would sit 6px off the rail's center.
+  headerCollapsed: {
+    justifyContent: 'center',
+    paddingInlineStart: 0,
+    paddingInlineEnd: 0
+  },
+  // The collapse and expand triggers sit quieter than the nav they act on: the faded foreground
+  // (the idle items' color, so the contrast is the same) until hover or focus lifts them.
+  trigger: {
+    color: {
+      default: colors.foregroundNeutralFaded,
+      ':hover': colors.foregroundNeutral,
+      ':focus-visible': colors.foregroundNeutral
+    }
+  },
+  brand: {
     // The logo is sized in em, so this shrinks mark and wordmark together.
+    fontSize: fontSize.body1
+  },
+  // The logo and the expand icon share one cell; hovering or focusing the header swaps them.
+  swap: {
+    display: 'grid',
+    placeItems: 'center'
+  },
+  swapLogo: {
+    gridArea: '1 / 1',
+    display: 'flex',
     fontSize: fontSize.body1,
-    height: unit.x12,
-    paddingInline: unit.x6,
-    borderBlockEndWidth: 1,
-    borderBlockEndStyle: 'solid',
-    borderBlockEndColor: colors.borderNeutralFaded
+    opacity: {
+      default: 1,
+      [stylex.when.ancestor(':hover')]: 0,
+      [stylex.when.ancestor(':focus-within')]: 0
+    }
+  },
+  swapIcon: {
+    gridArea: '1 / 1',
+    display: 'flex',
+    opacity: {
+      default: 0,
+      [stylex.when.ancestor(':hover')]: 1,
+      [stylex.when.ancestor(':focus-within')]: 1
+    }
   },
   nav: {
     boxSizing: 'border-box',
@@ -47,6 +109,16 @@ export const styles = stylex.create({
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',
     padding: unit.x3
+  },
+  // The labels are gone, so the groups meet with a small step between them instead of a label's room.
+  navCollapsed: {
+    gap: unit.x2
+  },
+  // `auto`, not the separator's own 100%, which a side margin would push past the rail; the color
+  // is the separator's own faded border.
+  railSeparator: {
+    width: 'auto',
+    marginInline: unit.x2
   },
   group: {
     display: 'flex',
@@ -75,6 +147,11 @@ export const styles = stylex.create({
     width: '100%',
     height: unit.x9,
     paddingInline: unit.x3
+  },
+  // The label is gone: the icon alone, centered in the 40px box.
+  itemCollapsed: {
+    justifyContent: 'center',
+    paddingInline: 0
   },
   itemCurrent: {
     color: colors.foregroundNeutral,

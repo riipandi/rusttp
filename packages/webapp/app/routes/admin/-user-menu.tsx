@@ -57,33 +57,47 @@ const profile = {
 
 /**
  * The admin sidebar's account row: avatar, name, and role as one target, opening upward from its
- * start edge. The email stays in the menu: it is too long for a sidebar row.
+ * start edge. The email stays in the menu: it is too long for a sidebar row. Collapsed, the row is
+ * the bare avatar and the menu opens beside the rail, as wide as a menu is by default.
  */
-export function AdminUserMenu() {
+export function AdminUserMenu({ collapsed = false }: { collapsed?: boolean }) {
   const { theme = 'system', setTheme } = useTheme()
   const current = themes.find((item) => item.value === theme) ?? themes[2]
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant='ghost' size='lg' style={styles.row} />}>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant='ghost'
+            size='lg'
+            aria-label={collapsed ? `${profile.name}, account menu` : undefined}
+            style={[styles.row, collapsed && styles.rowCollapsed]}
+          />
+        }
+      >
         <Avatar size='sm'>
           <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
         </Avatar>
-        <span {...stylex.props(styles.rowIdentity)}>
-          <span {...stylex.props(styles.menuName)} title={profile.name}>
-            {profile.name}
-          </span>
-          <span {...stylex.props(styles.menuEmail)}>{profile.role}</span>
-        </span>
-        <span {...stylex.props(styles.rowChevron)}>
-          <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />
-        </span>
+        {!collapsed && (
+          <>
+            <span {...stylex.props(styles.rowIdentity)}>
+              <span {...stylex.props(styles.menuName)} title={profile.name}>
+                {profile.name}
+              </span>
+              <span {...stylex.props(styles.menuEmail)}>{profile.role}</span>
+            </span>
+            <span {...stylex.props(styles.rowChevron)}>
+              <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />
+            </span>
+          </>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        side='top'
-        align='start'
+        side={collapsed ? 'right' : 'top'}
+        align={collapsed ? 'end' : 'start'}
         sideOffset={8}
-        style={[styles.menu, styles.menuRow]}
+        style={collapsed ? styles.menu : [styles.menu, styles.menuRow]}
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel style={styles.menuLabel}>

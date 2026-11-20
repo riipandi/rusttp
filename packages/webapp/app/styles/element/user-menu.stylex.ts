@@ -39,6 +39,25 @@ export const styles = stylex.create({
     },
     textAlign: 'start'
   },
+  // The icon rail: the avatar alone is the control, so it gets the avatar's own circular ring on
+  // hover and while the menu is open (as `trigger` does), not the row's rectangular tint.
+  rowCollapsed: {
+    flexShrink: 0,
+    width: unit.x8,
+    height: unit.x8,
+    marginInline: 'auto',
+    paddingInlineStart: 0,
+    paddingInlineEnd: 0,
+    borderRadius: '50%',
+    backgroundColor: 'transparent',
+    boxShadow: {
+      default: 'none',
+      ':hover': `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.borderNeutral}`,
+      '[data-popup-open]': `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.foregroundPrimary}`
+    },
+    transitionDuration: duration.fast,
+    transitionProperty: 'box-shadow'
+  },
   rowIdentity: {
     display: 'flex',
     flex: 1,
