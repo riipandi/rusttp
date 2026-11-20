@@ -21,7 +21,9 @@
 import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import { ring } from '../../styles/utils.stylex'
 import { tooltipStyles as s } from './tooltip.stylex'
 
 // Instant tooltips by default (Base UI's own default is 600ms).
@@ -65,10 +67,28 @@ export function TooltipContent({
       >
         <BaseTooltip.Popup
           {...props}
-          {...stylex.props(popupFx.shift, popupFx.fade, popupFx.pose, s.popup, style)}
+          {...stylex.props(
+            popupFx.shift,
+            popupFx.fade,
+            popupFx.pose,
+            s.popup,
+            ring({ shadow: shadow.raised }),
+            style
+          )}
         >
           {children}
-          <BaseTooltip.Arrow {...stylex.props(s.arrow)} />
+          <BaseTooltip.Arrow {...stylex.props(s.arrow)}>
+            <svg
+              width='12'
+              height='6'
+              viewBox='0 0 12 6'
+              aria-hidden='true'
+              {...stylex.props(s.arrowSvg)}
+            >
+              <path d='M0 6 L6 0 L12 6 Z' {...stylex.props(s.arrowFill)} />
+              <path d='M0 6 L6 0 L12 6' {...stylex.props(s.arrowStroke)} />
+            </svg>
+          </BaseTooltip.Arrow>
         </BaseTooltip.Popup>
       </BaseTooltip.Positioner>
     </BaseTooltip.Portal>

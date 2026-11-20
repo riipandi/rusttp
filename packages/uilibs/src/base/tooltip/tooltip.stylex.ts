@@ -6,9 +6,11 @@ import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex
 
 export const tooltipStyles = stylex.create({
   popup: {
-    backgroundColor: colors.foregroundNeutral,
+    // The overlay surface, as the popover and the menus have it, so a tooltip is the same color as
+    // every other popup in both themes (the inverted foreground-on-page pair was a white slab in dark).
+    backgroundColor: colors.backgroundElevationOverlay,
     borderRadius: radius.small,
-    color: colors.backgroundPage,
+    color: colors.foregroundNeutral,
     fontFamily: fontFamily.body,
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.caption1,
@@ -21,23 +23,45 @@ export const tooltipStyles = stylex.create({
     paddingBlock: unit.x1_5,
     paddingInline: unit.x3
   },
+  // The arrow is a 12x6 SVG that points up for a tooltip below its anchor and is turned for the other
+  // sides, so it can carry the popup's ring on its two slanted edges (a filled square cannot: its ring
+  // would show inside the popup). Its base sits on the popup's edge; the fill covers the ring between
+  // the legs, and the strokes meet the ring's ends. A rotated side needs the extra 1px offset: the
+  // box turns about its center, so its 12px length ends up on the other axis.
   arrow: {
-    backgroundColor: colors.foregroundNeutral,
-    bottom: { default: null, '[data-side="top"]': `calc(-1 * ${unit.x2} / 2)` },
-    height: unit.x2,
+    display: 'flex',
+    position: 'absolute',
+    top: { default: null, '[data-side="bottom"]': `calc(-1 * ${unit.x1_5})` },
+    bottom: { default: null, '[data-side="top"]': `calc(-1 * ${unit.x1_5})` },
     left: {
       default: null,
-      '[data-side="right"]': `calc(-1 * ${unit.x2} / 2)`,
-      '[data-side="inline-end"]': `calc(-1 * ${unit.x2} / 2)`
+      '[data-side="right"]': `calc(-1 * ${unit.x2} - 1px)`,
+      '[data-side="inline-end"]': `calc(-1 * ${unit.x2} - 1px)`
     },
-    position: 'absolute',
     right: {
       default: null,
-      '[data-side="left"]': `calc(-1 * ${unit.x2} / 2)`,
-      '[data-side="inline-start"]': `calc(-1 * ${unit.x2} / 2)`
+      '[data-side="left"]': `calc(-1 * ${unit.x2} - 1px)`,
+      '[data-side="inline-start"]': `calc(-1 * ${unit.x2} - 1px)`
     },
-    top: { default: null, '[data-side="bottom"]': `calc(-1 * ${unit.x2} / 2)` },
-    transform: 'rotate(45deg)',
-    width: unit.x2
+    rotate: {
+      default: null,
+      '[data-side="top"]': '180deg',
+      '[data-side="left"]': '90deg',
+      '[data-side="inline-start"]': '90deg',
+      '[data-side="right"]': '-90deg',
+      '[data-side="inline-end"]': '-90deg'
+    }
+  },
+  arrowSvg: {
+    display: 'block',
+    overflow: 'visible'
+  },
+  arrowFill: {
+    fill: colors.backgroundElevationOverlay
+  },
+  arrowStroke: {
+    fill: 'none',
+    stroke: colors.borderNeutralFaded,
+    strokeWidth: 1
   }
 })
