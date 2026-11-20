@@ -24,7 +24,7 @@ export function AdminTopBar() {
           </>
         }
         groups={groups}
-        footer={<AdminUserMenu />}
+        footer={<AdminUserMenu mobile />}
         dense
       />
       <Link to='/admin' {...stylex.props(layout.brand, styles.brand)}>

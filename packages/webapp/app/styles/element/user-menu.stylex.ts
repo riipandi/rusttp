@@ -90,6 +90,16 @@ export const styles = stylex.create({
     gap: unit.x0_5,
     paddingBlock: unit.x2
   },
+  // The drawer's menu: taller label and rows (a 36px row instead of 32px) and a smaller email line.
+  menuLabelTouch: {
+    paddingBlock: unit.x3
+  },
+  menuItemTouch: {
+    paddingBlock: unit.x2
+  },
+  menuEmailSmall: {
+    fontSize: fontSize.caption1
+  },
   menuName: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
