@@ -5,7 +5,6 @@ import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Separator } from 'uilibs/base/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
-import { Badge } from 'uilibs/extra/badge'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
@@ -62,44 +61,34 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 // to hide the indicator.
 const unread = 3
 
-// Pinned above the account strip. Collapsed, the count becomes a dot on the bell, and the label
-// moves to the accessible name and a tooltip, as with the nav items.
+// A bell with a dot while something is unread. Collapsed, it is the rail entry above the account
+// avatar; expanded, an icon at the end of the account strip, beside the menu trigger. The count is
+// in the accessible name and the tooltip, not on screen: the dot only says there is something new.
 function NotifyEntry({ collapsed }: { collapsed: boolean }) {
   const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
   const trigger = (
     <Button
       variant='ghost'
-      size='sm'
+      size={collapsed ? 'sm' : 'icon-md'}
       aria-label={name}
       style={[
-        styles.item,
+        collapsed && styles.item,
         collapsed && styles.itemCollapsed,
         styles.itemIdle,
         unread > 0 && styles.itemUnread
       ]}
     />
   )
-  const content = (
-    <>
-      <span {...stylex.props(styles.bell)}>
-        <Icon svg={Bell} size={16} />
-        {collapsed && unread > 0 && <span aria-hidden='true' {...stylex.props(styles.dot)} />}
-      </span>
-      {!collapsed && 'Notifications'}
-      {!collapsed && unread > 0 && (
-        <Badge variant='outline' tone='primary' aria-hidden='true' style={styles.count}>
-          {unread > 9 ? '9+' : unread}
-        </Badge>
-      )}
-    </>
-  )
-
-  if (!collapsed) return React.cloneElement(trigger, undefined, content)
 
   return (
     <Tooltip>
-      <TooltipTrigger render={trigger}>{content}</TooltipTrigger>
-      <TooltipContent side='right'>{name}</TooltipContent>
+      <TooltipTrigger render={trigger}>
+        <span {...stylex.props(styles.bell)}>
+          <Icon svg={Bell} size={collapsed ? 16 : 20} />
+          {unread > 0 && <span aria-hidden='true' {...stylex.props(styles.dot)} />}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side={collapsed ? 'right' : 'top'}>{name}</TooltipContent>
     </Tooltip>
   )
 }
@@ -192,14 +181,17 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div {...stylex.props(styles.notify)}>
-          <NotifyEntry collapsed={collapsed} />
+        {collapsed && (
+          <div {...stylex.props(styles.notify)}>
+            <NotifyEntry collapsed />
+          </div>
+        )}
+
+        <div {...stylex.props(styles.account, collapsed && styles.accountCollapsed)}>
+          <AdminUserMenu collapsed={collapsed} />
+          {!collapsed && <NotifyEntry collapsed={false} />}
         </div>
       </TooltipProvider>
-
-      <div {...stylex.props(styles.account)}>
-        <AdminUserMenu collapsed={collapsed} />
-      </div>
     </aside>
   )
 }

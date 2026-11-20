@@ -1,6 +1,6 @@
 import {
   AppWindow,
-  ChevronsUpDown,
+  ChevronDown,
   LogOut,
   Monitor,
   Moon,
@@ -55,16 +55,16 @@ const appItems = [
 const profile = {
   name: 'Hermione Granger',
   email: 'hermione.granger@example.com',
+  firstName: 'Hermione',
   role: 'Administrator',
   initials: 'HG'
 }
 
 /**
- * The admin sidebar's account row: avatar, name, and role as one target, opening upward from its
- * start edge. The email stays in the menu: it is too long for a sidebar row. Collapsed, the row is
- * the bare avatar and the menu opens beside the rail, as wide as a menu is by default. `mobile` is
- * the drawer's: the menu keeps its own width rather than the row's (a drawer-wide menu dwarfs its
- * few items), and its rows and text are sized for a finger.
+ * The admin sidebar's account trigger: the bare avatar, with the notification bell beside it in
+ * the strip (`routes/admin/-sidebar.tsx`). The name, role, and email are in the menu, which opens
+ * above the avatar, or beside the rail when collapsed. `mobile` is the drawer's: the trigger adds a
+ * short name, and the menu's rows and text are sized for a finger.
  */
 export function AdminUserMenu({
   collapsed = false,
@@ -82,25 +82,20 @@ export function AdminUserMenu({
         render={
           <Button
             variant='ghost'
-            size='lg'
-            aria-label={collapsed ? `${profile.name}, account menu` : undefined}
-            style={[styles.row, collapsed && styles.rowCollapsed]}
+            size={mobile ? 'lg' : 'icon-md'}
+            aria-label={`${profile.name}, account menu`}
+            style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
           />
         }
       >
-        <Avatar size='sm'>
+        <Avatar size='sm' style={styles.avatar}>
           <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
         </Avatar>
-        {!collapsed && (
+        {mobile && (
           <>
-            <span {...stylex.props(styles.rowIdentity)}>
-              <span {...stylex.props(styles.menuName)} title={profile.name}>
-                {profile.name}
-              </span>
-              <span {...stylex.props(styles.menuEmail)}>{profile.role}</span>
-            </span>
-            <span {...stylex.props(styles.rowChevron)}>
-              <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />
+            <span {...stylex.props(styles.pillName)}>{profile.firstName}</span>
+            <span {...stylex.props(styles.pillChevron)}>
+              <Icon svg={ChevronDown} size={14} color='neutralFaded' />
             </span>
           </>
         )}
@@ -108,17 +103,22 @@ export function AdminUserMenu({
       <DropdownMenuContent
         side={collapsed ? 'right' : 'top'}
         align={collapsed ? 'end' : 'start'}
-        sideOffset={8}
-        style={collapsed || mobile ? styles.menu : [styles.menu, styles.menuRow]}
+        // 8px past the divider the avatar sits under: the strip's top edge (or the rail's right edge)
+        // is 16px from the avatar, the drawer's separator 12px from its trigger. Expanded, 4px back
+        // lines the menu up with the nav items' left edge.
+        sideOffset={mobile ? 20 : 24}
+        alignOffset={collapsed || mobile ? 0 : -4}
+        style={styles.menu}
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel style={[styles.menuLabel, mobile && styles.menuLabelTouch]}>
-            <span {...stylex.props(styles.menuName)} title={profile.name}>
-              {profile.name}
-            </span>
+            <span {...stylex.props(styles.menuName, styles.menuTextWrap)}>{profile.name}</span>
             <span
-              {...stylex.props(styles.menuEmail, mobile && styles.menuEmailSmall)}
-              title={profile.email}
+              {...stylex.props(
+                styles.menuEmail,
+                styles.menuTextWrap,
+                mobile && styles.menuEmailSmall
+              )}
             >
               {profile.email}
             </span>

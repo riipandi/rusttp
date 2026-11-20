@@ -121,7 +121,7 @@ export const styles = stylex.create({
     width: 'auto',
     marginInline: unit.x2
   },
-  // The notification entry between the scrolling nav and the account strip; it stays put.
+  // The collapsed rail's notification entry between the scrolling nav and the account strip; it stays put.
   notify: {
     flexShrink: 0,
     paddingInline: unit.x3,
@@ -131,7 +131,7 @@ export const styles = stylex.create({
     position: 'relative',
     display: 'inline-flex'
   },
-  // The collapsed indicator: a dot on the bell's corner, ringed in the page color so it reads on top.
+  // The unread indicator: a dot on the bell's corner, ringed in the page color so it reads on top.
   dot: {
     position: 'absolute',
     top: `calc(-1 * ${unit.x0_5})`,
@@ -142,26 +142,10 @@ export const styles = stylex.create({
     backgroundColor: colors.backgroundPrimary,
     boxShadow: `0 0 0 2px ${colors.backgroundPage}`
   },
-  // With something unread the entry steps up from the idle gray to the full foreground, and the
-  // count is the solid primary: the two together read as one state, the gray one as none.
+  // With something unread the entry steps up from the idle gray to the full foreground; the dot on
+  // the bell is the solid primary: the two together read as one state, the gray one as none.
   itemUnread: {
     color: colors.foregroundNeutral
-  },
-  // A compact count, not the badge's label-sized pill, in tabular figures so the width does not
-  // jump between counts.
-  count: {
-    justifyContent: 'center',
-    boxSizing: 'border-box',
-    minWidth: unit.x5,
-    height: unit.x5,
-    marginInlineStart: 'auto',
-    paddingBlock: 0,
-    paddingInline: unit.x1_5,
-    fontVariantNumeric: 'tabular-nums',
-    // An outlined chip, not a fill: a mix of the muted primary into the page color goes dusty in the
-    // light theme, while the primary's foreground and border tokens are tuned for each theme. The
-    // border is softened so the chip sits back; the figure keeps the foreground token.
-    borderColor: `color-mix(in srgb, ${colors.borderPrimary} 55%, transparent)`
   },
   group: {
     display: 'flex',
@@ -210,12 +194,20 @@ export const styles = stylex.create({
     boxSizing: 'border-box',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: unit.x2,
     flexShrink: 0,
     height: unit.x16,
     minWidth: 0,
-    paddingInline: unit.x3,
+    // The avatar's center lines up with the nav icons' above it.
+    paddingInline: unit.x4,
     borderBlockStartWidth: 1,
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: colors.borderNeutralFaded
+  },
+  // Collapsed, the avatar is alone in the strip: centered on the rail.
+  accountCollapsed: {
+    justifyContent: 'center',
+    paddingInline: 0
   }
 })
