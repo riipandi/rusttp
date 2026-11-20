@@ -4,15 +4,15 @@ import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/oidc-clients')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Admin' }
+  staticData: { pageTitle: 'OIDC clients' }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Account</h1>
-        <p {...stylex.props(styles.subtitle)}>Put some description here.</p>
+        <h1 {...stylex.props(styles.title)}>OIDC clients</h1>
+        <p {...stylex.props(styles.subtitle)}>Register applications that sign users in through this server.</p>
       </div>
     </main>
   )

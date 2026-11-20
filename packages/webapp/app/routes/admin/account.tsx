@@ -4,7 +4,7 @@ import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/account')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Admin' }
+  staticData: { pageTitle: 'Account' }
 })
 
 function RouteComponent() {
@@ -12,7 +12,7 @@ function RouteComponent() {
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Account</h1>
-        <p {...stylex.props(styles.subtitle)}>Put some description here.</p>
+        <p {...stylex.props(styles.subtitle)}>Manage your admin profile, password, and sign-in details.</p>
       </div>
     </main>
   )

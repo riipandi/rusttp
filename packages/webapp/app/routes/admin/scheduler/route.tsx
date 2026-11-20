@@ -4,15 +4,15 @@ import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/scheduler')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Admin' }
+  staticData: { pageTitle: 'Scheduler' }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Account</h1>
-        <p {...stylex.props(styles.subtitle)}>Put some description here.</p>
+        <h1 {...stylex.props(styles.title)}>Scheduler</h1>
+        <p {...stylex.props(styles.subtitle)}>Inspect registered jobs and queues, pending work, and the dead archive.</p>
       </div>
     </main>
   )
