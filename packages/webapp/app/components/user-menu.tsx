@@ -72,8 +72,12 @@ export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' })
         {row && (
           <>
             <span {...stylex.props(styles.rowIdentity)}>
-              <span {...stylex.props(styles.menuName)}>{profile.name}</span>
-              <span {...stylex.props(styles.menuEmail)}>{profile.email}</span>
+              <span {...stylex.props(styles.menuName)} title={profile.name}>
+                {profile.name}
+              </span>
+              <span {...stylex.props(styles.menuEmail)} title={profile.email}>
+                {profile.email}
+              </span>
             </span>
             <span {...stylex.props(styles.rowChevron)}>
               <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />
@@ -85,7 +89,7 @@ export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' })
         side={row ? 'top' : 'bottom'}
         align={row ? 'start' : 'end'}
         sideOffset={8}
-        style={styles.menu}
+        style={row ? [styles.menu, styles.menuRow] : styles.menu}
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel style={styles.menuLabel}>

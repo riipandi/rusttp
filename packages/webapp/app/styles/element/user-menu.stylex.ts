@@ -59,6 +59,11 @@ export const styles = stylex.create({
     minWidth: '14rem',
     maxWidth: '18rem'
   },
+  // The sidebar's menu is as wide as the row that opened it; a long name or email truncates.
+  menuRow: {
+    minWidth: 0,
+    width: 'var(--anchor-width)'
+  },
   menuLabel: {
     display: 'flex',
     flexDirection: 'column',
