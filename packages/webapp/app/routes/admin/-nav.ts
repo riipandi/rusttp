@@ -1,5 +1,6 @@
-import { Ban, Bell, History, IdCard, Key, LayoutDashboard } from '@keyline-icons/react'
-import { Layers, LogIn, Plug, Settings, Timer, Users, Webhook } from '@keyline-icons/react'
+import { Ban, History, IdCard, Key, LayoutDashboard } from '@keyline-icons/react'
+import { Layers, LogIn, Megaphone, Plug } from '@keyline-icons/react'
+import { Settings, Timer, Users, Webhook } from '@keyline-icons/react'
 import type { NavGroup } from '#/components/nav-sheet'
 
 // Only Overview has a page; the other entries are placeholders until a route is wired in.
@@ -36,7 +37,7 @@ export const groups: NavGroup[] = [
     label: 'Platform',
     items: [
       { label: 'Settings', icon: Settings, to: '/admin/settings' }, // User & Authentication, Access & Signup, Multi-factor, Sessions, Protection, Federation & OIDC, Runtime
-      { label: 'Notifications', icon: Bell, to: '/admin/notifications' },
+      { label: 'Messages', icon: Megaphone, to: '/admin/messages' },
       { label: 'Scheduler', icon: Timer, to: '/admin/scheduler' } // unsure (Registered queues, pending, dead archive, Registered jobs)
     ]
   }
