@@ -43,11 +43,17 @@ const accountItems = [
   { label: 'API keys', icon: Key }
 ]
 
-const profile = { name: 'Hermione Granger', email: 'hermione.granger@example.com', initials: 'HG' }
+const profile = {
+  name: 'Hermione Granger',
+  email: 'hermione.granger@example.com',
+  role: 'Administrator',
+  initials: 'HG'
+}
 
 /**
  * `avatar` is the avatar alone (a top bar); `row` is the whole account row, avatar, name, and
- * email, as one target (a sidebar), and opens upward from its start edge.
+ * role, as one target (a sidebar), and opens upward from its start edge. The email stays in the
+ * menu: it is too long for a sidebar row.
  */
 export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' }) {
   const { theme = 'system', setTheme } = useTheme()
@@ -61,7 +67,7 @@ export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' })
           <Button
             variant='ghost'
             size={row ? 'lg' : 'icon-md'}
-            aria-label='Account menu'
+            aria-label={row ? undefined : 'Account menu'}
             style={row ? styles.row : styles.trigger}
           />
         }
@@ -75,9 +81,7 @@ export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' })
               <span {...stylex.props(styles.menuName)} title={profile.name}>
                 {profile.name}
               </span>
-              <span {...stylex.props(styles.menuEmail)} title={profile.email}>
-                {profile.email}
-              </span>
+              <span {...stylex.props(styles.menuEmail)}>{profile.role}</span>
             </span>
             <span {...stylex.props(styles.rowChevron)}>
               <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />

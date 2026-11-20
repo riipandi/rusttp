@@ -1,76 +1,80 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints } from '../constants.stylex'
 
-const narrow = '@media (max-width: 767px)'
-
-// The admin sidebar: brand, navigation, account. A column beside the page on wide screens; on
-// narrow ones the brand and account share a row above the navigation.
+// The admin sidebar: a header strip, a navigation that scrolls, and an account footer. On wide
+// screens it is a column beside the page whose two dividers run edge to edge; on narrow ones the
+// brand and the account share a top row above a single row of items that scrolls sideways, so a long
+// menu never grows the bar.
 export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: { default: 'column', [narrow]: 'row' },
-    flexWrap: { default: 'nowrap', [narrow]: 'wrap' },
-    alignItems: { default: 'stretch', [narrow]: 'center' },
-    gap: { default: unit.x3, [narrow]: unit.x2 },
+    flexDirection: { default: 'column', [breakpoints.narrow]: 'row' },
+    flexWrap: { default: 'nowrap', [breakpoints.narrow]: 'wrap' },
+    alignItems: { default: 'stretch', [breakpoints.narrow]: 'center' },
+    gap: { default: 0, [breakpoints.narrow]: unit.x2 },
     flexShrink: 0,
-    width: { default: '16rem', [narrow]: '100%' },
-    height: { default: '100dvh', [narrow]: 'auto' },
-    position: { default: 'sticky', [narrow]: 'static' },
+    width: { default: '16rem', [breakpoints.narrow]: '100%' },
+    height: { default: '100dvh', [breakpoints.narrow]: 'auto' },
+    position: { default: 'sticky', [breakpoints.narrow]: 'static' },
     top: 0,
-    padding: unit.x3,
-    paddingBlockStart: { default: 0, [narrow]: unit.x3 },
+    padding: { default: 0, [breakpoints.narrow]: unit.x3 },
     backgroundColor: colors.backgroundPage,
-    borderInlineEndWidth: { default: 1, [narrow]: 0 },
+    borderInlineEndWidth: { default: 1, [breakpoints.narrow]: 0 },
     borderInlineEndStyle: 'solid',
     borderInlineEndColor: colors.borderNeutralFaded,
-    borderBlockEndWidth: { default: 0, [narrow]: 1 },
+    borderBlockEndWidth: { default: 0, [breakpoints.narrow]: 1 },
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: colors.borderNeutralFaded
   },
-  // On wide screens the brand is a header strip: its divider runs edge to edge and the logo lines up
-  // with the icons below (sidebar padding plus the item's own). On narrow ones it is the top row's
-  // left half.
+  // The logo lines up with the icons below it: the nav's padding plus the item's own.
   brand: {
     boxSizing: 'border-box',
     display: 'flex',
-    flex: { default: 'none', [narrow]: 1 },
+    flex: { default: 'none', [breakpoints.narrow]: 1 },
     // The logo is sized in em, so this shrinks mark and wordmark together.
     fontSize: fontSize.body1,
-    height: { default: unit.x12, [narrow]: unit.x10 },
-    marginInline: { default: `calc(-1 * ${unit.x3})`, [narrow]: 0 },
-    paddingInline: { default: unit.x6, [narrow]: unit.x2 },
-    borderBlockEndWidth: { default: 1, [narrow]: 0 },
+    height: { default: unit.x12, [breakpoints.narrow]: unit.x10 },
+    paddingInline: { default: unit.x6, [breakpoints.narrow]: unit.x2 },
+    borderBlockEndWidth: { default: 1, [breakpoints.narrow]: 0 },
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: colors.borderNeutralFaded
   },
   nav: {
+    boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: { default: 'column', [narrow]: 'row' },
-    flexWrap: 'wrap',
-    gap: { default: unit.x4, [narrow]: unit.x0_5 },
-    flex: { default: 1, [narrow]: 'none' },
-    order: { default: 0, [narrow]: 2 },
-    width: { default: 'auto', [narrow]: '100%' }
+    flexDirection: { default: 'column', [breakpoints.narrow]: 'row' },
+    flexWrap: 'nowrap',
+    gap: { default: unit.x4, [breakpoints.narrow]: unit.x0_5 },
+    flex: { default: 1, [breakpoints.narrow]: 'none' },
+    // The only part that scrolls: between the two dividers on wide screens, sideways on narrow ones.
+    minHeight: 0,
+    overflowY: { default: 'auto', [breakpoints.narrow]: 'hidden' },
+    overflowX: { default: 'hidden', [breakpoints.narrow]: 'auto' },
+    overscrollBehavior: 'contain',
+    scrollbarWidth: 'thin',
+    order: { default: 0, [breakpoints.narrow]: 2 },
+    padding: { default: unit.x3, [breakpoints.narrow]: 0 },
+    width: { default: 'auto', [breakpoints.narrow]: '100%' }
   },
-  // On narrow screens the groups and lists dissolve into one wrapping row of items and their labels are hidden.
+  // On narrow screens the groups and lists dissolve into the nav's row and the labels are hidden.
   group: {
-    display: { default: 'flex', [narrow]: 'contents' },
+    display: { default: 'flex', [breakpoints.narrow]: 'contents' },
     flexDirection: 'column',
     gap: unit.x1
   },
   groupLabel: {
-    display: { default: 'block', [narrow]: 'none' },
+    display: { default: 'block', [breakpoints.narrow]: 'none' },
     paddingInline: unit.x3,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium
   },
   list: {
-    display: { default: 'flex', [narrow]: 'contents' },
-    flexDirection: { default: 'column', [narrow]: 'row' },
-    flexWrap: 'wrap',
+    display: { default: 'flex', [breakpoints.narrow]: 'contents' },
+    flexDirection: 'column',
     gap: unit.x0_5,
     margin: 0,
     padding: 0,
@@ -78,7 +82,9 @@ export const styles = stylex.create({
   },
   item: {
     justifyContent: 'flex-start',
-    width: { default: '100%', [narrow]: 'auto' }
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    width: { default: '100%', [breakpoints.narrow]: 'auto' }
   },
   itemCurrent: {
     color: colors.foregroundNeutral,
@@ -88,12 +94,16 @@ export const styles = stylex.create({
   itemIdle: {
     color: colors.foregroundNeutralFaded
   },
+  // The counterpart of the header strip: the same height, its divider edge to edge.
   account: {
+    boxSizing: 'border-box',
     display: 'flex',
     alignItems: 'center',
+    flexShrink: 0,
+    height: { default: unit.x14, [breakpoints.narrow]: 'auto' },
     minWidth: 0,
-    paddingBlockStart: { default: unit.x3, [narrow]: 0 },
-    borderBlockStartWidth: { default: 1, [narrow]: 0 },
+    paddingInline: { default: unit.x3, [breakpoints.narrow]: 0 },
+    borderBlockStartWidth: { default: 1, [breakpoints.narrow]: 0 },
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: colors.borderNeutralFaded
   }

@@ -1,12 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints } from '../constants.stylex'
 
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
     display: 'flex',
-    flexDirection: { default: 'row', '@media (max-width: 767px)': 'column' },
+    flexDirection: { default: 'row', [breakpoints.narrow]: 'column' },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
   },

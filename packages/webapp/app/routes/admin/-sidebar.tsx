@@ -12,7 +12,7 @@ import { styles } from '#/styles/element/sidebar.stylex'
 interface NavItem {
   label: string
   icon: typeof LayoutDashboard
-  /** Only Overview has a page; the other items do nothing until a route is wired in. */
+  /** Only Overview has a page; the others render `aria-disabled` until a route is wired in. */
   to?: '/admin'
 }
 
@@ -48,7 +48,7 @@ function NavEntry({ label, icon, to }: NavItem) {
   }
 
   return (
-    <Button variant='ghost' size='sm' style={[styles.item, styles.itemIdle]}>
+    <Button variant='ghost' size='sm' aria-disabled style={[styles.item, styles.itemIdle]}>
       <Icon svg={icon} size={16} color='neutralFaded' />
       {label}
     </Button>
@@ -60,7 +60,7 @@ export function Sidebar() {
 
   return (
     <aside {...stylex.props(styles.root)}>
-      <Link to='/' {...stylex.props(layout.brand, styles.brand)}>
+      <Link to='/admin' {...stylex.props(layout.brand, styles.brand)}>
         <Logo />
         Rusttp
       </Link>
