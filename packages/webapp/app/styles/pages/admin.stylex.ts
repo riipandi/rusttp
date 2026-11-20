@@ -3,6 +3,11 @@ import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints } from '#/styles/constants.stylex'
 
+// The page's inset, shared by the page and the small-screen top bar so the bar's menu and bell
+// glyphs line up with the content's edge. It sits closer to the sidebar than the customer pages'
+// 3rem: beside a sidebar, a wide gutter reads as a gap.
+const inset = 'clamp(1.5rem, 3vw, 2rem)'
+
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
@@ -27,7 +32,7 @@ export const styles = stylex.create({
     zIndex: 10,
     boxSizing: 'border-box',
     height: unit.x14,
-    paddingInline: 'clamp(1.5rem, 4vw, 3rem)',
+    paddingInline: inset,
     backgroundColor: colors.backgroundPage,
     borderBlockEndWidth: 1,
     borderBlockEndStyle: 'solid',
@@ -45,7 +50,7 @@ export const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x10,
-    padding: 'clamp(1.5rem, 4vw, 3rem)'
+    padding: inset
   },
   heading: {
     display: 'flex',
