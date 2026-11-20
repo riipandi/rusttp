@@ -1,4 +1,5 @@
 import {
+  Bell,
   BookOpen,
   ChartColumn,
   LayoutDashboard,
@@ -178,8 +179,9 @@ function NavSheet() {
 }
 
 // Small screens lay the bar out in three zones with the brand centered between the menu trigger
-// and an empty end (the account menu lives in the sheet there), so the brand sits mid-bar; from
-// the medium breakpoint it is the brand and nav on the start side and the account menu on the end.
+// and the notification trigger (the account menu lives in the sheet there), so the brand sits
+// mid-bar; from the medium breakpoint it is the brand and nav on the start side and the
+// notification trigger and account menu on the end.
 export function DashboardHeader() {
   return (
     <header {...stylex.props(layout.header)}>
@@ -195,7 +197,18 @@ export function DashboardHeader() {
           ))}
         </nav>
         <div {...stylex.props(styles.headerEnd)}>
-          <UserMenu />
+          {/* Placeholder: nothing opens until notifications have a source. */}
+          <Button
+            variant='ghost'
+            size='icon-md'
+            aria-label='Notifications'
+            style={styles.notifyTrigger}
+          >
+            <Icon svg={Bell} size={20} />
+          </Button>
+          <div {...stylex.props(styles.userMenuSlot)}>
+            <UserMenu />
+          </div>
         </div>
       </div>
     </header>

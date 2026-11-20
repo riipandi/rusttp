@@ -30,14 +30,28 @@ export const styles = stylex.create({
     marginInlineStart: `calc(-1 * ${unit.x2})`
   },
   headerEnd: {
-    display: {
-      default: 'none',
-      [breakpoints.medium]: 'flex'
-    },
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'flex-end',
+    gap: unit.x2,
     marginInlineStart: {
       default: 0,
       [breakpoints.medium]: 'auto'
+    }
+  },
+  // On small screens the bell is the last item, so its glyph, not its 36px box, lines up with the
+  // page's content edge, as the menu trigger does on the other side.
+  notifyTrigger: {
+    marginInlineEnd: {
+      default: `calc(-1 * ${unit.x2})`,
+      [breakpoints.medium]: 0
+    }
+  },
+  // The account menu lives in the sheet below the medium breakpoint.
+  userMenuSlot: {
+    display: {
+      default: 'none',
+      [breakpoints.medium]: 'flex'
     }
   },
   // The top and bottom room is 24px, the side inset of the entries, and grows past the status bar
