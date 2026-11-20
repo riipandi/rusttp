@@ -87,7 +87,7 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
       </span>
       {!collapsed && 'Notifications'}
       {!collapsed && unread > 0 && (
-        <Badge aria-hidden='true' style={styles.count}>
+        <Badge variant='outline' tone='primary' aria-hidden='true' style={styles.count}>
           {unread > 9 ? '9+' : unread}
         </Badge>
       )}

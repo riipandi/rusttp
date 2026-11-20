@@ -156,7 +156,11 @@ export const styles = stylex.create({
     marginInlineStart: 'auto',
     paddingBlock: 0,
     paddingInline: unit.x1_5,
-    fontVariantNumeric: 'tabular-nums'
+    fontVariantNumeric: 'tabular-nums',
+    // An outlined chip, not a fill: a mix of the muted primary into the page color goes dusty in the
+    // light theme, while the primary's foreground and border tokens are tuned for each theme. The
+    // border is softened so the chip sits back; the figure keeps the foreground token.
+    borderColor: `color-mix(in srgb, ${colors.borderPrimary} 55%, transparent)`
   },
   group: {
     display: 'flex',
