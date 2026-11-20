@@ -21,6 +21,7 @@ const vite = { host: '127.0.0.1', port: 5173 }
 // The build keeps lightningcss strict.
 const stylex = (mode: string) =>
   stylexPlugin({
+    aliases: { '#/*': resolve('app/*') },
     enableDevClassNames: mode === 'development',
     lightningcssOptions: mode === 'development' ? { errorRecovery: true } : undefined
   })
