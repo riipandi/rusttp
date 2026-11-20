@@ -10,6 +10,9 @@
 #   OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
 #   OTEL_EXPORTER_OTLP_HEADERS=authorization=rusttp-dev-ingestion-key
 #
+# Everything here sits behind the `sre` profile:
+#   docker compose -f container/compose.yaml --profile sre up -d
+#
 # `clickstack-init` registers the account, provisions clickstack/dashboards and
 # clickstack/searches as favorites, and clickstack/alerts, which email the
 # Mailpit inbox (plus CLICKSTACK_ALERT_WEBHOOK_URL when set); `cadvisor`,
@@ -45,6 +48,7 @@ x-clickstack-sources: &clickstack-sources >-
 services:
   clickstack:
     <<: *common
+    profiles: ["sre"]
     # All-in-one: HyperDX app + API, ClickHouse, MongoDB and the OpenTelemetry collector
     # in one container. Fine for development; production runs them as separate services.
     # @ref: https://clickhouse.com/docs/clickstack/managing/config
@@ -81,6 +85,7 @@ services:
 
   clickstack-init:
     <<: *common
+    profiles: ["sre"]
     image: docker.io/badouralix/curl-jq:${CURLJQ_VERSION:-alpine}
     restart: no
     entrypoint: ["/bin/sh", "/clickstack/provision.sh"]
@@ -106,6 +111,7 @@ services:
   # Per-container resource metrics, scraped into the same pipeline.
   cadvisor:
     <<: *common
+    profiles: ["sre"]
     image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:-0.61}
     hostname: cadvisor
     expose: ["8080"]
@@ -125,6 +131,7 @@ services:
   # PostgreSQL metrics, scraped into the same pipeline.
   postgres-exporter:
     <<: *common
+    profiles: ["sre"]
     image: docker.io/prometheuscommunity/postgres-exporter:${POSTGRES_EXPORTER_VERSION:-v0.21.1}
     hostname: postgres-exporter
     expose: ["9187"]
@@ -140,6 +147,7 @@ services:
 
   redis-exporter:
     <<: *common
+    profiles: ["sre"]
     image: docker.io/oliver006/redis_exporter:${REDIS_EXPORTER_VERSION:-v1.97.0-alpine}
     hostname: redis-exporter
     expose: ["9121"]

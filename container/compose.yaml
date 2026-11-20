@@ -1,8 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 
-# The development infrastructure: backing services in compose-dev.yaml, mock
-# third parties in compose-mock.yaml, the observability stack in
-# compose-sre.yaml. Credentials are development-only.
+# The development infrastructure: backing services in compose-dev.yaml,
+# mock third parties in compose-mock.yaml, the observability stack in
+# compose-sre.yaml. The demo, SRE, and conformance services start only
+# with their profile (`demo`, `sre`, `conformance`).
+# 
+# Credentials are development-only.
 
 name: rusttp
 
