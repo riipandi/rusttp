@@ -8,6 +8,7 @@ name: rusttp
 
 include:
   - ./compose-dev.yaml
+  - ./compose-demo.yaml
   - ./compose-mock.yaml
   - ./compose-sre.yaml
 

@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1.7
+
+# Distroless tags: `nonroot` (default) or `debug-nonroot` (adds busybox for a shell).
+ARG DISTROLESS_TAG=nonroot
+
+# -----------------------------------------------------------------------------
+# Download the release binary and verify it against the published checksums.
+# -----------------------------------------------------------------------------
+FROM debian:trixie-slim AS deps
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG PB_VERSION=0.42.3
+
+# PocketBase moved off GitHub; the old releases stay there, new ones are only on this host.
+ARG PB_DOWNLOAD_URL=https://ganigeorgiev.com/meta/pocketbase/pocketbase/download
+
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && apt-get update -y \
+    && apt-get -yqq --no-install-recommends install curl unzip ca-certificates
+
+WORKDIR /tmp
+
+RUN set -eux; \
+    FILE="pocketbase_${PB_VERSION}_${TARGETOS:-linux}_${TARGETARCH:-amd64}${TARGETVARIANT}.zip"; \
+    curl -fsSL -o "${FILE}" "${PB_DOWNLOAD_URL}/v${PB_VERSION}/${FILE}"; \
+    curl -fsSL -o checksums.txt "${PB_DOWNLOAD_URL}/v${PB_VERSION}/checksums.txt"; \
+    grep " ${FILE}\$" checksums.txt | sha256sum -c -; \
+    unzip "${FILE}" pocketbase -d /tmp/out; \
+    chmod 0755 /tmp/out/pocketbase
+
+# No shell in the runner, so the data directory is created here and copied in with its owner.
+RUN mkdir -p /tmp/data
+
+# -----------------------------------------------------------------------------
+# Runtime: distroless static (PocketBase is a static Go binary), as nonroot.
+# -----------------------------------------------------------------------------
+FROM gcr.io/distroless/static-debian13:${DISTROLESS_TAG} AS runner
+
+COPY --from=deps --chown=nonroot:nonroot /tmp/data /data
+COPY --from=deps --chown=root:root --chmod=0755 /tmp/out/pocketbase /app/pocketbase
+
+WORKDIR /app
+USER nonroot:nonroot
+EXPOSE 9090/tcp
+
+# `--encryptionEnv` takes the NAME of the env var (a 32-character value), not the value;
+# exec form does no `${...}` expansion, so the name must be literal here.
+ENTRYPOINT ["/app/pocketbase"]
+CMD ["serve", "--http=0.0.0.0:9090", "--dir=/data/pb_data", "--publicDir=/data/pb_public", "--encryptionEnv=PB_ENCRYPTION_KEY"]

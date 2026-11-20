@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cpus: 1.0
+  healthcheck:
+    start_period: 10s
+    interval: 1m30s
+    timeout: 10s
+    retries: 3
+
+services:
+  pocketbase:
+    <<: *common
+    build:
+      context: ./pocketbase
+      dockerfile: Dockerfile.pocketbase
+      args:
+        PB_VERSION: ${PB_VERSION:-0.42.3}
+        DISTROLESS_TAG: debug-nonroot
+    image: rusttp-pocketbase:${PB_VERSION:-0.42.3}-debug
+    hostname: pocketbase
+    ports: ["${PB_PORT:-9090}:9090"]
+    volumes: ["pocketbase_data:/data:rw"]
+    environment:
+      # Exactly 32 characters; PocketBase encrypts the app settings with it.
+      PB_ENCRYPTION_KEY: ${PB_ENCRYPTION_KEY:-secretRandWithExcact32Characters}
+      PB_SUPERUSER_EMAIL: ${PB_SUPERUSER_EMAIL:-admin@example.com}
+      PB_SUPERUSER_PASSWORD: ${PB_SUPERUSER_PASSWORD:-@Password123!}
+    configs: [{ source: pocketbase_superuser, target: /app/superuser.sh }]
+    post_start:
+      - command: /busybox/sh /app/superuser.sh
+    shm_size: 128m
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "/busybox/wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/api/health"]
+      start_period: 10s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+configs:
+  pocketbase_superuser:
+    content: |
+      #!/busybox/sh
+      set -eu
+      until /busybox/wget -q -O /dev/null http://127.0.0.1:9090/api/health; do sleep 1; done
+      /app/pocketbase superuser upsert "$$PB_SUPERUSER_EMAIL" "$$PB_SUPERUSER_PASSWORD" \
+        --dir=/data/pb_data --encryptionEnv=PB_ENCRYPTION_KEY
+
+volumes:
+  pocketbase_data:
+
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false
