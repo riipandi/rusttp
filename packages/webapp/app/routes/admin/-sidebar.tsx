@@ -5,9 +5,9 @@ import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
-import { UserMenu } from '#/components/user-menu'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
+import { AdminUserMenu } from './-user-menu'
 
 interface NavItem {
   label: string
@@ -88,7 +88,7 @@ export function Sidebar() {
       </nav>
 
       <div {...stylex.props(styles.account)}>
-        <UserMenu variant='row' />
+        <AdminUserMenu />
       </div>
     </aside>
   )

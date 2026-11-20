@@ -1,15 +1,6 @@
-import {
-  ChevronsUpDown,
-  Key,
-  LogOut,
-  Monitor,
-  Moon,
-  Settings,
-  Sun,
-  User
-} from '@keyline-icons/react'
+import { LogOut, Monitor, Moon, Shield, Sun, User } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { Link } from '@tanstack/react-router'
+import { Link, type LinkProps } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
 import { Button } from 'uilibs/base/button'
 import {
@@ -36,65 +27,41 @@ const themes = [
   { value: 'system', label: 'System', icon: Monitor }
 ]
 
-// Placeholders: none of these has a route yet, so they do nothing until one is wired in.
+interface UserMenuItem {
+  label: string
+  icon: typeof User
+  to?: LinkProps['to']
+}
+
+// An item with a `to` navigates; the rest are placeholders until a route is wired in.
 const accountItems = [
-  { label: 'Profile', icon: User },
-  { label: 'Settings', icon: Settings },
-  { label: 'API keys', icon: Key }
-]
+  { label: 'Account', icon: User, to: '/settings/account' },
+  { label: 'Security', icon: Shield, to: '/settings/security' }
+] satisfies UserMenuItem[]
 
 const profile = {
   name: 'Hermione Granger',
   email: 'hermione.granger@example.com',
-  role: 'Administrator',
   initials: 'HG'
 }
 
-/**
- * `avatar` is the avatar alone (a top bar); `row` is the whole account row, avatar, name, and
- * role, as one target (a sidebar), and opens upward from its start edge. The email stays in the
- * menu: it is too long for a sidebar row.
- */
-export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' }) {
+// The customer dashboard's account menu: the avatar alone, in the top bar.
+export function UserMenu() {
   const { theme = 'system', setTheme } = useTheme()
   const current = themes.find((item) => item.value === theme) ?? themes[2]
-  const row = variant === 'row'
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant='ghost'
-            size={row ? 'lg' : 'icon-md'}
-            aria-label={row ? undefined : 'Account menu'}
-            style={row ? styles.row : styles.trigger}
-          />
+          <Button variant='ghost' size='icon-md' aria-label='Account menu' style={styles.trigger} />
         }
       >
         <Avatar size='sm'>
           <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
         </Avatar>
-        {row && (
-          <>
-            <span {...stylex.props(styles.rowIdentity)}>
-              <span {...stylex.props(styles.menuName)} title={profile.name}>
-                {profile.name}
-              </span>
-              <span {...stylex.props(styles.menuEmail)}>{profile.role}</span>
-            </span>
-            <span {...stylex.props(styles.rowChevron)}>
-              <Icon svg={ChevronsUpDown} size={16} color='neutralFaded' />
-            </span>
-          </>
-        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        side={row ? 'top' : 'bottom'}
-        align={row ? 'start' : 'end'}
-        sideOffset={8}
-        style={row ? [styles.menu, styles.menuRow] : styles.menu}
-      >
+      <DropdownMenuContent side='bottom' align='end' sideOffset={8} style={styles.menu}>
         <DropdownMenuGroup>
           <DropdownMenuLabel style={styles.menuLabel}>
             <span {...stylex.props(styles.menuName)} title={profile.name}>
@@ -107,10 +74,13 @@ export function UserMenu({ variant = 'avatar' }: { variant?: 'avatar' | 'row' })
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountItems.map(({ label, icon }) => (
-            <DropdownMenuItem key={label}>
-              <Icon svg={icon} size={16} color='neutralFaded' />
-              {label}
+          {accountItems.map((item) => (
+            <DropdownMenuItem
+              key={item.label}
+              render={'to' in item ? <Link to={item.to} /> : undefined}
+            >
+              <Icon svg={item.icon} size={16} color='neutralFaded' />
+              {item.label}
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
