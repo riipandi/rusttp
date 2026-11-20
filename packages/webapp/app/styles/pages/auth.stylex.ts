@@ -3,12 +3,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-
-// Same-file rule: StyleX only inlines `defineConsts` media keys declared where they are used.
-export const breakpoints = stylex.defineConsts({
-  large: '@media (min-width: 900px)',
-  narrow: '@media (max-width: 479px)'
-})
+import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   split: {
@@ -16,7 +11,7 @@ export const styles = stylex.create({
     display: 'grid',
     gridTemplateColumns: {
       default: '1fr',
-      [breakpoints.large]: 'minmax(22rem, 5fr) 7fr'
+      [breakpoints.wide]: 'minmax(22rem, 5fr) 7fr'
     },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
@@ -24,7 +19,7 @@ export const styles = stylex.create({
   panel: {
     display: {
       default: 'none',
-      [breakpoints.large]: 'flex'
+      [breakpoints.wide]: 'flex'
     },
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -65,7 +60,7 @@ export const styles = stylex.create({
   mobileBrand: {
     display: {
       default: 'flex',
-      [breakpoints.large]: 'none'
+      [breakpoints.wide]: 'none'
     }
   },
   formWrap: {

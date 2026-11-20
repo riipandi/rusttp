@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   headerStart: {
@@ -11,7 +12,7 @@ export const styles = stylex.create({
   nav: {
     display: {
       default: 'none',
-      '@media (min-width: 660px)': 'flex'
+      [breakpoints.medium]: 'flex'
     },
     alignItems: 'center',
     gap: unit.x1
@@ -49,8 +50,8 @@ export const styles = stylex.create({
     display: 'grid',
     gridTemplateColumns: {
       default: '1fr',
-      '@media (min-width: 660px)': 'repeat(2, 1fr)',
-      '@media (min-width: 900px)': 'repeat(4, 1fr)'
+      [breakpoints.medium]: 'repeat(2, 1fr)',
+      [breakpoints.wide]: 'repeat(4, 1fr)'
     },
     gap: unit.x6,
     margin: 0,

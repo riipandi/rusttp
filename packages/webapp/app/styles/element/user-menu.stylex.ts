@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, radius, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '../constants.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   // The avatar is the whole control: no box behind it, a ring with a gap around it on hover (neutral)
@@ -26,11 +26,11 @@ export const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     gap: unit.x2,
-    width: { default: '100%', [breakpoints.narrow]: 'auto' },
-    height: { default: unit.x10, [breakpoints.narrow]: unit.x8 },
+    width: { default: '100%', [breakpoints.compact]: 'auto' },
+    height: { default: unit.x10, [breakpoints.compact]: unit.x8 },
     minWidth: 0,
-    paddingInline: { default: unit.x2, [breakpoints.narrow]: 0 },
-    borderRadius: { default: radius.medium, [breakpoints.narrow]: '50%' },
+    paddingInline: { default: unit.x2, [breakpoints.compact]: 0 },
+    borderRadius: { default: radius.medium, [breakpoints.compact]: '50%' },
     backgroundColor: {
       default: 'transparent',
       ':hover': colors.backgroundNeutralFaded,
@@ -39,7 +39,7 @@ export const styles = stylex.create({
     textAlign: 'start'
   },
   rowIdentity: {
-    display: { default: 'flex', [breakpoints.narrow]: 'none' },
+    display: { default: 'flex', [breakpoints.compact]: 'none' },
     flex: 1,
     flexDirection: 'column',
     minWidth: 0,
@@ -47,7 +47,7 @@ export const styles = stylex.create({
     lineHeight: 1.3
   },
   rowChevron: {
-    display: { default: 'flex', [breakpoints.narrow]: 'none' },
+    display: { default: 'flex', [breakpoints.compact]: 'none' },
     flexShrink: 0
   },
   triggerInitials: {

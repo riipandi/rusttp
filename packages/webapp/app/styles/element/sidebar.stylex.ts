@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '../constants.stylex'
+import { container, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer. On wide
 // screens it is a column beside the page whose two dividers run edge to edge; on narrow ones the
@@ -11,21 +11,21 @@ export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: { default: 'column', [breakpoints.narrow]: 'row' },
-    flexWrap: { default: 'nowrap', [breakpoints.narrow]: 'wrap' },
-    alignItems: { default: 'stretch', [breakpoints.narrow]: 'center' },
-    gap: { default: 0, [breakpoints.narrow]: unit.x2 },
+    flexDirection: { default: 'column', [breakpoints.compact]: 'row' },
+    flexWrap: { default: 'nowrap', [breakpoints.compact]: 'wrap' },
+    alignItems: { default: 'stretch', [breakpoints.compact]: 'center' },
+    gap: { default: 0, [breakpoints.compact]: unit.x2 },
     flexShrink: 0,
-    width: { default: '16rem', [breakpoints.narrow]: '100%' },
-    height: { default: '100dvh', [breakpoints.narrow]: 'auto' },
-    position: { default: 'sticky', [breakpoints.narrow]: 'static' },
+    width: { default: container.xsmall, [breakpoints.compact]: '100%' },
+    height: { default: '100dvh', [breakpoints.compact]: 'auto' },
+    position: { default: 'sticky', [breakpoints.compact]: 'static' },
     top: 0,
-    padding: { default: 0, [breakpoints.narrow]: unit.x3 },
+    padding: { default: 0, [breakpoints.compact]: unit.x3 },
     backgroundColor: colors.backgroundPage,
-    borderInlineEndWidth: { default: 1, [breakpoints.narrow]: 0 },
+    borderInlineEndWidth: { default: 1, [breakpoints.compact]: 0 },
     borderInlineEndStyle: 'solid',
     borderInlineEndColor: colors.borderNeutralFaded,
-    borderBlockEndWidth: { default: 0, [breakpoints.narrow]: 1 },
+    borderBlockEndWidth: { default: 0, [breakpoints.compact]: 1 },
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: colors.borderNeutralFaded
   },
@@ -33,47 +33,47 @@ export const styles = stylex.create({
   brand: {
     boxSizing: 'border-box',
     display: 'flex',
-    flex: { default: 'none', [breakpoints.narrow]: 1 },
+    flex: { default: 'none', [breakpoints.compact]: 1 },
     // The logo is sized in em, so this shrinks mark and wordmark together.
     fontSize: fontSize.body1,
-    height: { default: unit.x12, [breakpoints.narrow]: unit.x10 },
-    paddingInline: { default: unit.x6, [breakpoints.narrow]: unit.x2 },
-    borderBlockEndWidth: { default: 1, [breakpoints.narrow]: 0 },
+    height: { default: unit.x12, [breakpoints.compact]: unit.x10 },
+    paddingInline: { default: unit.x6, [breakpoints.compact]: unit.x2 },
+    borderBlockEndWidth: { default: 1, [breakpoints.compact]: 0 },
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: colors.borderNeutralFaded
   },
   nav: {
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: { default: 'column', [breakpoints.narrow]: 'row' },
+    flexDirection: { default: 'column', [breakpoints.compact]: 'row' },
     flexWrap: 'nowrap',
-    gap: { default: unit.x4, [breakpoints.narrow]: unit.x0_5 },
-    flex: { default: 1, [breakpoints.narrow]: 'none' },
+    gap: { default: unit.x4, [breakpoints.compact]: unit.x0_5 },
+    flex: { default: 1, [breakpoints.compact]: 'none' },
     // The only part that scrolls: between the two dividers on wide screens, sideways on narrow ones.
     minHeight: 0,
-    overflowY: { default: 'auto', [breakpoints.narrow]: 'hidden' },
-    overflowX: { default: 'hidden', [breakpoints.narrow]: 'auto' },
+    overflowY: { default: 'auto', [breakpoints.compact]: 'hidden' },
+    overflowX: { default: 'hidden', [breakpoints.compact]: 'auto' },
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',
-    order: { default: 0, [breakpoints.narrow]: 2 },
-    padding: { default: unit.x3, [breakpoints.narrow]: 0 },
-    width: { default: 'auto', [breakpoints.narrow]: '100%' }
+    order: { default: 0, [breakpoints.compact]: 2 },
+    padding: { default: unit.x3, [breakpoints.compact]: 0 },
+    width: { default: 'auto', [breakpoints.compact]: '100%' }
   },
   // On narrow screens the groups and lists dissolve into the nav's row and the labels are hidden.
   group: {
-    display: { default: 'flex', [breakpoints.narrow]: 'contents' },
+    display: { default: 'flex', [breakpoints.compact]: 'contents' },
     flexDirection: 'column',
     gap: unit.x1
   },
   groupLabel: {
-    display: { default: 'block', [breakpoints.narrow]: 'none' },
+    display: { default: 'block', [breakpoints.compact]: 'none' },
     paddingInline: unit.x3,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium
   },
   list: {
-    display: { default: 'flex', [breakpoints.narrow]: 'contents' },
+    display: { default: 'flex', [breakpoints.compact]: 'contents' },
     flexDirection: 'column',
     gap: unit.x0_5,
     margin: 0,
@@ -84,7 +84,7 @@ export const styles = stylex.create({
     justifyContent: 'flex-start',
     flexShrink: 0,
     whiteSpace: 'nowrap',
-    width: { default: '100%', [breakpoints.narrow]: 'auto' }
+    width: { default: '100%', [breakpoints.compact]: 'auto' }
   },
   itemCurrent: {
     color: colors.foregroundNeutral,
@@ -100,10 +100,10 @@ export const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     flexShrink: 0,
-    height: { default: unit.x14, [breakpoints.narrow]: 'auto' },
+    height: { default: unit.x14, [breakpoints.compact]: 'auto' },
     minWidth: 0,
-    paddingInline: { default: unit.x3, [breakpoints.narrow]: 0 },
-    borderBlockStartWidth: { default: 1, [breakpoints.narrow]: 0 },
+    paddingInline: { default: unit.x3, [breakpoints.compact]: 0 },
+    borderBlockStartWidth: { default: 1, [breakpoints.compact]: 0 },
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: colors.borderNeutralFaded
   }

@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 // Spacing follows the viewport height (`dvh`, clamped), so the page is roomy on
 // a tall screen and still fits a 720px-high laptop viewport without scrolling.
@@ -23,7 +24,7 @@ export const styles = stylex.create({
     maxWidth: '24ch',
     fontSize: {
       default: fontSize.featured1,
-      '@media (min-width: 660px)': fontSize.headline3
+      [breakpoints.medium]: fontSize.headline3
     },
     fontWeight: fontWeight.bold,
     lineHeight: 1.05,

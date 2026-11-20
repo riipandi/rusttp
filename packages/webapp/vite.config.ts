@@ -14,7 +14,16 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 // and the HMR socket connects to it directly so a server restart never drops it.
 const vite = { host: '127.0.0.1', port: 5173 }
 
-const stylex = (mode: string) => stylexPlugin({ enableDevClassNames: mode === 'development' })
+// In dev the CSS is collected on every request while modules are still being compiled one by one. A
+// `defineConsts` media key (app/styles/constants.stylex.ts) stays an unresolved `var(--x…)` until the
+// file that defines it has compiled, and lightningcss rejects that rule ("Invalid empty selector").
+// Error recovery drops the rule for that one response; the next HMR update serves the whole CSS.
+// The build keeps lightningcss strict.
+const stylex = (mode: string) =>
+  stylexPlugin({
+    enableDevClassNames: mode === 'development',
+    lightningcssOptions: mode === 'development' ? { errorRecovery: true } : undefined
+  })
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -56,5 +65,9 @@ export default defineConfig(({ mode }) => ({
     outDir: resolve('../../apps/server/frontend'),
     reportCompressedSize: false
   },
-  server: { ...vite, strictPort: true, hmr: { host: vite.host, clientPort: vite.port } }
+  server: {
+    ...vite,
+    strictPort: true,
+    hmr: { host: vite.host, clientPort: vite.port }
+  }
 }))

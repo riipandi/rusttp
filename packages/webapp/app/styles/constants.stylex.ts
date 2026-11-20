@@ -1,6 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 
-// Shared by the admin layout, its sidebar, and the account row, which change shape together.
+// App-wide breakpoints. Importing this file from a style is enough; `vite.config.ts` warms it up
+// (`server.warmup`) so `vite dev` has compiled it before the first CSS request.
 export const breakpoints = stylex.defineConsts({
-  narrow: '@media (max-width: 767px)'
+  narrow: '@media (max-width: 479px)',
+  compact: '@media (max-width: 767px)',
+  medium: '@media (min-width: 660px)',
+  wide: '@media (min-width: 900px)'
 })

@@ -236,6 +236,10 @@ export const zIndices = stylex.defineConsts({
 });
 ```
 
+**Trap (`vite dev`):** the compiler resolves a `defineConsts` media key (`[breakpoints.compact]`) only once the file that defines it has compiled, and `@stylexjs/unplugin` collects the CSS on every request while modules compile one by one. On a cold dev server that gives a `var(--x…)` where a media query belongs and lightningcss fails with "Invalid empty selector". Do not work around it with an import of the constants file in app code (the style that uses a constant already imports it, and the compiler keeps that import), and do not copy the constants into each file. `packages/webapp/vite.config.ts` sets `lightningcssOptions: { errorRecovery: true }` in development, which drops the rule for that one response; the next HMR update serves the whole CSS. The build stays strict. The webapp's shared breakpoints are in `app/styles/constants.stylex.ts` (`narrow` ≤479, `compact` ≤767, `medium` ≥660, `wide` ≥900).
+
+---
+
 ---
 
 ## Defining variables
