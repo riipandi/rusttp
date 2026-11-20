@@ -38,7 +38,7 @@ export const styles = stylex.create({
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    gap: unit.x4,
+    gap: unit.x5,
     flex: 1,
     // The only part that scrolls: between the two dividers.
     minHeight: 0,
@@ -55,6 +55,7 @@ export const styles = stylex.create({
   },
   groupLabel: {
     paddingInline: unit.x3,
+    paddingBlockEnd: unit.x1,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium
@@ -62,7 +63,7 @@ export const styles = stylex.create({
   list: {
     display: 'flex',
     flexDirection: 'column',
-    gap: unit.x0_5,
+    gap: unit.x1,
     margin: 0,
     padding: 0,
     listStyle: 'none'
@@ -71,7 +72,9 @@ export const styles = stylex.create({
     justifyContent: 'flex-start',
     flexShrink: 0,
     whiteSpace: 'nowrap',
-    width: '100%'
+    width: '100%',
+    height: unit.x9,
+    paddingInline: unit.x3
   },
   itemCurrent: {
     color: colors.foregroundNeutral,
