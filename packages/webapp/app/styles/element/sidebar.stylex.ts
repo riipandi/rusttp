@@ -120,6 +120,44 @@ export const styles = stylex.create({
     width: 'auto',
     marginInline: unit.x2
   },
+  // The notification entry between the scrolling nav and the account strip; it stays put.
+  notify: {
+    flexShrink: 0,
+    paddingInline: unit.x3,
+    paddingBlockEnd: unit.x3
+  },
+  bell: {
+    position: 'relative',
+    display: 'inline-flex'
+  },
+  // The collapsed indicator: a dot on the bell's corner, ringed in the page color so it reads on top.
+  dot: {
+    position: 'absolute',
+    top: `calc(-1 * ${unit.x0_5})`,
+    insetInlineEnd: `calc(-1 * ${unit.x0_5})`,
+    width: unit.x2,
+    height: unit.x2,
+    borderRadius: '50%',
+    backgroundColor: colors.backgroundPrimary,
+    boxShadow: `0 0 0 2px ${colors.backgroundPage}`
+  },
+  // With something unread the entry steps up from the idle gray to the full foreground, and the
+  // count is the solid primary: the two together read as one state, the gray one as none.
+  itemUnread: {
+    color: colors.foregroundNeutral
+  },
+  // A compact count, not the badge's label-sized pill, in tabular figures so the width does not
+  // jump between counts.
+  count: {
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    minWidth: unit.x5,
+    height: unit.x5,
+    marginInlineStart: 'auto',
+    paddingBlock: 0,
+    paddingInline: unit.x1_5,
+    fontVariantNumeric: 'tabular-nums'
+  },
   group: {
     display: 'flex',
     flexDirection: 'column',

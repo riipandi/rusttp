@@ -1,10 +1,11 @@
-import { PanelLeftClose, PanelLeftOpen } from '@keyline-icons/react'
+import { Bell, PanelLeftClose, PanelLeftOpen } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Separator } from 'uilibs/base/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
+import { Badge } from 'uilibs/extra/badge'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
@@ -53,6 +54,52 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
     <Tooltip>
       <TooltipTrigger render={trigger}>{content}</TooltipTrigger>
       <TooltipContent side='right'>{label}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+// Placeholder: the count is fixed and nothing opens until notifications have a source. Set it to 0
+// to hide the indicator.
+const unread = 3
+
+// Pinned above the account strip. Collapsed, the count becomes a dot on the bell, and the label
+// moves to the accessible name and a tooltip, as with the nav items.
+function NotifyEntry({ collapsed }: { collapsed: boolean }) {
+  const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
+  const trigger = (
+    <Button
+      variant='ghost'
+      size='sm'
+      aria-label={name}
+      style={[
+        styles.item,
+        collapsed && styles.itemCollapsed,
+        styles.itemIdle,
+        unread > 0 && styles.itemUnread
+      ]}
+    />
+  )
+  const content = (
+    <>
+      <span {...stylex.props(styles.bell)}>
+        <Icon svg={Bell} size={16} />
+        {collapsed && unread > 0 && <span aria-hidden='true' {...stylex.props(styles.dot)} />}
+      </span>
+      {!collapsed && 'Notifications'}
+      {!collapsed && unread > 0 && (
+        <Badge aria-hidden='true' style={styles.count}>
+          {unread > 9 ? '9+' : unread}
+        </Badge>
+      )}
+    </>
+  )
+
+  if (!collapsed) return React.cloneElement(trigger, undefined, content)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger render={trigger}>{content}</TooltipTrigger>
+      <TooltipContent side='right'>{name}</TooltipContent>
     </Tooltip>
   )
 }
@@ -144,6 +191,10 @@ export function Sidebar() {
             </React.Fragment>
           ))}
         </nav>
+
+        <div {...stylex.props(styles.notify)}>
+          <NotifyEntry collapsed={collapsed} />
+        </div>
       </TooltipProvider>
 
       <div {...stylex.props(styles.account)}>
