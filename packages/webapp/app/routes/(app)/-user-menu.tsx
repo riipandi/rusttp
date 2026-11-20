@@ -39,7 +39,7 @@ const accountItems = [
   { label: 'Security', icon: Shield, to: '/settings/security' }
 ] satisfies UserMenuItem[]
 
-const profile = {
+export const profile = {
   name: 'Hermione Granger',
   email: 'hermione.granger@example.com',
   initials: 'HG'
