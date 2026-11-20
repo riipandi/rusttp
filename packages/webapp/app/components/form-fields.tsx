@@ -10,7 +10,6 @@ import { colors } from 'uilibs/styles/colors.stylex'
 import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
 
 const styles = stylex.create({
-  // Visually hidden but still the control's accessible name: the placeholder is the visible label.
   srOnly: {
     position: 'absolute',
     width: 1,
@@ -22,12 +21,9 @@ const styles = stylex.create({
     whiteSpace: 'nowrap',
     borderWidth: 0
   },
-  // Hints and messages sit a little closer to their control than to the next one, and line up with
-  // the text inside it rather than with its border.
   hint: {
     marginBlockStart: `calc(-1 * ${unit.x1})`,
-    paddingInline: unit.x4,
-    // The same size for a hint and a message, so one replaces the other without the line shifting.
+    paddingInline: unit.x1,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2
   },
@@ -37,7 +33,6 @@ const styles = stylex.create({
     color: colors.foregroundWarning,
     fontSize: fontSize.caption1
   },
-  // The code fills the form column: the slots share its width and stand taller than a text field.
   code: {
     width: '100%'
   },
@@ -65,7 +60,7 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: unit.x3,
-    minHeight: unit.x10,
+    minHeight: unit.x12,
     paddingBlock: unit.x2,
     paddingInline: unit.x4,
     backgroundColor: colors.backgroundPageFaded,

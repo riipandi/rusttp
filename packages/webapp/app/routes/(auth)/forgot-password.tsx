@@ -29,7 +29,8 @@ function RouteComponent() {
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Forgot your password?</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Enter the email you registered with and we will send you a link to reset it.
+          Enter the email you registered with and we will send you an email with the instructions to
+          reset your password.
         </p>
       </div>
 

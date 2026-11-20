@@ -16,7 +16,7 @@ const styles = stylex.create({
     alignItems: 'center',
     gap: unit.x3,
     color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1
+    fontSize: fontSize.body2
   },
   line: {
     flex: 1

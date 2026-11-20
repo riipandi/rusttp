@@ -25,7 +25,7 @@ function RouteComponent() {
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Two-factor authentication</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Open your authenticator app and enter the 6-digit code it shows for Rusttp.
+          Open your authenticator app and enter the 6-digit code.
         </p>
       </div>
 

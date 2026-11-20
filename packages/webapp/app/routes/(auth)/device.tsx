@@ -1,10 +1,8 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
-import { ArrowLeft } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
-import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
 import { deviceSchema } from '#/schemas/device.schema'
 import { styles } from '#/styles/pages/auth.stylex'
@@ -48,13 +46,6 @@ function RouteComponent() {
           device.
         </p>
       </Form>
-
-      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
-        <span {...stylex.props(styles.backIcon)}>
-          <Icon svg={ArrowLeft} size={14} />
-        </span>
-        Back to sign in
-      </Link>
     </>
   )
 }

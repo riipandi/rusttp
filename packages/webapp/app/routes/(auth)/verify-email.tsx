@@ -17,9 +17,9 @@ function RouteComponent() {
         <StatusIcon svg={Mail} />
         <h1 {...stylex.props(styles.title)}>Check your email</h1>
         <p {...stylex.props(styles.subtitle)}>
-          We sent a verification link to{' '}
-          <span {...stylex.props(styles.strong)}>sophie.neveu@example.com</span>. Open it to finish
-          creating your account.
+          We&apos;ve emailed the instructions for verifying your email address,
+          <span {...stylex.props(styles.strong)}>sophie.neveu@example.com</span>. Check your inbox
+          and follow the steps to continue.
         </p>
       </div>
 

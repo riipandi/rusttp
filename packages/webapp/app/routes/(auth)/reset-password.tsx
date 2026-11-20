@@ -1,9 +1,11 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
+import { ArrowLeft } from '@keyline-icons/react'
 import { CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
 import { resetPasswordSchema, resetSearchSchema } from '#/schemas/reset-password.schema'
@@ -34,7 +36,8 @@ function RouteComponent() {
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>Choose a new password</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Pick one you have not used here before. You will sign in with it next.
+          Pick one you have not used here before. <br />
+          You will sign in with it next.
         </p>
       </div>
 
@@ -49,12 +52,7 @@ function RouteComponent() {
         <div {...stylex.props(styles.fields)}>
           <Field of={form} path={['password']}>
             {(field) => (
-              <PasswordField
-                field={field}
-                label='New password'
-                description='At least 12 characters.'
-                autoComplete='new-password'
-              />
+              <PasswordField field={field} label='New password' autoComplete='new-password' />
             )}
           </Field>
           <Field of={form} path={['confirm']}>
@@ -78,13 +76,21 @@ function InvalidLink() {
         <StatusIcon svg={CircleAlert} tone='critical' />
         <h1 {...stylex.props(styles.title)}>This reset link is not valid</h1>
         <p {...stylex.props(styles.subtitle)}>
-          It may have expired or already been used. Request a new one and we will email it to you.
+          It may have expired or already been used. <br />
+          Request a new one and we will email it to you.
         </p>
       </div>
 
       <LinkButton render={<Link to='/forgot-password' />} size='lg'>
         Request a new link
       </LinkButton>
+
+      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+        <span {...stylex.props(styles.backIcon)}>
+          <Icon svg={ArrowLeft} size={14} />
+        </span>
+        Back to sign in
+      </Link>
     </>
   )
 }

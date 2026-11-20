@@ -62,12 +62,7 @@ function RouteComponent() {
           </Field>
           <Field of={form} path={['password']}>
             {(field) => (
-              <PasswordField
-                field={field}
-                label='Password'
-                description='At least 12 characters.'
-                autoComplete='new-password'
-              />
+              <PasswordField field={field} label='Password' autoComplete='new-password' />
             )}
           </Field>
           <Field of={form} path={['captcha']}>
