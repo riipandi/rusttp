@@ -1,31 +1,81 @@
+import { CircleAlert, SearchX } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { Link, type ErrorComponentProps } from '@tanstack/react-router'
-import { Button } from 'uilibs/base/button'
+import { Link, type ErrorComponentProps, useRouter } from '@tanstack/react-router'
+import type * as React from 'react'
+import { Button, LinkButton } from 'uilibs/base/button'
+import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
+import { ThemeProvider } from 'uilibs/theme'
 import { styles as layout } from '#/styles/element/layout.stylex'
 
-export function GlobalNotFound() {
+function Boundary({
+  icon,
+  title,
+  description,
+  detail,
+  children
+}: {
+  icon: typeof CircleAlert
+  title: string
+  description: string
+  detail?: string
+  children: React.ReactNode
+}) {
+  // The root route's error component replaces the whole root, providers included, so this page
+  // brings its own: on a reload the theme script and the stored choice would otherwise never run
+  // and the page would fall back to light. A parent provider, when there is one, wins.
   return (
-    <div {...stylex.props(layout.root)}>
-      <main {...stylex.props(layout.center)}>
-        <Text variant='featured-1'>404</Text>
-        <Text color='neutral-faded'>Sorry, we couldn&rsquo;t find your page.</Text>
-        <Link to='/'>Back to main page</Link>
-      </main>
-    </div>
+    <ThemeProvider attribute='data-theme' defaultTheme='system'>
+      <title>{`${title} - Rusttp`}</title>
+      <div {...stylex.props(layout.root)}>
+        <main {...stylex.props(layout.center)}>
+          <Icon svg={icon} size={32} color='neutralFaded' />
+          <Text variant='featured-3' weight='bold'>
+            {title}
+          </Text>
+          <Text color='neutral-faded'>{description}</Text>
+          {detail && (
+            <Text variant='caption-1' color='neutral-faded' monospace>
+              {detail}
+            </Text>
+          )}
+          <div {...stylex.props(layout.actions)}>{children}</div>
+        </main>
+      </div>
+    </ThemeProvider>
+  )
+}
+
+export function GlobalNotFound() {
+  const router = useRouter()
+
+  return (
+    <Boundary
+      icon={SearchX}
+      title='Page not found'
+      description='The page may have moved, or the address may be mistyped.'
+    >
+      <LinkButton render={<Link to='/' />}>Back to home</LinkButton>
+      <Button variant='secondary' onClick={() => router.history.back()}>
+        Go back
+      </Button>
+    </Boundary>
   )
 }
 
 export function GlobalError({ error, reset }: ErrorComponentProps) {
   return (
-    <div {...stylex.props(layout.root)}>
-      <main {...stylex.props(layout.center)}>
-        <Text variant='featured-1'>Something went wrong</Text>
-        <Text color='neutral-faded'>
-          {error instanceof Error ? error.message : 'An unexpected error occurred.'}
-        </Text>
-        <Button onClick={reset}>Try again</Button>
-      </main>
-    </div>
+    <Boundary
+      icon={CircleAlert}
+      title='Something went wrong'
+      description='Try again. If it keeps happening, reload the page or come back later.'
+      // The raw message is a developer aid, not copy for a visitor, so a production build omits it.
+      detail={import.meta.env.DEV && error instanceof Error ? error.message : undefined}
+    >
+      <Button onClick={reset}>Try again</Button>
+      <LinkButton render={<Link to='/' />} variant='secondary'>
+        Back to home
+      </LinkButton>
+    </Boundary>
   )
 }

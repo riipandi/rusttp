@@ -56,9 +56,15 @@ export const styles = stylex.create({
     justifyContent: 'center',
     gap: unit.x4,
     width: '100%',
-    maxWidth: '32rem',
+    maxWidth: '36rem',
     marginInline: 'auto',
     padding: unit.x6
+  },
+  actions: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: unit.x2,
+    marginBlockStart: unit.x2
   },
   footer: {
     paddingBlock: unit.x6,
