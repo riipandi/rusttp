@@ -1,18 +1,5 @@
-import {
-  Ban,
-  Bell,
-  History,
-  IdCard,
-  Key,
-  LayoutDashboard,
-  Layers,
-  LogIn,
-  Plug,
-  Settings,
-  Timer,
-  Users,
-  Webhook
-} from '@keyline-icons/react'
+import { Ban, Bell, History, IdCard, Key, LayoutDashboard } from '@keyline-icons/react'
+import { Layers, LogIn, Plug, Settings, Timer, Users, Webhook } from '@keyline-icons/react'
 import type { NavGroup } from '#/components/nav-sheet'
 
 // Only Overview has a page; the other entries are placeholders until a route is wired in.

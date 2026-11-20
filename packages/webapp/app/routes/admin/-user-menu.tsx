@@ -1,10 +1,10 @@
 import {
+  AppWindow,
   ChevronsUpDown,
-  Key,
   LogOut,
   Monitor,
   Moon,
-  Settings,
+  Shield,
   Sun,
   User
 } from '@keyline-icons/react'
@@ -39,13 +39,17 @@ const themes = [
 interface UserMenuItem {
   label: string
   icon: typeof User
-  to?: LinkProps['to']
+  to: LinkProps['to']
 }
 
+// Personal entries only: the instance's own settings and API keys live in the sidebar.
 const accountItems = [
   { label: 'Account', icon: User, to: '/admin/account' },
-  { label: 'Settings', icon: Settings },
-  { label: 'API keys', icon: Key }
+  { label: 'Security', icon: Shield, to: '/admin/security' }
+] satisfies UserMenuItem[]
+
+const appItems = [
+  { label: 'Back to app', icon: AppWindow, to: '/dashboard' }
 ] satisfies UserMenuItem[]
 
 const profile = {
@@ -122,8 +126,25 @@ export function AdminUserMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountItems.map(({ label, icon }) => (
-            <DropdownMenuItem key={label} style={mobile ? styles.menuItemTouch : undefined}>
+          {accountItems.map(({ label, icon, to }) => (
+            <DropdownMenuItem
+              key={label}
+              render={<Link to={to} />}
+              style={mobile ? styles.menuItemTouch : undefined}
+            >
+              <Icon svg={icon} size={16} color='neutralFaded' />
+              {label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {appItems.map(({ label, icon, to }) => (
+            <DropdownMenuItem
+              key={label}
+              render={<Link to={to} />}
+              style={mobile ? styles.menuItemTouch : undefined}
+            >
               <Icon svg={icon} size={16} color='neutralFaded' />
               {label}
             </DropdownMenuItem>

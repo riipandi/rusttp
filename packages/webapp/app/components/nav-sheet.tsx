@@ -160,6 +160,13 @@ export function NavSheet({
 }) {
   const [open, setOpen] = React.useState(false)
   const close = () => setOpen(false)
+  // Links in the host's `footer` (the account menu) cannot reach `close`, so any navigation closes it.
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const [openedAt, setOpenedAt] = React.useState(pathname)
+  if (pathname !== openedAt) {
+    setOpenedAt(pathname)
+    setOpen(false)
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
