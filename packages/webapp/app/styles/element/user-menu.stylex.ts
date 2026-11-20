@@ -1,7 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, radius, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   // The avatar is the whole control: no box behind it, a ring with a gap around it on hover (neutral)
@@ -19,18 +18,20 @@ export const styles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: 'box-shadow'
   },
-  // The whole account row is the target: it fills the sidebar, takes the hover and open tint, and
-  // collapses to the bare avatar on narrow screens, where the sidebar is a top bar.
+  // The whole account row is the target: it fills the sidebar and takes the hover and open tint.
   row: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: unit.x2,
-    width: { default: '100%', [breakpoints.compact]: 'auto' },
-    height: { default: unit.x10, [breakpoints.compact]: unit.x8 },
+    gap: unit.x3,
+    width: '100%',
+    height: unit.x12,
     minWidth: 0,
-    paddingInline: { default: unit.x2, [breakpoints.compact]: 0 },
-    borderRadius: { default: radius.medium, [breakpoints.compact]: '50%' },
+    // The chevron glyph has about 5px of its own room on the right, so the end padding is smaller
+    // and the avatar and the chevron sit the same distance from the row's edges.
+    paddingInlineStart: unit.x3,
+    paddingInlineEnd: unit.x2,
+    borderRadius: radius.medium,
     backgroundColor: {
       default: 'transparent',
       ':hover': colors.backgroundNeutralFaded,
@@ -39,7 +40,7 @@ export const styles = stylex.create({
     textAlign: 'start'
   },
   rowIdentity: {
-    display: { default: 'flex', [breakpoints.compact]: 'none' },
+    display: 'flex',
     flex: 1,
     flexDirection: 'column',
     minWidth: 0,
@@ -47,7 +48,7 @@ export const styles = stylex.create({
     lineHeight: 1.3
   },
   rowChevron: {
-    display: { default: 'flex', [breakpoints.compact]: 'none' },
+    display: 'flex',
     flexShrink: 0
   },
   triggerInitials: {
@@ -61,6 +62,7 @@ export const styles = stylex.create({
   // The sidebar's menu is as wide as the row that opened it; a long name or email truncates.
   menuRow: {
     minWidth: 0,
+    maxWidth: 'none',
     width: 'var(--anchor-width)'
   },
   menuLabel: {

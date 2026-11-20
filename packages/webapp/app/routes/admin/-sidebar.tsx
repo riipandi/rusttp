@@ -1,45 +1,27 @@
-import { BookOpen, ChartColumn, LayoutDashboard, Settings, Users } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { Link, useRouterState } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
+import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
+import { groups } from './-nav'
 import { AdminUserMenu } from './-user-menu'
 
-interface NavItem {
-  label: string
-  icon: typeof LayoutDashboard
-  /** Only Overview has a page; the others render `aria-disabled` until a route is wired in. */
-  to?: '/admin'
-}
-
-const groups: { label?: string; items: NavItem[] }[] = [
-  { items: [{ label: 'Overview', icon: LayoutDashboard, to: '/admin' }] },
-  {
-    label: 'Library',
-    items: [
-      { label: 'Loans', icon: BookOpen },
-      { label: 'Members', icon: Users },
-      { label: 'Reports', icon: ChartColumn }
-    ]
-  },
-  { label: 'System', items: [{ label: 'Settings', icon: Settings }] }
-]
-
-function NavEntry({ label, icon, to }: NavItem) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
+function NavEntry({ item }: { item: NavItem }) {
+  const current = useIsCurrent(item)
+  const { label, icon, to } = item
 
   if (to) {
     return (
       <LinkButton
         render={<Link to={to} />}
-        current={pathname === to}
+        current={current}
         variant='ghost'
         size='sm'
-        style={[styles.item, pathname === to ? styles.itemCurrent : styles.itemIdle]}
+        style={[styles.item, current ? styles.itemCurrent : styles.itemIdle]}
       >
         <Icon svg={icon} size={16} />
         {label}
@@ -79,7 +61,7 @@ export function Sidebar() {
             >
               {items.map((item) => (
                 <li key={item.label}>
-                  <NavEntry {...item} />
+                  <NavEntry item={item} />
                 </li>
               ))}
             </ul>

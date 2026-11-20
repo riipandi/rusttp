@@ -15,6 +15,32 @@ export const styles = stylex.create({
     flex: 1,
     minWidth: 0
   },
+  // Below the compact breakpoint the sidebar is gone and this bar stands in: the menu trigger, the
+  // brand centered, and the notification trigger, in three equal-weight zones.
+  topbar: {
+    display: { default: 'none', [breakpoints.compact]: 'grid' },
+    gridTemplateColumns: '1fr auto 1fr',
+    alignItems: 'center',
+    gap: unit.x2,
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+    boxSizing: 'border-box',
+    height: unit.x14,
+    paddingInline: 'clamp(1.5rem, 4vw, 3rem)',
+    backgroundColor: colors.backgroundPage,
+    borderBlockEndWidth: 1,
+    borderBlockEndStyle: 'solid',
+    borderBlockEndColor: colors.borderNeutralFaded
+  },
+  brand: {
+    justifySelf: 'center'
+  },
+  // The bell is the last item, so its glyph, not its 36px box, lines up with the content edge.
+  notify: {
+    justifySelf: 'end',
+    marginInlineEnd: `calc(-1 * ${unit.x2})`
+  },
   main: {
     display: 'flex',
     flexDirection: 'column',
