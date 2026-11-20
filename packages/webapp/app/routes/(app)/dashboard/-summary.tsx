@@ -1,11 +1,11 @@
 import * as stylex from '@stylexjs/stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { summary } from './-data'
+import type { summary } from './-data'
 
-export function Summary() {
+export function Summary({ items }: { items: typeof summary }) {
   return (
     <dl {...stylex.props(styles.summary)}>
-      {summary.map(({ label, value }) => (
+      {items.map(({ label, value }) => (
         <div key={label} {...stylex.props(styles.summaryItem)}>
           <dt {...stylex.props(styles.summaryLabel)}>{label}</dt>
           <dd {...stylex.props(styles.summaryValue)}>{value}</dd>

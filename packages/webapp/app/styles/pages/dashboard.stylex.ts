@@ -88,5 +88,21 @@ export const styles = stylex.create({
   },
   muted: {
     color: colors.foregroundNeutralFaded
+  },
+  skeletonLabel: {
+    width: unit.x20,
+    height: unit.x4
+  },
+  skeletonValue: {
+    width: unit.x16,
+    height: unit.x8
+  },
+  skeletonText: {
+    width: unit.x20,
+    height: unit.x4
+  },
+  skeletonBadge: {
+    width: unit.x16,
+    height: unit.x6
   }
 })

@@ -1,7 +1,10 @@
+import { BookOpen } from '@keyline-icons/react'
 import { Badge, type BadgeProps } from 'uilibs/extra/badge'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
+import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { loans, type LoanStatus } from './-data'
+import type { Loan, LoanStatus } from './-data'
 
 const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Borrowed: { variant: 'secondary' },
@@ -10,7 +13,23 @@ const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Returned: { variant: 'ghost' }
 }
 
-export function LoansTable() {
+export function LoansTable({ loans }: { loans: Loan[] }) {
+  if (loans.length === 0) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant='icon'>
+            <Icon svg={BookOpen} size={16} />
+          </EmptyMedia>
+          <EmptyTitle>No loans yet</EmptyTitle>
+          <EmptyDescription>
+            Loans show up here as soon as a member borrows a book from the Hogwarts library.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    )
+  }
+
   return (
     <Table>
       <TableHeader>
