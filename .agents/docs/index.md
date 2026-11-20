@@ -49,6 +49,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five
 | `handover-00002-uilibs-audit-plan.md`    | done   | The `packages/uilibs` audit and the improvement plan, before any phase ran.                   |
 | `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
 | `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
+| `handover-00005-webapp-nav-container-demo.md` | partial | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme. |
 
 ## Audits (`.agents/docs/audit/`)
 
