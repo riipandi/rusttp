@@ -28,6 +28,7 @@ services:
   #   http://localhost:9180   Silo CDN (devbucket, read-only)
   #   https://localhost:9143  Silo CDN over TLS
   #   https://localhost:3443  the application on the host (:3000)
+  #   https://localhost:1411  Pocket ID
   #   https://mock-oauth2.localhost:3220  mock OAuth2 server (localhost works from the host)
   nginx:
     <<: *common
@@ -38,7 +39,7 @@ services:
     networks:
       intranet:
         aliases: ["mock-oauth2.localhost"]
-    ports: ["9100:9100", "9101:9101", "9180:9180", "9143:9143", "3443:3443", "3220:3220"]
+    ports: ["9100:9100", "9101:9101", "9180:9180", "9143:9143", "3443:3443", "3220:3220", "1411:1411"]
     volumes:
       - "./nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro"
       - "../storage/config:/etc/nginx/certs:ro"

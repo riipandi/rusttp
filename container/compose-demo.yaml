@@ -42,6 +42,33 @@ services:
       timeout: 5s
       retries: 3
 
+  # OIDC provider; Create the first admin (passkey) at https://localhost:1411/setup
+  # @ref: https://pocket-id.org/docs/setup/installation
+  # @ref: https://pocket-id.org/docs/advanced/hardening
+  pocket-id:
+    <<: *common
+    image: ghcr.io/pocket-id/pocket-id:${POCKETID_VERSION:-v2}
+    hostname: pocket-id
+    expose: ["1411"]
+    volumes: ["pocketid_data:/app/data:rw"]
+    environment:
+      APP_URL: https://localhost:1411
+      # At least 16 characters; encrypts the stored secrets, so changing it breaks existing data.
+      ENCRYPTION_KEY: ${POCKETID_ENCRYPTION_KEY:-secretEncryptionMinimal16Chars}
+      TRUST_PROXY: true
+      ANALYTICS_DISABLED: true
+      VERSION_CHECK_DISABLED: true
+    read_only: true
+    tmpfs: ["/tmp"]
+    shm_size: 32m
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "/app/pocket-id", "healthcheck"]
+      start_period: 10s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 configs:
   pocketbase_superuser:
     content: |
@@ -53,6 +80,7 @@ configs:
 
 volumes:
   pocketbase_data:
+  pocketid_data:
 
 networks:
   intranet:
