@@ -1,0 +1,268 @@
+import type { FieldElementProps } from '@formisch/react'
+import * as stylex from '@stylexjs/stylex'
+import * as React from 'react'
+import { Checkbox } from 'uilibs/base/checkbox'
+import { Field, FieldDescription, FieldError, FieldLabel } from 'uilibs/base/field'
+import { Input } from 'uilibs/base/input'
+import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs/base/otp-field'
+import { InputPassword } from 'uilibs/extra/input-password'
+import { colors } from 'uilibs/styles/colors.stylex'
+import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
+
+const styles = stylex.create({
+  srOnly: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    margin: -1,
+    padding: 0,
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+    borderWidth: 0
+  },
+  hint: {
+    marginBlockStart: `calc(-1 * ${unit.x1})`,
+    paddingInline: unit.x1,
+    fontSize: fontSize.body2,
+    lineHeight: fontLineHeight.body2
+  },
+  warning: {
+    display: 'block',
+    margin: 0,
+    color: colors.foregroundWarning,
+    fontSize: fontSize.caption1
+  },
+  code: {
+    width: '100%'
+  },
+  group: {
+    flex: 1,
+    minWidth: 0
+  },
+  slot: {
+    flexBasis: 0,
+    flexGrow: 1,
+    minWidth: 0,
+    width: 'auto',
+    height: unit.x12,
+    fontSize: fontSize.featured5
+  },
+  check: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: unit.x2,
+    fontSize: fontSize.body2,
+    cursor: 'pointer'
+  },
+  captcha: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: unit.x3,
+    minHeight: unit.x12,
+    paddingBlock: unit.x2,
+    paddingInline: unit.x4,
+    backgroundColor: colors.backgroundPageFaded,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: colors.borderControl,
+    borderRadius: radius.medium
+  },
+  captchaInvalid: {
+    borderColor: colors.borderCritical
+  },
+  captchaBadge: {
+    color: colors.foregroundNeutralFaded,
+    fontSize: fontSize.caption2,
+    textAlign: 'end'
+  }
+})
+
+/** What a field component reads of a Formisch field store, by the type of value it edits. */
+interface FieldLike<T> {
+  /** `undefined` until the field has a value: Formisch types the input as partial. */
+  readonly input: T | undefined
+  readonly errors: [string, ...string[]] | null
+  readonly onChange: (value: T) => void
+  readonly props: FieldElementProps
+}
+
+/** One message at a time: the first rule that failed, the next one shows once it is fixed. */
+const messagesOf = (field: Pick<FieldLike<unknown>, 'errors'>) =>
+  field.errors ? [{ message: field.errors[0] }] : []
+
+interface TextFieldProps {
+  field: FieldLike<string>
+  /** The accessible name; shown as the placeholder, not as a visible label. */
+  label: string
+  description?: string
+  autoComplete?: string
+  /** Not `type='email'`: native type validity would block the submit before Valibot can speak. */
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
+}
+
+export function TextField({ field, label, description, autoComplete, inputMode }: TextFieldProps) {
+  const id = React.useId()
+  const messages = messagesOf(field)
+
+  return (
+    <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel htmlFor={id} style={styles.srOnly}>
+        {label}
+      </FieldLabel>
+      <Input
+        {...field.props}
+        id={id}
+        size='lg'
+        inputMode={inputMode}
+        autoComplete={autoComplete}
+        placeholder={label}
+        value={field.input ?? ''}
+      />
+      {messages.length > 0 ? (
+        <FieldError errors={messages} style={styles.hint} />
+      ) : (
+        description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
+      )}
+    </Field>
+  )
+}
+
+export function PasswordField({
+  field,
+  label,
+  description,
+  autoComplete
+}: Omit<TextFieldProps, 'inputMode'>) {
+  const id = React.useId()
+  const messages = messagesOf(field)
+  const [capsLock, setCapsLock] = React.useState(false)
+
+  return (
+    <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel htmlFor={id} style={styles.srOnly}>
+        {label}
+      </FieldLabel>
+      <InputPassword
+        {...field.props}
+        id={id}
+        size='lg'
+        autoComplete={autoComplete}
+        placeholder={label}
+        value={field.input ?? ''}
+        onBlur={() => {
+          field.props.onBlur()
+          setCapsLock(false)
+        }}
+        onKeyDown={(event) => setCapsLock(event.getModifierState('CapsLock'))}
+        onKeyUp={(event) => setCapsLock(event.getModifierState('CapsLock'))}
+      />
+      {messages.length > 0 ? (
+        <FieldError errors={messages} style={styles.hint} />
+      ) : (
+        description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
+      )}
+      {capsLock && <output {...stylex.props(styles.warning)}>Caps Lock is on.</output>}
+    </Field>
+  )
+}
+
+/** The checkbox control itself; `inputRef` lets a failed submit focus it. */
+function FieldCheckbox({ field, id }: { field: FieldLike<boolean>; id: string }) {
+  return (
+    <Checkbox
+      id={id}
+      name={field.props.name}
+      inputRef={field.props.ref}
+      checked={field.input ?? false}
+      onCheckedChange={field.onChange}
+      onFocus={field.props.onFocus}
+      onBlur={field.props.onBlur}
+    />
+  )
+}
+
+export function CheckboxField({ field, label }: { field: FieldLike<boolean>; label: string }) {
+  const id = React.useId()
+
+  return (
+    <label htmlFor={id} {...stylex.props(styles.check)}>
+      <FieldCheckbox field={field} id={id} />
+      {label}
+    </label>
+  )
+}
+
+// Placeholder for a captcha widget (Turnstile, hCaptcha, reCAPTCHA): a checkbox challenge with
+// nothing verifying it. Swap the body for the provider's widget; the schema already requires it.
+export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
+  const messages = messagesOf(field)
+  const invalid = field.errors !== null
+  const id = React.useId()
+
+  return (
+    <Field name={field.props.name} invalid={invalid}>
+      <div {...stylex.props(styles.captcha, invalid && styles.captchaInvalid)}>
+        <label htmlFor={id} {...stylex.props(styles.check)}>
+          <FieldCheckbox field={field} id={id} />
+          I am not a robot
+        </label>
+        <span {...stylex.props(styles.captchaBadge)}>Captcha placeholder</span>
+      </div>
+      {invalid && <FieldError errors={messages} style={styles.hint} />}
+    </Field>
+  )
+}
+
+/** A one-time code in character slots: one group of `length`, or two halves when `split` is set. */
+export function CodeField({
+  field,
+  label,
+  length,
+  split = false
+}: {
+  field: FieldLike<string>
+  label: string
+  length: number
+  split?: boolean
+}) {
+  const messages = messagesOf(field)
+  const half = length / 2
+  // The first slot takes the ref, so a failed submit focuses the code.
+  const slots = (from: number, to: number) =>
+    Array.from({ length: to - from }, (_, index) => (
+      <OTPFieldSlot
+        key={from + index}
+        ref={from + index === 0 ? field.props.ref : undefined}
+        style={styles.slot}
+      />
+    ))
+
+  return (
+    <Field name={field.props.name} invalid={field.errors !== null}>
+      <OTPField
+        size='lg'
+        style={styles.code}
+        name={field.props.name}
+        length={length}
+        value={field.input ?? ''}
+        onValueChange={field.onChange}
+        onFocus={field.props.onFocus}
+        onBlur={field.props.onBlur}
+        aria-label={label}
+      >
+        {split ? (
+          <>
+            <OTPFieldGroup style={styles.group}>{slots(0, half)}</OTPFieldGroup>
+            <OTPFieldSeparator />
+            <OTPFieldGroup style={styles.group}>{slots(half, length)}</OTPFieldGroup>
+          </>
+        ) : (
+          <OTPFieldGroup style={styles.group}>{slots(0, length)}</OTPFieldGroup>
+        )}
+      </OTPField>
+      {messages.length > 0 && <FieldError errors={messages} style={styles.hint} />}
+    </Field>
+  )
+}

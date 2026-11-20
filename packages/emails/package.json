@@ -1,0 +1,24 @@
+{
+    "name": "emails",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "node preview.ts --port 3030",
+        "build": "node build.ts",
+        "check": "email check",
+        "typecheck": "tsrs --noEmit --fast"
+    },
+    "devDependencies": {
+        "@jsx-email/plugin-clean": "catalog:",
+        "@jsx-email/plugin-inline": "catalog:",
+        "@jsx-email/plugin-minify": "catalog:",
+        "@jsx-email/plugin-pretty": "catalog:",
+        "@jsx-email/plugin-url": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "jsx-email": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tsrs": "catalog:"
+    }
+}

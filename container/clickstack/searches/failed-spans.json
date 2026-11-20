@@ -1,0 +1,12 @@
+{
+    "name": "Failed spans",
+    "source": "Traces",
+    "select": "Timestamp,ServiceName,SpanName,StatusMessage,round(Duration/1e6) AS duration_ms",
+    "where": "StatusCode = 'Error' AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Timestamp DESC",
+    "tags": [
+        "rusttp",
+        "traces"
+    ]
+}

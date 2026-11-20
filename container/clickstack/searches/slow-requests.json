@@ -1,0 +1,14 @@
+{
+    "name": "Slow requests (> 1s)",
+    "source": "Traces",
+    "select": "Timestamp,ServiceName,SpanAttributes['http.request.method'] AS method,SpanAttributes['http.route'] AS route,SpanAttributes['http.response.status_code'] AS status,round(Duration/1e6) AS duration_ms",
+    "where": "SpanKind = 'Server' AND Duration > 1000000000 AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Duration DESC",
+    "tags": [
+        "rusttp",
+        "traces",
+        "http",
+        "latency"
+    ]
+}

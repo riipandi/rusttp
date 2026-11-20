@@ -1,0 +1,21 @@
+{
+    "name": "e2e",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "install-browsers": "playwright install --with-deps",
+        "test:chrome": "playwright test --headed --project Chromium",
+        "test:firefox": "playwright test --headed --project Firefox",
+        "test:mobile": "playwright test --headed --project 'Mobile Safari'",
+        "test:safari": "playwright test --headed --project Safari",
+        "test:ui": "playwright test --ui",
+        "test": "playwright test",
+        "report": "playwright show-report .output/e2e-result",
+        "typecheck": "tsrs --noEmit --fast"
+    },
+    "devDependencies": {
+        "@playwright/test": "catalog:",
+        "@types/node": "catalog:",
+        "tsrs": "catalog:"
+    }
+}

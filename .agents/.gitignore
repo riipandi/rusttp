@@ -1,0 +1,8 @@
+*
+!.gitignore
+!skills/
+!skills/**
+!docs/
+!docs/**
+.DS_Store
+.DS_Store?

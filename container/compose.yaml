@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+# The development infrastructure: backing services in compose-dev.yaml,
+# mock third parties in compose-mock.yaml, the observability stack in
+# compose-sre.yaml. The demo, SRE, and conformance services start only
+# with their profile (`demo`, `sre`, `conformance`).
+# 
+# Credentials are development-only.
+
+name: rusttp
+
+include:
+  - ./compose-dev.yaml
+  - ./compose-demo.yaml
+  - ./compose-mock.yaml
+  - ./compose-sre.yaml
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cpus: 1.0
+
+services:
+  # Reverse proxy and local HTTPS front, see nginx-proxy.conf.
+  # Needs the mkcert pair `just cert-generate` writes to storage/config.
+  #
+  #   http://localhost:9100   Silo S3 API
+  #   http://localhost:9101   Silo console
+  #   http://localhost:9180   Silo CDN (devbucket, read-only)
+  #   https://localhost:9143  Silo CDN over TLS
+  #   https://localhost:3443  the application on the host (:3000)
+  #   https://localhost:1411  Pocket ID (profile `demo`)
+  #   https://localhost.emobix.co.uk:8443  OpenID conformance suite (profile `conformance`)
+  #   https://mock-oauth2.localhost:3220  mock OAuth2 server (localhost works from the host)
+  nginx:
+    <<: *common
+    image: docker.io/nginx:${NGINX_VERSION:-stable-alpine}
+    hostname: nginx
+    # Silo fetches the OpenID discovery document from the same URL a browser
+    # on the host uses; *.localhost resolves to loopback there. The suite's own
+    # callbacks to localhost.emobix.co.uk need the same trick (in-container DNS
+    # otherwise sends it to 127.0.0.1).
+    networks:
+      intranet:
+        aliases: ["mock-oauth2.localhost", "localhost.emobix.co.uk"]
+    ports: ["9100:9100", "9101:9101", "9180:9180", "9143:9143", "3443:3443", "3220:3220", "1411:1411", "8443:8443"]
+    volumes:
+      - "./nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "../storage/config:/etc/nginx/certs:ro"
+    shm_size: 32m
+    mem_limit: 64m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:9180/stub_status || exit 1"]
+      start_period: 10s
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      silo: { condition: service_healthy }
+      mock-oauth2: { condition: service_healthy }
+
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false

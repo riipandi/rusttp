@@ -1,0 +1,14 @@
+{
+    "name": "rusttp panics",
+    "displayName": "Panic detected",
+    "savedSearch": "Panics",
+    "interval": "1m",
+    "threshold": 1,
+    "thresholdType": "above",
+    "numConsecutiveWindows": 1,
+    "message": "A Rust panic was logged: a request handler or background task crashed.",
+    "note": "Any `panicked at` log line fires on the next 1-minute check.",
+    "tags": [
+        "rusttp"
+    ]
+}

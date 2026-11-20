@@ -1,0 +1,46 @@
+---
+status: done
+created: 2026-11-20T03:14:00+07:00
+plan: plan-00001-uilibs-improvement
+---
+
+# Handover — 2026-11-20 03:14
+
+## State
+
+The owner asked for a full audit of `packages/uilibs` (reported symptom: Input and Button are out of proportion) and a plan to fix composition, accessibility, and functionality. Both are written and committed (`3057b15 docs: add the uilibs audit and the improvement plan`, by the owner or an earlier step; the tree for those files is clean). **No plan phase has started.** The plan is `awaiting-approval` and executes only on the owner's explicit "continue with phase N".
+
+- Audit: `.agents/docs/audit/audit-00001-uilibs.md` (26 findings, status `in_review`)
+- Plan: `.agents/docs/plans/plan-00001-uilibs-improvement.md` (13 phases, decisions D1 to D13, test matrix, out of scope)
+- Index rows added in `.agents/docs/index.md`
+
+Standing grant from the owner (2026-11-20): once the plan runs, each phase commits itself atomically with explicit paths; after the last phase the agent stops and recommends the closing commit message instead of committing it. No backward compatibility, no new dependency, no new top-level directory.
+
+## What to do next
+
+1. Wait for the owner's go-ahead. Before phase 2 the owner may overrule two recommended defaults (audit "Open questions"): the `borderControl` token for 3:1 control edges (D5) and the size scale `sm 32 / md 36 / lg 40` with `xs 28` only on Button, Toggle, Tabs (D1).
+2. On "continue with phase 1": read `.agents/docs/ui-components.md` and `.agents/docs/stylex-authoring.md` first, then follow the plan's phase entry and its validation line.
+
+## Not in the plan or audit files
+
+- **Uncommitted changes that are not this work:** `container/compose-dev.yaml`, `container/compose-sre.yaml`, `scripts/task-container.just` are modified by the owner. Leave them alone; stage explicit paths only.
+- **Reproduction scripts** used for the audit live in `/tmp/audit/` (not in the repo, may be gone): `measure.mjs` (control heights in Storybook), `axe.mjs` (axe over all stories, light/dark), `contrast.py` (OKLCH token contrast), `roles.mjs`, `invalid.mjs`, `probe-ref.tsx`. They need Storybook on `:6006` (`just storybook`). The Storybook dev server started during the audit was stopped.
+- **Traps:**
+  - `cat` and `grep` are aliased to `bat` and a different grep in this shell; use `command grep` or the Read/Grep tools, and python for multi-line edits (`sed -i` failed on macOS).
+  - axe totals include noise: the Storybook performance-panel overlay (inline span, `border-radius: 999px`, fixed `aria-hidden` badge) and Base UI focus guards (`aria-hidden-focus`). Strip them when counting (real: 81 light, 53 dark stories).
+  - The a11y env switch in plan phase 1 must use a name Vite exposes to the browser, hence `STORYBOOK_A11Y_GATE`.
+  - Baseline flake: `extra/aspect-ratio` `Square` (`aspect-ratio.stories.tsx:40`) failed once under parallel load and passes alone.
+  - `ContextMenu` / `DropdownMenu` item identity (plan D11) is a hypothesis; verify in the locked Base UI source before deduplicating.
+  - Unverified at runtime (reading only): Slider defaults to two thumbs, ButtonGroup fragment handling, AlertDialogAction not closing.
+- **Language:** chat with the owner in Indonesian, concise; files, code, commits in English.
+- **Webapp consumer:** `packages/webapp/app/components/link-button.tsx` is a workaround for Base UI's `role="button"` on non-native renders; the plan moves it into `uilibs/base/button` (D9). `packages/webapp/app/components/social-buttons.tsx` is the visible size-mismatch case.
+- **Stale index row:** `.agents/docs/index.md` still says "Handovers: None yet" although `.agents/docs/handover/handover-20261120_0001.md` exists; plan phase 11 covers it.
+
+## Suggested skills
+
+- `agent-docs` — any plan, audit, issue, handover, or index edit; read its `references/` exemplar first.
+- `deep-audit` — if the audit needs updating (status transitions, finding statuses at close).
+- `impeccable` and `emil-design-eng` / `apple-design` — phases that change visual composition (2, 3, 5, 6); `impeccable` for the final polish pass.
+- `clarity` — before writing the human-facing docs page in phase 10.
+- `code-review` or `simplify` — optional per-phase check before committing.
+- `run` — to see a change working in the app or Storybook.

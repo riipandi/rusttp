@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+# Mock third parties the application talks to in development. Reached from the
+# host only through the nginx TLS front in compose.yaml. The OpenID conformance
+# suite is heavy, so it sits behind the `conformance` profile.
+
+x-common: &common
+  networks: ["intranet"]
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cpus: 1.0
+  healthcheck:
+    start_period: 10s
+    interval: 1m30s
+    timeout: 10s
+    retries: 3
+
+services:
+  # One mock-oauth2-server carries both identity providers as issuerIds. The
+  # login page's username becomes the subject, and its prefix picks the claims
+  # (see mock-oauth2.json): `unverified-*` carries an unverified address,
+  # `nonames-*` no given/family name, anything else the verified shape.
+  #
+  # https://localhost:3220/google/.well-known/openid-configuration
+  # https://localhost:3220/github/.well-known/openid-configuration
+  mock-oauth2:
+    <<: *common
+    image: ghcr.io/navikt/mock-oauth2-server:${MOCK_OAUTH2_SERVER_VERSION:-6.0}
+    platform: linux/amd64
+    hostname: mock-oauth2
+    expose: ["8080"]
+    volumes: ["./mock-oauth2.json:/app/config.json:ro"]
+    environment:
+      JSON_CONFIG_PATH: /app/config.json
+    shm_size: 256m
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8080/isalive || exit 1"]
+
+  # The OpenID Foundation conformance suite, local rehearsal. Prebuilt images from the
+  # suite's own docker-compose-prebuilt.yml, minus its nginx: the shared `nginx` in
+  # compose.yaml fronts it on :8443 (nginx-proxy.conf), so there is one proxy, not two.
+  #
+  #   docker compose -f container/compose.yaml --profile conformance up -d
+  #
+  # The suite's JVM ignores the system trust store, so the PKCS12 bundle `just
+  # cert-conformance` builds from the mkcert CA rides in through JAVA_TOOL_OPTIONS; that is
+  # how its server-to-server calls verify the application's TLS issuer at
+  # https://localhost:3443. `localhost` maps to the host gateway for that reason.
+  #
+  # https://localhost.emobix.co.uk:8443 is the suite UI; a host that does not resolve the
+  # name needs `127.0.0.1 localhost.emobix.co.uk` in /etc/hosts. mTLS (:8444) is not wired.
+  conformance-mongodb:
+    <<: *common
+    profiles: ["conformance"]
+    image: docker.io/library/mongo:${CONFORMANCE_MONGODB_VERSION:-6.0.13}
+    hostname: conformance-mongodb
+    volumes: ["conformance_mongo_data:/data/db:rw"]
+    shm_size: 256m
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 })' | grep -q ok"]
+
+  conformance-server:
+    <<: *common
+    profiles: ["conformance"]
+    image: registry.gitlab.com/openid/conformance-suite:${CONFORMANCE_SUITE_VERSION:-latest}
+    hostname: conformance-server
+    expose: ["8080"]
+    extra_hosts: ["host.docker.internal:host-gateway", "localhost:host-gateway"]
+    environment:
+      BASE_URL: https://localhost.emobix.co.uk:8443
+      MONGODB_HOST: conformance-mongodb
+      SPRING_PROFILES_ACTIVE: dev
+      OIDC_GOOGLE_CLIENTID: ${OIDC_GOOGLE_CLIENTID:-google-client}
+      OIDC_GOOGLE_SECRET: ${OIDC_GOOGLE_SECRET:-google-secret}
+      OIDC_GITLAB_CLIENTID: ${OIDC_GITLAB_CLIENTID:-gitlab-client}
+      OIDC_GITLAB_SECRET: ${OIDC_GITLAB_SECRET:-gitlab-secret}
+      JAVA_TOOL_OPTIONS: >-
+        -Djavax.net.ssl.trustStore=/etc/rusttp/truststore.p12
+        -Djavax.net.ssl.trustStorePassword=changeit
+        -Djavax.net.ssl.trustStoreType=PKCS12
+    volumes: ["../storage/config/conformance-trust.p12:/etc/rusttp/truststore.p12:ro"]
+    depends_on:
+      conformance-mongodb: { condition: service_healthy }
+    shm_size: 256m
+    mem_limit: 1536m
+    healthcheck:
+      disable: true
+
+volumes:
+  conformance_mongo_data:
+
+networks:
+  intranet:
+    driver: bridge
+    enable_ipv6: false

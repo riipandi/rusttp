@@ -1,0 +1,9 @@
+# https://github.com/rvben/rumdl
+
+[global]
+# MD013: prose is never hard-wrapped (one paragraph per line).
+# MD025: ledger frontmatter carries `title:` keys, which rumdl would otherwise count as an H1 and demote every heading.
+# MD033: inline HTML is allowed (e.g. `<sub>` and comments in README).
+# MD036: a bold or italic line may stand on its own without being a heading.
+# MD041: a file does not have to open with an H1 (skills and ledger documents open with frontmatter).
+disable = ["MD013", "MD025", "MD033", "MD036", "MD041"]

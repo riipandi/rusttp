@@ -1,0 +1,55 @@
+import * as stylex from '@stylexjs/stylex'
+import { colors } from './colors.stylex'
+import { stroke } from './tokens.stylex'
+
+/**
+ * `ring` — the Tailwind `ring-*` equivalent, defined once as a StyleX dynamic
+ * style. Draws the edge as a box-shadow instead of a border and composes like
+ * any style:
+ *
+ *   {...stylex.props(styles.popup, ring({ shadow: shadow.md }), style)}
+ *   {...stylex.props(styles.card, ring({ width: stroke.ring2, color: colors.foregroundPrimary }))}
+ *
+ * Use it on popups instead of a border: Base UI's align-item-with-trigger
+ * math ignores borders (a border shifts the aligned text by its width), and a
+ * ring paints outside the box, overlapping the trigger's border for a single
+ * crisp edge.
+ */
+const recipes = stylex.create({
+  boxShadow: (value: string) => ({ boxShadow: value })
+})
+
+export interface RingOptions {
+  /** Ring thickness. Default: `stroke.ring1` (1px). */
+  width?: string
+  /** Ring color. Default: `colors.borderNeutralFaded`. */
+  color?: string
+  /** Extra drop shadow layered under the ring (e.g. `shadow.md`). Default: none. */
+  shadow?: string | null
+}
+
+export const ring = ({
+  width = stroke.ring1,
+  color = colors.borderNeutralFaded,
+  shadow: drop = null
+}: RingOptions = {}) => recipes.boxShadow(`0 0 0 ${width} ${color}${drop ? `, ${drop}` : ''}`)
+
+/**
+ * Text for assistive technology only: out of sight and out of the layout, still read. Name an
+ * icon-only control or an empty table header with it:
+ *
+ *   <span {...stylex.props(visuallyHidden.root)}>Actions</span>
+ */
+export const visuallyHidden = stylex.create({
+  root: {
+    borderWidth: 0,
+    clipPath: 'inset(50%)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    whiteSpace: 'nowrap',
+    width: 1
+  }
+})

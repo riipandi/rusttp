@@ -1,40 +1,77 @@
-# Logs
-logs
-*.log
+/.docs
+/.idea
+/.pnp
+/.husky
+/.storage
+.pnp.js
+.DS_Store
+.DS_Store?
+.compose/
+/coverage
+/[Tt]emp/
+/[Tt]mp/
+/storage/
+/target/
+/vendor/
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+node_modules/
+.pnpm-store/
+.tanstack/
+routes.gen.ts
+.compiled/
+.rendered/
+.vite/
+.rumdl_cache/
+*tsbuildinfo
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-.cache
-.pnpm-store
-node_modules
-dist/
-build/
-*.local
-
-# Editor directories and files
+coverage.*
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/launch.json
+!.vscode/mcp.json
 !.vscode/tasks.json
-.idea
-.DS_Store
-.DS_Store?
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+*.bak
+*.pid
+*~
 
-# envars
-.env*
+# SQLite
+*.sqlite*
+*.sqlite3*
+*.db
+
+# Output
+build/
+dist/
+output/
+release/
+.build/
+.data/
+.cache
+.output
+.wrangler
+.netlify
+.temp
+.tmp
+
+# Envars
+.env
+.env.*
 !.env.example
+compose.env*
+!compose.env.example
+.*.vars
 
-# Rust
-target/
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate*
+terraform.tfvars*
+!terraform.tfvars.example
 
-# fly.toml
-fly*.toml*
-!fly*.example.toml
+# Application
+apps/server/emails/*
+apps/server/frontend/

@@ -1,0 +1,13 @@
+{
+    "name": "HTTP 5xx responses",
+    "source": "Traces",
+    "select": "Timestamp,ServiceName,SpanAttributes['http.request.method'] AS method,SpanAttributes['http.route'] AS route,SpanAttributes['http.response.status_code'] AS status,round(Duration/1e6) AS duration_ms",
+    "where": "SpanKind = 'Server' AND toUInt16OrZero(SpanAttributes['http.response.status_code']) >= 500 AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Timestamp DESC",
+    "tags": [
+        "rusttp",
+        "traces",
+        "http"
+    ]
+}

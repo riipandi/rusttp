@@ -1,0 +1,14 @@
+{
+    "name": "Slow database queries (> 100ms)",
+    "source": "Traces",
+    "select": "Timestamp,ServiceName,SpanAttributes['db.operation.name'] AS operation,SpanAttributes['db.query.text'] AS query,round(Duration/1e6) AS duration_ms",
+    "where": "SpanAttributes['db.system.name'] != '' AND Duration > 100000000 AND ServiceName NOT LIKE 'hdx-oss-%'",
+    "whereLanguage": "sql",
+    "orderBy": "Duration DESC",
+    "tags": [
+        "rusttp",
+        "traces",
+        "database",
+        "latency"
+    ]
+}

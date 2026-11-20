@@ -1,0 +1,35 @@
+/* A custom trigger renders inside a bare, transparent button, so the chip paints itself. */
+.devtools-trigger {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #f8fafc;
+  background: #0f172a;
+  border: 1px solid rgb(148 163 184 / 0.35);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+  opacity: 0.55;
+  transition:
+    opacity 0.2s ease,
+    scale 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.devtools-trigger:hover,
+:focus-visible > .devtools-trigger {
+  opacity: 1;
+  scale: 1.08;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .devtools-trigger {
+    transition-property: opacity;
+  }
+
+  .devtools-trigger:hover,
+  :focus-visible > .devtools-trigger {
+    scale: 1;
+  }
+}

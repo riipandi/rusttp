@@ -1,33 +1,56 @@
 {
-	"editor.defaultFormatter": "biomejs.biome",
-	"typescript.enablePromptUseWorkspaceTsdk": false,
-	"files.associations": {
-		"*.yml.example": "yaml",
-		"*.css": "css"
-	},
-	"search.exclude": {
-		"**/build": true,
-		"**/dist": true,
-		"**/target": true
-	},
-	"tailwindCSS.experimental.classRegex": [
-		// @ref: https://www.tailwind-variants.org/docs/getting-started
-		// @ref: https://github.com/paolotiu/tailwind-intellisense-regex-list
-		["(?:cn|cva|clx|tv)\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"],
-		["classList={{([^;]*)}}", "\\s*?[\"'`]([^\"'`]*).*?:"]
-	],
-	"tailwindCSS.files.exclude": ["**/crates/**/!(views)/**"],
-	"[css]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[markdown]": {
-		"editor.defaultFormatter": "darkriszty.markdown-table-prettify"
-	},
-	"[tailwindcss]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[toml]": {
-		"editor.defaultFormatter": "tamasfe.even-better-toml",
-		"editor.formatOnSave": false
-	}
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.oxc": "always"
+    },
+    "files.associations": {
+        "*.vars": "dotenv",
+        "*.yaml.example": "yaml",
+        "*.yml.example": "yaml",
+        "wrangler.json": "jsonc"
+    },
+    "files.readonlyInclude": {
+        "**/*.lock": true
+    },
+    "files.watcherExclude": {
+        "**/*.lock": true
+    },
+    "search.exclude": {
+        "**/*.lock": true
+    },
+    "protobuf.externalLinter.enabled": true,
+    "protobuf.externalLinter.linter": "buf",
+    "protobuf.externalLinter.bufPath": "buf",
+    "[javascript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        },
+        "editor.defaultFormatter": "oxc.oxc-vscode",
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true
+    },
+    "[json]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[jsonl]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[toml]": {
+        "editor.defaultFormatter": "Shellomo.enhanced-toml",
+        "editor.formatOnSave": false
+    },
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        },
+        "editor.defaultFormatter": "oxc.oxc-vscode",
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true
+    }
 }

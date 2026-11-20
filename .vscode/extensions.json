@@ -1,14 +1,10 @@
 {
-	"recommendations": [
-		"biomejs.biome",
-		"bradlc.vscode-tailwindcss",
-		"darkriszty.markdown-table-prettify",
-		"EditorConfig.EditorConfig",
-		"fill-labs.dependi",
-		"foxundermoon.shell-format",
-		"rust-lang.rust-analyzer",
-		"tamasfe.even-better-toml",
-		"vadimcn.vscode-lldb"
-	],
-	"unwantedRecommendations": []
+    "recommendations": [
+        "DrBlury.protobuf-vsc",
+        "EditorConfig.EditorConfig",
+        "foxundermoon.shell-format",
+        "ms-playwright.playwright",
+        "oxc.oxc-vscode",
+        "redhat.vscode-yaml"
+    ]
 }

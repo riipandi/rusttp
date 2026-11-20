@@ -1,0 +1,61 @@
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '../../styles/colors.stylex'
+import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+import { stroke } from '../../styles/tokens.stylex'
+import { unit, radius } from '../../styles/tokens.stylex'
+
+export const alertStyles = stylex.create({
+  root: {
+    backgroundColor: colors.backgroundElevationBase,
+    borderColor: colors.borderNeutralFaded,
+    borderRadius: radius.large,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    color: colors.foregroundNeutral,
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: fontFamily.body,
+    gap: unit.x1,
+    padding: unit.x4,
+    position: 'relative',
+    width: '100%'
+  },
+  title: {
+    fontSize: fontSize.body2,
+    fontWeight: fontWeight.medium,
+    lineHeight: fontLineHeight.body2,
+    margin: 0
+  },
+  description: {
+    color: colors.foregroundNeutralFaded,
+    fontSize: fontSize.body2,
+    lineHeight: fontLineHeight.body2,
+    marginTop: unit.x1,
+    margin: 0
+  },
+  action: {
+    insetBlockStart: unit.x4,
+    insetInlineEnd: unit.x4,
+    position: 'absolute'
+  }
+})
+
+export const alertTones = stylex.create({
+  neutral: {},
+  primary: {
+    borderColor: colors.borderPrimary,
+    color: colors.foregroundPrimary
+  },
+  positive: {
+    borderColor: colors.borderPositive,
+    color: colors.foregroundPositive
+  },
+  warning: {
+    borderColor: colors.borderWarning,
+    color: colors.foregroundWarning
+  },
+  critical: {
+    borderColor: colors.borderCritical,
+    color: colors.foregroundCritical
+  }
+})

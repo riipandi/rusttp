@@ -1,0 +1,36 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Theme Color -->
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
+
+<!-- Favicon and Manifest -->
+<link rel="manifest" href="/manifest.json" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+
+<!-- Static SPA loader; React clears #root on mount. -->
+<style>
+  html {
+    color-scheme: light dark;
+  }
+  .s-loader {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-content: center;
+  }
+  .s-loader-mark {
+    width: 2.75rem;
+    height: auto;
+    fill: #d9531e;
+  }
+  @media (prefers-color-scheme: dark) {
+    .s-loader-mark {
+      fill: #fb8f5a;
+    }
+  }
+</style>

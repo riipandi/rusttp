@@ -1,32 +1,47 @@
-/.cache
-/build
-/dist
-/docs
-/temp
-/tmp
-.data
-.output
-.github
-.vscode
+# Rust build cache
+/target
+
+# Git
+.git
+.gitattributes
+.gitignore
+.gitmodules
+
+# Dependencies and build output: the image installs and builds its own
+**/node_modules
+.pnpm-store
+/apps/server/frontend
+**/.output
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Docs
+README.md
+CONTRIBUTING.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 .DS_Store?
+
+# Misc
+Makefile
 .dockerignore
-.sentryclirc
-.git/
-.gitignore
-*.sqlite*
-*.db*
-*.md
-Dockerfile
-node_modules
-npm-debug.log
-compose.env*
-README.md
-DEPLOY.md
-*.log
-.env*
-docker-compose*.yaml
-compose*.yaml
-/storage/
-/specs/
-target/
+.editorconfig
+/prettier*
+/eslint*
+*.bak
+*.orig
+/storage
+
+# Host-only build settings (native CPU, lld) and the dev toolchain manifest
+.cargo/
+rust-toolchain.toml
