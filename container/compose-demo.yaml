@@ -1,5 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 
+# Demo services, behind the `demo` profile:
+#   docker compose -f container/compose.yaml --profile demo up -d
+
 x-common: &common
   networks: ["intranet"]
   extra_hosts: ["host.docker.internal:host-gateway"]
@@ -15,6 +18,7 @@ x-common: &common
 services:
   pocketbase:
     <<: *common
+    profiles: ["demo"]
     build:
       context: ./pocketbase
       dockerfile: Dockerfile.pocketbase
@@ -47,6 +51,7 @@ services:
   # @ref: https://pocket-id.org/docs/advanced/hardening
   pocket-id:
     <<: *common
+    profiles: ["demo"]
     image: ghcr.io/pocket-id/pocket-id:${POCKETID_VERSION:-v2}
     hostname: pocket-id
     expose: ["1411"]

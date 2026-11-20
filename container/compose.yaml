@@ -28,18 +28,21 @@ services:
   #   http://localhost:9180   Silo CDN (devbucket, read-only)
   #   https://localhost:9143  Silo CDN over TLS
   #   https://localhost:3443  the application on the host (:3000)
-  #   https://localhost:1411  Pocket ID
+  #   https://localhost:1411  Pocket ID (profile `demo`)
+  #   https://localhost.emobix.co.uk:8443  OpenID conformance suite (profile `conformance`)
   #   https://mock-oauth2.localhost:3220  mock OAuth2 server (localhost works from the host)
   nginx:
     <<: *common
     image: docker.io/nginx:${NGINX_VERSION:-stable-alpine}
     hostname: nginx
     # Silo fetches the OpenID discovery document from the same URL a browser
-    # on the host uses; *.localhost resolves to loopback there.
+    # on the host uses; *.localhost resolves to loopback there. The suite's own
+    # callbacks to localhost.emobix.co.uk need the same trick (in-container DNS
+    # otherwise sends it to 127.0.0.1).
     networks:
       intranet:
-        aliases: ["mock-oauth2.localhost"]
-    ports: ["9100:9100", "9101:9101", "9180:9180", "9143:9143", "3443:3443", "3220:3220", "1411:1411"]
+        aliases: ["mock-oauth2.localhost", "localhost.emobix.co.uk"]
+    ports: ["9100:9100", "9101:9101", "9180:9180", "9143:9143", "3443:3443", "3220:3220", "1411:1411", "8443:8443"]
     volumes:
       - "./nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro"
       - "../storage/config:/etc/nginx/certs:ro"

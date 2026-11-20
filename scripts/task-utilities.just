@@ -38,7 +38,7 @@ cleanup *args:
     if ((total == 0)); then echo "Nothing to clean"; exit 0; fi
     status "$($dry_run && echo "Would free" || echo "Freed")" "$(human "$total")"
 
-[doc('Generate local HTTPS certificates (mkcert) in storage/config')]
+[doc('Generate local HTTPS certificates using mkcert')]
 [group('utility')]
 [no-exit-message]
 cert-generate:
@@ -47,10 +47,22 @@ cert-generate:
     command -v mkcert >/dev/null || { echo "mkcert is not installed (brew install mkcert)" >&2; exit 1; }
     mkdir -p storage/config
     mkcert -key-file storage/config/localhost_key.pem -cert-file storage/config/localhost_crt.pem \
-        localhost 127.0.0.1 ::1 host.docker.internal mock-oauth2.localhost
+        localhost 127.0.0.1 ::1 host.docker.internal mock-oauth2.localhost localhost.emobix.co.uk
     cp "$(mkcert -CAROOT)/rootCA.pem" storage/config/rootCA.pem
 
-[doc('Install the mkcert local CA into the system and browser trust stores')]
+[doc('Build the conformance suite truststore')]
+[group('utility')]
+[no-exit-message]
+cert-conformance:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v keytool >/dev/null || { echo "keytool is not installed (it ships with a JDK)" >&2; exit 1; }
+    test -f storage/config/rootCA.pem || { echo "run just cert-generate first" >&2; exit 1; }
+    rm -f storage/config/conformance-trust.p12
+    keytool -importcert -noprompt -alias mkcert-ca -file storage/config/rootCA.pem \
+        -keystore storage/config/conformance-trust.p12 -storetype PKCS12 -storepass changeit
+
+[doc('Trust the mkcert CA on this machine')]
 [group('utility')]
 [no-exit-message]
 cert-trust:
