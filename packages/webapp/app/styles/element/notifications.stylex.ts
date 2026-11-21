@@ -52,11 +52,13 @@ export const styles = stylex.create({
   list: {
     boxSizing: 'border-box',
     gap: 0,
-    maxHeight: 'min(24rem, 60dvh)',
+    // The first four rows (21rem with the sample data) under the top padding: the fifth starts below
+    // the fold, so a scrolled list reads as more to come, not as a cut row.
+    maxHeight: `min(calc(21rem + ${unit.x2}), 60dvh)`,
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',
-    paddingBlock: unit.x1,
+    paddingBlock: unit.x2,
     paddingInline: 0
   },
   // Edge to edge, with no fill or edge of its own: the text starts where the header's title does
