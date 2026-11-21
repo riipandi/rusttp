@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-21T21:28:29+07:00
+updated: 2026-11-21T21:37:46+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -34,7 +34,6 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
-| `issue-00002-stale-e2e-specs.md` | open (2 open) | Two Chromium E2E specs assert stale copy (MFA code message, 404 heading); Firefox and WebKit builds missing locally. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
@@ -58,4 +57,4 @@ Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`.
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).
