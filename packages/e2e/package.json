@@ -16,6 +16,7 @@
     "devDependencies": {
         "@playwright/test": "catalog:",
         "@types/node": "catalog:",
+        "axe-core": "catalog:",
         "tsrs": "catalog:"
     }
 }

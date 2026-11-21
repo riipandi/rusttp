@@ -14,3 +14,38 @@ export const routes = {
   deviceWithoutToken: '/device',
   missing: '/this-page-does-not-exist'
 } as const
+
+/** Every page the app renders, for sweeps that visit them all (axe, overflow). */
+export const allRoutes = [
+  routes.home,
+  routes.login,
+  routes.signup,
+  routes.forgotPassword,
+  routes.resetPassword,
+  routes.verifyEmail,
+  routes.emailVerified,
+  routes.twoFactor,
+  routes.device,
+  routes.dashboard,
+  '/settings',
+  '/settings/account',
+  '/settings/security',
+  '/notifications',
+  routes.admin,
+  '/admin/users',
+  '/admin/user-groups',
+  '/admin/roles',
+  '/admin/api-keys',
+  '/admin/audit-trail',
+  '/admin/messages',
+  '/admin/webhooks',
+  '/admin/scheduler',
+  '/admin/settings',
+  '/admin/settings/general',
+  '/admin/settings/auth',
+  '/admin/settings/oidc-clients',
+  '/admin/notifications',
+  '/admin/account',
+  '/admin/security',
+  routes.missing
+] as const
