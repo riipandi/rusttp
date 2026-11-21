@@ -31,7 +31,7 @@ import { useTheme } from 'uilibs/theme'
 import { adminProfile } from '#/fixtures/profile'
 import { styles } from '#/styles/element/user-menu.stylex'
 
-const themes = [
+export const themes = [
   { value: 'light', label: 'Light', icon: Sun },
   { value: 'dark', label: 'Dark', icon: Moon },
   { value: 'system', label: 'System', icon: Monitor }
@@ -43,15 +43,19 @@ interface UserMenuItem {
   to: LinkProps['to']
 }
 
-// Personal entries only: the instance's own settings and API keys live in the sidebar.
-const accountItems = [
+// Personal entries only: the instance's own settings and API keys live in the sidebar. The command
+// bar lists the same entries (`-commandbar.tsx`), so a link added here is searchable there.
+export const accountItems = [
   { label: 'Account', icon: User, to: '/admin/account' },
   { label: 'Security', icon: Shield, to: '/admin/security' }
 ] satisfies UserMenuItem[]
 
-const appItems = [
+export const appItems = [
   { label: 'Back to app', icon: AppWindow, to: '/dashboard' }
 ] satisfies UserMenuItem[]
+
+/** Where Sign out leads, until there is a session to end. */
+export const signOutTo = '/'
 
 /**
  * The admin sidebar's account trigger: the bare avatar, with the notification bell beside it in
@@ -167,7 +171,7 @@ export function AdminUserMenu({
         </DropdownMenuSub>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          render={<Link to='/' />}
+          render={<Link to={signOutTo} />}
           style={mobile ? styles.menuItemTouch : undefined}
         >
           <Icon svg={LogOut} size={16} color='neutralFaded' />

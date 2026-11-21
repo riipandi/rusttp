@@ -1,4 +1,12 @@
-import { ArrowLeft, Keyboard, RotateCcw, Search, SlidersHorizontal } from '@keyline-icons/react'
+import {
+  ArrowLeft,
+  Bell,
+  Keyboard,
+  LogOut,
+  RotateCcw,
+  Search,
+  SlidersHorizontal
+} from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import {
   type AppHotkeyId,
@@ -27,10 +35,12 @@ import {
   CommandSeparator
 } from 'uilibs/extra/command'
 import { Icon } from 'uilibs/extra/icon'
+import { useTheme } from 'uilibs/theme'
 import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
 import { useNotifications } from '#/libraries/notifications'
 import { styles } from '#/styles/element/commandbar.stylex'
 import { groups as navGroups } from './-nav'
+import { accountItems, appItems, signOutTo, themes } from './-user-menu'
 import { groups as settingsGroups } from './settings/-nav'
 
 // The command bar: one dialog that runs a command by name (Cmd+K on macOS, Ctrl+K elsewhere), with a
@@ -160,6 +170,7 @@ function CommandBarDialog({
   const navigate = useNavigate()
   const hotkeys = useAppHotkeys()
   const { unread } = useNotifications()
+  const { setTheme } = useTheme()
 
   const go = (to: string) => () => void navigate({ to })
   // Every page the sidebar links to, in its order, so a page added to `-nav.ts` is searchable at
@@ -167,6 +178,7 @@ function CommandBarDialog({
   const shortcuts: Partial<Record<string, AppHotkeyId>> = {
     '/admin': 'nav.overview',
     '/admin/users': 'nav.users',
+    '/admin/notifications': 'nav.notifications',
     '/admin/settings': 'nav.settings'
   }
   const pages = navGroups.flatMap(({ label, items }) =>
@@ -186,9 +198,21 @@ function CommandBarDialog({
       ]
     })
   )
+  // Notifications is reached from the bell, not the sidebar's list, so `-nav.ts` does not have it:
+  // it is added here, first after the Overview, since it is the page people come back to most, and
+  // is as easy to reach by name or by `G N` as any of them.
+  const notifications: CommandEntry = {
+    value: '/admin/notifications',
+    label: 'Notifications',
+    keywords: 'alerts inbox bell messages unread',
+    group: 'Go to',
+    icon: Bell,
+    hotkey: 'nav.notifications',
+    run: go('/admin/notifications')
+  }
   // The settings pages are a second level the sidebar only shows on the settings screen, so they
   // are listed here as `Settings → Page`: the quickest way to reach one from anywhere.
-  const settings = settingsGroups.flatMap(({ label, items }) =>
+  const settings = settingsGroups.flatMap(({ items }) =>
     items.flatMap((page): CommandEntry[] => {
       const { to } = page
       if (!to) return []
@@ -196,7 +220,9 @@ function CommandBarDialog({
         {
           value: to,
           label: `Settings → ${page.label}`,
-          keywords: `${label ?? 'General'} preferences configuration`,
+          // The settings group's name is not a keyword: `Security` would put Protection and Blocklist
+          // above the Security page in the account menu, and a page's own name should win.
+          keywords: 'preferences configuration',
           group: 'Settings',
           icon: SlidersHorizontal,
           run: go(to)
@@ -204,6 +230,40 @@ function CommandBarDialog({
       ]
     })
   )
+  const themeKeywords: Record<string, string> = {
+    light: 'bright day',
+    dark: 'night',
+    system: 'auto device'
+  }
+  // The account menu's links, as the menu has them: where to go, the theme, and signing out.
+  const account: CommandEntry[] = [
+    ...[...accountItems, ...appItems].map((item): CommandEntry => ({
+      value: item.to,
+      label: item.label,
+      keywords: 'account profile user menu',
+      group: 'Account',
+      icon: item.icon,
+      run: go(item.to)
+    })),
+    ...themes.map((item): CommandEntry => ({
+      value: `theme-${item.value}`,
+      label: `Theme → ${item.label}`,
+      // Only what is true of this theme: a shared word (`dark`, `system`) would match all three and
+      // Enter would pick the first. `appearance` is the one word that finds the group.
+      keywords: `appearance ${themeKeywords[item.value] ?? ''}`,
+      group: 'Account',
+      icon: item.icon,
+      run: () => setTheme(item.value)
+    })),
+    {
+      value: 'sign-out',
+      label: 'Sign out',
+      keywords: 'log out logout leave',
+      group: 'Account',
+      icon: LogOut,
+      run: go(signOutTo)
+    }
+  ]
   const help: CommandEntry[] = [
     {
       value: 'shortcuts',
@@ -215,7 +275,15 @@ function CommandBarDialog({
       run: () => onPanelChange('shortcuts')
     }
   ]
-  const commands = [...pages, ...settings, ...help]
+  const [overview, ...otherPages] = pages
+  const commands = [
+    ...(overview ? [overview] : []),
+    notifications,
+    ...otherPages,
+    ...settings,
+    ...account,
+    ...help
+  ]
   const groups = [...new Set(commands.map((command) => command.group))].map((label) => ({
     value: label,
     label,
@@ -234,6 +302,10 @@ function CommandBarDialog({
     <CommandDialog
       open
       onOpenChange={onOpenChange}
+      // Focus is not sent back to the sidebar trigger on close: the bar opens from a hotkey as
+      // often as from the trigger, and a ring left on the trigger after Escape reads as a stuck
+      // state. The page keeps whatever was focused before, or the body.
+      finalFocus={false}
       title={panel === 'shortcuts' ? 'Keyboard shortcuts' : 'Command bar'}
       description={
         panel === 'shortcuts'
@@ -304,11 +376,15 @@ function CommandBarDialog({
             <span {...stylex.props(styles.footerHint)}>
               <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' /> to move
             </span>
-            <span {...stylex.props(styles.footerHint)}>
-              <Shortcut hotkey='Enter' /> to open
-            </span>
-            <span {...stylex.props(styles.footerHint)}>
-              <Shortcut hotkey='Escape' /> to close
+            {/* What happens to the highlighted row, and how to leave: on the end side, apart from the
+                keys that move. */}
+            <span {...stylex.props(styles.footerEnd)}>
+              <span {...stylex.props(styles.footerHint)}>
+                <Shortcut hotkey='Enter' /> to open
+              </span>
+              <span {...stylex.props(styles.footerHint)}>
+                <Shortcut hotkey='Escape' /> to close
+              </span>
             </span>
           </div>
         </Command>

@@ -86,6 +86,48 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.commandBar()).toHaveCount(0)
   })
 
+  test('the command bar reaches the notifications page by name, a synonym, and G N', async ({
+    admin
+  }) => {
+    await admin.openReady()
+    await admin.mod('k')
+    await admin.page.keyboard.type('alerts')
+    await expect(admin.commandBar().getByRole('option')).toHaveCount(1)
+    await expect(admin.commandBar().getByRole('option')).toContainText('Notifications')
+    await admin.page.keyboard.press('Enter')
+    await expect(admin.page).toHaveURL(/\/admin\/notifications$/)
+
+    await admin.page.goto('/admin')
+    await admin.commandTrigger().waitFor()
+    await admin.page.keyboard.press('g')
+    await admin.page.keyboard.press('n')
+    await expect(admin.page).toHaveURL(/\/admin\/notifications$/)
+  })
+
+  test('closing the command bar does not put focus back on its trigger', async ({ admin }) => {
+    await admin.openReady()
+    await admin.commandTrigger().click()
+    await expect(admin.commandBar()).toBeVisible()
+    await admin.page.keyboard.press('Escape')
+    await expect(admin.commandBar()).toHaveCount(0)
+
+    await expect(admin.commandTrigger()).not.toBeFocused()
+  })
+
+  test('the command bar finds a settings page and an account link', async ({ admin }) => {
+    await admin.openReady()
+    await admin.mod('k')
+    await admin.page.keyboard.type('sessions')
+    await expect(admin.commandBar().getByRole('option')).toHaveText(['Settings → Sessions'])
+    await admin.page.keyboard.press('Enter')
+    await expect(admin.page).toHaveURL(/\/admin\/settings\/sessions$/)
+
+    await admin.mod('k')
+    await admin.page.keyboard.type('security')
+    await admin.page.keyboard.press('Enter')
+    await expect(admin.page).toHaveURL(/\/admin\/security$/)
+  })
+
   test('Mod+B expands and collapses the sidebar', async ({ admin }) => {
     await admin.openReady()
     await expect(admin.collapseButton()).toBeVisible()

@@ -80,10 +80,17 @@ export const styles = stylex.create({
     alignItems: 'center',
     gap: unit.x4,
     flexShrink: 0,
-    paddingBlock: unit.x2,
+    paddingBlock: unit.x3,
     paddingInline: unit.x4,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1
+  },
+  // Pushed to the far end of the footer; its two hints keep the footer's own spacing.
+  footerEnd: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: unit.x4,
+    marginInlineStart: 'auto'
   },
   footerHint: {
     display: 'inline-flex',
