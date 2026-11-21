@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger
 } from 'uilibs/base/dropdown-menu'
 import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from 'uilibs/base/popover'
+import { ScrollArea } from 'uilibs/base/scroll-area'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Badge } from 'uilibs/extra/badge'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
@@ -187,11 +188,13 @@ export function NotificationsPopover({
         </div>
 
         {items.length > 0 ? (
-          <ItemGroup style={styles.list}>
-            {items.map((item) => (
-              <Row key={item.id} item={item} />
-            ))}
-          </ItemGroup>
+          <ScrollArea fade style={styles.scroll}>
+            <ItemGroup style={styles.list}>
+              {items.map((item) => (
+                <Row key={item.id} item={item} />
+              ))}
+            </ItemGroup>
+          </ScrollArea>
         ) : (
           <Empty style={styles.empty}>
             <EmptyHeader>

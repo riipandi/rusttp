@@ -48,16 +48,20 @@ export const styles = stylex.create({
     gap: unit.x2,
     minWidth: 0
   },
-  // Only this part scrolls, so the header and the footer stay in view.
+  // Only this part scrolls, so the header and the footer stay in view. The `ScrollArea` carries the
+  // height cap and shrinks to it (`min-height: 0`); the list inside only pads.
+  scroll: {
+    display: 'flex',
+    flex: '0 1 auto',
+    flexDirection: 'column',
+    minHeight: 0,
+    // The first four rows (21rem with the sample data) under the top padding: the fifth starts below
+    // the fold, so a scrolled list reads as more to come, not as a cut row.
+    maxHeight: `min(calc(21rem + ${unit.x2}), 60dvh)`
+  },
   list: {
     boxSizing: 'border-box',
     gap: 0,
-    // The first four rows (21rem with the sample data) under the top padding: the fifth starts below
-    // the fold, so a scrolled list reads as more to come, not as a cut row.
-    maxHeight: `min(calc(21rem + ${unit.x2}), 60dvh)`,
-    overflowY: 'auto',
-    overscrollBehavior: 'contain',
-    scrollbarWidth: 'thin',
     paddingBlock: unit.x2,
     paddingInline: 0
   },
