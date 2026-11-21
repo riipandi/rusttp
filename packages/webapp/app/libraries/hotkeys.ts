@@ -15,6 +15,12 @@ export const appHotkeys = defineAppHotkeys({
     hotkey: 'Mod+B',
     meta: { name: 'Expand or collapse the sidebar', group: 'General' }
   },
+  // Shift turns `,` into `<` on a US layout; the library falls back to the physical Comma key, so
+  // the shortcut works on every layout. It is the General counterpart of `G S`.
+  'settings.open': {
+    hotkey: 'Mod+Shift+,',
+    meta: { name: 'Open settings', group: 'General' }
+  },
   'nav.overview': { hotkey: ['G', 'O'], meta: { name: 'Go to Overview', group: 'Navigation' } },
   'nav.users': { hotkey: ['G', 'U'], meta: { name: 'Go to Users', group: 'Navigation' } },
   'nav.notifications': {

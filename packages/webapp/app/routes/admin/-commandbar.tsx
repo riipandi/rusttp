@@ -74,6 +74,7 @@ export function useAdminHotkeys() {
   useHotkey(hotkeys['palette.toggle'], () => commandBarStore.actions.show('commands'))
   useHotkey(hotkeys['help.shortcuts'], () => commandBarStore.actions.show('shortcuts'))
   useHotkey(hotkeys['sidebar.toggle'], () => sidebarStore.actions.toggle())
+  useHotkey(hotkeys['settings.open'], () => void navigate({ to: '/admin/settings' }))
   useHotkey(hotkeys['nav.overview'], () => void navigate({ to: '/admin' }))
   useHotkey(hotkeys['nav.users'], () => void navigate({ to: '/admin/users' }))
   useHotkey(hotkeys['nav.notifications'], () => void navigate({ to: '/admin/notifications' }))

@@ -138,6 +138,13 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.collapseButton()).toBeVisible()
   })
 
+  test('Mod+Shift+, opens settings', async ({ admin }) => {
+    await admin.openReady()
+    await admin.page.keyboard.press('ControlOrMeta+Shift+,')
+
+    await expect(admin.page).toHaveURL(/\/admin\/settings/)
+  })
+
   test('G then U goes to Users', async ({ admin }) => {
     await admin.openReady()
     await admin.page.keyboard.press('g')
