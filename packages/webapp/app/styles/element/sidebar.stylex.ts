@@ -19,12 +19,14 @@ export const styles = stylex.create({
     position: 'sticky',
     top: 0,
     overflow: 'hidden',
-    transitionDuration: duration.medium,
+    transitionDuration: duration.slow,
     transitionProperty: {
       default: 'width',
       '@media (prefers-reduced-motion: reduce)': 'none'
     },
     transitionTimingFunction: easing.standard,
+    // Only the width moves, so let the browser keep the rest of the page out of each frame's paint.
+    willChange: 'width',
     backgroundColor: colors.backgroundPage,
     borderInlineEndWidth: 1,
     borderInlineEndStyle: 'solid',
@@ -44,14 +46,16 @@ export const styles = stylex.create({
     flex: 'none',
     height: unit.x14,
     paddingTop: unit.x1,
-    paddingInlineStart: unit.x6,
+    // 22px: the logo's center lands on the icon column (x=32), where the rail's expand button puts it.
+    paddingInlineStart: `calc(${unit.x6} - ${unit.x0_5})`,
     paddingInlineEnd: unit.x3
   },
-  // Both longhands: a `paddingInline` shorthand would lose to the header's own start and end
-  // padding, and the logo would sit 6px off the rail's center.
+  // Start-aligned, not centered: the 32px expand button starts 16px in, so the logo stays on the
+  // icon column (x=32) in both states and does not slide while the width animates. Both longhands:
+  // a `paddingInline` shorthand would lose to the header's own start and end padding.
   headerCollapsed: {
-    justifyContent: 'center',
-    paddingInlineStart: 0,
+    justifyContent: 'flex-start',
+    paddingInlineStart: unit.x4,
     paddingInlineEnd: 0
   },
   // The collapse and expand triggers sit quieter than the nav they act on: the faded foreground
@@ -105,15 +109,54 @@ export const styles = stylex.create({
     scrollbarWidth: 'thin',
     padding: unit.x3
   },
-  // The labels are gone, so the groups meet with a small step between them instead of a label's room.
-  navCollapsed: {
-    gap: unit.x2
+  // Text that leaves the rail fades while the width closes over it; it is never unmounted,
+  // so the row's layout (and the icon in it) stays put.
+  label: {
+    overflow: 'hidden',
+    textOverflow: 'clip',
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
   },
-  // `auto`, not the separator's own 100%, which a side margin would push past the rail; the color
-  // is the separator's own faded border.
-  railSeparator: {
-    width: 'auto',
-    marginInline: unit.x2
+  faded: {
+    opacity: 0
+  },
+  // The group label's row folds from its height to none (grid rows 1fr → 0fr animate),
+  // so the items below glide up instead of jumping.
+  groupLabelRow: {
+    display: 'grid',
+    gridTemplateRows: '1fr',
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'grid-template-rows',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  groupLabelRowFolded: {
+    gridTemplateRows: '0fr'
+  },
+  // The rail's group break: a short line centered in the gap above the group, faded in when the
+  // labels are gone.
+  rule: {
+    position: 'absolute',
+    top: `calc(${unit.x5} / -2)`,
+    insetInline: unit.x2,
+    height: 1,
+    backgroundColor: colors.borderNeutralFaded,
+    opacity: 0,
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'opacity',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  ruleShown: {
+    opacity: 1
   },
   // The collapsed rail's notification entry between the scrolling nav and the account strip; it stays put.
   notify: {
@@ -141,14 +184,24 @@ export const styles = stylex.create({
   itemUnread: {
     color: colors.foregroundNeutral
   },
+  // No gap: the label's own bottom padding is the step to the list, so it folds away with the row.
   group: {
+    position: 'relative',
     display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1
+    flexDirection: 'column'
   },
   groupLabel: {
+    minHeight: 0,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
     paddingInline: unit.x3,
-    paddingBlockEnd: unit.x1,
+    paddingBlockEnd: unit.x2,
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium
@@ -168,11 +221,6 @@ export const styles = stylex.create({
     width: '100%',
     height: unit.x9,
     paddingInline: unit.x3
-  },
-  // The label is gone: the icon alone, centered in the 40px box.
-  itemCollapsed: {
-    justifyContent: 'center',
-    paddingInline: 0
   },
   itemCurrent: {
     color: colors.foregroundNeutral,
@@ -198,10 +246,5 @@ export const styles = stylex.create({
     borderBlockStartWidth: 1,
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: colors.borderNeutralFaded
-  },
-  // Collapsed, the avatar is alone in the strip: centered on the rail.
-  accountCollapsed: {
-    justifyContent: 'center',
-    paddingInline: 0
   }
 })

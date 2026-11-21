@@ -24,7 +24,10 @@ test.describe('admin sidebar', () => {
     await admin.page.reload()
 
     await expect(admin.expandButton()).toBeVisible()
-    await expect(admin.sidebar().getByRole('link', { name: 'Overview' })).toHaveText('')
+    // The rail keeps the label in the row, faded out, so the icon does not move while it animates.
+    await expect(
+      admin.sidebar().getByRole('link', { name: 'Overview' }).getByText('Overview')
+    ).toHaveCSS('opacity', '0')
   })
 
   test('stays expanded after expanding and reloading', async ({ admin }) => {

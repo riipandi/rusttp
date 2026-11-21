@@ -3,7 +3,6 @@ import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
-import { Separator } from 'uilibs/base/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
@@ -16,15 +15,12 @@ import { AdminUserMenu } from './-user-menu'
 function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const current = useIsCurrent(item)
   const { label, icon, to } = item
-  const style = [
-    styles.item,
-    collapsed && styles.itemCollapsed,
-    current ? styles.itemCurrent : styles.itemIdle
-  ]
+  const style = [styles.item, current ? styles.itemCurrent : styles.itemIdle]
+  // The label stays in the row and fades, so the icon never moves while the width animates.
   const content = (
     <>
       <Icon svg={icon} size={16} color={to ? undefined : 'neutralFaded'} />
-      {!collapsed && label}
+      <span {...stylex.props(styles.label, collapsed && styles.faded)}>{label}</span>
     </>
   )
   // Collapsed, the label is gone from the row: it becomes the accessible name and a tooltip.
@@ -71,12 +67,7 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
       variant='ghost'
       size={collapsed ? 'sm' : 'icon-md'}
       aria-label={name}
-      style={[
-        collapsed && styles.item,
-        collapsed && styles.itemCollapsed,
-        styles.itemIdle,
-        unread > 0 && styles.itemUnread
-      ]}
+      style={[collapsed && styles.item, styles.itemIdle, unread > 0 && styles.itemUnread]}
     />
   )
 
@@ -143,7 +134,7 @@ export function Sidebar() {
                 render={
                   <Button
                     variant='ghost'
-                    size='icon-md'
+                    size='icon-sm'
                     aria-label='Expand sidebar'
                     aria-expanded={false}
                     aria-controls={navId}
@@ -192,34 +183,39 @@ export function Sidebar() {
           )}
         </div>
 
-        <nav
-          id={navId}
-          aria-label='Admin'
-          {...stylex.props(styles.nav, collapsed && styles.navCollapsed)}
-        >
-          {groups.map(({ label, items }, index) => (
-            <React.Fragment key={label ?? 'main'}>
-              {/* Collapsed, the labels are gone, so a muted rule marks where a group ends. */}
-              {collapsed && index > 0 && <Separator style={styles.railSeparator} />}
-              <div {...stylex.props(styles.group)}>
-                {label && !collapsed && (
-                  <span id={`${id}-${label}`} {...stylex.props(styles.groupLabel)}>
-                    {label}
-                  </span>
-                )}
-                <ul
-                  aria-labelledby={label && !collapsed ? `${id}-${label}` : undefined}
-                  aria-label={label && collapsed ? label : undefined}
-                  {...stylex.props(styles.list)}
-                >
-                  {items.map((item) => (
-                    <li key={item.label}>
-                      <NavEntry item={item} collapsed={collapsed} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </React.Fragment>
+        <nav id={navId} aria-label='Admin' {...stylex.props(styles.nav)}>
+          {groups.map(({ label, items }) => (
+            <div key={label ?? 'main'} {...stylex.props(styles.group)}>
+              {label && (
+                <>
+                  {/* Collapsed, the label's row folds to nothing and a muted rule marks the break. */}
+                  <span
+                    aria-hidden='true'
+                    {...stylex.props(styles.rule, collapsed && styles.ruleShown)}
+                  />
+                  <div
+                    {...stylex.props(styles.groupLabelRow, collapsed && styles.groupLabelRowFolded)}
+                  >
+                    <span
+                      id={`${id}-${label}`}
+                      {...stylex.props(styles.groupLabel, collapsed && styles.faded)}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                </>
+              )}
+              <ul
+                aria-labelledby={label ? `${id}-${label}` : undefined}
+                {...stylex.props(styles.list)}
+              >
+                {items.map((item) => (
+                  <li key={item.label}>
+                    <NavEntry item={item} collapsed={collapsed} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </nav>
 
@@ -229,7 +225,7 @@ export function Sidebar() {
           </div>
         )}
 
-        <div {...stylex.props(styles.account, collapsed && styles.accountCollapsed)}>
+        <div {...stylex.props(styles.account)}>
           <AdminUserMenu collapsed={collapsed} />
           {!collapsed && <NotifyEntry collapsed={false} />}
         </div>
