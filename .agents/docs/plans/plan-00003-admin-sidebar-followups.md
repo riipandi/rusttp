@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-21T21:10:48+07:00
-updated: 2026-11-21T21:10:48+07:00
+updated: 2026-11-21T21:25:36+07:00
 phases:
     - id: 1
       title: Run the uilibs a11y gate over the tooltip
@@ -17,16 +17,16 @@ phases:
       note: "See the phase 3 commit. Four tests in `admin.spec.ts` (`admin sidebar`, skipped when `isMobile`); `admin.screen.ts` gains `collapseButton`, `expandButton`, `logo`, `storeCollapse` (an init script). Against the pre-phase-2 sidebar, three fail (reload collapsed, rail logo, expand and reload); the unknown-value test passes there too, since the old sidebar was always expanded: it guards a read like `!== 'expanded'`. Deviation: the existing `shows the sidebar` test failed on Chromium before this plan (title `Admin - Rusttp`, heading `Admin`, stale since `7e10476` renamed the page to Overview); fixed in this commit. Chromium full suite 26 passed. Firefox, Safari, Mobile Safari n/a: Playwright wants `firefox-1572` and `webkit-2388`, the cache has `firefox-1555` and `webkit-2370`."
     - id: 4
       title: Visual, contrast, and devtools-theme verification
-      status: pending
-      note: —
+      status: done
+      note: "No defect, no commit. Chromium on the dev stack, measured by painting each pair to a canvas (translucent layers composited over the opaque background beneath). Light / dark: nav item idle 5.74 / 8.46; current 15.39 / 16.01; group label (12px/500) 5.74 / 8.46; routeless entry 5.74 / 8.46; collapse trigger icon 5.74 / 8.46 (non-text); notification icon 16.48 / 17.36; unread dot against the sidebar 5.14 / 3.78; focus ring 5.85 / 8.60; tooltip text on its surface 16.48 / 14.72. All at AA. The tooltip's outline and its arrow stroke are 8% black / 8% white, 1.19:1 against the page: not an AA failure under WCAG 1.4.11, since the edge does not identify the tooltip and its text carries the content; recorded, not changed (the outline is the shared overlay surface). Screenshots inspected, light and dark: expanded sidebar, rail with tooltip (4x zoom: the arrow renders and points at the item), focus ring, both account menus, both drawers at 390px; no clipping or misalignment. Devtools: with the panel open (it covers the sidebar footer, so the Theme menu was driven by keyboard) and the OS light, Light → Dark → System gave `data-theme` light/dark/light, `tanstack_devtools_settings.theme` light/dark/light, panel background rgb(249,250,251) / rgb(25,28,36) / rgb(249,250,251)."
     - id: 5
       title: Docs sync (human-facing)
-      status: pending
-      note: —
+      status: done
+      note: "n/a: `rg -n -i 'sidebar|collaps|rail' docs/` finds nothing; `docs/` describes the CLI and deployment, not the admin UI."
     - id: 6
       title: LLM docs sync (.agents/docs)
-      status: pending
-      note: —
+      status: committed
+      note: "See the phase 6 commit. `shape.md` admin sentence (persisted collapse, logo link, `Expand sidebar` entry); `rules.md` gains `Webapp state` (the `admin-sidebar` contract, the init-script seeding in E2E) and a line in `UI library` on the gate checking popups only when a story leaves them open. `ui-components.md` n/a: no component changed, only a story. `architecture.md` n/a: no new decision record beyond the plan. `rumdl check .agents/docs docs` clean."
     - id: 7
       title: Final validation
       status: pending

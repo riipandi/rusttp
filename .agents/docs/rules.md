@@ -88,7 +88,7 @@ The general instructions live in the root `AGENTS.md`; this file carries the det
 - Control edges use `borderControl`; `borderNeutralFaded` is for dividers and cards. A text pair clears 4.5:1 and a control edge 3:1 in both themes.
 - A string a component renders or names (a close button, a stepper, an ellipsis, a slot) is a `labels` prop (or a prop of its own) with an English default; there is no locale context.
 - Alert, Badge, and Toast color through `tone`, not a `destructive` variant. An icon-only control or an empty table header carries `visuallyHidden` text or an `aria-label`. A glyph is an `@keyline-icons/react` component; a `base` component does not import from `extra`, except Button's `Spinner`.
-- The a11y gate: `pnpm --filter uilibs test` runs axe on every story and fails on a violation, in light and dark. A new story passes it; the only allowlisted element is Base UI's focus guard (`[data-base-ui-focus-guard]`, `.storybook/preview.tsx`). `STORYBOOK_A11Y_GATE=todo` (or `off`) relaxes it for a local run only.
+- The a11y gate: `pnpm --filter uilibs test` runs axe on every story and fails on a violation, in light and dark. axe runs after a story's `play`, so a popup is only checked by a story that leaves it open (the tooltip's `Open` story, `defaultOpen`). A new story passes it; the only allowlisted element is Base UI's focus guard (`[data-base-ui-focus-guard]`, `.storybook/preview.tsx`). `STORYBOOK_A11Y_GATE=todo` (or `off`) relaxes it for a local run only.
 - `.oxlintrc.json` switches off the React-compiler and several a11y rules for `packages/uilibs/**` (the ported data grid, kanban, and chart stories trip them); new code there should still satisfy them.
 
 ### Webapp forms
@@ -101,6 +101,15 @@ Forms in `packages/webapp` use Formisch (`@formisch/react`) with Valibot; the de
 - A native input spreads `field.props` (`name`, `ref`, `autoFocus`, `onFocus`, `onChange`, `onBlur`). A composite control passes them by hand: Checkbox `inputRef={field.props.ref}`, `checked`, `onCheckedChange={field.onChange}`; the OTP field `value`, `onValueChange={field.onChange}`, and `field.props.ref` on its first slot.
 - `field.props.name` is the JSON of the path (`["password"]`), not an identifier: never use it as an `id` or `htmlFor` (use `React.useId()`), and a test finds a field by its label, not by `#id`.
 - Base UI's `Form` also moves focus to the first invalid control on a failed submit, so the E2E focus tests pass without a registered ref; the refs are kept because Formisch's own `focus()` and `shouldFocus` need them.
+
+### Webapp state
+
+The webapp keeps UI preferences in `localStorage`, read in a lazy `useState` initializer: the SPA renders on the client only, so the stored value is there before the first paint and no cookie or server contract is needed.
+
+- One key per preference, named for what it holds (`theme` from `uilibs/theme`, `admin-sidebar` from `routes/admin/-sidebar.tsx`). `admin-sidebar` is `collapsed` or `expanded`; any other value, a missing key, or a storage that throws reads as expanded.
+- A read or write that throws (storage disabled, quota) is caught: the preference falls back to its default and a toggle still works for the session.
+- No stored shape is migrated (the project keeps no backward compatibility): a value the code no longer knows reads as the default.
+- An E2E test seeds a preference with `page.addInitScript` before the app reads it (`admin.screen.ts` `storeCollapse`), never by reloading after `localStorage.setItem`.
 
 ### Sample data
 
