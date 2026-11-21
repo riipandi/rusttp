@@ -51,6 +51,8 @@ catalog:
   '@tanstack/store': ^0.11.2
   date-fns: ^4.4.0
   jsx-email: ^3.2.1
+  # React Compiler for plugin-react's `compiler` option; its peer range stops below 0.157.
+  oxc-transform-react: ^0.156.0
   playwright: ^1.65.1
   react-dom: ^19.3.1
   react: ^19.3.1

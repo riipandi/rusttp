@@ -23,7 +23,8 @@ const stylex = (mode: string) =>
   stylexPlugin({
     aliases: { '#/*': resolve('app/*') },
     enableDevClassNames: mode === 'development',
-    lightningcssOptions: mode === 'development' ? { errorRecovery: true } : undefined
+    lightningcssOptions: mode === 'development' ? { errorRecovery: true } : undefined,
+    useCSSLayers: { before: ['reset'], prefix: 'stylex' }
   })
 
 export default defineConfig(({ mode }) => ({
@@ -36,15 +37,19 @@ export default defineConfig(({ mode }) => ({
       args: ['serve'],
       watch: ['apps', 'crates', 'Cargo.toml'],
       ignore: ['apps/server/frontend'],
-      // `.html` and `.js`: the document shell and stub in apps/server/stub, which the binary embeds.
       extensions: ['rs', 'toml', 'html', 'js', 'sql'],
       readyTarget: 'rusttp_server::transport::server'
     }),
     devtoolsJson(),
     devtools({ logging: false }),
-    tanstackRouter(),
+    tanstackRouter({
+      routesDirectory: resolve('./app/routes'),
+      generatedRouteTree: resolve('./app/routes.gen.ts'),
+      autoCodeSplitting: true,
+      target: 'react'
+    }),
     stylex(mode),
-    react()
+    react({ compiler: true })
   ],
   envPrefix: ['VITE_', 'PUBLIC_'],
   define: { 'import.meta.env.PUBLIC_APP_VERSION': JSON.stringify(process.env.npm_package_version) },
@@ -58,11 +63,18 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: { tsconfigPaths: true },
   build: {
-    emptyOutDir: true,
-    // The server reads the entry's tags from the manifest; the entry is the module, not an HTML page.
     manifest: true,
-    rolldownOptions: { input: resolve('app/main.tsx') },
-    // The server embeds this folder (apps/server/build.rs); it is gitignored.
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 1024 * 2,
+    rolldownOptions: {
+      input: resolve('app/main.tsx'),
+      // The React Compiler has already read 'use no memo' by bundling time; dropping it is harmless.
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes('use no memo'))
+          return
+        warn(warning)
+      }
+    },
     outDir: resolve('../../apps/server/frontend'),
     reportCompressedSize: false
   },

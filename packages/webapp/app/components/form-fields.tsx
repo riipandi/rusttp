@@ -1,3 +1,8 @@
+// Compiled, these Formisch fields stop updating (validation messages never show,
+// the captcha never toggles) and the compiler reports nothing; e2e `auth.spec.ts`
+// catches it.
+'use no memo'
+
 import type { FieldElementProps } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
