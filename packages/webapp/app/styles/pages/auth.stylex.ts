@@ -3,7 +3,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
+import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   split: {
@@ -72,7 +72,7 @@ export const styles = stylex.create({
     justifyContent: 'center',
     gap: unit.x8,
     width: '100%',
-    maxWidth: '26rem',
+    maxWidth: layoutSize.form,
     marginInline: 'auto',
     paddingBlock: unit.x10
   },
@@ -80,13 +80,6 @@ export const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x2
-  },
-  title: {
-    margin: 0,
-    fontSize: fontSize.featured2,
-    fontWeight: fontWeight.bold,
-    lineHeight: 1.15,
-    letterSpacing: '-0.02em'
   },
   subtitle: {
     margin: 0,

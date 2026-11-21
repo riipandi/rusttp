@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
+import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   // A solid strip above the header. It scrolls away with the page; the header below stays sticky.
@@ -15,7 +15,7 @@ export const styles = stylex.create({
     rowGap: unit.x1,
     minHeight: unit.x10,
     paddingBlock: unit.x1,
-    paddingInline: 'clamp(1.5rem, 4vw, 3rem)',
+    paddingInline: layoutSize.gutter,
     fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
     textAlign: 'center'

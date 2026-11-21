@@ -65,10 +65,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {accountItems(m).map((item) => (
-            <DropdownMenuItem
-              key={item.label}
-              render={'to' in item ? <Link to={item.to} /> : undefined}
-            >
+            <DropdownMenuItem key={item.label} render={<Link to={item.to} />}>
               <Icon svg={item.icon} size={16} color='neutralFaded' />
               {item.label}
             </DropdownMenuItem>

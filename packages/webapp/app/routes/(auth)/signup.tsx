@@ -5,6 +5,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
+import { PageTitle } from '#/components/page-title'
 import { SocialButtons } from '#/components/social-buttons'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
@@ -30,7 +31,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.auth_signup_title()}</h1>
+        <PageTitle>{m.auth_signup_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_signup_subtitle()}</p>
       </div>
 

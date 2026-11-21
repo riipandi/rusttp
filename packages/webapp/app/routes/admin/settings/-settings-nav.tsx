@@ -2,8 +2,16 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
 import { LinkButton } from 'uilibs/base/button'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel } from 'uilibs/base/select'
-import { SelectSeparator, SelectTrigger, SelectValue } from 'uilibs/base/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue
+} from 'uilibs/base/select'
 import { useIsCurrent } from '#/components/nav-sheet'
 import { useMessages } from '#/libraries/messages'
 import { styles as sidebar } from '#/styles/element/sidebar.stylex'

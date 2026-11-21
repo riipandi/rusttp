@@ -1,6 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { duration, fontSize, fontWeight, radius, unit } from 'uilibs/styles/tokens.stylex'
+import {
+  container,
+  duration,
+  fontSize,
+  fontWeight,
+  radius,
+  unit
+} from 'uilibs/styles/tokens.stylex'
 
 export const styles = stylex.create({
   // The avatar is the whole control: no box behind it, a ring with a gap around it on hover (neutral)
@@ -78,7 +85,7 @@ export const styles = stylex.create({
   },
   menu: {
     minWidth: '14rem',
-    maxWidth: '18rem'
+    maxWidth: container.small
   },
   menuLabel: {
     display: 'flex',

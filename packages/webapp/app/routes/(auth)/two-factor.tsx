@@ -6,6 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CheckboxField, CodeField } from '#/components/form-fields'
+import { PageTitle } from '#/components/page-title'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { notWired } from '#/libraries/not-wired'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
@@ -28,7 +29,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.page_auth_two_factor()}</h1>
+        <PageTitle>{m.page_auth_two_factor()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_two_factor_subtitle()}</p>
       </div>
 

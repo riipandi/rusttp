@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { PageTitle } from '#/components/page-title'
 import { loans, summary } from '#/fixtures/loans'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
@@ -23,7 +24,7 @@ function Page({ busy, stats, table }: { busy?: boolean; stats: ReactNode; table:
   return (
     <main aria-busy={busy} {...stylex.props(layout.main, layout.container, styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.page_app_dashboard()}</h1>
+        <PageTitle>{m.page_app_dashboard()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.page_app_dashboard_description()}</p>
       </div>
       {stats}

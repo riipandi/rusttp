@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { container, duration, easing } from 'uilibs/styles/tokens.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
+import { breakpoints, motion } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer, a column
 // beside the page whose two dividers run edge to edge. Below the compact breakpoint it is gone: the
@@ -22,7 +22,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'width',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard,
     // Only the width moves, so let the browser keep the rest of the page out of each frame's paint.
@@ -127,7 +127,7 @@ export const styles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: {
       default: 'opacity',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -142,7 +142,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'grid-template-rows',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -161,7 +161,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'opacity',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -177,7 +177,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'height',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -198,7 +198,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'transform, width, inset-inline-end',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -217,7 +217,7 @@ export const styles = stylex.create({
     transitionDuration: duration.slow,
     transitionProperty: {
       default: 'transform',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -244,7 +244,7 @@ export const styles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: {
       default: 'opacity',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard,
     color: colors.foregroundNeutralFaded,

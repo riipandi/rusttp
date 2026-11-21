@@ -4,6 +4,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
+import { PageTitle } from '#/components/page-title'
 import { SocialButtons } from '#/components/social-buttons'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
@@ -29,7 +30,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.page_auth_login()}</h1>
+        <PageTitle>{m.page_auth_login()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_login_subtitle()}</p>
       </div>
 

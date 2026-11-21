@@ -1,6 +1,15 @@
-import { History, IdCard, Key, LayoutDashboard } from '@keyline-icons/react'
-import { Layers, Megaphone } from '@keyline-icons/react'
-import { Settings, Timer, Users, Webhook } from '@keyline-icons/react'
+import {
+  History,
+  IdCard,
+  Key,
+  Layers,
+  LayoutDashboard,
+  Megaphone,
+  Settings,
+  Timer,
+  Users,
+  Webhook
+} from '@keyline-icons/react'
 import type { NavGroup } from '#/components/nav-sheet'
 import type { Messages } from '#/libraries/messages'
 
@@ -21,9 +30,6 @@ export const groups = (m: Messages): NavGroup[] => [
       { label: m.admin_nav_user_groups(), icon: Layers, to: '/admin/user-groups' },
       { label: m.admin_nav_roles(), icon: IdCard, to: '/admin/roles' },
       { label: m.admin_nav_api_keys(), icon: Key, to: '/admin/api-keys' }
-      // { label: 'Signup tokens', icon: ChartColumn }
-      // { label: 'Consents', icon: ChartColumn } // unsure
-      // { label: 'Custom claims', icon: BookOpen }, // unsure (user claims, group claims)
     ]
   },
   {
@@ -31,7 +37,7 @@ export const groups = (m: Messages): NavGroup[] => [
     items: [
       { label: m.admin_nav_messages(), icon: Megaphone, to: '/admin/messages' },
       { label: m.admin_nav_webhooks(), icon: Webhook, to: '/admin/webhooks' },
-      { label: m.admin_nav_scheduler(), icon: Timer, to: '/admin/scheduler' }, // unsure (Registered queues, pending, dead archive, Registered jobs)
+      { label: m.admin_nav_scheduler(), icon: Timer, to: '/admin/scheduler' },
       { label: m.admin_nav_settings(), icon: Settings, to: '/admin/settings' }
     ]
   }

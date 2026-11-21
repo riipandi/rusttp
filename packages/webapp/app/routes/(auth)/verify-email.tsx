@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
+import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
 import { signupEmail } from '#/fixtures/profile'
 import { getMessages, useMessages } from '#/libraries/messages'
@@ -20,7 +21,7 @@ function RouteComponent() {
     <>
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={Mail} />
-        <h1 {...stylex.props(styles.title)}>{m.auth_verify_title()}</h1>
+        <PageTitle>{m.auth_verify_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>
           <MessageSlot
             message={m.auth_verify_subtitle({ email: slotMarker('email') })}

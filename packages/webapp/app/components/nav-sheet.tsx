@@ -1,5 +1,4 @@
-import { Menu } from '@keyline-icons/react'
-import type { LayoutDashboard } from '@keyline-icons/react'
+import { type LayoutDashboard, Menu } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
@@ -8,8 +7,16 @@ import { Button, LinkButton } from 'uilibs/base/button'
 import { CloseButton } from 'uilibs/base/dialog/close-button'
 import { Separator } from 'uilibs/base/separator'
 import { Icon } from 'uilibs/extra/icon'
-import { Sheet, SheetClose, SheetContent, SheetDescription } from 'uilibs/extra/sheet'
-import { SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from 'uilibs/extra/sheet'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from 'uilibs/extra/sheet'
 import { useMessages } from '#/libraries/messages'
 import { notWired } from '#/libraries/not-wired'
 import { styles } from '#/styles/element/nav-sheet.stylex'

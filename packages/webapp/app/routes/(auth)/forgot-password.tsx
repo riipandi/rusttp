@@ -6,6 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { TextField } from '#/components/form-fields'
+import { PageTitle } from '#/components/page-title'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { forgotPasswordSchema } from '#/schemas/auth.schema'
@@ -31,7 +32,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.auth_forgot_title()}</h1>
+        <PageTitle>{m.auth_forgot_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_forgot_subtitle()}</p>
       </div>
 

@@ -1,12 +1,12 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
-import { ArrowLeft } from '@keyline-icons/react'
-import { CircleAlert } from '@keyline-icons/react'
+import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
+import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
@@ -38,7 +38,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>{m.auth_reset_title()}</h1>
+        <PageTitle>{m.auth_reset_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_subtitle()}</p>
       </div>
 
@@ -84,7 +84,7 @@ function InvalidLink() {
     <>
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={CircleAlert} tone='critical' />
-        <h1 {...stylex.props(styles.title)}>{m.auth_reset_invalid_title()}</h1>
+        <PageTitle>{m.auth_reset_invalid_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 

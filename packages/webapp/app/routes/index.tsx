@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { LinkButton } from 'uilibs/base/button'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
 import { Logo } from '#/components/logo'
+import { PageTitle } from '#/components/page-title'
 import { PreferencesMenu } from '#/components/preferences-menu'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
@@ -29,7 +30,7 @@ function RouteComponent() {
 
       <main {...stylex.props(layout.main, layout.container, styles.main)}>
         <section {...stylex.props(styles.hero)}>
-          <h1 {...stylex.props(styles.title)}>{m.home_title()}</h1>
+          <PageTitle>{m.home_title()}</PageTitle>
           <p {...stylex.props(styles.lead)}>{m.home_lead()}</p>
           <LinkButton render={<Link to='/login' />} size='lg'>
             {m.home_sign_in()}

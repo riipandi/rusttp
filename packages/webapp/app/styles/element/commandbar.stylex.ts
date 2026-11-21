@@ -1,6 +1,14 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { duration, easing, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import {
+  container,
+  duration,
+  easing,
+  fontSize,
+  fontWeight,
+  unit
+} from 'uilibs/styles/tokens.stylex'
+import { motion } from '#/styles/constants.stylex'
 
 // The command bar: the search-like trigger in the sidebar, the keycaps in a command row, and the
 // keyboard-shortcuts panel (`routes/admin/-commandbar.tsx`).
@@ -34,7 +42,7 @@ export const styles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: {
       default: 'opacity',
-      '@media (prefers-reduced-motion: reduce)': 'none'
+      [motion.reduce]: 'none'
     },
     transitionTimingFunction: easing.standard
   },
@@ -100,7 +108,7 @@ export const styles = stylex.create({
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: 'min(28rem, 70dvh)',
+    maxHeight: `min(${container.xlarge}, 70dvh)`,
     // Focused by the dialog on open (`initialFocus`), so it never draws a ring of its own.
     outline: 'none'
   },
