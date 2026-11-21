@@ -197,22 +197,40 @@ Decision (2026-11-21, owner):
 
 - Paraglide JS v3 (`@inlang/paraglide-js`, with `@inlang/plugin-message-format`), compiled to typed `m.*` functions in `app/paraglide/`; catalogs are `app/locales/{locale}.json`, one flat file per locale, with semantic area-prefixed keys.
 - Strategy `localStorage` then `preferredLanguage` then `baseLocale`; no `url` strategy, so no routes are localized and the server's document stays English.
-- A change re-renders through TanStack Store: `libraries/locale.store.ts` holds the locale, `__root.tsx` keys the `<Outlet>` on it (a remount, no reload), and `setLocale(locale, { reload: false })` only persists.
+- A change re-renders through TanStack Store: `libraries/locale.store.ts` holds the locale and `setLocale(locale, { reload: false })` only persists. Amended 2026-11-22 (owner): the first design keyed the `<Outlet>` on the locale (a remount). It now re-renders in place: `libraries/messages.ts` `useMessages()` subscribes to the store and returns one object per locale, `getMessages()` serves `staticData`, and `libraries/format.ts` `useFormat()` does the same for `Intl`.
 - Page titles are functions (`staticData.pageTitle: m.page_…`); `plugins/vixum` calls them once, in English, for the server's `<title>`.
 - `uilibs` imports no i18n: the webapp feeds its `labels` props (`ThemeSwitcher` gained one, English by default). Account menus carry a "Language" submenu beside Theme; the landing and auth pages have a preferences menu (theme and language) instead of the theme button.
 
 Consequences:
 
-- (positive) typed keys and parameters, unused messages tree-shaken, no provider or hook, one catalog edit adds a language.
-- (negative) a language change remounts the route tree, so transient state resets; the server renders no localized HTML or titles (SEO and first paint are English); a label list must be a function, not a constant; every locale file must carry every key.
+- (positive) typed keys and parameters, unused messages tree-shaken, one catalog edit adds a language, and (since the 2026-11-22 amendment) a language change keeps typed input, an open popover, and focus.
+- (negative) every component that shows a message calls `useMessages()`, and a message is passed as a function of it, never read at module load; the server renders no localized HTML or titles (SEO and first paint are English); every locale file must carry every key; an error already in a form is written again by validating it (`useRevalidateOnLocale`).
 
 Alternatives considered:
 
 - Paraglide's default `setLocale()` (full reload) — rejected by the owner for the flash and lost state.
 - Routes with a locale prefix or TanStack Router `rewrite` — rejected by the owner: the language is a per-browser setting.
-- A `useLocale()` hook in every consumer — rejected: easy to miss, and a memoized component would keep its old text.
+- A `useLocale()` hook in every consumer, with nothing to enforce it — rejected: easy to miss, and a memoized component would keep its old text. Reopened 2026-11-22 (owner), because the remount lost typed input and moved focus to `body`: it now stands as `useMessages()`, which returns a different object for each language (so the React Compiler re-renders the caller) and is enforced by an oxlint `no-restricted-imports` rule that bans `#/paraglide/messages` outside `libraries/messages.ts` and `schemas/`, so a missed consumer is a lint error, not a stale label.
+- Keeping the remount and moving focus to `main` with a live-region announcement — rejected 2026-11-22 (owner): typed input is still lost.
 - Random human-readable keys (Paraglide's recommendation) — rejected for readable review; semantic keys are stable once used.
 - Namespaced catalog files per area — rejected: the editor integration writes the merge into every file.
+
+### Webapp accessibility is held by an axe sweep, not by component stories
+
+Context (2026-11-22): the UI audit found defects every existing gate passed: a six-slot code wider than a 390px column, a table a keyboard could not scroll, controls whose name left out their visible text, a 404 with no `h1`. Storybook's axe gate checks one component in isolation; the E2E suite checks flows. Neither looks at a whole page at a phone width.
+
+Decision (2026-11-22, owner): `packages/e2e/screens/a11y/a11y.spec.ts` visits every route at 390px and 1440px, light and dark, runs axe, and asserts the page is no wider than its window. It injects `axe-core` through `utils/axe.ts` (a catalog entry and an e2e devDependency, already locked as a transitive package); it runs on Chromium only, about 30 seconds for 124 runs.
+
+Consequences:
+
+- (positive) the class of defect is caught where it appears, and a new route joins `allRoutes` to be covered. With the audited OTP column and 404 title put back, the sweep failed on `/two-factor`, `/device`, and the 404 page.
+- (negative) a longer E2E run, and axe's rules decide: a control's name must contain its visible text (the sidebar search trigger carries its shortcut in the name); the sweep says nothing about screen-reader speech or forced colors.
+
+Alternatives considered:
+
+- `@axe-core/playwright` — rejected: a second dependency for one script injection and one call.
+- A test per defect only — rejected: it would pin the three audited bugs and miss the next one of the same kind.
+- Extending the Storybook gate to full pages — rejected: stories render components, and the defects live in the composition of layout and components.
 
 ## Parked
 
