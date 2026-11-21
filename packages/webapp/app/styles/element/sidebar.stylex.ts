@@ -13,8 +13,8 @@ export const styles = stylex.create({
     display: { default: 'flex', [breakpoints.compact]: 'none' },
     flexDirection: 'column',
     flexShrink: 0,
-    // 16rem plus one step: the next container token (18rem) is a 32px jump.
-    width: `calc(${container.xsmall} + ${unit.x4})`,
+    // 16rem plus a half step (264px): the next container token (18rem) is a 32px jump.
+    width: `calc(${container.xsmall} + ${unit.x2})`,
     height: '100dvh',
     position: 'sticky',
     top: 0,
