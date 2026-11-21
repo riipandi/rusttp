@@ -10,7 +10,7 @@ interface CommandBarState {
 const initial: CommandBarState = { open: false, panel: 'commands' }
 
 /**
- * The command bar's open state, shared by the Cmd/Ctrl+K and Cmd/Ctrl+/ shortcuts, the sidebar's
+ * The command bar's open state, shared by the Cmd/Ctrl+K and Cmd/Ctrl+Shift+/ shortcuts, the sidebar's
  * trigger, and the dialog itself, so none of them passes it through the layout.
  */
 export const commandBarStore = createStore(initial, ({ setState }) => ({

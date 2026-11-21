@@ -10,7 +10,11 @@ import { defineAppHotkeys } from '@tanstack/react-hotkeys'
 // these does. A sequence (`['G', 'O']`) is pressed one key after another.
 export const appHotkeys = defineAppHotkeys({
   'palette.toggle': { hotkey: 'Mod+K', meta: { name: 'Open the command bar', group: 'General' } },
-  'help.shortcuts': { hotkey: 'Mod+/', meta: { name: 'Keyboard shortcuts', group: 'General' } },
+  // Shift turns `/` into `?` on a US layout; like `settings.open`, it matches the physical Slash key.
+  'help.shortcuts': {
+    hotkey: 'Mod+Shift+/',
+    meta: { name: 'Keyboard shortcuts', group: 'General' }
+  },
   'sidebar.toggle': {
     hotkey: 'Mod+B',
     meta: { name: 'Expand or collapse the sidebar', group: 'General' }

@@ -173,11 +173,22 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.expandButton()).toBeVisible()
   })
 
+  test('Mod+Shift+/ opens the shortcuts without focusing a button', async ({ admin }) => {
+    await admin.openReady()
+    await admin.page.keyboard.press('ControlOrMeta+Shift+/')
+
+    const back = admin.page.getByRole('button', { name: 'Back to commands' })
+    await expect(back).toBeVisible()
+    await expect(back).not.toBeFocused()
+    // Focus is inside the dialog, on the panel, so Tab and Escape still work from there.
+    await expect(admin.page.getByRole('dialog').locator(':focus')).toHaveCount(1)
+  })
+
   test('a shortcut can be rebound, it survives a reload, and a taken one is refused', async ({
     admin
   }) => {
     await admin.openReady()
-    await admin.mod('/')
+    await admin.page.keyboard.press('ControlOrMeta+Shift+/')
     const change = (name: string) =>
       admin.page.getByRole('button', { name: `Change ${name} shortcut` })
 

@@ -140,6 +140,7 @@ export function CommandBar() {
 function CommandBarDialog() {
   const panel = useSelector(commandBarStore, (state) => state.panel)
   const { setOpen: onOpenChange, show: onPanelChange } = commandBarStore.actions
+  const panelRef = React.useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const hotkeys = useAppHotkeys()
   const unread = useSelector(unreadCount)
@@ -279,6 +280,9 @@ function CommandBarDialog() {
       // often as from the trigger, and a ring left on the trigger after Escape reads as a stuck
       // state. The page keeps whatever was focused before, or the body.
       finalFocus={false}
+      // Opened straight onto the cheat sheet, focus lands on the panel itself, not on its Back
+      // button: nothing there is meant to be typed in, so no control takes a ring on open.
+      initialFocus={panel === 'shortcuts' ? panelRef : undefined}
       title={panel === 'shortcuts' ? 'Keyboard shortcuts' : 'Command bar'}
       description={
         panel === 'shortcuts'
@@ -287,7 +291,7 @@ function CommandBarDialog() {
       }
     >
       {panel === 'shortcuts' ? (
-        <ShortcutsPanel onBack={() => onPanelChange('commands')} />
+        <ShortcutsPanel ref={panelRef} onBack={() => onPanelChange('commands')} />
       ) : (
         <Command
           items={groups}
@@ -375,13 +379,13 @@ const rejections = {
   'alt-graph': 'AltGr cannot be recorded.'
 } as const
 
-function ShortcutsPanel({ onBack }: { onBack: () => void }) {
+function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBack: () => void }) {
   const items = useAppHotkeyList()
   const groups = [...new Set(items.map(({ appHotkey }) => appHotkey.meta?.group ?? 'Other'))]
   const [editing, setEditing] = React.useState<AppHotkeyId | null>(null)
 
   return (
-    <div {...stylex.props(styles.panel)}>
+    <div ref={ref} tabIndex={-1} {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.panelHeader)}>
         <Button variant='ghost' size='icon-sm' aria-label='Back to commands' onClick={onBack}>
           <Icon svg={ArrowLeft} size={16} />

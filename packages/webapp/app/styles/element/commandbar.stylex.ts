@@ -100,7 +100,9 @@ export const styles = stylex.create({
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: 'min(28rem, 70dvh)'
+    maxHeight: 'min(28rem, 70dvh)',
+    // Focused by the dialog on open (`initialFocus`), so it never draws a ring of its own.
+    outline: 'none'
   },
   panelHeader: {
     display: 'flex',
