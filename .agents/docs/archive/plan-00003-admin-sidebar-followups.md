@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-21T21:10:48+07:00
-updated: 2026-11-21T21:25:36+07:00
+updated: 2026-11-21T21:28:29+07:00
 phases:
     - id: 1
       title: Run the uilibs a11y gate over the tooltip
@@ -10,11 +10,11 @@ phases:
     - id: 2
       title: Persist the sidebar collapse and keep the logo a link in the rail
       status: committed
-      note: "See the phase 2 commit. `readCollapsed()` in the lazy initializer and `toggle()` writing `admin-sidebar`; `TooltipProvider` now wraps the header so the rail's `Expand sidebar` entry gets the zero-delay tooltip. The collapsed header is a column (`headerCollapsed`: `flexDirection: column`, `height: auto`), the rail logo a 40px `brandCollapsed` box named `Rusttp`. Chromium on the dev stack: collapse → reload stays collapsed (stored `collapsed`); logo `href=/admin` and clicking it lands on `/admin`; expand → reload stays expanded (stored `expanded`); `garbage` opens expanded; Tab order from the page top is `Rusttp`, `Expand sidebar`, `Overview`; the logo shows the browser's default focus outline (as the expanded brand link does). Typecheck, oxlint, oxfmt clean."
+      note: "6be1f38. `readCollapsed()` in the lazy initializer and `toggle()` writing `admin-sidebar`; `TooltipProvider` now wraps the header so the rail's `Expand sidebar` entry gets the zero-delay tooltip. The collapsed header is a column (`headerCollapsed`: `flexDirection: column`, `height: auto`), the rail logo a 40px `brandCollapsed` box named `Rusttp`. Chromium on the dev stack: collapse → reload stays collapsed (stored `collapsed`); logo `href=/admin` and clicking it lands on `/admin`; expand → reload stays expanded (stored `expanded`); `garbage` opens expanded; Tab order from the page top is `Rusttp`, `Expand sidebar`, `Overview`; the logo shows the browser's default focus outline (as the expanded brand link does). Typecheck, oxlint, oxfmt clean."
     - id: 3
       title: Pin the sidebar behavior with E2E
       status: committed
-      note: "See the phase 3 commit. Four tests in `admin.spec.ts` (`admin sidebar`, skipped when `isMobile`); `admin.screen.ts` gains `collapseButton`, `expandButton`, `logo`, `storeCollapse` (an init script). Against the pre-phase-2 sidebar, three fail (reload collapsed, rail logo, expand and reload); the unknown-value test passes there too, since the old sidebar was always expanded: it guards a read like `!== 'expanded'`. Deviation: the existing `shows the sidebar` test failed on Chromium before this plan (title `Admin - Rusttp`, heading `Admin`, stale since `7e10476` renamed the page to Overview); fixed in this commit. Chromium full suite 26 passed. Firefox, Safari, Mobile Safari n/a: Playwright wants `firefox-1572` and `webkit-2388`, the cache has `firefox-1555` and `webkit-2370`."
+      note: "753ff2a. Four tests in `admin.spec.ts` (`admin sidebar`, skipped when `isMobile`); `admin.screen.ts` gains `collapseButton`, `expandButton`, `logo`, `storeCollapse` (an init script). Against the pre-phase-2 sidebar, three fail (reload collapsed, rail logo, expand and reload); the unknown-value test passes there too, since the old sidebar was always expanded: it guards a read like `!== 'expanded'`. Deviation: the existing `shows the sidebar` test failed on Chromium before this plan (title `Admin - Rusttp`, heading `Admin`, stale since `7e10476` renamed the page to Overview); fixed in this commit. Chromium full suite: 26 passed, 2 failed outside this plan (corrected in phase 7: the first read took only the output's tail; see `issue-00002-stale-e2e-specs.md`). Firefox, Safari, Mobile Safari n/a: Playwright wants `firefox-1572` and `webkit-2388`, the cache has `firefox-1555` and `webkit-2370`."
     - id: 4
       title: Visual, contrast, and devtools-theme verification
       status: done
@@ -26,15 +26,15 @@ phases:
     - id: 6
       title: LLM docs sync (.agents/docs)
       status: committed
-      note: "See the phase 6 commit. `shape.md` admin sentence (persisted collapse, logo link, `Expand sidebar` entry); `rules.md` gains `Webapp state` (the `admin-sidebar` contract, the init-script seeding in E2E) and a line in `UI library` on the gate checking popups only when a story leaves them open. `ui-components.md` n/a: no component changed, only a story. `architecture.md` n/a: no new decision record beyond the plan. `rumdl check .agents/docs docs` clean."
+      note: "5514ab7. `shape.md` admin sentence (persisted collapse, logo link, `Expand sidebar` entry); `rules.md` gains `Webapp state` (the `admin-sidebar` contract, the init-script seeding in E2E) and a line in `UI library` on the gate checking popups only when a story leaves them open. `ui-components.md` n/a: no component changed, only a story. `architecture.md` n/a: no new decision record beyond the plan. `rumdl check .agents/docs docs` clean."
     - id: 7
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "Green: `pnpm --filter webapp typecheck`, `pnpm lint`, `pnpm format:check`, `rumdl check .agents/docs docs`, `pnpm --filter uilibs test` (92 files, 434 tests), `pnpm --filter webapp build`, `just verify` (fmt, check, clippy, nextest 23/23). E2E Chromium against the dev stack: 26 passed, 2 failed, neither touched by this plan (`git diff d176a8a^ HEAD` empty for their pages and specs): `auth › a code of the wrong length is rejected` (strict-mode match, the MFA subtitle also says `6-digit code` since `f076be8`) and `not found › renders the catch-all page` (no `404` heading since `9407fed`); filed as `issue-00002-stale-e2e-specs.md`, awaiting the owner. Firefox, Safari, Mobile Safari n/a: browsers not installed at the Playwright version. API specs n/a: no endpoint changed. Visual, contrast, devtools: phase 4."
     - id: 8
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "Plan archived, index moved, `issue-00002-stale-e2e-specs.md` filed, `handover-00006-admin-sidebar-followups.md` written, `handover-00001` archived (the live directory keeps five). The closing commit is the owner's."
 ---
 
 # Close handover 00005's open threads: the tooltip gate, measured contrast, the visual checks, and the admin sidebar's collapse and rail logo
