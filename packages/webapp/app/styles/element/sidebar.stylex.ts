@@ -1,13 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import {
-  container,
-  duration,
-  easing,
-  fontSize,
-  fontWeight,
-  unit
-} from 'uilibs/styles/tokens.stylex'
+import { container, duration, easing } from 'uilibs/styles/tokens.stylex'
+import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer, a column
@@ -188,8 +182,8 @@ export const styles = stylex.create({
   itemIdle: {
     color: colors.foregroundNeutralFaded
   },
-  // The counterpart of the header strip: its divider edge to edge, tall enough for a 48px row with
-  // 8px above and below.
+  // The counterpart of the header strip: its divider edge to edge,
+  // tall enough for a 48px row with 8px above and below.
   account: {
     boxSizing: 'border-box',
     display: 'flex',
@@ -197,7 +191,7 @@ export const styles = stylex.create({
     justifyContent: 'space-between',
     gap: unit.x2,
     flexShrink: 0,
-    height: unit.x16,
+    height: unit.x14,
     minWidth: 0,
     // The avatar's center lines up with the nav icons' above it.
     paddingInline: unit.x4,
