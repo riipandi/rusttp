@@ -9,8 +9,8 @@ phases:
       note: "7932717. `pnpm --filter uilibs test` green before the change (92 files, 433 tests) with the gate in `error` mode (`STORYBOOK_A11Y_GATE` unset, `.storybook/preview.tsx:6`), but no story left the tooltip open: Playground's `play` unhovers before axe runs, Sides and Disabled button never open. The new `Open` story (`defaultOpen`) passes; with an `<img>` without `alt` planted in its `TooltipContent` it failed on `image-alt`, so axe reaches the portalled popup. No violation found in the tooltip, so no fix landed. Format and lint clean."
     - id: 2
       title: Persist the sidebar collapse and keep the logo a link in the rail
-      status: pending
-      note: —
+      status: committed
+      note: "See the phase 2 commit. `readCollapsed()` in the lazy initializer and `toggle()` writing `admin-sidebar`; `TooltipProvider` now wraps the header so the rail's `Expand sidebar` entry gets the zero-delay tooltip. The collapsed header is a column (`headerCollapsed`: `flexDirection: column`, `height: auto`), the rail logo a 40px `brandCollapsed` box named `Rusttp`. Chromium on the dev stack: collapse → reload stays collapsed (stored `collapsed`); logo `href=/admin` and clicking it lands on `/admin`; expand → reload stays expanded (stored `expanded`); `garbage` opens expanded; Tab order from the page top is `Rusttp`, `Expand sidebar`, `Overview`; the logo shows the browser's default focus outline (as the expanded brand link does). Typecheck, oxlint, oxfmt clean."
     - id: 3
       title: Pin the sidebar behavior with E2E
       status: pending

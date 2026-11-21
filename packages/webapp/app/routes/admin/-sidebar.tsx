@@ -93,63 +93,79 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
   )
 }
 
+// The collapse persists per browser. Anything but `collapsed` (a missing key, an unknown value, a
+// storage that throws) opens expanded; a failed write keeps the state for the session only.
+const storageKey = 'admin-sidebar'
+
+function readCollapsed() {
+  try {
+    return localStorage.getItem(storageKey) === 'collapsed'
+  } catch {
+    return false
+  }
+}
+
 export function Sidebar() {
   const id = React.useId()
   const navId = `${id}-nav`
-  const [collapsed, setCollapsed] = React.useState(false)
+  // The SPA renders on the client only, so the stored value is read before the first paint.
+  const [collapsed, setCollapsed] = React.useState(readCollapsed)
+
+  const toggle = (next: boolean) => {
+    setCollapsed(next)
+    try {
+      localStorage.setItem(storageKey, next ? 'collapsed' : 'expanded')
+    } catch {}
+  }
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
-      {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
-      <div
-        {...stylex.props(
-          styles.header,
-          collapsed && styles.headerCollapsed,
-          collapsed && stylex.defaultMarker()
-        )}
-      >
-        {collapsed ? (
-          <Button
-            variant='ghost'
-            size='icon-md'
-            aria-label='Expand sidebar'
-            aria-expanded={false}
-            aria-controls={navId}
-            onClick={() => setCollapsed(false)}
-            style={styles.trigger}
+      {/* The provider's zero delay shows a rail tooltip at once, and moving between items keeps it. */}
+      <TooltipProvider>
+        {/* The logo links to the overview in both modes; collapsed, expanding is its own entry below it. */}
+        <div {...stylex.props(styles.header, collapsed && styles.headerCollapsed)}>
+          <Link
+            to='/admin'
+            aria-label={collapsed ? 'Rusttp' : undefined}
+            {...stylex.props(layout.brand, styles.brand, collapsed && styles.brandCollapsed)}
           >
-            <span {...stylex.props(styles.swap)}>
-              <span {...stylex.props(styles.swapLogo)}>
-                <Logo />
-              </span>
-              <span {...stylex.props(styles.swapIcon)}>
+            <Logo />
+            {!collapsed && 'Rusttp'}
+          </Link>
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant='ghost'
+                    size='icon-md'
+                    aria-label='Expand sidebar'
+                    aria-expanded={false}
+                    aria-controls={navId}
+                    onClick={() => toggle(false)}
+                    style={styles.trigger}
+                  />
+                }
+              >
                 <Icon svg={PanelLeftOpen} size={16} />
-              </span>
-            </span>
-          </Button>
-        ) : (
-          <>
-            <Link to='/admin' {...stylex.props(layout.brand, styles.brand)}>
-              <Logo />
-              Rusttp
-            </Link>
+              </TooltipTrigger>
+              <TooltipContent side='right'>Expand sidebar</TooltipContent>
+            </Tooltip>
+          ) : (
             <Button
               variant='ghost'
               size='icon-sm'
               aria-label='Collapse sidebar'
               aria-expanded
               aria-controls={navId}
-              onClick={() => setCollapsed(true)}
+              onClick={() => toggle(true)}
               style={styles.trigger}
             >
               <Icon svg={PanelLeftClose} size={16} />
             </Button>
-          </>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* The provider's zero delay shows a rail tooltip at once, and moving between items keeps it. */}
-      <TooltipProvider>
         <nav
           id={navId}
           aria-label='Admin'
