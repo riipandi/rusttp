@@ -128,11 +128,6 @@
   :where(html) {
     -webkit-tap-highlight-color: transparent;
   }
-  @media (hover: none) and (pointer: coarse) {
-    :where(:focus-visible) {
-      outline: none;
-    }
-  }
   :where(html[data-theme='light']) {
     color-scheme: light;
   }

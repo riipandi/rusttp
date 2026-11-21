@@ -23,12 +23,17 @@ export const sliderStyles = stylex.create({
     backgroundColor: colors.backgroundNeutral,
     borderRadius: radius.full,
     flexGrow: 1,
+    // Forced colors drop backgrounds: the track gets an edge and the range a system color.
+    outline: { default: 'none', '@media (forced-colors: active)': '1px solid CanvasText' },
     overflow: 'hidden',
     position: 'relative',
     userSelect: 'none'
   },
   range: {
-    backgroundColor: colors.backgroundPrimary,
+    backgroundColor: {
+      default: colors.backgroundPrimary,
+      '@media (forced-colors: active)': 'Highlight'
+    },
     userSelect: 'none'
   },
   thumb: {
@@ -40,12 +45,21 @@ export const sliderStyles = stylex.create({
     boxShadow: {
       default: 'none',
       ':hover': sliderHaloShadow,
-      ':focus-visible': sliderHaloShadow,
+      // Base UI focuses a visually hidden input inside the thumb, never the thumb itself.
+      ':has(:focus-visible)': sliderHaloShadow,
       ':active': sliderHaloShadow
     },
     flexShrink: 0,
     height: unit.x3,
-    outline: 'none',
+    // The halo is a box-shadow, which forced colors remove: the focus ring is an outline there.
+    outline: {
+      default: 'none',
+      '@media (forced-colors: active)': {
+        default: 'none',
+        ':has(:focus-visible)': `${stroke.ring2} solid Highlight`
+      }
+    },
+    outlineOffset: stroke.ring2,
     position: 'relative',
     transitionDuration: duration.fast,
     transitionProperty: 'box-shadow',

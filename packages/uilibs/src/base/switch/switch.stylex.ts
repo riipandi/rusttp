@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
+import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
@@ -8,10 +9,14 @@ export const switchStyles = stylex.create({
     backgroundColor: {
       default: colors.borderControl,
       '[data-checked]': colors.backgroundPrimary,
-      '[data-invalid]': colors.backgroundCritical
+      '[data-invalid]': colors.backgroundCritical,
+      // Forced colors: the track is an outlined box that fills with Highlight when on.
+      '@media (forced-colors: active)': { default: 'Canvas', '[data-checked]': 'Highlight' }
     },
+    borderColor: { default: 'transparent', '@media (forced-colors: active)': 'CanvasText' },
     borderRadius: radius.full,
-    borderStyle: 'none',
+    borderStyle: 'solid',
+    borderWidth: { default: 0, '@media (forced-colors: active)': stroke.ring1 },
     display: 'inline-flex',
     flexShrink: 0,
     padding: unit.x0_5,
@@ -25,7 +30,10 @@ export const switchStyles = stylex.create({
     }
   },
   thumb: {
-    backgroundColor: colors.backgroundPage,
+    backgroundColor: {
+      default: colors.backgroundPage,
+      '@media (forced-colors: active)': 'CanvasText'
+    },
     borderRadius: radius.full,
     transitionDuration: duration.fast,
     transitionProperty: {

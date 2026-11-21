@@ -12,7 +12,7 @@ export const skeletonStyles = stylex.create({
   root: {
     animationDuration: '2s',
     animationIterationCount: 'infinite',
-    animationName: skeletonPulse,
+    animationName: { default: skeletonPulse, '@media (prefers-reduced-motion: reduce)': 'none' },
     animationTimingFunction: 'cubic-bezier(0.4, 0, 0.6, 1)',
     backgroundColor: colors.backgroundNeutral,
     borderRadius: radius.medium

@@ -28,7 +28,8 @@ export const resizableStyles = stylex.create({
       default: colors.borderControl,
       ':hover': colors.foregroundNeutralFaded,
       ':active': colors.foregroundPrimary,
-      ':focus-visible': colors.foregroundPrimary
+      ':focus-visible': colors.foregroundPrimary,
+      '@media (forced-colors: active)': 'CanvasText'
     },
     borderRadius: radius.full,
     boxShadow: {
@@ -39,7 +40,14 @@ export const resizableStyles = stylex.create({
     display: 'flex',
     justifyContent: 'center',
     opacity: { default: 1, '[data-disabled]': 0.5 },
-    outline: 'none',
+    // The focus cue is a box-shadow and a color, both dropped by forced colors: an outline there.
+    outline: {
+      default: 'none',
+      '@media (forced-colors: active)': {
+        default: 'none',
+        ':focus-visible': `${stroke.ring2} solid Highlight`
+      }
+    },
     position: 'relative',
     transitionDuration: duration.medium,
     transitionProperty: 'background-color, box-shadow',
@@ -82,12 +90,16 @@ export const resizableStyles = stylex.create({
       default: colors.borderControl,
       [stylex.when.ancestor(':hover')]: colors.foregroundNeutralFaded,
       [stylex.when.ancestor(':active')]: colors.foregroundPrimary,
-      [stylex.when.ancestor(':focus-visible')]: colors.foregroundPrimary
+      [stylex.when.ancestor(':focus-visible')]: colors.foregroundPrimary,
+      '@media (forced-colors: active)': 'CanvasText'
     },
     borderRadius: radius.full,
     flexShrink: 0,
     transitionDuration: duration.medium,
-    transitionProperty: 'background-color, height, width, transform',
+    transitionProperty: {
+      default: 'background-color, height, width, transform',
+      '@media (prefers-reduced-motion: reduce)': 'background-color'
+    },
     transitionTimingFunction: easing.standard,
     zIndex: zIndex.relative
   },
