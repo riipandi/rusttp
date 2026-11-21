@@ -38,6 +38,18 @@ test.describe('admin sidebar', () => {
     await expect(admin.sidebar().getByRole('link', { name: 'Overview' })).toHaveText('Overview')
   })
 
+  test('folds to the rail on settings and restores the sidebar after', async ({ admin }) => {
+    await admin.open()
+    await admin.sidebar().getByRole('link', { name: 'Settings' }).click()
+    await expect(admin.expandButton()).toBeVisible()
+
+    await admin.sidebar().getByRole('link', { name: 'Users' }).click()
+    await expect(admin.collapseButton()).toBeVisible()
+    await expect
+      .poll(() => admin.page.evaluate(() => localStorage.getItem('admin-sidebar')))
+      .not.toBe('collapsed')
+  })
+
   test('opens expanded when the stored value is unknown', async ({ admin }) => {
     await admin.storeCollapse('folded')
     await admin.open()

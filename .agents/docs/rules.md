@@ -107,7 +107,7 @@ Forms in `packages/webapp` use Formisch (`@formisch/react`) with Valibot; the de
 
 The webapp keeps UI preferences in `localStorage`, read in a lazy `useState` initializer: the SPA renders on the client only, so the stored value is there before the first paint and no cookie or server contract is needed.
 
-- One key per preference, named for what it holds (`theme` from `uilibs/theme`, `admin-sidebar` from `routes/admin/-sidebar.tsx`). `admin-sidebar` is `collapsed` or `expanded`; any other value, a missing key, or a storage that throws reads as expanded.
+- One key per preference, named for what it holds (`theme` from `uilibs/theme`, `admin-sidebar` from `routes/admin/-sidebar.tsx`). `admin-sidebar` is `collapsed` or `expanded`; any other value, a missing key, or a storage that throws reads as expanded. Under `/admin/settings` the sidebar shows as the rail whatever is stored, and a toggle there lasts for that visit only: neither writes the key, so leaving settings restores the stored state.
 - A read or write that throws (storage disabled, quota) is caught: the preference falls back to its default and a toggle still works for the session.
 - No stored shape is migrated (the project keeps no backward compatibility): a value the code no longer knows reads as the default.
 - An E2E test seeds a preference with `page.addInitScript` before the app reads it (`admin.screen.ts` `storeCollapse`), never by reloading after `localStorage.setItem`.

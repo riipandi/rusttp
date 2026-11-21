@@ -109,10 +109,17 @@ export function Sidebar() {
   const id = React.useId()
   const navId = `${id}-nav`
   // The SPA renders on the client only, so the stored value is read before the first paint.
-  const [collapsed, setCollapsed] = React.useState(readCollapsed)
+  const [stored, setStored] = React.useState(readCollapsed)
+  // The settings pages bring their own aside, so the sidebar folds to the rail there. A toggle on
+  // those pages lasts for the visit only: the stored preference returns when they are left.
+  const onSettings = useIsCurrent({ to: '/admin/settings' })
+  const [visit, setVisit] = React.useState<boolean | null>(null)
+  if (!onSettings && visit !== null) setVisit(null)
+  const collapsed = onSettings ? (visit ?? true) : stored
 
   const toggle = (next: boolean) => {
-    setCollapsed(next)
+    if (onSettings) return setVisit(next)
+    setStored(next)
     try {
       localStorage.setItem(storageKey, next ? 'collapsed' : 'expanded')
     } catch {}
