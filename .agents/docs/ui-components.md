@@ -85,7 +85,7 @@ Compositions and components Base UI does not provide.
 | **Input Phone** | `uilibs/extra/input-phone` | International phone input with a searchable country selector; `size`, `labels` (`selectCountry`, `searchCountry`, `noCountry`). |
 | **Item** | `uilibs/extra/item` | `ItemGroup`, `Item` (a `listitem` inside a group), `Media`, `Content`, `Title`, `Description`, `Actions`, `Header`, `Footer`, `Separator`: one-column rows; multi-column records use `Table`. |
 | **Kanban** | `uilibs/extra/kanban` | dnd-kit board with column and item drag-and-drop; `labels.columnHandle`; item ids must be unique across columns. |
-| **Kbd** | `uilibs/extra/kbd` | `Kbd`, `KbdGroup`: keyboard shortcut label (only the label; the listener is separate, `@tanstack/react-hotkeys`). |
+| **Kbd** | `uilibs/extra/kbd` | `Kbd`, `KbdGroup`: keyboard shortcut label (only the label; the listener is separate, `@tanstack/react-hotkeys`, and the webapp renders a hotkey as keycaps through `components/shortcut.tsx`). |
 | **Label** | `uilibs/extra/label` | Standalone label, for use outside a `Field`. |
 | **Loader Text** | `uilibs/extra/loader-text` | Animated text placeholder. |
 | **Pagination** | `uilibs/extra/pagination` | `Pagination`, `Content`, `Item`, `Link` (a `LinkButton`, so `role='link'`), `Previous`, `Next`, `Ellipsis` (`label`). |

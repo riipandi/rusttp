@@ -11,6 +11,7 @@ import { NotificationsPopover } from '#/components/notifications'
 import { useNotifications } from '#/libraries/notifications'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
+import { CommandBarTrigger } from './-commandbar'
 import { groups } from './-nav'
 import { AdminUserMenu } from './-user-menu'
 
@@ -97,25 +98,46 @@ function readCollapsed() {
   }
 }
 
-export function Sidebar() {
-  const id = React.useId()
-  const navId = `${id}-nav`
+/**
+ * The sidebar's collapse, held by the admin layout so the sidebar's own buttons and the Cmd/Ctrl+B
+ * shortcut change one state. Under `/admin/settings` it shows as the rail whatever is stored, and a
+ * toggle there lasts for that visit only: neither writes the key, so leaving settings restores it.
+ */
+export function useSidebarCollapse() {
   // The SPA renders on the client only, so the stored value is read before the first paint.
   const [stored, setStored] = React.useState(readCollapsed)
-  // The settings pages bring their own aside, so the sidebar folds to the rail there. A toggle on
-  // those pages lasts for the visit only: the stored preference returns when they are left.
+  // The settings pages bring their own aside, so the sidebar folds to the rail there.
   const onSettings = useIsCurrent({ to: '/admin/settings' })
   const [visit, setVisit] = React.useState<boolean | null>(null)
   if (!onSettings && visit !== null) setVisit(null)
   const collapsed = onSettings ? (visit ?? true) : stored
 
-  const toggle = (next: boolean) => {
-    if (onSettings) return setVisit(next)
-    setStored(next)
-    try {
-      localStorage.setItem(storageKey, next ? 'collapsed' : 'expanded')
-    } catch {}
-  }
+  const setCollapsed = React.useCallback(
+    (next: boolean) => {
+      if (onSettings) return setVisit(next)
+      setStored(next)
+      try {
+        localStorage.setItem(storageKey, next ? 'collapsed' : 'expanded')
+      } catch {}
+    },
+    [onSettings]
+  )
+
+  return { collapsed, setCollapsed }
+}
+
+export function Sidebar({
+  collapsed,
+  onCollapsedChange,
+  onOpenCommandBar
+}: {
+  collapsed: boolean
+  onCollapsedChange: (collapsed: boolean) => void
+  onOpenCommandBar: () => void
+}) {
+  const id = React.useId()
+  const navId = `${id}-nav`
+  const toggle = onCollapsedChange
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
@@ -184,7 +206,11 @@ export function Sidebar() {
           )}
         </div>
 
-        <nav id={navId} aria-label='Admin' {...stylex.props(styles.nav)}>
+        <div {...stylex.props(styles.search)}>
+          <CommandBarTrigger collapsed={collapsed} onOpen={onOpenCommandBar} />
+        </div>
+
+        <nav id={navId} aria-label='Admin' {...stylex.props(styles.nav, styles.navUnderSearch)}>
           {groups.map(({ label, items }) => (
             <div key={label ?? 'main'} {...stylex.props(styles.group)}>
               {label && (

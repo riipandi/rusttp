@@ -95,6 +95,16 @@ export const styles = stylex.create({
       [stylex.when.ancestor(':focus-within')]: 1
     }
   },
+  // The search-like command bar trigger, between the header and the navigation.
+  search: {
+    flexShrink: 0,
+    paddingInline: unit.x3,
+    paddingBlockEnd: unit.x1
+  },
+  // The trigger above it already steps down, so the navigation starts without extra top padding.
+  navUnderSearch: {
+    paddingBlockStart: unit.x2
+  },
   nav: {
     boxSizing: 'border-box',
     display: 'flex',
