@@ -77,9 +77,12 @@ export const styles = stylex.create({
   },
   // Like the sidebar: a column the full height of the viewport with its own divider, items inset by
   // the same step as the sidebar's nav, and the first item level with the page title.
+  // The groups stack with the sidebar's own step between them.
   settingsAside: {
     boxSizing: 'border-box',
-    display: { default: 'block', [breakpoints.compact]: 'none' },
+    display: { default: 'flex', [breakpoints.compact]: 'none' },
+    flexDirection: 'column',
+    gap: unit.x5,
     flexShrink: 0,
     position: 'sticky',
     top: 0,

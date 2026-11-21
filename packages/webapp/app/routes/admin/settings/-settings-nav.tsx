@@ -1,11 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import * as React from 'react'
 import { LinkButton } from 'uilibs/base/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'uilibs/base/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel } from 'uilibs/base/select'
+import { SelectSeparator, SelectTrigger, SelectValue } from 'uilibs/base/select'
 import { useIsCurrent } from '#/components/nav-sheet'
 import { styles as sidebar } from '#/styles/element/sidebar.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
-import { pages } from './-nav'
+import { groups, pages } from './-nav'
 
 function AsideEntry({ page }: { page: (typeof pages)[number] }) {
   const current = useIsCurrent(page)
@@ -25,6 +27,7 @@ function AsideEntry({ page }: { page: (typeof pages)[number] }) {
 // Both are always rendered; the stylesheet shows the aside above the compact breakpoint and the
 // select below it, so no media hook is needed.
 export function SettingsNav() {
+  const id = React.useId()
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const current = pages.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`))
@@ -32,13 +35,26 @@ export function SettingsNav() {
   return (
     <>
       <nav aria-label='Settings' {...stylex.props(styles.settingsAside)}>
-        <ul {...stylex.props(sidebar.list)}>
-          {pages.map((page) => (
-            <li key={page.to}>
-              <AsideEntry page={page} />
-            </li>
-          ))}
-        </ul>
+        {groups.map((group) => {
+          const { label } = group
+          const labelId = label && `${id}-${label}`
+          return (
+            <div key={label ?? 'main'} {...stylex.props(sidebar.group)}>
+              {label && (
+                <span id={labelId} {...stylex.props(sidebar.groupLabel)}>
+                  {label}
+                </span>
+              )}
+              <ul aria-labelledby={labelId} {...stylex.props(sidebar.list)}>
+                {group.items.map((page) => (
+                  <li key={page.to}>
+                    <AsideEntry page={page} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        })}
       </nav>
       <div {...stylex.props(styles.settingsPicker)}>
         <Select
@@ -52,11 +68,22 @@ export function SettingsNav() {
             <SelectValue placeholder='Settings' />
           </SelectTrigger>
           <SelectContent>
-            {pages.map(({ label, to }) => (
-              <SelectItem key={to} value={to}>
-                {label}
-              </SelectItem>
-            ))}
+            {groups.map((group, index) => {
+              const { label } = group
+              return (
+                <React.Fragment key={label ?? 'main'}>
+                  {index > 0 && <SelectSeparator />}
+                  <SelectGroup>
+                    {label && <SelectLabel>{label}</SelectLabel>}
+                    {group.items.map(({ label: name, to }) => (
+                      <SelectItem key={to} value={to}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </React.Fragment>
+              )
+            })}
           </SelectContent>
         </Select>
       </div>

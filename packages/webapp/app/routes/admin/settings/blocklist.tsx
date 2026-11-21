@@ -2,18 +2,18 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import { styles } from '#/styles/pages/admin.stylex'
 
-export const Route = createFileRoute('/admin/settings/oidc')({
+export const Route = createFileRoute('/admin/settings/blocklist')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Federation & OIDC settings' }
+  staticData: { pageTitle: 'Blocklist' }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Federation & OIDC settings</h1>
+        <h1 {...stylex.props(styles.title)}>Blocklist</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Configure issuer details and federation with external providers.
+          Block abusive addresses, accounts, and email domains.
         </p>
       </div>
     </main>

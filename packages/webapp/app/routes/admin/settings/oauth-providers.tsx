@@ -2,18 +2,18 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import { styles } from '#/styles/pages/admin.stylex'
 
-export const Route = createFileRoute('/admin/authorization')({
+export const Route = createFileRoute('/admin/settings/oauth-providers')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Authorization' }
+  staticData: { pageTitle: 'OAuth providers' }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Authorization</h1>
+        <h1 {...stylex.props(styles.title)}>OAuth providers</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Manage roles, permissions, and the policies that decide who can do what.
+          Connect external identity providers for social and federated sign-in.
         </p>
       </div>
     </main>
