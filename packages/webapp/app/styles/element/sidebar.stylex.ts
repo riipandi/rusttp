@@ -168,11 +168,61 @@ export const styles = stylex.create({
   ruleShown: {
     opacity: 1
   },
-  // The collapsed rail's notification entry between the scrolling nav and the account strip; it stays put.
-  notify: {
+  // The space the rail keeps for the bell between the scrolling nav and the account strip: 36px for
+  // the bell and the 12px step below it. It folds to nothing expanded, with the width's timing, so
+  // the nav grows and shrinks in step with the bell's travel instead of jumping.
+  notifyRoom: {
     flexShrink: 0,
-    paddingInline: unit.x3,
-    paddingBlockEnd: unit.x3
+    height: 0,
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'height',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  notifyRoomOpen: {
+    height: unit.x12
+  },
+  // The bell's slot, against the sidebar's bottom end corner (the root is its containing block).
+  // Expanded it is the 36px box at the strip's end, centered in the strip under its 1px divider; the
+  // rail moves it up by the strip's height plus the step, 12px in from the edge and 40px wide like the
+  // nav items. The transform and the width ride the sidebar's own duration and easing.
+  notifySlot: {
+    position: 'absolute',
+    bottom: `calc((${unit.x14} - 1px - ${unit.x9}) / 2)`,
+    insetInlineEnd: unit.x4,
+    width: unit.x9,
+    height: unit.x9,
+    transform: 'translateY(0)',
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'transform, width, inset-inline-end',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  notifySlotRail: {
+    insetInlineEnd: unit.x3,
+    width: unit.x10,
+    transform: `translateY(calc(-1 * (${unit.x14} + ${unit.x3} - (${unit.x14} - 1px - ${unit.x9}) / 2)))`
+  },
+  notifyButton: {
+    width: '100%',
+    height: '100%'
+  },
+  // The bell is drawn at 20px; the rail's 16px is that scaled, so the size change animates too.
+  notifyIcon: {
+    transform: 'scale(1)',
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'transform',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  notifyIconRail: {
+    transform: 'scale(0.8)'
   },
   // With something unread the entry steps up from the idle gray to the full foreground; the dot on
   // the bell is the solid primary: the two together read as one state, the gray one as none.

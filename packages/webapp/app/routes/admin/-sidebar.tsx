@@ -60,32 +60,41 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 
 // Collapsed, the bell is the rail entry above the account avatar; expanded, an icon at the end of
 // the account strip, beside the menu trigger. The popover opens beside the sidebar.
+//
+// One element in both states: the slot is absolutely placed against the sidebar's bottom corner and
+// travels between the two spots (a transform, with the same duration and easing as the width), so
+// the bell glides instead of unmounting in one place and mounting in the other, and an open popover
+// or a keyboard focus survives the toggle.
 function NotifyEntry({ collapsed }: { collapsed: boolean }) {
   // Only whether any are unread decides the dot, so a count that moves from 3 to 2 renders nothing.
   const anyUnread = useSelector(unreadCount, (count) => count > 0)
   return (
-    <NotificationsPopover
-      to='/admin/notifications'
-      // Expanded, it opens above the bell and grows toward the sidebar's left edge; it is wider than
-      // the room there, so it shifts right rather than flipping to the bell's other side. The rail
-      // has no room to its left and opens beside it.
-      side={collapsed ? 'right' : 'top'}
-      align='end'
-      collisionAvoidance={{ side: 'flip', align: 'shift' }}
-      // The user menu's edges: 12px from the sidebar's left edge expanded; the rail's menu sits 72px
-      // in. Its bottom edge is 22px above the strip, so the offsets match it.
-      collisionPadding={12}
-      sideOffset={collapsed ? 21 : 22}
-      tooltipSide={collapsed ? 'right' : 'top'}
-      iconSize={collapsed ? 16 : 20}
-      trigger={
-        <Button
-          variant='ghost'
-          size={collapsed ? 'sm' : 'icon-md'}
-          style={[collapsed && styles.item, styles.itemIdle, anyUnread && styles.itemUnread]}
-        />
-      }
-    />
+    <div {...stylex.props(styles.notifySlot, collapsed && styles.notifySlotRail)}>
+      <NotificationsPopover
+        to='/admin/notifications'
+        // Expanded, it opens above the bell and grows toward the sidebar's left edge; it is wider than
+        // the room there, so it shifts right rather than flipping to the bell's other side. The rail
+        // has no room to its left and opens beside it.
+        side={collapsed ? 'right' : 'top'}
+        align='end'
+        collisionAvoidance={{ side: 'flip', align: 'shift' }}
+        // The user menu's edges: 12px from the sidebar's left edge expanded; the rail's menu sits 72px
+        // in. Its bottom edge is 22px above the strip, so the offsets match it.
+        collisionPadding={12}
+        sideOffset={collapsed ? 21 : 22}
+        tooltipSide={collapsed ? 'right' : 'top'}
+        // The icon is 20px in both states and scales down in the rail, so it animates with the slot.
+        iconSize={20}
+        iconStyle={[styles.notifyIcon, collapsed && styles.notifyIconRail]}
+        trigger={
+          <Button
+            variant='ghost'
+            size='icon-md'
+            style={[styles.notifyButton, styles.itemIdle, anyUnread && styles.itemUnread]}
+          />
+        }
+      />
+    </div>
   )
 }
 
@@ -211,16 +220,17 @@ export function Sidebar() {
           ))}
         </nav>
 
-        {collapsed && (
-          <div {...stylex.props(styles.notify)}>
-            <NotifyEntry collapsed />
-          </div>
-        )}
+        {/* Room for the bell above the account strip; it opens and closes with the width. */}
+        <div
+          aria-hidden='true'
+          {...stylex.props(styles.notifyRoom, collapsed && styles.notifyRoomOpen)}
+        />
 
         <div {...stylex.props(styles.account)}>
           <AdminUserMenu collapsed={collapsed} />
-          {!collapsed && <NotifyEntry collapsed={false} />}
         </div>
+
+        <NotifyEntry collapsed={collapsed} />
       </TooltipProvider>
     </aside>
   )

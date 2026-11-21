@@ -84,6 +84,8 @@ interface NotificationsPopoverProps {
   /** The bell's button: a `Button` element whose size and style the host picks. */
   trigger: React.ReactElement<{ 'aria-label'?: string }>
   iconSize?: number
+  /** Extra style on the bell icon's wrapper, for a host that animates it (the sidebar's rail). */
+  iconStyle?: stylex.StyleXStyles
   /** Where the popover opens, and where the bell's own tooltip does. */
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
@@ -106,6 +108,7 @@ export function NotificationsPopover({
   to,
   trigger,
   iconSize = 20,
+  iconStyle,
   side = 'bottom',
   align = 'end',
   tooltipSide = 'bottom',
@@ -126,7 +129,7 @@ export function NotificationsPopover({
         <TooltipTrigger
           render={<PopoverTrigger render={React.cloneElement(trigger, { 'aria-label': name })} />}
         >
-          <span {...stylex.props(styles.bell)}>
+          <span {...stylex.props(styles.bell, iconStyle)}>
             <Icon svg={Bell} size={iconSize} />
             {unread > 0 && <span aria-hidden='true' {...stylex.props(styles.dot)} />}
           </span>
