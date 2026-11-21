@@ -53,15 +53,10 @@ export const styles = stylex.create({
     paddingInlineStart: unit.x6,
     paddingInlineEnd: unit.x3
   },
-  // The logo above the expand entry, both centered on the rail. Both longhands: a `paddingInline`
-  // shorthand would lose to the header's own start and end padding, and the column would sit 6px
-  // off the rail's center.
+  // Both longhands: a `paddingInline` shorthand would lose to the header's own start and end
+  // padding, and the logo would sit 6px off the rail's center.
   headerCollapsed: {
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    gap: unit.x1,
-    height: 'auto',
-    paddingTop: unit.x2,
+    justifyContent: 'center',
     paddingInlineStart: 0,
     paddingInlineEnd: 0
   },
@@ -78,11 +73,29 @@ export const styles = stylex.create({
     // The logo is sized in em, so this shrinks mark and wordmark together.
     fontSize: fontSize.body1
   },
-  // The mark alone, in a box the size of the entry below it, so the two stack on one axis.
-  brandCollapsed: {
-    justifyContent: 'center',
-    width: unit.x10,
-    height: unit.x10
+  // The logo and the expand icon share one cell; hovering or focusing the header swaps them.
+  swap: {
+    display: 'grid',
+    placeItems: 'center'
+  },
+  swapLogo: {
+    gridArea: '1 / 1',
+    display: 'flex',
+    fontSize: fontSize.body1,
+    opacity: {
+      default: 1,
+      [stylex.when.ancestor(':hover')]: 0,
+      [stylex.when.ancestor(':focus-within')]: 0
+    }
+  },
+  swapIcon: {
+    gridArea: '1 / 1',
+    display: 'flex',
+    opacity: {
+      default: 0,
+      [stylex.when.ancestor(':hover')]: 1,
+      [stylex.when.ancestor(':focus-within')]: 1
+    }
   },
   nav: {
     boxSizing: 'border-box',

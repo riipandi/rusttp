@@ -22,10 +22,6 @@ export class AdminScreen extends AppScreen {
     return this.page.getByRole('button', { name: 'Expand sidebar' })
   }
 
-  logo() {
-    return this.page.getByRole('link', { name: 'Rusttp', exact: true })
-  }
-
   /** Sets the stored collapse before the app reads it, as an earlier visit would have. */
   async storeCollapse(value: string) {
     await this.page.addInitScript((stored) => localStorage.setItem('admin-sidebar', stored), value)

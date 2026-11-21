@@ -27,15 +27,6 @@ test.describe('admin sidebar', () => {
     await expect(admin.sidebar().getByRole('link', { name: 'Overview' })).toHaveText('')
   })
 
-  test('keeps the logo a link to the overview in the rail', async ({ admin }) => {
-    await admin.storeCollapse('collapsed')
-    await admin.page.goto('/admin/users')
-
-    await expect(admin.expandButton()).toBeVisible()
-    await admin.logo().click()
-    await expect(admin.page).toHaveURL(/\/admin$/)
-  })
-
   test('stays expanded after expanding and reloading', async ({ admin }) => {
     await admin.open()
     await admin.collapseButton().click()
