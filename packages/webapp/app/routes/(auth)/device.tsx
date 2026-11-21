@@ -36,7 +36,15 @@ function RouteComponent() {
         }}
       >
         <Field of={form} path={['code']}>
-          {(field) => <CodeField field={field} label='Device code' length={8} split />}
+          {(field) => (
+            <CodeField
+              field={field}
+              label='Device code'
+              length={8}
+              split
+              characters='alphanumeric'
+            />
+          )}
         </Field>
         <Button type='submit' size='lg' style={styles.submit}>
           Continue

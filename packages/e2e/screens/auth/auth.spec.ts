@@ -121,6 +121,15 @@ test.describe('auth pages', () => {
     ).toBeVisible()
   })
 
+  test('a device code takes letters and digits', async ({ page }) => {
+    await page.goto(routes.device)
+    await page.getByRole('textbox').first().click()
+    await page.keyboard.type('HP7G4X2D')
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    await expect(page).toHaveURL(routes.dashboard)
+  })
+
   test('a failed submit focuses the first invalid field, not the first field', async ({ page }) => {
     await page.goto(routes.login)
     await page.getByLabel('Email').fill('robert.langdon@example.com')

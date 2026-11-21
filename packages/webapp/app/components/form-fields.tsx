@@ -215,17 +215,22 @@ export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
   )
 }
 
-/** A one-time code in character slots: one group of `length`, or two halves when `split` is set. */
+/**
+ * A one-time code in character slots: one group of `length`, or two halves when `split` is set.
+ * `characters` is what the slots accept (digits by default); the schema still decides what is valid.
+ */
 export function CodeField({
   field,
   label,
   length,
-  split = false
+  split = false,
+  characters = 'numeric'
 }: {
   field: FieldLike<string>
   label: string
   length: number
   split?: boolean
+  characters?: 'numeric' | 'alphanumeric'
 }) {
   const messages = messagesOf(field)
   const half = length / 2
@@ -246,6 +251,7 @@ export function CodeField({
         style={styles.code}
         name={field.props.name}
         length={length}
+        validationType={characters}
         value={field.input ?? ''}
         onValueChange={field.onChange}
         onFocus={field.props.onFocus}
