@@ -3,6 +3,7 @@ import { type CustomHotkeys, HotkeysProvider } from '@tanstack/react-hotkeys'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { batch } from '@tanstack/store'
 import * as React from 'react'
+import { AnnouncementBar } from '#/components/announcement-bar'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
 import { sidebarStore } from '#/libraries/sidebar.store'
@@ -74,6 +75,9 @@ function AdminLayout() {
       <Sidebar />
       <AdminTopBar />
       <div {...stylex.props(styles.content)}>
+        <AnnouncementBar label='Demo mode' tone='critical'>
+          You are in demo mode, changes are not saved.
+        </AnnouncementBar>
         <Outlet />
       </div>
       <CommandBar />
