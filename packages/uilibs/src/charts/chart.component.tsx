@@ -9,8 +9,11 @@
  *
  * The `definition` is a plain TanStack `defineChart()` value; series keys in
  * the `config` map to mark `id`s so tooltips and legends can resolve labels
- * and colors. Mark colors must be concrete color strings — TanStack paints
- * them as SVG presentation attributes, which do not resolve CSS variables.
+ * and colors. A mark color is any CSS color, a theme token (`colors.backgroundPrimary`, a
+ * `var()` string) included: TanStack paints it as an SVG presentation attribute, and a browser
+ * resolves `var()` there (checked in Chromium, light and dark), so a series follows the theme.
+ * A series that carries meaning needs 3:1 against the page (WCAG 1.4.11) or a second cue: a
+ * label, a pattern, or a legend entry next to it.
  *
  * SSR and multi-chart hygiene: keep `initialWidth` stable across server and
  * client, and give every chart in the same document an explicit `idPrefix` so

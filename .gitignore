@@ -27,6 +27,7 @@ routes.gen.ts
 .rumdl_cache/
 *tsbuildinfo
 npm-debug.log*
+*.log
 coverage.*
 .vscode/*
 !.vscode/extensions.json

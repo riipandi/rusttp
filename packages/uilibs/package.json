@@ -2,6 +2,9 @@
     "name": "uilibs",
     "private": true,
     "type": "module",
+    "sideEffects": [
+        "*.css"
+    ],
     "exports": {
         "./*": [
             "./src/*",
@@ -28,12 +31,10 @@
         "@stylexjs/atoms": "catalog:",
         "@stylexjs/stylex": "catalog:",
         "@tanstack/charts": "catalog:",
-        "@tanstack/react-hotkeys": "catalog:",
         "@tanstack/react-router": "catalog:",
         "@tanstack/react-table": "catalog:",
         "@tanstack/react-virtual": "catalog:",
         "country-flag-icons": "^1.6.20",
-        "date-fns": "catalog:",
         "react": "catalog:",
         "react-day-picker": "^10.0.2",
         "react-dom": "catalog:",
@@ -48,11 +49,13 @@
         "@storybook/addon-mcp": "catalog:",
         "@storybook/addon-vitest": "catalog:",
         "@storybook/tanstack-react": "catalog:",
+        "@tanstack/react-hotkeys": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "catalog:",
         "@vitest/browser-playwright": "^5.1.1",
+        "date-fns": "catalog:",
         "playwright": "catalog:",
         "plugins": "workspace:*",
         "remark-gfm": "^4.0.1",
