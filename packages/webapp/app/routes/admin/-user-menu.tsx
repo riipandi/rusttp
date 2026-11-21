@@ -60,7 +60,10 @@ export function AdminUserMenu({
           <Button
             variant='ghost'
             size={mobile ? 'lg' : 'icon-md'}
-            aria-label={m.user_menu_trigger_named({ name: adminProfile.name })}
+            aria-label={m.user_menu_trigger_named({
+              initials: adminProfile.initials,
+              name: adminProfile.name
+            })}
             style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
           />
         }

@@ -7,6 +7,7 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CheckboxField, CodeField } from '#/components/form-fields'
 import { getMessages, useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { twoFactorSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
@@ -54,7 +55,11 @@ function RouteComponent() {
 
       <div {...stylex.props(styles.links)}>
         {/* Placeholder: recovery codes need the backend. */}
-        <button type='button' {...stylex.props(styles.link, styles.linkButton)}>
+        <button
+          type='button'
+          onClick={notWired('Use a recovery code')}
+          {...stylex.props(styles.link, styles.linkButton)}
+        >
           {m.auth_two_factor_recovery()}
         </button>
         <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>

@@ -42,7 +42,7 @@ export function UserMenu() {
           <Button
             variant='ghost'
             size='icon-md'
-            aria-label={m.user_menu_trigger()}
+            aria-label={m.user_menu_trigger_initials({ initials: profile.initials })}
             style={styles.trigger}
           />
         }

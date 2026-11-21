@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { AnnouncementBar } from '#/components/announcement-bar'
+import { SkipLink } from '#/components/skip-link'
 import { adminProfile } from '#/fixtures/profile'
 import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
@@ -19,6 +20,7 @@ function RouteComponent() {
 
   return (
     <div {...stylex.props(layout.root)}>
+      <SkipLink />
       {isAdministrator && (
         <AnnouncementBar
           label={m.app_banner_admin_label()}

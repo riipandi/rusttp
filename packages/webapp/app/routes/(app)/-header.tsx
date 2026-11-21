@@ -15,6 +15,7 @@ import { type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
 import { profile } from '#/fixtures/profile'
 import { type Messages, useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { UserMenu } from './-user-menu'
@@ -54,7 +55,7 @@ function NavEntry({ item }: { item: NavItem }) {
   }
 
   return (
-    <Button variant='ghost' size='sm' style={style}>
+    <Button variant='ghost' size='sm' style={style} onClick={notWired(item.label)}>
       {item.label}
     </Button>
   )

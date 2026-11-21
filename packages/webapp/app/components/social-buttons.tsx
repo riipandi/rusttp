@@ -5,6 +5,7 @@ import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, unit } from 'uilibs/styles/tokens.stylex'
 import { useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 
 const styles = stylex.create({
   group: {
@@ -30,11 +31,11 @@ export function SocialButtons() {
   return (
     <>
       <div {...stylex.props(styles.group)}>
-        <Button type='button' variant='outline' size='lg'>
+        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with Google')}>
           <GoogleIcon size={18} aria-hidden='true' />
           Google
         </Button>
-        <Button type='button' variant='outline' size='lg'>
+        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with GitHub')}>
           <GitHubIcon size={18} aria-hidden='true' />
           GitHub
         </Button>

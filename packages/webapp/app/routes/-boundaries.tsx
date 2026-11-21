@@ -31,9 +31,7 @@ function Boundary({
       <div {...stylex.props(layout.root)}>
         <main {...stylex.props(layout.center)}>
           <Icon svg={icon} size={32} color='neutralFaded' />
-          <Text variant='featured-3' weight='bold'>
-            {title}
-          </Text>
+          <Text variant='featured-3' weight='bold' render={<h1>{title}</h1>} />
           <Text color='neutral-faded'>{description}</Text>
           {detail && (
             <Text variant='caption-1' color='neutral-faded' monospace>

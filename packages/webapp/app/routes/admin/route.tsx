@@ -4,6 +4,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { batch } from '@tanstack/store'
 import * as React from 'react'
 import { AnnouncementBar } from '#/components/announcement-bar'
+import { SkipLink } from '#/components/skip-link'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
 import { useMessages } from '#/libraries/messages'
@@ -74,6 +75,7 @@ function AdminLayout() {
 
   return (
     <div {...stylex.props(styles.root)}>
+      <SkipLink />
       <Sidebar />
       <AdminTopBar />
       <div {...stylex.props(styles.content)}>

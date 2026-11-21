@@ -25,7 +25,7 @@ export class AdminScreen extends AppScreen {
 
   /** The sidebar's search-like trigger. */
   commandTrigger() {
-    return this.page.getByRole('button', { name: 'Search and commands' })
+    return this.page.getByRole('button', { name: /^Search/ })
   }
 
   commandBar() {
@@ -40,12 +40,19 @@ export class AdminScreen extends AppScreen {
     await this.page.keyboard.press(`ControlOrMeta+${key}`)
   }
 
-  collapseButton() {
-    return this.page.getByRole('button', { name: 'Collapse sidebar' })
+  /** The one toggle in the sidebar header: its name stays, `aria-expanded` says what a press does. */
+  toggleButton() {
+    return this.page.getByRole('button', { name: 'Toggle sidebar' })
   }
 
+  /** The toggle while the sidebar is open: pressing it collapses to the rail. */
+  collapseButton() {
+    return this.toggleButton().and(this.page.locator('[aria-expanded="true"]'))
+  }
+
+  /** The toggle while the sidebar is the rail: pressing it expands. */
   expandButton() {
-    return this.page.getByRole('button', { name: 'Expand sidebar' })
+    return this.toggleButton().and(this.page.locator('[aria-expanded="false"]'))
   }
 
   /** Sets the stored collapse before the app reads it, as an earlier visit would have. */

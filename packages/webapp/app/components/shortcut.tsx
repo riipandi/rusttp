@@ -34,6 +34,19 @@ export function ariaKeyShortcuts(hotkey: Hotkey | null | undefined) {
   return (isHotkeySequence(hotkey) ? hotkey : [hotkey]).map(chord).join(' ')
 }
 
+/**
+ * A hotkey as the words a control's accessible name can end with (`Search ⌘ K`): the same parts the
+ * keycaps show, so the name contains the visible text (WCAG 2.5.3) and follows the user's binding.
+ */
+export function useShortcutText(hotkey: Hotkey | null | undefined) {
+  const formatForDisplay = useFormatForDisplay()
+  if (!hotkey) return ''
+  const keys = isHotkeySequence(hotkey)
+    ? formatForDisplay(hotkey, { parts: true }).flat()
+    : formatForDisplay(hotkey, { parts: true })
+  return keys.join(' ')
+}
+
 /** A hotkey as keycaps, labelled for the user's platform. */
 export function Shortcut({ hotkey, hidden, style }: ShortcutProps) {
   const formatForDisplay = useFormatForDisplay()

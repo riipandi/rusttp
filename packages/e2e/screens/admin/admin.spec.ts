@@ -128,6 +128,19 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.page).toHaveURL(/\/admin\/security$/)
   })
 
+  test('the toggle keeps keyboard focus through a collapse and an expand', async ({ admin }) => {
+    await admin.openReady()
+    const toggle = admin.toggleButton()
+
+    await toggle.focus()
+    await admin.page.keyboard.press('Enter')
+    await expect(admin.expandButton()).toBeVisible()
+    await expect(toggle).toBeFocused()
+    await admin.page.keyboard.press('Enter')
+    await expect(admin.collapseButton()).toBeVisible()
+    await expect(toggle).toBeFocused()
+  })
+
   test('Mod+B expands and collapses the sidebar', async ({ admin }) => {
     await admin.openReady()
     await expect(admin.collapseButton()).toBeVisible()
@@ -214,5 +227,21 @@ test.describe('admin command bar and hotkeys', () => {
     await admin.page.keyboard.press('g')
     await admin.page.keyboard.press('x')
     await expect(admin.page).toHaveURL(/\/admin\/settings/)
+  })
+})
+
+test.describe('skip link and not-wired controls', () => {
+  test('the first Tab stop skips to the page content', async ({ admin, isMobile, browserName }) => {
+    test.skip(isMobile, 'No keyboard on a touch device')
+    // Safari does not Tab to links unless its "Press Tab to highlight each item" option is on.
+    test.skip(browserName === 'webkit', 'Safari skips links when tabbing by default')
+    await admin.openReady()
+
+    await admin.page.keyboard.press('Tab')
+    const skip = admin.page.getByRole('link', { name: 'Skip to content' })
+    await expect(skip).toBeFocused()
+    await admin.page.keyboard.press('Enter')
+
+    await expect(admin.page.locator('main')).toBeFocused()
   })
 })

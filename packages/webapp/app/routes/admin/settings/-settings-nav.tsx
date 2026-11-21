@@ -60,7 +60,7 @@ export function SettingsNav() {
           )
         })}
       </nav>
-      <div {...stylex.props(styles.settingsPicker)}>
+      <nav aria-label={m.settings_nav_landmark()} {...stylex.props(styles.settingsPicker)}>
         <Select
           items={pages.map(({ label, to }) => ({ label, value: to }))}
           value={current?.to ?? null}
@@ -90,7 +90,7 @@ export function SettingsNav() {
             })}
           </SelectContent>
         </Select>
-      </div>
+      </nav>
     </>
   )
 }

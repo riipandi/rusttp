@@ -11,6 +11,7 @@ import { Icon } from 'uilibs/extra/icon'
 import { Sheet, SheetClose, SheetContent, SheetDescription } from 'uilibs/extra/sheet'
 import { SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from 'uilibs/extra/sheet'
 import { useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 import { styles } from '#/styles/element/nav-sheet.stylex'
 
 export interface NavItem {
@@ -76,7 +77,7 @@ function SheetEntry({
   }
 
   return (
-    <Button variant='ghost' size='lg' style={style}>
+    <Button variant='ghost' size='lg' style={style} onClick={notWired(item.label)}>
       {content}
     </Button>
   )
@@ -176,7 +177,12 @@ export function NavSheet({
       >
         <Icon svg={Menu} size={20} />
       </SheetTrigger>
-      <SheetContent side='left' showCloseButton={false} style={styles.sheetContent}>
+      <SheetContent
+        side='left'
+        showCloseButton={false}
+        aria-label={m.nav_sheet_dialog()}
+        style={styles.sheetContent}
+      >
         <SheetHeader style={[styles.sheetProfile, !profile && styles.sheetHeaderBrand]}>
           {profile ? (
             <>

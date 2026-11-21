@@ -156,12 +156,13 @@ export const styles = stylex.create({
     },
     textDecorationLine: 'underline',
     textDecorationColor: {
-      default: 'transparent',
+      default: 'currentColor',
       ':hover': 'currentColor'
     },
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
     textUnderlineOffset: '0.25em',
     transitionDuration: duration.fast,
-    transitionProperty: 'color, text-decoration-color'
+    transitionProperty: 'color, text-decoration-thickness'
   },
   // A button that reads as one of the page's links (a placeholder action, not a navigation).
   linkButton: {
@@ -182,13 +183,11 @@ export const styles = stylex.create({
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.medium,
     textDecorationLine: 'underline',
-    textDecorationColor: {
-      default: 'transparent',
-      ':hover': 'currentColor'
-    },
+    textDecorationColor: 'currentColor',
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
     textUnderlineOffset: '0.25em',
     transitionDuration: duration.fast,
-    transitionProperty: 'text-decoration-color'
+    transitionProperty: 'text-decoration-thickness'
   },
   backLink: {
     display: 'inline-flex',

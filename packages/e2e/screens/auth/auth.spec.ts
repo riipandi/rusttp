@@ -177,3 +177,18 @@ test.describe('auth pages', () => {
     await expect(page.getByRole('textbox', { name: 'Authentication code' })).toBeFocused()
   })
 })
+
+test.describe('controls with no backend yet', () => {
+  test('a control that is not wired logs one line to the console', async ({ page }) => {
+    const lines: string[] = []
+    page.on('console', (message) => {
+      if (message.type() === 'info') lines.push(message.text())
+    })
+    await page.goto(routes.login)
+
+    await page.getByRole('button', { name: 'Google' }).click()
+    await page.getByRole('button', { name: 'GitHub' }).click()
+
+    expect(lines).toEqual(['[not wired] Sign in with Google', '[not wired] Sign in with GitHub'])
+  })
+})

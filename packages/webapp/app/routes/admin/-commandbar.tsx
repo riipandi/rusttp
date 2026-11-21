@@ -37,7 +37,7 @@ import {
 } from 'uilibs/extra/command'
 import { Icon } from 'uilibs/extra/icon'
 import { useTheme } from 'uilibs/theme'
-import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
+import { AppShortcut, Shortcut, ariaKeyShortcuts, useShortcutText } from '#/components/shortcut'
 import { themes } from '#/components/theme-menu'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { hotkeyNames, localizedHotkeyName } from '#/libraries/hotkeys'
@@ -93,12 +93,16 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
   const m = useMessages()
   const appHotkey = useAppHotkeys()['palette.toggle']
   const holding = useHotkeyHint(appHotkey)
+  const shortcutText = useShortcutText(appHotkey.hotkey)
 
   const button = (
     <Button
       variant='outline'
       size={collapsed ? 'icon-md' : 'md'}
-      aria-label={m.commandbar_trigger()}
+      // The name is what the button shows (WCAG 2.5.3: a voice user says what they see); the longer
+      // purpose is its description.
+      aria-label={`${m.commandbar_search()} ${shortcutText}`.trim()}
+      aria-description={m.commandbar_trigger()}
       aria-keyshortcuts={ariaKeyShortcuts(appHotkey.hotkey)}
       onClick={() => commandBarStore.actions.show('commands')}
       style={[styles.trigger, collapsed && styles.triggerRail]}
@@ -394,6 +398,7 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
   const m = useMessages()
   const items = useAppHotkeyList()
   const names = groupNames(m)
+  const groupId = React.useId()
   const groups = [...new Set(items.map(({ appHotkey }) => appHotkey.meta?.group ?? 'Other'))]
   const [editing, setEditing] = React.useState<AppHotkeyId | null>(null)
 
@@ -409,10 +414,12 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
         {groups.map((group) => (
           <section
             key={group}
-            aria-label={names[group] ?? group}
+            aria-labelledby={`${groupId}-${group}`}
             {...stylex.props(styles.panelGroup)}
           >
-            <h3 {...stylex.props(styles.panelGroupLabel)}>{names[group] ?? group}</h3>
+            <h3 id={`${groupId}-${group}`} {...stylex.props(styles.panelGroupLabel)}>
+              {names[group] ?? group}
+            </h3>
             {items
               .filter(({ appHotkey }) => (appHotkey.meta?.group ?? 'Other') === group)
               .map(({ appHotkey, isCustom }) => (

@@ -128,21 +128,30 @@ export function Sidebar() {
             collapsed && stylex.defaultMarker()
           )}
         >
-          {collapsed ? (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    variant='ghost'
-                    size='icon-sm'
-                    aria-label={m.admin_sidebar_expand()}
-                    aria-expanded={false}
-                    aria-controls={navId}
-                    onClick={() => toggle(false)}
-                    style={styles.trigger}
-                  />
-                }
-              >
+          {/* Collapsed, the logo is the toggle's face; expanded, the brand is beside it. The button is
+              one element in one position, so a keyboard user's focus stays on it through a toggle. */}
+          {!collapsed && (
+            // Not a link: the Overview item already leads to `/admin`.
+            <span {...stylex.props(layout.brand, styles.brand)}>
+              <Logo />
+              Rusttp
+            </span>
+          )}
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant='ghost'
+                  size='icon-sm'
+                  aria-label={m.admin_sidebar_toggle()}
+                  aria-expanded={!collapsed}
+                  aria-controls={navId}
+                  onClick={() => toggle(!collapsed)}
+                  style={styles.trigger}
+                />
+              }
+            >
+              {collapsed ? (
                 <span {...stylex.props(styles.swap)}>
                   <span {...stylex.props(styles.swapLogo)}>
                     <Logo />
@@ -151,36 +160,14 @@ export function Sidebar() {
                     <Icon svg={PanelLeftOpen} size={16} />
                   </span>
                 </span>
-              </TooltipTrigger>
-              <TooltipContent side='right'>{m.admin_sidebar_expand()}</TooltipContent>
-            </Tooltip>
-          ) : (
-            <>
-              {/* Not a link: the Overview item already leads to `/admin`. */}
-              <span {...stylex.props(layout.brand, styles.brand)}>
-                <Logo />
-                Rusttp
-              </span>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant='ghost'
-                      size='icon-sm'
-                      aria-label={m.admin_sidebar_collapse()}
-                      aria-expanded
-                      aria-controls={navId}
-                      onClick={() => toggle(true)}
-                      style={styles.trigger}
-                    />
-                  }
-                >
-                  <Icon svg={PanelLeftClose} size={16} />
-                </TooltipTrigger>
-                <TooltipContent side='right'>{m.admin_sidebar_collapse()}</TooltipContent>
-              </Tooltip>
-            </>
-          )}
+              ) : (
+                <Icon svg={PanelLeftClose} size={16} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent side='right'>
+              {collapsed ? m.admin_sidebar_expand() : m.admin_sidebar_collapse()}
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         <div {...stylex.props(styles.search)}>
