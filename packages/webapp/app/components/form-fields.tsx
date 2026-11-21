@@ -16,17 +16,6 @@ import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.sty
 import { useMessages } from '#/libraries/messages'
 
 const styles = stylex.create({
-  srOnly: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    margin: -1,
-    padding: 0,
-    overflow: 'hidden',
-    clip: 'rect(0, 0, 0, 0)',
-    whiteSpace: 'nowrap',
-    borderWidth: 0
-  },
   hint: {
     marginBlockStart: `calc(-1 * ${unit.x1})`,
     paddingInline: unit.x1,
@@ -95,7 +84,7 @@ const messagesOf = (field: Pick<FieldLike<unknown>, 'errors'>) =>
 
 interface TextFieldProps {
   field: FieldLike<string>
-  /** The accessible name; shown as the placeholder, not as a visible label. */
+  /** The visible label above the field, which is also its accessible name. */
   label: string
   description?: string
   autoComplete?: string
@@ -109,16 +98,13 @@ export function TextField({ field, label, description, autoComplete, inputMode }
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
-      <FieldLabel htmlFor={id} style={styles.srOnly}>
-        {label}
-      </FieldLabel>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
         {...field.props}
         id={id}
         size='lg'
         inputMode={inputMode}
         autoComplete={autoComplete}
-        placeholder={label}
         value={field.input ?? ''}
       />
       {messages.length > 0 ? (
@@ -143,15 +129,12 @@ export function PasswordField({
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
-      <FieldLabel htmlFor={id} style={styles.srOnly}>
-        {label}
-      </FieldLabel>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <InputPassword
         {...field.props}
         id={id}
         size='lg'
         autoComplete={autoComplete}
-        placeholder={label}
         labels={{ show: m.form_password_show(), hide: m.form_password_hide() }}
         value={field.input ?? ''}
         onBlur={() => {
@@ -247,6 +230,7 @@ export function CodeField({
   const m = useMessages()
   const messages = messagesOf(field)
   const half = length / 2
+  const labelId = React.useId()
   // The first slot takes the ref, so a failed submit focuses the code.
   const slots = (from: number, to: number) =>
     Array.from({ length: to - from }, (_, index) => (
@@ -261,6 +245,7 @@ export function CodeField({
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel id={labelId}>{label}</FieldLabel>
       <OTPField
         size='lg'
         style={styles.code}
@@ -272,7 +257,7 @@ export function CodeField({
         onValueChange={field.onChange}
         onFocus={field.props.onFocus}
         onBlur={field.props.onBlur}
-        aria-label={label}
+        aria-labelledby={labelId}
         labels={{ slot: (position, total) => m.form_code_slot({ position, length: total }) }}
       >
         {split ? (

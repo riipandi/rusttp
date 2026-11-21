@@ -52,7 +52,7 @@ function RouteComponent() {
                 field={field}
                 label={m.auth_email_label()}
                 inputMode='email'
-                autoComplete='email'
+                autoComplete='username'
               />
             )}
           </Field>
