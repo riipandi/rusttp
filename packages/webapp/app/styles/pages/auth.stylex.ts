@@ -10,8 +10,10 @@ export const styles = stylex.create({
     minHeight: '100dvh',
     display: 'grid',
     gridTemplateColumns: {
-      default: '1fr',
-      [breakpoints.wide]: 'minmax(22rem, 5fr) 7fr'
+      // `minmax(0, …)`: a bare `1fr` is `minmax(auto, 1fr)`, so a wide child (a six-slot code)
+      // would stretch the column past the screen instead of shrinking.
+      default: 'minmax(0, 1fr)',
+      [breakpoints.wide]: 'minmax(22rem, 5fr) minmax(0, 7fr)'
     },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral

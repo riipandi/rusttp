@@ -37,7 +37,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
   }
 
   return (
-    <Table>
+    <Table labels={{ region: m.dashboard_recent_loans() }}>
       <TableHeader>
         <TableRow>
           <TableHead>{m.loans_member()}</TableHead>

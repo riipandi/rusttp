@@ -4,7 +4,10 @@ import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily } from '../../styles/tokens.stylex'
 
-/** A slot is a square the height of the control, as in `controlSizes`. */
+/**
+ * A slot is a square the height of the control, as in `controlSizes`, and shrinks when the row is
+ * narrower than the slots (a 6-digit code on a 320px screen) instead of overflowing it.
+ */
 export const otpFieldSlotSizes = stylex.create({
   sm: { width: unit.x8 },
   md: { width: unit.x9 },
@@ -16,11 +19,13 @@ export const otpFieldStyles = stylex.create({
     alignItems: 'center',
     display: 'flex',
     fontFamily: fontFamily.body,
-    gap: unit.x2
+    gap: unit.x2,
+    maxWidth: '100%'
   },
   group: {
     alignItems: 'center',
-    display: 'flex'
+    display: 'flex',
+    minWidth: 0
   },
   // Slots fuse into one field: shared vertical borders, a leading border only
   // on the first slot, and end radii — joined-slot look. The box and state
@@ -31,6 +36,8 @@ export const otpFieldStyles = stylex.create({
     borderTopLeftRadius: { default: 0, ':first-child': radius.large },
     borderTopRightRadius: { default: 0, ':last-child': radius.large },
     marginInlineStart: { default: `calc(-1 * ${stroke.ring1})`, ':first-child': 0 },
+    flexShrink: 1,
+    minWidth: 0,
     padding: 0,
     position: 'relative',
     textAlign: 'center',

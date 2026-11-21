@@ -25,7 +25,7 @@ export const resizableStyles = stylex.create({
   handle: {
     alignItems: 'center',
     backgroundColor: {
-      default: colors.borderNeutralFaded,
+      default: colors.borderControl,
       ':hover': colors.foregroundNeutralFaded,
       ':active': colors.foregroundPrimary,
       ':focus-visible': colors.foregroundPrimary
@@ -62,10 +62,10 @@ export const resizableStyles = stylex.create({
     left: '50%',
     top: 0,
     transform: 'translateX(-50%)',
-    width: unit.x2
+    width: unit.x6
   },
   handleHitAreaVerticalGroup: {
-    height: unit.x2,
+    height: unit.x6,
     left: 0,
     right: 0,
     top: '50%',
@@ -79,7 +79,7 @@ export const resizableStyles = stylex.create({
   },
   handleIndicator: {
     backgroundColor: {
-      default: colors.borderNeutral,
+      default: colors.borderControl,
       [stylex.when.ancestor(':hover')]: colors.foregroundNeutralFaded,
       [stylex.when.ancestor(':active')]: colors.foregroundPrimary,
       [stylex.when.ancestor(':focus-visible')]: colors.foregroundPrimary

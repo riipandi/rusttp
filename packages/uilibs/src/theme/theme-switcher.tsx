@@ -1,7 +1,5 @@
 import { Monitor, Moon, Sun } from '@keyline-icons/react'
-import * as stylex from '@stylexjs/stylex'
-import { colors } from '../styles/colors.stylex'
-import { radius } from '../styles/tokens.stylex'
+import { Button } from '../base/button'
 import { useTheme } from './theme'
 
 const cycle: Record<string, string> = { light: 'dark', dark: 'system', system: 'light' }
@@ -22,31 +20,6 @@ const defaultLabels: ThemeSwitcherLabels = {
   toLight: 'Switch to light mode'
 }
 
-const styles = stylex.create({
-  wrapper: {
-    display: 'inline-flex'
-  },
-  base: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '2.25rem',
-    height: '2.25rem',
-    borderRadius: radius.large,
-    color: { default: colors.foregroundNeutralFaded, ':hover': colors.foregroundNeutral },
-    backgroundColor: { default: 'transparent', ':hover': colors.backgroundNeutralFaded },
-    borderWidth: 0,
-    cursor: 'pointer',
-    transitionProperty: 'background-color, color',
-    transitionDuration: '150ms'
-  },
-  icon: {
-    height: '1rem',
-    width: '1rem',
-    stroke: 'currentColor'
-  }
-})
-
 export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels> }) {
   const { theme, setTheme } = useTheme()
   const current = theme ?? 'system'
@@ -56,19 +29,16 @@ export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels
     dark: names.toSystem,
     system: names.toLight
   }
+  const Icon = current === 'light' ? Sun : current === 'dark' ? Moon : Monitor
 
   return (
-    <div {...stylex.props(styles.wrapper)}>
-      <button
-        type='button'
-        onClick={() => setTheme(cycle[current] ?? 'light')}
-        {...stylex.props(styles.base)}
-        aria-label={byTheme[current]}
-      >
-        {current === 'light' && <Sun {...stylex.props(styles.icon)} />}
-        {current === 'dark' && <Moon {...stylex.props(styles.icon)} />}
-        {current === 'system' && <Monitor {...stylex.props(styles.icon)} />}
-      </button>
-    </div>
+    <Button
+      variant='ghost'
+      size='icon-md'
+      onClick={() => setTheme(cycle[current] ?? 'light')}
+      aria-label={byTheme[current]}
+    >
+      <Icon size={16} aria-hidden />
+    </Button>
   )
 }
