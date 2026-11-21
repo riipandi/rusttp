@@ -11,10 +11,6 @@ export const scrollAreaStyles = stylex.create({
   viewport: {
     borderRadius: 'inherit',
     height: '100%',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     width: '100%'
   },
   // Overlay scrollbar: hidden at rest, fades in while hovering or scrolling.

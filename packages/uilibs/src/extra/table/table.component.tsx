@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { focusRing } from '../../styles/utils.stylex'
 import { tableStyles as s } from './table.stylex'
 
 interface StyleXStyleProps {
@@ -29,9 +30,14 @@ export function Table({
   }) {
   const region = { ...defaultLabels, ...labels }.region
   return (
-    // A scrollable region must be focusable for keyboard users (axe: scrollable-region-focusable).
-    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-    <div role='region' aria-label={region} tabIndex={0} {...stylex.props(s.container)}>
+    <div
+      role='region'
+      aria-label={region}
+      // A scrollable region must be focusable for keyboard users (axe: scrollable-region-focusable).
+      // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      {...stylex.props(focusRing.root, s.container)}
+    >
       <table {...props} {...stylex.props(s.table, style)} />
     </div>
   )

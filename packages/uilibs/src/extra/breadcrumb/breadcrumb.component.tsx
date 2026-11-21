@@ -1,6 +1,7 @@
 import { ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import { breadcrumbStyles as s } from './breadcrumb.stylex'
 
 interface StyleXStyleProps {
@@ -74,7 +75,7 @@ export function BreadcrumbEllipsis({
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
-      <span {...stylex.props(s.srOnly)}>{label}</span>
+      <span {...stylex.props(visuallyHidden.root)}>{label}</span>
     </span>
   )
 }

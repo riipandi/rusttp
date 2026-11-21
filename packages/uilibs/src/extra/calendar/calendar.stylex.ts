@@ -38,9 +38,7 @@ export const calendarStyles = stylex.create({
     userSelect: 'none'
   },
   chevron: {
-    ':dir(rtl)': {
-      transform: 'scaleX(-1)'
-    },
+    transform: { default: null, ':dir(rtl)': 'scaleX(-1)' },
     height: '1rem',
     width: '1rem'
   },

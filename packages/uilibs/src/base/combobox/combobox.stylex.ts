@@ -37,10 +37,6 @@ export const comboboxStyles = stylex.create({
     display: 'flex',
     height: '100%',
     justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     padding: 0,
     position: 'absolute',
     top: 0,
@@ -105,10 +101,6 @@ export const comboboxStyles = stylex.create({
     display: 'flex',
     height: unit.x4,
     justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     padding: 0,
     position: 'relative',
     width: unit.x4,

@@ -2,6 +2,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import type { Tone } from '../../styles/tone'
+import { focusRing } from '../../styles/utils.stylex'
 import {
   badgeFadedTones,
   badgeGhostTones,
@@ -33,6 +34,7 @@ export function Badge({ variant = 'primary', tone, style, render, ...props }: Ba
     defaultTagName: 'span',
     props: mergeProps<'span'>(
       stylex.props(
+        focusRing.root,
         s.root,
         variants[variant],
         toneStyles[variant][tone ?? (variant === 'primary' ? 'primary' : 'neutral')],

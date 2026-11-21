@@ -35,6 +35,7 @@ import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
 
@@ -136,7 +137,11 @@ export function ComboboxInput({
         <BaseCombobox.Clear
           aria-label={labels?.clear ?? 'Clear value'}
           tabIndex={-1}
-          {...stylex.props(s.iconButton, showTrigger ? s.inputClearWithTrigger : s.inputClearAlone)}
+          {...stylex.props(
+            focusRing.root,
+            s.iconButton,
+            showTrigger ? s.inputClearWithTrigger : s.inputClearAlone
+          )}
         >
           <X size={16} strokeWidth={1.5} aria-hidden />
         </BaseCombobox.Clear>
@@ -145,7 +150,7 @@ export function ComboboxInput({
         <BaseCombobox.Trigger
           aria-label={labels?.open ?? 'Open list'}
           tabIndex={-1}
-          {...stylex.props(s.iconButton, s.inputTrigger)}
+          {...stylex.props(focusRing.root, s.iconButton, s.inputTrigger)}
         >
           <TriggerChevron />
         </BaseCombobox.Trigger>
@@ -194,7 +199,7 @@ export function ComboboxChip({
       {children}
       <BaseCombobox.ChipRemove
         aria-label={removeLabel ?? (typeof children === 'string' ? `Remove ${children}` : 'Remove')}
-        {...stylex.props(s.chipRemove)}
+        {...stylex.props(focusRing.root, s.chipRemove)}
       >
         <X size={10} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ChipRemove>

@@ -3,6 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Separator } from '../../base/separator'
+import { focusRing } from '../../styles/utils.stylex'
 import { itemStyles as s, itemVariants, itemSizes } from './item.stylex'
 import { itemMediaVariants as mediaVariants } from './item.stylex'
 
@@ -50,7 +51,7 @@ export function Item({ variant = 'default', size = 'md', style, render, ...props
     defaultTagName: 'div',
     props: mergeProps<'div'>(
       inGroup ? { role: 'listitem' } : {},
-      stylex.props(s.root, itemVariants[variant], itemSizes[size], style),
+      stylex.props(focusRing.root, s.root, itemVariants[variant], itemSizes[size], style),
       props
     ),
     render

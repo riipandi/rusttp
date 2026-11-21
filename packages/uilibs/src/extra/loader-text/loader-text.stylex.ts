@@ -39,11 +39,8 @@ export const loaderTextStyles = stylex.create({
   textShimmer: {
     animationDuration: '2.5s',
     animationIterationCount: 'infinite',
-    animationName: shimmer,
-    animationTimingFunction: 'linear',
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: null
-    }
+    animationName: { default: shimmer, '@media (prefers-reduced-motion: reduce)': null },
+    animationTimingFunction: 'linear'
   },
   textExit: {
     opacity: 0,

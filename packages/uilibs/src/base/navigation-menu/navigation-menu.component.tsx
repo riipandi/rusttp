@@ -32,6 +32,7 @@ import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { navigationMenuStyles as s } from './navigation-menu.stylex'
 
@@ -95,7 +96,7 @@ export function NavigationMenuTrigger({
 }: Omit<React.ComponentProps<typeof BaseNavigationMenu.Trigger>, 'className' | 'style'> &
   StyleProp) {
   return (
-    <BaseNavigationMenu.Trigger {...props} {...stylex.props(s.trigger, style)}>
+    <BaseNavigationMenu.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
       {children}
       <ChevronDown size={12} strokeWidth={2} aria-hidden {...stylex.props(s.triggerChevron)} />
     </BaseNavigationMenu.Trigger>
@@ -114,7 +115,7 @@ export function NavigationMenuLink({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseNavigationMenu.Link>, 'className' | 'style'> & StyleProp) {
-  return <BaseNavigationMenu.Link {...props} {...stylex.props(s.link, style)} />
+  return <BaseNavigationMenu.Link {...props} {...stylex.props(focusRing.root, s.link, style)} />
 }
 
 export function NavigationMenuPositioner({

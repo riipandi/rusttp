@@ -57,15 +57,6 @@ export const commandStyles = stylex.create({
     },
     transitionTimingFunction: easing.standard
   },
-  srOnly: {
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    margin: `calc(-1 * ${stroke.ring1})`,
-    overflow: 'hidden',
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px'
-  },
   // The field is the room's header, not a box in it: a tall row with the icon, the text, and a
   // divider under it. No edge changes when it is focused (it is always the focus while the bar is
   // open), which is what kept drawing the eye to a ring.

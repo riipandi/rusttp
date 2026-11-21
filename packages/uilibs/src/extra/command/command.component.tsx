@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../base/dialog'
 import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
 
 interface StyleProp {
@@ -66,8 +67,8 @@ export function CommandDialog({
         finalFocus={finalFocus}
         style={[s.dialogContent, style]}
       >
-        <DialogTitle style={s.srOnly}>{title}</DialogTitle>
-        <DialogDescription style={s.srOnly}>{description}</DialogDescription>
+        <DialogTitle style={visuallyHidden.root}>{title}</DialogTitle>
+        <DialogDescription style={visuallyHidden.root}>{description}</DialogDescription>
         <div {...stylex.props(s.inner)}>{children}</div>
       </DialogContent>
     </Dialog>

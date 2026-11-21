@@ -17,6 +17,7 @@
 import { ScrollArea as BaseScrollArea } from '@base-ui/react/scroll-area'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { focusRing } from '../../styles/utils.stylex'
 import { scrollAreaStyles as s } from './scroll-area.stylex'
 import { scrollAreaScrollbarOrientations as orientations } from './scroll-area.stylex'
 import { scrollAreaFadeStyles } from './scroll-area.stylex'
@@ -37,7 +38,9 @@ export function ScrollArea({
   }) {
   return (
     <BaseScrollArea.Root {...props} {...stylex.props(s.root, style)}>
-      <BaseScrollArea.Viewport {...stylex.props(s.viewport, fade && scrollAreaFadeStyles.fade)}>
+      <BaseScrollArea.Viewport
+        {...stylex.props(focusRing.root, s.viewport, fade && scrollAreaFadeStyles.fade)}
+      >
         {children}
       </BaseScrollArea.Viewport>
       <ScrollBar />

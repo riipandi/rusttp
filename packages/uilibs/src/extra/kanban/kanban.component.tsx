@@ -57,6 +57,7 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { focusRing } from '../../styles/utils.stylex'
 import { kanbanStyles } from './kanban.stylex'
 
 // ---------------------------------------------------------------------------
@@ -657,6 +658,7 @@ function KanbanColumn({ value, style, render, disabled, ...props }: KanbanColumn
           {
             ...stylex.props(
               stylex.defaultMarker(),
+              focusRing.root,
               kanbanStyles.column,
               !isOverlay && isSortableDragging && kanbanStyles.columnDragging,
               !isOverlay && isOver && !isSortableDragging && kanbanStyles.columnOver,
@@ -760,6 +762,7 @@ function KanbanItem({ value, style, render, disabled, ...props }: KanbanItemProp
       {
         ...stylex.props(
           stylex.defaultMarker(),
+          focusRing.root,
           kanbanStyles.item,
           !isOverlay && isSortableDragging && kanbanStyles.itemDragging,
           !isOverlay && isOver && !isSortableDragging && kanbanStyles.itemOver,

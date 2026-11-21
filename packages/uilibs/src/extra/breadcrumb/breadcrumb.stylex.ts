@@ -45,13 +45,5 @@ export const breadcrumbStyles = stylex.create({
     height: unit.x5,
     justifyContent: 'center',
     width: unit.x5
-  },
-  srOnly: {
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    overflow: 'hidden',
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px'
   }
 })

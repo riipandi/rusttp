@@ -30,11 +30,8 @@ export const kanbanStyles = stylex.create({
     display: 'grid',
     gap: unit.x4,
     gridAutoColumns: 'minmax(0, 1fr)',
-    gridAutoFlow: 'column',
-    '@media (max-width: 659px)': {
-      gridAutoFlow: 'row',
-      gridTemplateColumns: '1fr'
-    }
+    gridAutoFlow: { default: 'column', '@media (max-width: 659px)': 'row' },
+    gridTemplateColumns: { default: null, '@media (max-width: 659px)': '1fr' }
   },
   column: {
     backgroundColor: colors.backgroundElevationBase,
@@ -50,28 +47,18 @@ export const kanbanStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x2,
     lineHeight: fontLineHeight.body2,
-    maxWidth: container.xxlarge,
-    minWidth: container.small,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
+    maxWidth: { default: container.xxlarge, '@media (max-width: 659px)': '100%' },
+    minWidth: { default: container.small, '@media (max-width: 659px)': 0 },
     outlineOffset: stroke.ring2,
-    paddingBlock: unit.x3,
-    paddingInline: unit.x3,
+    paddingBlock: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
+    paddingInline: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
     touchAction: 'manipulation',
     transitionDuration: {
       default: duration.medium,
       '@media (prefers-reduced-motion: reduce)': '0ms'
     },
     transitionProperty: 'background-color, border-color, box-shadow, transform, opacity',
-    transitionTimingFunction: easing.decelerate,
-    '@media (max-width: 659px)': {
-      maxWidth: '100%',
-      minWidth: 0,
-      paddingBlock: unit.x2,
-      paddingInline: unit.x2
-    }
+    transitionTimingFunction: easing.decelerate
   },
   columnDragging: {
     opacity: 0.5,
@@ -98,7 +85,7 @@ export const kanbanStyles = stylex.create({
     },
     display: 'flex',
     flexShrink: 0,
-    height: unit.x6,
+    height: { default: unit.x6, '@media (max-width: 659px)': unit.x7 },
     justifyContent: 'center',
     outline: 'none',
     padding: unit.x1,
@@ -109,11 +96,7 @@ export const kanbanStyles = stylex.create({
     },
     transitionProperty: 'color, opacity',
     transitionTimingFunction: easing.decelerate,
-    width: unit.x6,
-    '@media (max-width: 659px)': {
-      height: unit.x7,
-      width: unit.x7
-    }
+    width: { default: unit.x6, '@media (max-width: 659px)': unit.x7 }
   },
   columnHandleVisible: {
     opacity: {
@@ -145,19 +128,21 @@ export const kanbanStyles = stylex.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    gap: unit.x2,
+    gap: { default: unit.x2, '@media (max-width: 659px)': unit.x1 },
     minHeight: unit.x12,
-    overflowY: 'auto',
-    '@media (max-width: 659px)': {
-      gap: unit.x1
-    }
+    overflowY: 'auto'
   },
   columnContentEmpty: {
     minHeight: 0
   },
   item: {
-    backgroundColor: colors.backgroundPage,
-    borderColor: colors.borderNeutralFaded,
+    backgroundColor: {
+      default: colors.backgroundPage,
+      ':hover': colors.backgroundNeutralHighlightedFaded,
+      ':active': colors.backgroundNeutralFaded
+    },
+    borderColor: { default: colors.borderNeutralFaded, ':hover': colors.borderNeutral },
+    boxShadow: { default: null, ':hover': shadow.outline },
     borderRadius: radius.medium,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
@@ -165,32 +150,16 @@ export const kanbanStyles = stylex.create({
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
-    paddingBlock: unit.x3,
-    paddingInline: unit.x3,
+    paddingBlock: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
+    paddingInline: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
     touchAction: 'manipulation',
     transitionDuration: {
       default: duration.medium,
       '@media (prefers-reduced-motion: reduce)': '0ms'
     },
     transitionProperty: 'background-color, border-color, box-shadow, transform, opacity',
-    transitionTimingFunction: easing.decelerate,
-    ':hover': {
-      backgroundColor: colors.backgroundNeutralHighlightedFaded,
-      borderColor: colors.borderNeutral,
-      boxShadow: shadow.outline
-    },
-    ':active': {
-      backgroundColor: colors.backgroundNeutralFaded
-    },
-    '@media (max-width: 659px)': {
-      paddingBlock: unit.x2,
-      paddingInline: unit.x2
-    }
+    transitionTimingFunction: easing.decelerate
   },
   itemDragging: {
     opacity: 0.5,

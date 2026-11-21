@@ -11,6 +11,7 @@ import { Menubar as BaseMenubar } from '@base-ui/react/menubar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type ControlSize, controlSizes } from '../../styles/control.stylex'
+import { focusRing } from '../../styles/utils.stylex'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -64,7 +65,7 @@ export function MenubarTrigger({
 }: Omit<React.ComponentProps<typeof DropdownMenuTrigger>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
-  return <DropdownMenuTrigger {...props} {...stylex.props(s.trigger, style)} />
+  return <DropdownMenuTrigger {...props} {...stylex.props(focusRing.root, s.trigger, style)} />
 }
 
 export function MenubarContent({

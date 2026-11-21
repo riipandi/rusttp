@@ -100,7 +100,7 @@ export type ChartProps<
   TYValue extends ChartValue = ChartValue
 > = Omit<
   TanStackRendererChartProps<TDatum, TXValue, TYValue>,
-  'renderTooltipBody' | 'style' | 'renderer'
+  'renderTooltipBody' | 'style' | 'renderer' | 'className'
 > &
   ChartOwnProps<TDatum, TXValue, TYValue>
 
@@ -115,16 +115,14 @@ export function Chart<
   // Rich tooltip bodies stay opt-in via `renderTooltipBody`; the default is
   // the native body (title, per-series rows with swatches, locale formatting)
   // themed through the `--ts-chart-tooltip-*` variables on the host class.
+  const chartProps = stylex.props(s.chart, style)
   const chart = (
     <TanStackChart
       {...props}
       renderer={chartMotionRenderer}
       renderTooltipBody={renderTooltipBody}
-      className={
-        [props.className, stylex.props(s.chart, style).className].filter(Boolean).join(' ') ||
-        undefined
-      }
-      style={stylex.props(s.chart, style).style}
+      className={chartProps.className}
+      style={chartProps.style}
     />
   )
 

@@ -10,6 +10,7 @@ import {
   stroke,
   unit
 } from '../../styles/tokens.stylex'
+import { gridLayer } from './data-grid.stylex'
 
 /**
  * The data-grid table renderer chrome. State-driven styles are applied as
@@ -58,7 +59,7 @@ export const dataGridTableStyles = stylex.create({
     backgroundColor: `color-mix(in srgb, ${colors.backgroundPage} 90%, transparent)`,
     position: 'sticky',
     top: 0,
-    zIndex: 40
+    zIndex: gridLayer.header
   },
   // Header cell.
   th: {
@@ -388,10 +389,6 @@ export const dataGridTableStyles = stylex.create({
     display: 'inline-flex',
     height: unit.x7,
     justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
     transitionDuration: duration.fast,
     transitionProperty: 'color, background-color, border-color',
@@ -419,10 +416,6 @@ export const dataGridTableStyles = stylex.create({
       '[data-dense]': unit.x6
     },
     justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
     transitionDuration: duration.fast,
     transitionProperty: 'color, background-color, border-color',
@@ -464,7 +457,7 @@ export const dataGridTableStyles = stylex.create({
     top: 0,
     touchAction: 'none',
     userSelect: 'none',
-    zIndex: 10
+    zIndex: gridLayer.raised
   },
   resizeHandleStart: {
     justifyContent: 'flex-start',
@@ -536,7 +529,7 @@ export const dataGridTableStyles = stylex.create({
     insetBlock: 0,
     pointerEvents: 'none',
     position: 'absolute',
-    zIndex: 50
+    zIndex: gridLayer.overlay
   },
   resizeIndicatorBar: {
     backgroundColor: `color-mix(in srgb, ${colors.foregroundPrimary} 85%, transparent)`,
@@ -579,7 +572,7 @@ export const dataGridTableStyles = stylex.create({
     bottom: 0,
     cursor: 'crosshair',
     position: 'absolute',
-    zIndex: 10
+    zIndex: gridLayer.raised
   },
   fillHandleDot: {
     backgroundColor: colors.backgroundPrimary,
@@ -731,7 +724,7 @@ export const dataGridTableDndRowsStyles = stylex.create({
     inset: 0,
     pointerEvents: 'none',
     position: 'absolute',
-    zIndex: 20
+    zIndex: gridLayer.scrollbar
   },
   // Two solid pixels down the leading edge — the bar is the whole indicator.
   dropIndicatorBar: {
@@ -800,28 +793,20 @@ export const dataGridPaginationStyles = stylex.create({
   root: {
     alignItems: 'center',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: { default: 'column', '@media (min-width: 660px)': 'row' },
     flexGrow: 1,
     flexWrap: 'wrap',
     gap: unit.x2,
     justifyContent: 'space-between',
-    paddingBlock: unit.x2,
-    '@media (min-width: 660px)': {
-      flexDirection: 'row',
-      paddingBlock: 0
-    }
+    paddingBlock: { default: unit.x2, '@media (min-width: 660px)': 0 }
   },
   sizes: {
     alignItems: 'center',
     display: 'flex',
     flexWrap: 'wrap',
     gap: unit.x2,
-    order: 2,
-    paddingBlockEnd: unit.x2,
-    '@media (min-width: 660px)': {
-      order: 1,
-      paddingBlockEnd: 0
-    }
+    order: { default: 2, '@media (min-width: 660px)': 1 },
+    paddingBlockEnd: { default: unit.x2, '@media (min-width: 660px)': 0 }
   },
   mutedText: {
     color: colors.foregroundNeutralFaded,
@@ -841,27 +826,18 @@ export const dataGridPaginationStyles = stylex.create({
   info: {
     alignItems: 'center',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: { default: 'column', '@media (min-width: 660px)': 'row' },
     gap: unit.x2,
-    justifyContent: 'center',
-    order: 1,
-    paddingBlockStart: unit.x2,
-    '@media (min-width: 660px)': {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      order: 2,
-      paddingBlockStart: 0
-    }
+    justifyContent: { default: 'center', '@media (min-width: 660px)': 'flex-end' },
+    order: { default: 1, '@media (min-width: 660px)': 2 },
+    paddingBlockStart: { default: unit.x2, '@media (min-width: 660px)': 0 }
   },
   infoText: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    order: 2,
-    whiteSpace: 'nowrap',
-    '@media (min-width: 660px)': {
-      order: 1
-    }
+    order: { default: 2, '@media (min-width: 660px)': 1 },
+    whiteSpace: 'nowrap'
   },
   pages: {
     alignItems: 'center',
@@ -883,23 +859,11 @@ export const dataGridPaginationStyles = stylex.create({
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     padding: 0,
-    ':dir(rtl)': { transform: 'rotate(180deg)' }
+    transform: { default: null, ':dir(rtl)': 'rotate(180deg)' }
   },
   arrowIcon: { height: unit.x4, width: unit.x4 },
   sizesSkeleton: { height: unit.x8, width: 176 },
-  infoSkeleton: { height: unit.x8, width: 240 },
-  srOnly: {
-    borderStyle: 'solid',
-    borderWidth: 0,
-    clipPath: 'inset(50%)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: 1
-  }
+  infoSkeleton: { height: unit.x8, width: 240 }
 })
 
 /** Virtual table chrome: placeholder cells, spacers, status rows. */
