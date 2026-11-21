@@ -115,7 +115,10 @@ test.describe('auth pages', () => {
     await page.goto(routes.mfa)
     await page.getByRole('button', { name: 'Verify' }).click()
 
-    await expect(page.getByText('Enter the 6-digit code.')).toBeVisible()
+    // The subtitle also asks for the 6-digit code: the message is the field's alert.
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'Enter the 6-digit code.' })
+    ).toBeVisible()
   })
 
   test('a failed submit focuses the first invalid field, not the first field', async ({ page }) => {
