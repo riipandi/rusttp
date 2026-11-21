@@ -28,7 +28,7 @@
         "@stylexjs/atoms": "^0.19.1",
         "@stylexjs/stylex": "^0.19.1",
         "@tanstack/charts": "^1.1.0",
-        "@tanstack/react-hotkeys": "^0.13.0",
+        "@tanstack/react-hotkeys": "catalog:",
         "@tanstack/react-router": "^1.170.46",
         "@tanstack/react-table": "^9.2.8",
         "@tanstack/react-virtual": "^3.14.15",
