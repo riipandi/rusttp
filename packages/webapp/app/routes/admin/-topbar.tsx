@@ -1,6 +1,5 @@
 import { Bell } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { Link } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
@@ -27,10 +26,11 @@ export function AdminTopBar() {
         footer={<AdminUserMenu mobile />}
         dense
       />
-      <Link to='/admin' {...stylex.props(layout.brand, styles.brand)}>
+      {/* Not a link: the drawer's Overview item leads to `/admin`. */}
+      <span {...stylex.props(layout.brand, styles.brand)}>
         <Logo />
         Rusttp
-      </Link>
+      </span>
       {/* Placeholder: nothing opens until notifications have a source. */}
       <Button variant='ghost' size='icon-md' aria-label='Notifications' style={styles.notify}>
         <Icon svg={Bell} size={20} />

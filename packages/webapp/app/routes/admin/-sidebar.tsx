@@ -120,56 +120,71 @@ export function Sidebar() {
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
-      {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
-      <div
-        {...stylex.props(
-          styles.header,
-          collapsed && styles.headerCollapsed,
-          collapsed && stylex.defaultMarker()
-        )}
-      >
-        {collapsed ? (
-          <Button
-            variant='ghost'
-            size='icon-md'
-            aria-label='Expand sidebar'
-            aria-expanded={false}
-            aria-controls={navId}
-            onClick={() => toggle(false)}
-            style={styles.trigger}
-          >
-            <span {...stylex.props(styles.swap)}>
-              <span {...stylex.props(styles.swapLogo)}>
-                <Logo />
-              </span>
-              <span {...stylex.props(styles.swapIcon)}>
-                <Icon svg={PanelLeftOpen} size={16} />
-              </span>
-            </span>
-          </Button>
-        ) : (
-          <>
-            <Link to='/admin' {...stylex.props(layout.brand, styles.brand)}>
-              <Logo />
-              Rusttp
-            </Link>
-            <Button
-              variant='ghost'
-              size='icon-sm'
-              aria-label='Collapse sidebar'
-              aria-expanded
-              aria-controls={navId}
-              onClick={() => toggle(true)}
-              style={styles.trigger}
-            >
-              <Icon svg={PanelLeftClose} size={16} />
-            </Button>
-          </>
-        )}
-      </div>
-
       {/* The provider's zero delay shows a rail tooltip at once, and moving between items keeps it. */}
       <TooltipProvider>
+        {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
+        <div
+          {...stylex.props(
+            styles.header,
+            collapsed && styles.headerCollapsed,
+            collapsed && stylex.defaultMarker()
+          )}
+        >
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant='ghost'
+                    size='icon-md'
+                    aria-label='Expand sidebar'
+                    aria-expanded={false}
+                    aria-controls={navId}
+                    onClick={() => toggle(false)}
+                    style={styles.trigger}
+                  />
+                }
+              >
+                <span {...stylex.props(styles.swap)}>
+                  <span {...stylex.props(styles.swapLogo)}>
+                    <Logo />
+                  </span>
+                  <span {...stylex.props(styles.swapIcon)}>
+                    <Icon svg={PanelLeftOpen} size={16} />
+                  </span>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side='right'>Expand sidebar</TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              {/* Not a link: the Overview item already leads to `/admin`. */}
+              <span {...stylex.props(layout.brand, styles.brand)}>
+                <Logo />
+                Rusttp
+              </span>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant='ghost'
+                      size='icon-sm'
+                      aria-label='Collapse sidebar'
+                      aria-expanded
+                      aria-controls={navId}
+                      onClick={() => toggle(true)}
+                      style={styles.trigger}
+                    />
+                  }
+                >
+                  <Icon svg={PanelLeftClose} size={16} />
+                </TooltipTrigger>
+                <TooltipContent side='right'>Collapse sidebar</TooltipContent>
+              </Tooltip>
+            </>
+          )}
+        </div>
+
         <nav
           id={navId}
           aria-label='Admin'
