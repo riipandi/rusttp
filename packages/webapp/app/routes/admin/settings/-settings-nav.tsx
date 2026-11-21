@@ -5,11 +5,12 @@ import { LinkButton } from 'uilibs/base/button'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel } from 'uilibs/base/select'
 import { SelectSeparator, SelectTrigger, SelectValue } from 'uilibs/base/select'
 import { useIsCurrent } from '#/components/nav-sheet'
+import { m } from '#/paraglide/messages'
 import { styles as sidebar } from '#/styles/element/sidebar.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
-import { groups, pages } from './-nav'
+import { groups as navGroups, pages as navPages, type Page } from './-nav'
 
-function AsideEntry({ page }: { page: (typeof pages)[number] }) {
+function AsideEntry({ page }: { page: Page }) {
   const current = useIsCurrent(page)
   return (
     <LinkButton
@@ -30,11 +31,13 @@ export function SettingsNav() {
   const id = React.useId()
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const groups = navGroups()
+  const pages = navPages()
   const current = pages.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`))
 
   return (
     <>
-      <nav aria-label='Settings' {...stylex.props(styles.settingsAside)}>
+      <nav aria-label={m.settings_nav_landmark()} {...stylex.props(styles.settingsAside)}>
         {groups.map((group) => {
           const { label } = group
           const labelId = label && `${id}-${label}`
@@ -64,8 +67,8 @@ export function SettingsNav() {
             if (to) void navigate({ to })
           }}
         >
-          <SelectTrigger aria-label='Settings section'>
-            <SelectValue placeholder='Settings' />
+          <SelectTrigger aria-label={m.settings_nav_picker()}>
+            <SelectValue placeholder={m.settings_nav_landmark()} />
           </SelectTrigger>
           <SelectContent>
             {groups.map((group, index) => {

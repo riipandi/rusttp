@@ -38,12 +38,15 @@ import {
 import { Icon } from 'uilibs/extra/icon'
 import { useTheme } from 'uilibs/theme'
 import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
+import { themes } from '#/components/theme-menu'
 import { commandBarStore } from '#/libraries/commandbar.store'
+import { hotkeyNames, localizedHotkeyName } from '#/libraries/hotkeys'
 import { unreadCount } from '#/libraries/notifications.store'
 import { sidebarStore } from '#/libraries/sidebar.store'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/element/commandbar.stylex'
 import { groups as navGroups } from './-nav'
-import { accountItems, appItems, signOutTo, themes } from './-user-menu'
+import { accountItems, appItems, signOutTo } from './-user-menu'
 import { groups as settingsGroups } from './settings/-nav'
 
 // The command bar: one dialog that runs a command by name (Cmd+K on macOS, Ctrl+K elsewhere), with a
@@ -94,7 +97,7 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
     <Button
       variant='outline'
       size={collapsed ? 'icon-md' : 'md'}
-      aria-label='Search and commands'
+      aria-label={m.commandbar_trigger()}
       aria-keyshortcuts={ariaKeyShortcuts(appHotkey.hotkey)}
       onClick={() => commandBarStore.actions.show('commands')}
       style={[styles.trigger, collapsed && styles.triggerRail]}
@@ -103,7 +106,7 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
       {/* The rail has room for the icon only: the word and the keys are the tooltip there. */}
       {!collapsed && (
         <>
-          <span {...stylex.props(styles.triggerLabel)}>Search</span>
+          <span {...stylex.props(styles.triggerLabel)}>{m.commandbar_search()}</span>
           <Shortcut
             hotkey={appHotkey.hotkey}
             hidden
@@ -120,7 +123,7 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
     <Tooltip>
       <TooltipTrigger render={button} />
       <TooltipContent side='right'>
-        Search <Shortcut hotkey={appHotkey.hotkey} hidden style={styles.tipKeys} />
+        {m.commandbar_search()} <Shortcut hotkey={appHotkey.hotkey} hidden style={styles.tipKeys} />
       </TooltipContent>
     </Tooltip>
   )
@@ -155,7 +158,7 @@ function CommandBarDialog() {
     '/admin/notifications': 'nav.notifications',
     '/admin/settings': 'nav.settings'
   }
-  const pages = navGroups.flatMap(({ label, items }) =>
+  const pages = navGroups().flatMap(({ label, items }) =>
     items.flatMap((item): CommandEntry[] => {
       const { to } = item
       if (!to) return []
@@ -164,7 +167,7 @@ function CommandBarDialog() {
           value: to,
           label: item.label,
           keywords: label ?? '',
-          group: 'Go to',
+          group: m.commandbar_group_go_to(),
           icon: item.icon,
           hotkey: shortcuts[to],
           run: go(to)
@@ -177,27 +180,27 @@ function CommandBarDialog() {
   // is as easy to reach by name or by `G N` as any of them.
   const notifications: CommandEntry = {
     value: '/admin/notifications',
-    label: 'Notifications',
-    keywords: 'alerts inbox bell messages unread',
-    group: 'Go to',
+    label: m.notifications_title(),
+    keywords: m.commandbar_keywords_notifications(),
+    group: m.commandbar_group_go_to(),
     icon: Bell,
     hotkey: 'nav.notifications',
     run: go('/admin/notifications')
   }
   // The settings pages are a second level the sidebar only shows on the settings screen, so they
   // are listed here as `Settings → Page`: the quickest way to reach one from anywhere.
-  const settings = settingsGroups.flatMap(({ items }) =>
+  const settings = settingsGroups().flatMap(({ items }) =>
     items.flatMap((page): CommandEntry[] => {
       const { to } = page
       if (!to) return []
       return [
         {
           value: to,
-          label: `Settings → ${page.label}`,
+          label: m.commandbar_settings_item({ page: page.label }),
           // The settings group's name is not a keyword: `Security` would put Protection and Blocklist
           // above the Security page in the account menu, and a page's own name should win.
-          keywords: 'preferences configuration',
-          group: 'Settings',
+          keywords: m.commandbar_keywords_settings(),
+          group: m.commandbar_group_settings(),
           icon: SlidersHorizontal,
           run: go(to)
         }
@@ -205,35 +208,35 @@ function CommandBarDialog() {
     })
   )
   const themeKeywords: Record<string, string> = {
-    light: 'bright day',
-    dark: 'night',
-    system: 'auto device'
+    light: m.commandbar_keywords_theme_light(),
+    dark: m.commandbar_keywords_theme_dark(),
+    system: m.commandbar_keywords_theme_system()
   }
   // The account menu's links, as the menu has them: where to go, the theme, and signing out.
   const account: CommandEntry[] = [
-    ...[...accountItems, ...appItems].map((item): CommandEntry => ({
+    ...[...accountItems(), ...appItems()].map((item): CommandEntry => ({
       value: item.to,
       label: item.label,
-      keywords: 'account profile user menu',
-      group: 'Account',
+      keywords: m.commandbar_keywords_account(),
+      group: m.commandbar_group_account(),
       icon: item.icon,
       run: go(item.to)
     })),
-    ...themes.map((item): CommandEntry => ({
+    ...themes().map((item): CommandEntry => ({
       value: `theme-${item.value}`,
-      label: `Theme → ${item.label}`,
+      label: m.commandbar_theme_item({ name: item.label }),
       // Only what is true of this theme: a shared word (`dark`, `system`) would match all three and
       // Enter would pick the first. `appearance` is the one word that finds the group.
-      keywords: `appearance ${themeKeywords[item.value] ?? ''}`,
-      group: 'Account',
+      keywords: themeKeywords[item.value] ?? '',
+      group: m.commandbar_group_account(),
       icon: item.icon,
       run: () => setTheme(item.value)
     })),
     {
       value: 'sign-out',
-      label: 'Sign out',
-      keywords: 'log out logout leave',
-      group: 'Account',
+      label: m.user_menu_sign_out(),
+      keywords: m.commandbar_keywords_sign_out(),
+      group: m.commandbar_group_account(),
       icon: LogOut,
       run: go(signOutTo)
     }
@@ -241,9 +244,9 @@ function CommandBarDialog() {
   const help: CommandEntry[] = [
     {
       value: 'shortcuts',
-      label: 'Keyboard shortcuts',
-      keywords: 'hotkeys keys help bindings',
-      group: 'Help',
+      label: m.commandbar_shortcuts_item(),
+      keywords: m.commandbar_keywords_shortcuts(),
+      group: m.commandbar_group_help(),
       icon: Keyboard,
       hotkey: 'help.shortcuts',
       run: () => onPanelChange('shortcuts')
@@ -263,7 +266,7 @@ function CommandBarDialog() {
     label,
     items: commands.filter((command) => command.group === label)
   }))
-  const unreadLabel = `${unread} unread`
+  const unreadLabel = m.commandbar_unread({ count: unread })
 
   // Escape closes the palette (or steps back from the panel), and the shortcut that opened it
   // closes it again: the page's registration of both is suspended while this scope is exclusive.
@@ -283,11 +286,9 @@ function CommandBarDialog() {
       // Opened straight onto the cheat sheet, focus lands on the panel itself, not on its Back
       // button: nothing there is meant to be typed in, so no control takes a ring on open.
       initialFocus={panel === 'shortcuts' ? panelRef : undefined}
-      title={panel === 'shortcuts' ? 'Keyboard shortcuts' : 'Command bar'}
+      title={panel === 'shortcuts' ? m.shortcuts_title() : m.commandbar_title()}
       description={
-        panel === 'shortcuts'
-          ? 'Every shortcut, and a way to change each one.'
-          : 'Search for a page or a command.'
+        panel === 'shortcuts' ? m.commandbar_shortcuts_description() : m.commandbar_description()
       }
     >
       {panel === 'shortcuts' ? (
@@ -304,16 +305,14 @@ function CommandBarDialog() {
           }
         >
           <CommandInput
-            placeholder='Search pages, settings, and commands…'
-            aria-label='Search pages, settings, and commands'
+            placeholder={m.commandbar_placeholder()}
+            aria-label={m.commandbar_placeholder_label()}
           />
           <CommandEmpty>
-            <span {...stylex.props(styles.emptyTitle)}>Nothing matches</span>
-            <span {...stylex.props(styles.emptyHint)}>
-              Try a page name, or a word like “sessions” or “shortcuts”.
-            </span>
+            <span {...stylex.props(styles.emptyTitle)}>{m.commandbar_empty_title()}</span>
+            <span {...stylex.props(styles.emptyHint)}>{m.commandbar_empty_hint()}</span>
           </CommandEmpty>
-          <CommandList aria-label='Pages and commands'>
+          <CommandList aria-label={m.commandbar_list()}>
             {(group: (typeof groups)[number], index: number) => (
               <React.Fragment key={group.value}>
                 {/* A rule between groups, so it leads every group but the first shown: the list
@@ -351,16 +350,17 @@ function CommandBarDialog() {
           <Separator />
           <div aria-hidden='true' {...stylex.props(styles.footer)}>
             <span {...stylex.props(styles.footerHint)}>
-              <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' /> to move
+              <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' />{' '}
+              {m.commandbar_hint_move()}
             </span>
             {/* What happens to the highlighted row, and how to leave: on the end side, apart from the
                 keys that move. */}
             <span {...stylex.props(styles.footerEnd)}>
               <span {...stylex.props(styles.footerHint)}>
-                <Shortcut hotkey='Enter' /> to open
+                <Shortcut hotkey='Enter' /> {m.commandbar_hint_open()}
               </span>
               <span {...stylex.props(styles.footerHint)}>
-                <Shortcut hotkey='Escape' /> to close
+                <Shortcut hotkey='Escape' /> {m.commandbar_hint_close()}
               </span>
             </span>
           </div>
@@ -372,12 +372,19 @@ function CommandBarDialog() {
 
 // What the recorder says when it turns a recording down, in the app's own words.
 const rejections = {
-  conflict: 'That shortcut is already in use.',
-  validation: 'Use a modifier, or a key sequence.',
-  whitespace: 'Space cannot be a shortcut.',
-  'missing-code': 'That key cannot be recorded.',
-  'alt-graph': 'AltGr cannot be recorded.'
+  conflict: m.shortcuts_reject_conflict,
+  validation: m.shortcuts_reject_validation,
+  whitespace: m.shortcuts_reject_whitespace,
+  'missing-code': m.shortcuts_reject_missing_code,
+  'alt-graph': m.shortcuts_reject_alt_graph
 } as const
+
+// The cheat sheet's groups are declared in English (`meta.group`); this is what each is called.
+const groupNames: Record<string, () => string> = {
+  General: m.shortcuts_group_general,
+  Navigation: m.shortcuts_group_navigation,
+  Other: m.shortcuts_group_other
+}
 
 function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBack: () => void }) {
   const items = useAppHotkeyList()
@@ -387,15 +394,19 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
   return (
     <div ref={ref} tabIndex={-1} {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.panelHeader)}>
-        <Button variant='ghost' size='icon-sm' aria-label='Back to commands' onClick={onBack}>
+        <Button variant='ghost' size='icon-sm' aria-label={m.shortcuts_back()} onClick={onBack}>
           <Icon svg={ArrowLeft} size={16} />
         </Button>
-        <h2 {...stylex.props(styles.panelTitle)}>Keyboard shortcuts</h2>
+        <h2 {...stylex.props(styles.panelTitle)}>{m.shortcuts_title()}</h2>
       </div>
       <div {...stylex.props(styles.panelList)}>
         {groups.map((group) => (
-          <section key={group} aria-label={group} {...stylex.props(styles.panelGroup)}>
-            <h3 {...stylex.props(styles.panelGroupLabel)}>{group}</h3>
+          <section
+            key={group}
+            aria-label={groupNames[group]?.() ?? group}
+            {...stylex.props(styles.panelGroup)}
+          >
+            <h3 {...stylex.props(styles.panelGroupLabel)}>{groupNames[group]?.() ?? group}</h3>
             {items
               .filter(({ appHotkey }) => (appHotkey.meta?.group ?? 'Other') === group)
               .map(({ appHotkey, isCustom }) => (
@@ -441,11 +452,13 @@ function ShortcutRow({
       const conflicts = findConflicts(id, hotkey, context)
       return (
         conflicts.length === 0 ||
-        `Already used by “${conflicts[0]?.meta?.name ?? 'another shortcut'}”.`
+        m.shortcuts_conflict({
+          name: localizedHotkeyName(conflicts[0]?.meta?.name) ?? m.shortcuts_conflict_other()
+        })
       )
     },
     onReject: ({ reason, message: why }) =>
-      setMessage(reason === 'validation' && why ? why : rejections[reason]),
+      setMessage(reason === 'validation' && why ? why : rejections[reason]()),
     onRecord: (hotkey, context) => {
       setCustomHotkey(id, hotkey, context)
       setMessage(null)
@@ -469,13 +482,13 @@ function ShortcutRow({
   return (
     <div {...stylex.props(styles.row)}>
       <div {...stylex.props(styles.rowText)}>
-        <span {...stylex.props(styles.rowName)}>{appHotkey.meta?.name}</span>
+        <span {...stylex.props(styles.rowName)}>{hotkeyNames[id]()}</span>
         {editing && recorder.isRecording && (
           <output {...stylex.props(styles.rowHint)}>
             {message ??
               (recorder.steps.length > 0
-                ? `${formatForDisplay(recorder.steps)} then Enter`
-                : 'Press the keys · Esc cancels · Backspace unbinds')}
+                ? m.shortcuts_recording_steps({ keys: formatForDisplay(recorder.steps) })
+                : m.shortcuts_recording_hint())}
           </output>
         )}
       </div>
@@ -483,24 +496,24 @@ function ShortcutRow({
         {appHotkey.hotkey ? (
           <Shortcut hotkey={appHotkey.hotkey} />
         ) : (
-          <span {...stylex.props(styles.unbound)}>Unassigned</span>
+          <span {...stylex.props(styles.unbound)}>{m.shortcuts_unassigned()}</span>
         )}
         <Button
           variant='ghost'
           size='sm'
-          aria-label={`Change ${appHotkey.meta?.name ?? id} shortcut`}
+          aria-label={m.shortcuts_change_named({ name: hotkeyNames[id]() })}
           onClick={() => {
             onEdit(true)
             recorder.startRecording()
           }}
         >
-          {editing && recorder.isRecording ? 'Recording…' : 'Change'}
+          {editing && recorder.isRecording ? m.shortcuts_recording() : m.shortcuts_change()}
         </Button>
         {isCustom && (
           <Button
             variant='ghost'
             size='icon-sm'
-            aria-label={`Reset ${appHotkey.meta?.name ?? id} shortcut`}
+            aria-label={m.shortcuts_reset_named({ name: hotkeyNames[id]() })}
             onClick={() => resetCustomHotkey(id)}
           >
             <Icon svg={RotateCcw} size={14} />

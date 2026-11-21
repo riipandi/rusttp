@@ -7,6 +7,7 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
+import { m } from '#/paraglide/messages'
 import { deviceSchema, deviceSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/(auth)/device')({
   component: RouteComponent,
   errorComponent: InvalidLink,
   validateSearch: deviceSearchSchema,
-  staticData: { pageTitle: 'Device login' }
+  staticData: { pageTitle: m.page_auth_device }
 })
 
 function RouteComponent() {
@@ -29,10 +30,8 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Sign in on a device</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Enter the 8-character code shown on the device you want to link to your account.
-        </p>
+        <h1 {...stylex.props(styles.title)}>{m.auth_device_title()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_device_subtitle()}</p>
       </div>
 
       <Form
@@ -47,7 +46,7 @@ function RouteComponent() {
           {(field) => (
             <CodeField
               field={field}
-              label='Device code'
+              label={m.auth_device_code()}
               length={8}
               split
               characters='alphanumeric'
@@ -57,12 +56,9 @@ function RouteComponent() {
           )}
         </Field>
         <Button type='submit' size='lg' style={styles.submit}>
-          Continue
+          {m.auth_device_submit()}
         </Button>
-        <p {...stylex.props(styles.fine)}>
-          Only continue if you started this sign-in yourself. Anyone with the code can link a
-          device.
-        </p>
+        <p {...stylex.props(styles.fine)}>{m.auth_device_warning()}</p>
       </Form>
     </>
   )
@@ -73,17 +69,15 @@ function InvalidLink() {
     <>
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={CircleAlert} tone='critical' />
-        <h1 {...stylex.props(styles.title)}>This device link is not valid</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Open the link the device shows you, or scan its code again.
-        </p>
+        <h1 {...stylex.props(styles.title)}>{m.auth_device_invalid_title()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_device_invalid_subtitle()}</p>
       </div>
 
       <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>
-        Back to sign in
+        {m.auth_back_to_sign_in()}
       </Link>
     </>
   )

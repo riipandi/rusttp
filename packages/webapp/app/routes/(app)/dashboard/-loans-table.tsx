@@ -3,6 +3,7 @@ import { Badge, type BadgeProps } from 'uilibs/extra/badge'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
 import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
+import { m } from '#/paraglide/messages'
 import type { LoanResponse, LoanStatus } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
@@ -13,6 +14,13 @@ const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Returned: { variant: 'ghost' }
 }
 
+const statusLabel: Record<LoanStatus, () => string> = {
+  Borrowed: m.loans_status_borrowed,
+  'Due soon': m.loans_status_due_soon,
+  Overdue: m.loans_status_overdue,
+  Returned: m.loans_status_returned
+}
+
 export function LoansTable({ loans }: { loans: LoanResponse[] }) {
   if (loans.length === 0) {
     return (
@@ -21,10 +29,8 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
           <EmptyMedia variant='icon'>
             <Icon svg={BookOpen} size={16} />
           </EmptyMedia>
-          <EmptyTitle>No loans yet</EmptyTitle>
-          <EmptyDescription>
-            Loans show up here as soon as a member borrows a book from the Hogwarts library.
-          </EmptyDescription>
+          <EmptyTitle>{m.loans_empty_title()}</EmptyTitle>
+          <EmptyDescription>{m.loans_empty_description()}</EmptyDescription>
         </EmptyHeader>
       </Empty>
     )
@@ -34,10 +40,10 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Member</TableHead>
-          <TableHead>Book</TableHead>
-          <TableHead>Due</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>{m.loans_member()}</TableHead>
+          <TableHead>{m.loans_book()}</TableHead>
+          <TableHead>{m.loans_due()}</TableHead>
+          <TableHead>{m.loans_status()}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -47,7 +53,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
             <TableCell style={styles.muted}>{loan.book}</TableCell>
             <TableCell style={styles.muted}>{loan.due}</TableCell>
             <TableCell>
-              <Badge {...statusBadge[loan.status]}>{loan.status}</Badge>
+              <Badge {...statusBadge[loan.status]}>{statusLabel[loan.status]()}</Badge>
             </TableCell>
           </TableRow>
         ))}

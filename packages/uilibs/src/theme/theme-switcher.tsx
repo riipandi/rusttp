@@ -6,10 +6,20 @@ import { useTheme } from './theme'
 
 const cycle: Record<string, string> = { light: 'dark', dark: 'system', system: 'light' }
 
-const labels: Record<string, string> = {
-  light: 'Switch to dark mode',
-  dark: 'Switch to system mode',
-  system: 'Switch to light mode'
+/** Accessible names of the switcher's button: it names the theme a press switches to. */
+export interface ThemeSwitcherLabels {
+  /** Shown while the theme is light. Defaults to `Switch to dark mode`. */
+  toDark: string
+  /** Shown while the theme is dark. Defaults to `Switch to system mode`. */
+  toSystem: string
+  /** Shown while the theme follows the system. Defaults to `Switch to light mode`. */
+  toLight: string
+}
+
+const defaultLabels: ThemeSwitcherLabels = {
+  toDark: 'Switch to dark mode',
+  toSystem: 'Switch to system mode',
+  toLight: 'Switch to light mode'
 }
 
 const styles = stylex.create({
@@ -37,9 +47,15 @@ const styles = stylex.create({
   }
 })
 
-export function ThemeSwitcher() {
+export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels> }) {
   const { theme, setTheme } = useTheme()
   const current = theme ?? 'system'
+  const names = { ...defaultLabels, ...labels }
+  const byTheme: Record<string, string> = {
+    light: names.toDark,
+    dark: names.toSystem,
+    system: names.toLight
+  }
 
   return (
     <div {...stylex.props(styles.wrapper)}>
@@ -47,7 +63,7 @@ export function ThemeSwitcher() {
         type='button'
         onClick={() => setTheme(cycle[current] ?? 'light')}
         {...stylex.props(styles.base)}
-        aria-label={labels[current]}
+        aria-label={byTheme[current]}
       >
         {current === 'light' && <Sun {...stylex.props(styles.icon)} />}
         {current === 'dark' && <Moon {...stylex.props(styles.icon)} />}

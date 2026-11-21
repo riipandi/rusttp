@@ -8,6 +8,7 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
+import { m } from '#/paraglide/messages'
 import { resetPasswordSchema, resetSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -17,7 +18,7 @@ export const Route = createFileRoute('/(auth)/reset-password')({
   component: RouteComponent,
   errorComponent: InvalidLink,
   validateSearch: resetSearchSchema,
-  staticData: { pageTitle: 'Reset password' }
+  staticData: { pageTitle: m.page_auth_reset_password }
 })
 
 function RouteComponent() {
@@ -34,10 +35,10 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Choose a new password</h1>
+        <h1 {...stylex.props(styles.title)}>{m.auth_reset_title()}</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Pick one you have not used here before. <br />
-          You will sign in with it next.
+          {m.auth_reset_subtitle_first()} <br />
+          {m.auth_reset_subtitle_second()}
         </p>
       </div>
 
@@ -52,17 +53,25 @@ function RouteComponent() {
         <div {...stylex.props(styles.fields)}>
           <Field of={form} path={['password']}>
             {(field) => (
-              <PasswordField field={field} label='New password' autoComplete='new-password' />
+              <PasswordField
+                field={field}
+                label={m.auth_reset_new_password()}
+                autoComplete='new-password'
+              />
             )}
           </Field>
           <Field of={form} path={['confirm']}>
             {(field) => (
-              <PasswordField field={field} label='Confirm password' autoComplete='new-password' />
+              <PasswordField
+                field={field}
+                label={m.auth_reset_confirm_password()}
+                autoComplete='new-password'
+              />
             )}
           </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
-          Reset password
+          {m.auth_reset_submit()}
         </Button>
       </Form>
     </>
@@ -74,22 +83,22 @@ function InvalidLink() {
     <>
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={CircleAlert} tone='critical' />
-        <h1 {...stylex.props(styles.title)}>This reset link is not valid</h1>
+        <h1 {...stylex.props(styles.title)}>{m.auth_reset_invalid_title()}</h1>
         <p {...stylex.props(styles.subtitle)}>
-          It may have expired or already been used. <br />
-          Request a new one and we will email it to you.
+          {m.auth_reset_invalid_first()} <br />
+          {m.auth_reset_invalid_second()}
         </p>
       </div>
 
       <LinkButton render={<Link to='/forgot-password' />} size='lg'>
-        Request a new link
+        {m.auth_reset_invalid_action()}
       </LinkButton>
 
       <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>
-        Back to sign in
+        {m.auth_back_to_sign_in()}
       </Link>
     </>
   )

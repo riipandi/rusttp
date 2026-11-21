@@ -18,6 +18,7 @@ This file holds the workflow rules, always in force; the detail — the reposito
 - No self-evident comments: a comment must carry what the code cannot (a why, a contract, a trap), never restate what the next line already says.
 - Chat follows the user's language. Files, code, identifiers, and commit messages are English.
 - UI components live in `packages/uilibs` and are styled with StyleX only: reuse a component from the index before writing one, take every color, size, and motion value from `src/styles/` tokens, and follow `stylex-authoring.md` (no `className` or raw `style` beside `stylex.props`, no top-level pseudo-classes or media queries, no non-StyleX imports in a style). A control takes `size` and composes `controlBase` or `controlPress` (`stylex-authoring.md`, "Controls"), a built-in string is a `labels` prop, and a new story passes the a11y gate (`pnpm --filter uilibs test`).
+- Webapp words are Paraglide messages (`m.<key>()`), never literals in a component, and the keys in every `packages/webapp/app/locales/*.json` stay sorted alphabetically ascending, the same keys in each locale; `.agents/docs/rules.md` ("Webapp i18n") has the details.
 - Sample data (fixtures, test values, previews, stories, placeholder copy and labels) is drawn from Dan Brown's novels and Harry Potter, never from `John Doe`, `foo`, or lorem ipsum; `.agents/docs/rules.md` ("Sample data") has the details.
 
 ## Skills

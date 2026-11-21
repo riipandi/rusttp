@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { loans, summary } from '#/fixtures/loans'
+import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { LoansTable } from './-loans-table'
@@ -14,19 +15,19 @@ export const Route = createFileRoute('/(app)/dashboard/')({
   loader: () => ({ summary, loans }),
   pendingComponent: Pending,
   component: RouteComponent,
-  staticData: { pageTitle: 'Dashboard' }
+  staticData: { pageTitle: m.page_app_dashboard }
 })
 
 function Page({ busy, stats, table }: { busy?: boolean; stats: ReactNode; table: ReactNode }) {
   return (
     <main aria-busy={busy} {...stylex.props(layout.main, layout.container, styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Dashboard</h1>
-        <p {...stylex.props(styles.subtitle)}>Loans at the Hogwarts library this week.</p>
+        <h1 {...stylex.props(styles.title)}>{m.page_app_dashboard()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.page_app_dashboard_description()}</p>
       </div>
       {stats}
       <section {...stylex.props(styles.section)}>
-        <h2 {...stylex.props(styles.sectionTitle)}>Recent loans</h2>
+        <h2 {...stylex.props(styles.sectionTitle)}>{m.dashboard_recent_loans()}</h2>
         {table}
       </section>
     </main>

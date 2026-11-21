@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { Skeleton } from 'uilibs/extra/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
 const summaryItems = ['one', 'two', 'three', 'four']
@@ -27,10 +28,10 @@ export function LoansTableSkeleton() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Member</TableHead>
-          <TableHead>Book</TableHead>
-          <TableHead>Due</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>{m.loans_member()}</TableHead>
+          <TableHead>{m.loans_book()}</TableHead>
+          <TableHead>{m.loans_due()}</TableHead>
+          <TableHead>{m.loans_status()}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody aria-hidden='true'>

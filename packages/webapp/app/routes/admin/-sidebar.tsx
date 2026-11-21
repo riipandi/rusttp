@@ -11,6 +11,7 @@ import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
 import { unreadCount } from '#/libraries/notifications.store'
 import { sidebarCollapsed, sidebarStore } from '#/libraries/sidebar.store'
+import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
 import { CommandBarTrigger } from './-commandbar'
@@ -112,6 +113,7 @@ export function Sidebar() {
   const navId = `${id}-nav`
   const collapsed = useSelector(sidebarCollapsed)
   const toggle = sidebarStore.actions.setCollapsed
+  const navGroups = groups()
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
@@ -132,7 +134,7 @@ export function Sidebar() {
                   <Button
                     variant='ghost'
                     size='icon-sm'
-                    aria-label='Expand sidebar'
+                    aria-label={m.admin_sidebar_expand()}
                     aria-expanded={false}
                     aria-controls={navId}
                     onClick={() => toggle(false)}
@@ -149,7 +151,7 @@ export function Sidebar() {
                   </span>
                 </span>
               </TooltipTrigger>
-              <TooltipContent side='right'>Expand sidebar</TooltipContent>
+              <TooltipContent side='right'>{m.admin_sidebar_expand()}</TooltipContent>
             </Tooltip>
           ) : (
             <>
@@ -164,7 +166,7 @@ export function Sidebar() {
                     <Button
                       variant='ghost'
                       size='icon-sm'
-                      aria-label='Collapse sidebar'
+                      aria-label={m.admin_sidebar_collapse()}
                       aria-expanded
                       aria-controls={navId}
                       onClick={() => toggle(true)}
@@ -174,7 +176,7 @@ export function Sidebar() {
                 >
                   <Icon svg={PanelLeftClose} size={16} />
                 </TooltipTrigger>
-                <TooltipContent side='right'>Collapse sidebar</TooltipContent>
+                <TooltipContent side='right'>{m.admin_sidebar_collapse()}</TooltipContent>
               </Tooltip>
             </>
           )}
@@ -184,8 +186,12 @@ export function Sidebar() {
           <CommandBarTrigger collapsed={collapsed} />
         </div>
 
-        <nav id={navId} aria-label='Admin' {...stylex.props(styles.nav, styles.navUnderSearch)}>
-          {groups.map(({ label, items }) => (
+        <nav
+          id={navId}
+          aria-label={m.admin_nav_landmark()}
+          {...stylex.props(styles.nav, styles.navUnderSearch)}
+        >
+          {navGroups.map(({ label, items }) => (
             <div key={label ?? 'main'} {...stylex.props(styles.group)}>
               {label && (
                 <>

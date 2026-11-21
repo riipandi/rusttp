@@ -189,6 +189,31 @@ Alternatives considered:
 - Base UI `Form` alone with `safeParse` in `onFormSubmit` — rejected: submitted values are untyped and every rule runs by hand.
 - Formisch's own `Form` component — rejected: a plain `<form>` with no StyleX `style` and no Base UI Form context.
 
+### Webapp i18n is Paraglide, in localStorage, with no locale in the URL
+
+Context: every string in `packages/webapp` was English and written in the component. The app is a client-rendered SPA behind a Rust server, the account menus already persist preferences in `localStorage`, and the owner wanted two languages (English, Indonesian) without a locale in the paths.
+
+Decision (2026-11-21, owner):
+
+- Paraglide JS v3 (`@inlang/paraglide-js`, with `@inlang/plugin-message-format`), compiled to typed `m.*` functions in `app/paraglide/`; catalogs are `app/locales/{locale}.json`, one flat file per locale, with semantic area-prefixed keys.
+- Strategy `localStorage` then `preferredLanguage` then `baseLocale`; no `url` strategy, so no routes are localized and the server's document stays English.
+- A change re-renders through TanStack Store: `libraries/locale.store.ts` holds the locale, `__root.tsx` keys the `<Outlet>` on it (a remount, no reload), and `setLocale(locale, { reload: false })` only persists.
+- Page titles are functions (`staticData.pageTitle: m.page_…`); `plugins/vixum` calls them once, in English, for the server's `<title>`.
+- `uilibs` imports no i18n: the webapp feeds its `labels` props (`ThemeSwitcher` gained one, English by default). Account menus carry a "Language" submenu beside Theme; the landing and auth pages have a preferences menu (theme and language) instead of the theme button.
+
+Consequences:
+
+- (positive) typed keys and parameters, unused messages tree-shaken, no provider or hook, one catalog edit adds a language.
+- (negative) a language change remounts the route tree, so transient state resets; the server renders no localized HTML or titles (SEO and first paint are English); a label list must be a function, not a constant; every locale file must carry every key.
+
+Alternatives considered:
+
+- Paraglide's default `setLocale()` (full reload) — rejected by the owner for the flash and lost state.
+- Routes with a locale prefix or TanStack Router `rewrite` — rejected by the owner: the language is a per-browser setting.
+- A `useLocale()` hook in every consumer — rejected: easy to miss, and a memoized component would keep its old text.
+- Random human-readable keys (Paraglide's recommendation) — rejected for readable review; semantic keys are stable once used.
+- Namespaced catalog files per area — rejected: the editor integration writes the merge into every file.
+
 ## Parked
 
 - Community and enterprise editions (an `enterprise` Cargo feature, port overrides in the kernel, a license gate) — set aside by the owner on 2026-11-19. Revisit only when the owner raises it.

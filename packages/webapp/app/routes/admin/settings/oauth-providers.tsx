@@ -1,19 +1,20 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/settings/oauth-providers')({
   component: RouteComponent,
-  staticData: { pageTitle: 'OAuth providers' }
+  staticData: { pageTitle: m.page_admin_settings_oauth_providers }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>OAuth providers</h1>
+        <h1 {...stylex.props(styles.title)}>{m.page_admin_settings_oauth_providers()}</h1>
         <p {...stylex.props(styles.subtitle)}>
-          Connect external identity providers for social and federated sign-in.
+          {m.page_admin_settings_oauth_providers_description()}
         </p>
       </div>
     </main>

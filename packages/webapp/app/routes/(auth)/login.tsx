@@ -5,12 +5,13 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { SocialButtons } from '#/components/social-buttons'
+import { m } from '#/paraglide/messages'
 import { loginSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Sign in' }
+  staticData: { pageTitle: m.page_auth_login }
 })
 
 function RouteComponent() {
@@ -25,8 +26,8 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Sign in</h1>
-        <p {...stylex.props(styles.subtitle)}>Use the account you registered with.</p>
+        <h1 {...stylex.props(styles.title)}>{m.page_auth_login()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_login_subtitle()}</p>
       </div>
 
       <div {...stylex.props(styles.form)}>
@@ -46,7 +47,7 @@ function RouteComponent() {
             {(field) => (
               <TextField
                 field={field}
-                label='Email address'
+                label={m.auth_email_label()}
                 inputMode='email'
                 autoComplete='email'
               />
@@ -54,7 +55,11 @@ function RouteComponent() {
           </Field>
           <Field of={form} path={['password']}>
             {(field) => (
-              <PasswordField field={field} label='Password' autoComplete='current-password' />
+              <PasswordField
+                field={field}
+                label={m.auth_password_label()}
+                autoComplete='current-password'
+              />
             )}
           </Field>
           <Field of={form} path={['captcha']}>
@@ -62,16 +67,16 @@ function RouteComponent() {
           </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
-          Sign in
+          {m.auth_login_submit()}
         </Button>
       </Form>
 
       <div {...stylex.props(styles.links)}>
         <Link to='/signup' {...stylex.props(styles.link)}>
-          Create an account
+          {m.auth_login_create_account()}
         </Link>
         <Link to='/forgot-password' {...stylex.props(styles.link)}>
-          Forgot password?
+          {m.auth_login_forgot()}
         </Link>
       </div>
     </>

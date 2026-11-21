@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { adminProfile } from '#/fixtures/profile'
+import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { DashboardHeader } from './-header'
 
@@ -19,10 +20,10 @@ function RouteComponent() {
     <div {...stylex.props(layout.root)}>
       {isAdministrator && (
         <AnnouncementBar
-          label='Account notice'
-          action={{ label: 'Open admin', render: <Link to='/admin' /> }}
+          label={m.app_banner_admin_label()}
+          action={{ label: m.app_banner_admin_action(), render: <Link to='/admin' /> }}
         >
-          You are signed in as an administrator.
+          {m.app_banner_admin_notice()}
         </AnnouncementBar>
       )}
       <DashboardHeader />

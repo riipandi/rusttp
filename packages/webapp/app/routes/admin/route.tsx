@@ -7,6 +7,7 @@ import { AnnouncementBar } from '#/components/announcement-bar'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
 import { sidebarStore } from '#/libraries/sidebar.store'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 import { CommandBar, useAdminHotkeys } from './-commandbar'
 import { Sidebar, useFoldSidebarOnSettings } from './-sidebar'
@@ -75,8 +76,8 @@ function AdminLayout() {
       <Sidebar />
       <AdminTopBar />
       <div {...stylex.props(styles.content)}>
-        <AnnouncementBar label='Demo mode' tone='critical'>
-          You are in demo mode, changes are not saved.
+        <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
+          {m.admin_banner_demo_notice()}
         </AnnouncementBar>
         <Outlet />
       </div>

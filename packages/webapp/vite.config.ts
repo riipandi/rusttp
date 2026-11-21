@@ -1,3 +1,4 @@
+import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
@@ -40,6 +41,7 @@ export default defineConfig(({ mode }) => ({
       extensions: ['rs', 'toml', 'html', 'js', 'sql'],
       readyTarget: 'rusttp_server::transport::server'
     }),
+    paraglideVitePlugin({ project: './project.inlang' }),
     devtoolsJson(),
     devtools({ logging: false }),
     tanstackRouter({

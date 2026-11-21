@@ -26,6 +26,7 @@ import {
 } from 'uilibs/extra/item'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
 import { notificationsStore, unreadCount } from '#/libraries/notifications.store'
+import { m } from '#/paraglide/messages'
 import type { NotificationResponse } from '#/schemas/notifications.schema'
 import { styles } from '#/styles/element/notifications.stylex'
 
@@ -38,7 +39,9 @@ function Row({ item }: { item: NotificationResponse }) {
       {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadBar)} />}
       <ItemContent style={styles.content}>
         <ItemTitle style={[styles.title, item.read && styles.titleRead]}>
-          {!item.read && <span {...stylex.props(visuallyHidden.root)}>Unread: </span>}
+          {!item.read && (
+            <span {...stylex.props(visuallyHidden.root)}>{m.notifications_unread_prefix()}</span>
+          )}
           {item.title}
         </ItemTitle>
         <ItemDescription style={styles.body}>{item.body}</ItemDescription>
@@ -51,7 +54,7 @@ function Row({ item }: { item: NotificationResponse }) {
               <Button
                 variant='ghost'
                 size='icon-sm'
-                aria-label={`Actions for ${item.title}`}
+                aria-label={m.notifications_row_actions({ title: item.title })}
                 style={styles.action}
               />
             }
@@ -61,7 +64,7 @@ function Row({ item }: { item: NotificationResponse }) {
           <DropdownMenuContent side='bottom' align='end'>
             <DropdownMenuItem style={styles.menuItem} onClick={() => setRead(item.id, !item.read)}>
               <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutralFaded' />
-              {item.read ? 'Mark as unread' : 'Mark as read'}
+              {item.read ? m.notifications_mark_unread() : m.notifications_mark_read()}
             </DropdownMenuItem>
             <DropdownMenuItem
               variant='destructive'
@@ -69,7 +72,7 @@ function Row({ item }: { item: NotificationResponse }) {
               onClick={() => dismiss(item.id)}
             >
               <Icon svg={X} size={14} />
-              Dismiss
+              {m.notifications_dismiss()}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -121,7 +124,8 @@ export function NotificationsPopover({
   const unread = useSelector(unreadCount)
   const { markAllRead, dismissAll } = notificationsStore.actions
   const [open, setOpen] = React.useState(false)
-  const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
+  const name =
+    unread > 0 ? m.notifications_title_unread({ count: unread }) : m.notifications_title()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -148,10 +152,10 @@ export function NotificationsPopover({
       >
         <div {...stylex.props(styles.header)}>
           <div {...stylex.props(styles.heading)}>
-            <PopoverTitle>Notifications</PopoverTitle>
+            <PopoverTitle>{m.notifications_title()}</PopoverTitle>
             {unread > 0 && (
               <Badge variant='secondary' tone='primary'>
-                {unread} new
+                {m.notifications_new_count({ count: unread })}
               </Badge>
             )}
           </div>
@@ -161,7 +165,7 @@ export function NotificationsPopover({
                 <Button
                   variant='ghost'
                   size='icon-sm'
-                  aria-label='Notification actions'
+                  aria-label={m.notifications_menu()}
                   style={styles.action}
                 />
               }
@@ -175,7 +179,7 @@ export function NotificationsPopover({
                 onClick={markAllRead}
               >
                 <Icon svg={MailOpen} size={14} color='neutralFaded' />
-                Mark all read
+                {m.notifications_mark_all_read()}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant='destructive'
@@ -184,7 +188,7 @@ export function NotificationsPopover({
                 onClick={dismissAll}
               >
                 <Icon svg={X} size={14} />
-                Dismiss all
+                {m.notifications_dismiss_all()}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -204,8 +208,8 @@ export function NotificationsPopover({
               <EmptyMedia variant='icon'>
                 <Icon svg={Inbox} size={20} color='neutralFaded' />
               </EmptyMedia>
-              <EmptyTitle>You are all caught up</EmptyTitle>
-              <EmptyDescription>New activity at the library shows up here.</EmptyDescription>
+              <EmptyTitle>{m.notifications_empty_title()}</EmptyTitle>
+              <EmptyDescription>{m.notifications_empty_description()}</EmptyDescription>
             </EmptyHeader>
           </Empty>
         )}
@@ -217,7 +221,7 @@ export function NotificationsPopover({
             size='sm'
             style={styles.footerLink}
           >
-            View all notifications
+            {m.notifications_view_all()}
             <Icon svg={ArrowRight} size={14} />
           </LinkButton>
         </div>

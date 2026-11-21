@@ -32,6 +32,12 @@ const isRouterModule = (
 ): mod is Record<string, unknown> & RouterModule =>
   typeof mod['createRouter'] === 'function' && typeof mod['createMemoryHistory'] === 'function'
 
+/** A route's text is a string or a function returning one (the webapp's messages are functions). */
+function text(value: unknown): string | undefined {
+  const resolved = typeof value === 'function' ? Reflect.apply(value, undefined, []) : value
+  return typeof resolved === 'string' ? resolved : undefined
+}
+
 interface RouteNode {
   parentRoute?: RouteNode
   options: { staticData?: { pageTitle?: unknown; pageDescription?: unknown } }
@@ -54,10 +60,8 @@ async function readRoutes(server: ViteDevServer, routeTree: string): Promise<Rou
     const entry: RouteEntry = { path }
     for (let node: RouteNode | undefined = route; node; node = node.parentRoute) {
       const { pageTitle, pageDescription } = node.options.staticData ?? {}
-      if (entry.title === undefined && typeof pageTitle === 'string') entry.title = pageTitle
-      if (entry.description === undefined && typeof pageDescription === 'string') {
-        entry.description = pageDescription
-      }
+      if (entry.title === undefined) entry.title = text(pageTitle)
+      if (entry.description === undefined) entry.description = text(pageDescription)
     }
     return entry
   })

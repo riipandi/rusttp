@@ -13,6 +13,7 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs
 import { InputPassword } from 'uilibs/extra/input-password'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
+import { m } from '#/paraglide/messages'
 
 const styles = stylex.create({
   srOnly: {
@@ -155,6 +156,8 @@ export function PasswordField({
         size='lg'
         autoComplete={autoComplete}
         placeholder={label}
+        showAriaLabel={m.form_password_show()}
+        hideAriaLabel={m.form_password_hide()}
         value={field.input ?? ''}
         onBlur={() => {
           field.props.onBlur()
@@ -168,7 +171,7 @@ export function PasswordField({
       ) : (
         description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
       )}
-      {capsLock && <output {...stylex.props(styles.warning)}>Caps Lock is on.</output>}
+      {capsLock && <output {...stylex.props(styles.warning)}>{m.form_caps_lock()}</output>}
     </Field>
   )
 }
@@ -211,9 +214,9 @@ export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
       <div {...stylex.props(styles.captcha, invalid && styles.captchaInvalid)}>
         <label htmlFor={id} {...stylex.props(styles.check)}>
           <FieldCheckbox field={field} id={id} />
-          I am not a robot
+          {m.form_captcha_label()}
         </label>
-        <span {...stylex.props(styles.captchaBadge)}>Captcha placeholder</span>
+        <span {...stylex.props(styles.captchaBadge)}>{m.form_captcha_badge()}</span>
       </div>
       {invalid && <FieldError errors={messages} style={styles.hint} />}
     </Field>
@@ -274,6 +277,7 @@ export function CodeField({
         onFocus={field.props.onFocus}
         onBlur={field.props.onBlur}
         aria-label={label}
+        labels={{ slot: (position, total) => m.form_code_slot({ position, length: total }) }}
       >
         {split ? (
           <>

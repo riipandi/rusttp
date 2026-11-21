@@ -1,20 +1,19 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/settings/auth')({
   component: RouteComponent,
-  staticData: { pageTitle: 'User & authentication settings' }
+  staticData: { pageTitle: m.page_admin_settings_auth }
 })
 
 function RouteComponent() {
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>User & authentication settings</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          How users register, identify themselves, and sign in.
-        </p>
+        <h1 {...stylex.props(styles.title)}>{m.page_admin_settings_auth()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.page_admin_settings_auth_description()}</p>
       </div>
     </main>
   )

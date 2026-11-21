@@ -1,7 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
-import { ThemeSwitcher } from 'uilibs/theme'
 import { Logo } from '#/components/logo'
+import { PreferencesMenu } from '#/components/preferences-menu'
+import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -19,10 +20,8 @@ function RouteComponent() {
           Rusttp
         </Link>
         <div>
-          <p {...stylex.props(styles.panelTitle)}>One Rust binary, from server to screen.</p>
-          <p {...stylex.props(styles.panelText)}>
-            The server renders the document, the React app takes over, and both ship together.
-          </p>
+          <p {...stylex.props(styles.panelTitle)}>{m.auth_panel_title()}</p>
+          <p {...stylex.props(styles.panelText)}>{m.auth_panel_text()}</p>
         </div>
       </aside>
 
@@ -33,7 +32,7 @@ function RouteComponent() {
             Rusttp
           </Link>
           <div {...stylex.props(styles.theme)}>
-            <ThemeSwitcher />
+            <PreferencesMenu />
           </div>
         </div>
 

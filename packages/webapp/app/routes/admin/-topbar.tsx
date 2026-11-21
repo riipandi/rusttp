@@ -3,6 +3,7 @@ import { Button } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { NavSheet } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
+import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
 import { groups } from './-nav'
@@ -14,14 +15,14 @@ export function AdminTopBar() {
   return (
     <header {...stylex.props(styles.topbar)}>
       <NavSheet
-        label='Admin'
+        label={m.admin_nav_landmark()}
         brand={
           <>
             <Logo />
             Rusttp
           </>
         }
-        groups={groups}
+        groups={groups()}
         footer={<AdminUserMenu mobile />}
         dense
       />

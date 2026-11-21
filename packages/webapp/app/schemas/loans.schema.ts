@@ -14,5 +14,11 @@ export const loanSchema = v.object({
 })
 export type LoanResponse = v.InferOutput<typeof loanSchema>
 
-export const summaryItemSchema = v.object({ label: v.string(), value: v.string() })
+export const summaryIdSchema = v.picklist([
+  'active-loans',
+  'overdue',
+  'new-members',
+  'books-available'
+])
+export const summaryItemSchema = v.object({ id: summaryIdSchema, value: v.string() })
 export type SummaryItemResponse = v.InferOutput<typeof summaryItemSchema>

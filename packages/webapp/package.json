@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "generate": "NODE_OPTIONS=--disable-warning=Warning tsr generate",
+        "generate": "NODE_OPTIONS=--disable-warning=Warning tsr generate && paraglide-js compile --project ./project.inlang",
         "build": "pnpm --silent generate && tsrs --noEmit --fast && vite build",
         "preview": "vite preview",
         "typecheck": "pnpm --silent generate && tsrs --noEmit --fast"
@@ -26,6 +26,8 @@
         "valibot": "catalog:"
     },
     "devDependencies": {
+        "@inlang/paraglide-js": "catalog:",
+        "@inlang/plugin-message-format": "catalog:",
         "@tanstack/devtools-vite": "catalog:",
         "@tanstack/react-devtools": "catalog:",
         "@tanstack/react-query-devtools": "catalog:",

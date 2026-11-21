@@ -6,12 +6,13 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CheckboxField, CodeField } from '#/components/form-fields'
+import { m } from '#/paraglide/messages'
 import { twoFactorSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/two-factor')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Two-factor authentication' }
+  staticData: { pageTitle: m.page_auth_two_factor }
 })
 
 function RouteComponent() {
@@ -23,10 +24,8 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Two-factor authentication</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Open your authenticator app and enter the 6-digit code.
-        </p>
+        <h1 {...stylex.props(styles.title)}>{m.page_auth_two_factor()}</h1>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_two_factor_subtitle()}</p>
       </div>
 
       <Form
@@ -38,26 +37,28 @@ function RouteComponent() {
         }}
       >
         <Field of={form} path={['code']}>
-          {(field) => <CodeField field={field} label='Authentication code' length={6} focusFirst />}
+          {(field) => (
+            <CodeField field={field} label={m.auth_two_factor_code()} length={6} focusFirst />
+          )}
         </Field>
         <Field of={form} path={['trust']}>
-          {(field) => <CheckboxField field={field} label='Trust this device for 30 days' />}
+          {(field) => <CheckboxField field={field} label={m.auth_two_factor_trust()} />}
         </Field>
         <Button type='submit' size='lg' style={styles.submit}>
-          Verify
+          {m.auth_two_factor_submit()}
         </Button>
       </Form>
 
       <div {...stylex.props(styles.links)}>
         {/* Placeholder: recovery codes need the backend. */}
         <button type='button' {...stylex.props(styles.link, styles.linkButton)}>
-          Use a recovery code
+          {m.auth_two_factor_recovery()}
         </button>
         <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
           <span {...stylex.props(styles.backIcon)}>
             <Icon svg={ArrowLeft} size={14} />
           </span>
-          Back to sign in
+          {m.auth_back_to_sign_in()}
         </Link>
       </div>
     </>

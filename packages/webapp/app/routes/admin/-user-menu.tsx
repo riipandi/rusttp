@@ -1,13 +1,4 @@
-import {
-  AppWindow,
-  ChevronDown,
-  LogOut,
-  Monitor,
-  Moon,
-  Shield,
-  Sun,
-  User
-} from '@keyline-icons/react'
+import { AppWindow, ChevronDown, LogOut, Shield, User } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
@@ -18,24 +9,15 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from 'uilibs/base/dropdown-menu'
 import { Icon } from 'uilibs/extra/icon'
-import { useTheme } from 'uilibs/theme'
+import { LanguageMenu } from '#/components/language-menu'
+import { ThemeMenu } from '#/components/theme-menu'
 import { adminProfile } from '#/fixtures/profile'
+import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/element/user-menu.stylex'
-
-export const themes = [
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
-  { value: 'system', label: 'System', icon: Monitor }
-]
 
 interface UserMenuItem {
   label: string
@@ -45,14 +27,14 @@ interface UserMenuItem {
 
 // Personal entries only: the instance's own settings and API keys live in the sidebar. The command
 // bar lists the same entries (`-commandbar.tsx`), so a link added here is searchable there.
-export const accountItems = [
-  { label: 'Account', icon: User, to: '/admin/account' },
-  { label: 'Security', icon: Shield, to: '/admin/security' }
-] satisfies UserMenuItem[]
+export const accountItems = () =>
+  [
+    { label: m.user_menu_account(), icon: User, to: '/admin/account' },
+    { label: m.user_menu_security(), icon: Shield, to: '/admin/security' }
+  ] satisfies UserMenuItem[]
 
-export const appItems = [
-  { label: 'Back to app', icon: AppWindow, to: '/dashboard' }
-] satisfies UserMenuItem[]
+export const appItems = () =>
+  [{ label: m.user_menu_back_to_app(), icon: AppWindow, to: '/dashboard' }] satisfies UserMenuItem[]
 
 /** Where Sign out leads, until there is a session to end. */
 export const signOutTo = '/'
@@ -70,9 +52,6 @@ export function AdminUserMenu({
   collapsed?: boolean
   mobile?: boolean
 }) {
-  const { theme = 'system', setTheme } = useTheme()
-  const current = themes.find((item) => item.value === theme) ?? themes[2]
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -80,7 +59,7 @@ export function AdminUserMenu({
           <Button
             variant='ghost'
             size={mobile ? 'lg' : 'icon-md'}
-            aria-label={`${adminProfile.name}, account menu`}
+            aria-label={m.user_menu_trigger_named({ name: adminProfile.name })}
             style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
           />
         }
@@ -123,7 +102,7 @@ export function AdminUserMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountItems.map(({ label, icon, to }) => (
+          {accountItems().map(({ label, icon, to }) => (
             <DropdownMenuItem
               key={label}
               render={<Link to={to} />}
@@ -136,7 +115,7 @@ export function AdminUserMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {appItems.map(({ label, icon, to }) => (
+          {appItems().map(({ label, icon, to }) => (
             <DropdownMenuItem
               key={label}
               render={<Link to={to} />}
@@ -148,34 +127,15 @@ export function AdminUserMenu({
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger style={mobile ? styles.menuItemTouch : undefined}>
-            {current && <Icon svg={current.icon} size={16} color='neutralFaded' />}
-            Theme
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-              {themes.map(({ value, label, icon }) => (
-                <DropdownMenuRadioItem
-                  key={value}
-                  value={value}
-                  closeOnClick
-                  style={mobile ? styles.menuItemTouch : undefined}
-                >
-                  <Icon svg={icon} size={16} color='neutralFaded' />
-                  {label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        <ThemeMenu style={mobile ? styles.menuItemTouch : undefined} />
+        <LanguageMenu style={mobile ? styles.menuItemTouch : undefined} />
         <DropdownMenuSeparator />
         <DropdownMenuItem
           render={<Link to={signOutTo} />}
           style={mobile ? styles.menuItemTouch : undefined}
         >
           <Icon svg={LogOut} size={16} color='neutralFaded' />
-          Sign out
+          {m.user_menu_sign_out()}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

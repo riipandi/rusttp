@@ -4,6 +4,7 @@ import { Separator } from 'uilibs/base/separator'
 import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, unit } from 'uilibs/styles/tokens.stylex'
+import { m } from '#/paraglide/messages'
 
 const styles = stylex.create({
   group: {
@@ -39,7 +40,7 @@ export function SocialButtons() {
       </div>
       <div {...stylex.props(styles.divider)}>
         <Separator style={styles.line} />
-        or continue with email
+        {m.social_divider()}
         <Separator style={styles.line} />
       </div>
     </>
