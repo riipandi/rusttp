@@ -3,8 +3,8 @@ import { Badge, type BadgeProps } from 'uilibs/extra/badge'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
 import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
+import type { LoanResponse, LoanStatus } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import type { Loan, LoanStatus } from './-types'
 
 const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Borrowed: { variant: 'secondary' },
@@ -13,7 +13,7 @@ const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Returned: { variant: 'ghost' }
 }
 
-export function LoansTable({ loans }: { loans: Loan[] }) {
+export function LoansTable({ loans }: { loans: LoanResponse[] }) {
   if (loans.length === 0) {
     return (
       <Empty>

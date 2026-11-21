@@ -1,8 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
+import type { SummaryItemResponse } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import type { SummaryItem } from './-types'
 
-export function Summary({ items }: { items: SummaryItem[] }) {
+export function Summary({ items }: { items: SummaryItemResponse[] }) {
   return (
     <dl {...stylex.props(styles.summary)}>
       {items.map(({ label, value }) => (

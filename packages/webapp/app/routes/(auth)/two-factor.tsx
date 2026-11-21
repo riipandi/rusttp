@@ -6,7 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CheckboxField, CodeField } from '#/components/form-fields'
-import { mfaSchema } from '#/schemas/mfa.schema'
+import { twoFactorSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/two-factor')({
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/(auth)/two-factor')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useForm({ schema: mfaSchema, initialInput: { code: '', trust: false } })
+  const form = useForm({ schema: twoFactorSchema, initialInput: { code: '', trust: false } })
   // Demo only: there is no verification endpoint yet, so a valid code opens the dashboard sample.
   const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 

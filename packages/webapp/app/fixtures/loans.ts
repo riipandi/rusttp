@@ -1,14 +1,14 @@
-import type { Loan, SummaryItem } from '#/routes/(app)/dashboard/-types'
+import type { LoanResponse, SummaryItemResponse } from '#/schemas/loans.schema'
 
 // Sample data for the customer dashboard: replace with the loans endpoint (see the route's `loader`).
-export const summary: SummaryItem[] = [
+export const summary: SummaryItemResponse[] = [
   { label: 'Active loans', value: '128' },
   { label: 'Overdue', value: '7' },
   { label: 'New members this week', value: '12' },
   { label: 'Books available', value: '2,418' }
 ]
 
-export const loans: Loan[] = [
+export const loans: LoanResponse[] = [
   {
     id: 'loan-1',
     member: 'Hermione Granger',

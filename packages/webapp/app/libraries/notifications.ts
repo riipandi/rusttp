@@ -1,24 +1,16 @@
 import * as React from 'react'
 import { notifications } from '#/fixtures/notifications'
-
-export interface NotificationItem {
-  id: string
-  title: string
-  body: string
-  /** Shown as written: there is no clock behind this sample data. */
-  time: string
-  read: boolean
-}
+import type { NotificationResponse } from '#/schemas/notifications.schema'
 
 // Placeholder source: the sample list (`fixtures/notifications.ts`) held in memory until a
 // notification endpoint exists. Reading and acting on it is the contract the popover needs
 // (`useNotifications`); swapping the source for a query leaves the components alone. A reload brings
 // the sample back.
-let items: NotificationItem[] = notifications
+let items: NotificationResponse[] = notifications
 
 const listeners = new Set<() => void>()
 
-function set(next: NotificationItem[]) {
+function set(next: NotificationResponse[]) {
   items = next
   for (const listener of listeners) listener()
 }

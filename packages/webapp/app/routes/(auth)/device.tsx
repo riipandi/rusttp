@@ -7,7 +7,7 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
-import { deviceSchema, deviceSearchSchema } from '#/schemas/device.schema'
+import { deviceSchema, deviceSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/device')({

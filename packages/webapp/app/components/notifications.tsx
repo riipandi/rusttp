@@ -23,11 +23,12 @@ import {
   ItemTitle
 } from 'uilibs/extra/item'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
-import { type NotificationItem, useNotifications } from '#/libraries/notifications'
+import { useNotifications } from '#/libraries/notifications'
+import type { NotificationResponse } from '#/schemas/notifications.schema'
 import { styles } from '#/styles/element/notifications.stylex'
 
 // The quick actions live in a menu at the row's top-right corner, so the text keeps the whole row.
-function Row({ item }: { item: NotificationItem }) {
+function Row({ item }: { item: NotificationResponse }) {
   const { setRead, dismiss } = useNotifications()
 
   return (

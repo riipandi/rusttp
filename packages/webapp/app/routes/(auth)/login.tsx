@@ -5,7 +5,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { SocialButtons } from '#/components/social-buttons'
-import { loginSchema } from '#/schemas/login.schema'
+import { loginSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/login')({

@@ -1,7 +1,7 @@
-import type { NotificationItem } from '#/libraries/notifications'
+import type { NotificationResponse } from '#/schemas/notifications.schema'
 
 // Sample notifications for the popover: replace with the notifications endpoint (see `useNotifications`).
-export const notifications: NotificationItem[] = [
+export const notifications: NotificationResponse[] = [
   {
     id: 'quidditch',
     title: 'Loan overdue',

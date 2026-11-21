@@ -8,7 +8,7 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
-import { resetPasswordSchema, resetSearchSchema } from '#/schemas/reset-password.schema'
+import { resetPasswordSchema, resetSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/reset-password')({

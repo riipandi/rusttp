@@ -6,7 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { TextField } from '#/components/form-fields'
-import { forgotPasswordSchema } from '#/schemas/forgot-password.schema'
+import { forgotPasswordSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/forgot-password')({
