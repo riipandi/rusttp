@@ -1,11 +1,13 @@
 import { expect, test } from '../../fixtures/test.ts'
 
 test.describe('admin', () => {
-  test('shows the sidebar beside the overview', async ({ admin }) => {
+  test('shows the navigation beside the overview', async ({ admin, isMobile }) => {
     await admin.open()
 
     await expect(admin.page).toHaveTitle('Overview - Rusttp')
     await expect(admin.heading()).toBeVisible()
+    // Below the compact breakpoint the same `Admin` navigation lives in the top bar's drawer.
+    if (isMobile) await admin.page.getByRole('button', { name: 'Open navigation' }).click()
     await expect(admin.sidebar().getByRole('link', { name: 'Overview' })).toHaveAttribute(
       'aria-current',
       'page'
