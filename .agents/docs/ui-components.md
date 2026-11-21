@@ -42,7 +42,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Navigation Menu** | `uilibs/base/navigation-menu` | Links and menus for site navigation; `labels` name its two `nav` landmarks. |
 | **Number Field** | `uilibs/base/number-field` | Numeric input with steppers and a scrub area; `size` on `NumberField`, `labels` (`increase`, `decrease`) on the group. |
 | **OTP Field** | `uilibs/base/otp-field` | One-time code input in character slots; `size` on `OTPField`. An `aria-label` on the root names the first slot, the others are named `Character n of N` (`labels.slot`). |
-| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger. |
+| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, and `collisionAvoidance`. |
 | **Preview Card** | `uilibs/base/preview-card` | Rich preview shown on hover or focus of a link. |
 | **Progress** | `uilibs/base/progress` | Progress of a long task. |
 | **Provider** | `uilibs/base/provider` | `UIProvider`: CSP nonce and text direction for Base UI. |

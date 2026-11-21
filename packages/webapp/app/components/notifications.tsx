@@ -22,13 +22,13 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'ui
 import { Icon } from 'uilibs/extra/icon'
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
   ItemMedia,
   ItemTitle
 } from 'uilibs/extra/item'
+import { fontSize } from 'uilibs/styles/tokens.stylex.js'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
 import {
   type NotificationItem,
@@ -53,7 +53,7 @@ function Row({ item }: { item: NotificationItem }) {
   const { svg, color } = kinds[item.kind]
 
   return (
-    <Item size='sm' style={[styles.row, !item.read && styles.rowUnread]}>
+    <Item size='xs' style={[styles.row, !item.read && styles.rowUnread]}>
       <ItemMedia style={styles.media}>
         <Icon svg={svg} size={16} color={color} />
       </ItemMedia>
@@ -63,28 +63,30 @@ function Row({ item }: { item: NotificationItem }) {
           {item.title}
         </ItemTitle>
         <ItemDescription style={styles.body}>{item.body}</ItemDescription>
-        <span {...stylex.props(styles.time)}>{item.time}</span>
+        <div {...stylex.props(styles.meta)}>
+          <span {...stylex.props(styles.time)}>{item.time}</span>
+          <div {...stylex.props(styles.actions)}>
+            <Button
+              variant='ghost'
+              size='icon-sm'
+              aria-label={item.read ? `Mark ${item.title} as unread` : `Mark ${item.title} as read`}
+              onClick={() => setRead(item.id, !item.read)}
+              style={styles.action}
+            >
+              <Icon svg={item.read ? Mail : MailOpen} size={16} />
+            </Button>
+            <Button
+              variant='ghost'
+              size='icon-sm'
+              aria-label={`Dismiss ${item.title}`}
+              onClick={() => dismiss(item.id)}
+              style={styles.action}
+            >
+              <Icon svg={X} size={16} />
+            </Button>
+          </div>
+        </div>
       </ItemContent>
-      <ItemActions style={styles.actions}>
-        <Button
-          variant='ghost'
-          size='icon-sm'
-          aria-label={item.read ? `Mark ${item.title} as unread` : `Mark ${item.title} as read`}
-          onClick={() => setRead(item.id, !item.read)}
-          style={styles.action}
-        >
-          <Icon svg={item.read ? Mail : MailOpen} size={16} />
-        </Button>
-        <Button
-          variant='ghost'
-          size='icon-sm'
-          aria-label={`Dismiss ${item.title}`}
-          onClick={() => dismiss(item.id)}
-          style={styles.action}
-        >
-          <Icon svg={X} size={16} />
-        </Button>
-      </ItemActions>
     </Item>
   )
 }
@@ -99,6 +101,9 @@ interface NotificationsPopoverProps {
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
   tooltipSide?: 'top' | 'right' | 'bottom' | 'left'
+  /** Shifts the popover along its edge of the bell, in pixels. */
+  alignOffset?: number
+  collisionAvoidance?: React.ComponentProps<typeof PopoverContent>['collisionAvoidance']
 }
 
 /**
@@ -112,7 +117,9 @@ export function NotificationsPopover({
   iconSize = 20,
   side = 'bottom',
   align = 'end',
-  tooltipSide = 'bottom'
+  tooltipSide = 'bottom',
+  alignOffset,
+  collisionAvoidance
 }: NotificationsPopoverProps) {
   const { items, unread, markAllRead } = useNotifications()
   const [open, setOpen] = React.useState(false)
@@ -132,7 +139,14 @@ export function NotificationsPopover({
         <TooltipContent side={tooltipSide}>{name}</TooltipContent>
       </Tooltip>
 
-      <PopoverContent side={side} align={align} sideOffset={12} style={styles.panel}>
+      <PopoverContent
+        side={side}
+        align={align}
+        alignOffset={alignOffset}
+        collisionAvoidance={collisionAvoidance}
+        sideOffset={12}
+        style={styles.panel}
+      >
         <div {...stylex.props(styles.header)}>
           <div {...stylex.props(styles.heading)}>
             <PopoverTitle>Notifications</PopoverTitle>
@@ -149,7 +163,7 @@ export function NotificationsPopover({
             disabled={unread === 0}
             focusableWhenDisabled
           >
-            Mark all as read
+            Mark all read
           </Button>
         </div>
 

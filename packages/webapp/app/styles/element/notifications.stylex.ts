@@ -1,6 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { container, fontSize, fontWeight, radius, unit } from 'uilibs/styles/tokens.stylex'
+import {
+  container,
+  fontLineHeight,
+  fontSize,
+  fontWeight,
+  radius,
+  unit
+} from 'uilibs/styles/tokens.stylex'
 
 // The notifications popover: a header, a scrolling list of rows, and a footer link, edge to edge in
 // the popup (`components/notifications.tsx`, opened from each layout's bell).
@@ -26,7 +33,7 @@ export const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     padding: 0,
-    width: `min(${container.large}, calc(100vw - ${unit.x4}))`,
+    width: `min(${container.medium}, calc(100vw - ${unit.x4}))`,
     overflow: 'hidden'
   },
   header: {
@@ -52,7 +59,7 @@ export const styles = stylex.create({
   list: {
     boxSizing: 'border-box',
     gap: unit.x1,
-    maxHeight: 'min(26rem, 60dvh)',
+    maxHeight: 'min(24rem, 60dvh)',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',
@@ -77,7 +84,10 @@ export const styles = stylex.create({
     color: colors.foregroundNeutralFaded,
     fontWeight: fontWeight.regular
   },
+  // The preview and the time are caption-sized: the title carries the row, the rest is detail.
   body: {
+    fontSize: fontSize.caption1,
+    lineHeight: fontLineHeight.caption1,
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
@@ -85,13 +95,20 @@ export const styles = stylex.create({
   },
   time: {
     color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1
+    fontSize: fontSize.caption1,
+    lineHeight: fontLineHeight.caption1
+  },
+  // The time on the start side, the quick actions on the end, on one line under the text.
+  meta: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: unit.x2,
+    // The buttons' 32px boxes would add height to a 16px line: pull them back in.
+    marginBlock: `calc(-1 * ${unit.x1})`
   },
   actions: {
-    flexShrink: 0,
-    gap: 0,
-    // The buttons' own 32px boxes sit flush with the row's padding.
-    marginBlockStart: `calc(-1 * ${unit.x1})`,
+    display: 'flex',
     marginInlineEnd: `calc(-1 * ${unit.x1})`
   },
   action: {

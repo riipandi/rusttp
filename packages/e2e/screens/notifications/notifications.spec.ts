@@ -35,7 +35,7 @@ for (const { name, path, all } of layouts) {
       await expect(popover.getByText('New member')).toHaveCount(0)
       await expect(notifications.bell()).toHaveAccessibleName('Notifications, 1 unread')
 
-      await popover.getByRole('button', { name: 'Mark all as read' }).click()
+      await popover.getByRole('button', { name: 'Mark all read' }).click()
       await expect(notifications.bell()).toHaveAccessibleName('Notifications')
     })
 

@@ -62,7 +62,12 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
   return (
     <NotificationsPopover
       to='/admin/notifications'
-      side='right'
+      // Expanded, it opens above the bell and grows toward the sidebar's left edge; it is wider than
+      // the room there, so it shifts right rather than flipping to the bell's other side. The rail
+      // has no room to its left and opens beside it.
+      side={collapsed ? 'right' : 'top'}
+      align='end'
+      collisionAvoidance={{ side: 'flip', align: 'shift' }}
       tooltipSide={collapsed ? 'right' : 'top'}
       iconSize={collapsed ? 16 : 20}
       trigger={
