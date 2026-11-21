@@ -20,7 +20,7 @@ function RouteComponent() {
     initialInput: { email: '', password: '', captcha: false }
   })
   // Demo only: there is no sign-in endpoint yet, so a valid form continues to the two-factor step.
-  const submit = handleSubmit(form, () => void navigate({ to: '/mfa' }))
+  const submit = handleSubmit(form, () => void navigate({ to: '/two-factor' }))
 
   return (
     <>

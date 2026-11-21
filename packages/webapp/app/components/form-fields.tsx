@@ -215,22 +215,31 @@ export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
   )
 }
 
+// Idempotent, as Base UI requires: it may normalize the same value more than once.
+const toUpperCase = (value: string) => value.toUpperCase()
+
 /**
  * A one-time code in character slots: one group of `length`, or two halves when `split` is set.
- * `characters` is what the slots accept (digits by default); the schema still decides what is valid.
+ * `characters` is what the slots accept (digits by default) and `uppercase` turns typed or pasted
+ * letters into capitals; the schema still decides what is valid. `focusFirst` puts the caret in the
+ * first slot when the page opens.
  */
 export function CodeField({
   field,
   label,
   length,
   split = false,
-  characters = 'numeric'
+  characters = 'numeric',
+  uppercase = false,
+  focusFirst = false
 }: {
   field: FieldLike<string>
   label: string
   length: number
   split?: boolean
   characters?: 'numeric' | 'alphanumeric'
+  uppercase?: boolean
+  focusFirst?: boolean
 }) {
   const messages = messagesOf(field)
   const half = length / 2
@@ -240,6 +249,8 @@ export function CodeField({
       <OTPFieldSlot
         key={from + index}
         ref={from + index === 0 ? field.props.ref : undefined}
+        // oxlint-disable-next-line jsx-a11y/no-autofocus -- deliberate: opt-in, for pages whose only task is this code
+        autoFocus={focusFirst && from + index === 0}
         style={styles.slot}
       />
     ))
@@ -252,6 +263,7 @@ export function CodeField({
         name={field.props.name}
         length={length}
         validationType={characters}
+        normalizeValue={uppercase ? toUpperCase : undefined}
         value={field.input ?? ''}
         onValueChange={field.onChange}
         onFocus={field.props.onFocus}

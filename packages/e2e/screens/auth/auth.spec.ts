@@ -8,7 +8,7 @@ const pages = [
   { path: routes.resetPassword, heading: 'Choose a new password' },
   { path: routes.verifyEmail, heading: 'Check your email' },
   { path: routes.emailVerified, heading: 'Email verified' },
-  { path: routes.mfa, heading: 'Two-factor authentication' },
+  { path: routes.twoFactor, heading: 'Two-factor authentication' },
   { path: routes.device, heading: 'Sign in on a device' }
 ]
 
@@ -43,8 +43,10 @@ test.describe('auth pages', () => {
     await page.getByRole('checkbox', { name: /not a robot/i }).click()
     await page.getByRole('button', { name: 'Sign in', exact: true }).click()
 
-    await expect(page).toHaveURL(routes.mfa)
-    await page.getByRole('textbox').first().click()
+    await expect(page).toHaveURL(routes.twoFactor)
+    // By name, not the first textbox: the URL changes before the lazy page renders, and the
+    // sign-in form's Email field would still match.
+    await page.getByRole('textbox', { name: 'Authentication code' }).click()
     await page.keyboard.type('123456')
     await page.getByRole('button', { name: 'Verify' }).click()
 
@@ -112,7 +114,7 @@ test.describe('auth pages', () => {
   })
 
   test('a code of the wrong length is rejected', async ({ page }) => {
-    await page.goto(routes.mfa)
+    await page.goto(routes.twoFactor)
     await page.getByRole('button', { name: 'Verify' }).click()
 
     // The subtitle also asks for the 6-digit code: the message is the field's alert.
@@ -121,13 +123,31 @@ test.describe('auth pages', () => {
     ).toBeVisible()
   })
 
-  test('a device code takes letters and digits', async ({ page }) => {
+  test('a device code takes letters and digits, in capitals', async ({ page }) => {
     await page.goto(routes.device)
-    await page.getByRole('textbox').first().click()
-    await page.keyboard.type('HP7G4X2D')
-    await page.getByRole('button', { name: 'Continue' }).click()
+    const code = page.getByRole('textbox', { name: 'Device code' })
+    // The first slot has focus on arrival, so typing needs no click.
+    await expect(code).toBeFocused()
+    await page.keyboard.type('hp7g4x2d')
 
+    await expect(page.locator('input[name]').first()).toHaveValue('HP7G4X2D')
+    await page.getByRole('button', { name: 'Continue' }).click()
     await expect(page).toHaveURL(routes.dashboard)
+  })
+
+  test('a device link without its token is rejected', async ({ page }) => {
+    await page.goto(routes.deviceWithoutToken)
+
+    await expect(
+      page.getByRole('heading', { name: 'This device link is not valid', level: 1 })
+    ).toBeVisible()
+    await expect(page.getByRole('textbox')).toHaveCount(0)
+  })
+
+  test('the two-factor code has focus on arrival', async ({ page }) => {
+    await page.goto(routes.twoFactor)
+
+    await expect(page.getByRole('textbox', { name: 'Authentication code' })).toBeFocused()
   })
 
   test('a failed submit focuses the first invalid field, not the first field', async ({ page }) => {
@@ -151,7 +171,7 @@ test.describe('auth pages', () => {
   })
 
   test('an empty code submit focuses the first slot', async ({ page }) => {
-    await page.goto(routes.mfa)
+    await page.goto(routes.twoFactor)
     await page.getByRole('button', { name: 'Verify' }).click()
 
     await expect(page.getByRole('textbox', { name: 'Authentication code' })).toBeFocused()

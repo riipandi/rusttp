@@ -9,7 +9,8 @@ export const routes = {
   resetPasswordWithoutToken: '/reset-password',
   verifyEmail: '/verify-email',
   emailVerified: '/email-verified',
-  mfa: '/mfa',
-  device: '/device',
+  twoFactor: '/two-factor',
+  device: '/device?token=lumos',
+  deviceWithoutToken: '/device',
   missing: '/this-page-does-not-exist'
 } as const

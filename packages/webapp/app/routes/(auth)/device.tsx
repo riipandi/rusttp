@@ -1,20 +1,28 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
+import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
-import { deviceSchema } from '#/schemas/device.schema'
+import { StatusIcon } from '#/components/status-icon'
+import { deviceSchema, deviceSearchSchema } from '#/schemas/device.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/device')({
+  // The device shows `/device?token=...`; without a token the search fails validation and the route
+  // renders `InvalidLink` instead of the form.
   component: RouteComponent,
+  errorComponent: InvalidLink,
+  validateSearch: deviceSearchSchema,
   staticData: { pageTitle: 'Device login' }
 })
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const form = useForm({ schema: deviceSchema, initialInput: { code: '' } })
+  const { token } = Route.useSearch()
+  const form = useForm({ schema: deviceSchema, initialInput: { token, code: '' } })
   // Demo only: there is no device-authorization endpoint yet, so a valid code opens the dashboard sample.
   const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 
@@ -43,6 +51,8 @@ function RouteComponent() {
               length={8}
               split
               characters='alphanumeric'
+              uppercase
+              focusFirst
             />
           )}
         </Field>
@@ -54,6 +64,27 @@ function RouteComponent() {
           device.
         </p>
       </Form>
+    </>
+  )
+}
+
+function InvalidLink() {
+  return (
+    <>
+      <div {...stylex.props(styles.heading)}>
+        <StatusIcon svg={CircleAlert} tone='critical' />
+        <h1 {...stylex.props(styles.title)}>This device link is not valid</h1>
+        <p {...stylex.props(styles.subtitle)}>
+          Open the link the device shows you, or scan its code again.
+        </p>
+      </div>
+
+      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+        <span {...stylex.props(styles.backIcon)}>
+          <Icon svg={ArrowLeft} size={14} />
+        </span>
+        Back to sign in
+      </Link>
     </>
   )
 }

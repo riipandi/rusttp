@@ -9,7 +9,7 @@ import { CheckboxField, CodeField } from '#/components/form-fields'
 import { mfaSchema } from '#/schemas/mfa.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
-export const Route = createFileRoute('/(auth)/mfa')({
+export const Route = createFileRoute('/(auth)/two-factor')({
   component: RouteComponent,
   staticData: { pageTitle: 'Two-factor authentication' }
 })
@@ -38,7 +38,7 @@ function RouteComponent() {
         }}
       >
         <Field of={form} path={['code']}>
-          {(field) => <CodeField field={field} label='Authentication code' length={6} />}
+          {(field) => <CodeField field={field} label='Authentication code' length={6} focusFirst />}
         </Field>
         <Field of={form} path={['trust']}>
           {(field) => <CheckboxField field={field} label='Trust this device for 30 days' />}
