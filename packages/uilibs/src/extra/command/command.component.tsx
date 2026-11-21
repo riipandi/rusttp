@@ -39,6 +39,7 @@ export function CommandDialog({
   description = 'Search for a command to run…',
   children,
   style,
+  initialFocus,
   finalFocus,
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, 'children'> &
@@ -51,11 +52,17 @@ export function CommandDialog({
      * leave it where it is (for a palette opened by a hotkey, so a trigger does not keep a ring).
      */
     finalFocus?: React.ComponentProps<typeof DialogContent>['finalFocus']
+    /**
+     * Where focus goes when the dialog opens: the first focusable element by default. A panel with
+     * no field to type in passes its own container, so no button takes a ring on open.
+     */
+    initialFocus?: React.ComponentProps<typeof DialogContent>['initialFocus']
   }) {
   return (
     <Dialog {...props}>
       <DialogContent
         showCloseButton={false}
+        initialFocus={initialFocus}
         finalFocus={finalFocus}
         style={[s.dialogContent, style]}
       >
