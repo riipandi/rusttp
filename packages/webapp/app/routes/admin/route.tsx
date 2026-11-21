@@ -1,11 +1,14 @@
 import * as stylex from '@stylexjs/stylex'
 import { type CustomHotkeys, HotkeysProvider } from '@tanstack/react-hotkeys'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { batch } from '@tanstack/store'
 import * as React from 'react'
+import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
+import { sidebarStore } from '#/libraries/sidebar.store'
 import { styles } from '#/styles/pages/admin.stylex'
 import { CommandBar, useAdminHotkeys } from './-commandbar'
-import { Sidebar, useSidebarCollapse } from './-sidebar'
+import { Sidebar, useFoldSidebarOnSettings } from './-sidebar'
 import { AdminTopBar } from './-topbar'
 
 // The admin dashboard: a sidebar beside the page, a top bar above it on small screens.
@@ -50,36 +53,30 @@ function RouteComponent() {
   )
 }
 
-function AdminLayout() {
-  const { collapsed, setCollapsed } = useSidebarCollapse()
-  const [bar, setBar] = React.useState<{ open: boolean; panel: 'commands' | 'shortcuts' }>({
-    open: false,
-    panel: 'commands'
+// The stores outlive this layout: leaving /admin must not bring back an open command bar or a
+// settings toggle on the next visit. One batch, so nothing renders between the two resets.
+function resetAdminUi() {
+  batch(() => {
+    commandBarStore.actions.reset()
+    sidebarStore.actions.reset()
   })
+}
 
-  useAdminHotkeys({
-    toggleSidebar: () => setCollapsed(!collapsed),
-    openCommandBar: () => setBar({ open: true, panel: 'commands' }),
-    openShortcuts: () => setBar({ open: true, panel: 'shortcuts' })
-  })
+// Reads no store itself: the shortcuts and the sidebar's buttons call the store actions, so a
+// collapse or an open command bar renders only the parts that show it, not the whole layout.
+function AdminLayout() {
+  useFoldSidebarOnSettings()
+  useAdminHotkeys()
+  React.useEffect(() => resetAdminUi, [])
 
   return (
     <div {...stylex.props(styles.root)}>
-      <Sidebar
-        collapsed={collapsed}
-        onCollapsedChange={setCollapsed}
-        onOpenCommandBar={() => setBar({ open: true, panel: 'commands' })}
-      />
+      <Sidebar />
       <AdminTopBar />
       <div {...stylex.props(styles.content)}>
         <Outlet />
       </div>
-      <CommandBar
-        open={bar.open}
-        panel={bar.panel}
-        onOpenChange={(open) => setBar((current) => ({ ...current, open, panel: 'commands' }))}
-        onPanelChange={(panel) => setBar({ open: true, panel })}
-      />
+      <CommandBar />
     </div>
   )
 }

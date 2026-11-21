@@ -1,6 +1,7 @@
 import { PanelLeftClose, PanelLeftOpen } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
+import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
@@ -8,7 +9,8 @@ import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
-import { useNotifications } from '#/libraries/notifications'
+import { unreadCount } from '#/libraries/notifications.store'
+import { sidebarCollapsed, sidebarStore } from '#/libraries/sidebar.store'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
 import { CommandBarTrigger } from './-commandbar'
@@ -59,7 +61,8 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 // Collapsed, the bell is the rail entry above the account avatar; expanded, an icon at the end of
 // the account strip, beside the menu trigger. The popover opens beside the sidebar.
 function NotifyEntry({ collapsed }: { collapsed: boolean }) {
-  const { unread } = useNotifications()
+  // Only whether any are unread decides the dot, so a count that moves from 3 to 2 renders nothing.
+  const anyUnread = useSelector(unreadCount, (count) => count > 0)
   return (
     <NotificationsPopover
       to='/admin/notifications'
@@ -79,65 +82,27 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
         <Button
           variant='ghost'
           size={collapsed ? 'sm' : 'icon-md'}
-          style={[collapsed && styles.item, styles.itemIdle, unread > 0 && styles.itemUnread]}
+          style={[collapsed && styles.item, styles.itemIdle, anyUnread && styles.itemUnread]}
         />
       }
     />
   )
 }
 
-// The collapse persists per browser. Anything but `collapsed` (a missing key, an unknown value, a
-// storage that throws) opens expanded; a failed write keeps the state for the session only.
-const storageKey = 'admin-sidebar'
-
-function readCollapsed() {
-  try {
-    return localStorage.getItem(storageKey) === 'collapsed'
-  } catch {
-    return false
-  }
-}
-
 /**
- * The sidebar's collapse, held by the admin layout so the sidebar's own buttons and the Cmd/Ctrl+B
- * shortcut change one state. Under `/admin/settings` it shows as the rail whatever is stored, and a
- * toggle there lasts for that visit only: neither writes the key, so leaving settings restores it.
+ * The settings pages bring their own aside, so the sidebar folds to the rail there. The route is the
+ * only thing the store cannot know, so the layout feeds it in; the layout effect lands before paint.
  */
-export function useSidebarCollapse() {
-  // The SPA renders on the client only, so the stored value is read before the first paint.
-  const [stored, setStored] = React.useState(readCollapsed)
-  // The settings pages bring their own aside, so the sidebar folds to the rail there.
+export function useFoldSidebarOnSettings() {
   const onSettings = useIsCurrent({ to: '/admin/settings' })
-  const [visit, setVisit] = React.useState<boolean | null>(null)
-  if (!onSettings && visit !== null) setVisit(null)
-  const collapsed = onSettings ? (visit ?? true) : stored
-
-  const setCollapsed = React.useCallback(
-    (next: boolean) => {
-      if (onSettings) return setVisit(next)
-      setStored(next)
-      try {
-        localStorage.setItem(storageKey, next ? 'collapsed' : 'expanded')
-      } catch {}
-    },
-    [onSettings]
-  )
-
-  return { collapsed, setCollapsed }
+  React.useLayoutEffect(() => sidebarStore.actions.setRail(onSettings), [onSettings])
 }
 
-export function Sidebar({
-  collapsed,
-  onCollapsedChange,
-  onOpenCommandBar
-}: {
-  collapsed: boolean
-  onCollapsedChange: (collapsed: boolean) => void
-  onOpenCommandBar: () => void
-}) {
+export function Sidebar() {
   const id = React.useId()
   const navId = `${id}-nav`
-  const toggle = onCollapsedChange
+  const collapsed = useSelector(sidebarCollapsed)
+  const toggle = sidebarStore.actions.setCollapsed
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
@@ -207,7 +172,7 @@ export function Sidebar({
         </div>
 
         <div {...stylex.props(styles.search)}>
-          <CommandBarTrigger collapsed={collapsed} onOpen={onOpenCommandBar} />
+          <CommandBarTrigger collapsed={collapsed} />
         </div>
 
         <nav id={navId} aria-label='Admin' {...stylex.props(styles.nav, styles.navUnderSearch)}>

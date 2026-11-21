@@ -209,9 +209,15 @@ catalogs:
     '@tanstack/react-router-devtools':
       specifier: ^1.167.4
       version: 1.167.4
+    '@tanstack/react-store':
+      specifier: ^0.11.2
+      version: 0.11.2
     '@tanstack/router-cli':
       specifier: ^1.168.0
       version: 1.168.0
+    '@tanstack/store':
+      specifier: ^0.11.2
+      version: 0.11.2
     '@types/node':
       specifier: ^26.6.6
       version: 26.6.6
@@ -473,6 +479,12 @@ importers:
       '@tanstack/react-router':
         specifier: ^1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/react-store':
+        specifier: 'catalog:'
+        version: 0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/store':
+        specifier: 'catalog:'
+        version: 0.11.2
       react:
         specifier: 'catalog:'
         version: 19.3.1

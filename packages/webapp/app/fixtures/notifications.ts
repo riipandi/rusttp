@@ -1,6 +1,6 @@
 import type { NotificationResponse } from '#/schemas/notifications.schema'
 
-// Sample notifications for the popover: replace with the notifications endpoint (see `useNotifications`).
+// Sample notifications for the popover: replace with the notifications endpoint (see `libraries/notifications.store.ts`).
 export const notifications: NotificationResponse[] = [
   {
     id: 'quidditch',

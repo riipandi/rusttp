@@ -20,6 +20,7 @@ import {
   useHotkeyRecorder
 } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
+import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
 import { Button } from 'uilibs/base/button'
 import { Separator } from 'uilibs/base/separator'
@@ -37,7 +38,9 @@ import {
 import { Icon } from 'uilibs/extra/icon'
 import { useTheme } from 'uilibs/theme'
 import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
-import { useNotifications } from '#/libraries/notifications'
+import { commandBarStore } from '#/libraries/commandbar.store'
+import { unreadCount } from '#/libraries/notifications.store'
+import { sidebarStore } from '#/libraries/sidebar.store'
 import { styles } from '#/styles/element/commandbar.stylex'
 import { groups as navGroups } from './-nav'
 import { accountItems, appItems, signOutTo, themes } from './-user-menu'
@@ -62,25 +65,15 @@ interface CommandEntry {
   run: () => void
 }
 
-type Panel = 'commands' | 'shortcuts'
-
 /** The admin's global shortcuts. Lives under the admin layout, so they work on every admin page. */
-export function useAdminHotkeys({
-  toggleSidebar,
-  openCommandBar,
-  openShortcuts
-}: {
-  toggleSidebar: () => void
-  openCommandBar: () => void
-  openShortcuts: () => void
-}) {
+export function useAdminHotkeys() {
   const navigate = useNavigate()
   const hotkeys = useAppHotkeys()
 
   // Registered with the user's binding for each id, and a rebinding takes effect at once.
-  useHotkey(hotkeys['palette.toggle'], openCommandBar)
-  useHotkey(hotkeys['help.shortcuts'], openShortcuts)
-  useHotkey(hotkeys['sidebar.toggle'], toggleSidebar)
+  useHotkey(hotkeys['palette.toggle'], () => commandBarStore.actions.show('commands'))
+  useHotkey(hotkeys['help.shortcuts'], () => commandBarStore.actions.show('shortcuts'))
+  useHotkey(hotkeys['sidebar.toggle'], () => sidebarStore.actions.toggle())
   useHotkey(hotkeys['nav.overview'], () => void navigate({ to: '/admin' }))
   useHotkey(hotkeys['nav.users'], () => void navigate({ to: '/admin/users' }))
   useHotkey(hotkeys['nav.notifications'], () => void navigate({ to: '/admin/notifications' }))
@@ -92,13 +85,7 @@ export function useAdminHotkeys({
  * the user holds the shortcut's modifier the keycaps are the hint (`useHotkeyHint`) that the key
  * under their finger does something.
  */
-export function CommandBarTrigger({
-  collapsed,
-  onOpen
-}: {
-  collapsed: boolean
-  onOpen: () => void
-}) {
+export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
   const appHotkey = useAppHotkeys()['palette.toggle']
   const holding = useHotkeyHint(appHotkey)
 
@@ -108,7 +95,7 @@ export function CommandBarTrigger({
       size={collapsed ? 'icon-md' : 'md'}
       aria-label='Search and commands'
       aria-keyshortcuts={ariaKeyShortcuts(appHotkey.hotkey)}
-      onClick={onOpen}
+      onClick={() => commandBarStore.actions.show('commands')}
       style={[styles.trigger, collapsed && styles.triggerRail]}
     >
       <Icon svg={Search} size={collapsed ? 16 : 14} />
@@ -138,38 +125,23 @@ export function CommandBarTrigger({
   )
 }
 
-export function CommandBar({
-  open,
-  panel,
-  onOpenChange,
-  onPanelChange
-}: {
-  open: boolean
-  panel: Panel
-  onOpenChange: (open: boolean) => void
-  onPanelChange: (panel: Panel) => void
-}) {
+export function CommandBar() {
+  const open = useSelector(commandBarStore, (state) => state.open)
   // The overlay owns the keyboard while it is mounted: its scope is exclusive, so every hotkey on
   // the page behind it is suspended. It is mounted only while open, so the scope is too.
   return open ? (
     <HotkeysProvider scope='commandbar' exclusive>
-      <CommandBarDialog panel={panel} onOpenChange={onOpenChange} onPanelChange={onPanelChange} />
+      <CommandBarDialog />
     </HotkeysProvider>
   ) : null
 }
 
-function CommandBarDialog({
-  panel,
-  onOpenChange,
-  onPanelChange
-}: {
-  panel: Panel
-  onOpenChange: (open: boolean) => void
-  onPanelChange: (panel: Panel) => void
-}) {
+function CommandBarDialog() {
+  const panel = useSelector(commandBarStore, (state) => state.panel)
+  const { setOpen: onOpenChange, show: onPanelChange } = commandBarStore.actions
   const navigate = useNavigate()
   const hotkeys = useAppHotkeys()
-  const { unread } = useNotifications()
+  const unread = useSelector(unreadCount)
   const { setTheme } = useTheme()
 
   const go = (to: string) => () => void navigate({ to })

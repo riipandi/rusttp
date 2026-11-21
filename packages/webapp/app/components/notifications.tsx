@@ -1,6 +1,7 @@
 import { ArrowRight, Bell, Inbox, Mail, MailOpen, MoreHorizontal, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
+import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
 import {
@@ -23,13 +24,13 @@ import {
   ItemTitle
 } from 'uilibs/extra/item'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
-import { useNotifications } from '#/libraries/notifications'
+import { notificationsStore, unreadCount } from '#/libraries/notifications.store'
 import type { NotificationResponse } from '#/schemas/notifications.schema'
 import { styles } from '#/styles/element/notifications.stylex'
 
 // The quick actions live in a menu at the row's top-right corner, so the text keeps the whole row.
 function Row({ item }: { item: NotificationResponse }) {
-  const { setRead, dismiss } = useNotifications()
+  const { setRead, dismiss } = notificationsStore.actions
 
   return (
     <Item size='xs' style={styles.row}>
@@ -112,7 +113,9 @@ export function NotificationsPopover({
   collisionPadding,
   collisionAvoidance
 }: NotificationsPopoverProps) {
-  const { items, unread, markAllRead, dismissAll } = useNotifications()
+  const items = useSelector(notificationsStore)
+  const unread = useSelector(unreadCount)
+  const { markAllRead, dismissAll } = notificationsStore.actions
   const [open, setOpen] = React.useState(false)
   const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
 

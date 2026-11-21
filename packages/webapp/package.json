@@ -18,6 +18,8 @@
         "@tanstack/react-hotkeys": "catalog:",
         "@tanstack/react-query": "^5.108.0",
         "@tanstack/react-router": "^1.170.46",
+        "@tanstack/react-store": "catalog:",
+        "@tanstack/store": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",
         "uilibs": "workspace:*",
