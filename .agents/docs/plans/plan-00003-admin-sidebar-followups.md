@@ -13,8 +13,8 @@ phases:
       note: "See the phase 2 commit. `readCollapsed()` in the lazy initializer and `toggle()` writing `admin-sidebar`; `TooltipProvider` now wraps the header so the rail's `Expand sidebar` entry gets the zero-delay tooltip. The collapsed header is a column (`headerCollapsed`: `flexDirection: column`, `height: auto`), the rail logo a 40px `brandCollapsed` box named `Rusttp`. Chromium on the dev stack: collapse → reload stays collapsed (stored `collapsed`); logo `href=/admin` and clicking it lands on `/admin`; expand → reload stays expanded (stored `expanded`); `garbage` opens expanded; Tab order from the page top is `Rusttp`, `Expand sidebar`, `Overview`; the logo shows the browser's default focus outline (as the expanded brand link does). Typecheck, oxlint, oxfmt clean."
     - id: 3
       title: Pin the sidebar behavior with E2E
-      status: pending
-      note: —
+      status: committed
+      note: "See the phase 3 commit. Four tests in `admin.spec.ts` (`admin sidebar`, skipped when `isMobile`); `admin.screen.ts` gains `collapseButton`, `expandButton`, `logo`, `storeCollapse` (an init script). Against the pre-phase-2 sidebar, three fail (reload collapsed, rail logo, expand and reload); the unknown-value test passes there too, since the old sidebar was always expanded: it guards a read like `!== 'expanded'`. Deviation: the existing `shows the sidebar` test failed on Chromium before this plan (title `Admin - Rusttp`, heading `Admin`, stale since `7e10476` renamed the page to Overview); fixed in this commit. Chromium full suite 26 passed. Firefox, Safari, Mobile Safari n/a: Playwright wants `firefox-1572` and `webkit-2388`, the cache has `firefox-1555` and `webkit-2370`."
     - id: 4
       title: Visual, contrast, and devtools-theme verification
       status: pending
