@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-20T06:39:00+07:00
+updated: 2026-11-21T21:10:48+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -25,7 +25,11 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-None live. `plan-00001-uilibs-improvement.md` and `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20) are in `.agents/docs/archive/`.
+| File | Status | Subject |
+| --- | --- | --- |
+| `plan-00003-admin-sidebar-followups.md` | in-progress | Close handover 00005's open threads: tooltip a11y gate, measured contrast, visual and devtools checks, the admin sidebar's persisted collapse and rail logo. |
+
+`plan-00001-uilibs-improvement.md` and `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
