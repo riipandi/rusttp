@@ -71,15 +71,16 @@ export const styles = stylex.create({
     paddingInlineStart: unit.x4,
     paddingInlineEnd: unit.x2
   },
-  // Unread is a dot hanging in the left gutter, centred on the title's first line, and a title at
-  // full strength; a read row has neither, so it recedes without a fill to add noise to the list.
-  unreadDot: {
+  // Unread is a thin bar on the row's left edge and a title at full strength; a read row has
+  // neither, so it recedes without a fill or a gutter to add noise to the list. The bar is flush
+  // with the popup's edge, so the text keeps its 16px start.
+  unreadBar: {
     position: 'absolute',
-    top: `calc(${unit.x1_5} + ${fontLineHeight.body2} / 2 - ${unit.x1_5} / 2)`,
-    insetInlineStart: unit.x1,
-    width: unit.x1_5,
-    height: unit.x1_5,
-    borderRadius: '50%',
+    insetBlock: unit.x1,
+    insetInlineStart: 0,
+    width: unit.x0_5,
+    borderStartEndRadius: unit.x0_5,
+    borderEndEndRadius: unit.x0_5,
     backgroundColor: colors.backgroundPrimary
   },
   title: {

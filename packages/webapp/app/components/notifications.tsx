@@ -32,7 +32,7 @@ function Row({ item }: { item: NotificationItem }) {
 
   return (
     <Item size='xs' style={styles.row}>
-      {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadDot)} />}
+      {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadBar)} />}
       <ItemContent style={styles.content}>
         <ItemTitle style={[styles.title, item.read && styles.titleRead]}>
           {!item.read && <span {...stylex.props(visuallyHidden.root)}>Unread: </span>}
