@@ -6,8 +6,8 @@ export const notificationSchema = v.object({
   id: v.string(),
   title: v.string(),
   body: v.string(),
-  /** Shown as written: there is no clock behind the sample data. */
-  time: v.string(),
+  /** When it happened, an ISO timestamp; the popover shows how long ago. */
+  time: v.pipe(v.string(), v.isoTimestamp()),
   read: v.boolean()
 })
 export type NotificationResponse = v.InferOutput<typeof notificationSchema>

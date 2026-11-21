@@ -2,6 +2,7 @@ import { Mail } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
+import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { StatusIcon } from '#/components/status-icon'
 import { signupEmail } from '#/fixtures/profile'
 import { getMessages, useMessages } from '#/libraries/messages'
@@ -20,9 +21,12 @@ function RouteComponent() {
         <StatusIcon svg={Mail} />
         <h1 {...stylex.props(styles.title)}>{m.auth_verify_title()}</h1>
         <p {...stylex.props(styles.subtitle)}>
-          {m.auth_verify_subtitle_before()}{' '}
-          <span {...stylex.props(styles.strong)}>{signupEmail}</span>
-          {m.auth_verify_subtitle_after()}
+          <MessageSlot
+            message={m.auth_verify_subtitle({ email: slotMarker('email') })}
+            name='email'
+          >
+            <span {...stylex.props(styles.strong)}>{signupEmail}</span>
+          </MessageSlot>
         </p>
       </div>
 
@@ -38,11 +42,11 @@ function RouteComponent() {
       </div>
 
       <p {...stylex.props(styles.fine)}>
-        {m.auth_verify_no_mail()}{' '}
-        <Link to='/signup' {...stylex.props(styles.link)}>
-          {m.auth_verify_other_email()}
-        </Link>
-        .
+        <MessageSlot message={m.auth_verify_no_mail({ link: slotMarker('link') })} name='link'>
+          <Link to='/signup' {...stylex.props(styles.link)}>
+            {m.auth_verify_other_email()}
+          </Link>
+        </MessageSlot>
       </p>
     </>
   )

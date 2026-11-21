@@ -77,11 +77,6 @@ const styles = stylex.create({
   },
   captchaInvalid: {
     borderColor: colors.borderCritical
-  },
-  captchaBadge: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption2,
-    textAlign: 'end'
   }
 })
 
@@ -217,7 +212,6 @@ export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
           <FieldCheckbox field={field} id={id} />
           {m.form_captcha_label()}
         </label>
-        <span {...stylex.props(styles.captchaBadge)}>{m.form_captcha_badge()}</span>
       </div>
       {invalid && <FieldError errors={messages} style={styles.hint} />}
     </Field>

@@ -3,6 +3,7 @@ import { Badge, type BadgeProps } from 'uilibs/extra/badge'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
 import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
+import { useFormat } from '#/libraries/format'
 import { type Messages, useMessages } from '#/libraries/messages'
 import type { LoanResponse, LoanStatus } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
@@ -23,6 +24,7 @@ const statusLabel = (m: Messages): Record<LoanStatus, string> => ({
 
 export function LoansTable({ loans }: { loans: LoanResponse[] }) {
   const m = useMessages()
+  const format = useFormat()
   if (loans.length === 0) {
     return (
       <Empty>
@@ -52,7 +54,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
           <TableRow key={loan.id}>
             <TableCell>{loan.member}</TableCell>
             <TableCell style={styles.muted}>{loan.book}</TableCell>
-            <TableCell style={styles.muted}>{loan.due}</TableCell>
+            <TableCell style={styles.muted}>{format.date(loan.due)}</TableCell>
             <TableCell>
               <Badge {...statusBadge[loan.status]}>{statusLabel(m)[loan.status]}</Badge>
             </TableCell>

@@ -9,7 +9,8 @@ export const loanSchema = v.object({
   id: v.string(),
   member: v.string(),
   book: v.string(),
-  due: v.string(),
+  /** The day the loan is due, an ISO date (`2026-11-28`). */
+  due: v.pipe(v.string(), v.isoDate()),
   status: loanStatusSchema
 })
 export type LoanResponse = v.InferOutput<typeof loanSchema>
@@ -20,5 +21,5 @@ export const summaryIdSchema = v.picklist([
   'new-members',
   'books-available'
 ])
-export const summaryItemSchema = v.object({ id: summaryIdSchema, value: v.string() })
+export const summaryItemSchema = v.object({ id: summaryIdSchema, value: v.number() })
 export type SummaryItemResponse = v.InferOutput<typeof summaryItemSchema>

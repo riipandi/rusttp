@@ -39,10 +39,7 @@ function RouteComponent() {
     <>
       <div {...stylex.props(styles.heading)}>
         <h1 {...stylex.props(styles.title)}>{m.auth_reset_title()}</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          {m.auth_reset_subtitle_first()} <br />
-          {m.auth_reset_subtitle_second()}
-        </p>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_reset_subtitle()}</p>
       </div>
 
       <Form
@@ -88,10 +85,7 @@ function InvalidLink() {
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={CircleAlert} tone='critical' />
         <h1 {...stylex.props(styles.title)}>{m.auth_reset_invalid_title()}</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          {m.auth_reset_invalid_first()} <br />
-          {m.auth_reset_invalid_second()}
-        </p>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 
       <LinkButton render={<Link to='/forgot-password' />} size='lg'>

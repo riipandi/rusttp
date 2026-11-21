@@ -4,6 +4,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
+import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { SocialButtons } from '#/components/social-buttons'
 import { getMessages, useMessages } from '#/libraries/messages'
 import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
@@ -96,10 +97,11 @@ function RouteComponent() {
       </Form>
 
       <p {...stylex.props(styles.switch)}>
-        {m.auth_signup_have_account()}{' '}
-        <Link to='/login' {...stylex.props(styles.linkStrong)}>
-          {m.auth_signup_sign_in()}
-        </Link>
+        <MessageSlot message={m.auth_signup_have_account({ link: slotMarker('link') })} name='link'>
+          <Link to='/login' {...stylex.props(styles.linkStrong)}>
+            {m.auth_signup_sign_in()}
+          </Link>
+        </MessageSlot>
       </p>
     </>
   )

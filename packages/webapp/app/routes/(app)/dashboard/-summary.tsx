@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
+import { useFormat } from '#/libraries/format'
 import { type Messages, useMessages } from '#/libraries/messages'
 import type { SummaryItemResponse } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
@@ -13,12 +14,13 @@ const summaryLabel = (m: Messages): Record<SummaryItemResponse['id'], string> =>
 
 export function Summary({ items }: { items: SummaryItemResponse[] }) {
   const m = useMessages()
+  const format = useFormat()
   return (
     <dl {...stylex.props(styles.summary)}>
       {items.map(({ id, value }) => (
         <div key={id} {...stylex.props(styles.summaryItem)}>
           <dt {...stylex.props(styles.summaryLabel)}>{summaryLabel(m)[id]}</dt>
-          <dd {...stylex.props(styles.summaryValue)}>{value}</dd>
+          <dd {...stylex.props(styles.summaryValue)}>{format.number(value)}</dd>
         </div>
       ))}
     </dl>

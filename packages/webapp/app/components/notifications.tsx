@@ -25,6 +25,7 @@ import {
   ItemTitle
 } from 'uilibs/extra/item'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
+import { useFormat } from '#/libraries/format'
 import { useMessages } from '#/libraries/messages'
 import { notificationsStore, unreadCount } from '#/libraries/notifications.store'
 import type { NotificationResponse } from '#/schemas/notifications.schema'
@@ -33,6 +34,7 @@ import { styles } from '#/styles/element/notifications.stylex'
 // The quick actions live in a menu at the row's top-right corner, so the text keeps the whole row.
 function Row({ item }: { item: NotificationResponse }) {
   const m = useMessages()
+  const format = useFormat()
   const { setRead, dismiss } = notificationsStore.actions
 
   return (
@@ -46,7 +48,7 @@ function Row({ item }: { item: NotificationResponse }) {
           {item.title}
         </ItemTitle>
         <ItemDescription style={styles.body}>{item.body}</ItemDescription>
-        <span {...stylex.props(styles.time)}>{item.time}</span>
+        <span {...stylex.props(styles.time)}>{format.relative(item.time)}</span>
       </ItemContent>
       <ItemActions style={styles.actions}>
         <DropdownMenu>
