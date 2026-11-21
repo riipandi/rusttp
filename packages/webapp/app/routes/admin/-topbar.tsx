@@ -1,9 +1,8 @@
-import { Bell } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Button } from 'uilibs/base/button'
-import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { NavSheet } from '#/components/nav-sheet'
+import { NotificationsPopover } from '#/components/notifications'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
 import { groups } from './-nav'
@@ -31,10 +30,10 @@ export function AdminTopBar() {
         <Logo />
         Rusttp
       </span>
-      {/* Placeholder: nothing opens until notifications have a source. */}
-      <Button variant='ghost' size='icon-md' aria-label='Notifications' style={styles.notify}>
-        <Icon svg={Bell} size={20} />
-      </Button>
+      <NotificationsPopover
+        to='/admin/notifications'
+        trigger={<Button variant='ghost' size='icon-md' style={styles.notify} />}
+      />
     </header>
   )
 }

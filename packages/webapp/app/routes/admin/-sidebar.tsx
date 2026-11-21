@@ -1,4 +1,4 @@
-import { Bell, PanelLeftClose, PanelLeftOpen } from '@keyline-icons/react'
+import { PanelLeftClose, PanelLeftOpen } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import * as React from 'react'
@@ -7,6 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
+import { NotificationsPopover } from '#/components/notifications'
+import { useNotifications } from '#/libraries/notifications'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
 import { groups } from './-nav'
@@ -53,34 +55,24 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   )
 }
 
-// Placeholder: the count is fixed and nothing opens until notifications have a source.
-// Set it to 0 to hide the indicator.
-const unread = 3
-
-// A bell with a dot while something is unread. Collapsed, it is the rail entry above the account
-// avatar; expanded, an icon at the end of the account strip, beside the menu trigger. The count is
-// in the accessible name and the tooltip, not on screen: the dot only says there is something new.
+// Collapsed, the bell is the rail entry above the account avatar; expanded, an icon at the end of
+// the account strip, beside the menu trigger. The popover opens beside the sidebar.
 function NotifyEntry({ collapsed }: { collapsed: boolean }) {
-  const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
-  const trigger = (
-    <Button
-      variant='ghost'
-      size={collapsed ? 'sm' : 'icon-md'}
-      aria-label={name}
-      style={[collapsed && styles.item, styles.itemIdle, unread > 0 && styles.itemUnread]}
-    />
-  )
-
+  const { unread } = useNotifications()
   return (
-    <Tooltip>
-      <TooltipTrigger render={trigger}>
-        <span {...stylex.props(styles.bell)}>
-          <Icon svg={Bell} size={collapsed ? 16 : 20} />
-          {unread > 0 && <span aria-hidden='true' {...stylex.props(styles.dot)} />}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent side={collapsed ? 'right' : 'top'}>{name}</TooltipContent>
-    </Tooltip>
+    <NotificationsPopover
+      to='/admin/notifications'
+      side='right'
+      tooltipSide={collapsed ? 'right' : 'top'}
+      iconSize={collapsed ? 16 : 20}
+      trigger={
+        <Button
+          variant='ghost'
+          size={collapsed ? 'sm' : 'icon-md'}
+          style={[collapsed && styles.item, styles.itemIdle, unread > 0 && styles.itemUnread]}
+        />
+      }
+    />
   )
 }
 

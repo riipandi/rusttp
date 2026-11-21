@@ -1,5 +1,4 @@
 import {
-  Bell,
   BookOpen,
   ChartColumn,
   LayoutDashboard,
@@ -11,9 +10,9 @@ import {
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
-import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavGroup, type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
+import { NotificationsPopover } from '#/components/notifications'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { UserMenu, profile } from './-user-menu'
@@ -85,15 +84,10 @@ export function DashboardHeader() {
           ))}
         </nav>
         <div {...stylex.props(styles.headerEnd)}>
-          {/* Placeholder: nothing opens until notifications have a source. */}
-          <Button
-            variant='ghost'
-            size='icon-md'
-            aria-label='Notifications'
-            style={styles.notifyTrigger}
-          >
-            <Icon svg={Bell} size={20} />
-          </Button>
+          <NotificationsPopover
+            to='/notifications'
+            trigger={<Button variant='ghost' size='icon-md' style={styles.notifyTrigger} />}
+          />
           <div {...stylex.props(styles.userMenuSlot)}>
             <UserMenu />
           </div>
