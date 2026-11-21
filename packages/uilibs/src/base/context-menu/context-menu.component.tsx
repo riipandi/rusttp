@@ -37,7 +37,6 @@ import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import {
   type DropdownMenuItemProps,
-  type DropdownMenuItemVariant,
   DropdownMenuCheckboxItem,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -109,7 +108,6 @@ export function ContextMenuContent({
 
 // The item parts are Base UI's own Menu parts (`ContextMenu.Item` is `Menu.Item`), styled the same
 // as a dropdown's, so they are the dropdown's.
-export type ContextMenuItemVariant = DropdownMenuItemVariant
 export type ContextMenuItemProps = DropdownMenuItemProps
 export const ContextMenuItem = DropdownMenuItem
 export const ContextMenuCheckboxItem = DropdownMenuCheckboxItem

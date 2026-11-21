@@ -156,3 +156,14 @@ export const ControlSizes: Story = {
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }
+
+export const Translated: Story = {
+  render: () => (
+    <InputPassword aria-label='Kata sandi' labels={{ show: 'Tampilkan', hide: 'Sembunyikan' }} />
+  ),
+  play: async ({ canvas }) => {
+    const toggle = canvas.getByRole('button', { name: 'Tampilkan' })
+    await userEvent.click(toggle)
+    await expect(canvas.getByRole('button', { name: 'Sembunyikan' })).toBeInTheDocument()
+  }
+}

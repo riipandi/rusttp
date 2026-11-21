@@ -156,8 +156,7 @@ export function PasswordField({
         size='lg'
         autoComplete={autoComplete}
         placeholder={label}
-        showAriaLabel={m.form_password_show()}
-        hideAriaLabel={m.form_password_hide()}
+        labels={{ show: m.form_password_show(), hide: m.form_password_hide() }}
         value={field.input ?? ''}
         onBlur={() => {
           field.props.onBlur()

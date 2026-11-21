@@ -16,17 +16,17 @@ export interface CloseLabels {
  * behavior; position it with `style`.
  */
 export function CloseButton({
-  label = 'Close',
+  labels,
   style,
   ...props
 }: Omit<React.ComponentProps<'button'>, 'className' | 'style'> & {
-  label?: string
+  labels?: Partial<CloseLabels>
   style?: stylex.StyleXStyles
 }) {
   return (
     <button
       type='button'
-      aria-label={label}
+      aria-label={{ close: 'Close', ...labels }.close}
       {...props}
       {...stylex.props(focusRing.root, s.root, style)}
     >

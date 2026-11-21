@@ -74,7 +74,7 @@ export const Playground: Story = {
 }
 
 export const Alone: Story = {
-  render: () => <Spinner label='Consulting the Marauder’s Map' />,
+  render: () => <Spinner labels={{ loading: 'Consulting the Marauder’s Map' }} />,
   // On its own it is a polite live region with the given name.
   play: async ({ canvas }) => {
     await expect(

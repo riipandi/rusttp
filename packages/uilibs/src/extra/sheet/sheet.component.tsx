@@ -43,7 +43,7 @@ export function SheetContent({
       <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
         {children}
         {showCloseButton && (
-          <BaseDialog.Close render={<CloseButton label={labels?.close} style={s.close} />} />
+          <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
         )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>

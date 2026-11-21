@@ -27,6 +27,15 @@ import {
   InputGroupInput
 } from '../input-group'
 
+export interface InputPasswordLabels {
+  /** Name of the toggle while the password is hidden. Defaults to `Show password`. */
+  show: string
+  /** Name of the toggle while the password is visible. Defaults to `Hide password`. */
+  hide: string
+}
+
+const defaultLabels: InputPasswordLabels = { show: 'Show password', hide: 'Hide password' }
+
 export interface InputPasswordProps extends Omit<
   React.ComponentProps<typeof InputGroupInput>,
   'type' | 'style'
@@ -42,10 +51,8 @@ export interface InputPasswordProps extends Omit<
   showIcon?: React.ReactNode
   /** Icon shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
   hideIcon?: React.ReactNode
-  /** Accessible label for the toggle when the password is hidden. */
-  showAriaLabel?: string
-  /** Accessible label for the toggle when the password is visible. */
-  hideAriaLabel?: string
+  /** Accessible names of the toggle; English by default. */
+  labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
   toggleVariant?: keyof typeof buttonVariants
   /** Toggle button size. Defaults to `icon-xs`. */
@@ -77,13 +84,13 @@ export function InputPassword({
   onVisibleChange,
   showIcon,
   hideIcon,
-  showAriaLabel = 'Show password',
-  hideAriaLabel = 'Hide password',
+  labels,
   toggleVariant = 'ghost',
   toggleSize = 'icon-xs',
   ...props
 }: InputPasswordProps) {
   const [visible, setVisible] = useUncontrolledState(visibleProp, defaultVisible)
+  const names = { ...defaultLabels, ...labels }
 
   const toggle = React.useCallback(() => {
     const next = !visible
@@ -107,7 +114,7 @@ export function InputPassword({
           variant={toggleVariant}
           size={toggleSize}
           aria-pressed={visible}
-          aria-label={visible ? hideAriaLabel : showAriaLabel}
+          aria-label={visible ? names.hide : names.show}
           onClick={toggle}
         >
           {visible ? hideIconNode : showIconNode}

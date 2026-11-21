@@ -125,7 +125,7 @@ function ToastList({
           <BaseToast.Description {...stylex.props(s.description)} />
         </div>
         <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
-        <BaseToast.Close render={<CloseButton label={labels?.close} style={s.close} />} />
+        <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
       </div>
     </BaseToast.Root>
   ))

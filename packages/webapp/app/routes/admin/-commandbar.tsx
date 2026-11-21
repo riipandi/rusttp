@@ -286,10 +286,11 @@ function CommandBarDialog() {
       // Opened straight onto the cheat sheet, focus lands on the panel itself, not on its Back
       // button: nothing there is meant to be typed in, so no control takes a ring on open.
       initialFocus={panel === 'shortcuts' ? panelRef : undefined}
-      title={panel === 'shortcuts' ? m.shortcuts_title() : m.commandbar_title()}
-      description={
-        panel === 'shortcuts' ? m.commandbar_shortcuts_description() : m.commandbar_description()
-      }
+      labels={{
+        title: panel === 'shortcuts' ? m.shortcuts_title() : m.commandbar_title(),
+        description:
+          panel === 'shortcuts' ? m.commandbar_shortcuts_description() : m.commandbar_description()
+      }}
     >
       {panel === 'shortcuts' ? (
         <ShortcutsPanel ref={panelRef} onBack={() => onPanelChange('commands')} />

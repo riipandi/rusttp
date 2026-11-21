@@ -103,7 +103,7 @@ type AlertDialogButtonProps = Omit<
   React.ComponentProps<typeof BaseAlertDialog.Close>,
   'className' | 'style'
 > &
-  Pick<ButtonProps, 'variant' | 'size' | 'loading'> &
+  Pick<ButtonProps, 'variant' | 'tone' | 'size' | 'loading'> &
   StyleXStyleProps
 
 /**
@@ -113,13 +113,14 @@ type AlertDialogButtonProps = Omit<
  */
 export function AlertDialogAction({
   variant = 'primary',
+  tone,
   size = 'md',
   style,
   ...props
 }: AlertDialogButtonProps) {
   return (
     <BaseAlertDialog.Close
-      render={<Button variant={variant} size={size} style={style} />}
+      render={<Button variant={variant} tone={tone} size={size} style={style} />}
       {...props}
     />
   )
@@ -127,13 +128,14 @@ export function AlertDialogAction({
 
 export function AlertDialogCancel({
   variant = 'outline',
+  tone,
   size = 'md',
   style,
   ...props
 }: AlertDialogButtonProps) {
   return (
     <BaseAlertDialog.Close
-      render={<Button variant={variant} size={size} style={style} />}
+      render={<Button variant={variant} tone={tone} size={size} style={style} />}
       {...props}
     />
   )

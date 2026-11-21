@@ -8,11 +8,32 @@ interface StyleXStyleProps {
   style?: stylex.StyleXStyles
 }
 
+/** Built-in words of the breadcrumb parts; each part reads the keys it shows. */
+export interface BreadcrumbLabels {
+  /** Name of the `nav` landmark. Defaults to `Breadcrumb`. */
+  breadcrumb: string
+  /** Text for assistive technology on the ellipsis. Defaults to `More`. */
+  more: string
+}
+
+const defaultLabels: BreadcrumbLabels = { breadcrumb: 'Breadcrumb', more: 'More' }
+
+interface LabelsProps {
+  labels?: Partial<BreadcrumbLabels>
+}
+
 export function Breadcrumb({
   style,
+  labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <nav aria-label='Breadcrumb' {...props} {...stylex.props(style)} />
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+  return (
+    <nav
+      aria-label={{ ...defaultLabels, ...labels }.breadcrumb}
+      {...props}
+      {...stylex.props(style)}
+    />
+  )
 }
 
 export function BreadcrumbList({
@@ -64,18 +85,14 @@ export function BreadcrumbSeparator({
 }
 
 export function BreadcrumbEllipsis({
-  label = 'More',
+  labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> &
-  StyleXStyleProps & {
-    /** Text for assistive technology; the dots are decoration. Defaults to `More`. */
-    label?: string
-  }) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
-      <span {...stylex.props(visuallyHidden.root)}>{label}</span>
+      <span {...stylex.props(visuallyHidden.root)}>{{ ...defaultLabels, ...labels }.more}</span>
     </span>
   )
 }

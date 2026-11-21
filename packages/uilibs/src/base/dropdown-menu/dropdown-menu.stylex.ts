@@ -88,7 +88,7 @@ export const dropdownMenuStyles = stylex.create({
     right: unit.x2,
     width: unit.x4
   },
-  itemDestructive: {
+  itemCritical: {
     backgroundColor: {
       default: 'transparent',
       '[data-highlighted]': colors.backgroundCriticalHighlightedFaded

@@ -97,7 +97,7 @@ export const Playground: Story = {
           <ContextMenuRadioItem value='prongs'>James Potter</ContextMenuRadioItem>
         </ContextMenuRadioGroup>
         <ContextMenuSeparator />
-        <ContextMenuItem variant='destructive'>Mischief managed</ContextMenuItem>
+        <ContextMenuItem tone='critical'>Mischief managed</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   ),
@@ -189,7 +189,7 @@ export const Destructive: Story = {
         <ContextMenuItem>Re-ink the map</ContextMenuItem>
         <ContextMenuItem>Duplicate parchment</ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem variant='destructive'>Mischief managed</ContextMenuItem>
+        <ContextMenuItem tone='critical'>Mischief managed</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )

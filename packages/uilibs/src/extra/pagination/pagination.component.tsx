@@ -9,11 +9,47 @@ interface StyleXStyleProps {
   style?: stylex.StyleXStyles
 }
 
+/** Built-in words of the pagination parts; each part reads the keys it shows. */
+export interface PaginationLabels {
+  /** Name of the `nav` landmark. Defaults to `Pagination`. */
+  pagination: string
+  /** Visible text of the previous link; empty for an icon-only link. Defaults to `Previous`. */
+  previous: string
+  /** Accessible name of the previous link. Defaults to `Go to previous page`. */
+  previousPage: string
+  /** Visible text of the next link; empty for an icon-only link. Defaults to `Next`. */
+  next: string
+  /** Accessible name of the next link. Defaults to `Go to next page`. */
+  nextPage: string
+  /** Text for assistive technology on the ellipsis. Defaults to `More pages`. */
+  morePages: string
+}
+
+const defaultLabels: PaginationLabels = {
+  pagination: 'Pagination',
+  previous: 'Previous',
+  previousPage: 'Go to previous page',
+  next: 'Next',
+  nextPage: 'Go to next page',
+  morePages: 'More pages'
+}
+
+interface LabelsProps {
+  labels?: Partial<PaginationLabels>
+}
+
 export function Pagination({
   style,
+  labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <nav aria-label='Pagination' {...props} {...stylex.props(s.nav, style)} />
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+  return (
+    <nav
+      aria-label={{ ...defaultLabels, ...labels }.pagination}
+      {...props}
+      {...stylex.props(s.nav, style)}
+    />
+  )
 }
 
 export function PaginationContent({
@@ -54,49 +90,49 @@ export function PaginationLink({
 }
 
 export function PaginationPrevious({
-  text = 'Previous',
+  labels,
   style,
   ...props
-}: Omit<PaginationLinkProps, 'size'> & { text?: string }) {
+}: Omit<PaginationLinkProps, 'size'> & LabelsProps) {
+  const names = { ...defaultLabels, ...labels }
   return (
     <PaginationLink
-      aria-label='Go to previous page'
+      aria-label={names.previousPage}
       size='md'
       {...props}
       style={[s.previous, style]}
     >
       <Chevron direction='left' />
-      <span {...stylex.props(s.linkText)}>{text}</span>
+      <span {...stylex.props(s.linkText)}>{names.previous}</span>
     </PaginationLink>
   )
 }
 
 export function PaginationNext({
-  text = 'Next',
+  labels,
   style,
   ...props
-}: Omit<PaginationLinkProps, 'size'> & { text?: string }) {
+}: Omit<PaginationLinkProps, 'size'> & LabelsProps) {
+  const names = { ...defaultLabels, ...labels }
   return (
-    <PaginationLink aria-label='Go to next page' size='md' {...props} style={[s.next, style]}>
-      <span {...stylex.props(s.linkText)}>{text}</span>
+    <PaginationLink aria-label={names.nextPage} size='md' {...props} style={[s.next, style]}>
+      <span {...stylex.props(s.linkText)}>{names.next}</span>
       <Chevron direction='right' />
     </PaginationLink>
   )
 }
 
 export function PaginationEllipsis({
-  label = 'More pages',
+  labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> &
-  StyleXStyleProps & {
-    /** Text for assistive technology; the dots are decoration. Defaults to `More pages`. */
-    label?: string
-  }) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
-      <span {...stylex.props(visuallyHidden.root)}>{label}</span>
+      <span {...stylex.props(visuallyHidden.root)}>
+        {{ ...defaultLabels, ...labels }.morePages}
+      </span>
     </span>
   )
 }

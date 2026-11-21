@@ -84,13 +84,32 @@ export const buttonVariants = stylex.create({
       default: colors.foregroundNeutral,
       ':hover:not(:disabled)': colors.foregroundNeutral
     }
-  },
-  destructive: {
+  }
+})
+
+/**
+ * `tone='critical'` recolors a variant: the filled variants (`primary`, `secondary`) become the
+ * solid critical fill, the quiet ones (`outline`, `ghost`) keep their shape and take the critical
+ * text color. Compose it after the variant.
+ */
+export const buttonCriticalTone = stylex.create({
+  filled: {
     backgroundColor: {
       default: colors.backgroundCritical,
       ':hover:not(:disabled)': colors.backgroundCriticalHighlighted
     },
     color: colors.onBackgroundCritical
+  },
+  quiet: {
+    backgroundColor: {
+      default: null,
+      ':hover:not(:disabled)': colors.backgroundCriticalFaded
+    },
+    borderColor: colors.borderCritical,
+    color: {
+      default: colors.foregroundCritical,
+      ':hover:not(:disabled)': colors.foregroundCritical
+    }
   }
 })
 

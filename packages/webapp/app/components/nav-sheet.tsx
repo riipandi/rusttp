@@ -184,7 +184,12 @@ export function NavSheet({
                   <AvatarFallback>{profile.initials}</AvatarFallback>
                 </Avatar>
                 <SheetClose
-                  render={<CloseButton label={m.nav_sheet_close()} style={styles.sheetClose} />}
+                  render={
+                    <CloseButton
+                      labels={{ close: m.nav_sheet_close() }}
+                      style={styles.sheetClose}
+                    />
+                  }
                 />
               </div>
               <SheetTitle style={styles.sheetName}>{profile.name}</SheetTitle>
@@ -194,7 +199,9 @@ export function NavSheet({
             <div {...stylex.props(styles.sheetProfileTop)}>
               <SheetTitle style={styles.sheetBrand}>{brand}</SheetTitle>
               <SheetClose
-                render={<CloseButton label={m.nav_sheet_close()} style={styles.sheetClose} />}
+                render={
+                  <CloseButton labels={{ close: m.nav_sheet_close() }} style={styles.sheetClose} />
+                }
               />
             </div>
           )}

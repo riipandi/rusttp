@@ -173,3 +173,26 @@ export const CustomSeparator: Story = {
     </Breadcrumb>
   )
 }
+
+export const Translated: Story = {
+  render: () => {
+    const labels = { breadcrumb: 'Jejak halaman', more: 'Lainnya' }
+    return (
+      <Breadcrumb labels={labels}>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href='#'>Hogwarts</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbEllipsis labels={labels} />
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    )
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('navigation', { name: 'Jejak halaman' })).toBeInTheDocument()
+    await expect(canvas.getByText('Lainnya')).toBeInTheDocument()
+  }
+}

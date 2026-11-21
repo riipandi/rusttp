@@ -65,7 +65,7 @@ export function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <BaseDialog.Close render={<CloseButton label={labels?.close} style={s.close} />} />
+          <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
         )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>

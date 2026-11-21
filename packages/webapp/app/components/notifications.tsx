@@ -67,7 +67,7 @@ function Row({ item }: { item: NotificationResponse }) {
               {item.read ? m.notifications_mark_unread() : m.notifications_mark_read()}
             </DropdownMenuItem>
             <DropdownMenuItem
-              variant='destructive'
+              tone='critical'
               style={styles.menuItem}
               onClick={() => dismiss(item.id)}
             >
@@ -182,7 +182,7 @@ export function NotificationsPopover({
                 {m.notifications_mark_all_read()}
               </DropdownMenuItem>
               <DropdownMenuItem
-                variant='destructive'
+                tone='critical'
                 style={styles.menuItem}
                 disabled={items.length === 0}
                 onClick={dismissAll}

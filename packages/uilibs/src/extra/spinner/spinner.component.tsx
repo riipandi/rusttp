@@ -9,20 +9,28 @@ import { spinnerStyles as s } from './spinner.stylex'
  */
 export const LabelledControlContext = React.createContext(false)
 
-export interface SpinnerProps extends Omit<React.ComponentProps<'svg'>, 'className' | 'style'> {
+export interface SpinnerLabels {
   /** Accessible name when the spinner stands alone. Defaults to `Loading`. */
-  label?: string
+  loading: string
+}
+
+const defaultLabels: SpinnerLabels = { loading: 'Loading' }
+
+export interface SpinnerProps extends Omit<React.ComponentProps<'svg'>, 'className' | 'style'> {
+  /** Accessible name of the standing-alone spinner; English by default. */
+  labels?: Partial<SpinnerLabels>
   style?: stylex.StyleXStyles
 }
 
-/** A busy indicator. Alone it is a `status` live region named `label`; inside a Button it is hidden from assistive technology. */
-export function Spinner({ label = 'Loading', style, ...props }: SpinnerProps) {
+/** A busy indicator. Alone it is a `status` live region named `labels.loading`; inside a Button it is hidden from assistive technology. */
+export function Spinner({ labels, style, ...props }: SpinnerProps) {
+  const loading = { ...defaultLabels, ...labels }.loading
   const decorative = React.useContext(LabelledControlContext)
   return (
     <LoaderCircle
       {...(decorative
         ? { 'aria-hidden': true }
-        : { role: 'status', 'aria-label': label, 'aria-hidden': false })}
+        : { role: 'status', 'aria-label': loading, 'aria-hidden': false })}
       size={16}
       strokeWidth={1.5}
       {...props}

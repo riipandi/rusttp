@@ -35,9 +35,20 @@ export function Command({ style, children, ...props }: CommandProps) {
   )
 }
 
+export interface CommandDialogLabels {
+  /** Name of the dialog, read but not shown. Defaults to `Command Palette`. */
+  title: string
+  /** Description of the dialog, read but not shown. Defaults to `Search for a command to run…`. */
+  description: string
+}
+
+const defaultLabels: CommandDialogLabels = {
+  title: 'Command Palette',
+  description: 'Search for a command to run…'
+}
+
 export function CommandDialog({
-  title = 'Command Palette',
-  description = 'Search for a command to run…',
+  labels,
   children,
   style,
   initialFocus,
@@ -45,8 +56,8 @@ export function CommandDialog({
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, 'children'> &
   StyleProp & {
-    title?: string
-    description?: string
+    /** Accessible name and description of the dialog; English by default. */
+    labels?: Partial<CommandDialogLabels>
     children: React.ReactNode
     /**
      * Where focus goes when the dialog closes: the element that opened it by default, `false` to
@@ -59,6 +70,7 @@ export function CommandDialog({
      */
     initialFocus?: React.ComponentProps<typeof DialogContent>['initialFocus']
   }) {
+  const names = { ...defaultLabels, ...labels }
   return (
     <Dialog {...props}>
       <DialogContent
@@ -67,8 +79,8 @@ export function CommandDialog({
         finalFocus={finalFocus}
         style={[s.dialogContent, style]}
       >
-        <DialogTitle style={visuallyHidden.root}>{title}</DialogTitle>
-        <DialogDescription style={visuallyHidden.root}>{description}</DialogDescription>
+        <DialogTitle style={visuallyHidden.root}>{names.title}</DialogTitle>
+        <DialogDescription style={visuallyHidden.root}>{names.description}</DialogDescription>
         <div {...stylex.props(s.inner)}>{children}</div>
       </DialogContent>
     </Dialog>

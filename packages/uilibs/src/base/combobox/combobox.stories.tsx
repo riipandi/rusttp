@@ -412,3 +412,25 @@ export const Keyboard: Story = {
     await expect(input).not.toHaveValue('')
   }
 }
+
+export const TranslatedChip: Story = {
+  render: () => (
+    <Combobox items={frameworks} multiple defaultValue={['Hogwarts']}>
+      <ComboboxChips>
+        <ComboboxValue>
+          {(items: string[]) =>
+            items.map((item) => (
+              <ComboboxChip key={item} labels={{ remove: (text) => `Hapus ${text ?? ''}`.trim() }}>
+                {item}
+              </ComboboxChip>
+            ))
+          }
+        </ComboboxValue>
+        <ComboboxChipsInput aria-label='Sekolah' />
+      </ComboboxChips>
+    </Combobox>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Hapus Hogwarts' })).toBeInTheDocument()
+  }
+}

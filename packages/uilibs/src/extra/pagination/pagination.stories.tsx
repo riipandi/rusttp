@@ -108,12 +108,47 @@ export const IconsOnly: Story = {
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href='#' text='' style={styles.iconOnly} />
+          <PaginationPrevious href='#' labels={{ previous: '' }} style={styles.iconOnly} />
         </PaginationItem>
         <PaginationItem>
-          <PaginationNext href='#' text='' style={styles.iconOnly} />
+          <PaginationNext href='#' labels={{ next: '' }} style={styles.iconOnly} />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
   )
+}
+
+/** Every built-in word comes from `labels`, so an app translates them in one place. */
+export const Translated: Story = {
+  render: () => {
+    const labels = {
+      pagination: 'Halaman',
+      previous: 'Sebelumnya',
+      previousPage: 'Ke halaman sebelumnya',
+      next: 'Berikutnya',
+      nextPage: 'Ke halaman berikutnya',
+      morePages: 'Halaman lainnya'
+    }
+    return (
+      <Pagination labels={labels}>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href='#' labels={labels} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis labels={labels} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href='#' labels={labels} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    )
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('navigation', { name: 'Halaman' })).toBeInTheDocument()
+    await expect(canvas.getByRole('link', { name: 'Ke halaman sebelumnya' })).toBeInTheDocument()
+    await expect(canvas.getByRole('link', { name: 'Ke halaman berikutnya' })).toBeInTheDocument()
+    await expect(canvas.getByText('Halaman lainnya')).toBeInTheDocument()
+  }
 }
