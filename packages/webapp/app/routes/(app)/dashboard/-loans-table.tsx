@@ -4,7 +4,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'ui
 import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import type { Loan, LoanStatus } from './-data'
+import type { Loan, LoanStatus } from './-types'
 
 const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Borrowed: { variant: 'secondary' },

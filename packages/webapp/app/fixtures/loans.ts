@@ -1,14 +1,7 @@
-export type LoanStatus = 'Borrowed' | 'Due soon' | 'Overdue' | 'Returned'
+import type { Loan, SummaryItem } from '#/routes/(app)/dashboard/-types'
 
-export interface Loan {
-  id: string
-  member: string
-  book: string
-  due: string
-  status: LoanStatus
-}
-
-export const summary = [
+// Sample data for the customer dashboard: replace with the loans endpoint (see the route's `loader`).
+export const summary: SummaryItem[] = [
   { label: 'Active loans', value: '128' },
   { label: 'Overdue', value: '7' },
   { label: 'New members this week', value: '12' },

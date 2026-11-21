@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { StatusIcon } from '#/components/status-icon'
+import { signupEmail } from '#/fixtures/profile'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/verify-email')({
@@ -18,8 +19,8 @@ function RouteComponent() {
         <h1 {...stylex.props(styles.title)}>Check your email</h1>
         <p {...stylex.props(styles.subtitle)}>
           We&apos;ve emailed the instructions for verifying your email address,
-          <span {...stylex.props(styles.strong)}>sophie.neveu@example.com</span>. Check your inbox
-          and follow the steps to continue.
+          <span {...stylex.props(styles.strong)}>{signupEmail}</span>. Check your inbox and follow
+          the steps to continue.
         </p>
       </div>
 

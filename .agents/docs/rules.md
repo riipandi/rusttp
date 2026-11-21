@@ -111,9 +111,11 @@ The webapp keeps UI preferences in `localStorage`, read in a lazy `useState` ini
 - A read or write that throws (storage disabled, quota) is caught: the preference falls back to its default and a toggle still works for the session.
 - No stored shape is migrated (the project keeps no backward compatibility): a value the code no longer knows reads as the default.
 - An E2E test seeds a preference with `page.addInitScript` before the app reads it (`admin.screen.ts` `storeCollapse`), never by reloading after `localStorage.setItem`.
-- Notifications come from `useNotifications()` (`libraries/notifications.ts`) only: a component never holds its own list or unread count, so every bell agrees. Today it is an in-memory sample store (a reload restores it); when an endpoint lands, swap the store's source and keep the hook's shape (`items`, `unread`, `setRead`, `markAllRead`, `dismiss`, `dismissAll`).
+- Notifications come from `useNotifications()` (`libraries/notifications.ts`) only: a component never holds its own list or unread count, so every bell agrees. Today it is an in-memory store seeded from `fixtures/notifications.ts` (a reload restores it); when an endpoint lands, swap the store's source and keep the hook's shape (`items`, `unread`, `setRead`, `markAllRead`, `dismiss`, `dismissAll`).
 
 ### Sample data
+
+In `packages/webapp` the made-up values live in `app/fixtures/*.ts` (`profile`, `loans`, `notifications`), one file per kind: a component, route, or store imports the fixture and never writes a sample value inline, and a type belongs to the code that reads it (`routes/(app)/dashboard/-types.ts`, `libraries/profile.ts`, `libraries/notifications.ts`), not to the fixture, so wiring a real source means replacing the fixture import (and deleting the file). Navigation items are structure and stay beside their layout. The rules below apply to the fixtures.
 
 Every made-up value — test fixtures, seed rows, email `previewProps`, stories, mock responses, placeholder copy and labels — names people, places, and things from Dan Brown's novels (Robert Langdon, Sophie Neveu, Leigh Teabing, Katherine Solomon, Vittoria Vetra, the Louvre, CERN) or Harry Potter (Hermione Granger, Harry Potter, Albus Dumbledore, Minerva McGonagall, Hogwarts, Gringotts, Diagon Alley). Never `John Doe`, `Jane`, `Alice`/`Bob`, `foo`/`bar`, `test@`, `dummy`, or lorem ipsum.
 

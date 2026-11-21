@@ -28,6 +28,7 @@ import {
 } from 'uilibs/base/dropdown-menu'
 import { Icon } from 'uilibs/extra/icon'
 import { useTheme } from 'uilibs/theme'
+import { adminProfile } from '#/fixtures/profile'
 import { styles } from '#/styles/element/user-menu.stylex'
 
 const themes = [
@@ -52,14 +53,6 @@ const appItems = [
   { label: 'Back to app', icon: AppWindow, to: '/dashboard' }
 ] satisfies UserMenuItem[]
 
-const profile = {
-  name: 'Hermione Granger',
-  email: 'hermione.granger@example.com',
-  firstName: 'Hermione',
-  role: 'Administrator',
-  initials: 'HG'
-}
-
 /**
  * The admin sidebar's account trigger: the bare avatar, with the notification bell beside it in
  * the strip (`routes/admin/-sidebar.tsx`). The name, role, and email are in the menu, which opens
@@ -83,17 +76,17 @@ export function AdminUserMenu({
           <Button
             variant='ghost'
             size={mobile ? 'lg' : 'icon-md'}
-            aria-label={`${profile.name}, account menu`}
+            aria-label={`${adminProfile.name}, account menu`}
             style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
           />
         }
       >
         <Avatar size='sm' style={styles.avatar}>
-          <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
+          <AvatarFallback style={styles.triggerInitials}>{adminProfile.initials}</AvatarFallback>
         </Avatar>
         {mobile && (
           <>
-            <span {...stylex.props(styles.pillName)}>{profile.firstName}</span>
+            <span {...stylex.props(styles.pillName)}>{adminProfile.firstName}</span>
             <span {...stylex.props(styles.pillChevron)}>
               <Icon svg={ChevronDown} size={14} color='neutralFaded' />
             </span>
@@ -112,7 +105,7 @@ export function AdminUserMenu({
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel style={[styles.menuLabel, mobile && styles.menuLabelTouch]}>
-            <span {...stylex.props(styles.menuName, styles.menuTextWrap)}>{profile.name}</span>
+            <span {...stylex.props(styles.menuName, styles.menuTextWrap)}>{adminProfile.name}</span>
             <span
               {...stylex.props(
                 styles.menuEmail,
@@ -120,7 +113,7 @@ export function AdminUserMenu({
                 mobile && styles.menuEmailSmall
               )}
             >
-              {profile.email}
+              {adminProfile.email}
             </span>
           </DropdownMenuLabel>
         </DropdownMenuGroup>

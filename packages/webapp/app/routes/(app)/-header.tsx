@@ -13,9 +13,10 @@ import { Button, LinkButton } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { type NavGroup, type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
+import { profile } from '#/fixtures/profile'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
-import { UserMenu, profile } from './-user-menu'
+import { UserMenu } from './-user-menu'
 
 // Only Overview has a page; the other sections are placeholders.
 const navItems: NavItem[] = [

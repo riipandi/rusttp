@@ -19,6 +19,7 @@ import {
 } from 'uilibs/base/dropdown-menu'
 import { Icon } from 'uilibs/extra/icon'
 import { useTheme } from 'uilibs/theme'
+import { profile } from '#/fixtures/profile'
 import { styles } from '#/styles/element/user-menu.stylex'
 
 const themes = [
@@ -38,12 +39,6 @@ const accountItems = [
   { label: 'Account', icon: User, to: '/settings/account' },
   { label: 'Security', icon: Shield, to: '/settings/security' }
 ] satisfies UserMenuItem[]
-
-export const profile = {
-  name: 'Hermione Granger',
-  email: 'hermione.granger@example.com',
-  initials: 'HG'
-}
 
 // The customer dashboard's account menu: the avatar alone, in the top bar.
 export function UserMenu() {
