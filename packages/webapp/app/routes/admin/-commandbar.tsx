@@ -1,13 +1,4 @@
-import {
-  ArrowLeft,
-  Keyboard,
-  Layers,
-  LayoutDashboard,
-  RotateCcw,
-  Search,
-  Settings,
-  Users
-} from '@keyline-icons/react'
+import { ArrowLeft, Keyboard, RotateCcw, Search, SlidersHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import {
   type AppHotkeyId,
@@ -23,6 +14,7 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import * as React from 'react'
 import { Button } from 'uilibs/base/button'
+import { Separator } from 'uilibs/base/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import {
   Command,
@@ -38,6 +30,8 @@ import { Icon } from 'uilibs/extra/icon'
 import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
 import { useNotifications } from '#/libraries/notifications'
 import { styles } from '#/styles/element/commandbar.stylex'
+import { groups as navGroups } from './-nav'
+import { groups as settingsGroups } from './settings/-nav'
 
 // The command bar: one dialog that runs a command by name (Cmd+K on macOS, Ctrl+K elsewhere), with a
 // keyboard-shortcuts panel inside it that lists every declared shortcut and records a new one.
@@ -47,7 +41,10 @@ import { styles } from '#/styles/element/commandbar.stylex'
 
 interface CommandEntry {
   value: string
+  /** What the row says: a page's name, or `Settings → Sessions` for a settings page. */
   label: string
+  /** Extra words the search also matches (the group a page sits in), never shown. */
+  keywords: string
   group: string
   icon: React.ComponentType
   /** An app hotkey whose binding is shown beside the command. */
@@ -165,60 +162,66 @@ function CommandBarDialog({
   const { unread } = useNotifications()
 
   const go = (to: string) => () => void navigate({ to })
-  const commands: CommandEntry[] = [
-    {
-      value: 'overview',
-      label: 'Overview',
-      group: 'Go to',
-      icon: LayoutDashboard,
-      hotkey: 'nav.overview',
-      run: go('/admin')
-    },
-    {
-      value: 'users',
-      label: 'Users',
-      group: 'Go to',
-      icon: Users,
-      hotkey: 'nav.users',
-      run: go('/admin/users')
-    },
-    {
-      value: 'groups',
-      label: 'Groups',
-      group: 'Go to',
-      icon: Layers,
-      run: go('/admin/user-groups')
-    },
-    {
-      value: 'notifications',
-      label: unread > 0 ? `Notifications (${unread} unread)` : 'Notifications',
-      group: 'Go to',
-      icon: Search,
-      hotkey: 'nav.notifications',
-      run: go('/admin/notifications')
-    },
-    {
-      value: 'settings',
-      label: 'Settings',
-      group: 'Go to',
-      icon: Settings,
-      hotkey: 'nav.settings',
-      run: go('/admin/settings')
-    },
+  // Every page the sidebar links to, in its order, so a page added to `-nav.ts` is searchable at
+  // once; a few of them have a go-to sequence to show.
+  const shortcuts: Partial<Record<string, AppHotkeyId>> = {
+    '/admin': 'nav.overview',
+    '/admin/users': 'nav.users',
+    '/admin/settings': 'nav.settings'
+  }
+  const pages = navGroups.flatMap(({ label, items }) =>
+    items.flatMap((item): CommandEntry[] => {
+      const { to } = item
+      if (!to) return []
+      return [
+        {
+          value: to,
+          label: item.label,
+          keywords: label ?? '',
+          group: 'Go to',
+          icon: item.icon,
+          hotkey: shortcuts[to],
+          run: go(to)
+        }
+      ]
+    })
+  )
+  // The settings pages are a second level the sidebar only shows on the settings screen, so they
+  // are listed here as `Settings → Page`: the quickest way to reach one from anywhere.
+  const settings = settingsGroups.flatMap(({ label, items }) =>
+    items.flatMap((page): CommandEntry[] => {
+      const { to } = page
+      if (!to) return []
+      return [
+        {
+          value: to,
+          label: `Settings → ${page.label}`,
+          keywords: `${label ?? 'General'} preferences configuration`,
+          group: 'Settings',
+          icon: SlidersHorizontal,
+          run: go(to)
+        }
+      ]
+    })
+  )
+  const help: CommandEntry[] = [
     {
       value: 'shortcuts',
       label: 'Keyboard shortcuts',
+      keywords: 'hotkeys keys help bindings',
       group: 'Help',
       icon: Keyboard,
       hotkey: 'help.shortcuts',
       run: () => onPanelChange('shortcuts')
     }
   ]
+  const commands = [...pages, ...settings, ...help]
   const groups = [...new Set(commands.map((command) => command.group))].map((label) => ({
     value: label,
     label,
     items: commands.filter((command) => command.group === label)
   }))
+  const unreadLabel = `${unread} unread`
 
   // Escape closes the palette (or steps back from the panel), and the shortcut that opened it
   // closes it again: the page's registration of both is suspended while this scope is exclusive.
@@ -243,15 +246,30 @@ function CommandBarDialog({
       ) : (
         <Command
           items={groups}
+          // The search matches what a row says and the words it carries (its group, a synonym),
+          // so `sessions`, `security`, or `hotkeys` all find their page.
           itemToStringValue={(item) =>
-            typeof item === 'object' && item && 'label' in item ? String(item.label) : ''
+            typeof item === 'object' && item && 'label' in item
+              ? `${String(item.label)} ${'keywords' in item ? String(item.keywords) : ''}`
+              : ''
           }
         >
-          <CommandInput placeholder='Search pages and commands…' />
-          <CommandEmpty>Nothing matches.</CommandEmpty>
-          <CommandList>
-            {(group: (typeof groups)[number]) => (
+          <CommandInput
+            placeholder='Search pages, settings, and commands…'
+            aria-label='Search pages, settings, and commands'
+          />
+          <CommandEmpty>
+            <span {...stylex.props(styles.emptyTitle)}>Nothing matches</span>
+            <span {...stylex.props(styles.emptyHint)}>
+              Try a page name, or a word like “sessions” or “shortcuts”.
+            </span>
+          </CommandEmpty>
+          <CommandList aria-label='Pages and commands'>
+            {(group: (typeof groups)[number], index: number) => (
               <React.Fragment key={group.value}>
+                {/* A rule between groups, so it leads every group but the first shown: the list
+                    is the filtered one, and a rule after the last would sit on the footer's. */}
+                {index > 0 && <CommandSeparator />}
                 <CommandGroup heading={group.label}>
                   {group.items.map((item) => (
                     <CommandItem
@@ -263,18 +281,36 @@ function CommandBarDialog({
                         item.run()
                       }}
                     >
-                      <Icon svg={item.icon} size={16} color='neutralFaded' />
-                      {item.label}
+                      <span {...stylex.props(styles.itemIcon)}>
+                        <Icon svg={item.icon} size={16} color='neutralFaded' />
+                      </span>
+                      <span {...stylex.props(styles.itemLabel)}>
+                        {item.label}
+                        {item.value === '/admin/notifications' && unread > 0 && (
+                          <span {...stylex.props(styles.itemMeta)}>{unreadLabel}</span>
+                        )}
+                      </span>
                       {item.hotkey && (
                         <AppShortcut id={item.hotkey} hidden style={styles.itemKeys} />
                       )}
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                {group.value !== groups[groups.length - 1]?.value && <CommandSeparator />}
               </React.Fragment>
             )}
           </CommandList>
+          <Separator />
+          <div aria-hidden='true' {...stylex.props(styles.footer)}>
+            <span {...stylex.props(styles.footerHint)}>
+              <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' /> to move
+            </span>
+            <span {...stylex.props(styles.footerHint)}>
+              <Shortcut hotkey='Enter' /> to open
+            </span>
+            <span {...stylex.props(styles.footerHint)}>
+              <Shortcut hotkey='Escape' /> to close
+            </span>
+          </div>
         </Command>
       )}
     </CommandDialog>

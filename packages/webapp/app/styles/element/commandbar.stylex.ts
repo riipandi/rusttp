@@ -41,8 +41,54 @@ export const styles = stylex.create({
   triggerKeysQuiet: {
     opacity: 0.6
   },
+  // A fixed icon slot, so every label starts on the same line whatever the glyph's width.
+  itemIcon: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    width: unit.x5
+  },
+  itemLabel: {
+    display: 'flex',
+    alignItems: 'baseline',
+    flex: 1,
+    gap: unit.x2,
+    minWidth: 0
+  },
+  itemMeta: {
+    color: colors.foregroundNeutralFaded,
+    fontSize: fontSize.caption1
+  },
   itemKeys: {
     marginInlineStart: 'auto'
+  },
+  emptyTitle: {
+    display: 'block',
+    color: colors.foregroundNeutral,
+    fontSize: fontSize.body2,
+    fontWeight: fontWeight.medium
+  },
+  emptyHint: {
+    display: 'block',
+    marginBlockStart: unit.x1,
+    fontSize: fontSize.caption1
+  },
+  // The key hints under the list: what the keyboard does here, for a person who has not met it.
+  footer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: unit.x4,
+    flexShrink: 0,
+    paddingBlock: unit.x2,
+    paddingInline: unit.x4,
+    color: colors.foregroundNeutralFaded,
+    fontSize: fontSize.caption1
+  },
+  footerHint: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: unit.x1
   },
   panel: {
     display: 'flex',
