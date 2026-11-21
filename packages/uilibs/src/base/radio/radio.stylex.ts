@@ -2,7 +2,6 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { duration } from '../../styles/tokens.stylex'
 
 export const radioStyles = stylex.create({
   group: {
@@ -21,21 +20,12 @@ export const radioStyles = stylex.create({
     borderRadius: radius.full,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
     display: 'inline-flex',
     flexShrink: 0,
     height: unit.x4,
     justifyContent: 'center',
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: stroke.ring2,
     padding: 0,
     position: 'relative',
-    transitionDuration: duration.fast,
-    transitionProperty: 'border-color',
     width: unit.x4,
     // Invisible expanded hit area (larger touch target).
     '::after': {

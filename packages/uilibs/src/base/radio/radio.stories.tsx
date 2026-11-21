@@ -164,7 +164,11 @@ export const Disabled: Story = {
   ),
   play: async ({ canvas }) => {
     const items = canvas.getAllByRole('radio')
-    for (const item of items) await expect(item).toHaveAttribute('data-disabled')
+    for (const item of items) {
+      await expect(item).toHaveAttribute('data-disabled')
+      await expect(getComputedStyle(item).opacity).toBe('0.5')
+      await expect(getComputedStyle(item).cursor).toBe('not-allowed')
+    }
 
     const second = items[1]
     if (!second) throw new Error('Second radio not found')

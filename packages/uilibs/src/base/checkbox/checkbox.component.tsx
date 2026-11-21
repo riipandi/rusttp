@@ -20,6 +20,7 @@ import { CheckboxGroup as BaseCheckboxGroup } from '@base-ui/react/checkbox-grou
 import { Check, Minus } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { controlPress } from '../../styles/control.stylex'
 import { checkboxStyles, checkboxGroupStyles } from './checkbox.stylex'
 
 export interface CheckboxProps extends Omit<
@@ -31,7 +32,7 @@ export interface CheckboxProps extends Omit<
 
 export function Checkbox({ style, ...props }: CheckboxProps) {
   return (
-    <BaseCheckbox.Root {...props} {...stylex.props(checkboxStyles.root, style)}>
+    <BaseCheckbox.Root {...props} {...stylex.props(controlPress.root, checkboxStyles.root, style)}>
       <BaseCheckbox.Indicator
         render={(indicatorProps, state) => (
           <span {...indicatorProps} {...stylex.props(checkboxStyles.indicator)}>

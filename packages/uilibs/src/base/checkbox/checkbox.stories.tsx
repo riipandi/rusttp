@@ -104,6 +104,8 @@ export const Disabled: Story = {
   play: async ({ canvas }) => {
     const el = canvas.getByRole('checkbox', { name: /Hogsmeade permission slip/ })
     await expect(el).toHaveAttribute('data-disabled')
+    await expect(getComputedStyle(el).opacity).toBe('0.5')
+    await expect(getComputedStyle(el).cursor).toBe('not-allowed')
     await expect(el).toHaveAttribute('aria-checked', 'true')
     await userEvent.click(el)
     await expect(el).toHaveAttribute('aria-checked', 'true')
