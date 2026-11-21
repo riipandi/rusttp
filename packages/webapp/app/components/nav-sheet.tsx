@@ -8,16 +8,8 @@ import { Button, LinkButton } from 'uilibs/base/button'
 import { CloseButton } from 'uilibs/base/dialog/close-button'
 import { Separator } from 'uilibs/base/separator'
 import { Icon } from 'uilibs/extra/icon'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from 'uilibs/extra/sheet'
+import { Sheet, SheetClose, SheetContent, SheetDescription } from 'uilibs/extra/sheet'
+import { SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from 'uilibs/extra/sheet'
 import { styles } from '#/styles/element/nav-sheet.stylex'
 
 export interface NavItem {

@@ -57,8 +57,8 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   )
 }
 
-// Placeholder: the count is fixed and nothing opens until notifications have a source. Set it to 0
-// to hide the indicator.
+// Placeholder: the count is fixed and nothing opens until notifications have a source.
+// Set it to 0 to hide the indicator.
 const unread = 3
 
 // A bell with a dot while something is unread. Collapsed, it is the rail entry above the account
