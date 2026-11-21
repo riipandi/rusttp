@@ -8,6 +8,9 @@ import { createStore } from '@tanstack/store'
 export const sidebarStorageKey = 'admin-sidebar'
 
 function readStored() {
+  // The build-time route reader (plugins/vixum) imports this module in Node,
+  // whose global `localStorage` prints an ExperimentalWarning on first touch.
+  if (typeof window === 'undefined') return false
   try {
     return localStorage.getItem(sidebarStorageKey) === 'collapsed'
   } catch {
