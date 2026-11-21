@@ -16,7 +16,7 @@ import { Icon } from 'uilibs/extra/icon'
 import { LanguageMenu } from '#/components/language-menu'
 import { ThemeMenu } from '#/components/theme-menu'
 import { profile } from '#/fixtures/profile'
-import { m } from '#/paraglide/messages'
+import { type Messages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/element/user-menu.stylex'
 
 interface UserMenuItem {
@@ -26,7 +26,7 @@ interface UserMenuItem {
 }
 
 // An item with a `to` navigates; the rest are placeholders until a route is wired in.
-const accountItems = () =>
+const accountItems = (m: Messages) =>
   [
     { label: m.user_menu_account(), icon: User, to: '/settings/account' },
     { label: m.user_menu_security(), icon: Shield, to: '/settings/security' }
@@ -34,6 +34,7 @@ const accountItems = () =>
 
 // The customer dashboard's account menu: the avatar alone, in the top bar.
 export function UserMenu() {
+  const m = useMessages()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -63,7 +64,7 @@ export function UserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountItems().map((item) => (
+          {accountItems(m).map((item) => (
             <DropdownMenuItem
               key={item.label}
               render={'to' in item ? <Link to={item.to} /> : undefined}

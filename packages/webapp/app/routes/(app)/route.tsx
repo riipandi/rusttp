@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { adminProfile } from '#/fixtures/profile'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { DashboardHeader } from './-header'
 
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/(app)')({
 // The role comes from a fixture until there is a session. The strip is also where
 // a promotion or an announcement will go: it shows the first notice that applies.
 function RouteComponent() {
+  const m = useMessages()
   const isAdministrator = adminProfile.role === 'Administrator'
 
   return (

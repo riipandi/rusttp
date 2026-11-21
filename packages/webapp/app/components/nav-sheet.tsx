@@ -10,7 +10,7 @@ import { Separator } from 'uilibs/base/separator'
 import { Icon } from 'uilibs/extra/icon'
 import { Sheet, SheetClose, SheetContent, SheetDescription } from 'uilibs/extra/sheet'
 import { SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from 'uilibs/extra/sheet'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/element/nav-sheet.stylex'
 
 export interface NavItem {
@@ -151,6 +151,7 @@ export function NavSheet({
   dense?: boolean
   triggerStyle?: stylex.StyleXStyles
 }) {
+  const m = useMessages()
   const [open, setOpen] = React.useState(false)
   const close = () => setOpen(false)
   // Links in the host's `footer` (the account menu) cannot reach `close`, so any navigation closes it.

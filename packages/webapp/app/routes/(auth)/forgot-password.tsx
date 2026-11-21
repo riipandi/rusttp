@@ -6,16 +6,18 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { TextField } from '#/components/form-fields'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { forgotPasswordSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/forgot-password')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_auth_forgot_password }
+  staticData: { pageTitle: () => getMessages().page_auth_forgot_password() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const form = useForm({ schema: forgotPasswordSchema, initialInput: { email: '' } })
   // Demo only: there is no mailer wired in yet, so a valid form opens the reset page the emailed
@@ -24,6 +26,7 @@ function RouteComponent() {
     form,
     () => void navigate({ to: '/reset-password', search: { token: 'alohomora' } })
   )
+  useRevalidateOnLocale(form)
 
   return (
     <>

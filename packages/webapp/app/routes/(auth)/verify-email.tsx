@@ -4,15 +4,16 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { StatusIcon } from '#/components/status-icon'
 import { signupEmail } from '#/fixtures/profile'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/verify-email')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_auth_verify_email }
+  staticData: { pageTitle: () => getMessages().page_auth_verify_email() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.heading)}>

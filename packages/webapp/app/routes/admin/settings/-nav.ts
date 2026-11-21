@@ -1,5 +1,5 @@
 import type { LinkProps } from '@tanstack/react-router'
-import { m } from '#/paraglide/messages'
+import type { Messages } from '#/libraries/messages'
 
 export interface Page {
   label: string
@@ -14,7 +14,7 @@ interface PageGroup {
 // The settings sub-navigation, grouped like the admin sidebar: an unlabelled first group, then
 // one labelled group per concern. The aside renders the labels as headings, the picker as option
 // group labels. Functions, so the labels follow the language the user picked.
-export const groups = (): PageGroup[] => [
+export const groups = (m: Messages): PageGroup[] => [
   { items: [{ label: m.settings_nav_general(), to: '/admin/settings/general' }] },
   {
     label: m.settings_nav_group_authentication(),
@@ -46,4 +46,4 @@ export const groups = (): PageGroup[] => [
   }
 ]
 
-export const pages = (): Page[] => groups().flatMap(({ items }) => items)
+export const pages = (m: Messages): Page[] => groups(m).flatMap(({ items }) => items)

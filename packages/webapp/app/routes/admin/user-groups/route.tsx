@@ -1,14 +1,15 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/user-groups')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_admin_user_groups }
+  staticData: { pageTitle: () => getMessages().page_admin_user_groups() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>

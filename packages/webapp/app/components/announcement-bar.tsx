@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import type * as React from 'react'
 import { LinkButton } from 'uilibs/base/button'
 import type { Tone } from 'uilibs/styles/tone'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles, tones } from '#/styles/element/announcement-bar.stylex'
 
 interface AnnouncementBarProps {
@@ -20,12 +20,16 @@ interface AnnouncementBarProps {
 // region: it is there on load, so a screen reader finds it instead of being interrupted by it.
 export function AnnouncementBar({
   tone = 'primary',
-  label = m.announcement_bar_label(),
+  label,
   action,
   children
 }: AnnouncementBarProps) {
+  const m = useMessages()
   return (
-    <aside aria-label={label} {...stylex.props(styles.root, tones[tone])}>
+    <aside
+      aria-label={label ?? m.announcement_bar_label()}
+      {...stylex.props(styles.root, tones[tone])}
+    >
       <p {...stylex.props(styles.message)}>{children}</p>
       {action && (
         <LinkButton render={action.render} variant='ghost' size='xs' style={styles.action}>

@@ -6,18 +6,21 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CheckboxField, CodeField } from '#/components/form-fields'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { twoFactorSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/two-factor')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_auth_two_factor }
+  staticData: { pageTitle: () => getMessages().page_auth_two_factor() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const form = useForm({ schema: twoFactorSchema, initialInput: { code: '', trust: false } })
+  useRevalidateOnLocale(form)
   // Demo only: there is no verification endpoint yet, so a valid code opens the dashboard sample.
   const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 

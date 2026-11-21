@@ -25,13 +25,14 @@ import {
   ItemTitle
 } from 'uilibs/extra/item'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
+import { useMessages } from '#/libraries/messages'
 import { notificationsStore, unreadCount } from '#/libraries/notifications.store'
-import { m } from '#/paraglide/messages'
 import type { NotificationResponse } from '#/schemas/notifications.schema'
 import { styles } from '#/styles/element/notifications.stylex'
 
 // The quick actions live in a menu at the row's top-right corner, so the text keeps the whole row.
 function Row({ item }: { item: NotificationResponse }) {
+  const m = useMessages()
   const { setRead, dismiss } = notificationsStore.actions
 
   return (
@@ -120,6 +121,7 @@ export function NotificationsPopover({
   collisionPadding,
   collisionAvoidance
 }: NotificationsPopoverProps) {
+  const m = useMessages()
   const items = useSelector(notificationsStore)
   const unread = useSelector(unreadCount)
   const { markAllRead, dismissAll } = notificationsStore.actions

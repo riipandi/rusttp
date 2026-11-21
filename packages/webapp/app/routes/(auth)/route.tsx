@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { Logo } from '#/components/logo'
 import { PreferencesMenu } from '#/components/preferences-menu'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -12,6 +12,7 @@ export const Route = createFileRoute('/(auth)')({
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <div {...stylex.props(styles.split)}>
       <aside {...stylex.props(styles.panel)}>

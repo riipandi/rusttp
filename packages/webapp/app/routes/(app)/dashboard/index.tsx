@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { loans, summary } from '#/fixtures/loans'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { LoansTable } from './-loans-table'
@@ -15,10 +15,11 @@ export const Route = createFileRoute('/(app)/dashboard/')({
   loader: () => ({ summary, loans }),
   pendingComponent: Pending,
   component: RouteComponent,
-  staticData: { pageTitle: m.page_app_dashboard }
+  staticData: { pageTitle: () => getMessages().page_app_dashboard() }
 })
 
 function Page({ busy, stats, table }: { busy?: boolean; stats: ReactNode; table: ReactNode }) {
+  const m = useMessages()
   return (
     <main aria-busy={busy} {...stylex.props(layout.main, layout.container, styles.main)}>
       <div {...stylex.props(styles.heading)}>

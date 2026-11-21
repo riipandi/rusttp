@@ -6,8 +6,8 @@ import * as React from 'react'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
+import { useMessages } from '#/libraries/messages'
 import { sidebarStore } from '#/libraries/sidebar.store'
-import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 import { CommandBar, useAdminHotkeys } from './-commandbar'
 import { Sidebar, useFoldSidebarOnSettings } from './-sidebar'
@@ -67,6 +67,7 @@ function resetAdminUi() {
 // Reads no store itself: the shortcuts and the sidebar's buttons call the store actions, so a
 // collapse or an open command bar renders only the parts that show it, not the whole layout.
 function AdminLayout() {
+  const m = useMessages()
   useFoldSidebarOnSettings()
   useAdminHotkeys()
   React.useEffect(() => resetAdminUi, [])

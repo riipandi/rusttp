@@ -4,16 +4,17 @@ import { LinkButton } from 'uilibs/base/button'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
 import { Logo } from '#/components/logo'
 import { PreferencesMenu } from '#/components/preferences-menu'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/home.stylex'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_home }
+  staticData: { pageTitle: () => getMessages().page_home() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <div {...stylex.props(layout.root)}>
       <header {...stylex.props(layout.header)}>

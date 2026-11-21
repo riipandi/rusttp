@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { Skeleton } from 'uilibs/extra/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
 const summaryItems = ['one', 'two', 'three', 'four']
@@ -24,6 +24,7 @@ export function SummarySkeleton() {
 
 // The headers are static, so they stay real; only the rows wait for data.
 export function LoansTableSkeleton() {
+  const m = useMessages()
   return (
     <Table>
       <TableHeader>

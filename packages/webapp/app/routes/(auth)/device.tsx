@@ -7,7 +7,8 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { deviceSchema, deviceSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -17,13 +18,15 @@ export const Route = createFileRoute('/(auth)/device')({
   component: RouteComponent,
   errorComponent: InvalidLink,
   validateSearch: deviceSearchSchema,
-  staticData: { pageTitle: m.page_auth_device }
+  staticData: { pageTitle: () => getMessages().page_auth_device() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const { token } = Route.useSearch()
   const form = useForm({ schema: deviceSchema, initialInput: { token, code: '' } })
+  useRevalidateOnLocale(form)
   // Demo only: there is no device-authorization endpoint yet, so a valid code opens the dashboard sample.
   const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 
@@ -65,6 +68,7 @@ function RouteComponent() {
 }
 
 function InvalidLink() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.heading)}>

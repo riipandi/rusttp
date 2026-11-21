@@ -4,13 +4,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from 'uilibs/b
 import { Icon } from 'uilibs/extra/icon'
 import { LanguageMenu } from '#/components/language-menu'
 import { ThemeMenu } from '#/components/theme-menu'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 
 /**
  * The preferences of a page with no account menu (the landing page, the auth pages): theme and
  * language, in one menu behind an icon button at the end of the header.
  */
 export function PreferencesMenu() {
+  const m = useMessages()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

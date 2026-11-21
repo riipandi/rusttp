@@ -2,12 +2,12 @@ import { History, IdCard, Key, LayoutDashboard } from '@keyline-icons/react'
 import { Layers, Megaphone } from '@keyline-icons/react'
 import { Settings, Timer, Users, Webhook } from '@keyline-icons/react'
 import type { NavGroup } from '#/components/nav-sheet'
-import { m } from '#/paraglide/messages'
+import type { Messages } from '#/libraries/messages'
 
 // A function, not a constant: the labels are messages, read when the layout renders, so they follow
 // the language the user picked.
 // Only Overview has a page; the other entries are placeholders until a route is wired in.
-export const groups = (): NavGroup[] => [
+export const groups = (m: Messages): NavGroup[] => [
   {
     items: [
       { label: m.admin_nav_overview(), icon: LayoutDashboard, to: '/admin', end: true },

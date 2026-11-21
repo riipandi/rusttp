@@ -5,7 +5,7 @@ import { LinkButton } from 'uilibs/base/button'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel } from 'uilibs/base/select'
 import { SelectSeparator, SelectTrigger, SelectValue } from 'uilibs/base/select'
 import { useIsCurrent } from '#/components/nav-sheet'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles as sidebar } from '#/styles/element/sidebar.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
 import { groups as navGroups, pages as navPages, type Page } from './-nav'
@@ -28,11 +28,12 @@ function AsideEntry({ page }: { page: Page }) {
 // Both are always rendered; the stylesheet shows the aside above the compact breakpoint and the
 // select below it, so no media hook is needed.
 export function SettingsNav() {
+  const m = useMessages()
   const id = React.useId()
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const groups = navGroups()
-  const pages = navPages()
+  const groups = navGroups(m)
+  const pages = navPages(m)
   const current = pages.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`))
 
   return (

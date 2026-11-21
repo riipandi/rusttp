@@ -1,5 +1,5 @@
 import { defineAppHotkeys } from '@tanstack/react-hotkeys'
-import { m } from '#/paraglide/messages'
+import type { Messages } from '#/libraries/messages'
 
 // Every keyboard shortcut of the admin, declared in one place so the cheat sheet lists them all
 // (even before the page that handles one has rendered) and a user's rebinding can be saved by id.
@@ -37,22 +37,23 @@ export const appHotkeys = defineAppHotkeys({
 
 // What the cheat sheet says for each hotkey, by id. `meta.name` above stays English: it is what the
 // library hands back (a conflict, the recorder), and `localizedHotkeyName` maps it back to a message.
-export const hotkeyNames = {
-  'palette.toggle': m.hotkey_palette_toggle,
-  'help.shortcuts': m.hotkey_help_shortcuts,
-  'sidebar.toggle': m.hotkey_sidebar_toggle,
-  'settings.open': m.hotkey_settings_open,
-  'nav.overview': m.hotkey_nav_overview,
-  'nav.users': m.hotkey_nav_users,
-  'nav.notifications': m.hotkey_nav_notifications,
-  'nav.settings': m.hotkey_nav_settings
-} satisfies Record<keyof typeof appHotkeys, () => string>
+export const hotkeyNames = (m: Messages) =>
+  ({
+    'palette.toggle': m.hotkey_palette_toggle(),
+    'help.shortcuts': m.hotkey_help_shortcuts(),
+    'sidebar.toggle': m.hotkey_sidebar_toggle(),
+    'settings.open': m.hotkey_settings_open(),
+    'nav.overview': m.hotkey_nav_overview(),
+    'nav.users': m.hotkey_nav_users(),
+    'nav.notifications': m.hotkey_nav_notifications(),
+    'nav.settings': m.hotkey_nav_settings()
+  }) satisfies Record<keyof typeof appHotkeys, string>
 
 /** The message for a hotkey the library names by its English `meta.name`; `undefined` when unknown. */
-export function localizedHotkeyName(name: string | undefined) {
+export function localizedHotkeyName(m: Messages, name: string | undefined) {
   const id = Object.entries(appHotkeys).find(([, hotkey]) => hotkey.meta?.name === name)?.[0]
-  const names: Record<string, () => string> = hotkeyNames
-  return id ? names[id]?.() : undefined
+  const names: Record<string, string> = hotkeyNames(m)
+  return id ? names[id] : undefined
 }
 
 declare module '@tanstack/react-hotkeys' {

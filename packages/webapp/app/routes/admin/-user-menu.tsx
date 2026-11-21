@@ -16,7 +16,7 @@ import { Icon } from 'uilibs/extra/icon'
 import { LanguageMenu } from '#/components/language-menu'
 import { ThemeMenu } from '#/components/theme-menu'
 import { adminProfile } from '#/fixtures/profile'
-import { m } from '#/paraglide/messages'
+import { type Messages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/element/user-menu.stylex'
 
 interface UserMenuItem {
@@ -27,13 +27,13 @@ interface UserMenuItem {
 
 // Personal entries only: the instance's own settings and API keys live in the sidebar. The command
 // bar lists the same entries (`-commandbar.tsx`), so a link added here is searchable there.
-export const accountItems = () =>
+export const accountItems = (m: Messages) =>
   [
     { label: m.user_menu_account(), icon: User, to: '/admin/account' },
     { label: m.user_menu_security(), icon: Shield, to: '/admin/security' }
   ] satisfies UserMenuItem[]
 
-export const appItems = () =>
+export const appItems = (m: Messages) =>
   [{ label: m.user_menu_back_to_app(), icon: AppWindow, to: '/dashboard' }] satisfies UserMenuItem[]
 
 /** Where Sign out leads, until there is a session to end. */
@@ -52,6 +52,7 @@ export function AdminUserMenu({
   collapsed?: boolean
   mobile?: boolean
 }) {
+  const m = useMessages()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -102,7 +103,7 @@ export function AdminUserMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountItems().map(({ label, icon, to }) => (
+          {accountItems(m).map(({ label, icon, to }) => (
             <DropdownMenuItem
               key={label}
               render={<Link to={to} />}
@@ -115,7 +116,7 @@ export function AdminUserMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {appItems().map(({ label, icon, to }) => (
+          {appItems(m).map(({ label, icon, to }) => (
             <DropdownMenuItem
               key={label}
               render={<Link to={to} />}

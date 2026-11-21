@@ -6,7 +6,7 @@ import { Button, LinkButton } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
 import { ThemeProvider } from 'uilibs/theme'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 
 function Boundary({
@@ -48,6 +48,7 @@ function Boundary({
 }
 
 export function GlobalNotFound() {
+  const m = useMessages()
   const router = useRouter()
 
   return (
@@ -65,6 +66,7 @@ export function GlobalNotFound() {
 }
 
 export function GlobalError({ error, reset }: ErrorComponentProps) {
+  const m = useMessages()
   return (
     <Boundary
       icon={CircleAlert}

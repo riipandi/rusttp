@@ -11,6 +11,17 @@
         "no-console": "off",
         "no-debugger": "warn",
         "no-empty": ["error", { "allowEmptyCatch": true }],
+        "no-restricted-imports": [
+            "error",
+            {
+                "patterns": [
+                    {
+                        "group": ["#/paraglide/messages"],
+                        "message": "Read messages through useMessages() (#/libraries/messages) so a language change re-renders the caller."
+                    }
+                ]
+            }
+        ],
         "no-unused-vars": ["error", { "args": "after-used" }],
         "paraglide/no-dynamic-message-access": "error",
         "react/jsx-key": "error",
@@ -24,6 +35,13 @@
         "typescript/triple-slash-reference": "allow"
     },
     "overrides": [
+        {
+            "files": [
+                "packages/webapp/app/libraries/messages.ts",
+                "packages/webapp/app/schemas/*.ts"
+            ],
+            "rules": { "no-restricted-imports": "off" }
+        },
         {
             "files": ["packages/uilibs/**"],
             "rules": {

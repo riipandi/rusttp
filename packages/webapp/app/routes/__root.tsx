@@ -30,8 +30,7 @@ function RootComponent() {
       <UIProvider direction={getTextDirection(locale)}>
         <ThemeProvider attribute='data-theme' defaultTheme='system'>
           <title>{pageTitle ? `${pageTitle} - Rusttp` : 'Rusttp'}</title>
-          {/* A new key remounts the tree, so every message is read again in the new language. */}
-          <Outlet key={locale} />
+          <Outlet />
           <DevTools queryClient={queryClient} />
         </ThemeProvider>
       </UIProvider>

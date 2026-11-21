@@ -9,9 +9,9 @@ import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
+import { useMessages } from '#/libraries/messages'
 import { unreadCount } from '#/libraries/notifications.store'
 import { sidebarCollapsed, sidebarStore } from '#/libraries/sidebar.store'
-import { m } from '#/paraglide/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/element/sidebar.stylex'
 import { CommandBarTrigger } from './-commandbar'
@@ -109,11 +109,12 @@ export function useFoldSidebarOnSettings() {
 }
 
 export function Sidebar() {
+  const m = useMessages()
   const id = React.useId()
   const navId = `${id}-nav`
   const collapsed = useSelector(sidebarCollapsed)
   const toggle = sidebarStore.actions.setCollapsed
-  const navGroups = groups()
+  const navGroups = groups(m)
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>

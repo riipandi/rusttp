@@ -41,9 +41,9 @@ import { AppShortcut, Shortcut, ariaKeyShortcuts } from '#/components/shortcut'
 import { themes } from '#/components/theme-menu'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { hotkeyNames, localizedHotkeyName } from '#/libraries/hotkeys'
+import { type Messages, useMessages } from '#/libraries/messages'
 import { unreadCount } from '#/libraries/notifications.store'
 import { sidebarStore } from '#/libraries/sidebar.store'
-import { m } from '#/paraglide/messages'
 import { styles } from '#/styles/element/commandbar.stylex'
 import { groups as navGroups } from './-nav'
 import { accountItems, appItems, signOutTo } from './-user-menu'
@@ -90,6 +90,7 @@ export function useAdminHotkeys() {
  * under their finger does something.
  */
 export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
+  const m = useMessages()
   const appHotkey = useAppHotkeys()['palette.toggle']
   const holding = useHotkeyHint(appHotkey)
 
@@ -141,6 +142,7 @@ export function CommandBar() {
 }
 
 function CommandBarDialog() {
+  const m = useMessages()
   const panel = useSelector(commandBarStore, (state) => state.panel)
   const { setOpen: onOpenChange, show: onPanelChange } = commandBarStore.actions
   const panelRef = React.useRef<HTMLDivElement>(null)
@@ -158,7 +160,7 @@ function CommandBarDialog() {
     '/admin/notifications': 'nav.notifications',
     '/admin/settings': 'nav.settings'
   }
-  const pages = navGroups().flatMap(({ label, items }) =>
+  const pages = navGroups(m).flatMap(({ label, items }) =>
     items.flatMap((item): CommandEntry[] => {
       const { to } = item
       if (!to) return []
@@ -189,7 +191,7 @@ function CommandBarDialog() {
   }
   // The settings pages are a second level the sidebar only shows on the settings screen, so they
   // are listed here as `Settings → Page`: the quickest way to reach one from anywhere.
-  const settings = settingsGroups().flatMap(({ items }) =>
+  const settings = settingsGroups(m).flatMap(({ items }) =>
     items.flatMap((page): CommandEntry[] => {
       const { to } = page
       if (!to) return []
@@ -214,7 +216,7 @@ function CommandBarDialog() {
   }
   // The account menu's links, as the menu has them: where to go, the theme, and signing out.
   const account: CommandEntry[] = [
-    ...[...accountItems(), ...appItems()].map((item): CommandEntry => ({
+    ...[...accountItems(m), ...appItems(m)].map((item): CommandEntry => ({
       value: item.to,
       label: item.label,
       keywords: m.commandbar_keywords_account(),
@@ -222,7 +224,7 @@ function CommandBarDialog() {
       icon: item.icon,
       run: go(item.to)
     })),
-    ...themes().map((item): CommandEntry => ({
+    ...themes(m).map((item): CommandEntry => ({
       value: `theme-${item.value}`,
       label: m.commandbar_theme_item({ name: item.label }),
       // Only what is true of this theme: a shared word (`dark`, `system`) would match all three and
@@ -372,23 +374,26 @@ function CommandBarDialog() {
 }
 
 // What the recorder says when it turns a recording down, in the app's own words.
-const rejections = {
-  conflict: m.shortcuts_reject_conflict,
-  validation: m.shortcuts_reject_validation,
-  whitespace: m.shortcuts_reject_whitespace,
-  'missing-code': m.shortcuts_reject_missing_code,
-  'alt-graph': m.shortcuts_reject_alt_graph
-} as const
+const rejections = (m: Messages) =>
+  ({
+    conflict: m.shortcuts_reject_conflict(),
+    validation: m.shortcuts_reject_validation(),
+    whitespace: m.shortcuts_reject_whitespace(),
+    'missing-code': m.shortcuts_reject_missing_code(),
+    'alt-graph': m.shortcuts_reject_alt_graph()
+  }) as const
 
 // The cheat sheet's groups are declared in English (`meta.group`); this is what each is called.
-const groupNames: Record<string, () => string> = {
-  General: m.shortcuts_group_general,
-  Navigation: m.shortcuts_group_navigation,
-  Other: m.shortcuts_group_other
-}
+const groupNames = (m: Messages): Record<string, string> => ({
+  General: m.shortcuts_group_general(),
+  Navigation: m.shortcuts_group_navigation(),
+  Other: m.shortcuts_group_other()
+})
 
 function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBack: () => void }) {
+  const m = useMessages()
   const items = useAppHotkeyList()
+  const names = groupNames(m)
   const groups = [...new Set(items.map(({ appHotkey }) => appHotkey.meta?.group ?? 'Other'))]
   const [editing, setEditing] = React.useState<AppHotkeyId | null>(null)
 
@@ -404,10 +409,10 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
         {groups.map((group) => (
           <section
             key={group}
-            aria-label={groupNames[group]?.() ?? group}
+            aria-label={names[group] ?? group}
             {...stylex.props(styles.panelGroup)}
           >
-            <h3 {...stylex.props(styles.panelGroupLabel)}>{groupNames[group]?.() ?? group}</h3>
+            <h3 {...stylex.props(styles.panelGroupLabel)}>{names[group] ?? group}</h3>
             {items
               .filter(({ appHotkey }) => (appHotkey.meta?.group ?? 'Other') === group)
               .map(({ appHotkey, isCustom }) => (
@@ -437,6 +442,7 @@ function ShortcutRow({
   editing: boolean
   onEdit: (on: boolean) => void
 }) {
+  const m = useMessages()
   const formatForDisplay = useFormatForDisplay()
   const appHotkey = useAppHotkeys()[id]
   const { setCustomHotkey, resetCustomHotkey, findConflicts } = useCustomHotkeys()
@@ -454,12 +460,12 @@ function ShortcutRow({
       return (
         conflicts.length === 0 ||
         m.shortcuts_conflict({
-          name: localizedHotkeyName(conflicts[0]?.meta?.name) ?? m.shortcuts_conflict_other()
+          name: localizedHotkeyName(m, conflicts[0]?.meta?.name) ?? m.shortcuts_conflict_other()
         })
       )
     },
     onReject: ({ reason, message: why }) =>
-      setMessage(reason === 'validation' && why ? why : rejections[reason]()),
+      setMessage(reason === 'validation' && why ? why : rejections(m)[reason]),
     onRecord: (hotkey, context) => {
       setCustomHotkey(id, hotkey, context)
       setMessage(null)
@@ -483,7 +489,7 @@ function ShortcutRow({
   return (
     <div {...stylex.props(styles.row)}>
       <div {...stylex.props(styles.rowText)}>
-        <span {...stylex.props(styles.rowName)}>{hotkeyNames[id]()}</span>
+        <span {...stylex.props(styles.rowName)}>{hotkeyNames(m)[id]}</span>
         {editing && recorder.isRecording && (
           <output {...stylex.props(styles.rowHint)}>
             {message ??
@@ -502,7 +508,7 @@ function ShortcutRow({
         <Button
           variant='ghost'
           size='sm'
-          aria-label={m.shortcuts_change_named({ name: hotkeyNames[id]() })}
+          aria-label={m.shortcuts_change_named({ name: hotkeyNames(m)[id] })}
           onClick={() => {
             onEdit(true)
             recorder.startRecording()
@@ -514,7 +520,7 @@ function ShortcutRow({
           <Button
             variant='ghost'
             size='icon-sm'
-            aria-label={m.shortcuts_reset_named({ name: hotkeyNames[id]() })}
+            aria-label={m.shortcuts_reset_named({ name: hotkeyNames(m)[id] })}
             onClick={() => resetCustomHotkey(id)}
           >
             <Icon svg={RotateCcw} size={14} />

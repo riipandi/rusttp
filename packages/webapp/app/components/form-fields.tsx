@@ -13,7 +13,7 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs
 import { InputPassword } from 'uilibs/extra/input-password'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 
 const styles = stylex.create({
   srOnly: {
@@ -141,6 +141,7 @@ export function PasswordField({
   description,
   autoComplete
 }: Omit<TextFieldProps, 'inputMode'>) {
+  const m = useMessages()
   const id = React.useId()
   const messages = messagesOf(field)
   const [capsLock, setCapsLock] = React.useState(false)
@@ -204,6 +205,7 @@ export function CheckboxField({ field, label }: { field: FieldLike<boolean>; lab
 // Placeholder for a captcha widget (Turnstile, hCaptcha, reCAPTCHA): a checkbox challenge with
 // nothing verifying it. Swap the body for the provider's widget; the schema already requires it.
 export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
+  const m = useMessages()
   const messages = messagesOf(field)
   const invalid = field.errors !== null
   const id = React.useId()
@@ -248,6 +250,7 @@ export function CodeField({
   uppercase?: boolean
   focusFirst?: boolean
 }) {
+  const m = useMessages()
   const messages = messagesOf(field)
   const half = length / 2
   // The first slot takes the ref, so a failed submit focuses the code.

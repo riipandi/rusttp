@@ -4,7 +4,7 @@ import { Separator } from 'uilibs/base/separator'
 import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, unit } from 'uilibs/styles/tokens.stylex'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 
 const styles = stylex.create({
   group: {
@@ -26,6 +26,7 @@ const styles = stylex.create({
 
 // Placeholders for the OAuth providers: the buttons do nothing until the backend has a provider flow.
 export function SocialButtons() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.group)}>

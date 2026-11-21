@@ -3,15 +3,16 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LinkButton } from 'uilibs/base/button'
 import { StatusIcon } from '#/components/status-icon'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/email-verified')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_auth_email_verified }
+  staticData: { pageTitle: () => getMessages().page_auth_email_verified() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.heading)}>

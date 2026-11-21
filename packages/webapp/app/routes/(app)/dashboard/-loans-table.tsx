@@ -3,7 +3,7 @@ import { Badge, type BadgeProps } from 'uilibs/extra/badge'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'uilibs/extra/empty'
 import { Icon } from 'uilibs/extra/icon'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'uilibs/extra/table'
-import { m } from '#/paraglide/messages'
+import { type Messages, useMessages } from '#/libraries/messages'
 import type { LoanResponse, LoanStatus } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
@@ -14,14 +14,15 @@ const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
   Returned: { variant: 'ghost' }
 }
 
-const statusLabel: Record<LoanStatus, () => string> = {
-  Borrowed: m.loans_status_borrowed,
-  'Due soon': m.loans_status_due_soon,
-  Overdue: m.loans_status_overdue,
-  Returned: m.loans_status_returned
-}
+const statusLabel = (m: Messages): Record<LoanStatus, string> => ({
+  Borrowed: m.loans_status_borrowed(),
+  'Due soon': m.loans_status_due_soon(),
+  Overdue: m.loans_status_overdue(),
+  Returned: m.loans_status_returned()
+})
 
 export function LoansTable({ loans }: { loans: LoanResponse[] }) {
+  const m = useMessages()
   if (loans.length === 0) {
     return (
       <Empty>
@@ -53,7 +54,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
             <TableCell style={styles.muted}>{loan.book}</TableCell>
             <TableCell style={styles.muted}>{loan.due}</TableCell>
             <TableCell>
-              <Badge {...statusBadge[loan.status]}>{statusLabel[loan.status]()}</Badge>
+              <Badge {...statusBadge[loan.status]}>{statusLabel(m)[loan.status]}</Badge>
             </TableCell>
           </TableRow>
         ))}

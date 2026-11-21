@@ -5,21 +5,24 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { SocialButtons } from '#/components/social-buttons'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { loginSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_auth_login }
+  staticData: { pageTitle: () => getMessages().page_auth_login() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const form = useForm({
     schema: loginSchema,
     initialInput: { email: '', password: '', captcha: false }
   })
+  useRevalidateOnLocale(form)
   // Demo only: there is no sign-in endpoint yet, so a valid form continues to the two-factor step.
   const submit = handleSubmit(form, () => void navigate({ to: '/two-factor' }))
 

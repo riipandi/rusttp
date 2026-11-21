@@ -1,14 +1,15 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/webhooks')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_admin_webhooks }
+  staticData: { pageTitle: () => getMessages().page_admin_webhooks() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>

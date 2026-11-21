@@ -8,7 +8,8 @@ import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
 import { StatusIcon } from '#/components/status-icon'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
 import { resetPasswordSchema, resetSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -18,16 +19,18 @@ export const Route = createFileRoute('/(auth)/reset-password')({
   component: RouteComponent,
   errorComponent: InvalidLink,
   validateSearch: resetSearchSchema,
-  staticData: { pageTitle: m.page_auth_reset_password }
+  staticData: { pageTitle: () => getMessages().page_auth_reset_password() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const { token } = Route.useSearch()
   const form = useForm({
     schema: resetPasswordSchema,
     initialInput: { token, password: '', confirm: '' }
   })
+  useRevalidateOnLocale(form)
   // Demo only: there is no reset endpoint yet, so a valid form returns to sign in. The token travels
   // with the new password in the submitted values.
   const submit = handleSubmit(form, () => void navigate({ to: '/login' }))
@@ -79,6 +82,7 @@ function RouteComponent() {
 }
 
 function InvalidLink() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.heading)}>

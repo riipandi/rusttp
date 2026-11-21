@@ -1,15 +1,16 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
-import { m } from '#/paraglide/messages'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
 export const Route = createFileRoute('/(app)/settings/security')({
   component: RouteComponent,
-  staticData: { pageTitle: m.page_app_security_settings }
+  staticData: { pageTitle: () => getMessages().page_app_security_settings() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <main {...stylex.props(layout.main, layout.container, styles.main)}>
       <div {...stylex.props(styles.heading)}>

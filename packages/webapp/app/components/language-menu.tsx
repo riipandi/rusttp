@@ -10,7 +10,7 @@ import {
 } from 'uilibs/base/dropdown-menu'
 import { Icon } from 'uilibs/extra/icon'
 import { localeNames, localeStore } from '#/libraries/locale.store'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { isLocale, locales } from '#/paraglide/runtime'
 
 /**
@@ -19,6 +19,7 @@ import { isLocale, locales } from '#/paraglide/runtime'
  * touch-sized menu.
  */
 export function LanguageMenu({ style }: { style?: stylex.StyleXStyles }) {
+  const m = useMessages()
   const locale = useSelector(localeStore)
 
   return (

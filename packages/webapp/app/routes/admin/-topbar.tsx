@@ -3,7 +3,7 @@ import { Button } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { NavSheet } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
-import { m } from '#/paraglide/messages'
+import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/admin.stylex'
 import { groups } from './-nav'
@@ -12,6 +12,7 @@ import { AdminUserMenu } from './-user-menu'
 // The small-screen counterpart of the sidebar: it only shows below the compact breakpoint. The
 // drawer carries the sidebar's own account menu at its bottom.
 export function AdminTopBar() {
+  const m = useMessages()
   return (
     <header {...stylex.props(styles.topbar)}>
       <NavSheet
@@ -22,7 +23,7 @@ export function AdminTopBar() {
             Rusttp
           </>
         }
-        groups={groups()}
+        groups={groups(m)}
         footer={<AdminUserMenu mobile />}
         dense
       />
