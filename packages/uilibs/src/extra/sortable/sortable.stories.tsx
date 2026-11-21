@@ -3,6 +3,7 @@ import { ChevronRight, FileText, GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/collapsible'
 import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
@@ -1069,5 +1070,53 @@ export const PersistedOrder: Story = {
         </Sortable>
       </div>
     )
+  }
+}
+
+const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+
+/** A keyboard drag is announced by the item's name, in the language `labels` give. */
+export const KeyboardAnnouncements: Story = {
+  render: () => {
+    const [items, setItems] = useState(defaultFiles.slice(0, 3))
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Sortable
+          value={items}
+          onValueChange={setItems}
+          getItemValue={(item) => item.id}
+          style={styles.list}
+          labels={{
+            pickedUp: (name) => `Diangkat: ${name}.`,
+            movedOver: (name, over) => `${name} di atas ${over}.`,
+            dropped: (name, over) => `${name} dilepas${over ? ` di atas ${over}` : ''}.`
+          }}
+        >
+          {items.map((item) => (
+            <SortableItem key={item.id} value={item.id}>
+              <div {...stylex.props(styles.row)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+              </div>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const first = canvas.getAllByRole('button')[0]
+    if (!first) throw new Error('No sortable item')
+    first.focus()
+    await userEvent.keyboard(' ')
+    await waitFor(() => expect(live()).toBe('Diangkat: Product Demo.'))
+    await userEvent.keyboard('{ArrowDown}')
+    await waitFor(() => expect(live()).toBe('Product Demo di atas Product Specification.'))
+    await userEvent.keyboard(' ')
+    await waitFor(() => expect(live()).toContain('Product Demo dilepas'))
+    // Leave once the dropped item has settled, so the a11y gate does not read it mid-fade.
+    await waitFor(() => expect(document.querySelector('[data-dragging="true"]')).toBeNull())
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    await expect(live()).not.toMatch(/\b[0-9]+\b/)
   }
 }

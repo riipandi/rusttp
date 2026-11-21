@@ -2,6 +2,7 @@ import { GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Meter } from '../../base/meter'
@@ -1093,5 +1094,61 @@ export const PersistedToBackend: Story = {
         </Kanban>
       </div>
     )
+  }
+}
+
+const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+
+/** A keyboard drag names the task, not its id, and speaks the language `labels` give. */
+export const KeyboardAnnouncements: Story = {
+  render: () => {
+    const [value, setValue] = useState<Record<string, Task[]>>({
+      todo: [
+        { id: 'task-1', title: 'Research competitors' },
+        { id: 'task-2', title: 'Design system audit' }
+      ],
+      done: [{ id: 'task-8', title: 'Setup project' }]
+    })
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Kanban
+          value={value}
+          onValueChange={setValue}
+          getItemValue={(task) => task.id}
+          labels={{
+            pickedUp: (name) => `Diangkat: ${name}.`,
+            movedOver: (name, over) => `${name} di atas ${over}.`,
+            dropped: (name) => `${name} dilepas.`
+          }}
+        >
+          <KanbanBoard>
+            {Object.entries(value).map(([id, tasks]) => (
+              <KanbanColumn key={id} value={id}>
+                <KanbanColumnContent value={id}>
+                  {tasks.map((task) => (
+                    <KanbanItem key={task.id} value={task.id}>
+                      {task.title}
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+        </Kanban>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const item = canvas.getByText('Research competitors')
+    item.focus()
+    await userEvent.keyboard(' ')
+    await waitFor(() => expect(live()).toBe('Diangkat: Research competitors.'))
+    await userEvent.keyboard('{ArrowDown}')
+    await waitFor(() => expect(live()).toContain('Research competitors di atas'))
+    await expect(live()).not.toContain('task-')
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(live()).toContain('Dragging cancelled. Research competitors'))
+    await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }

@@ -64,6 +64,12 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import {
+  dragAccessibility,
+  defaultDragLabels,
+  nameOfElement,
+  type DragLabels
+} from './drag-announcements'
 import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
 
 interface StyleProp {
@@ -100,12 +106,12 @@ export const SortableItemContext = createContext<{
 /** Marks a `SortableItem` clone rendered inside `DragOverlay`. */
 const IsOverlayContext = createContext(false)
 
-export interface SortableLabels {
+export interface SortableLabels extends DragLabels {
   /** Name of an item's drag handle. Defaults to `Drag to reorder`. */
   handle: string
 }
 
-const defaultLabels: SortableLabels = { handle: 'Drag to reorder' }
+const defaultLabels: SortableLabels = { ...defaultDragLabels, handle: 'Drag to reorder' }
 
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null
@@ -226,6 +232,12 @@ function Sortable<T>({
     [activeId, modifiers, activeWidth, setActiveWidth, labels]
   )
 
+  const nameOfItem = useCallback(
+    (id: UniqueIdentifier) =>
+      nameOfElement(`[data-slot="sortable-item"][data-value="${String(id)}"]`, id),
+    []
+  )
+
   const sensors = useSensors(
     useSensor(MouseSensor, MOUSE_SENSOR_CONFIG),
     useSensor(TouchSensor, TOUCH_SENSOR_CONFIG),
@@ -322,7 +334,7 @@ function Sortable<T>({
   return (
     <SortableInternalContext.Provider value={contextValue}>
       <DndContext
-        accessibility={accessibility}
+        accessibility={dragAccessibility(contextValue.labels, nameOfItem, accessibility)}
         collisionDetection={undefined}
         measuring={MEASURING_CONFIG}
         modifiers={modifiers}
