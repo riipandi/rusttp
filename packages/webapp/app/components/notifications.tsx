@@ -1,20 +1,14 @@
-import {
-  ArrowRight,
-  Bell,
-  BookCheck,
-  BookOpen,
-  CircleAlert,
-  Clock,
-  Inbox,
-  Mail,
-  MailOpen,
-  UserPlus,
-  X
-} from '@keyline-icons/react'
+import { ArrowRight, Bell, Inbox, Mail, MailOpen, MoreHorizontal, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import * as React from 'react'
 import { Button, LinkButton } from 'uilibs/base/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from 'uilibs/base/dropdown-menu'
 import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from 'uilibs/base/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Badge } from 'uilibs/extra/badge'
@@ -22,71 +16,61 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'ui
 import { Icon } from 'uilibs/extra/icon'
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
-  ItemMedia,
   ItemTitle
 } from 'uilibs/extra/item'
-import { fontSize } from 'uilibs/styles/tokens.stylex.js'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
-import {
-  type NotificationItem,
-  type NotificationKind,
-  useNotifications
-} from '#/libraries/notifications'
+import { type NotificationItem, useNotifications } from '#/libraries/notifications'
 import { styles } from '#/styles/element/notifications.stylex'
 
-const kinds: Record<
-  NotificationKind,
-  { svg: React.ComponentType; color: React.ComponentProps<typeof Icon>['color'] }
-> = {
-  overdue: { svg: CircleAlert, color: 'critical' },
-  due: { svg: Clock, color: 'warning' },
-  member: { svg: UserPlus, color: 'primary' },
-  returned: { svg: BookCheck, color: 'positive' },
-  reserved: { svg: BookOpen, color: 'neutralFaded' }
-}
-
+// The quick actions live in a menu at the row's top-right corner, so the text keeps the whole row.
 function Row({ item }: { item: NotificationItem }) {
   const { setRead, dismiss } = useNotifications()
-  const { svg, color } = kinds[item.kind]
 
   return (
-    <Item size='xs' style={[styles.row, !item.read && styles.rowUnread]}>
-      <ItemMedia style={styles.media}>
-        <Icon svg={svg} size={16} color={color} />
-      </ItemMedia>
-      <ItemContent>
+    <Item size='xs' style={styles.row}>
+      {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadDot)} />}
+      <ItemContent style={styles.content}>
         <ItemTitle style={[styles.title, item.read && styles.titleRead]}>
           {!item.read && <span {...stylex.props(visuallyHidden.root)}>Unread: </span>}
           {item.title}
         </ItemTitle>
         <ItemDescription style={styles.body}>{item.body}</ItemDescription>
-        <div {...stylex.props(styles.meta)}>
-          <span {...stylex.props(styles.time)}>{item.time}</span>
-          <div {...stylex.props(styles.actions)}>
-            <Button
-              variant='ghost'
-              size='icon-sm'
-              aria-label={item.read ? `Mark ${item.title} as unread` : `Mark ${item.title} as read`}
-              onClick={() => setRead(item.id, !item.read)}
-              style={styles.action}
-            >
-              <Icon svg={item.read ? Mail : MailOpen} size={16} />
-            </Button>
-            <Button
-              variant='ghost'
-              size='icon-sm'
-              aria-label={`Dismiss ${item.title}`}
-              onClick={() => dismiss(item.id)}
-              style={styles.action}
-            >
-              <Icon svg={X} size={16} />
-            </Button>
-          </div>
-        </div>
+        <span {...stylex.props(styles.time)}>{item.time}</span>
       </ItemContent>
+      <ItemActions style={styles.actions}>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant='ghost'
+                size='icon-sm'
+                aria-label={`Actions for ${item.title}`}
+                style={styles.action}
+              />
+            }
+          >
+            <Icon svg={MoreHorizontal} size={16} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='bottom' align='end'>
+            <DropdownMenuItem style={styles.menuItem} onClick={() => setRead(item.id, !item.read)}>
+              <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutralFaded' />
+              {item.read ? 'Mark as unread' : 'Mark as read'}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant='destructive'
+              style={styles.menuItem}
+              onClick={() => dismiss(item.id)}
+            >
+              <Icon svg={X} size={14} />
+              Dismiss
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </ItemActions>
     </Item>
   )
 }
@@ -103,12 +87,16 @@ interface NotificationsPopoverProps {
   tooltipSide?: 'top' | 'right' | 'bottom' | 'left'
   /** Shifts the popover along its edge of the bell, in pixels. */
   alignOffset?: number
+  /** Distance from the bell, in pixels. */
+  sideOffset?: number
+  /** Keeps the popover this far from the viewport's edges when it has to shift. */
+  collisionPadding?: number
   collisionAvoidance?: React.ComponentProps<typeof PopoverContent>['collisionAvoidance']
 }
 
 /**
  * The notification bell and the popover it opens: the latest notifications with quick actions (mark
- * one read or unread, dismiss it, mark all read) and a link to the page with all of them. The
+ * one read or unread, dismiss it; mark all read or dismiss all from the header menu) and a link to the page with all of them. The
  * bell carries a dot while anything is unread, and its name says how many.
  */
 export function NotificationsPopover({
@@ -119,9 +107,11 @@ export function NotificationsPopover({
   align = 'end',
   tooltipSide = 'bottom',
   alignOffset,
+  sideOffset = 12,
+  collisionPadding,
   collisionAvoidance
 }: NotificationsPopoverProps) {
-  const { items, unread, markAllRead } = useNotifications()
+  const { items, unread, markAllRead, dismissAll } = useNotifications()
   const [open, setOpen] = React.useState(false)
   const name = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
 
@@ -144,7 +134,8 @@ export function NotificationsPopover({
         align={align}
         alignOffset={alignOffset}
         collisionAvoidance={collisionAvoidance}
-        sideOffset={12}
+        sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
         style={styles.panel}
       >
         <div {...stylex.props(styles.header)}>
@@ -156,15 +147,39 @@ export function NotificationsPopover({
               </Badge>
             )}
           </div>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={markAllRead}
-            disabled={unread === 0}
-            focusableWhenDisabled
-          >
-            Mark all read
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant='ghost'
+                  size='icon-sm'
+                  aria-label='Notification actions'
+                  style={styles.action}
+                />
+              }
+            >
+              <Icon svg={MoreHorizontal} size={16} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side='bottom' align='end'>
+              <DropdownMenuItem
+                style={styles.menuItem}
+                disabled={unread === 0}
+                onClick={markAllRead}
+              >
+                <Icon svg={MailOpen} size={14} color='neutralFaded' />
+                Mark all read
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant='destructive'
+                style={styles.menuItem}
+                disabled={items.length === 0}
+                onClick={dismissAll}
+              >
+                <Icon svg={X} size={14} />
+                Dismiss all
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {items.length > 0 ? (

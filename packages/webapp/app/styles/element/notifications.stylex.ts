@@ -1,13 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import {
-  container,
-  fontLineHeight,
-  fontSize,
-  fontWeight,
-  radius,
-  unit
-} from 'uilibs/styles/tokens.stylex'
+import { container, fontLineHeight, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 
 // The notifications popover: a header, a scrolling list of rows, and a footer link, edge to edge in
 // the popup (`components/notifications.tsx`, opened from each layout's bell).
@@ -58,26 +51,39 @@ export const styles = stylex.create({
   // Only this part scrolls, so the header and the footer stay in view.
   list: {
     boxSizing: 'border-box',
-    gap: unit.x1,
+    gap: 0,
     maxHeight: 'min(24rem, 60dvh)',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',
-    padding: unit.x2
+    paddingBlock: unit.x1,
+    paddingInline: 0
   },
+  // Edge to edge, with no fill or edge of its own: the text starts where the header's title does
+  // (16px) and the menu trigger ends where the header's does (8px from the edge), so both line up.
   row: {
+    position: 'relative',
     flexWrap: 'nowrap',
     alignItems: 'flex-start',
-    borderRadius: radius.medium
+    borderWidth: 0,
+    borderRadius: 0,
+    paddingBlock: unit.x1_5,
+    paddingInlineStart: unit.x4,
+    paddingInlineEnd: unit.x2
   },
-  rowUnread: {
-    backgroundColor: colors.backgroundNeutralFaded
-  },
-  media: {
-    // The icon sits on the first line of the title.
-    paddingBlockStart: unit.x0_5
+  // Unread is a dot hanging in the left gutter, centred on the title's first line, and a title at
+  // full strength; a read row has neither, so it recedes without a fill to add noise to the list.
+  unreadDot: {
+    position: 'absolute',
+    top: `calc(${unit.x1_5} + ${fontLineHeight.body2} / 2 - ${unit.x1_5} / 2)`,
+    insetInlineStart: unit.x1,
+    width: unit.x1_5,
+    height: unit.x1_5,
+    borderRadius: '50%',
+    backgroundColor: colors.backgroundPrimary
   },
   title: {
+    color: colors.foregroundNeutral,
     fontWeight: fontWeight.medium
   },
   titleRead: {
@@ -98,18 +104,13 @@ export const styles = stylex.create({
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.caption1
   },
-  // The time on the start side, the quick actions on the end, on one line under the text.
-  meta: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
-    // The buttons' 32px boxes would add height to a 16px line: pull them back in.
-    marginBlock: `calc(-1 * ${unit.x1})`
+  content: {
+    minWidth: 0
   },
+  // The menu trigger at the row's top-right, its 32px box centred on the title's first line.
   actions: {
-    display: 'flex',
-    marginInlineEnd: `calc(-1 * ${unit.x1})`
+    flexShrink: 0,
+    marginBlock: `calc(-1 * ${unit.x1_5})`
   },
   action: {
     color: {
@@ -117,6 +118,11 @@ export const styles = stylex.create({
       ':hover': colors.foregroundNeutral,
       ':focus-visible': colors.foregroundNeutral
     }
+  },
+  // The menus' items are caption-sized, to sit with the rows they act on.
+  menuItem: {
+    fontSize: fontSize.caption1,
+    lineHeight: fontLineHeight.caption1
   },
   empty: {
     borderWidth: 0,

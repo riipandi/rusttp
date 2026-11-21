@@ -68,6 +68,10 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
       side={collapsed ? 'right' : 'top'}
       align='end'
       collisionAvoidance={{ side: 'flip', align: 'shift' }}
+      // The user menu's edges: 12px from the sidebar's left edge expanded; the rail's menu sits 72px
+      // in. Its bottom edge is 22px above the strip, so the offsets match it.
+      collisionPadding={12}
+      sideOffset={collapsed ? 21 : 22}
       tooltipSide={collapsed ? 'right' : 'top'}
       iconSize={collapsed ? 16 : 20}
       trigger={

@@ -111,7 +111,7 @@ The webapp keeps UI preferences in `localStorage`, read in a lazy `useState` ini
 - A read or write that throws (storage disabled, quota) is caught: the preference falls back to its default and a toggle still works for the session.
 - No stored shape is migrated (the project keeps no backward compatibility): a value the code no longer knows reads as the default.
 - An E2E test seeds a preference with `page.addInitScript` before the app reads it (`admin.screen.ts` `storeCollapse`), never by reloading after `localStorage.setItem`.
-- Notifications come from `useNotifications()` (`libraries/notifications.ts`) only: a component never holds its own list or unread count, so every bell agrees. Today it is an in-memory sample store (a reload restores it); when an endpoint lands, swap the store's source and keep the hook's shape (`items`, `unread`, `setRead`, `markAllRead`, `dismiss`).
+- Notifications come from `useNotifications()` (`libraries/notifications.ts`) only: a component never holds its own list or unread count, so every bell agrees. Today it is an in-memory sample store (a reload restores it); when an endpoint lands, swap the store's source and keep the hook's shape (`items`, `unread`, `setRead`, `markAllRead`, `dismiss`, `dismissAll`).
 
 ### Sample data
 

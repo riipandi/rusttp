@@ -18,25 +18,46 @@ for (const { name, path, all } of layouts) {
       await expect(notifications.popover().getByText('Loan overdue')).toBeVisible()
     })
 
-    test('quick actions mark a notification read, dismiss it, or mark all read', async ({
+    test('the row menu marks a notification read or unread, or dismisses it', async ({
       notifications
     }) => {
       await notifications.open(path)
       await notifications.bell().click()
       const popover = notifications.popover()
+      const choose = (label: string) => notifications.choose(label)
 
-      await popover.getByRole('button', { name: 'Mark Loan overdue as read' }).click()
+      // The menu opens over the popover: the popover stays open while it is used.
+      await notifications.rowMenu('Loan overdue').click()
+      await choose('Mark as read')
       await expect(notifications.bell()).toHaveAccessibleName('Notifications, 2 unread')
-      await expect(
-        popover.getByRole('button', { name: 'Mark Loan overdue as unread' })
-      ).toBeVisible()
+      await expect(popover).toBeVisible()
 
-      await popover.getByRole('button', { name: 'Dismiss New member' }).click()
+      await notifications.rowMenu('Loan overdue').click()
+      await choose('Mark as unread')
+      await expect(notifications.bell()).toHaveAccessibleName('Notifications, 3 unread')
+
+      await notifications.rowMenu('New member').click()
+      await choose('Dismiss')
       await expect(popover.getByText('New member')).toHaveCount(0)
-      await expect(notifications.bell()).toHaveAccessibleName('Notifications, 1 unread')
+      await expect(notifications.bell()).toHaveAccessibleName('Notifications, 2 unread')
+    })
 
-      await popover.getByRole('button', { name: 'Mark all read' }).click()
+    test('the header menu marks all read, or dismisses all', async ({ notifications }) => {
+      await notifications.open(path)
+      await notifications.bell().click()
+      const choose = (label: string) => notifications.choose(label)
+
+      await notifications.headerMenu().click()
+      await choose('Mark all read')
       await expect(notifications.bell()).toHaveAccessibleName('Notifications')
+
+      // Nothing is unread now, so the item is disabled; dismissing still works.
+      await notifications.headerMenu().click()
+      await expect(
+        notifications.page.getByRole('menuitem', { name: 'Mark all read' })
+      ).toBeDisabled()
+      await choose('Dismiss all')
+      await expect(notifications.popover().getByText('You are all caught up')).toBeVisible()
     })
 
     test('the footer link opens the page with every notification', async ({ notifications }) => {
