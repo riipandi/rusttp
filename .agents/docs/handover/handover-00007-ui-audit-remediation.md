@@ -1,5 +1,5 @@
 ---
-status: partial
+status: done
 created: 2026-11-22T07:00:00+07:00
 plan: plan-00004-ui-audit-remediation
 ---
@@ -32,8 +32,8 @@ Ledger moves: `plan-00004` archived, `issue-00003-ui-audit-leftovers.md` filed, 
 
 ## What stayed open / the trap
 
-- `issue-00003-ui-audit-leftovers.md` (re-measured 2026-11-22; the figures this handover first gave were wrong in cause): the entry load (the entry chunk plus the chunks it imports statically) grew from 422 KB (137 KB gzip) to 547 KB (177 KB gzip). `useMessages` is only about 35 KB of that (10 KB gzip); the larger part, about 89 KB (31 KB gzip), is `TooltipProvider` moved to `routes/__root.tsx` by `e7618a0`, which pulls Base UI's tooltip into the entry. Also open: the palette contrast gaps, the data grid size, the double-mounted admin chrome, no webapp unit runner. The `AGENTS.md:21` line is fixed.
-- Not verified: a real screen reader, a real forced-colors OS mode (Chromium emulation only), a physical device.
+- `issue-00003-ui-audit-leftovers.md` (archived, all six items resolved): the entry growth was mostly the root `TooltipProvider`, not `useMessages`; plan 00005 fixed it with the entry budget, the contrast gaps, the admin chrome, and the data grid split, and plan 00006 added the webapp unit test runner (`handover-00008`, `handover-00009`). Nothing from this plan stays open in code.
+- Not verified, and not fixable in code: a real screen reader, a real forced-colors OS mode (Chromium emulation only), a physical device; `handover-00008` carries them.
 - Phase 14 (`docs/`) is n/a: it has no UI content.
 
 Traps:
