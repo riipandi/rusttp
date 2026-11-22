@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-22T13:20:00+07:00
-updated: 2026-11-22T13:52:00+07:00
+updated: 2026-11-22T14:03:00+07:00
 phases:
     - id: 1
       title: Entry-load budget check (fails on the current tree)
@@ -25,12 +25,12 @@ phases:
       note: "Built and measured on 2026-11-22, then dropped by the owner, nothing committed: the entry load went from 458.1 KB / 145.9 KB gzip to 442.8 KB / 146.6 KB, because one language is 19.2 KB raw and only 6.0 KB gzip (D8 assumed about 30 KB) and the extra chunks cost as much as they save; total JS of the build rose about 5 KB. The cost was an async language change, a top-level await in main.tsx, and a failed-load path. Option 3 of the owner's choice (route-group partition) was never built."
     - id: 6
       title: Split data-grid-cell.tsx
-      status: pending
-      note: —
+      status: committed
+      note: "7a18377. data-grid-cell.tsx 2459 -> 1243 lines (ops 1008, editor 250); non-import lines match as a multiset; index.ts export names identical; lint, format, typecheck clean; uilibs 92 files, 444 tests."
     - id: 7
       title: Split data-grid-table.tsx
-      status: pending
-      note: —
+      status: committed
+      note: "The table commit. data-grid-table.tsx 2491 -> 465 lines (body 1091, head 680, utils 333; utils is .tsx, not .ts as D6 wrote, because the fill-column cells are JSX); acyclic: utils <- head, body <- table; same checks as phase 6, export list of 103 names identical; uilibs 92 files, 444 tests. data-grid-table-virtual.tsx (1186) was not touched by the split."
     - id: 8
       title: Docs sync (docs/)
       status: pending
@@ -73,7 +73,7 @@ phases:
 - **D3 (2026-11-22, owner): a budget check reads `.vite/manifest.json` and fails over 480 KB raw or 152 KB gzip for the entry and its static imports.** That is the measured 458 KB / 146 KB plus about 5%. It is `pnpm --filter webapp size` and `just size`, run by the final validation, not part of `just verify` (it needs a build). Rejected: no gate (the regression went unseen for a day); a size-limit dependency (a new dependency for 30 lines).
 - **D4 (2026-11-22, owner): the admin layout renders `<Sidebar />` or `<AdminTopBar />` by `useMediaQuery`, not both with a CSS hide.** The query restates `breakpoints.compact` (767px) in one webapp constant with a comment pointing at `constants.stylex.ts`, as the hook's own header does for its breakpoints; the `display: none` rules for the pair are deleted. The cost: crossing the breakpoint swaps the two chromes, so an open notifications popover closes (the stores keep the sidebar's collapse and the unread count). Rejected: keeping the CSS hide (two live subscriptions, the reason this item exists); a shared popover host (a new layer for a swap this small).
 - **D5 (2026-11-22, owner): series use the `foreground*` tokens and `borderControl` changes value; no new token.** `seriesColors` maps to `foregroundPrimary`, `foregroundPositive`, `foregroundWarning`, `foregroundCritical`, and `foregroundNeutralFaded`, which carry text-grade contrast in both themes. `borderControl` moves to light L 0.58 and dark L 0.64 (phase 4 re-measures the pair; the bar is 3:1 on `backgroundNeutral` and on its hover surface). The cost: control edges look stronger on the page (4.28 and 5.77 instead of 3.36 and 3.84), which phase 4 inspects in light and dark. Rejected: new `chart*` tokens (more surface for the same effect); labeling the weak series only (the status quo); lifting `backgroundNeutral` (moves every neutral surface).
-- **D6 (2026-11-22, owner): the data grid splits by responsibility, moving code unchanged.** Cell: the pure helpers to `data-grid-cell-ops.ts`, the editor overlay and selection bar to `data-grid-cell-editor.tsx`. Table: the resize and touch helpers with the head cells to `data-grid-table-head.tsx`, the body rows and row controls to `data-grid-table-body.tsx`, shared pinning and chrome helpers to `data-grid-table-utils.ts`. Importers and `index.ts` point at the new files; no re-export shims; the package's public surface (`index.ts` exports) is identical. The cost: a wider file list for `git blame`. Rejected: splitting `DataGridCellSelection` into hooks (a behavior risk with no defect behind it); leaving the files (the trigger fired).
+- **D6 (2026-11-22, owner): the data grid splits by responsibility, moving code unchanged.** Cell: the pure helpers to `data-grid-cell-ops.ts`, the editor overlay and selection bar to `data-grid-cell-editor.tsx`. Table: the resize and touch helpers with the head cells to `data-grid-table-head.tsx`, the body rows and row controls to `data-grid-table-body.tsx`, shared pinning and chrome helpers to `data-grid-table-utils.tsx`. Importers and `index.ts` point at the new files; no re-export shims; the package's public surface (`index.ts` exports) is identical. The cost: a wider file list for `git blame`. Rejected: splitting `DataGridCellSelection` into hooks (a behavior risk with no defect behind it); leaving the files (the trigger fired).
 - **D7 (2026-11-22, owner): the term is "agent docs", not "LLM docs".** Agent docs are `.agents/docs/` (the ledger, the core documents) and `AGENTS.md`; human docs are `docs/`. "LLM docs" suggested an `llms.txt`, which does not exist and is not created. The plan's sync phase is renamed, `index.md` gains a "Terms" paragraph that defines the two, and archived plans keep their old wording (they move unchanged).
 - **D8 (2026-11-22, owner, rejected the same day after a measurement): the non-default language catalog does not load on demand.** The owner asked for it; Paraglide has no lazy mode (`locale-modules` output writes one module per language but `messages/_index.js` imports them all), so it was built in `libraries/messages.ts` (`en` static, `id` through `import()`, `changeLocale` async, a top-level await in `main.tsx`). Measured against the tree before it: entry 458.1 KB / 145.9 KB gzip became 442.8 KB / 146.6 KB, because a language is 19.2 KB raw and only 6.0 KB gzip, not the about 30 KB assumed, and splitting the build into more chunks cost as much as it saved (all JS +5 KB). An Indonesian visitor would also wait for one more request before the first paint. The owner dropped it (option 1, 2026-11-22) and the working tree was restored; `useMessages` stays whole-namespace, as plan 00004 D6 left it. Reopen only if a third language or a much larger catalog breaks the budget; the then candidate is the route-group partition (a key partition by area, shared keys loaded twice, a loader per route).
 
