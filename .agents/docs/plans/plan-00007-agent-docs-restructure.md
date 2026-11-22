@@ -90,7 +90,7 @@ The owner asked (2026-11-22) for a documentation and instruction structure any a
 - **Atomic commit per phase** with the message named in the phase; the owner's go-ahead for a range of phases authorizes those phases' commits and nothing else. After the last phase, recommend the closing commit message.
 - **Execution waits for the owner's explicit go-ahead.**
 - **No backward compatibility** (early-stage project): old section names and file names are replaced, not aliased.
-- **Markdown only.** No code, config, lockfile, or dependency change. `stylex-authoring.md` and `stylex-installation.md` are untouched.
+- **Markdown only.** No code, config, lockfile, or dependency change; the one exception is a comment in `packages/webapp/vitest.config.ts` that quoted the old `rules.md` section. `stylex-authoring.md` and `stylex-installation.md` are untouched.
 - **Content loss check before each rewrite commit:** every `###` section and every trap of the old file is mapped to its new home (a scratch list under `.amp/in/`, deleted at the end).
 - **Stage explicit paths**; never `git add -A`. No push.
 - **E2E: n/a** — no runtime change.

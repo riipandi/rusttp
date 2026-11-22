@@ -7,7 +7,7 @@ import { defineConfig } from 'vitest/config'
 // This is not `vite.config.ts`: that one starts the Rust server, renders the documents, and
 // scans the routes, and a test needs none of it. What the two share is the pipeline that changes
 // the code under test: Paraglide writes the messages the modules import, and the React Compiler is
-// on so a hook test sees the memoization the app ships with (`rules.md`, "Traps").
+// on so a hook test sees the memoization the app ships with (`.agents/docs/frontend.md`, "Traps").
 export default defineConfig({
   plugins: [paraglideVitePlugin({ project: './project.inlang' }), react({ compiler: true })],
   resolve: { tsconfigPaths: true },
