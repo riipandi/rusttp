@@ -1,32 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Button } from '../../base/button'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Alert, AlertAction, AlertDescription, AlertTitle } from './alert.component'
 
 const meta = {
   title: 'Extra Components/Alert',
   component: Alert,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     color: { control: 'select', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Alert>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   alert: {
+    maxWidth: '100%',
     width: container.xlarge
   },
   stack: {
@@ -45,18 +39,6 @@ export const Playground: Story = {
       <AlertTitle>Lumos!</AlertTitle>
       <AlertDescription>
         Point your wand and speak the incantation to light the darkest corridor.
-      </AlertDescription>
-    </Alert>
-  )
-}
-
-export const Critical: Story = {
-  args: { color: 'critical', role: 'alert' },
-  render: (args) => (
-    <Alert {...args} style={styles.alert}>
-      <AlertTitle>Illuminati threat detected</AlertTitle>
-      <AlertDescription>
-        An antimatter canister is armed inside Vatican City. Alert the Swiss Guard.
       </AlertDescription>
     </Alert>
   )
@@ -89,20 +71,26 @@ const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as 
 
 export const Colors: Story = {
   render: () => (
-    <div {...stylex.props(styles.stack)}>
-      {colorNames.map((color) => (
-        <Alert key={color} color={color} style={styles.alert}>
+    <Axis axis='color' rows={colorNames}>
+      {(color) => (
+        <Alert color={color} style={styles.alert}>
           <AlertTitle>{`Owl post: ${color}`}</AlertTitle>
           <AlertDescription>A message from the Owl Office, in {color}.</AlertDescription>
         </Alert>
-      ))}
-    </div>
+      )}
+    </Axis>
   ),
-  play: async ({ canvas }) => {
+  play: async ({ canvasElement, canvas }) => {
     // Every color keeps the title and description readable (the gate checks the contrast).
+    const looks = new Set<string>()
     for (const color of colorNames) {
       await expect(canvas.getByRole('heading', { name: `Owl post: ${color}` })).toBeInTheDocument()
+      const style = getComputedStyle(
+        cellOf(canvasElement, 'color', color).firstElementChild ?? canvasElement
+      )
+      looks.add(`${style.backgroundColor}|${style.borderTopColor}`)
     }
+    await expect(looks.size).toBe(colorNames.length)
   }
 }
 

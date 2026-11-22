@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
+import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import {
@@ -19,28 +19,18 @@ import {
 const meta = {
   title: 'Extra Components/Card',
   component: Card,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     size: { control: 'radio', options: ['md', 'sm'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Card>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   card: {
+    maxWidth: '100%',
     width: container.xlarge
-  },
-  smallCard: {
-    width: container.medium
   }
 })
 
@@ -93,19 +83,30 @@ export const Action: Story = {
   )
 }
 
-export const Small: Story = {
-  args: { size: 'sm' },
-  render: (args) => (
-    <Card {...args} style={styles.smallCard}>
-      <CardHeader>
-        <CardTitle>Chocolate Frog card</CardTitle>
-        <CardDescription>Tighter padding for your collectibles.</CardDescription>
-      </CardHeader>
-      <CardFooter>
-        <Button size='sm'>Collect</Button>
-      </CardFooter>
-    </Card>
-  )
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={['md', 'sm'] as const}>
+      {(size) => (
+        <Card size={size} style={styles.card}>
+          <CardHeader>
+            <CardTitle>Chocolate Frog card</CardTitle>
+            <CardDescription>Padding follows the card size.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button size='sm'>Collect</Button>
+          </CardFooter>
+        </Card>
+      )}
+    </Axis>
+  ),
+  // `sm` tightens the padding, so the same content is shorter.
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      (
+        cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
+      ).getBoundingClientRect().height
+    await expect(height('sm')).toBeLessThan(height('md'))
+  }
 }
 
 export const States: Story = {

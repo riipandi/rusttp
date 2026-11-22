@@ -1,10 +1,10 @@
 import { FileText, Package, Search } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
+import { Axis } from '../../contracts/story-axes'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../input-group'
 import {
   Empty,
@@ -18,15 +18,7 @@ import {
 const meta = {
   title: 'Extra Components/Empty',
   component: Empty,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Empty>
 
 type Story = StoryObj<typeof meta>
@@ -59,6 +51,30 @@ export const Playground: Story = {
       </EmptyContent>
     </Empty>
   )
+}
+
+/** The media is a bare slot (`default`) or a tinted icon tile (`icon`). */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={['default', 'icon'] as const}>
+      {(variant) => (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant={variant} data-testid={`media-${variant}`}>
+              <Package {...stylex.props(styles.icon)} />
+            </EmptyMedia>
+            <EmptyTitle>No potions brewed ({variant})</EmptyTitle>
+          </EmptyHeader>
+        </Empty>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const media = (variant: string) => getComputedStyle(canvas.getByTestId(`media-${variant}`))
+    // Only the icon tile has a fill of its own.
+    await expect(media('icon').backgroundColor).not.toBe(media('default').backgroundColor)
+    await expect(media('icon').width).not.toBe(media('default').width)
+  }
 }
 
 export const Outline: Story = {

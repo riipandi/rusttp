@@ -1,12 +1,13 @@
 import { Home, Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Switch } from '../../base/switch'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import {
   Item,
@@ -22,19 +23,11 @@ import {
 const meta = {
   title: 'Extra Components/Item',
   component: Item,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
-    variant: { control: 'radio', options: ['default', 'outline', 'muted'] },
+    variant: { control: 'radio', options: ['ghost', 'outline', 'faded'] },
     size: { control: 'radio', options: ['xs', 'sm', 'md'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Item>
 
 type Story = StoryObj<typeof meta>
@@ -95,49 +88,54 @@ export const Playground: Story = {
 
 export const Variants: Story = {
   render: () => (
-    <ItemGroup style={styles.group}>
-      <Item variant='ghost'>
-        <ItemContent>
-          <ItemTitle>Madam Malkin's robes</ItemTitle>
-          <ItemDescription>Standard fit, no embellishments.</ItemDescription>
-        </ItemContent>
-      </Item>
-      <Item variant='outline'>
-        <ItemContent>
-          <ItemTitle>Quidditch robes</ItemTitle>
-          <ItemDescription>House colours with a bold border.</ItemDescription>
-        </ItemContent>
-      </Item>
-      <Item variant='faded'>
-        <ItemContent>
-          <ItemTitle>Dress robes</ItemTitle>
-          <ItemDescription>Soft tones for the Yule Ball.</ItemDescription>
-        </ItemContent>
-      </Item>
-    </ItemGroup>
-  )
+    <Axis axis='variant' rows={['ghost', 'outline', 'faded'] as const}>
+      {(variant) => (
+        <Item variant={variant} style={styles.group}>
+          <ItemContent>
+            <ItemTitle>Madam Malkin&apos;s robes ({variant})</ItemTitle>
+            <ItemDescription>Standard fit, no embellishments.</ItemDescription>
+          </ItemContent>
+        </Item>
+      )}
+    </Axis>
+  ),
+  // Each fill differs from the others in color or edge.
+  play: async ({ canvasElement }) => {
+    const looks = new Set(
+      ['ghost', 'outline', 'faded'].map((variant) => {
+        const style = getComputedStyle(
+          cellOf(canvasElement, 'variant', variant).firstElementChild ?? canvasElement
+        )
+        return `${style.backgroundColor}|${style.borderTopWidth}|${style.borderTopColor}`
+      })
+    )
+    await expect(looks.size).toBe(3)
+  }
 }
 
 export const Sizes: Story = {
   render: () => (
-    <ItemGroup style={styles.group}>
-      <Item variant='outline' size='xs'>
-        <ItemContent>
-          <ItemTitle>House-elf size</ItemTitle>
-        </ItemContent>
-      </Item>
-      <Item variant='outline' size='sm'>
-        <ItemContent>
-          <ItemTitle>First-year size</ItemTitle>
-        </ItemContent>
-      </Item>
-      <Item variant='outline' size='md'>
-        <ItemContent>
-          <ItemTitle>Hagrid size</ItemTitle>
-        </ItemContent>
-      </Item>
-    </ItemGroup>
-  )
+    <Axis axis='size' rows={['xs', 'sm', 'md'] as const}>
+      {(size) => (
+        <Item variant='outline' size={size} style={styles.group}>
+          <ItemContent>
+            <ItemTitle>Robe fitting ({size})</ItemTitle>
+            <ItemDescription>Padding follows the size.</ItemDescription>
+          </ItemContent>
+        </Item>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      (
+        cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
+      ).getBoundingClientRect().height
+    await expect(height('xs')).toBeLessThan(height('sm'))
+    // audit-00002 F-15: `sm` and `md` share one padding and gap, so they are the same height.
+    // Tighten this to `sm < md` when the sizes are told apart.
+    await expect(height('sm')).toBeLessThanOrEqual(height('md'))
+  }
 }
 
 export const WithAvatar: Story = {

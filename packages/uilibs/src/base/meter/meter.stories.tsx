@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
@@ -9,28 +8,12 @@ import { Meter, MeterLabel, MeterValue } from './meter.component'
 const meta = {
   title: 'Base Components/Meter',
   component: Meter,
-  parameters: { layout: 'centered' },
   argTypes: {
     value: { control: 'number' },
     min: { control: 'number' },
     max: { control: 'number' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Meter>
 
 type Story = StoryObj<typeof meta>

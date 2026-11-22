@@ -28,10 +28,10 @@ baseline:
     secret_scan: not_run
     race_detector: not_available
 findings:
-    total: 14
-    by_severity: { critical: 0, high: 0, medium: 3, low: 9, info: 2 }
-    by_status: { open: 9, fixed: 4, deferred: 1, wont_fix: 0, false_positive: 0 }
-    verified: 11
+    total: 15
+    by_severity: { critical: 0, high: 0, medium: 3, low: 10, info: 2 }
+    by_status: { open: 10, fixed: 4, deferred: 1, wont_fix: 0, false_positive: 0 }
+    verified: 12
     unverified: 3
 cleanup_candidates: 1
 optimization_opportunities: 0
@@ -198,6 +198,10 @@ Measured at 1440 px, light: Checkbox and Radio 16x16, Switch 36x20, NumberField 
 
 Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a <label> or <Field.Label>` (warning, not error, so the console gate does not fail). `frontend.md` already says the field is named by `FieldLabel`; the stories show the other pattern, and axe still passes. Whether the root really ends up unnamed was not verified.
 
+### F-15 Item `sm` and `md` are the same size
+
+`item.stylex.ts:92-101`: `itemSizes.sm` and `itemSizes.md` both set `gap: unit.x3`, `paddingBlock: unit.x3`, and `paddingInline: unit.x3`; only `xs` differs. The `Sizes` story measures both rows at 70 px. Found while regrouping the stories (plan-00008, batch D). The story asserts `sm <= md` until the sizes are told apart; decision for the owner: give `md` more padding, or drop one size.
+
 ## Cleanup candidates
 
 | Item | Type | Evidence of non-use | Confidence | Proposal | Status |
@@ -246,4 +250,5 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 
 ## Change log
 
+- 2026-11-22: F-15 added (Item `sm` and `md` identical) during plan-00008 batch D.
 - 2026-11-22T18:34:00+07:00: status draft -> in_review. Report written after the baseline, the story probe, the dark and engine runs and the focus checks; the test and story fixes (F-01, F-05, F-06, F-07) are in the working tree, uncommitted.

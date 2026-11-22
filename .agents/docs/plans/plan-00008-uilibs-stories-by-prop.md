@@ -49,8 +49,8 @@ phases:
       note: 13 components regrouped, 59 -> 62 story ids, gate 906 -> 912 tests, no overflow at 390 px in 62 stories; new helper expectDockedTo; disabled menu rows keep the default cursor (opacity only)
     - id: 11
       title: Batch D - feedback and content
-      status: pending
-      note: —
+      status: committed
+      note: 16 folders regrouped, gate 912 -> 920 tests, no overflow at 390 px in 85 stories (Text Variants overflowed 91 px with a long sample and now uses a short one); new axis stories Text Variants, Weights, Colors, Responsive, Icon Sizes, Colors, Item and Card Sizes, Empty Variants, LoaderText States; audit-00002 F-15 (Item sm equals md)
     - id: 12
       title: Batch E - navigation, structure, dates
       status: pending

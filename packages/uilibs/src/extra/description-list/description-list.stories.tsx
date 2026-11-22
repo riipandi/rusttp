@@ -10,7 +10,6 @@ import { DescriptionDetails, DescriptionList, DescriptionTerm } from './descript
 const meta = {
   title: 'Extra Components/DescriptionList',
   component: DescriptionList,
-  parameters: { layout: 'padded' },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof DescriptionList>
 

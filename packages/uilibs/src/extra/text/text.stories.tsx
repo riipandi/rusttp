@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Text } from './text.component'
 
 const meta = {
   title: 'Extra Components/Text',
   component: Text,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     variant: {
       control: 'select',
@@ -47,14 +47,7 @@ const meta = {
     decoration: { control: 'select', options: ['underline', 'line-through'] },
     wrap: { control: 'select', options: ['balance', 'nowrap'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding('16px'), atoms.width('100%'))}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Text>
 
 type Story = StoryObj<typeof meta>
@@ -80,52 +73,96 @@ export const Playground: Story = {
   render: (args) => <Text {...args} />
 }
 
+const variantNames = [
+  'headline-1',
+  'headline-2',
+  'headline-3',
+  'featured-1',
+  'featured-2',
+  'featured-3',
+  'featured-4',
+  'featured-5',
+  'featured-6',
+  'body-1',
+  'body-2',
+  'caption-1',
+  'caption-2'
+] as const
+
 export const Variants: Story = {
   render: () => (
+    <Axis axis='variant' rows={variantNames}>
+      {(variant) => <Text variant={variant}>Lumos</Text>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const size = (variant: string) =>
+      parseFloat(
+        getComputedStyle(
+          cellOf(canvasElement, 'variant', variant).firstElementChild ?? canvasElement
+        ).fontSize
+      )
+    // The scale runs from headlines down to captions.
+    await expect(size('headline-1')).toBeGreaterThan(size('body-1'))
+    await expect(size('body-1')).toBeGreaterThan(size('caption-2'))
+  }
+}
+
+const weightNames = ['regular', 'medium', 'semibold', 'bold', 'extrabold'] as const
+
+export const Weights: Story = {
+  render: () => (
+    <Axis axis='weight' rows={weightNames}>
+      {(weight) => <Text weight={weight}>{weight}</Text>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const weights = weightNames.map(
+      (weight) =>
+        getComputedStyle(cellOf(canvasElement, 'weight', weight).firstElementChild ?? canvasElement)
+          .fontWeight
+    )
+    await expect(new Set(weights).size).toBe(weightNames.length)
+  }
+}
+
+const colorNames = [
+  'neutral',
+  'neutral-faded',
+  'primary',
+  'positive',
+  'warning',
+  'critical',
+  'disabled'
+] as const
+
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => (
+        <Text color={color} aria-disabled={color === 'disabled' ? true : undefined}>
+          {color}
+        </Text>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const tints = colorNames.map(
+      (color) =>
+        getComputedStyle(cellOf(canvasElement, 'color', color).firstElementChild ?? canvasElement)
+          .color
+    )
+    await expect(new Set(tints).size).toBe(colorNames.length)
+  }
+}
+
+/** A prop takes a per-breakpoint object as well as a single value. */
+export const Responsive: Story = {
+  render: () => (
     <div {...stylex.props(styles.col)}>
-      <Text variant='headline-1'>The Boy Who Lived</Text>
-      <Text variant='headline-2'>The Lost Symbol</Text>
-      <Text variant='headline-3'>Hogwarts: A History</Text>
-      <Text variant='featured-1'>The Louvre by Night</Text>
-      <Text variant='featured-2'>Gringotts Under Lockdown</Text>
-      <Text variant='featured-3'>Decoding the Cryptex</Text>
-      <Text variant='featured-4'>Secrets of the Priory</Text>
-      <Text variant='featured-5'>The Last Supper Cipher</Text>
-      <Text variant='featured-6'>Shadows of the Vatican</Text>
-      <Text variant='body-1'>Langdon studied the symbols in silence.</Text>
-      <Text variant='body-2'>Hermione cast the charm perfectly.</Text>
-      <Text variant='caption-1'>From the Daily Prophet archives</Text>
-      <Text variant='caption-2'>Grand Gallery, the Louvre</Text>
       <Text variant={{ s: 'body-2', m: 'featured-4' }}>Responsive variant</Text>
-    </div>
-  )
-}
-
-export const Weight: Story = {
-  render: () => (
-    <div {...stylex.props(styles.col)}>
-      <Text weight='regular'>Regular</Text>
-      <Text weight='medium'>Medium</Text>
-      <Text weight='semibold'>Semibold</Text>
-      <Text weight='bold'>Bold</Text>
-      <Text weight='extrabold'>Extrabold</Text>
       <Text weight={{ s: 'regular', m: 'bold' }}>Responsive weight</Text>
-    </div>
-  )
-}
-
-export const Color: Story = {
-  render: () => (
-    <div {...stylex.props(styles.col)}>
-      <Text>Neutral</Text>
-      <Text color='neutral-faded'>Faded</Text>
-      <Text color='positive'>Positive</Text>
-      <Text color='warning'>Warning</Text>
-      <Text color='critical'>Critical</Text>
-      <Text color='primary'>Primary</Text>
-      <Text color='disabled' aria-disabled>
-        Disabled
-      </Text>
+      <Text align={{ s: 'center', m: 'start' }}>Responsive alignment</Text>
     </div>
   )
 }
@@ -181,7 +218,6 @@ export const Align: Story = {
       <Text align='start'>Expelliarmus</Text>
       <Text align='center'>Expelliarmus</Text>
       <Text align='end'>Expelliarmus</Text>
-      <Text align={{ s: 'center', m: 'start' }}>Responsive alignment</Text>
     </div>
   )
 }

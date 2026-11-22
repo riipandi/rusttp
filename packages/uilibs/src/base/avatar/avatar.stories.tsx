@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, waitFor } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import {
   Avatar,
@@ -16,26 +17,10 @@ import {
 const meta = {
   title: 'Base Components/Avatar',
   component: Avatar,
-  parameters: { layout: 'centered' },
   argTypes: {
     size: { control: 'radio', options: ['sm', 'md', 'lg'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Avatar>
 
 type Story = StoryObj<typeof meta>
@@ -57,25 +42,24 @@ export const Playground: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div
-      {...stylex.props(
-        atoms.display.flex,
-        atoms.alignItems.center,
-        atoms.flexWrap.wrap,
-        atoms.gap['8px']
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => (
+        <Avatar size={size}>
+          <AvatarFallback>HP</AvatarFallback>
+        </Avatar>
       )}
-    >
-      <Avatar size='sm'>
-        <AvatarFallback>HP</AvatarFallback>
-      </Avatar>
-      <Avatar size='md'>
-        <AvatarFallback>RW</AvatarFallback>
-      </Avatar>
-      <Avatar size='lg'>
-        <AvatarFallback>HG</AvatarFallback>
-      </Avatar>
-    </div>
-  )
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const side = (size: string) => {
+      const { width, height } = (
+        cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
+      ).getBoundingClientRect()
+      return width === height ? width : -1
+    }
+    // Square, and 32, 40, and 48 px.
+    await expect(['sm', 'md', 'lg'].map(side)).toEqual([32, 40, 48])
+  }
 }
 
 export const Fallback: Story = {

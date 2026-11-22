@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { container, radius } from '../../styles/tokens.stylex'
@@ -8,15 +7,7 @@ import { Skeleton } from './skeleton.component'
 const meta = {
   title: 'Extra Components/Skeleton',
   component: Skeleton,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Skeleton>
 
 type Story = StoryObj<typeof meta>

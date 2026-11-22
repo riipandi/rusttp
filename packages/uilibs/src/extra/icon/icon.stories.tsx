@@ -3,29 +3,15 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Icon } from './icon.component'
 
 const meta = {
   title: 'Extra Components/Icon',
   component: Icon,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.flexDirection.column,
-          atoms.gap['24px'],
-          atoms.padding['20px'],
-          atoms.fontSize['16px']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Icon>
 
 type Story = StoryObj<typeof meta>
@@ -92,61 +78,93 @@ export const Playground: Story = {
   )
 }
 
-export const Size: Story = {
-  name: 'size',
+const sizeNames = ['12', '16', '20', '24', '32'] as const
+
+export const Sizes: Story = {
   args: { svg: Activity },
   render: () => (
-    <div {...stylex.props(styles.column)}>
-      <div {...stylex.props(styles.row)}>
-        <Icon svg={Activity} size={12} />
-        <Icon svg={Activity} size={16} />
-        <Icon svg={Activity} size={20} />
-        <Icon svg={Activity} size={24} />
-        <Icon svg={Activity} size={32} />
-      </div>
-      {/* Default: scales with the parent font size */}
-      <div {...stylex.props(styles.row)}>
-        <span {...stylex.props(atoms.fontSize['12px'])}>
-          <Icon svg={Activity} />
-        </span>
-        <span {...stylex.props(atoms.fontSize['24px'])}>
-          <Icon svg={Activity} />
-        </span>
-      </div>
-      {/* Literal values: fill the parent box */}
-      <div {...stylex.props(atoms.display.flex, atoms.gap['8px'])}>
-        <div {...stylex.props(styles.sized)}>
-          <Icon svg={Activity} size='100%' />
+    <Axis axis='size' rows={sizeNames}>
+      {(size) => (
+        // In a row, as icons sit in a layout: a stretching column would override the square.
+        <div {...stylex.props(styles.row)}>
+          <Icon svg={Activity} size={Number(size)} />
         </div>
-        <div {...stylex.props(styles.sized)}>
-          <Icon svg={MicSvg} size='100%' />
-        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const size of sizeNames) {
+      const svg = cellOf(canvasElement, 'size', size).querySelector('svg')
+      if (!svg) throw new Error(`No svg for size ${size}`)
+      const box = svg.getBoundingClientRect()
+      await expect([box.width, box.height]).toEqual([Number(size), Number(size)])
+    }
+  }
+}
+
+/** Without a number, the icon follows the font size; a literal value fills the parent box. */
+export const FluidSize: Story = {
+  name: 'Fluid size',
+  args: { svg: Activity },
+  render: () => (
+    <div {...stylex.props(styles.row)}>
+      <span {...stylex.props(atoms.fontSize['12px'])}>
+        <Icon svg={Activity} />
+      </span>
+      <span {...stylex.props(atoms.fontSize['24px'])}>
+        <Icon svg={Activity} />
+      </span>
+      <div {...stylex.props(styles.sized)}>
+        <Icon svg={Activity} size='100%' />
+      </div>
+      <div {...stylex.props(styles.sized)}>
+        <Icon svg={MicSvg} size='100%' />
       </div>
     </div>
   )
 }
 
-export const Color: Story = {
-  name: 'color',
+const colorNames = [
+  'neutral',
+  'neutral-faded',
+  'primary',
+  'positive',
+  'warning',
+  'critical',
+  'disabled'
+] as const
+
+export const Colors: Story = {
   args: { svg: Zap },
   render: () => (
-    <div {...stylex.props(styles.column)}>
-      <div {...stylex.props(styles.row)}>
-        <Icon svg={Zap} size={20} />
-        <Icon svg={Zap} color='neutral' size={20} />
-        <Icon svg={Zap} color='neutral-faded' size={20} />
-        <Icon svg={Zap} color='primary' size={20} />
-        <Icon svg={Zap} color='positive' size={20} />
-        <Icon svg={Zap} color='warning' size={20} />
-        <Icon svg={Zap} color='critical' size={20} />
-        <Icon svg={Zap} color='disabled' size={20} />
-      </div>
-      {/* Inherits the parent text color when no color is set */}
-      <div {...stylex.props(styles.inherit)}>
-        <Icon svg={Zap} size={20} />
-      </div>
+    <Axis axis='color' rows={colorNames}>
+      {(color) => <Icon svg={Zap} color={color} size={20} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const tints = colorNames.map(
+      (color) =>
+        getComputedStyle(cellOf(canvasElement, 'color', color).firstElementChild ?? canvasElement)
+          .color
+    )
+    await expect(new Set(tints).size).toBe(colorNames.length)
+  }
+}
+
+/** Without a color, the icon inherits the text color around it. */
+export const InheritsColor: Story = {
+  name: 'Inherits color',
+  args: { svg: Zap },
+  render: () => (
+    <div data-testid='inherit' {...stylex.props(styles.inherit)}>
+      <Icon svg={Zap} size={20} data-testid='inherited' />
     </div>
-  )
+  ),
+  play: async ({ canvas }) => {
+    await expect(getComputedStyle(canvas.getByTestId('inherited')).color).toBe(
+      getComputedStyle(canvas.getByTestId('inherit')).color
+    )
+  }
 }
 
 export const AutoWidth: Story = {

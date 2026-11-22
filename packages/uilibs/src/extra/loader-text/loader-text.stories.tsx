@@ -3,14 +3,15 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { LoaderText } from './loader-text.component'
 
 const meta = {
   title: 'Extra Components/LoaderText',
   component: LoaderText,
-  parameters: { layout: 'centered' },
   argTypes: {
     variant: {
       control: 'select',
@@ -33,14 +34,7 @@ const meta = {
       ]
     }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding('16px'), atoms.width('100%'))}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof LoaderText>
 
 type Story = StoryObj<typeof meta>
@@ -63,6 +57,34 @@ export const Playground: Story = {
     children: 'Transcribing with the Quick-Quotes Quill'
   },
   render: (args) => <LoaderText {...args} />
+}
+
+/** Both texts stay mounted for the cross-fade; only the current one is visible. */
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['loading', 'completed'] as const}>
+      {(state) => (
+        <LoaderText icon={Mic} completed={state === 'completed'} completedText='Quill notes saved'>
+          Transcribing with the Quick-Quotes Quill
+        </LoaderText>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const texts = (state: string) => {
+      const cell = within(cellOf(canvasElement, 'state', state))
+      return {
+        loading: cell.getByText('Transcribing with the Quick-Quotes Quill'),
+        completed: cell.getByText('Quill notes saved')
+      }
+    }
+    const loading = texts('loading')
+    await expect(loading.loading).toBeVisible()
+    await expect(loading.completed).not.toBeVisible()
+    const completed = texts('completed')
+    await waitFor(() => expect(completed.loading).not.toBeVisible())
+    await expect(completed.completed).toBeVisible()
+  }
 }
 
 export const WithoutIcon: Story = {

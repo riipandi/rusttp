@@ -20,22 +20,7 @@ const icons = [
 
 const meta = {
   title: 'Extra Components/Icons',
-  parameters: { layout: 'centered' },
-  tags: [],
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.alignItems.center,
-          atoms.justifyContent.center,
-          atoms.minWidth['448px']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: []
 } satisfies Meta
 
 export default meta
@@ -108,14 +93,7 @@ const sizeSteps = [16, 20, 24, 32, 48] as const
 export const Sizes: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div
-      {...stylex.props(
-        atoms.display.flex,
-        atoms.flexDirection.column,
-        atoms.gap['1.5rem'],
-        atoms.minWidth['320px']
-      )}
-    >
+    <div {...stylex.props(atoms.display.flex, atoms.flexDirection.column, atoms.gap['1.5rem'])}>
       {icons.slice(0, 4).map(({ name, component: Icon }) => (
         <div
           key={name}
