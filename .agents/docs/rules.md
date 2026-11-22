@@ -1,6 +1,6 @@
 # Rules
 
-updated: 2026-11-22T15:20:00+07:00
+updated: 2026-11-22T15:16:00+07:00
 
 The cross-area rules behind `AGENTS.md`. Area rules: `backend.md` (Rust: `apps/`, `crates/`, `modules/`, `api/`) and `frontend.md` (`packages/`). Reasoning: `architecture.md`. Read the section a change touches before touching it.
 

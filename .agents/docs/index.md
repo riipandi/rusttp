@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-22T15:20:00+07:00
+updated: 2026-11-22T15:16:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -46,11 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File | Status | Subject |
-| --- | --- | --- |
-| `plan-00007-agent-docs-restructure.md` | in-progress | Split rules into rules/backend/frontend, slim root and scoped `AGENTS.md`, handover titles by summary, roadmap for parked work, refined skills, new `ui-audit` skill. |
+None live.
 
-Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -74,7 +72,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 | File                                     | Status  | Subject                                                                                                                                              |
 | ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `handover-00009-webapp-unit-tests.md` | done | Plan 00006 closed: Vitest browser mode for the webapp, one catalog version, `just test-web*`, 75 tests, the traps of browser mode. |
+| `handover-00010-agent-docs-restructure.md` | done | Plan 00007 closed: rules split into rules/backend/frontend, slim and scoped `AGENTS.md`, handover titles by summary, roadmap-00001, refined skills, new `ui-audit`. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -82,4 +80,4 @@ Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. None live
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22).
+Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22).

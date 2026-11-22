@@ -1,6 +1,6 @@
 # Backend rules
 
-updated: 2026-11-22T15:20:00+07:00
+updated: 2026-11-22T15:16:00+07:00
 
 Contracts and traps for the Rust side: `apps/`, `crates/`, `modules/` (planned), `api/`. Cross-area rules are in `rules.md`; the reasoning is in `architecture.md`; commands are in `shape.md`.
 

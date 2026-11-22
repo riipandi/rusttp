@@ -1,48 +1,48 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-22T14:56:00+07:00
-updated: 2026-11-22T14:56:00+07:00
+updated: 2026-11-22T15:16:00+07:00
 phases:
     - id: 1
       title: Roadmap for parked work (manual verifications, dual edition)
-      status: pending
-      note: —
+      status: committed
+      note: "10bf4ed. roadmap-00001 (RI-1 to RI-4); handover-00008 done; architecture.md \"Parked\" removed."
     - id: 2
       title: Handover titles and archive policy
-      status: pending
-      note: —
+      status: committed
+      note: "d84d4ec. Nine handovers retitled `# Handover: <summary>`; 00007 and 00008 archived; 00009 live as the newest."
     - id: 3
       title: Split rules.md into rules, backend, frontend; tighten the core documents
-      status: pending
-      note: —
+      status: committed
+      note: "5ac9a67. rules.md 219 → 44 lines plus backend.md and frontend.md; shape.md layout moved to the area files; other-project mentions removed; stylex files unchanged."
     - id: 4
       title: Slim root AGENTS.md and scoped AGENTS.md per area
-      status: pending
-      note: —
+      status: committed
+      note: "8f5683e. Root AGENTS.md 89 → 55 lines; scoped AGENTS.md in apps/, crates/, packages/webapp/, packages/uilibs/; the vitest.config.ts comment and handover-00009 section quotes repointed."
     - id: 5
       title: Refine the agent-docs, handoff, deep-audit, and rust-verify-harden skills
-      status: pending
-      note: —
+      status: committed
+      note: "be7d903. agent-docs, handoff, deep-audit (hands frontend scope to ui-audit), rust-verify-harden (backend.md, binary probe)."
     - id: 6
       title: New ui-audit skill
-      status: pending
-      note: —
+      status: committed
+      note: "3d8d1c4. ui-audit SKILL.md and references/checklist.md; every command checked against package.json and scripts/*.just; resolves through .claude/skills."
     - id: 7
       title: Docs sync (docs/)
-      status: pending
-      note: —
+      status: done
+      note: "n/a: `rg -n -i \"agents|handover|rules.md\" docs README.md CONTRIBUTING.md` finds nothing; PRODUCT.md:30 (`rules.md`, \"Sample data\") still resolves."
     - id: 8
       title: Agent docs sync (.agents/docs, AGENTS.md, skills)
-      status: pending
-      note: —
+      status: committed
+      note: "40ec8d6. index.md: core documents, terms, project skills table, audit owners; reference check 0 dangling."
     - id: 9
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "Plan archived, handover-00010 written, handover-00009 archived; closing commit on the owner instruction of 2026-11-22."
     - id: 10
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "rumdl check . clean (67 files); oxfmt clean; reference check 0 dangling; stylex files unchanged since 67d339f; only non-Markdown change is the vitest.config.ts comment; other-project grep 0; handover titles all `Handover: `; five skill names match; AGENTS.md 55 lines; 11517 words vs 15949; every old rules.md section has a home (65 of 674 backtick examples dropped, no rule or trap); locale keys sorted."
 ---
 
 # Restructure the agent docs — split rules by area, scope AGENTS.md, refine the skills, add a UI audit skill

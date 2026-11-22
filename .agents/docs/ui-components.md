@@ -1,6 +1,6 @@
 # UI Components Index
 
-updated: 2026-11-22T15:20:00+07:00
+updated: 2026-11-22T15:16:00+07:00
 
 The inventory of `packages/uilibs/src`: what each component is, where it imports from, and what it is built on. Check it before writing a new component; extend an existing one when it already covers the need. `packages/webapp` consumes it (`uilibs` dependency, StyleX plugin in its Vite config, `UIProvider` and `ThemeProvider` at the root; see `frontend.md`).
 
