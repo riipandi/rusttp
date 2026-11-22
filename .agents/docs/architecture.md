@@ -258,6 +258,29 @@ Alternatives considered:
 - New `chart*` tokens, labeling the weak series only, or lifting `backgroundNeutral` — rejected: more surface for the same effect, the status quo, and a change to every neutral surface.
 - Splitting `DataGridCellSelection` into hooks — rejected: a behavior refactor with no defect behind it.
 
+### The webapp's unit tests run in a real browser, with one Vitest version
+
+Context (2026-11-22): `packages/webapp` had no unit test runner (`issue-00003` item 5); a store change (the same array when nothing changes) had been checked with a scratch script and deleted. `uilibs` already ran Vitest 5 in Chromium with its versions written inline.
+
+Decision (2026-11-22, owner, `plan-00006-webapp-unit-tests`):
+
+- Vitest 5 in browser mode on Chromium, with `vitest-browser-react`, `@vitest/ui`, and `@vitest/coverage-v8`; every Vitest package is a workspace catalog entry and `uilibs` moves onto it.
+- Tests sit beside their source; coverage is v8 with no threshold; `just test-web*` recipes exist and `just verify` is unchanged.
+- The webapp has its own `vitest.config.ts` with Paraglide and the React Compiler on, not `vite.config.ts`.
+
+Consequences:
+
+- (positive) the stores, hooks, and schemas run against a real `localStorage`, `matchMedia`, and DOM; a hook test sees the compiled memoization, which is where the language-change trap lives.
+- (negative) a run starts Chromium (a second or two); browser mode cannot reset modules, so tests reset singletons by hand; the webapp tests are one more command outside `verify`.
+
+Alternatives considered:
+
+- jsdom or happy-dom with `@testing-library/react` — rejected: an imitation DOM and two more dependencies outside the `uilibs` pattern.
+- The `node` environment only — rejected: the locale store and the hooks touch `window`.
+- `@vitest/coverage-istanbul` — rejected: it instruments code and fights the React Compiler and StyleX pipeline.
+- A coverage threshold now — rejected: the figure would be arbitrary before a baseline exists.
+- Vitest versions inline in the packages that use them — rejected: two sources of one version.
+
 ## Parked
 
 - Community and enterprise editions (an `enterprise` Cargo feature, port overrides in the kernel, a license gate) — set aside by the owner on 2026-11-19. Revisit only when the owner raises it.
