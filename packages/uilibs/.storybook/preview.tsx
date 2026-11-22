@@ -7,6 +7,19 @@ const gateMode = (value: unknown) => (value === 'todo' || value === 'off' ? valu
 
 const preview: Preview = {
   parameters: {
+    options: {
+      // Top-level groups, in the order the sidebar shows them; inside a group stories keep file order.
+      storySort: {
+        order: [
+          'Introduction',
+          'Base Components',
+          'Extra Components',
+          'Data Grid',
+          'Visualizations',
+          'Contracts'
+        ]
+      }
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

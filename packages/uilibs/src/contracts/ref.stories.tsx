@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect } from 'storybook/test'
 import { Button } from '../base/button'
@@ -6,9 +7,27 @@ import { Input } from '../base/input'
 import { Select, SelectTrigger, SelectValue } from '../base/select'
 import { Textarea } from '../extra/textarea'
 
+const styles = stylex.create({
+  grid: {
+    alignItems: 'center',
+    display: 'grid',
+    gap: 12,
+    gridTemplateColumns: '120px 260px',
+    padding: 20
+  },
+  caption: { fontSize: 13, opacity: 0.7 }
+})
+
 const meta = {
-  title: 'Contracts/Ref',
-  parameters: { layout: 'centered' }
+  title: 'Contracts/Ref as a prop',
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Every wrapper takes `ref` as a prop (React 19), not through `forwardRef`.'
+      }
+    }
+  }
 } satisfies Meta
 
 export default meta
@@ -16,7 +35,8 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Every wrapper takes `ref` as a prop (React 19); a type error here fails `just typecheck`. */
-export const RefReachesTheElement: Story = {
+export const RefAsAProp: Story = {
+  name: 'Ref as a prop',
   render: () => {
     const input = React.useRef<HTMLInputElement>(null)
     const button = React.useRef<HTMLButtonElement>(null)
@@ -34,14 +54,24 @@ export const RefReachesTheElement: Story = {
     }, [])
 
     return (
-      <div data-testid='refs' data-tags={tags}>
-        <Input ref={input} aria-label='Spell' />
+      <div data-testid='refs' data-tags={tags} {...stylex.props(styles.grid)}>
+        <span {...stylex.props(styles.caption)}>Input</span>
+        <Input ref={input} aria-label='Spell' placeholder='Spell' />
+        <span {...stylex.props(styles.caption)}>Button</span>
         <Button ref={button}>Alohomora</Button>
-        <Textarea ref={textarea} aria-label='Prophecy' />
-        <Textarea ref={textareaAuto} autoResize aria-label='Marauder entry' />
+        <span {...stylex.props(styles.caption)}>Textarea</span>
+        <Textarea ref={textarea} aria-label='Prophecy' placeholder='Prophecy' />
+        <span {...stylex.props(styles.caption)}>Textarea, auto-resize</span>
+        <Textarea
+          ref={textareaAuto}
+          autoResize
+          aria-label='Marauder entry'
+          placeholder='Marauder entry'
+        />
+        <span {...stylex.props(styles.caption)}>Select trigger</span>
         <Select items={[{ value: 'gryffindor', label: 'Gryffindor' }]}>
           <SelectTrigger ref={trigger} aria-label='House'>
-            <SelectValue />
+            <SelectValue placeholder='House' />
           </SelectTrigger>
         </Select>
       </div>
