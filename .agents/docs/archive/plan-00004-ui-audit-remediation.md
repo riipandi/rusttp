@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-22T04:40:00+07:00
-updated: 2026-11-22T04:40:00+07:00
+updated: 2026-11-22T07:05:00+07:00
 phases:
     - id: 1
       title: Disabled Checkbox, Switch, and Radio compose controlPress
@@ -9,68 +9,68 @@ phases:
       note: "93a2e41. The `Disabled` stories fail on the old roots (`expected '1' to be '0.5'`) and pass after; uilibs suite 92 files, 434 tests; lint, format, typecheck clean."
     - id: 2
       title: Mobile overflow and keyboard reach in uilibs (OTP, Table, Resizable, Combobox chip, ThemeSwitcher)
-      status: pending
-      note: —
+      status: committed
+      note: "d8d519f. The 2.29:1 contrast on /two-factor dark was the stretched grid column, fixed by minmax(0, 1fr) in auth.stylex.ts"
     - id: 3
       title: Forced colors, coarse-pointer focus, and reduced motion in uilibs
-      status: pending
-      note: —
+      status: committed
+      note: "de795c2"
     - id: 4
       title: StyleX rule compliance in uilibs (nested conditions, shared recipes, no duplicates)
-      status: pending
-      note: —
+      status: committed
+      note: "8524d60. focusRing is a composable style, not a defineConsts value (StyleX rejects color variables there)"
     - id: 5
       title: One tone vocabulary and one labels shape in uilibs
-      status: pending
-      note: —
+      status: committed
+      note: "70a62dc"
     - id: 6
       title: Kanban and Sortable announcements through labels
-      status: pending
-      note: —
+      status: committed
+      note: "b3a897e"
     - id: 7
       title: uilibs housekeeping (chart contract, sideEffects, dependencies, theme read, repo ignore)
-      status: pending
-      note: —
+      status: committed
+      note: "ce3393d. Chart var() resolves in Chromium: the comment and docs were wrong. ThemeProvider read left unchanged (client-rendered app)"
     - id: 8
       title: Webapp i18n runtime without remount (useMessages)
-      status: pending
-      note: —
+      status: committed
+      note: "a2e7a76"
     - id: 9
       title: Webapp i18n content (whole-sentence messages, real copy, Intl formatting)
-      status: pending
-      note: —
+      status: committed
+      note: "53a6483"
     - id: 10
       title: Visible labels on the auth and settings forms
-      status: pending
-      note: —
+      status: committed
+      note: "3fbd2df"
     - id: 11
       title: Webapp landmarks, names, and focus (skip link, 404 h1, label in name, sidebar toggle, dummy handlers)
-      status: pending
-      note: —
+      status: committed
+      note: "e7618a0"
     - id: 12
       title: Webapp reuse of tokens and components, store equality, dead code
-      status: pending
-      note: —
+      status: committed
+      note: "b9e992d. No kept unit test (no runner, see issue-00003)"
     - id: 13
       title: E2E accessibility and overflow sweep
-      status: pending
-      note: —
+      status: committed
+      note: "1ecb6b0"
     - id: 14
       title: Docs sync (human-facing)
-      status: pending
-      note: —
+      status: done
+      note: "n/a: docs/ has no UI content (rg searched sidebar, admin, locale, theme, accessibility)"
     - id: 15
       title: LLM docs sync (.agents/docs)
-      status: pending
-      note: —
+      status: committed
+      note: "9d6943b. AGENTS.md line left as a proposal in issue-00003"
     - id: 16
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "Green: format, lint, typecheck (5 packages), rumdl, frozen lockfile, uilibs 92 files / 444 tests, webapp and storybook builds, E2E 337 passed (391 skipped by design), axe sweep 0 findings. Deviation: entry chunk 303 -> 363 KB (115 KB gzip), above the 10% bound: issue-00003"
     - id: 17
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "Plan archived, issue-00003 filed, handover-00007 written, handover-00002 archived, index updated. Closing commit is the owner's"
 ---
 
 # Remediate the UI audit — fix the verified defects in `packages/uilibs` and `packages/webapp` without touching the design-system tokens
