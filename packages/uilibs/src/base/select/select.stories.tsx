@@ -296,10 +296,24 @@ export const Keyboard: Story = {
     await expect(trigger).toHaveFocus()
     await userEvent.keyboard('{Enter}')
     await body.findByRole('listbox')
+    // Where the highlight starts is not fixed under simulated events: WebKit opens with nothing
+    // highlighted, and one cold Chromium run picked the first item after one arrow. Home pins the
+    // start, so the arrow's step is the same on every engine and run.
+    await userEvent.keyboard('{Home}')
+    await waitFor(() =>
+      expect(body.getByRole('option', { name: 'Phoenix feather' })).toHaveAttribute(
+        'data-highlighted'
+      )
+    )
     await userEvent.keyboard('{ArrowDown}')
+    await waitFor(() =>
+      expect(body.getByRole('option', { name: 'Dragon heartstring' })).toHaveAttribute(
+        'data-highlighted'
+      )
+    )
     await userEvent.keyboard('{Enter}')
     await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
-    await expect(trigger).toHaveTextContent(/Dragon heartstring|Unicorn hair/)
+    await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }
 }

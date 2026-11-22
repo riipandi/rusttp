@@ -21,6 +21,7 @@ const syncManagerTheme = (mode: unknown) => {
 // expands its own group). These are the slugged ids of the top-level titles in `preview.tsx`.
 addons.setConfig({
   showPanel: false,
+  panelPosition: 'right',
   sidebar: { collapsedRoots: ['extra-components', 'data-grid', 'visualizations', 'contracts'] }
 })
 

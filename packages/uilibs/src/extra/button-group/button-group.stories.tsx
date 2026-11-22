@@ -132,6 +132,10 @@ export const WithInput: Story = {
 /** Filled buttons have no border to share, so the group draws a divider between them. */
 export const FilledDividers: Story = {
   name: 'Filled buttons get dividers',
+  // audit-00002 F-01: `ButtonGroup` re-keys a Fragment's children with the same `.0`, `.1` keys
+  // `toArray` gave the outer ones, so React logs a duplicate-key error. The console gate stays off
+  // for this story until the fix; delete the line to reproduce.
+  parameters: { consoleErrors: 'off' },
   render: () => (
     <ButtonGroup aria-label='Wand woods'>
       <Button>Holly</Button>

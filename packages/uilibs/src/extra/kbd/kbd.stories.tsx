@@ -4,7 +4,6 @@ import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../base/tooltip'
-import { colors } from '../../styles/colors.stylex'
 import { Kbd, KbdGroup } from './kbd.component'
 
 const meta = {
@@ -36,10 +35,6 @@ const styles = stylex.create({
     alignItems: 'center',
     display: 'flex',
     gap: 6
-  },
-  kbd: {
-    backgroundColor: `color-mix(in srgb, ${colors.backgroundPage} 20%, transparent)`,
-    color: colors.backgroundPage
   }
 })
 
@@ -71,7 +66,7 @@ export const InTooltip: Story = {
       <Tooltip>
         <TooltipTrigger render={<Button variant='outline' />}>Alohomora</TooltipTrigger>
         <TooltipContent style={styles.content}>
-          Alohomora <Kbd style={styles.kbd}>⌘S</Kbd>
+          Alohomora <Kbd>⌘S</Kbd>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

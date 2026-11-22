@@ -3,6 +3,12 @@ import { GlobalDecorator, STORYBOOK_THEME_GLOBAL } from './decorator'
 import { ThemedDocsContainer } from './docs-container'
 import '../src/assets/globals.css'
 
+// `console.error` is where React reports a duplicate key, an invalid style property, or a DOM
+// nesting error: a story that logs one fails, so these never reach a consumer unseen. A story with
+// a known defect opts out with `parameters: { consoleErrors: 'off' }` and names the finding.
+const consoleErrors: string[] = []
+const nativeConsoleError = console.error
+
 const gateMode = (value: unknown) => (value === 'todo' || value === 'off' ? value : 'error')
 
 const preview: Preview = {
@@ -56,6 +62,21 @@ const preview: Preview = {
   },
   initialGlobals: {
     [STORYBOOK_THEME_GLOBAL]: 'system'
+  },
+  beforeEach: () => {
+    consoleErrors.length = 0
+    console.error = (...args: unknown[]) => {
+      consoleErrors.push(args.map(String).join(' ').slice(0, 300))
+      nativeConsoleError(...args)
+    }
+  },
+  afterEach: ({ parameters }) => {
+    console.error = nativeConsoleError
+    if (parameters.consoleErrors !== 'off' && consoleErrors.length > 0) {
+      throw new Error(
+        `The story logged ${consoleErrors.length} console error(s):\n${consoleErrors.join('\n')}`
+      )
+    }
   },
   decorators: [
     (Story, context) => (

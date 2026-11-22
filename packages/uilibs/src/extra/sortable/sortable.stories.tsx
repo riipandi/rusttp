@@ -562,7 +562,7 @@ export const NestedGroups: Story = {
         >
           {optionGroups.map((group) => (
             <SortableItem key={group.id} value={group.id}>
-              <div style={styles.groupContainer}>
+              <div {...stylex.props(styles.groupContainer)}>
                 <Collapsible defaultOpen={group.id === '1'}>
                   {/* The handle sits beside the trigger: a button cannot hold another control. */}
                   <div {...stylex.props(styles.groupRow)}>

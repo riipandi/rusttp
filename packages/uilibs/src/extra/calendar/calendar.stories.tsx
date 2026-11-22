@@ -6,6 +6,7 @@ import * as React from 'react'
 import type { DayButton } from 'react-day-picker'
 import type { DateRange } from 'react-day-picker'
 import { arSA } from 'react-day-picker/locale'
+import { expect } from 'storybook/test'
 import { Button } from '../../base/button/button.component'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
@@ -441,6 +442,17 @@ export const CustomDays: Story = {
         </CardContent>
       </Card>
     )
+  },
+  // audit-00002 F-05: the custom day button loses the range fill between the two ends (and applies
+  // `dayBtnSelected` as `style && flag`, so a single selection gets none). Excluded from the run
+  // (`!test`) until fixed; remove the tag to reproduce.
+  tags: ['!test'],
+  play: async ({ canvasElement }) => {
+    const middle = canvasElement.querySelectorAll<HTMLElement>('[data-range-middle="true"]')
+    await expect(middle.length).toBeGreaterThan(0)
+    for (const day of middle) {
+      await expect(getComputedStyle(day).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    }
   }
 }
 
