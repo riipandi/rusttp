@@ -32,7 +32,7 @@ There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-Live: `plan-00006-webapp-unit-tests.md` (awaiting-approval, 9 phases: Vitest browser mode with React, UI, and coverage for the webapp, Vitest versions in the catalog, `just test-web*` recipes, tests for the stores, formatters, message hooks, and auth schema; issue-00003 item 5). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), `plan-00004-ui-audit-remediation.md`, and `plan-00005-ui-leftovers-remediation.md` (both done, 2026-11-22) are in `.agents/docs/archive/`.
+None live. `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -41,7 +41,6 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
-| `issue-00003-ui-audit-leftovers.md` | considering (1 considering, 5 resolved) | What plan 00004 left out; plan 00005 resolved the entry load (root `TooltipProvider`), contrast gaps, data grid size, double-mounted admin chrome, and the `AGENTS.md` line. Open: no webapp unit test runner. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
@@ -54,7 +53,8 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the newe
 | File                                     | Status  | Subject                                                                                                                                              |
 | ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 (re-measured), the traps.                                                          |
-| `handover-00008-ui-leftovers-remediation.md` | partial | Plan 00005 closed: entry budget, per-layout tooltip, one admin chrome, contrast, data grid split, the dropped lazy catalog; issue 00003 item 5 open. |
+| `handover-00008-ui-leftovers-remediation.md` | partial | Plan 00005 closed: entry budget, per-layout tooltip, one admin chrome, contrast, data grid split, the dropped lazy catalog; open: manual verifications and `data-grid-table-virtual.tsx`. |
+| `handover-00009-webapp-unit-tests.md` | done | Plan 00006 closed: Vitest browser mode for the webapp, one catalog version, `just test-web*`, 75 tests, the traps of browser mode. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -62,4 +62,4 @@ Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22).

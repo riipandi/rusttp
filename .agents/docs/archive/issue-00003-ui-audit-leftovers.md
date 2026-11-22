@@ -1,8 +1,8 @@
 ---
-status: considering
+status: resolved
 created: 2026-11-22T07:00:00+07:00
-updated: 2026-11-22T14:10:00+07:00
-summary: "Re-checked 2026-11-22; plan 00005 resolved five of six: the entry load (the root TooltipProvider, not useMessages), the contrast gaps, the data grid size, the double-mounted admin chrome, and the AGENTS.md line. Only the missing webapp unit test runner stays parked."
+updated: 2026-11-22T14:40:00+07:00
+summary: "Resolved 2026-11-22 (all six items): plan 00005 fixed the entry load (the root TooltipProvider, not useMessages), the contrast gaps, the data grid size, the double-mounted admin chrome, and the AGENTS.md line; plan 00006 added the webapp unit test runner."
 count: 6
 ---
 
@@ -46,11 +46,12 @@ count: 6
 
 ## The webapp has no unit test runner
 
-- status: considering (trigger: the owner approves a runner, for instance Vitest, as a dependency)
+- status: resolved (2026-11-22)
   area: frontend/webapp
   summary: Verified 2026-11-22: `packages/webapp/package.json` has no `test` script. Plan 00004 phase 12 changed `notifications.store.ts` to return the same array when nothing changes and verified it with a scratch script (deleted), not a kept test. `packages/uilibs` already uses `vitest ^5.1.1`, written inline in its `package.json` rather than through `catalog:`, so a webapp runner would first move that version into the catalog.
-  plan: none yet
-  trigger: The approval.
+  plan: plan-00006-webapp-unit-tests
+  trigger: None — closed.
+  resolution: The owner approved Vitest, Vitest React, Vitest UI, and coverage on 2026-11-22. `packages/webapp` runs Vitest 5 in Chromium (`pnpm --filter webapp test`, `test:ui`, `test:coverage`, `just test-web*`), every Vitest version is a catalog entry shared with `uilibs`, and 75 tests cover the notifications, sidebar, and locale stores, the formatters, the message hooks, and the auth schema (`7f783ff`, `4a2d987`, `f6dc323`, `77a0b97`, `8ec24c5`).
 
 ## AGENTS.md still says `m.<key>()`
 

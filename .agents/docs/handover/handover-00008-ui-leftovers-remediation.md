@@ -28,7 +28,7 @@ Ledger moves: plan 00005 archived; handovers 00003 to 00006 (done) archived; `is
 
 ## What stayed open / the trap
 
-- `issue-00003-ui-audit-leftovers.md` item 5: the webapp has no unit test runner; it needs an owner-approved dependency (Vitest, with `uilibs`' inline version moved into `catalog:`).
+- `issue-00003-ui-audit-leftovers.md` item 5 (the webapp unit test runner) closed the same day by plan 00006 (`handover-00009`); the issue is archived.
 - Not verified: a real screen reader, a real forced-colors OS mode, a physical device (from plan 00004), and Firefox and WebKit for this plan (Chromium only: 184 E2E passed, uilibs 92 files / 444 tests).
 - `packages/uilibs/src/extra/data-grid/data-grid-table-virtual.tsx` is 1186 lines and was not split; no defect depends on it.
 

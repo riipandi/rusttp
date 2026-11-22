@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-22T14:20:00+07:00
-updated: 2026-11-22T14:27:00+07:00
+updated: 2026-11-22T14:40:00+07:00
 phases:
     - id: 1
       title: Vitest versions into the catalog, test dependencies for the webapp
@@ -25,20 +25,20 @@ phases:
       note: "The tests commit. 45 more tests (75 in all); scratch edits (the hour and day boundaries, a single messages object, minLength 11, the code regex, the forward path of the mismatch error) each turned tests red; lines covered: format 94%, messages 100%, auth.schema 96%, notifications.store, sidebar.store, locale.store 100%."
     - id: 6
       title: Docs sync (docs/)
-      status: pending
-      note: —
+      status: done
+      note: "n/a: `rg -n -i "test|webapp|vitest|just" docs` finds only the setup-admin text of commandline.md (no match about tests or the webapp runner)."
     - id: 7
       title: Agent docs sync (.agents/docs and AGENTS.md)
-      status: pending
-      note: —
+      status: committed
+      note: "fa85e4f. shape.md (the three recipes in the gates table, the Vitest sentence in the webapp entry), rules.md ("Webapp tests"), architecture.md (decision record), AGENTS.md validation line; the recipe names, scripts, config path, report directory, and the five catalog entries were checked with `rg`; `rumdl check .` clean."
     - id: 8
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "handover-00009 written; plan archived; issue-00003 item 5 resolved and the file, all terminal, archived; handover-00008 notes item 5 closed; index moved. Closing commit made on the owner's instruction of 2026-11-22."
     - id: 9
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "Green: `pnpm install --frozen-lockfile`, lint, format, typecheck (all packages, 0 errors), `rumdl check .`; webapp 6 files / 75 tests, also with coverage (report at packages/webapp/.output/coverage/index.html, no threshold); uilibs 92 files / 444 tests; webapp build and `size` 458.1 KB / 145.9 KB gzip; dependency diff is the catalog entries, two uilibs lines, the webapp devDependencies and scripts, the lockfile; `test` and `verify` recipes unchanged. E2E, Rust, API specs: n/a (no app or server change). The scratch-edit red checks were run per phase."
 ---
 
 # Give the webapp a unit test runner — Vitest in browser mode with React, UI, and coverage, and tests for its pure logic
