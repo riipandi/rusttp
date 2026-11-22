@@ -96,7 +96,7 @@ export const Sizes: Story = {
 export const Composition: Story = {
   render: () => (
     <div {...stylex.props(styles.stack)}>
-      <Badge variant='secondary'>
+      <Badge variant='faded'>
         <Spinner {...stylex.props(styles.spinnerSm)} />
         Brewing
       </Badge>

@@ -610,7 +610,7 @@ export const RowPinningSupport: Story = {
           <CardHeader style={statusStyles.cardHeader}>
             <div {...stylex.props(s.cellFlex)}>
               <span {...stylex.props(s.strong)}>Catalog</span>
-              {pinnedCount > 0 ? <Badge variant='primary'>{pinnedCount} pinned</Badge> : null}
+              {pinnedCount > 0 ? <Badge variant='solid'>{pinnedCount} pinned</Badge> : null}
             </div>
             {pinnedCount > 0 ? (
               <Button
@@ -785,9 +785,9 @@ export const TreeRows: Story = {
           header: 'Status',
           cell: ({ row }) =>
             row.original.status === 'inPrint' ? (
-              <Badge variant='secondary'>In print</Badge>
+              <Badge variant='faded'>In print</Badge>
             ) : (
-              <Badge tone='critical'>Out of print</Badge>
+              <Badge color='critical'>Out of print</Badge>
             ),
           size: 130
         }

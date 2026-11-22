@@ -47,71 +47,107 @@ export const buttonStyles = stylex.create({
   }
 })
 
-export const buttonVariants = stylex.create({
+// A fill is the shape of a button (`solid`, `faded`, `outline`, `ghost`) and a color is its role
+// (`primary`, `neutral`, `critical`); every fill has every color, so `buttonFills[fill][color]` is
+// one style. Reshaped names the same two axes `variant` and `color`.
+const hover = ':hover:not(:disabled)'
+
+export const buttonSolid = stylex.create({
   primary: {
     backgroundColor: {
       default: colors.backgroundPrimary,
-      ':hover:not(:disabled)': colors.backgroundPrimaryHighlighted
+      [hover]: colors.backgroundPrimaryHighlighted
     },
     color: colors.onBrand
   },
-  secondary: {
+  neutral: {
+    backgroundColor: {
+      default: colors.foregroundNeutral,
+      [hover]: `color-mix(in srgb, ${colors.foregroundNeutral} 85%, ${colors.backgroundPage})`
+    },
+    color: colors.backgroundPage
+  },
+  critical: {
+    backgroundColor: {
+      default: colors.backgroundCritical,
+      [hover]: colors.backgroundCriticalHighlighted
+    },
+    color: colors.onBackgroundCritical
+  }
+})
+
+export const buttonFaded = stylex.create({
+  primary: {
+    backgroundColor: {
+      default: colors.backgroundPrimaryFaded,
+      [hover]: colors.backgroundPrimaryHighlightedFaded
+    },
+    color: colors.foregroundPrimary
+  },
+  neutral: {
     backgroundColor: {
       default: colors.backgroundNeutral,
-      ':hover:not(:disabled)': colors.backgroundNeutralHighlighted
+      [hover]: colors.backgroundNeutralHighlighted
     },
     color: colors.foregroundNeutral
   },
-  outline: {
+  critical: {
+    backgroundColor: {
+      default: colors.backgroundCriticalFaded,
+      [hover]: colors.backgroundCriticalHighlightedFaded
+    },
+    color: colors.foregroundCritical
+  }
+})
+
+export const buttonOutline = stylex.create({
+  primary: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundPrimaryFaded },
+    borderColor: colors.borderPrimary,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    color: colors.foregroundPrimary
+  },
+  neutral: {
     backgroundColor: {
       default: colors.backgroundPage,
-      ':hover:not(:disabled)': colors.backgroundNeutralFaded
+      [hover]: colors.backgroundNeutralFaded
     },
     borderColor: colors.borderNeutralFaded,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: {
-      default: colors.foregroundNeutral,
-      ':hover:not(:disabled)': colors.foregroundNeutral
-    }
+    color: colors.foregroundNeutral
   },
-  ghost: {
-    backgroundColor: {
-      default: 'transparent',
-      ':hover:not(:disabled)': colors.backgroundNeutralFaded
-    },
-    color: {
-      default: colors.foregroundNeutral,
-      ':hover:not(:disabled)': colors.foregroundNeutral
-    }
+  critical: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundCriticalFaded },
+    borderColor: colors.borderCritical,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    color: colors.foregroundCritical
   }
 })
 
-/**
- * `tone='critical'` recolors a variant: the filled variants (`primary`, `secondary`) become the
- * solid critical fill, the quiet ones (`outline`, `ghost`) keep their shape and take the critical
- * text color. Compose it after the variant.
- */
-export const buttonCriticalTone = stylex.create({
-  filled: {
-    backgroundColor: {
-      default: colors.backgroundCritical,
-      ':hover:not(:disabled)': colors.backgroundCriticalHighlighted
-    },
-    color: colors.onBackgroundCritical
+export const buttonGhost = stylex.create({
+  primary: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundPrimaryFaded },
+    color: colors.foregroundPrimary
   },
-  quiet: {
-    backgroundColor: {
-      default: null,
-      ':hover:not(:disabled)': colors.backgroundCriticalFaded
-    },
-    borderColor: colors.borderCritical,
-    color: {
-      default: colors.foregroundCritical,
-      ':hover:not(:disabled)': colors.foregroundCritical
-    }
+  neutral: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundNeutralFaded },
+    color: colors.foregroundNeutral
+  },
+  critical: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundCriticalFaded },
+    color: colors.foregroundCritical
   }
 })
+
+export const buttonFills = {
+  solid: buttonSolid,
+  faded: buttonFaded,
+  outline: buttonOutline,
+  ghost: buttonGhost
+}
 
 export const buttonSizes = stylex.create({
   xs: { fontSize: fontSize.caption1, gap: unit.x1, height: unit.x7, paddingInline: unit.x2 },

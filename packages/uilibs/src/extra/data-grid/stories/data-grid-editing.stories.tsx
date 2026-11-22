@@ -137,9 +137,9 @@ export const CrudFeatures: Story = {
           header: 'Status',
           cell: ({ row }) =>
             row.original.status === 'inPrint' ? (
-              <Badge variant='secondary'>In print</Badge>
+              <Badge variant='faded'>In print</Badge>
             ) : (
-              <Badge tone='critical'>Out of print</Badge>
+              <Badge color='critical'>Out of print</Badge>
             ),
           size: 120
         }

@@ -1,35 +1,38 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
-import type { Tone } from '../../styles/tone'
 import { focusRing } from '../../styles/utils.stylex'
 import {
-  badgeFadedTones,
-  badgeGhostTones,
-  badgeOutlineTones,
-  badgeSolidTones,
+  badgeFadedColors,
+  badgeGhostColors,
+  badgeOutlineColors,
+  badgeSolidColors,
   badgeStyles as s,
   badgeVariants as variants
 } from './badge.stylex'
 
-export type BadgeVariant = 'primary' | 'secondary' | 'outline' | 'ghost'
+export type BadgeVariant = 'solid' | 'faded' | 'outline' | 'ghost'
+export type BadgeColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
 
-export interface BadgeProps extends Omit<useRender.ComponentProps<'span'>, 'className' | 'style'> {
-  /** The shape: `primary` a solid fill, `secondary` a faded one, `outline` an edge, `ghost` text only. */
+export interface BadgeProps extends Omit<
+  useRender.ComponentProps<'span'>,
+  'className' | 'style' | 'color'
+> {
+  /** The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). */
   variant?: BadgeVariant
-  /** The color role. `primary` for the `primary` variant, `neutral` for the others, by default. */
-  tone?: Tone
+  /** The role. `primary` for `solid`, `neutral` for the other fills, by default. */
+  color?: BadgeColor
   style?: stylex.StyleXStyles
 }
 
-const toneStyles = {
-  primary: badgeSolidTones,
-  secondary: badgeFadedTones,
-  outline: badgeOutlineTones,
-  ghost: badgeGhostTones
+const colorStyles = {
+  solid: badgeSolidColors,
+  faded: badgeFadedColors,
+  outline: badgeOutlineColors,
+  ghost: badgeGhostColors
 }
 
-export function Badge({ variant = 'primary', tone, style, render, ...props }: BadgeProps) {
+export function Badge({ variant = 'solid', color, style, render, ...props }: BadgeProps) {
   return useRender({
     defaultTagName: 'span',
     props: mergeProps<'span'>(
@@ -37,7 +40,7 @@ export function Badge({ variant = 'primary', tone, style, render, ...props }: Ba
         focusRing.root,
         s.root,
         variants[variant],
-        toneStyles[variant][tone ?? (variant === 'primary' ? 'primary' : 'neutral')],
+        colorStyles[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')],
         style
       ),
       props

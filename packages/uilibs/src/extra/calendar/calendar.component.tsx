@@ -4,7 +4,7 @@ import type { StyleXStyles } from '@stylexjs/stylex'
 import * as React from 'react'
 import { DateLib, DayPicker, getDefaultClassNames, labelDayButton } from 'react-day-picker'
 import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-picker'
-import { buttonStyles, buttonVariants } from '../../base/button'
+import { buttonFill, buttonStyles, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
 import { calendarStyles } from './calendar.stylex'
@@ -199,7 +199,7 @@ const labelDayWithNumber: NonNullable<
   `${(dateLib ?? new DateLib(options)).format(date, 'd')}, ${labelDayButton(date, modifiers, options, dateLib)}`
 
 type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-  buttonVariant?: keyof typeof buttonVariants
+  buttonVariant?: ButtonVariant
   className?: string
   style?: StyleXStyles
 }
@@ -225,13 +225,13 @@ export function Calendar({
 
   const prevBtnProps = stylex.props(
     buttonStyles.root,
-    buttonVariants[buttonVariant],
+    buttonFill(buttonVariant),
     calendarStyles.buttonNav
   )
 
   const nextBtnProps = stylex.props(
     buttonStyles.root,
-    buttonVariants[buttonVariant],
+    buttonFill(buttonVariant),
     calendarStyles.buttonNav
   )
 

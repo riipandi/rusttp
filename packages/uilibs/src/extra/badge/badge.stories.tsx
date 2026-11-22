@@ -55,31 +55,31 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { variant: 'primary' },
+  args: { variant: 'solid' },
   render: (args) => <Badge {...args}>Gryffindor</Badge>
 }
 
 export const Variants: Story = {
   render: () => (
     <div {...stylex.props(styles.row)}>
-      <Badge variant='secondary'>Hufflepuff</Badge>
+      <Badge variant='faded'>Hufflepuff</Badge>
       <Badge variant='outline'>Ravenclaw</Badge>
-      <Badge tone='critical'>Azkaban</Badge>
+      <Badge color='critical'>Azkaban</Badge>
     </div>
   )
 }
 
-const tones = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
-const variantNames = ['primary', 'secondary', 'outline', 'ghost'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+const variantNames = ['solid', 'faded', 'outline', 'ghost'] as const
 
-/** Every variant in every tone; the a11y gate checks the contrast of each pair. */
-export const Tones: Story = {
+/** Every variant in every color; the a11y gate checks the contrast of each pair. */
+export const Colors: Story = {
   render: () => (
     <div {...stylex.props(styles.grid)}>
       {variantNames.map((variant) =>
-        tones.map((tone) => (
-          <Badge key={`${variant}-${tone}`} variant={variant} tone={tone}>
-            {`${variant} ${tone}`}
+        colorNames.map((color) => (
+          <Badge key={`${variant}-${color}`} variant={variant} color={color}>
+            {`${variant} ${color}`}
           </Badge>
         ))
       )}
@@ -87,8 +87,8 @@ export const Tones: Story = {
   ),
   play: async ({ canvas }) => {
     for (const variant of variantNames) {
-      for (const tone of tones) {
-        await expect(canvas.getByText(`${variant} ${tone}`)).toBeInTheDocument()
+      for (const color of colorNames) {
+        await expect(canvas.getByText(`${variant} ${color}`)).toBeInTheDocument()
       }
     }
   }
@@ -97,7 +97,7 @@ export const Tones: Story = {
 export const Icon: Story = {
   name: 'With icon',
   render: () => (
-    <Badge variant='secondary'>
+    <Badge variant='faded'>
       <Check {...stylex.props(styles.icon)} />
       Ministry approved
     </Badge>
@@ -107,7 +107,7 @@ export const Icon: Story = {
 export const WithSpinner: Story = {
   name: 'With spinner',
   render: () => (
-    <Badge variant='secondary'>
+    <Badge variant='faded'>
       <Spinner {...stylex.props(styles.spinner)} />
       Apparating
     </Badge>
@@ -116,7 +116,7 @@ export const WithSpinner: Story = {
 
 export const Link: Story = {
   render: () => (
-    <Badge variant='secondary' render={<a href='#new-release' />}>
+    <Badge variant='faded' render={<a href='#new-release' />}>
       New at Weasleys'
     </Badge>
   ),

@@ -199,7 +199,7 @@ export const Destructive: Story = {
         <DropdownMenuItem>Revise</DropdownMenuItem>
         <DropdownMenuItem>Gemino</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem tone='critical'>Evanesco</DropdownMenuItem>
+        <DropdownMenuItem color='critical'>Evanesco</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -223,7 +223,7 @@ export const Submenu: Story = {
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem tone='critical'>
+        <DropdownMenuItem color='critical'>
           Evanesco
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

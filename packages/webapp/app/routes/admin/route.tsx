@@ -90,7 +90,7 @@ function AdminLayout() {
         <div {...stylex.props(styles.content)}>
           <AnnouncementBar
             label={m.admin_banner_demo_label()}
-            tone='critical'
+            color='critical'
             style={styles.banner}
           >
             {m.admin_banner_demo_notice()}

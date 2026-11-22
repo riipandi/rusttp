@@ -4,6 +4,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { radius } from '../../styles/tokens.stylex'
 import { Button, LinkButton } from './button.component'
 import { buttonSizes } from './button.stylex'
@@ -67,12 +68,12 @@ export const Playground: Story = {
 }
 
 export const Default: Story = {
-  args: { variant: 'primary' },
+  args: { variant: 'solid' },
   render: (args) => <Button {...args}>Expelliarmus</Button>
 }
 
 export const Secondary: Story = {
-  args: { variant: 'secondary' },
+  args: { variant: 'faded' },
   render: (args) => <Button {...args}>Protego</Button>
 }
 
@@ -86,22 +87,34 @@ export const Ghost: Story = {
   render: (args) => <Button {...args}>Moaning Myrtle</Button>
 }
 
-export const Critical: Story = {
-  args: { tone: 'critical' },
-  render: (args) => <Button {...args}>Avada Kedavra</Button>
-}
+const fillNames = ['solid', 'faded', 'outline', 'ghost'] as const
+const colorNames = ['primary', 'neutral', 'critical'] as const
 
-export const CriticalQuiet: Story = {
+/** Every fill in every color; the a11y gate checks the contrast of each pair. */
+export const Colors: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Button variant='outline' tone='critical'>
-        Obliviate
-      </Button>
-      <Button variant='ghost' tone='critical'>
-        Confundo
-      </Button>
-    </div>
-  )
+    <Axis axis='variant' rows={fillNames} columnAxis='color' columns={colorNames}>
+      {(variant, color) => (
+        <Button variant={variant} color={color}>
+          Obliviate
+        </Button>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const look = (variant: string, color: string) => {
+      const el = canvasElement.querySelector(
+        `[data-variant="${variant}"][data-color="${color}"]`
+      )?.firstElementChild
+      if (!el) throw new Error(`No button for ${variant} ${color}`)
+      const style = getComputedStyle(el)
+      return `${style.backgroundColor}|${style.color}|${style.borderTopColor}`
+    }
+    // Color and fill are independent: every pair renders and no two colors share a look.
+    for (const variant of fillNames) {
+      await expect(new Set(colorNames.map((color) => look(variant, color))).size).toBe(3)
+    }
+  }
 }
 
 export const Sizes: Story = {
@@ -193,7 +206,7 @@ export const LoadingKeepsWidth: Story = {
 export const Disabled: Story = {
   name: 'disabled',
   render: () => (
-    <Button disabled variant='primary'>
+    <Button disabled variant='solid'>
       Petrified
     </Button>
   ),

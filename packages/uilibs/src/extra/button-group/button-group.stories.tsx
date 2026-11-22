@@ -141,8 +141,8 @@ export const FilledDividers: Story = {
       <Button>Holly</Button>
       <Button>Elder</Button>
       <>
-        <Button variant='secondary'>Yew</Button>
-        <Button tone='critical'>Vine</Button>
+        <Button variant='faded'>Yew</Button>
+        <Button color='critical'>Vine</Button>
       </>
     </ButtonGroup>
   ),

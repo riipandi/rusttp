@@ -23,7 +23,7 @@ export const styles = stylex.create({
     margin: 0,
     textWrap: 'balance'
   },
-  // The action borrows the strip's text color, so it reads on every tone; the hover tint is that
+  // The action borrows the strip's text color, so it reads on every color; the hover tint is that
   // color at low alpha.
   action: {
     color: 'inherit',
@@ -42,7 +42,7 @@ export const styles = stylex.create({
   }
 })
 
-export const tones = stylex.create({
+export const barColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
   primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
   positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },

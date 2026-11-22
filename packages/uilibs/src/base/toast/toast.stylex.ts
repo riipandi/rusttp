@@ -19,7 +19,7 @@ export const toastStyles = stylex.create({
     '--toast-gap': unit.x2,
     alignItems: 'flex-start',
     backgroundColor: colors.backgroundElevationOverlay,
-    // The accent is `toastTones`; a neutral toast has the quiet edge.
+    // The accent is `toastColors`; a neutral toast has the quiet edge.
     borderColor: colors.borderNeutralFaded,
     borderRadius: radius.medium,
     borderStyle: 'solid',
@@ -126,7 +126,7 @@ export const toastStyles = stylex.create({
   }
 })
 
-export const toastTones = stylex.create({
+export const toastColors = stylex.create({
   neutral: {},
   primary: { borderColor: colors.borderPrimary },
   positive: { borderColor: colors.borderPositive },

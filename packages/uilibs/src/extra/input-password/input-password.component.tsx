@@ -17,7 +17,7 @@
 import { Eye, EyeOff } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { buttonVariants } from '../../base/button'
+import type { ButtonVariant } from '../../base/button'
 import { Icon } from '../icon'
 import {
   InputGroup,
@@ -54,7 +54,7 @@ export interface InputPasswordProps extends Omit<
   /** Accessible names of the toggle; English by default. */
   labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
-  toggleVariant?: keyof typeof buttonVariants
+  toggleVariant?: ButtonVariant
   /** Toggle button size. Defaults to `icon-xs`. */
   toggleSize?: InputGroupButtonSize
 }

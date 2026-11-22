@@ -56,7 +56,7 @@ export function GlobalNotFound() {
       description={m.boundary_not_found_description()}
     >
       <LinkButton render={<Link to='/' />}>{m.boundary_back_home()}</LinkButton>
-      <Button variant='secondary' onClick={() => router.history.back()}>
+      <Button variant='faded' color='neutral' onClick={() => router.history.back()}>
         {m.boundary_go_back()}
       </Button>
     </Boundary>
@@ -74,7 +74,7 @@ export function GlobalError({ error, reset }: ErrorComponentProps) {
       detail={import.meta.env.DEV && error instanceof Error ? error.message : undefined}
     >
       <Button onClick={reset}>{m.boundary_try_again()}</Button>
-      <LinkButton render={<Link to='/' />} variant='secondary'>
+      <LinkButton render={<Link to='/' />} variant='faded' color='neutral'>
         {m.boundary_back_home()}
       </LinkButton>
     </Boundary>

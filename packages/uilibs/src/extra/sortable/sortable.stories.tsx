@@ -370,7 +370,7 @@ export const BasicList: Story = {
                   <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
                 </div>
                 <div {...stylex.props(styles.metaRow)}>
-                  <Badge variant='secondary'>{item.type}</Badge>
+                  <Badge variant='faded'>{item.type}</Badge>
                   <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
                 </div>
               </div>
@@ -482,7 +482,7 @@ export const GridLayout: Story = {
                   <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
                 </div>
                 <div {...stylex.props(styles.gridFooter)}>
-                  <Badge variant='secondary'>{item.type}</Badge>
+                  <Badge variant='faded'>{item.type}</Badge>
                   {item.type !== 'featured' && (
                     <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
                   )}
@@ -695,7 +695,7 @@ export const Playlist: Story = {
               <CardTitle>Queue</CardTitle>
               <CardDescription>{tracks.length} tracks</CardDescription>
             </div>
-            <Badge variant='primary'>Playlist</Badge>
+            <Badge variant='solid'>Playlist</Badge>
           </CardHeader>
           <div {...stylex.props(styles.cardBody)}>
             <Sortable
@@ -712,7 +712,7 @@ export const Playlist: Story = {
                     <div {...stylex.props(styles.rowBody)}>
                       <div {...stylex.props(styles.metaRow)}>
                         <span {...stylex.props(styles.rowTitle)}>{track.title}</span>
-                        {track.active && <Badge variant='primary'>Playing</Badge>}
+                        {track.active && <Badge variant='solid'>Playing</Badge>}
                       </div>
                       <span {...stylex.props(styles.rowMeta)}>
                         {track.artist} · {track.album}

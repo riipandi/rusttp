@@ -97,11 +97,11 @@ export const WithBadges: Story = {
     <DescriptionList {...args} style={styles.frame}>
       <DescriptionTerm>Payment status</DescriptionTerm>
       <DescriptionDetails>
-        <Badge variant='secondary'>Paid</Badge>
+        <Badge variant='faded'>Paid</Badge>
       </DescriptionDetails>
       <DescriptionTerm>Priority</DescriptionTerm>
       <DescriptionDetails>
-        <Badge tone='critical'>High</Badge>
+        <Badge color='critical'>High</Badge>
       </DescriptionDetails>
       <DescriptionTerm>Shipping</DescriptionTerm>
       <DescriptionDetails>

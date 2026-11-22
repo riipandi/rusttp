@@ -182,7 +182,7 @@ export const Actions: Story = {
                     <DropdownMenuItem>Edit title</DropdownMenuItem>
                     <DropdownMenuItem>Send an owl</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem tone='critical'>Expel</DropdownMenuItem>
+                    <DropdownMenuItem color='critical'>Expel</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

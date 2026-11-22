@@ -65,7 +65,7 @@ export const Playground: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction tone='critical'>Seal</AlertDialogAction>
+          <AlertDialogAction color='critical'>Seal</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -108,7 +108,7 @@ export const Media: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction tone='critical'>Vanish</AlertDialogAction>
+          <AlertDialogAction color='critical'>Vanish</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -130,7 +130,7 @@ export const Small: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Stay</AlertDialogCancel>
-          <AlertDialogAction tone='critical'>Disapparate</AlertDialogAction>
+          <AlertDialogAction color='critical'>Disapparate</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -151,7 +151,7 @@ export const Destructive: Story = {
 
     return (
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger render={<Button tone='critical' />}>
+        <AlertDialogTrigger render={<Button color='critical' />}>
           Close the Gringotts vault
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -165,7 +165,7 @@ export const Destructive: Story = {
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              tone='critical'
+              color='critical'
               loading={deleting}
               onClick={(event) => {
                 // Keep the dialog open until the work is done, then close it through `open`.

@@ -40,7 +40,7 @@ export const alertStyles = stylex.create({
   }
 })
 
-export const alertTones = stylex.create({
+export const alertColors = stylex.create({
   neutral: {},
   primary: {
     borderColor: colors.borderPrimary,

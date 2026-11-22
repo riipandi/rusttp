@@ -88,19 +88,19 @@ function DataGridColumnFilter<TData extends object, TValue>({
             {selectedValues?.size > 0 && (
               <>
                 <Separator orientation='vertical' style={sFilter.verticalSeparator} />
-                <Badge variant='secondary' style={sFilter.countBadge}>
+                <Badge variant='faded' style={sFilter.countBadge}>
                   {selectedValues.size}
                 </Badge>
                 <div {...stylex.props(sFilter.badgeList)}>
                   {selectedValues.size > 2 ? (
-                    <Badge variant='secondary' style={sFilter.countBadge}>
+                    <Badge variant='faded' style={sFilter.countBadge}>
                       {i18n.labels.filterSelectedCount(selectedValues.size)}
                     </Badge>
                   ) : (
                     options
                       .filter((option) => selectedValues.has(option.value))
                       .map((option) => (
-                        <Badge variant='secondary' key={option.value} style={sFilter.countBadge}>
+                        <Badge variant='faded' key={option.value} style={sFilter.countBadge}>
                           {option.label}
                         </Badge>
                       ))

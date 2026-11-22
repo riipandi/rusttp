@@ -5,16 +5,16 @@ updated: 2026-11-22T19:21:58+07:00
 phases:
     - id: 0
       title: Commit the audit work already in the tree
-      status: pending
-      note: —
+      status: committed
+      note: landed in 4808368 together with the plan
     - id: 1
       title: Story axes helper, fluid canvas, convention
-      status: pending
-      note: —
+      status: committed
+      note: 4dce9b2; Axis replaces ControlSizesColumn and DenseControlSizesColumn in 14 story files
     - id: 2
       title: Rename tone to color, rename Button and Badge variants
-      status: pending
-      note: —
+      status: in_progress
+      note: parity 74 of 76 identical (the 2 diffs are ghost critical border-top-color under border-style none); e2e 184 passed; commit hash lands with phase 3
     - id: 3
       title: Button and Badge new props and colors
       status: pending

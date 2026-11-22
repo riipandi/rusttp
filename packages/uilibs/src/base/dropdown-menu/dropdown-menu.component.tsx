@@ -92,18 +92,20 @@ export function DropdownMenuContent({
 }
 
 export interface DropdownMenuItemProps
-  extends Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style'>, StyleProp {
+  extends
+    Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
+    StyleProp {
   /** `critical` marks a destructive or irreversible item. */
-  tone?: 'critical'
+  color?: 'neutral' | 'critical'
   /** Indents the item to align with checkbox/radio item labels. */
   inset?: boolean
 }
 
-export function DropdownMenuItem({ style, tone, inset, ...props }: DropdownMenuItemProps) {
+export function DropdownMenuItem({ style, color, inset, ...props }: DropdownMenuItemProps) {
   return (
     <BaseMenu.Item
       {...props}
-      {...stylex.props(s.item, inset && s.itemInset, tone === 'critical' && s.itemCritical, style)}
+      {...stylex.props(s.item, inset && s.itemInset, color === 'critical' && s.itemCritical, style)}
     />
   )
 }

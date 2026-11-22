@@ -29,13 +29,13 @@ const styles = stylex.create({
 
 interface StatusIconProps {
   svg: React.ComponentType
-  tone?: 'primary' | 'positive' | 'critical'
+  color?: 'primary' | 'positive' | 'critical'
 }
 
 // The mark at the top of a page that reports a state ("check your email", "verified").
-export function StatusIcon({ svg, tone = 'primary' }: StatusIconProps) {
+export function StatusIcon({ svg, color = 'primary' }: StatusIconProps) {
   return (
-    <span {...stylex.props(styles.circle, styles[tone])} aria-hidden='true'>
+    <span {...stylex.props(styles.circle, styles[color])} aria-hidden='true'>
       <Icon svg={svg} size={24} />
     </span>
   )

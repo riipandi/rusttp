@@ -33,7 +33,7 @@ function flatten(children: React.ReactNode): React.ReactNode[] {
 function isFilledButton(child: React.ReactElement<object>) {
   if (child.type !== Button) return false
   const variant = 'variant' in child.props ? child.props.variant : undefined
-  return variant === undefined || variant === 'primary' || variant === 'secondary'
+  return variant === undefined || variant === 'solid' || variant === 'faded'
 }
 
 /**

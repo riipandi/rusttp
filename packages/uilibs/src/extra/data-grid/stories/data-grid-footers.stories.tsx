@@ -114,9 +114,9 @@ function baseColumns(): ColumnDef<DataGridFeatures, IBook>[] {
       header: 'Status',
       cell: ({ row }) =>
         row.original.status === 'inPrint' ? (
-          <Badge variant='secondary'>In print</Badge>
+          <Badge variant='faded'>In print</Badge>
         ) : (
-          <Badge tone='critical'>Out of print</Badge>
+          <Badge color='critical'>Out of print</Badge>
         ),
       size: 110
     },
@@ -223,7 +223,7 @@ export const SummaryStatsFooter: Story = {
           <DataGridTableFootRowCell colSpan={2}>
             <div {...stylex.props(s.cellFlex)}>
               <span {...stylex.props(footerStyles.muted)}>In print</span>
-              <Badge variant='secondary'>{stats.inPrintCount}</Badge>
+              <Badge variant='faded'>{stats.inPrintCount}</Badge>
             </div>
           </DataGridTableFootRowCell>
         </DataGridTableFootRow>

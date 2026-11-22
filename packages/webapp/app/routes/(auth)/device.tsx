@@ -73,7 +73,7 @@ function InvalidLink() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <StatusIcon svg={CircleAlert} tone='critical' />
+        <StatusIcon svg={CircleAlert} color='critical' />
         <PageTitle>{m.auth_device_invalid_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_device_invalid_subtitle()}</p>
       </div>

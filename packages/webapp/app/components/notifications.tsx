@@ -70,7 +70,7 @@ function Row({ item }: { item: NotificationResponse }) {
               {item.read ? m.notifications_mark_unread() : m.notifications_mark_read()}
             </DropdownMenuItem>
             <DropdownMenuItem
-              tone='critical'
+              color='critical'
               style={styles.menuItem}
               onClick={() => dismiss(item.id)}
             >
@@ -158,7 +158,7 @@ export function NotificationsPopover({
           <div {...stylex.props(styles.heading)}>
             <PopoverTitle>{m.notifications_title()}</PopoverTitle>
             {unread > 0 && (
-              <Badge variant='secondary' tone='primary'>
+              <Badge variant='faded' color='primary'>
                 {m.notifications_new_count({ count: unread })}
               </Badge>
             )}
@@ -186,7 +186,7 @@ export function NotificationsPopover({
                 {m.notifications_mark_all_read()}
               </DropdownMenuItem>
               <DropdownMenuItem
-                tone='critical'
+                color='critical'
                 style={styles.menuItem}
                 disabled={items.length === 0}
                 onClick={dismissAll}

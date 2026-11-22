@@ -17,7 +17,7 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <StatusIcon svg={CircleCheck} tone='positive' />
+        <StatusIcon svg={CircleCheck} color='positive' />
         <PageTitle>{m.page_auth_email_verified()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_verified_subtitle()}</p>
       </div>

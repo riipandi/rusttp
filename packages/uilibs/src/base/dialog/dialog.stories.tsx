@@ -78,7 +78,7 @@ export const Playground: Story = {
         </DialogHeader>
         <DialogFooter>
           <DialogClose render={<Button variant='ghost' />}>Cancel</DialogClose>
-          <DialogClose render={<Button tone='critical' />}>Erase</DialogClose>
+          <DialogClose render={<Button color='critical' />}>Erase</DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

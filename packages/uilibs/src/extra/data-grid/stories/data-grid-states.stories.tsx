@@ -226,9 +226,9 @@ export const CardContainer: Story = {
           ),
           cell: ({ row }) =>
             row.original.status === 'inPrint' ? (
-              <Badge variant='primary'>In print</Badge>
+              <Badge variant='solid'>In print</Badge>
             ) : (
-              <Badge tone='critical'>Out of print</Badge>
+              <Badge color='critical'>Out of print</Badge>
             ),
           size: 200,
           enableSorting: true,
@@ -480,9 +480,9 @@ export const LocalizedLabels: Story = {
           header: config.columns.status,
           cell: ({ row }) =>
             row.original.status === 'shipped' ? (
-              <Badge variant='secondary'>{config.status.shipped}</Badge>
+              <Badge variant='faded'>{config.status.shipped}</Badge>
             ) : (
-              <Badge variant='secondary'>{config.status.processing}</Badge>
+              <Badge variant='faded'>{config.status.processing}</Badge>
             ),
           size: 140
         },
@@ -517,7 +517,7 @@ export const LocalizedLabels: Story = {
               <Button
                 key={key}
                 size='sm'
-                variant={locale === key ? 'primary' : 'outline'}
+                variant={locale === key ? 'solid' : 'outline'}
                 onClick={() => setLocale(key)}
               >
                 {LOCALES[key]!.label}
@@ -666,9 +666,9 @@ export const ServerSidePagination: Story = {
           ),
           cell: ({ row }) =>
             row.original.status === 'inPrint' ? (
-              <Badge variant='secondary'>In print</Badge>
+              <Badge variant='faded'>In print</Badge>
             ) : (
-              <Badge tone='critical'>Out of print</Badge>
+              <Badge color='critical'>Out of print</Badge>
             ),
           size: 130,
           meta: { skeleton: <Skeleton style={skeletonStyles.chip} /> }
@@ -725,7 +725,7 @@ export const ServerSidePagination: Story = {
                   <Button
                     key={value}
                     size='sm'
-                    variant={status === value ? 'primary' : 'outline'}
+                    variant={status === value ? 'solid' : 'outline'}
                     onClick={() => {
                       setPagination((old) => ({ ...old, pageIndex: 0 }))
                       setStatus(value)

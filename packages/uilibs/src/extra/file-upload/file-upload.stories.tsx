@@ -128,9 +128,7 @@ export const Variants: Story = {
       </FileUpload>
       <FileUpload name='file-4' variant='headless' inline onChange={console.log}>
         {(props) => (
-          <Button variant={props.highlighted ? 'primary' : 'secondary'}>
-            Upload potion license
-          </Button>
+          <Button variant={props.highlighted ? 'solid' : 'faded'}>Upload potion license</Button>
         )}
       </FileUpload>
     </div>

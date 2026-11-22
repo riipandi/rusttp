@@ -193,19 +193,19 @@ export const Position: Story = {
   )
 }
 
-const toneNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
-export const Tones: Story = {
+export const Colors: Story = {
   render: () => (
     <ToastProvider>
       <div {...stylex.props(styles.row)}>
-        {toneNames.map((tone) => (
+        {colorNames.map((color) => (
           <Button
-            key={tone}
+            key={color}
             variant='outline'
-            onClick={() => toast(`Owl post: ${tone}`, { tone, timeout: 0 })}
+            onClick={() => toast(`Owl post: ${color}`, { color, timeout: 0 })}
           >
-            {tone}
+            {color}
           </Button>
         ))}
       </div>
@@ -214,20 +214,20 @@ export const Tones: Story = {
   ),
   play: async ({ canvas }) => {
     const body = within(document.body)
-    const edge = async (tone: (typeof toneNames)[number]) => {
-      await userEvent.click(canvas.getByRole('button', { name: tone }))
-      const title = await body.findByText(`Owl post: ${tone}`)
+    const edge = async (color: (typeof colorNames)[number]) => {
+      await userEvent.click(canvas.getByRole('button', { name: color }))
+      const title = await body.findByText(`Owl post: ${color}`)
       const root = title.closest('[role="dialog"]')
       if (!root) throw new Error('Toast root not found')
-      const color = getComputedStyle(root).borderTopColor
+      const edgeColor = getComputedStyle(root).borderTopColor
       toast.close()
-      await waitFor(() => expect(body.queryByText(`Owl post: ${tone}`)).toBeNull())
-      return color
+      await waitFor(() => expect(body.queryByText(`Owl post: ${color}`)).toBeNull())
+      return edgeColor
     }
-    // A toned toast has its own accent; the neutral one keeps the quiet edge.
+    // A colored toast has its own accent; the neutral one keeps the quiet edge.
     const neutral = await edge('neutral')
-    for (const tone of toneNames.slice(1)) {
-      await expect(await edge(tone)).not.toBe(neutral)
+    for (const color of colorNames.slice(1)) {
+      await expect(await edge(color)).not.toBe(neutral)
     }
   }
 }

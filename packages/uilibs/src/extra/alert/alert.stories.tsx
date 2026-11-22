@@ -11,7 +11,7 @@ const meta = {
   component: Alert,
   parameters: { layout: 'fullscreen' },
   argTypes: {
-    tone: { control: 'select', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] }
+    color: { control: 'select', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] }
   },
   tags: [], // ['autodocs']
   decorators: [
@@ -39,7 +39,7 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { tone: 'neutral' },
+  args: { color: 'neutral' },
   render: (args) => (
     <Alert {...args} style={styles.alert}>
       <AlertTitle>Lumos!</AlertTitle>
@@ -51,7 +51,7 @@ export const Playground: Story = {
 }
 
 export const Critical: Story = {
-  args: { tone: 'critical', role: 'alert' },
+  args: { color: 'critical', role: 'alert' },
   render: (args) => (
     <Alert {...args} style={styles.alert}>
       <AlertTitle>Illuminati threat detected</AlertTitle>
@@ -63,7 +63,7 @@ export const Critical: Story = {
 }
 
 export const Action: Story = {
-  args: { tone: 'neutral' },
+  args: { color: 'neutral' },
   render: (args) => (
     <Alert {...args} style={styles.alert}>
       <AlertTitle>Spell recorded</AlertTitle>
@@ -85,23 +85,23 @@ export const Action: Story = {
   }
 }
 
-const tones = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
-export const Tones: Story = {
+export const Colors: Story = {
   render: () => (
     <div {...stylex.props(styles.stack)}>
-      {tones.map((tone) => (
-        <Alert key={tone} tone={tone} style={styles.alert}>
-          <AlertTitle>{`Owl post: ${tone}`}</AlertTitle>
-          <AlertDescription>A message from the Owl Office, in the {tone} tone.</AlertDescription>
+      {colorNames.map((color) => (
+        <Alert key={color} color={color} style={styles.alert}>
+          <AlertTitle>{`Owl post: ${color}`}</AlertTitle>
+          <AlertDescription>A message from the Owl Office, in {color}.</AlertDescription>
         </Alert>
       ))}
     </div>
   ),
   play: async ({ canvas }) => {
-    // Every tone keeps the title and description readable (the gate checks the contrast).
-    for (const tone of tones) {
-      await expect(canvas.getByRole('heading', { name: `Owl post: ${tone}` })).toBeInTheDocument()
+    // Every color keeps the title and description readable (the gate checks the contrast).
+    for (const color of colorNames) {
+      await expect(canvas.getByRole('heading', { name: `Owl post: ${color}` })).toBeInTheDocument()
     }
   }
 }
@@ -112,7 +112,7 @@ export const Roles: Story = {
       <Alert style={styles.alert}>
         <AlertTitle>Polite by default</AlertTitle>
       </Alert>
-      <Alert role='alert' tone='critical' style={styles.alert}>
+      <Alert role='alert' color='critical' style={styles.alert}>
         <AlertTitle>Assertive on request</AlertTitle>
       </Alert>
       <Alert role={undefined} style={styles.alert}>

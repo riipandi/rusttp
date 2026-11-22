@@ -12,15 +12,24 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import { buttonCriticalTone, buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
+import { buttonFills, buttonSizes, buttonStyles } from './button.stylex'
+
+export type ButtonVariant = keyof typeof buttonFills
+export type ButtonColor = 'primary' | 'neutral' | 'critical'
+
+/** The style of a fill in a color; the color is `primary` for `solid` and `neutral` for the other fills unless given. */
+export function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
+  return buttonFills[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')]
+}
 
 export interface ButtonProps extends Omit<
   React.ComponentProps<typeof BaseButton>,
-  'className' | 'style'
+  'className' | 'style' | 'color'
 > {
-  variant?: keyof typeof buttonVariants
-  /** `critical` marks a destructive or irreversible action: a solid fill, or critical text on a quiet variant. */
-  tone?: 'critical'
+  /** The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). */
+  variant?: ButtonVariant
+  /** The role. `primary` for `solid`, `neutral` for the other fills, by default; `critical` marks a destructive or irreversible action. */
+  color?: ButtonColor
   size?: keyof typeof buttonSizes
   /**
    * Shows a spinner over the label and ignores presses until it clears. The button keeps its
@@ -31,8 +40,8 @@ export interface ButtonProps extends Omit<
 }
 
 export function Button({
-  variant = 'primary',
-  tone,
+  variant = 'solid',
+  color,
   size = 'md',
   loading = false,
   disabled,
@@ -51,11 +60,7 @@ export function Button({
       {...stylex.props(
         controlPress.root,
         buttonStyles.root,
-        buttonVariants[variant],
-        tone === 'critical' &&
-          (variant === 'outline' || variant === 'ghost'
-            ? buttonCriticalTone.quiet
-            : buttonCriticalTone.filled),
+        buttonFill(variant, color),
         (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
         buttonSizes[size],
         loading && buttonStyles.loading,

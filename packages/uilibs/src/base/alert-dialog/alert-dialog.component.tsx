@@ -101,9 +101,9 @@ export function AlertDialogDescription({
 
 type AlertDialogButtonProps = Omit<
   React.ComponentProps<typeof BaseAlertDialog.Close>,
-  'className' | 'style'
+  'className' | 'style' | 'color'
 > &
-  Pick<ButtonProps, 'variant' | 'tone' | 'size' | 'loading'> &
+  Pick<ButtonProps, 'variant' | 'color' | 'size' | 'loading'> &
   StyleXStyleProps
 
 /**
@@ -112,15 +112,15 @@ type AlertDialogButtonProps = Omit<
  * `event.preventBaseUIHandler()` in `onClick` and close through the dialog's `open` state later.
  */
 export function AlertDialogAction({
-  variant = 'primary',
-  tone,
+  variant = 'solid',
+  color,
   size = 'md',
   style,
   ...props
 }: AlertDialogButtonProps) {
   return (
     <BaseAlertDialog.Close
-      render={<Button variant={variant} tone={tone} size={size} style={style} />}
+      render={<Button variant={variant} color={color} size={size} style={style} />}
       {...props}
     />
   )
@@ -128,14 +128,14 @@ export function AlertDialogAction({
 
 export function AlertDialogCancel({
   variant = 'outline',
-  tone,
+  color,
   size = 'md',
   style,
   ...props
 }: AlertDialogButtonProps) {
   return (
     <BaseAlertDialog.Close
-      render={<Button variant={variant} tone={tone} size={size} style={style} />}
+      render={<Button variant={variant} color={color} size={size} style={style} />}
       {...props}
     />
   )

@@ -1,16 +1,17 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { Tone } from '../../styles/tone'
-import { alertStyles as s, alertTones as tones } from './alert.stylex'
+import { alertStyles as s, alertColors as colors } from './alert.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
+export type AlertColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
+
 export interface AlertProps
-  extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
+  extends Omit<React.ComponentProps<'div'>, 'className' | 'style' | 'color'>, StyleProp {
   /** The color role of the notice; `neutral` by default. */
-  tone?: Tone
+  color?: AlertColor
 }
 
 /**
@@ -18,8 +19,8 @@ export interface AlertProps
  * changes, without interrupting. Pass `role='alert'` for an error the user must act on at once, or
  * `role={undefined}` for a notice that is static on load and should not be announced.
  */
-export function Alert({ tone = 'neutral', style, ...props }: AlertProps) {
-  return <div role='status' {...props} {...stylex.props(s.root, tones[tone], style)} />
+export function Alert({ color = 'neutral', style, ...props }: AlertProps) {
+  return <div role='status' {...props} {...stylex.props(s.root, colors[color], style)} />
 }
 
 export type AlertTitleLevel = 1 | 2 | 3 | 4 | 5 | 6
