@@ -39,10 +39,16 @@
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "catalog:",
+        "@vitest/browser-playwright": "catalog:",
+        "@vitest/coverage-v8": "catalog:",
+        "@vitest/ui": "catalog:",
         "oxc-transform-react": "catalog:",
+        "playwright": "catalog:",
         "plugins": "workspace:*",
         "tsrs": "catalog:",
         "vite": "catalog:",
-        "vite-plugin-devtools-json": "catalog:"
+        "vite-plugin-devtools-json": "catalog:",
+        "vitest": "catalog:",
+        "vitest-browser-react": "catalog:"
     }
 }
