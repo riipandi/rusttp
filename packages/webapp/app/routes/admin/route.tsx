@@ -3,6 +3,7 @@ import { type CustomHotkeys, HotkeysProvider } from '@tanstack/react-hotkeys'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { batch } from '@tanstack/store'
 import * as React from 'react'
+import { TooltipProvider } from 'uilibs/base/tooltip'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { SkipLink } from '#/components/skip-link'
 import { commandBarStore } from '#/libraries/commandbar.store'
@@ -74,17 +75,22 @@ function AdminLayout() {
   React.useEffect(() => resetAdminUi, [])
 
   return (
-    <div {...stylex.props(styles.root)}>
-      <SkipLink />
-      <Sidebar />
-      <AdminTopBar />
-      <div {...stylex.props(styles.content)}>
-        <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
-          {m.admin_banner_demo_notice()}
-        </AnnouncementBar>
-        <Outlet />
+    // The provider's zero delay shows a rail tooltip at once, and moving between tooltips keeps it.
+    // It lives here, not at the root: the landing and auth pages show no tooltip and would load
+    // Base UI's for nothing (89 KB of the entry; `pnpm --filter webapp size`).
+    <TooltipProvider>
+      <div {...stylex.props(styles.root)}>
+        <SkipLink />
+        <Sidebar />
+        <AdminTopBar />
+        <div {...stylex.props(styles.content)}>
+          <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
+            {m.admin_banner_demo_notice()}
+          </AnnouncementBar>
+          <Outlet />
+        </div>
+        <CommandBar />
       </div>
-      <CommandBar />
-    </div>
+    </TooltipProvider>
   )
 }

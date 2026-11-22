@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { TooltipProvider } from 'uilibs/base/tooltip'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { SkipLink } from '#/components/skip-link'
 import { adminProfile } from '#/fixtures/profile'
@@ -19,18 +20,22 @@ function RouteComponent() {
   const isAdministrator = adminProfile.role === 'Administrator'
 
   return (
-    <div {...stylex.props(layout.root)}>
-      <SkipLink />
-      {isAdministrator && (
-        <AnnouncementBar
-          label={m.app_banner_admin_label()}
-          action={{ label: m.app_banner_admin_action(), render: <Link to='/admin' /> }}
-        >
-          {m.app_banner_admin_notice()}
-        </AnnouncementBar>
-      )}
-      <DashboardHeader />
-      <Outlet />
-    </div>
+    // The notification bell in the header has a tooltip; see `routes/admin/route.tsx` for why the
+    // provider is not at the root.
+    <TooltipProvider>
+      <div {...stylex.props(layout.root)}>
+        <SkipLink />
+        {isAdministrator && (
+          <AnnouncementBar
+            label={m.app_banner_admin_label()}
+            action={{ label: m.app_banner_admin_action(), render: <Link to='/admin' /> }}
+          >
+            {m.app_banner_admin_notice()}
+          </AnnouncementBar>
+        )}
+        <DashboardHeader />
+        <Outlet />
+      </div>
+    </TooltipProvider>
   )
 }
