@@ -1,6 +1,5 @@
 import { ChevronDown } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
@@ -11,31 +10,17 @@ import {
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
 import { Input } from '../../base/input'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-group.component'
 
 const meta = {
   title: 'Extra Components/ButtonGroup',
   component: ButtonGroup,
-  parameters: { layout: 'centered' },
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ButtonGroup>
 
 type Story = StoryObj<typeof meta>
@@ -60,15 +45,31 @@ export const Playground: Story = {
   )
 }
 
-export const Orientation: Story = {
-  args: { orientation: 'vertical' },
-  render: (args) => (
-    <ButtonGroup {...args}>
-      <Button variant='outline'>Accio</Button>
-      <Button variant='outline'>Alohomora</Button>
-      <Button variant='outline'>Lumos</Button>
-    </ButtonGroup>
-  )
+export const Orientations: Story = {
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <ButtonGroup orientation={orientation} aria-label={`Charms ${orientation}`}>
+          <Button variant='outline'>Accio</Button>
+          <Button variant='outline'>Alohomora</Button>
+          <Button variant='outline'>Lumos</Button>
+        </ButtonGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const [h1, h2] = Array.from(
+      cellOf(canvasElement, 'orientation', 'horizontal').querySelectorAll('button')
+    ).map((el) => el.getBoundingClientRect())
+    const [v1, v2] = Array.from(
+      cellOf(canvasElement, 'orientation', 'vertical').querySelectorAll('button')
+    ).map((el) => el.getBoundingClientRect())
+    if (!h1 || !h2 || !v1 || !v2) throw new Error('Group buttons not found')
+    await expect(h2.left).toBeGreaterThan(h1.left)
+    await expect(h2.top).toBe(h1.top)
+    await expect(v2.top).toBeGreaterThan(v1.top)
+    await expect(v2.left).toBe(v1.left)
+  }
 }
 
 export const Split: Story = {

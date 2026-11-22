@@ -1,9 +1,9 @@
 import { Bell as BellIcon, User } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
+  cellOf,
   denseControlHeights,
   denseControlSizeNames,
   expectControlHeights
@@ -15,24 +15,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
 const meta = {
   title: 'Base Components/Tabs',
   component: Tabs,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Tabs>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   tabs: {
+    maxWidth: '100%',
     width: container.large
   },
   trigger: {
@@ -100,47 +93,91 @@ export const Variants: Story = {
   }
 }
 
-export const Disabled: Story = {
-  name: 'Disabled tab',
-  args: { defaultValue: 'active' },
-  render: (args) => (
-    <Tabs {...args} style={styles.tabs}>
-      <TabsList>
-        <TabsTrigger value='active'>Hogsmeade</TabsTrigger>
-        <TabsTrigger value='disabled' disabled>
-          Azkaban
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value='active'>The other tab is locked away in Azkaban.</TabsContent>
-    </Tabs>
+export const Sizes: Story = {
+  render: () => (
+    <Axis
+      axis='size'
+      rows={denseControlSizeNames}
+      columnAxis='variant'
+      columns={['pills', 'bordered', 'borderless'] as const}
+    >
+      {(size, variant) => (
+        <Tabs defaultValue='one'>
+          <TabsList size={size} variant={variant} aria-label={`Subjects ${size} ${variant}`}>
+            <TabsTrigger value='one'>Charms</TabsTrigger>
+            <TabsTrigger value='two'>Potions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+    </Axis>
   ),
-  play: async ({ canvas }) => {
-    const locked = canvas.getByRole('tab', { name: 'Azkaban' })
-    await expect(locked).toHaveAttribute('data-disabled')
-
-    await userEvent.click(locked)
-    await expect(locked).toHaveAttribute('aria-selected', 'false')
-    await expect(canvas.getByRole('tab', { name: 'Hogsmeade' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+  // The list, tab padding included, is as tall as a control of its size in every variant: the
+  // active bar overlaps the `bordered` rail and sits on the edge of `borderless`.
+  play: async ({ canvasElement }) => {
+    for (const variant of ['pills', 'bordered', 'borderless']) {
+      await expectControlHeights(canvasElement, denseControlHeights, `[data-variant="${variant}"]`)
+    }
   }
 }
 
-export const Vertical: Story = {
-  args: { defaultValue: 'profile', orientation: 'vertical' },
-  render: (args) => (
-    <Tabs {...args} style={styles.tabs}>
-      <TabsList>
-        <TabsTrigger value='profile'>Prefect</TabsTrigger>
-        <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
-        <TabsTrigger value='notifications'>Owl Post</TabsTrigger>
-      </TabsList>
-      <TabsContent value='profile'>Update your name at Hogwarts.</TabsContent>
-      <TabsContent value='account'>Manage your vault details.</TabsContent>
-      <TabsContent value='notifications'>Choose which owls you receive.</TabsContent>
-    </Tabs>
-  )
+export const Orientations: Story = {
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <Tabs defaultValue='profile' orientation={orientation}>
+          <TabsList aria-label={`Prefect desk ${orientation}`}>
+            <TabsTrigger value='profile'>Prefect</TabsTrigger>
+            <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
+            <TabsTrigger value='notifications'>Owl Post</TabsTrigger>
+          </TabsList>
+          <TabsContent value='profile'>Update your name at Hogwarts.</TabsContent>
+        </Tabs>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const tabs = (orientation: string) =>
+      Array.from(
+        cellOf(canvasElement, 'orientation', orientation).querySelectorAll('[role="tab"]')
+      ).map((el) => el.getBoundingClientRect())
+    const [h1, h2] = tabs('horizontal')
+    const [v1, v2] = tabs('vertical')
+    if (!h1 || !h2 || !v1 || !v2) throw new Error('Tabs not found')
+    await expect(h2.left).toBeGreaterThan(h1.left)
+    await expect(h2.top).toBe(h1.top)
+    await expect(v2.top).toBeGreaterThan(v1.top)
+    await expect(v2.left).toBe(v1.left)
+  }
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <Tabs defaultValue='active'>
+          <TabsList aria-label={`Wings ${state}`}>
+            <TabsTrigger value='active'>Hogsmeade</TabsTrigger>
+            <TabsTrigger value='locked' disabled={state === 'disabled'}>
+              Azkaban
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value='active'>The other tab is locked away in Azkaban.</TabsContent>
+        </Tabs>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const locked = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelectorAll('[role="tab"]')[1]
+      if (!el) throw new Error(`No second tab for ${state}`)
+      return el
+    }
+    const disabled = locked('disabled')
+    await expect(disabled).toHaveAttribute('data-disabled')
+    await userEvent.click(disabled)
+    await expect(disabled).toHaveAttribute('aria-selected', 'false')
+    await expect(locked('default')).not.toHaveAttribute('data-disabled')
+  }
 }
 
 export const Icons: Story = {
@@ -161,63 +198,6 @@ export const Icons: Story = {
       <TabsContent value='notifications'>Manage your owl post preferences.</TabsContent>
     </Tabs>
   )
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={denseControlSizeNames}>
-      {(size) => (
-        <Tabs defaultValue='one'>
-          <TabsList size={size}>
-            <TabsTrigger value='one'>Charms</TabsTrigger>
-            <TabsTrigger value='two'>Potions</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      )}
-    </Axis>
-  ),
-  // The list, tab padding included, is as tall as a control of its size.
-  play: async ({ canvasElement }) => {
-    await expectControlHeights(canvasElement, denseControlHeights)
-  }
-}
-
-export const BorderedControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={denseControlSizeNames}>
-      {(size) => (
-        <Tabs defaultValue='one'>
-          <TabsList size={size} variant='bordered'>
-            <TabsTrigger value='one'>Charms</TabsTrigger>
-            <TabsTrigger value='two'>Potions</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      )}
-    </Axis>
-  ),
-  // The active tab's bar overlaps the list's bottom border, so the list is as tall as the tab.
-  play: async ({ canvasElement }) => {
-    await expectControlHeights(canvasElement, denseControlHeights)
-  }
-}
-
-export const BorderlessControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={denseControlSizeNames}>
-      {(size) => (
-        <Tabs defaultValue='one'>
-          <TabsList size={size} variant='borderless'>
-            <TabsTrigger value='one'>Charms</TabsTrigger>
-            <TabsTrigger value='two'>Potions</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      )}
-    </Axis>
-  ),
-  // With no rail the bar sits at the list's bottom edge: the list is as tall as the tab.
-  play: async ({ canvasElement }) => {
-    await expectControlHeights(canvasElement, denseControlHeights)
-  }
 }
 
 export const Keyboard: Story = {

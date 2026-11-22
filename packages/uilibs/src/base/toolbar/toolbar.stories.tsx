@@ -1,6 +1,5 @@
 import { AlignCenter, AlignLeft, AlignRight } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Button } from '../button'
@@ -11,23 +10,7 @@ import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator } from './toolba
 const meta = {
   title: 'Base Components/Toolbar',
   component: Toolbar,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Toolbar>
 
 type Story = StoryObj<typeof meta>

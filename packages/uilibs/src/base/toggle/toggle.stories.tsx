@@ -1,12 +1,13 @@
 import { Bold, Italic } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
+  cellOf,
   denseControlHeights,
   denseControlSizeNames,
-  expectControlHeights
+  expectControlHeights,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Toggle } from './toggle.component'
@@ -14,39 +15,18 @@ import { Toggle } from './toggle.component'
 const meta = {
   title: 'Base Components/Toggle',
   component: Toggle,
-  parameters: { layout: 'centered' },
   argTypes: {
     variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
     size: { control: 'radio', options: ['sm', 'md', 'lg'] },
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Toggle>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  icon: { width: 16, height: 16 },
-  row: {
-    alignItems: 'center',
-    display: 'flex',
-    gap: 8
-  }
+  icon: { width: 16, height: 16 }
 })
 
 export default meta
@@ -119,6 +99,37 @@ export const Colors: Story = {
   }
 }
 
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'pressed', 'disabled'] as const}>
+      {(state) => (
+        <Toggle
+          aria-label={`Toggle charm ${state}`}
+          defaultPressed={state === 'pressed'}
+          disabled={state === 'disabled'}
+        >
+          Charm
+        </Toggle>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const toggle = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('button')
+      if (!el) throw new Error(`No toggle for ${state}`)
+      return el
+    }
+    await expect(toggle('default')).toHaveAttribute('aria-pressed', 'false')
+    await expect(toggle('pressed')).toHaveAttribute('aria-pressed', 'true')
+
+    const disabled = toggle('disabled')
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    await userEvent.click(disabled)
+    await expect(disabled).toHaveAttribute('aria-pressed', 'false')
+  }
+}
+
 export const WithText: Story = {
   name: 'With text',
   render: () => (
@@ -131,25 +142,6 @@ export const WithText: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Toggle size='xs' aria-label='Toggle pixie'>
-        Pixie
-      </Toggle>
-      <Toggle size='sm' aria-label='Toggle imp'>
-        Imp
-      </Toggle>
-      <Toggle size='md' aria-label='Toggle wizard'>
-        Wizard
-      </Toggle>
-      <Toggle size='lg' aria-label='Toggle giant'>
-        Giant
-      </Toggle>
-    </div>
-  )
-}
-
-export const ControlSizes: Story = {
-  render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Toggle size={size} aria-label={`Toggle charm ${size}`}>
@@ -159,15 +151,6 @@ export const ControlSizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
-}
-
-export const Disabled: Story = {
-  args: { disabled: true },
-  render: (args) => (
-    <Toggle {...args} aria-label='Toggle charm'>
-      Charm
-    </Toggle>
-  )
 }
 
 export const Keyboard: Story = {

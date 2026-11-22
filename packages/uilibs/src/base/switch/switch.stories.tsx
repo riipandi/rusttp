@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
-import { expectBoxSizes } from '../../contracts/control-sizes'
+import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
@@ -11,28 +10,12 @@ import { Switch } from './switch.component'
 const meta = {
   title: 'Base Components/Switch',
   component: Switch,
-  parameters: { layout: 'centered' },
   argTypes: {
-    size: { control: 'radio', options: ['sm', 'md'] },
+    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
     defaultChecked: { control: 'boolean' },
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Switch>
 
 type Story = StoryObj<typeof meta>
@@ -42,9 +25,6 @@ const styles = stylex.create({
     alignItems: 'center',
     display: 'flex',
     gap: 8
-  },
-  disabled: {
-    opacity: 0.5
   },
   row: {
     alignItems: 'center',
@@ -103,30 +83,48 @@ export const Description: Story = {
   )
 }
 
-export const Disabled: Story = {
-  render: () => (
-    <label {...stylex.props(styles.label, styles.disabled)}>
-      <Switch disabled aria-label='Disabled switch' /> Disabled
-    </label>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByRole('switch', { name: /Disabled switch/ })
-    await expect(el).toHaveAttribute('data-disabled')
-    await expect(getComputedStyle(el).opacity).toBe('0.5')
-    await expect(getComputedStyle(el).cursor).toBe('not-allowed')
-    await userEvent.click(el)
-    await expect(el).toHaveAttribute('aria-checked', 'false')
-  }
-}
+const states = ['off', 'on', 'disabled', 'invalid'] as const
 
-export const Invalid: Story = {
+export const States: Story = {
   render: () => (
-    <Field orientation='horizontal' invalid>
-      <FieldContent>
-        <FieldLabel htmlFor='switch-invalid-two-factor'>Gringotts security charms</FieldLabel>
-        <FieldError>A security charm is required to enter your vault.</FieldError>
-      </FieldContent>
-      <Switch id='switch-invalid-two-factor' />
-    </Field>
-  )
+    <Axis axis='state' rows={states}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field orientation='horizontal' invalid>
+            <FieldContent>
+              <FieldLabel htmlFor='switch-invalid-two-factor'>Gringotts security charms</FieldLabel>
+              <FieldError>A security charm is required to enter your vault.</FieldError>
+            </FieldContent>
+            <Switch id='switch-invalid-two-factor' />
+          </Field>
+        ) : (
+          <Label>
+            <Switch
+              aria-label={`Invisibility Cloak ${state}`}
+              defaultChecked={state === 'on'}
+              disabled={state === 'disabled'}
+            />
+            Invisibility Cloak {state}
+          </Label>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const control = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('[role="switch"]')
+      if (!el) throw new Error(`No switch for ${state}`)
+      return el
+    }
+    await expect(control('off')).toHaveAttribute('aria-checked', 'false')
+    await expect(control('on')).toHaveAttribute('aria-checked', 'true')
+
+    const disabled = control('disabled')
+    await expect(disabled).toHaveAttribute('data-disabled')
+    await expectDisabledLook(disabled)
+    await userEvent.click(disabled)
+    await expect(disabled).toHaveAttribute('aria-checked', 'false')
+
+    await expect(control('invalid')).toHaveAttribute('data-invalid')
+  }
 }

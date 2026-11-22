@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
-import { expectBoxSizes } from '../../contracts/control-sizes'
+import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
@@ -12,28 +11,12 @@ import { Checkbox, CheckboxGroup } from './checkbox.component'
 const meta = {
   title: 'Base Components/Checkbox',
   component: Checkbox,
-  parameters: { layout: 'centered' },
   argTypes: {
     defaultChecked: { control: 'boolean' },
     disabled: { control: 'boolean' },
     indeterminate: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Checkbox>
 
 type Story = StoryObj<typeof meta>
@@ -67,21 +50,6 @@ export const Playground: Story = {
   }
 }
 
-export const Indeterminate: Story = {
-  args: { indeterminate: true },
-  render: (args) => (
-    <Label>
-      <Checkbox {...args} aria-label='Select all Marauders' /> Select all Marauders
-    </Label>
-  ),
-  play: async ({ canvas }) => {
-    await expect(canvas.getByRole('checkbox', { name: /Select all Marauders/ })).toHaveAttribute(
-      'aria-checked',
-      'mixed'
-    )
-  }
-}
-
 export const Description: Story = {
   render: () => (
     <Field orientation='horizontal'>
@@ -91,36 +59,6 @@ export const Description: Story = {
         <FieldDescription>
           Receive occasional owl-delivered updates and announcements from Hogwarts.
         </FieldDescription>
-      </FieldContent>
-    </Field>
-  )
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <Label>
-      <Checkbox disabled defaultChecked aria-label='Hogsmeade permission slip' /> Hogsmeade
-      permission slip
-    </Label>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByRole('checkbox', { name: /Hogsmeade permission slip/ })
-    await expect(el).toHaveAttribute('data-disabled')
-    await expect(getComputedStyle(el).opacity).toBe('0.5')
-    await expect(getComputedStyle(el).cursor).toBe('not-allowed')
-    await expect(el).toHaveAttribute('aria-checked', 'true')
-    await userEvent.click(el)
-    await expect(el).toHaveAttribute('aria-checked', 'true')
-  }
-}
-
-export const Invalid: Story = {
-  render: () => (
-    <Field orientation='horizontal' invalid>
-      <Checkbox id='checkbox-invalid-terms' />
-      <FieldContent>
-        <FieldLabel htmlFor='checkbox-invalid-terms'>Accept the Hogwarts school rules</FieldLabel>
-        <FieldError>You must accept the school rules before the Sorting begins.</FieldError>
       </FieldContent>
     </Field>
   )
@@ -268,4 +206,54 @@ export const Sizes: Story = {
   ),
   play: async ({ canvasElement }) =>
     expectBoxSizes(canvasElement, '[role="checkbox"]', { sm: [12, 12], md: [16, 16], lg: [20, 20] })
+}
+
+const states = ['unchecked', 'checked', 'indeterminate', 'disabled', 'invalid'] as const
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={states}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field orientation='horizontal' invalid>
+            <Checkbox id='checkbox-invalid-terms' />
+            <FieldContent>
+              <FieldLabel htmlFor='checkbox-invalid-terms'>
+                Accept the Hogwarts school rules
+              </FieldLabel>
+              <FieldError>You must accept the school rules before the Sorting begins.</FieldError>
+            </FieldContent>
+          </Field>
+        ) : (
+          <Label>
+            <Checkbox
+              aria-label={`Select all Marauders ${state}`}
+              defaultChecked={state === 'checked' || state === 'disabled'}
+              indeterminate={state === 'indeterminate'}
+              disabled={state === 'disabled'}
+            />
+            Select all Marauders {state}
+          </Label>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const box = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('[role="checkbox"]')
+      if (!el) throw new Error(`No checkbox for ${state}`)
+      return el
+    }
+    await expect(box('unchecked')).toHaveAttribute('aria-checked', 'false')
+    await expect(box('checked')).toHaveAttribute('aria-checked', 'true')
+    await expect(box('indeterminate')).toHaveAttribute('aria-checked', 'mixed')
+
+    const disabled = box('disabled')
+    await expect(disabled).toHaveAttribute('data-disabled')
+    await expectDisabledLook(disabled)
+    await userEvent.click(disabled)
+    await expect(disabled).toHaveAttribute('aria-checked', 'true')
+
+    await expect(box('invalid')).toHaveAttribute('data-invalid')
+  }
 }

@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent } from 'storybook/test'
-import { expectBoxSizes } from '../../contracts/control-sizes'
+import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, radius, stroke } from '../../styles/tokens.stylex'
@@ -12,26 +11,10 @@ import { RadioGroup, RadioGroupItem } from './radio.component'
 const meta = {
   title: 'Base Components/Radio',
   component: RadioGroup,
-  parameters: { layout: 'centered' },
   argTypes: {
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof RadioGroup>
 
 type Story = StoryObj<typeof meta>
@@ -114,6 +97,48 @@ export const Playground: Story = {
   }
 }
 
+const states = ['default', 'disabled', 'invalid'] as const
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={states}>
+      {(state) => {
+        const group = (
+          <RadioGroup
+            defaultValue='a'
+            disabled={state === 'disabled'}
+            aria-label={`Dossier ${state}`}
+          >
+            <label {...stylex.props(styles.label, state === 'disabled' && styles.disabled)}>
+              <RadioGroupItem value='a' /> Illuminati dossier
+            </label>
+            <label {...stylex.props(styles.label, state === 'disabled' && styles.disabled)}>
+              <RadioGroupItem value='b' /> Priory of Sion dossier
+            </label>
+          </RadioGroup>
+        )
+        return state === 'invalid' ? <Field invalid>{group}</Field> : group
+      }}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = (state: string) =>
+      Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[role="radio"]'))
+    for (const item of items('disabled')) {
+      await expect(item).toHaveAttribute('data-disabled')
+      await expectDisabledLook(item)
+    }
+    const [first, second] = items('disabled')
+    if (!first || !second) throw new Error('Disabled radios not found')
+    await userEvent.click(second)
+    await expect(second).toHaveAttribute('aria-checked', 'false')
+    await expect(first).toHaveAttribute('aria-checked', 'true')
+
+    for (const item of items('invalid')) await expect(item).toHaveAttribute('data-invalid')
+    for (const item of items('default')) await expect(item).not.toHaveAttribute('data-invalid')
+  }
+}
+
 export const Description: Story = {
   args: { defaultValue: 'starter' },
   render: (args) => (
@@ -150,34 +175,6 @@ export const ChoiceCard: Story = {
       ))}
     </RadioGroup>
   )
-}
-
-export const Disabled: Story = {
-  args: { defaultValue: 'a', disabled: true },
-  render: (args) => (
-    <RadioGroup {...args}>
-      <label {...stylex.props(styles.label, styles.disabled)}>
-        <RadioGroupItem value='a' /> Illuminati dossier
-      </label>
-      <label {...stylex.props(styles.label, styles.disabled)}>
-        <RadioGroupItem value='b' /> Priory of Sion dossier
-      </label>
-    </RadioGroup>
-  ),
-  play: async ({ canvas }) => {
-    const items = canvas.getAllByRole('radio')
-    for (const item of items) {
-      await expect(item).toHaveAttribute('data-disabled')
-      await expect(getComputedStyle(item).opacity).toBe('0.5')
-      await expect(getComputedStyle(item).cursor).toBe('not-allowed')
-    }
-
-    const second = items[1]
-    if (!second) throw new Error('Second radio not found')
-    await userEvent.click(second)
-    await expect(second).toHaveAttribute('aria-checked', 'false')
-    await expect(items[0]).toHaveAttribute('aria-checked', 'true')
-  }
 }
 
 export const OnValueChange: StoryObj<{ handleChange: ReturnType<typeof fn> }> = {

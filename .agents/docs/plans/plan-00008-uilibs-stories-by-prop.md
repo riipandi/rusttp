@@ -41,8 +41,8 @@ phases:
       note: 13 components regrouped, 110 -> 98 story ids, gate 944 -> 920 tests, no overflow at 390 px; fixed the InputPhone country trigger (inherited the Combobox trigger's width 100%, leaving the digits 24 px)
     - id: 9
       title: Batch B - press and selection controls
-      status: pending
-      note: —
+      status: committed
+      note: 11 components regrouped, 69 -> 62 story ids, gate 920 -> 906 tests, no overflow at 390 px in 62 stories
     - id: 10
       title: Batch C - overlays and menus
       status: pending

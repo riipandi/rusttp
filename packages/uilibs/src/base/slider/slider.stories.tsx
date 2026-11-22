@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontFamily, fontSize } from '../../styles/tokens.stylex'
 import { Slider } from './slider.component'
@@ -10,27 +11,11 @@ import { Slider } from './slider.component'
 const meta = {
   title: 'Base Components/Slider',
   component: Slider,
-  parameters: { layout: 'centered' },
   argTypes: {
     disabled: { control: 'boolean' },
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Slider>
 
 type Story = StoryObj<typeof meta>
@@ -85,6 +70,57 @@ export const Playground: Story = {
   }
 }
 
+export const Orientations: Story = {
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <div {...stylex.props(orientation === 'vertical' && styles.verticalRow)}>
+          <Slider
+            orientation={orientation}
+            defaultValue={[40]}
+            aria-label={`Volume ${orientation}`}
+          />
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const orientation of ['horizontal', 'vertical']) {
+      const root = cellOf(canvasElement, 'orientation', orientation).querySelector(
+        `[data-orientation="${orientation}"]`
+      )
+      if (!root) throw new Error(`No ${orientation} slider`)
+      const { width, height } = root.getBoundingClientRect()
+      await expect(width > height).toBe(orientation === 'horizontal')
+    }
+  }
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <Slider
+          defaultValue={[40]}
+          disabled={state === 'disabled'}
+          aria-label={`Volume ${state}`}
+          style={styles.root}
+        />
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const dimmed = (state: string) =>
+      Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[data-disabled]')).filter(
+        (el) => getComputedStyle(el).opacity === '0.5'
+      )
+    await expect(dimmed('disabled').length).toBeGreaterThan(0)
+    await expect(
+      cellOf(canvasElement, 'state', 'default').querySelector('[data-disabled]')
+    ).toBeNull()
+  }
+}
+
 export const Range: Story = {
   args: { defaultValue: [25, 75], thumbLabels: ['Minimum price', 'Maximum price'] },
   render: (args) => <Slider {...args} style={styles.root} />,
@@ -94,15 +130,6 @@ export const Range: Story = {
     await expect(min).toHaveAttribute('aria-valuenow', '25')
     await expect(max).toHaveAttribute('aria-valuenow', '75')
   }
-}
-
-export const Vertical: Story = {
-  args: { orientation: 'vertical', defaultValue: [40], 'aria-label': 'Volume' },
-  render: (args) => (
-    <div {...stylex.props(styles.verticalRow)}>
-      <Slider {...args} />
-    </div>
-  )
 }
 
 export const Controlled: Story = {
@@ -122,9 +149,4 @@ export const Controlled: Story = {
       </div>
     )
   }
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, defaultValue: [40], 'aria-label': 'Volume' },
-  render: (args) => <Slider {...args} style={styles.root} />
 }

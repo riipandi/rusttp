@@ -1,12 +1,12 @@
-import { AlignCenter, AlignLeft, AlignRight } from '@keyline-icons/react'
+import { AlignCenter, AlignLeft } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
+  cellOf,
   denseControlHeights,
   denseControlSizeNames,
-  expectControlHeights
+  expectControlHeights,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
@@ -14,7 +14,6 @@ import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 const meta = {
   title: 'Base Components/ToggleGroup',
   component: ToggleGroup,
-  parameters: { layout: 'centered' },
   argTypes: {
     variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
     size: { control: 'radio', options: ['sm', 'md', 'lg'] },
@@ -22,35 +21,10 @@ const meta = {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ToggleGroup>
 
 type Story = StoryObj<typeof meta>
-
-const styles = stylex.create({
-  icon: { width: 16, height: 16 },
-  col: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12
-  }
-})
 
 export default meta
 
@@ -87,111 +61,7 @@ export const Playground: Story = {
   }
 }
 
-export const Joined: Story = {
-  args: { variant: 'outline', spacing: 'joined', defaultValue: ['center'] },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value='left' aria-label='Align left'>
-        Left
-      </ToggleGroupItem>
-      <ToggleGroupItem value='center' aria-label='Align center'>
-        Center
-      </ToggleGroupItem>
-      <ToggleGroupItem value='right' aria-label='Align right'>
-        Right
-      </ToggleGroupItem>
-    </ToggleGroup>
-  )
-}
-
-export const Outline: Story = {
-  args: { variant: 'outline', defaultValue: ['left'] },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value='left' aria-label='Align left'>
-        <AlignLeft {...stylex.props(styles.icon)} />
-      </ToggleGroupItem>
-      <ToggleGroupItem value='center' aria-label='Align center'>
-        <AlignCenter {...stylex.props(styles.icon)} />
-      </ToggleGroupItem>
-      <ToggleGroupItem value='right' aria-label='Align right'>
-        <AlignRight {...stylex.props(styles.icon)} />
-      </ToggleGroupItem>
-    </ToggleGroup>
-  )
-}
-
 export const Sizes: Story = {
-  render: () => (
-    <div {...stylex.props(styles.col)}>
-      <ToggleGroup size='sm' variant='outline' defaultValue={['bold']}>
-        <ToggleGroupItem value='bold' aria-label='Toggle charm'>
-          Charm
-        </ToggleGroupItem>
-        <ToggleGroupItem value='italic' aria-label='Toggle hex'>
-          Hex
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <ToggleGroup size='md' variant='outline' defaultValue={['bold']}>
-        <ToggleGroupItem value='bold' aria-label='Toggle charm'>
-          Charm
-        </ToggleGroupItem>
-        <ToggleGroupItem value='italic' aria-label='Toggle hex'>
-          Hex
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <ToggleGroup size='lg' variant='outline' defaultValue={['bold']}>
-        <ToggleGroupItem value='bold' aria-label='Toggle charm'>
-          Charm
-        </ToggleGroupItem>
-        <ToggleGroupItem value='italic' aria-label='Toggle hex'>
-          Hex
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
-  )
-}
-
-export const Vertical: Story = {
-  args: {
-    orientation: 'vertical',
-    variant: 'outline',
-    spacing: 'joined',
-    defaultValue: ['center']
-  },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value='top' aria-label='Align top'>
-        Top
-      </ToggleGroupItem>
-      <ToggleGroupItem value='center' aria-label='Align center'>
-        Center
-      </ToggleGroupItem>
-      <ToggleGroupItem value='bottom' aria-label='Align bottom'>
-        Bottom
-      </ToggleGroupItem>
-    </ToggleGroup>
-  )
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, variant: 'outline', defaultValue: ['bold'] },
-  render: (args) => (
-    <ToggleGroup {...args}>
-      <ToggleGroupItem value='bold' aria-label='Toggle charm'>
-        Charm
-      </ToggleGroupItem>
-      <ToggleGroupItem value='italic' aria-label='Toggle hex'>
-        Hex
-      </ToggleGroupItem>
-      <ToggleGroupItem value='underline' aria-label='Toggle jinx'>
-        Jinx
-      </ToggleGroupItem>
-    </ToggleGroup>
-  )
-}
-
-export const ControlSizes: Story = {
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
@@ -230,6 +100,108 @@ export const Variants: Story = {
       const rest = getComputedStyle(canvas.getByRole('button', { name: `Center ${variant}` }))
       // `selectedColor` reaches the items through the group: the pressed one is colored.
       await expect(pressed.backgroundColor).not.toBe(rest.backgroundColor)
+    }
+  }
+}
+
+const items = (root: HTMLElement) => Array.from(root.querySelectorAll('button'))
+
+export const Orientations: Story = {
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <ToggleGroup
+          orientation={orientation}
+          variant='outline'
+          spacing='joined'
+          defaultValue={['center']}
+        >
+          <ToggleGroupItem value='start' aria-label={`Align start ${orientation}`}>
+            Start
+          </ToggleGroupItem>
+          <ToggleGroupItem value='center' aria-label={`Align center ${orientation}`}>
+            Center
+          </ToggleGroupItem>
+          <ToggleGroupItem value='end' aria-label={`Align end ${orientation}`}>
+            End
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const [h1, h2] = items(cellOf(canvasElement, 'orientation', 'horizontal')).map((el) =>
+      el.getBoundingClientRect()
+    )
+    const [v1, v2] = items(cellOf(canvasElement, 'orientation', 'vertical')).map((el) =>
+      el.getBoundingClientRect()
+    )
+    if (!h1 || !h2 || !v1 || !v2) throw new Error('Toggle group items not found')
+    await expect(h2.left).toBeGreaterThan(h1.left)
+    await expect(h2.top).toBe(h1.top)
+    await expect(v2.top).toBeGreaterThan(v1.top)
+    await expect(v2.left).toBe(v1.left)
+  }
+}
+
+export const Spacings: Story = {
+  render: () => (
+    <Axis axis='spacing' rows={['gap', 'joined'] as const}>
+      {(spacing) => (
+        <ToggleGroup spacing={spacing} variant='outline' defaultValue={['left']}>
+          <ToggleGroupItem value='left' aria-label={`Left ${spacing}`}>
+            <AlignLeft size={16} />
+          </ToggleGroupItem>
+          <ToggleGroupItem value='center' aria-label={`Center ${spacing}`}>
+            <AlignCenter size={16} />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const space = (spacing: string) => {
+      const [first, second] = items(cellOf(canvasElement, 'spacing', spacing)).map((el) =>
+        el.getBoundingClientRect()
+      )
+      if (!first || !second) throw new Error(`No items for ${spacing}`)
+      return second.left - first.right
+    }
+    // `gap` leaves room between the items; `joined` fuses them edge to edge.
+    await expect(space('gap')).toBeGreaterThan(0)
+    await expect(space('joined')).toBeLessThanOrEqual(0)
+  }
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <ToggleGroup variant='outline' disabled={state === 'disabled'} defaultValue={['bold']}>
+          <ToggleGroupItem value='bold' aria-label={`Toggle charm ${state}`}>
+            Charm
+          </ToggleGroupItem>
+          <ToggleGroupItem value='italic' aria-label={`Toggle hex ${state}`}>
+            Hex
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const disabled = items(cellOf(canvasElement, 'state', 'disabled'))
+    await expect(disabled).toHaveLength(2)
+    for (const item of disabled) {
+      await expect(item).toBeDisabled()
+      await expectDisabledLook(item)
+    }
+    const [charm, hex] = disabled
+    if (!charm || !hex) throw new Error('Disabled items not found')
+    await userEvent.click(hex)
+    await expect(hex).not.toHaveAttribute('data-pressed')
+    await expect(charm).toHaveAttribute('data-pressed')
+    for (const item of items(cellOf(canvasElement, 'state', 'default'))) {
+      await expect(item).not.toBeDisabled()
     }
   }
 }

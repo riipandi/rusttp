@@ -1,24 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion.component'
 
 const meta = {
   title: 'Base Components/Accordion',
   component: Accordion,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     multiple: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Accordion>
 
 type Story = StoryObj<typeof meta>
@@ -51,6 +43,50 @@ export const Playground: Story = {
   )
 }
 
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <Accordion>
+          <AccordionItem value='item-1'>
+            <AccordionTrigger>Available vault</AccordionTrigger>
+            <AccordionContent>This vault can be selected and configured.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value='item-2' disabled={state === 'disabled'}>
+            <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+            <AccordionContent>
+              Contact the Department of Mysteries to unlock this vault.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const triggers = (state: string) => {
+      const [available, restricted] = Array.from(
+        cellOf(canvasElement, 'state', state).querySelectorAll('button')
+      )
+      if (!available || !restricted) throw new Error(`Accordion triggers not found for ${state}`)
+      return { available, restricted }
+    }
+    // Disabled item: marked with data-disabled and never expands.
+    const disabled = triggers('disabled')
+    await expect(disabled.restricted).toHaveAttribute('data-disabled')
+    await userEvent.click(disabled.restricted)
+    await expect(disabled.restricted).toHaveAttribute('aria-expanded', 'false')
+
+    // The enabled sibling still works.
+    await userEvent.click(disabled.available)
+    await expect(disabled.available).toHaveAttribute('aria-expanded', 'true')
+
+    const enabled = triggers('default')
+    await expect(enabled.restricted).not.toHaveAttribute('data-disabled')
+    await userEvent.click(enabled.restricted)
+    await expect(enabled.restricted).toHaveAttribute('aria-expanded', 'true')
+  }
+}
+
 export const Multiple: Story = {
   args: { multiple: true, defaultValue: ['item-1', 'item-2'] },
   render: (args) => (
@@ -75,39 +111,6 @@ export const Multiple: Story = {
       </AccordionItem>
     </Accordion>
   )
-}
-
-export const Disabled: Story = {
-  args: { multiple: false },
-  render: (args) => (
-    <Accordion {...args}>
-      <AccordionItem value='item-1'>
-        <AccordionTrigger>Available vault</AccordionTrigger>
-        <AccordionContent>This vault can be selected and configured.</AccordionContent>
-      </AccordionItem>
-      <AccordionItem value='item-2' disabled>
-        <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
-        <AccordionContent>
-          Contact the Department of Mysteries to unlock this vault.
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
-  play: async ({ canvas }) => {
-    const triggers = canvas.getAllByRole('button')
-    const available = triggers[0]
-    const restricted = triggers[1]
-    if (!available || !restricted) throw new Error('Accordion triggers not found')
-
-    // Disabled item: marked with data-disabled and never expands.
-    await expect(restricted).toHaveAttribute('data-disabled')
-    await userEvent.click(restricted)
-    await expect(restricted).toHaveAttribute('aria-expanded', 'false')
-
-    // The enabled sibling still works.
-    await userEvent.click(available)
-    await expect(available).toHaveAttribute('aria-expanded', 'true')
-  }
 }
 
 export const OpenClose: Story = {
