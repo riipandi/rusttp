@@ -1,28 +1,28 @@
 ---
 status: in-progress
 created: 2026-11-22T13:20:00+07:00
-updated: 2026-11-22T13:28:00+07:00
+updated: 2026-11-22T13:48:00+07:00
 phases:
     - id: 1
       title: Entry-load budget check (fails on the current tree)
-      status: pending
-      note: —
+      status: committed
+      note: "3affca4. Red on the unchanged tree: 546.6 KB / 177.0 KB gzip against 480 / 152."
     - id: 2
       title: TooltipProvider only in the layouts that show a tooltip
-      status: pending
-      note: —
+      status: committed
+      note: "a9cd234. 458.1 KB / 145.9 KB gzip; `size` green; the entry, the landing, and login chunks no longer contain the tooltip (manifest check); Chromium admin, notifications, dashboard, a11y, and home specs 155 passed."
     - id: 3
       title: Mount one admin chrome per viewport
-      status: pending
-      note: —
+      status: committed
+      note: "8bd85e9. One `Notifications` button at 1440px and at 390px, swapped across 767px (new spec); screenshots of /admin at both widths inspected; Chromium 157 passed."
     - id: 4
       title: Chart series and control borders reach 3:1
-      status: pending
-      note: —
+      status: committed
+      note: "045ae52. Series 5.6:1 or better on the page, borderControl 4.28 / 5.77 on the page and 3.59 / 3.77 on backgroundNeutral (3.30 / 3.22 on its hover surface); uilibs 92 files, 444 tests; chart and select stories inspected light and dark; full Chromium E2E 184 passed, a11y sweep 0 findings."
     - id: 5
       title: Load the non-default locale catalog on demand
-      status: pending
-      note: —
+      status: in_progress
+      note: "Built and measured, not committed: the entry load is 442.8 KB / 146.6 KB gzip against 458.1 / 145.9 before, because one language is 19.2 KB raw and only 6.0 KB gzip (D8 assumed about 30 KB), and the extra chunks cost about as much as they save. Waiting on the owner: keep or drop."
     - id: 6
       title: Split data-grid-cell.tsx
       status: pending
