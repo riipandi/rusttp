@@ -38,6 +38,11 @@ test *args:
 test-api url="http://127.0.0.1:3000":
     @hurl --test --variable base_url={{ url }} --glob 'api/specs/**/*.hurl'
 
+[doc('Fail when the built SPA entry load passes its budget (build first)')]
+[group('quality')]
+size:
+    @pnpm --silent --filter webapp size
+
 [doc('Run all quality gates')]
 [group('quality')]
 verify: format-check check lint test
