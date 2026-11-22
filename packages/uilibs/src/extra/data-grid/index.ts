@@ -81,9 +81,9 @@ export {
   hasDataGridTableRightPinnedColumns
 } from './data-grid-table'
 export type { DataGridTablePinnedBoundary } from './data-grid-table'
+export { DataGridCellSelection } from './data-grid-cell'
+export { DataGridSelectionBar } from './data-grid-cell-editor'
 export {
-  DataGridCellSelection,
-  DataGridSelectionBar,
   buildDataGridClearDetails,
   buildDataGridPasteDetails,
   getDataGridActiveRegionGrid,
@@ -92,12 +92,12 @@ export {
   parseDataGridClipboardText,
   serializeDataGridClipboardText,
   tileDataGridClipboardBlock
-} from './data-grid-cell'
+} from './data-grid-cell-ops'
 export type {
   DataGridCellSelectionApi,
   DataGridFocusCellOptions,
   DataGridPasteTarget
-} from './data-grid-cell'
+} from './data-grid-cell-ops'
 export {
   DataGridColumnFilter,
   DataGridColumnHeader,
