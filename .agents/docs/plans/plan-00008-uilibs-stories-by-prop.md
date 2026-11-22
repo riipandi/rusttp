@@ -1,5 +1,5 @@
 ---
-status: awaiting-approval
+status: in-progress
 created: 2026-11-22T19:00:00+07:00
 updated: 2026-11-22T19:21:58+07:00
 phases:
@@ -61,8 +61,8 @@ phases:
       note: 75 -> 74 story ids, gate 912 -> 910 tests, no overflow at 390 px in 77 stories; kanban, sortable, and the seven data-grid files keep their story counts; new axis stories BarChart Orientations and Layouts, AreaChart Layouts, LineChart Variants, Sortable Layouts; Axis gains wide
     - id: 14
       title: Docs sync and agent docs sync
-      status: pending
-      note: —
+      status: committed
+      note: docs/ n/a (`rg -il "storybook|stories" docs` empty); frontend.md, architecture.md, packages/uilibs/AGENTS.md, the ui-audit checklist, and audit-00002 (F-09 fixed) synced; ui-components.md already carried every prop
     - id: 15
       title: Ledger close and handover
       status: pending

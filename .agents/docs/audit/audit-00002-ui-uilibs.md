@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs (components, stories, Storybook gate)"
 status: in_review
 created_at: 2026-11-22T18:34:00+07:00
-updated_at: 2026-11-22T18:34:00+07:00
+updated_at: 2026-11-22T23:31:40+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 3, low: 10, info: 2 }
-    by_status: { open: 10, fixed: 4, deferred: 1, wont_fix: 0, false_positive: 0 }
+    by_status: { open: 9, fixed: 5, deferred: 1, wont_fix: 0, false_positive: 0 }
     verified: 12
     unverified: 3
 cleanup_candidates: 1
@@ -88,7 +88,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | F-06 | low | test quality | `src/base/select/select.stories.tsx:274-306` | `Keyboard` story flaky on Chromium, failing on WebKit | verified | fixed |
 | F-07 | low | story | `src/extra/sortable/sortable.stories.tsx:565` | Raw `style={styles.x}` on a div throws a React error | verified | fixed |
 | F-08 | low | story | `src/extra/calendar/calendar.stories.tsx:366-444` | CustomDays loses the range fill | verified | open |
-| F-09 | low | test quality | about 67 story files (`minWidth` decorator) | No story can show a 390 px layout | verified | open |
+| F-09 | low | test quality | about 67 story files (`minWidth` decorator) | No story can show a 390 px layout | verified | fixed |
 | F-10 | low | StyleX contract | see F-10 | Raw media queries, z-indexes, durations and one color remain | verified | open |
 | F-11 | info | design decision | `src/extra/command/command.stylex.ts:77-105` | Command input has no focus ring on purpose | n/a | open |
 | F-12 | info | a11y (WebKit) | `src/base/menubar/menubar.stories.tsx` | axe `aria-required-children` on the menubar in WebKit only | verified | deferred |
@@ -168,8 +168,8 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 
 - **Location**: about 67 story files set `minWidth` (448 px in the accordion) in their decorator.
 - **Problem**: at 390 px 68 story groups overflow horizontally by the decorator's width (`acc390.png`: accordion `scrollWidth` 448). The checklist item "a control that must fit a phone shrinks" cannot be judged from stories, and one component could overflow for real without any signal.
-- **Fix**: a narrow story per component that must fit (the contracts already have `NarrowRow` for OTP) or a shared decorator with a `fluid` mode. Not done: it touches 67 files and is a product decision on how much phone coverage the library owes.
-- **Status**: open.
+- **Fix**: a narrow story per component that must fit (the contracts already have `NarrowRow` for OTP) or a shared decorator with a `fluid` mode.
+- **Status**: fixed (2026-11-22, plan-00008). `.storybook/preview.tsx` sets a padded, fluid canvas, every story file lost its `minWidth` decorator, and a probe at 390 px over every story of the library found no horizontal overflow (two real overflows it exposed, InputPhone's country trigger and a Text sample, were fixed).
 
 ### F-10 StyleX contract leftovers
 
@@ -250,5 +250,6 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 
 ## Change log
 
+- 2026-11-22T23:31:40+07:00: F-09 fixed by plan-00008 (fluid canvas, no `minWidth`, 390 px probe clean); open question 3 (per-component state and size stories) is answered by the same plan, which gave every component `Sizes` and `States` stories.
 - 2026-11-22: F-15 added (Item `sm` and `md` identical) during plan-00008 batch D.
 - 2026-11-22T18:34:00+07:00: status draft -> in_review. Report written after the baseline, the story probe, the dark and engine runs and the focus checks; the test and story fixes (F-01, F-05, F-06, F-07) are in the working tree, uncommitted.

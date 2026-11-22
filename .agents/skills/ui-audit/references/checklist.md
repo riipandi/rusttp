@@ -33,6 +33,11 @@ Each line is a question with the contract it comes from. A "no" with evidence is
 - At 767/768px, does the admin layout render exactly one of the sidebar and the top bar?
 - Do long `id` strings wrap or truncate without breaking the layout?
 
+## Stories
+
+- Is each component's story file `Playground`, then one story per prop axis (`Variants`, `Colors`, `Sizes`, `States`, `Orientations`, `Sides`), then behavior stories, with every axis drawn by `Axis` and asserted in its `play`? (`frontend.md`, "UI library")
+- Does a story set a `minWidth` or `layout: 'centered'`, so the 390 px layout cannot show? Does any story overflow horizontally at 390 px?
+
 ## Motion and system modes
 
 - Does every animation have a `prefers-reduced-motion` branch (`motion.reduce`)?
