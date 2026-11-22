@@ -3,7 +3,7 @@ status: done
 created: 2026-11-20T00:01:00+07:00
 ---
 
-# Handover — CLI scaffold, transport, vixum (server-rendered SPA), DX and Docker
+# Handover: CLI scaffold, transport, vixum SPA document, DX and Docker
 
 The session ran from the CLI scaffold to a Rust-owned SPA document with a Vite-driven dev loop. Every piece of work is committed on branch `development`; the working tree was clean at capture. Nothing is pushed.
 

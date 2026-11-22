@@ -75,7 +75,7 @@ Parked improvements, not work items (`references/roadmap-example.md`). Each entr
 
 ## Handovers
 
-Session compactions (`references/handover-example.md`). Write one directly at a plan's close or when a session ends mid-work; the `handoff` skill does the same when the owner invokes it. The live directory keeps the five newest; older ones move to the archive.
+Session compactions (`references/handover-example.md`), titled `# Handover: <summary>` (what the session closed or left open, about ten words; the time lives in `created`). Write one directly at a plan's close or when a session ends mid-work; the `handoff` skill does the same when the owner invokes it. The live directory keeps `partial` handovers and the newest one; a `done` handover moves to the archive when a newer one lands.
 
 ## Docs sync and the closing sweep
 
