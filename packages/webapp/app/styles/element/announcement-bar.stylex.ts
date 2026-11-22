@@ -4,7 +4,6 @@ import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
-  // A solid strip above the header. It scrolls away with the page; the header below stays sticky.
   root: {
     display: 'flex',
     boxSizing: 'border-box',

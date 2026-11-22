@@ -8,6 +8,11 @@ import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 // 3rem: beside a sidebar, a wide gutter reads as a gap.
 const inset = layoutSize.adminInset
 
+// The announcement strip's height beside the sidebar: its one-line message stays at the strip's
+// `minHeight` there (`styles/element/announcement-bar.stylex.ts`), so the sticky settings aside starts
+// below it. Below the compact breakpoint the message may wrap, but the aside is gone there.
+const banner = unit.x10
+
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
@@ -19,6 +24,13 @@ export const styles = stylex.create({
   content: {
     flex: 1,
     minWidth: 0
+  },
+  // The announcement strip stays in view: at the top beside the sidebar, under the sticky top bar
+  // below the compact breakpoint.
+  banner: {
+    position: 'sticky',
+    top: { default: 0, [breakpoints.compact]: unit.x14 },
+    zIndex: 10
   },
   // Below the compact breakpoint the sidebar is not rendered and this bar stands in: the menu trigger, the
   // brand centered, and the notification trigger, in three equal-weight zones.
@@ -68,7 +80,7 @@ export const styles = stylex.create({
     flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
     alignItems: { default: 'flex-start', [breakpoints.compact]: 'stretch' }
   },
-  // Like the sidebar: a column the full height of the viewport with its own divider, items inset by
+  // Like the sidebar: a column the height of the viewport below the pinned banner, with its own divider, items inset by
   // the same step as the sidebar's nav, and the first item level with the page title.
   // The groups stack with the sidebar's own step between them.
   settingsAside: {
@@ -78,9 +90,9 @@ export const styles = stylex.create({
     gap: unit.x5,
     flexShrink: 0,
     position: 'sticky',
-    top: 0,
+    top: banner,
     width: container.xsmall,
-    height: '100dvh',
+    height: `calc(100dvh - ${banner})`,
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',

@@ -12,6 +12,8 @@ interface AnnouncementBarProps {
   label?: string
   /** An optional call to action: `render` is the link element (`<Link to='…' />` or `<a href='…' />`). */
   action?: { label: string; render: React.ReactElement<React.ComponentProps<'a'>> }
+  /** Layout styles from the page, merged last (the admin layout pins the strip). */
+  style?: stylex.StyleXStyles
   children: React.ReactNode
 }
 
@@ -22,13 +24,14 @@ export function AnnouncementBar({
   tone = 'primary',
   label,
   action,
+  style,
   children
 }: AnnouncementBarProps) {
   const m = useMessages()
   return (
     <aside
       aria-label={label ?? m.announcement_bar_label()}
-      {...stylex.props(styles.root, tones[tone])}
+      {...stylex.props(styles.root, tones[tone], style)}
     >
       <p {...stylex.props(styles.message)}>{children}</p>
       {action && (

@@ -88,7 +88,11 @@ function AdminLayout() {
         {/* One chrome, not both hidden by CSS: a hidden one still ran its subscriptions. */}
         {compact ? <AdminTopBar /> : <Sidebar />}
         <div {...stylex.props(styles.content)}>
-          <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
+          <AnnouncementBar
+            label={m.admin_banner_demo_label()}
+            tone='critical'
+            style={styles.banner}
+          >
             {m.admin_banner_demo_notice()}
           </AnnouncementBar>
           <Outlet />
