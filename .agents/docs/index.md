@@ -17,6 +17,13 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 | `.agents/docs/stylex-installation.md` | StyleX build setup per bundler, options, TypeScript, troubleshooting. Read when changing the compiler pipeline. |
 | `.agents/docs/architecture.md` | The architecture: module anatomy, lifecycle, and the decision records with their rejected alternatives.                                                     |
 
+## Terms
+
+- **Agent docs** — `.agents/docs/` (this ledger and the core documents) and `AGENTS.md`: written for agents, English, with `file:line` evidence.
+- **Human docs** — `docs/`: written for people, no paths or internals.
+
+There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
+
 ## Docs sync
 
 `AGENTS.md` carries the rule: a behavior change and its documentation land in the same turn and the same commit. This file is the map the rule dispatches on — when a diff touches what a document claims, update that document and the matching row here.
@@ -25,7 +32,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-Live: `plan-00005-ui-leftovers-remediation.md` (awaiting-approval, 10 phases: the entry budget and the root `TooltipProvider`, one admin chrome per viewport, series and `borderControl` contrast, the data grid split; issue-00003 items 1-4). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
+Live: `plan-00005-ui-leftovers-remediation.md` (in-progress, 11 phases: the entry budget and the root `TooltipProvider`, one admin chrome per viewport, series and `borderControl` contrast, the on-demand language catalog, the data grid split; issue-00003 items 1-4). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
