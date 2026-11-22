@@ -1,5 +1,5 @@
 ---
-status: partial
+status: done
 created: 2026-11-20T19:42:04+07:00
 ---
 
@@ -20,13 +20,13 @@ No plan drove this session; the owner steered it with small requests and screens
 
 ## What stayed open / the trap
 
-Open threads, none filed as issues:
+Every thread this handover left open is closed (checked against the tree and a run on 2026-11-22):
 
-- The Storybook a11y gate (`pnpm --filter uilibs test`, needs Chromium) was not run after the tooltip change in `packages/uilibs/src/base/tooltip/`.
-- Contrast figures quoted in chat were estimated from OKLCH lightness tokens, not measured.
-- Drawers and the collapsed rail were checked by typecheck and build, plus Chromium for tooltips and devtools; other layouts were judged from the owner's screenshots. The devtools theme was exercised through `prefers-color-scheme`, not by clicking the app's Theme menu.
-- The unread count (`unread = 3` in `routes/admin/-sidebar.tsx`) is a fixed placeholder, and the bells in `(app)/-header.tsx` and `admin/-topbar.tsx` have no indicator. Sidebar collapse is local state, not persisted, and the collapsed logo is the expand button, so it no longer links to `/admin`. Persisting it, a shared indicator, and a notifications popover (sample data per `AGENTS.md`) were floated, not requested.
-- Compose files carry development-only default credentials; never reuse them outside local dev.
+- The Storybook a11y gate after the tooltip change: closed by plan 00003 (the `Open` story in `packages/uilibs/src/base/tooltip/tooltip.stories.tsx`); `pnpm --filter uilibs test` is 92 files, 444 tests green.
+- Contrast: measured, not estimated, in plan 00003 phase 4 (all text and control pairs at AA; the tooltip outline is decorative).
+- Drawers, the rail, and the devtools theme: checked in Chromium by plan 00003; the axe sweep (`packages/e2e/screens/a11y/a11y.spec.ts`) covers every route at 390 and 1440px; the mobile drawer is opened by the admin navigation test (`isMobile`). Chromium E2E: 183 passed.
+- Notifications: `unread` comes from `libraries/notifications.store.ts` (`unreadCount`), the bells show a dot and a count in their name, and the popover exists. Sidebar collapse persists in `localStorage` `admin-sidebar`. The collapsed logo is part of the one toggle button (since `fe1415a`); it is not a link.
+- Compose files carry development-only default credentials by the owner's choice (`AGENTS.md`, "Secrets"; `rules.md`, "Sample data"): not a finding.
 
 Traps that cost time:
 

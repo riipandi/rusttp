@@ -18,7 +18,7 @@ This file holds the workflow rules, always in force; the detail — the reposito
 - No self-evident comments: a comment must carry what the code cannot (a why, a contract, a trap), never restate what the next line already says.
 - Chat follows the user's language. Files, code, identifiers, and commit messages are English.
 - UI components live in `packages/uilibs` and are styled with StyleX only: reuse a component from the index before writing one, take every color, size, and motion value from `src/styles/` tokens, and follow `stylex-authoring.md` (no `className` or raw `style` beside `stylex.props`, no top-level pseudo-classes or media queries, no non-StyleX imports in a style). A control takes `size` and composes `controlBase` or `controlPress` (`stylex-authoring.md`, "Controls"), a built-in string is a `labels` prop, and a new story passes the a11y gate (`pnpm --filter uilibs test`).
-- Webapp words are Paraglide messages (`m.<key>()`), never literals in a component, and the keys in every `packages/webapp/app/locales/*.json` stay sorted alphabetically ascending, the same keys in each locale; `.agents/docs/rules.md` ("Webapp i18n") has the details.
+- Webapp words are Paraglide messages read through `useMessages()` (`libraries/messages.ts`; a direct import of `#/paraglide/messages` is a lint error), never literals in a component, and the keys in every `packages/webapp/app/locales/*.json` stay sorted alphabetically ascending, the same keys in each locale; `.agents/docs/rules.md` ("Webapp i18n") has the details.
 - Sample data (fixtures, test values, previews, stories, placeholder copy and labels) is drawn from Dan Brown's novels and Harry Potter, never from `John Doe`, `foo`, or lorem ipsum; `.agents/docs/rules.md` ("Sample data") has the details.
 
 ## Skills
@@ -74,7 +74,7 @@ If the owner already chose in the same thread, do not re-ask. If new facts chang
 - **Plans.** A plan (`.agents/docs/plans/`) is a contract with a fixed shape; it executes only on the owner's explicit instruction, phase by phase.
 - **Prose.** `.agents/docs/` is for agents: English, technical, `file:line` evidence. `docs/` is for humans: no paths, internals, or agent context.
 - **Library docs.** Check external crates against current docs (docs.rs for the version in `Cargo.lock`, doc.rust-lang.org, changelogs) via whatever tool the environment provides (Context7, DeepWiki, web fetch). The locked source is the pinned truth — code wins over docs.
-- **Secrets.** Never print a secret; never rewrite a `.env` file without consent.
+- **Secrets.** Never print a secret; never rewrite a `.env` file without consent. The default credentials in `container/*.yaml` and `.env.example` are development-only by the owner's choice: they stay in the files, are not findings, and are never reused outside local dev.
 - **Destructive operations.** Never run a migration rollback, database reset, or drop without explicit consent in the same turn.
 
 ## Git

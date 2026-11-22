@@ -32,7 +32,7 @@ Ledger moves: `plan-00004` archived, `issue-00003-ui-audit-leftovers.md` filed, 
 
 ## What stayed open / the trap
 
-- `issue-00003-ui-audit-leftovers.md`: the entry chunk grew from 303 to 363 KB (115 KB gzip) because `useMessages` imports every message (the matrix's 10% bound is missed); two palette contrast gaps; the data grid size; the double-mounted admin chrome; no webapp unit runner; the `AGENTS.md:21` line awaiting approval.
+- `issue-00003-ui-audit-leftovers.md` (re-measured 2026-11-22; the figures this handover first gave were wrong in cause): the entry load (the entry chunk plus the chunks it imports statically) grew from 422 KB (137 KB gzip) to 547 KB (177 KB gzip). `useMessages` is only about 35 KB of that (10 KB gzip); the larger part, about 89 KB (31 KB gzip), is `TooltipProvider` moved to `routes/__root.tsx` by `e7618a0`, which pulls Base UI's tooltip into the entry. Also open: the palette contrast gaps, the data grid size, the double-mounted admin chrome, no webapp unit runner. The `AGENTS.md:21` line is fixed.
 - Not verified: a real screen reader, a real forced-colors OS mode (Chromium emulation only), a physical device.
 - Phase 14 (`docs/`) is n/a: it has no UI content.
 

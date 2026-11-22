@@ -165,7 +165,7 @@ Every made-up value — test fixtures, seed rows, email `previewProps`, stories,
 - Addresses and hosts keep reserved names: `<first>.<last>@example.com`, `smtp.example.com`, `*.test`; the domain never becomes a real one (`hogwarts.edu`).
 - IPs come from the documentation ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32`).
 - Codes and tokens may borrow spells and passwords from the books (`EXPECTO-PATRONUM`, `SANGREAL`), never something resembling a real secret.
-- Infrastructure credentials in `container/` and `.env.example` are configuration, not sample data, and keep their neutral names.
+- Infrastructure credentials in `container/` and `.env.example` are configuration, not sample data, and keep their neutral names. The defaults there (`PB_SUPERUSER_PASSWORD`, `PB_ENCRYPTION_KEY`, `ENCRYPTION_KEY`, the Postgres and MinIO passwords) are development-only by the owner's choice: an audit does not report them, nothing moves them into a secret store, and nothing outside local dev reuses them.
 
 ## How to change it
 

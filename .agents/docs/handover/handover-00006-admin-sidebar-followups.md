@@ -1,5 +1,5 @@
 ---
-status: partial
+status: done
 created: 2026-11-21T21:28:29+07:00
 plan: plan-00003-admin-sidebar-followups
 ---
@@ -22,9 +22,12 @@ Plan 00003 (archived, done) closed the verification threads that `handover-00005
 
 ## What stayed open / the trap
 
-- `issue-00002-stale-e2e-specs.md`: two Chromium specs (`auth` wrong-length code, `not-found`) assert copy the webapp no longer renders, and Firefox and WebKit cannot launch until `pnpm --filter e2e install-browsers` runs. Both items are awaiting the owner.
-- Notifications are still placeholders: `unread = 3` in `routes/admin/-sidebar.tsx`, and bells without an indicator in `(app)/-header.tsx` and `admin/-topbar.tsx`. They wait for a notification source.
-- The rail logo shows the browser's default focus outline, as the expanded brand link does; no shared focus style for links exists yet.
+Nothing stays open (checked on 2026-11-22):
+
+- `issue-00002-stale-e2e-specs.md` is resolved and archived (2026-11-21): the two Chromium specs were fixed, and Firefox and WebKit run after `playwright install firefox webkit`.
+- Notifications are no longer placeholders: `unreadCount` and the popover read `libraries/notifications.store.ts`.
+- The rail logo is no longer a link: `a1ab6b8` and `fe1415a` (2026-11-22) made it the face of the one `Toggle sidebar` button, with the expand icon on hover or keyboard focus. The "logo is a link" paragraph above describes plan 00003's state, not today's; `shape.md` and `admin.spec.ts:144` carry the current behavior.
+- No shared focus style for links exists; it is moot for the rail logo and was never filed.
 
 Traps:
 

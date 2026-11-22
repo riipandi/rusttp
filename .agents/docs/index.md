@@ -34,7 +34,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
-| `issue-00003-ui-audit-leftovers.md` | considering (1 open, 5 considering) | What plan 00004 left out: entry chunk growth, palette contrast gaps, data grid size, double-mounted admin chrome, no webapp unit runner, the `AGENTS.md` line. |
+| `issue-00003-ui-audit-leftovers.md` | considering (1 open, 4 considering, 1 resolved) | What plan 00004 left out: entry load growth (mostly the root `TooltipProvider`), palette contrast gaps, data grid size, double-mounted admin chrome, no webapp unit runner; the `AGENTS.md` line is resolved. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
@@ -48,9 +48,9 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five
 | ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
 | `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
 | `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
-| `handover-00005-webapp-nav-container-demo.md` | partial | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme. |
-| `handover-00006-admin-sidebar-followups.md` | partial | Plan 00003 closed: tooltip gate, measured contrast, persisted sidebar collapse, rail logo link; issue 00002 open. |
-| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 open, the traps. |
+| `handover-00005-webapp-nav-container-demo.md` | done | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme; every open thread closed (re-checked 2026-11-22). |
+| `handover-00006-admin-sidebar-followups.md` | done | Plan 00003 closed: tooltip gate, measured contrast, persisted sidebar collapse; issue 00002 resolved, the rail logo is no longer a link (since `fe1415a`). |
+| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 (re-measured: the entry growth is mostly the root `TooltipProvider`), the traps. |
 
 ## Audits (`.agents/docs/audit/`)
 
