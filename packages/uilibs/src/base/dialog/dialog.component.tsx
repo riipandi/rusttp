@@ -61,7 +61,12 @@ export function DialogContent({
       <DialogOverlay />
       <BaseDialog.Popup
         {...props}
-        {...stylex.props(s.content, ring({ shadow: shadow.overlay }), style)}
+        {...stylex.props(
+          stylex.defaultMarker(),
+          s.content,
+          ring({ shadow: shadow.overlay }),
+          style
+        )}
       >
         {children}
         {showCloseButton && (

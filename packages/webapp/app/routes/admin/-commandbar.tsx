@@ -136,17 +136,28 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
 
 export function CommandBar() {
   const open = useSelector(commandBarStore, (state) => state.open)
-  // The overlay owns the keyboard while it is mounted: its scope is exclusive, so every hotkey on
-  // the page behind it is suspended. It is mounted only while open, so the scope is too.
-  return open ? (
-    <HotkeysProvider scope='commandbar' exclusive>
-      <CommandBarDialog />
+  // The dialog stays mounted and closed, so a change of `open` runs its enter and exit transitions
+  // (a dialog mounted already open has no starting state to fade from). Its content mounts only
+  // while it is open or fading out. The overlay owns the keyboard while it is open: its scope is
+  // exclusive, so every hotkey on the page behind it is suspended, and `enabled` hands the keyboard
+  // back the moment it closes, not when the fade ends.
+  return (
+    <HotkeysProvider scope='commandbar' exclusive enabled={open}>
+      <CommandBarDialog open={open} />
     </HotkeysProvider>
-  ) : null
+  )
 }
 
-function CommandBarDialog() {
+function CommandBarDialog({ open }: { open: boolean }) {
   const m = useMessages()
+  // The content outlives `open` while the dialog fades out, so a bar reopened in that window would
+  // keep the last query: it is cleared on every open instead of on unmount.
+  const [query, setQuery] = React.useState('')
+  const [wasOpen, setWasOpen] = React.useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setQuery('')
+  }
   const panel = useSelector(commandBarStore, (state) => state.panel)
   const { setOpen: onOpenChange, show: onPanelChange } = commandBarStore.actions
   const panelRef = React.useRef<HTMLDivElement>(null)
@@ -283,7 +294,7 @@ function CommandBarDialog() {
 
   return (
     <CommandDialog
-      open
+      open={open}
       onOpenChange={onOpenChange}
       // Focus is not sent back to the sidebar trigger on close: the bar opens from a hotkey as
       // often as from the trigger, and a ring left on the trigger after Escape reads as a stuck
@@ -303,6 +314,8 @@ function CommandBarDialog() {
       ) : (
         <Command
           items={groups}
+          value={query}
+          onValueChange={setQuery}
           // The search matches what a row says and the words it carries (its group, a synonym),
           // so `sessions`, `security`, or `hotkeys` all find their page.
           itemToStringValue={(item) =>

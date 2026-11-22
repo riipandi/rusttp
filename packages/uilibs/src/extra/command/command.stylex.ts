@@ -23,39 +23,57 @@ export const commandStyles = stylex.create({
   // shortcut share a row. The box keeps the dialog's own centring and fade; the rise is `inner`.
   dialogContent: {
     borderRadius: radius.xlarge,
-    // A firmer edge than the dialog's own faded ring (which the dim overlay swallows) and a deeper
-    // shadow under it: the palette floats over the page, so its outline has to read in both themes.
-    // Two rings, the neutral border and a hairline of the page's lighter tone just inside it, so the
-    // edge shows against a near-black overlay too. Set here, after the dialog's ring, so it wins.
-    boxShadow: `0 0 0 ${stroke.ring1} ${colors.borderNeutral}, inset 0 0 0 ${stroke.ring1} ${colors.borderNeutralFaded}, 0 24px 48px -12px rgb(0 0 0 / 0.28), 0 8px 16px -8px rgb(0 0 0 / 0.16)`,
+    // The edge: a 1px ring of the text color at low strength (so it is dark on light and light on dark
+    // and shows against both the page and the dim overlay), a faint top highlight that only a dark
+    // surface can show, and two soft shadows, tight and wide, that lift the palette off the page.
+    // Set here, after the dialog's own ring, so it wins.
+    boxShadow: [
+      `0 0 0 ${stroke.ring1} color-mix(in srgb, ${colors.foregroundNeutral} 12%, transparent)`,
+      `inset 0 1px 0 color-mix(in srgb, ${colors.white} 6%, transparent)`,
+      `0 1px 2px color-mix(in srgb, ${colors.black} 8%, transparent)`,
+      `0 12px 24px -8px color-mix(in srgb, ${colors.black} 22%, transparent)`,
+      `0 32px 64px -16px color-mix(in srgb, ${colors.black} 28%, transparent)`
+    ].join(', '),
     gap: 0,
     maxHeight: `calc(100dvh - ${unit.x16})`,
     overflow: 'hidden',
     padding: 0,
     top: '15%',
+    // The box only fades, on the dialog's own timing (its centring never changes, so it cannot
+    // appear to swell); the motion is `inner`'s.
     transform: 'translate(-50%, 0)',
     width: container.xxlarge
   },
-  // The rise: the content inside the box lifts a few pixels as the box fades in, so the box never
-  // appears to swell and the transform it centres with is left alone.
+  // The content lifts a few pixels into place a beat after the box starts to fade in, so the frame
+  // settles first and the rows follow; it leaves with the box, on the box's own timing, drifting up a touch.
   inner: {
     display: 'flex',
     flexDirection: 'column',
     minHeight: 0,
     opacity: {
       default: 1,
-      '[data-starting-style] > &': 0
+      [stylex.when.ancestor('[data-starting-style]')]: 0,
+      [stylex.when.ancestor('[data-ending-style]')]: 0
     },
     translate: {
       default: '0 0',
-      '[data-starting-style] > &': '0 8px'
+      [stylex.when.ancestor('[data-starting-style]')]: '0 6px',
+      [stylex.when.ancestor('[data-ending-style]')]: '0 -2px'
+    },
+    transitionDelay: {
+      default: '40ms',
+      [stylex.when.ancestor('[data-ending-style]')]: '0ms',
+      '@media (prefers-reduced-motion: reduce)': '0ms'
     },
     transitionDuration: duration.medium,
     transitionProperty: {
       default: 'opacity, translate',
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
-    transitionTimingFunction: easing.standard
+    transitionTimingFunction: {
+      default: easing.standard,
+      [stylex.when.ancestor('[data-ending-style]')]: easing.decelerate
+    }
   },
   // The field is the room's header, not a box in it: a tall row with the icon, the text, and a
   // divider under it. No edge changes when it is focused (it is always the focus while the bar is
