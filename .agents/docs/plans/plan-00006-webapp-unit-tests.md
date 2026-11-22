@@ -1,28 +1,28 @@
 ---
-status: awaiting-approval
+status: in-progress
 created: 2026-11-22T14:20:00+07:00
-updated: 2026-11-22T14:20:00+07:00
+updated: 2026-11-22T14:27:00+07:00
 phases:
     - id: 1
       title: Vitest versions into the catalog, test dependencies for the webapp
-      status: pending
-      note: —
+      status: committed
+      note: "7f783ff. `pnpm install --frozen-lockfile` passes; the five catalog entries, two uilibs lines, the webapp devDependencies, and the lockfile are the only changes; uilibs 92 files, 444 tests. The `playwright` peer warning for oxc-transform-react is older than this plan."
     - id: 2
       title: Webapp Vitest browser config, scripts, and the first test
-      status: pending
-      note: —
+      status: committed
+      note: "4a2d987. 9 tests; the D8 scratch edit (a new array on a no-op) turned 3 red; `test:coverage` wrote .output/coverage and the text table; `test:ui` answered 302 with its token URL (without a TTY it exits after one run, so it needs a terminal or `--watch`); build and `size` unchanged at 458.1 KB / 145.9 KB gzip. `.vitest` added to .gitignore."
     - id: 3
       title: just recipes for the webapp tests
-      status: pending
-      note: —
+      status: committed
+      note: "f6dc323. `just --list` shows the three; `test-web` and `test-web-coverage` ran; `verify` untouched."
     - id: 4
       title: Store tests (sidebar, locale)
-      status: pending
-      note: —
+      status: committed
+      note: "77a0b97. 21 tests; scratch edits (the stored-value read, the rail visit reset, the locale no-op) each turned tests red; sidebar.store 96%, locale.store 100% lines."
     - id: 5
       title: Format, messages, and auth schema tests
-      status: pending
-      note: —
+      status: committed
+      note: "The tests commit. 45 more tests (75 in all); scratch edits (the hour and day boundaries, a single messages object, minLength 11, the code regex, the forward path of the mismatch error) each turned tests red; lines covered: format 94%, messages 100%, auth.schema 96%, notifications.store, sidebar.store, locale.store 100%."
     - id: 6
       title: Docs sync (docs/)
       status: pending
@@ -86,7 +86,7 @@ phases:
 - **No backward compatibility and no legacy code**: the project is early stage.
 - **Dependencies:** the owner approved Vitest, `vitest-browser-react`, `@vitest/ui`, and `@vitest/coverage-v8` on 2026-11-22; each is declared once in the catalog with its caret range as the workspace does; nothing else is added. The install needs the network.
 - **Per-phase validation runs before each phase's commit.** E2E is relevant only if a phase touches the app; none does, so it is recorded n/a.
-- **Test hygiene:** a test asserts observable results through the module's public interface, derives its expected values independently of the code, uses asymmetric inputs and both sides of a boundary, and resets module singletons between cases (`vi.resetModules()` with a dynamic import for a store read at import time; `localStorage.clear()`).
+- **Test hygiene:** a test asserts observable results through the module's public interface, derives its expected values independently of the code, uses asymmetric inputs and both sides of a boundary, and resets module singletons between cases (browser mode cannot reset modules, `vi.resetModules()` does nothing there: a store is put back with `setState`, and a module that reads storage at load is imported again under a query string, `import(`./x.ts?visit=${n}`)`; `localStorage.clear()`).
 - **Do not run Storybook and a Vitest run at the same time** (handover 00008: a shared StyleX plugin reported a false error).
 
 ## Phases
