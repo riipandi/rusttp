@@ -48,7 +48,11 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
-Parked improvements with a named unlock. None yet; the dual-edition idea is parked inside `architecture.md` ("Parked").
+Parked improvements with a named unlock.
+
+| File | Status | Subject |
+| --- | --- | --- |
+| `roadmap-00001-parked-verifications.md` | living | Manual checks no code can replace (real screen reader, forced-colors OS mode, physical device) and the community/enterprise edition idea. |
 
 ## Handovers (`.agents/docs/handover/`)
 
@@ -57,7 +61,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the newe
 | File                                     | Status  | Subject                                                                                                                                              |
 | ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `handover-00007-ui-audit-remediation.md` | done | Plan 00004 closed: the UI audit's fixes, the commits, the traps; its leftovers were closed by plans 00005 and 00006. |
-| `handover-00008-ui-leftovers-remediation.md` | partial | Plan 00005 closed: entry budget, per-layout tooltip, one admin chrome, contrast, data grid split, the dropped lazy catalog; open: real screen reader, real forced-colors mode, physical device (not fixable in code). |
+| `handover-00008-ui-leftovers-remediation.md` | done | Plan 00005 closed: entry budget, per-layout tooltip, one admin chrome, contrast, data grid split, the dropped lazy catalog; the manual checks moved to `roadmap-00001`. |
 | `handover-00009-webapp-unit-tests.md` | done | Plan 00006 closed: Vitest browser mode for the webapp, one catalog version, `just test-web*`, 75 tests, the traps of browser mode. |
 
 ## Audits (`.agents/docs/audit/`)

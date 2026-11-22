@@ -280,7 +280,3 @@ Alternatives considered:
 - `@vitest/coverage-istanbul` — rejected: it instruments code and fights the React Compiler and StyleX pipeline.
 - A coverage threshold now — rejected: the figure would be arbitrary before a baseline exists.
 - Vitest versions inline in the packages that use them — rejected: two sources of one version.
-
-## Parked
-
-- Community and enterprise editions (an `enterprise` Cargo feature, port overrides in the kernel, a license gate) — set aside by the owner on 2026-11-19. Revisit only when the owner raises it.

@@ -1,5 +1,5 @@
 ---
-status: partial
+status: done
 created: 2026-11-22T14:10:00+07:00
 plan: plan-00005-ui-leftovers-remediation
 ---
@@ -29,7 +29,7 @@ Ledger moves: plan 00005 archived; handovers 00003 to 00006 (done) archived; `is
 ## What stayed open / the trap
 
 - `issue-00003-ui-audit-leftovers.md` is archived: its item 5 (the webapp unit test runner) was closed the same day by plan 00006 (`handover-00009`).
-- Not verified, and not fixable in code: a real screen reader, a real forced-colors OS mode (Chromium emulation only), a physical device (from plan 00004). Chromium E2E: 184 passed; Firefox, Safari, and Mobile Safari: 159 passed, 0 failed, 393 skipped by design (the a11y sweep is Chromium-only, and the rail and sidebar specs skip on mobile), run on 2026-11-22 against a rebuilt server after plan 00006.
+- Not verified, and not fixable in code: a real screen reader, a real forced-colors OS mode, a physical device; moved to `roadmap-00001-parked-verifications.md` (RI-1 to RI-3) on 2026-11-22, which closes this handover. Last full E2E run, 2026-11-22: Chromium 184 passed; Firefox, Safari, and Mobile Safari 159 passed, 0 failed, 393 skipped by design.
 - `packages/uilibs/src/extra/data-grid/data-grid-table-virtual.tsx` is 1186 lines and was not split; no defect depends on it.
 
 Traps:
