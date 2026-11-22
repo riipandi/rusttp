@@ -21,14 +21,26 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 ## Terms
 
-- **Agent docs** — `.agents/docs/` (this ledger and the core documents) and `AGENTS.md`: written for agents, English, with `file:line` evidence.
+- **Agent docs** — `.agents/docs/` (this ledger and the core documents), `AGENTS.md` (root and scoped), and the project skills in `.agents/skills/`: written for agents, English, with `file:line` evidence.
 - **Human docs** — `docs/`: written for people, no paths or internals.
 
 There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 ## Docs sync
 
-`AGENTS.md` carries the rule: a behavior change and its documentation land in the same turn and the same commit. This file is the map the rule dispatches on — when a diff touches what a document claims, update that document and the matching row here.
+A behavior change and its documentation land in the same commit; `rules.md` ("Where a fact lives") names the file, and this map gets the matching row.
+
+## Project skills (`.agents/skills/`)
+
+| Skill | Use it for |
+| --- | --- |
+| `agent-docs` | Every ledger or docs change: plans, issues, roadmap, handovers, index, archive, `docs/`. |
+| `handoff` | Writing a handover on the owner's request. |
+| `deep-audit` | Evidence-based audit of a feature or the system (backend side); report in `audit/`. |
+| `ui-audit` | Audit of `packages/webapp` and `packages/uilibs`: a11y, StyleX tokens, i18n, entry budget, screens per state and width; same report shape as `deep-audit`. |
+| `rust-verify-harden` | Rust quality gates and the leak, deadlock, race, and boundary pass. |
+
+The other entries in `.agents/skills/` are links to skills shipped by pnpm packages (TanStack), git-ignored and owned upstream.
 
 ## Plans (`.agents/docs/plans/`)
 
@@ -36,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `plan-00007-agent-docs-restructure.md` | awaiting-approval | Split rules into rules/backend/frontend, slim root and scoped `AGENTS.md`, handover titles by summary, roadmap for parked work, refined skills, new `ui-audit` skill. |
+| `plan-00007-agent-docs-restructure.md` | in-progress | Split rules into rules/backend/frontend, slim root and scoped `AGENTS.md`, handover titles by summary, roadmap for parked work, refined skills, new `ui-audit` skill. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
@@ -66,7 +78,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
+Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. None live; `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
 
 ## Archive (`.agents/docs/archive/`)
 
