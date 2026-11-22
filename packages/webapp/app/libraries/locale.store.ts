@@ -8,11 +8,10 @@ import {
 } from '#/paraglide/runtime'
 
 // The language of the interface. Paraglide's `m.*` functions read the locale at call time and know
-// nothing about React, so this store is what the app subscribes to: `__root.tsx` keys the route
-// tree on it, and a change remounts every message call at once (a memoized component would
-// otherwise keep its old text). The browser remembers the choice in `localStorage`; the first
-// visit takes the browser's language and falls back to English (`project.inlang/paraglide.config.ts`).
-// There is no locale in the URL.
+// nothing about React, so this store is what the app subscribes to: `useMessages` and `useFormat`
+// re-render their callers in place when it changes (no remount, so typed input and focus stay).
+// The browser remembers the choice in `localStorage`; the first visit takes the browser's language
+// and falls back to English (`project.inlang/paraglide.config.ts`). There is no locale in the URL.
 export const localeNames: Record<Locale, string> = { en: 'English', id: 'Bahasa Indonesia' }
 
 function read(): Locale {
