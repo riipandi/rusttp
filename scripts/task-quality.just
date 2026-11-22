@@ -33,6 +33,21 @@ lint *args:
 test *args:
     @if command -v cargo-nextest >/dev/null; then cargo nextest run --workspace --no-tests=pass {{ args }}; else cargo test --workspace {{ args }}; fi
 
+[doc('Run the webapp unit tests (Chromium; extra arguments go to Vitest)')]
+[group('quality')]
+test-web *args:
+    @pnpm --silent --filter webapp test {{ args }}
+
+[doc('Open the Vitest UI for the webapp unit tests')]
+[group('quality')]
+test-web-ui:
+    @pnpm --silent --filter webapp test:ui
+
+[doc('Run the webapp unit tests with a coverage report (.output/coverage)')]
+[group('quality')]
+test-web-coverage:
+    @pnpm --silent --filter webapp test:coverage
+
 [doc('Run Hurl API specs')]
 [group('quality')]
 test-api url="http://127.0.0.1:3000":
