@@ -23,6 +23,9 @@ This skill is stack-agnostic. Detect the language, framework, and database from 
 - **Feature name given** - audit that feature and every flow touching it (entry points, services, storage, jobs/queues, external integrations, consuming UI/API). Follow dependencies; do not stop at one directory.
 - **No argument** - audit the whole system. Start with the feature inventory (Phase 1), then ask the user to pick priorities if the system is large.
 - **Name matches nothing in the code** - do not guess. Offer the closest candidates as choices.
+- **Frontend scope** (`packages/webapp`, `packages/uilibs`, a page, a component) - use the `ui-audit` skill, which carries this stack's UI checks and writes the same report shape. A whole-system audit covers the backend here and hands the UI part to `ui-audit`.
+
+Project facts that are not findings: anything `.agents/docs/rules.md` settles (for example the development-only credentials in `container/` and `.env.example`) and decisions recorded in `.agents/docs/architecture.md`. Read `backend.md` or `frontend.md` for the area's contracts before judging code against them.
 
 ## Language rules
 
@@ -99,7 +102,8 @@ Write the report using `references/report-template.md`. It starts with YAML fron
 - Save the report to `.agents/docs/audit/audit-<nnnnn>-<topic>.md` relative to the repository root (create the directories if missing). `<nnnnn>` is the next five-digit number: the highest existing `audit-` number across `.agents/docs/audit/` and `.agents/docs/archive/`, plus one, never reused. `<topic>` is the audited scope in lowercase kebab-case (`auth`, `whole-system`). Read `created_at` from the system clock (e.g. `date -Iseconds`), never guess it.
 - Create the file early (end of Phase 1) with `status: draft` and fill it in as phases complete, so progress survives an interrupted session.
 - If a report for the same scope already exists and the user is continuing it, update that file (keep `created_at`, refresh `updated_at`) instead of creating a new one. If unsure whether to continue or start fresh, ask. Never overwrite another report.
-- Do not edit `.gitignore` or commit the report unless asked. If `.agents/docs/` is not ignored by git, mention it in one line and let the user decide.
+- Do not commit the report unless asked.
+- A completed report moves unchanged to `.agents/docs/archive/` and its `index.md` row moves with it (`agent-docs`).
 - Keep frontmatter and body consistent: counts, `status`, and `updated_at` must be updated on every edit.
 
 **Language**
