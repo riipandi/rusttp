@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar'
@@ -11,23 +12,7 @@ import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from './preview-c
 const meta = {
   title: 'Base Components/PreviewCard',
   component: PreviewCard,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof PreviewCard>
 
 type Story = StoryObj<typeof meta>
@@ -50,12 +35,6 @@ const styles = stylex.create({
   muted: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1
-  },
-  sidesRow: {
-    alignItems: 'center',
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8
   }
 })
 
@@ -95,15 +74,28 @@ export const Playground: Story = {
   }
 }
 
+/** Each side opens its own card; the popup flips when the canvas leaves it no room, so the side is not asserted. */
 export const Sides: Story = {
   render: () => (
-    <div {...stylex.props(styles.sidesRow)}>
-      {sides.map((side) => (
-        <PreviewCard key={side}>
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <PreviewCard>
           <PreviewCardTrigger render={<Button variant='outline' />}>{side}</PreviewCardTrigger>
           <PreviewCardContent side={side}>Preview floats to the {side}</PreviewCardContent>
         </PreviewCard>
-      ))}
-    </div>
-  )
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
+        name: side
+      })
+      await userEvent.hover(trigger)
+      await body.findByText(`Preview floats to the ${side}`)
+      await userEvent.unhover(trigger)
+      await waitFor(() => expect(body.queryByText(`Preview floats to the ${side}`)).toBeNull())
+    }
+  }
 }

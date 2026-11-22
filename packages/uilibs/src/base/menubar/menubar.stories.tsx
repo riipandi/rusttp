@@ -1,6 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -23,15 +21,7 @@ import {
 const meta = {
   title: 'Base Components/Menubar',
   component: Menubar,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Menubar>
 
 type Story = StoryObj<typeof meta>
@@ -191,7 +181,7 @@ export const Submenu: Story = {
   )
 }
 
-export const ControlSizes: Story = {
+export const Sizes: Story = {
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => (

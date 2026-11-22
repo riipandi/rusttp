@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
+import { cellOf, expectDockedTo } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Label } from '../label'
 import {
   Sheet,
@@ -20,23 +21,7 @@ import {
 const meta = {
   title: 'Extra Components/Sheet',
   component: Sheet,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Sheet>
 
 type Story = StoryObj<typeof meta>
@@ -49,11 +34,6 @@ const styles = stylex.create({
     flexDirection: 'column',
     gap: 16,
     paddingInline: 16
-  },
-  row: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8
   }
 })
 
@@ -122,9 +102,9 @@ export const CloseButton: Story = {
 
 export const Sides: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      {sides.map((side) => (
-        <Sheet key={side}>
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <Sheet>
           <SheetTrigger render={<Button variant='outline' />}>{side}</SheetTrigger>
           <SheetContent side={side}>
             <SheetHeader>
@@ -135,9 +115,22 @@ export const Sides: Story = {
             </SheetHeader>
           </SheetContent>
         </Sheet>
-      ))}
-    </div>
-  )
+      )}
+    </Axis>
+  ),
+  // Docked popups do not flip: each sheet sits flush against its own edge.
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
+      )
+      const dialog = await body.findByRole('dialog')
+      await expectDockedTo(dialog, side)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+  }
 }
 
 export const NoCloseButton: Story = {

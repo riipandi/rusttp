@@ -1,9 +1,9 @@
 import { Bin } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
 import {
@@ -22,26 +22,56 @@ import {
 const meta = {
   title: 'Base Components/AlertDialog',
   component: AlertDialog,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof AlertDialog>
 
 type Story = StoryObj<typeof meta>
+
+const colorNames = ['primary', 'neutral', 'critical', 'positive', 'warning'] as const
+const variantNames = ['solid', 'faded', 'outline', 'ghost'] as const
+
+/** One dialog per value of the prop, so each trigger opens the dialog under test. */
+function ActionDialog({
+  label,
+  variant,
+  color
+}: {
+  label: string
+  variant?: (typeof variantNames)[number]
+  color?: (typeof colorNames)[number]
+}) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger render={<Button variant='outline' />}>{label}</AlertDialogTrigger>
+      <AlertDialogContent size='sm'>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirm {label}?</AlertDialogTitle>
+          <AlertDialogDescription>The action below takes the {label} look.</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction variant={variant} color={color}>
+            Proceed {label}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
+/** Opens the dialog in `cell`, reads the look of its action, and closes it again. */
+async function actionLook(cell: HTMLElement, label: string) {
+  const body = within(document.body)
+  await userEvent.click(within(cell).getByRole('button', { name: label }))
+  const action = within(await body.findByRole('alertdialog')).getByRole('button', {
+    name: `Proceed ${label}`
+  })
+  const style = getComputedStyle(action)
+  const look = [style.backgroundColor, style.borderTopWidth, style.borderTopColor, style.color]
+  await userEvent.keyboard('{Escape}')
+  await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+  return look.join('|')
+}
 
 function deleteAccount() {
   return new Promise<void>((resolve) => setTimeout(resolve, 1500))
@@ -90,6 +120,80 @@ export const Playground: Story = {
   }
 }
 
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={['sm', 'md'] as const}>
+      {(size) => (
+        <AlertDialog>
+          <AlertDialogTrigger render={<Button variant='outline' />}>{size}</AlertDialogTrigger>
+          <AlertDialogContent size={size}>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Leave without casting Lumos?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Your unfinished incantations will be lost.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Stay</AlertDialogCancel>
+              <AlertDialogAction color='critical'>Disapparate</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </Axis>
+  ),
+  // `md` widens at 660 px and up, so on a narrow canvas both sizes are the `sm` width: `md` is
+  // never narrower than `sm`, and `sm` never exceeds the medium container (20rem; less on a narrower viewport).
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const width = async (size: string) => {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'size', size)).getByRole('button', { name: size })
+      )
+      const dialog = await body.findByRole('alertdialog')
+      const { width: boxWidth } = dialog.getBoundingClientRect()
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+      return boxWidth
+    }
+    const sm = await width('sm')
+    await expect(sm).toBeLessThanOrEqual(320)
+    await expect(await width('md')).toBeGreaterThanOrEqual(sm)
+  }
+}
+
+/** The action takes the Button `variant`; each look differs from the others. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={variantNames}>
+      {(variant) => <ActionDialog label={variant} variant={variant} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const looks = new Set<string>()
+    for (const variant of variantNames) {
+      looks.add(await actionLook(cellOf(canvasElement, 'variant', variant), variant))
+    }
+    await expect(looks.size).toBe(variantNames.length)
+  }
+}
+
+/** The action takes the Button `color`; each color differs from the others. */
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => <ActionDialog label={color} color={color} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const looks = new Set<string>()
+    for (const color of colorNames) {
+      looks.add(await actionLook(cellOf(canvasElement, 'color', color), color))
+    }
+    await expect(looks.size).toBe(colorNames.length)
+  }
+}
+
 export const Media: Story = {
   render: () => (
     <AlertDialog>
@@ -109,28 +213,6 @@ export const Media: Story = {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction color='critical'>Vanish</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  )
-}
-
-export const Small: Story = {
-  render: () => (
-    <AlertDialog>
-      <AlertDialogTrigger render={<Button variant='outline' />}>
-        Leave the archive
-      </AlertDialogTrigger>
-      <AlertDialogContent size='sm'>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Leave without casting Lumos?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Your unfinished incantations will be lost.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Stay</AlertDialogCancel>
-          <AlertDialogAction color='critical'>Disapparate</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

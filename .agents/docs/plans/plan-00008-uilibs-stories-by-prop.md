@@ -45,8 +45,8 @@ phases:
       note: 11 components regrouped, 69 -> 62 story ids, gate 920 -> 906 tests, no overflow at 390 px in 62 stories
     - id: 10
       title: Batch C - overlays and menus
-      status: pending
-      note: —
+      status: committed
+      note: 13 components regrouped, 59 -> 62 story ids, gate 906 -> 912 tests, no overflow at 390 px in 62 stories; new helper expectDockedTo; disabled menu rows keep the default cursor (opacity only)
     - id: 11
       title: Batch D - feedback and content
       status: pending

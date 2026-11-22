@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Field, FieldLabel } from '../field'
@@ -18,26 +19,10 @@ import {
 const meta = {
   title: 'Base Components/Popover',
   component: Popover,
-  parameters: { layout: 'centered' },
   argTypes: {
     open: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Popover>
 
 type Story = StoryObj<typeof meta>
@@ -89,15 +74,34 @@ export const Playground: Story = {
   }
 }
 
+const sides = ['top', 'right', 'bottom', 'left'] as const
+
+/** Each side opens its own popover; the popup flips when the canvas leaves it no room, so the side is not asserted. */
 export const Placement: Story = {
   render: () => (
-    <Popover>
-      <PopoverTrigger render={<Button variant='outline' />}>Levitate above</PopoverTrigger>
-      <PopoverContent side='top' align='start'>
-        Wingardium Leviosa — hovering above the trigger.
-      </PopoverContent>
-    </Popover>
-  )
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <Popover>
+          <PopoverTrigger render={<Button variant='outline' />}>{side}</PopoverTrigger>
+          <PopoverContent side={side} aria-label={`Levitate ${side}`}>
+            Wingardium Leviosa — hovering to the {side} of the trigger.
+          </PopoverContent>
+        </Popover>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
+      )
+      const popover = await body.findByRole('dialog', { name: `Levitate ${side}` })
+      await expect(popover).toHaveTextContent(`to the ${side} of the trigger`)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+  }
 }
 
 export const Parts: Story = {

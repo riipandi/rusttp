@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontSize, fontFamily, radius, stroke } from '../../styles/tokens.stylex'
 import {
@@ -24,23 +25,7 @@ import {
 const meta = {
   title: 'Base Components/ContextMenu',
   component: ContextMenu,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ContextMenu>
 
 type Story = StoryObj<typeof meta>
@@ -127,6 +112,68 @@ export const Playground: Story = {
   }
 }
 
+/** A disabled item takes no action; a disabled menu never opens. */
+export const States: Story = {
+  render: () => (
+    <Axis axis='disabled' rows={['item', 'menu'] as const}>
+      {(part) => (
+        <ContextMenu disabled={part === 'menu'}>
+          <ContextMenuTrigger style={styles.trigger}>Right-click the {part}</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>Re-ink the map</ContextMenuItem>
+            <ContextMenuItem disabled={part === 'item'}>Follow the dot</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+
+    const item = within(cellOf(canvasElement, 'disabled', 'item')).getByText('Right-click the item')
+    await userEvent.pointer({ keys: '[MouseRight]', target: item })
+    await body.findByRole('menu')
+    const follow = body.getByRole('menuitem', { name: 'Follow the dot' })
+    await expect(follow).toHaveAttribute('data-disabled')
+    // Menu rows dim but keep the default cursor, unlike a form control.
+    await expectDisabledLook(follow, { cursor: false })
+    await userEvent.click(follow)
+    await expect(body.getByRole('menu')).toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+
+    const menu = within(cellOf(canvasElement, 'disabled', 'menu')).getByText('Right-click the menu')
+    await userEvent.pointer({ keys: '[MouseRight]', target: menu })
+    await expect(body.queryByRole('menu')).toBeNull()
+  }
+}
+
+/** The item `color`: `critical` marks the item that destroys something. */
+export const Colors: Story = {
+  render: () => (
+    <ContextMenu>
+      <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Re-ink the map</ContextMenuItem>
+        <ContextMenuItem>Duplicate parchment</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem color='critical'>Mischief managed</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    await userEvent.pointer({
+      keys: '[MouseRight]',
+      target: canvas.getByText('Right-click the map')
+    })
+    await body.findByRole('menu')
+    await expect(
+      getComputedStyle(body.getByRole('menuitem', { name: 'Mischief managed' })).color
+    ).not.toBe(getComputedStyle(body.getByRole('menuitem', { name: 'Re-ink the map' })).color)
+  }
+}
+
 export const Submenu: Story = {
   render: () => (
     <ContextMenu>
@@ -176,20 +223,6 @@ export const Radio: Story = {
         <ContextMenuSeparator />
         {/* A radio item outside its RadioGroup has no context — plain item. */}
         <ContextMenuItem disabled>Add a new Marauder…</ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
-  )
-}
-
-export const Destructive: Story = {
-  render: () => (
-    <ContextMenu>
-      <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem>Re-ink the map</ContextMenuItem>
-        <ContextMenuItem>Duplicate parchment</ContextMenuItem>
-        <ContextMenuSeparator />
-        <ContextMenuItem color='critical'>Mischief managed</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )

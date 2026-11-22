@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { detectPlatform, formatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 import * as React from 'react'
@@ -14,23 +13,7 @@ import { CommandGroup, CommandInput, CommandItem } from './command.component'
 const meta = {
   title: 'Extra Components/Command',
   component: Command,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Command>
 
 type Story = StoryObj<typeof meta>

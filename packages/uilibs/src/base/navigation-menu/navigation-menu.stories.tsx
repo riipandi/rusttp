@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
@@ -16,15 +15,7 @@ import {
 const meta = {
   title: 'Base Components/NavigationMenu',
   component: NavigationMenu,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof NavigationMenu>
 
 type Story = StoryObj<typeof meta>

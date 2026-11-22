@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import {
   DropdownMenu,
@@ -23,23 +23,7 @@ import {
 const meta = {
   title: 'Base Components/DropdownMenu',
   component: DropdownMenu,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof DropdownMenu>
 
 type Story = StoryObj<typeof meta>
@@ -75,20 +59,77 @@ export const Playground: Story = {
   }
 }
 
-export const DisabledItem: Story = {
-  name: 'Disabled item',
+/** The disabled item stays in the list but takes no action; a disabled trigger never opens the menu. */
+export const States: Story = {
+  render: () => (
+    <Axis axis='disabled' rows={['item', 'trigger'] as const}>
+      {(part) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button variant='outline' />} disabled={part === 'trigger'}>
+            Spells {part}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>Gemino</DropdownMenuItem>
+              <DropdownMenuItem disabled={part === 'item'}>
+                Archive (Ministry pending)
+              </DropdownMenuItem>
+              <DropdownMenuItem>Evanesco</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+
+    const item = within(cellOf(canvasElement, 'disabled', 'item')).getByRole('button', {
+      name: 'Spells item'
+    })
+    await userEvent.click(item)
+    await body.findByRole('menu')
+    const archive = body.getByRole('menuitem', { name: 'Archive (Ministry pending)' })
+    await expect(archive).toHaveAttribute('data-disabled')
+    // Menu rows dim but keep the default cursor, unlike a form control.
+    await expectDisabledLook(archive, { cursor: false })
+    // Choosing it does nothing: the menu stays open.
+    await userEvent.click(archive)
+    await expect(body.getByRole('menu')).toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+
+    const trigger = within(cellOf(canvasElement, 'disabled', 'trigger')).getByRole('button', {
+      name: 'Spells trigger'
+    })
+    await expect(trigger).toBeDisabled()
+    await expectDisabledLook(trigger)
+  }
+}
+
+/** The item `color`: `critical` marks the item that destroys something. */
+export const Colors: Story = {
   render: () => (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant='outline' />}>Spells</DropdownMenuTrigger>
+      <DropdownMenuTrigger render={<Button variant='outline' />}>
+        Prophet article options
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Gemino</DropdownMenuItem>
-          <DropdownMenuItem disabled>Archive (Ministry pending)</DropdownMenuItem>
-          <DropdownMenuItem>Evanesco</DropdownMenuItem>
-        </DropdownMenuGroup>
+        <DropdownMenuItem>Revise</DropdownMenuItem>
+        <DropdownMenuItem>Gemino</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem color='critical'>Evanesco</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Prophet article options' }))
+    await body.findByRole('menu')
+    await expect(getComputedStyle(body.getByRole('menuitem', { name: 'Evanesco' })).color).not.toBe(
+      getComputedStyle(body.getByRole('menuitem', { name: 'Revise' })).color
+    )
+  }
 }
 
 export const Checkboxes: Story = {
@@ -184,22 +225,6 @@ export const Shortcuts: Story = {
           Select every scroll
           <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
         </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-export const Destructive: Story = {
-  render: () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant='outline' />}>
-        Prophet article options
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>Revise</DropdownMenuItem>
-        <DropdownMenuItem>Gemino</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem color='critical'>Evanesco</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

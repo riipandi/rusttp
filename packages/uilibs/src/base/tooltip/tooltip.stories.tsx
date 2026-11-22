@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Button } from '../button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip.component'
@@ -9,26 +10,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 const meta = {
   title: 'Base Components/Tooltip',
   component: TooltipProvider,
-  parameters: { layout: 'centered' },
   argTypes: {
     delay: { control: 'number' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof TooltipProvider>
 
 type Story = StoryObj<typeof meta>
@@ -38,12 +23,6 @@ const sides = ['top', 'right', 'bottom', 'left'] as const
 const styles = stylex.create({
   pair: { display: 'flex', gap: 160, paddingTop: 64 },
   neutralSurface: { backgroundColor: colors.backgroundElevationOverlay, height: 1, width: 1 },
-  row: {
-    alignItems: 'center',
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8
-  },
   // Disabled native buttons don't fire pointer events, so the tooltip
   // trigger has to be the wrapping span instead of the button itself.
   trigger: {
@@ -96,37 +75,67 @@ export const Open: Story = {
   }
 }
 
+/** Each side opens its own tooltip; the popup flips when the canvas leaves it no room, so the side is not asserted. */
 export const Sides: Story = {
-  args: { delay: 0 },
   render: () => (
     <TooltipProvider>
-      <div {...stylex.props(styles.row)}>
-        {sides.map((side) => (
-          <Tooltip key={side}>
+      <Axis axis='side' rows={sides}>
+        {(side) => (
+          <Tooltip>
             <TooltipTrigger render={<Button variant='outline' />}>{side}</TooltipTrigger>
             <TooltipContent side={side}>Reveals the {side} of the map</TooltipContent>
           </Tooltip>
-        ))}
-      </div>
+        )}
+      </Axis>
     </TooltipProvider>
-  )
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
+        name: side
+      })
+      await userEvent.hover(trigger)
+      await waitFor(() => expect(body.getByText(`Reveals the ${side} of the map`)).toBeVisible())
+      await userEvent.unhover(trigger)
+      await waitFor(() => expect(body.queryByText(`Reveals the ${side} of the map`)).toBeNull())
+    }
+  }
 }
 
-export const DisabledButton: Story = {
-  name: 'Disabled button',
-  args: { delay: 0 },
+// Disabled native buttons don't fire pointer events, so the trigger is the wrapping span.
+export const States: Story = {
   render: () => (
     <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger render={<span {...stylex.props(styles.trigger)} />}>
-          <Button variant='outline' disabled>
-            Alohomora
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Speak the riddle to unlock the door</TooltipContent>
-      </Tooltip>
+      <Axis axis='state' rows={['default', 'disabled'] as const}>
+        {(state) => (
+          <Tooltip>
+            <TooltipTrigger render={<span {...stylex.props(styles.trigger)} />}>
+              <Button variant='outline' disabled={state === 'disabled'}>
+                Alohomora
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Speak the riddle to unlock the {state} door</TooltipContent>
+          </Tooltip>
+        )}
+      </Axis>
     </TooltipProvider>
-  )
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const disabled = cellOf(canvasElement, 'state', 'disabled')
+    const button = within(disabled).getByRole('button', { name: 'Alohomora' })
+    await expect(button).toBeDisabled()
+    await expectDisabledLook(button)
+    // The wrapper still opens the tooltip for the disabled button.
+    const wrapper = disabled.firstElementChild
+    if (!wrapper) throw new Error('No tooltip trigger for the disabled state')
+    await userEvent.hover(wrapper)
+    await waitFor(() =>
+      expect(body.getByText('Speak the riddle to unlock the disabled door')).toBeVisible()
+    )
+    await userEvent.unhover(wrapper)
+  }
 }
 
 /** The inverted surface, open so the a11y gate checks its contrast; the probe is the neutral one. */

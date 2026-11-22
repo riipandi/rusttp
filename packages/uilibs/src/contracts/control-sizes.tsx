@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import type { ControlSize, DenseControlSize } from '../styles/control.stylex'
 import { visuallyHidden } from '../styles/utils.stylex'
 
@@ -123,4 +123,22 @@ export function cellOf(root: HTMLElement, axis: string, value: string): HTMLElem
   const cell = root.querySelector(`[data-${axis}="${value}"]`)
   if (!(cell instanceof HTMLElement)) throw new Error(`No ${axis} cell for ${value}`)
   return cell
+}
+
+/**
+ * Asserts a docked popup (a sheet or a drawer) sits flush against `edge` of the viewport. It
+ * waits, since the popup slides in from its edge.
+ */
+export async function expectDockedTo(element: Element, edge: 'top' | 'right' | 'bottom' | 'left') {
+  await waitFor(async () => {
+    const rect = element.getBoundingClientRect()
+    const root = document.documentElement
+    const gap = {
+      top: rect.top,
+      left: rect.left,
+      right: root.clientWidth - rect.right,
+      bottom: root.clientHeight - rect.bottom
+    }[edge]
+    await expect(Math.abs(gap)).toBeLessThanOrEqual(1)
+  })
 }
