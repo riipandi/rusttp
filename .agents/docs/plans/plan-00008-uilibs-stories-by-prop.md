@@ -53,8 +53,8 @@ phases:
       note: 16 folders regrouped, gate 912 -> 920 tests, no overflow at 390 px in 85 stories (Text Variants overflowed 91 px with a long sample and now uses a short one); new axis stories Text Variants, Weights, Colors, Responsive, Icon Sizes, Colors, Item and Card Sizes, Empty Variants, LoaderText States; audit-00002 F-15 (Item sm equals md)
     - id: 12
       title: Batch E - navigation, structure, dates
-      status: pending
-      note: —
+      status: committed
+      note: 8 folders regrouped, 49 -> 45 story ids, gate 920 -> 912 tests, no overflow at 390 px in 45 stories; new axis stories Separator and ScrollArea Orientations, AspectRatio Ratios, Pagination Sizes, Resizable Variants and Orientations, Calendar Modes and Layouts
     - id: 13
       title: Batch F - scenario components, data grid, charts, icons
       status: pending

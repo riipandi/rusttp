@@ -10,6 +10,8 @@ import { expect } from 'storybook/test'
 import { Button } from '../../base/button/button.component'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
 import { Card, CardContent, CardFooter } from '../card/card.component'
@@ -85,17 +87,88 @@ type DayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'>
 
 const meta: Meta<typeof Calendar> = {
   title: 'Extra Components/Calendar',
-  component: Calendar,
-  parameters: {
-    layout: 'centered'
-  }
+  component: Calendar
 }
 
 export default meta
 type Story = StoryObj<typeof Calendar>
 
-export const Basic: Story = {
-  render: () => <Calendar mode='single' />
+const jan = new Date(2026, 0, 12)
+
+// Several calendars on one canvas: each navigation landmark needs its own name.
+const nav = (name: string) => ({ labelNav: () => `Navigation bar ${name}` })
+
+/** Single picks one day, multiple any number, range a start and an end with the days between. */
+export const Modes: Story = {
+  render: () => (
+    <Axis axis='mode' rows={['single', 'multiple', 'range'] as const}>
+      {(mode) =>
+        mode === 'single' ? (
+          <Calendar mode='single' defaultMonth={jan} selected={jan} labels={nav(mode)} />
+        ) : mode === 'multiple' ? (
+          <Calendar
+            mode='multiple'
+            defaultMonth={jan}
+            selected={[jan, new Date(2026, 0, 15), new Date(2026, 0, 20)]}
+            labels={nav(mode)}
+          />
+        ) : (
+          <Calendar
+            mode='range'
+            defaultMonth={jan}
+            selected={{ from: jan, to: new Date(2026, 0, 16) }}
+            labels={nav(mode)}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const count = (mode: string, selector: string) =>
+      cellOf(canvasElement, 'mode', mode).querySelectorAll(selector).length
+    await expect(count('single', '[data-selected-single="true"]')).toBe(1)
+    await expect(count('multiple', '[data-selected-single="true"]')).toBe(3)
+    await expect(count('range', '[data-range-start="true"]')).toBe(1)
+    await expect(count('range', '[data-range-end="true"]')).toBe(1)
+    await expect(count('range', '[data-range-middle="true"]')).toBe(3)
+  }
+}
+
+/** The caption is a label or two dropdowns; `numberOfMonths` draws that many months side by side. */
+export const Layouts: Story = {
+  render: () => (
+    <Axis
+      axis='caption'
+      rows={['label', 'dropdown'] as const}
+      columnAxis='months'
+      columns={['1', '2'] as const}
+    >
+      {(caption, months) => (
+        <Calendar
+          mode='single'
+          defaultMonth={jan}
+          captionLayout={caption}
+          numberOfMonths={Number(months)}
+          labels={nav(`${caption} ${months}`)}
+        />
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const caption of ['label', 'dropdown']) {
+      for (const months of ['1', '2']) {
+        const cell = canvasElement.querySelector(
+          `[data-caption="${caption}"][data-months="${months}"]`
+        )
+        if (!cell) throw new Error(`No cell for ${caption} ${months}`)
+        await expect(cell.querySelectorAll('[role="grid"]')).toHaveLength(Number(months))
+        // A dropdown caption has a month and a year select per month; a label has none.
+        await expect(cell.querySelectorAll('[role="combobox"]')).toHaveLength(
+          caption === 'dropdown' ? 2 * Number(months) : 0
+        )
+      }
+    }
+  }
 }
 
 export const Controlled: Story = {
@@ -208,39 +281,6 @@ export const DateTimePicker: Story = {
     )
   }
 }
-export const Range: Story = {
-  render: () => {
-    const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-      from: new Date(new Date().getFullYear(), 0, 12),
-      to: addDays(new Date(new Date().getFullYear(), 0, 12), 30)
-    })
-    return (
-      <Calendar
-        mode='range'
-        defaultMonth={dateRange?.from}
-        selected={dateRange}
-        onSelect={setDateRange}
-        numberOfMonths={2}
-      />
-    )
-  }
-}
-
-export const MultipleMonths: Story = {
-  render: () => {
-    const [dates, setDates] = React.useState<Date[] | undefined>([
-      new Date(new Date().getFullYear(), 0, 12),
-      new Date(new Date().getFullYear(), 0, 15),
-      new Date(new Date().getFullYear(), 0, 20)
-    ])
-    return <Calendar mode='multiple' selected={dates} onSelect={setDates} numberOfMonths={3} />
-  }
-}
-
-export const WithDropdowns: Story = {
-  render: () => <Calendar mode='single' captionLayout='dropdown' />
-}
-
 export const WithPresets: Story = {
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(

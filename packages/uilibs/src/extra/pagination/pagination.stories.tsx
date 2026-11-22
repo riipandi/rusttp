@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, within } from 'storybook/test'
+import { expectBoxSizes } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import {
   Pagination,
   PaginationContent,
@@ -15,23 +16,7 @@ import {
 const meta = {
   title: 'Extra Components/Pagination',
   component: Pagination,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Pagination>
 
 type Story = StoryObj<typeof meta>
@@ -80,6 +65,42 @@ export const Playground: Story = {
     await expect(canvas.getByRole('link', { name: 'Go to next page' })).toBeInTheDocument()
     await expect(within(canvas.getByRole('navigation')).queryAllByRole('button')).toHaveLength(0)
   }
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={['icon-xs', 'icon-sm', 'icon-md', 'icon-lg'] as const}>
+      {(size) => (
+        <Pagination labels={{ pagination: `Pages ${size}` }}>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink href='#' size={size}>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href='#' size={size} isActive>
+                2
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href='#' size={size}>
+                3
+              </PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+    </Axis>
+  ),
+  // The page links are squares as tall as a dense control of their size.
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, 'a', {
+      'icon-xs': [28, 28],
+      'icon-sm': [32, 32],
+      'icon-md': [36, 36],
+      'icon-lg': [40, 40]
+    })
 }
 
 export const Simple: Story = {

@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import {
   container,
@@ -18,23 +19,7 @@ import { ScrollArea, ScrollBar } from './scroll-area.component'
 const meta = {
   title: 'Base Components/ScrollArea',
   component: ScrollArea,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ScrollArea>
 
 type Story = StoryObj<typeof meta>
@@ -75,6 +60,7 @@ const styles = stylex.create({
     fontSize: fontSize.body2
   },
   wide: {
+    maxWidth: '100%',
     width: container.xlarge
   },
   row: {
@@ -131,19 +117,48 @@ export const Playground: Story = {
   }
 }
 
-export const Horizontal: Story = {
+export const Orientations: Story = {
   render: () => (
-    <ScrollArea style={styles.wide}>
-      <div {...stylex.props(styles.row)}>
-        {artworks.map((art) => (
-          <div key={art.title} {...stylex.props(styles.card)}>
-            <div {...stylex.props(styles.thumb)} />
-            <div {...stylex.props(styles.title)}>{art.title}</div>
-            <div {...stylex.props(styles.artist)}>{art.artist}</div>
-          </div>
-        ))}
-      </div>
-      <ScrollBar orientation='horizontal' />
-    </ScrollArea>
-  )
+    <Axis axis='orientation' rows={['vertical', 'horizontal'] as const}>
+      {(orientation) =>
+        orientation === 'vertical' ? (
+          <ScrollArea style={styles.root}>
+            <div {...stylex.props(styles.inner)}>
+              {tags.slice(0, 12).map((tag) => (
+                <div key={tag} {...stylex.props(styles.tag)}>
+                  {tag}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        ) : (
+          <ScrollArea style={styles.wide}>
+            <div {...stylex.props(styles.row)}>
+              {artworks.map((art) => (
+                <div key={art.title} {...stylex.props(styles.card)}>
+                  <div {...stylex.props(styles.thumb)} />
+                  <div {...stylex.props(styles.title)}>{art.title}</div>
+                  <div {...stylex.props(styles.artist)}>{art.artist}</div>
+                </div>
+              ))}
+            </div>
+            <ScrollBar orientation='horizontal' />
+          </ScrollArea>
+        )
+      }
+    </Axis>
+  ),
+  // The viewport scrolls along its own axis only: the content is taller than the vertical area
+  // and wider than the horizontal one.
+  play: async ({ canvasElement }) => {
+    const scrolls = (orientation: 'vertical' | 'horizontal') =>
+      Array.from(cellOf(canvasElement, 'orientation', orientation).querySelectorAll('*')).some(
+        (el) =>
+          orientation === 'vertical'
+            ? el.scrollHeight > el.clientHeight + 1 && getComputedStyle(el).overflowY !== 'visible'
+            : el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== 'visible'
+      )
+    await expect(scrolls('vertical')).toBe(true)
+    await expect(scrolls('horizontal')).toBe(true)
+  }
 }

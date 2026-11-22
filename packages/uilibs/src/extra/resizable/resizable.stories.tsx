@@ -5,6 +5,7 @@ import * as React from 'react'
 import type { GroupImperativeHandle } from 'react-resizable-panels'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, radius, stroke, unit } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
@@ -15,9 +16,10 @@ const meta = {
   component: ResizablePanelGroup,
   parameters: { layout: 'fullscreen' },
   tags: [], // ['autodocs']
+  // `canvas: 'auto'` lets a story that draws several groups size its own cells.
   decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.width['100%'], styles.canvas)}>
+    (Story, { parameters }) => (
+      <div {...stylex.props(atoms.width['100%'], parameters.canvas !== 'auto' && styles.canvas)}>
         <Story />
       </div>
     )
@@ -56,6 +58,9 @@ const styles = stylex.create({
   nested: {
     height: '100%'
   },
+  box: {
+    height: container.xxsmall
+  },
   outer: {
     display: 'flex',
     flexDirection: 'column',
@@ -73,7 +78,7 @@ const styles = stylex.create({
   }
 })
 
-export const Horizontal: Story = {
+export const Playground: Story = {
   render: () => (
     <ResizablePanelGroup style={styles.frame}>
       <ResizablePanel id='sidebar' defaultSize='25%' minSize='15%' style={styles.content}>
@@ -100,18 +105,74 @@ export const Horizontal: Story = {
   }
 }
 
-export const Vertical: Story = {
+const handleVariants = ['line', 'pill', 'spring', 'capsule'] as const
+
+/** The handle: a bare line, or a grip drawn as a pill, a spring-loaded pill, or a capsule. */
+export const Variants: Story = {
+  parameters: { canvas: 'auto' },
   render: () => (
-    <ResizablePanelGroup orientation='vertical' style={styles.frame}>
-      <ResizablePanel defaultSize='25%' style={styles.content}>
-        Header
-      </ResizablePanel>
-      <ResizableHandle aria-label='Resize header' />
-      <ResizablePanel defaultSize='75%' style={styles.content}>
-        Content
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
+    <Axis axis='variant' rows={handleVariants}>
+      {(variant) => (
+        <div {...stylex.props(styles.box)}>
+          <ResizablePanelGroup style={styles.frame}>
+            <ResizablePanel defaultSize='35%' style={styles.content}>
+              Panel A
+            </ResizablePanel>
+            <ResizableHandle
+              withHandle={variant !== 'line'}
+              variant={variant === 'line' ? undefined : variant}
+              aria-label={`Resize ${variant}`}
+            />
+            <ResizablePanel defaultSize='65%' style={styles.content}>
+              Panel B
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    for (const variant of handleVariants) {
+      const handle = canvas.getByRole('separator', { name: `Resize ${variant}` })
+      // Every handle has a hit area; only the grips add an indicator after it.
+      await expect(handle.children).toHaveLength(variant === 'line' ? 1 : 2)
+    }
+  }
+}
+
+/** Each group flows along its own axis, and the arrow keys grow the first panel along it. */
+export const Orientations: Story = {
+  parameters: { canvas: 'auto' },
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <div {...stylex.props(styles.box)}>
+          <ResizablePanelGroup orientation={orientation} style={styles.frame}>
+            <ResizablePanel id={`first-${orientation}`} defaultSize='30%' style={styles.content}>
+              First
+            </ResizablePanel>
+            <ResizableHandle aria-label={`Resize ${orientation}`} />
+            <ResizablePanel defaultSize='70%' style={styles.content}>
+              Second
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    for (const [orientation, key, side] of [
+      ['horizontal', 'ArrowRight', 'width'],
+      ['vertical', 'ArrowDown', 'height']
+    ] as const) {
+      const panel = document.body.querySelector<HTMLElement>(`[data-testid="first-${orientation}"]`)
+      if (!panel) throw new Error(`No ${orientation} panel`)
+      const before = panel.getBoundingClientRect()[side]
+      canvas.getByRole('separator', { name: `Resize ${orientation}` }).focus()
+      await userEvent.keyboard(`{${key}}`)
+      await waitFor(() => expect(panel.getBoundingClientRect()[side]).toBeGreaterThan(before))
+    }
+  }
 }
 
 export const NestedMixed: Story = {
@@ -153,48 +214,6 @@ export const Nested: Story = {
             Three
           </ResizablePanel>
         </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
-}
-
-export const PillIndicator: Story = {
-  render: () => (
-    <ResizablePanelGroup style={styles.frame}>
-      <ResizablePanel defaultSize='30%' style={styles.content}>
-        Sidebar
-      </ResizablePanel>
-      <ResizableHandle withHandle aria-label='Resize sidebar' />
-      <ResizablePanel defaultSize='70%' style={styles.content}>
-        Content
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
-}
-
-export const PillSpring: Story = {
-  render: () => (
-    <ResizablePanelGroup style={styles.frame}>
-      <ResizablePanel defaultSize='30%' style={styles.content}>
-        Sidebar
-      </ResizablePanel>
-      <ResizableHandle withHandle variant='spring' aria-label='Resize sidebar' />
-      <ResizablePanel defaultSize='70%' style={styles.content}>
-        Content
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
-}
-
-export const CapsuleExpansion: Story = {
-  render: () => (
-    <ResizablePanelGroup style={styles.frame}>
-      <ResizablePanel defaultSize='35%' style={styles.content}>
-        Panel A
-      </ResizablePanel>
-      <ResizableHandle withHandle variant='capsule' aria-label='Resize panel A' />
-      <ResizablePanel defaultSize='65%' style={styles.content}>
-        Panel B
       </ResizablePanel>
     </ResizablePanelGroup>
   )

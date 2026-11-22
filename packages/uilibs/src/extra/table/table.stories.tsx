@@ -1,6 +1,5 @@
 import { MoreVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, within } from 'storybook/test'
 import { Button } from '../../base/button'
@@ -26,15 +25,7 @@ import {
 const meta = {
   title: 'Extra Components/Table',
   component: Table,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Table>
 
 type Story = StoryObj<typeof meta>

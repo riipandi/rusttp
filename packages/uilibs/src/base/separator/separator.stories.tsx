@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontFamily, fontSize, fontWeight } from '../../styles/tokens.stylex'
@@ -11,26 +11,10 @@ import { Separator } from './separator.component'
 const meta = {
   title: 'Base Components/Separator',
   component: Separator,
-  parameters: { layout: 'centered' },
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Separator>
 
 type Story = StoryObj<typeof meta>
@@ -67,6 +51,7 @@ const styles = stylex.create({
     flexDirection: 'column',
     fontFamily: fontFamily.body,
     gap: 12,
+    maxWidth: '100%',
     width: container.large
   },
   listRow: {
@@ -108,16 +93,38 @@ export const Playground: Story = {
   }
 }
 
-export const Vertical: Story = {
+export const Orientations: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <span>Louvre</span>
-      <Separator orientation='vertical' />
-      <span>Vatican</span>
-      <Separator orientation='vertical' />
-      <span>CERN</span>
-    </div>
-  )
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) =>
+        orientation === 'horizontal' ? (
+          <div {...stylex.props(styles.root)}>
+            <span>Louvre</span>
+            <Separator />
+            <span>Vatican</span>
+          </div>
+        ) : (
+          <div {...stylex.props(styles.row)}>
+            <span>Louvre</span>
+            <Separator orientation='vertical' />
+            <span>Vatican</span>
+          </div>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const box = (orientation: string) => {
+      const line = cellOf(canvasElement, 'orientation', orientation).querySelector(
+        '[role="separator"]'
+      )
+      if (!line) throw new Error(`No ${orientation} separator`)
+      return line.getBoundingClientRect()
+    }
+    // A horizontal line is wider than it is tall; a vertical one the other way round.
+    await expect(box('horizontal').width).toBeGreaterThan(box('horizontal').height)
+    await expect(box('vertical').height).toBeGreaterThan(box('vertical').width)
+  }
 }
 
 export const List: Story = {
