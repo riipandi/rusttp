@@ -108,6 +108,28 @@ export function useFoldSidebarOnSettings() {
   React.useLayoutEffect(() => sidebarStore.actions.setRail(onSettings), [onSettings])
 }
 
+/**
+ * True once the rail has finished closing. The logo gives way to the expand icon while the header is
+ * hovered, but right after a click the pointer is still over the header as the width shrinks away
+ * from it: reacting to that hover would start the swap and reverse it a frame later. The swap waits
+ * for the width animation (`duration.slow`, 300ms), so a click leaves the logo alone.
+ */
+function useRailSettled(collapsed: boolean) {
+  const [settled, setSettled] = React.useState(collapsed)
+  const [seen, setSeen] = React.useState(collapsed)
+  // A toggle starts the wait again; adjusting state while rendering avoids an effect that sets it.
+  if (seen !== collapsed) {
+    setSeen(collapsed)
+    setSettled(false)
+  }
+  React.useEffect(() => {
+    if (!collapsed || settled) return undefined
+    const timer = setTimeout(() => setSettled(true), 320)
+    return () => clearTimeout(timer)
+  }, [collapsed, settled])
+  return settled
+}
+
 export function Sidebar() {
   const m = useMessages()
   const id = React.useId()
@@ -115,28 +137,30 @@ export function Sidebar() {
   const collapsed = useSelector(sidebarCollapsed)
   const toggle = sidebarStore.actions.setCollapsed
   const navGroups = groups(m)
+  const settled = useRailSettled(collapsed)
 
   return (
     <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
       {/* The provider's zero delay shows a rail tooltip at once, and moving between items keeps it. */}
       <TooltipProvider>
         {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
-        <div
-          {...stylex.props(
-            styles.header,
-            collapsed && styles.headerCollapsed,
-            collapsed && stylex.defaultMarker()
-          )}
-        >
-          {/* Collapsed, the logo is the toggle's face; expanded, the brand is beside it. The button is
-              one element in one position, so a keyboard user's focus stays on it through a toggle. */}
-          {!collapsed && (
-            // Not a link: the Overview item already leads to `/admin`.
-            <span {...stylex.props(layout.brand, styles.brand)}>
+        {/* One header for both states, so a toggle only moves and fades what is already there: the
+            logo stays where it is, the wordmark fades, and the toggle rides the sidebar's edge
+            (the rail is 64px wide, so the same logo sits on the icon column in both). One
+            button in one position also keeps a keyboard user's focus through a toggle. */}
+        <div {...stylex.props(styles.header, stylex.defaultMarker())}>
+          {/* Not a link: the Overview item already leads to `/admin`. */}
+          <span {...stylex.props(layout.brand, styles.brand)}>
+            <span {...stylex.props(collapsed && settled && styles.logoRail)}>
               <Logo />
+            </span>
+            <span
+              aria-hidden={collapsed || undefined}
+              {...stylex.props(styles.wordmark, collapsed && styles.faded)}
+            >
               Rusttp
             </span>
-          )}
+          </span>
           <Tooltip>
             <TooltipTrigger
               render={
@@ -147,22 +171,20 @@ export function Sidebar() {
                   aria-expanded={!collapsed}
                   aria-controls={navId}
                   onClick={() => toggle(!collapsed)}
-                  style={styles.trigger}
+                  style={[styles.trigger, collapsed && styles.triggerRail]}
                 />
               }
             >
-              {collapsed ? (
-                <span {...stylex.props(styles.swap)}>
-                  <span {...stylex.props(styles.swapLogo)}>
-                    <Logo />
-                  </span>
-                  <span {...stylex.props(styles.swapIcon)}>
-                    <Icon svg={PanelLeftOpen} size={16} />
-                  </span>
+              <span {...stylex.props(styles.swap)}>
+                <span {...stylex.props(styles.swapClose, collapsed && styles.faded)}>
+                  <Icon svg={PanelLeftClose} size={16} />
                 </span>
-              ) : (
-                <Icon svg={PanelLeftClose} size={16} />
-              )}
+                <span
+                  {...stylex.props(styles.swapOpen, collapsed && settled && styles.swapOpenRail)}
+                >
+                  <Icon svg={PanelLeftOpen} size={16} />
+                </span>
+              </span>
             </TooltipTrigger>
             <TooltipContent side='right'>
               {collapsed ? m.admin_sidebar_expand() : m.admin_sidebar_collapse()}
