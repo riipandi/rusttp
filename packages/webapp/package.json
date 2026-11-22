@@ -9,6 +9,9 @@
         "build": "pnpm --silent generate && tsrs --noEmit --fast && vite build",
         "preview": "vite preview",
         "size": "node scripts/entry-size.mjs",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:ui": "vitest --ui",
         "typecheck": "pnpm --silent generate && tsrs --noEmit --fast"
     },
     "dependencies": {
