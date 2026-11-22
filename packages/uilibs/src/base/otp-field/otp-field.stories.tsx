@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import {
+  cellOf,
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -18,27 +19,11 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-
 const meta = {
   title: 'Base Components/OTPField',
   component: OTPField,
-  parameters: { layout: 'centered' },
   argTypes: {
     length: { control: 'number' },
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof OTPField>
 
 type Story = StoryObj<typeof meta>
@@ -79,6 +64,108 @@ export const Playground: Story = {
   )
 }
 
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  args: { length: 4 },
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <OTPField variant={variant} length={4} aria-label={`Code ${variant}`}>
+          <OTPFieldGroup>
+            {[1, 2, 3, 4].map((position) => (
+              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+            ))}
+          </OTPFieldGroup>
+        </OTPField>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectControlVariants(canvasElement, (cell) => cell.querySelector('input'))
+}
+
+export const Sizes: Story = {
+  args: { length: 4 },
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => (
+        <OTPField size={size} length={4} aria-label={`Code ${size}`}>
+          <OTPFieldGroup>
+            {[1, 2, 3, 4].map((position) => (
+              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+            ))}
+          </OTPFieldGroup>
+        </OTPField>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement)
+    // A slot is a square the height of the control.
+    for (const slot of canvasElement.querySelectorAll('input')) {
+      await expect(slot.getBoundingClientRect().width).toBe(slot.getBoundingClientRect().height)
+    }
+  }
+}
+
+export const States: Story = {
+  args: { length: 4 },
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel>Verification code</FieldLabel>
+            <OTPField length={4} defaultValue='1234'>
+              <OTPFieldGroup>
+                {[0, 1, 2, 3].map((slot) => (
+                  <OTPFieldSlot key={slot} />
+                ))}
+              </OTPFieldGroup>
+            </OTPField>
+            <FieldError match>That code has expired. Ask the Owl Office for a new one.</FieldError>
+          </Field>
+        ) : (
+          <OTPField
+            length={4}
+            defaultValue={state === 'disabled' ? '1234' : ''}
+            disabled={state === 'disabled'}
+            aria-label={`Code ${state}`}
+          >
+            <OTPFieldGroup>
+              {[0, 1, 2, 3].map((slot) => (
+                <OTPFieldSlot key={slot} />
+              ))}
+            </OTPFieldGroup>
+          </OTPField>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const slots = (state: string) =>
+      Array.from(
+        cellOf(canvasElement, 'state', state).querySelectorAll('input:not([aria-hidden="true"])')
+      )
+    const disabled = slots('disabled')
+    await expect(disabled).toHaveLength(4)
+    for (const slot of disabled) {
+      await expect(slot).toBeDisabled()
+      await expectDisabledLook(slot)
+    }
+    const first = disabled[0]
+    if (!first) throw new Error('No OTP slots rendered')
+    await userEvent.type(first, '9')
+    await expect(first).toHaveValue('1')
+
+    const invalid = slots('invalid')
+    for (const slot of invalid) await expect(slot).toHaveAttribute('data-invalid')
+    // The first slot takes the field's label, the others their position.
+    await expect(invalid[0]).toHaveAccessibleName('Verification code')
+    await expect(invalid[1]).toHaveAccessibleName('Character 2 of 4')
+  }
+}
+
 export const Joined: Story = {
   name: 'Joined slots',
   args: { length: 6, 'aria-label': 'Verification code' },
@@ -117,30 +204,6 @@ export const Separator: Story = {
   )
 }
 
-export const Disabled: Story = {
-  args: { length: 6, disabled: true, defaultValue: '123456', 'aria-label': 'Verification code' },
-  render: (args) => (
-    <OTPField {...args}>
-      <OTPFieldGroup>
-        <OTPFieldSlot />
-        <OTPFieldSlot />
-        <OTPFieldSlot />
-        <OTPFieldSlot />
-        <OTPFieldSlot />
-        <OTPFieldSlot />
-      </OTPFieldGroup>
-    </OTPField>
-  ),
-  play: async ({ canvas }) => {
-    const slots = canvas.getAllByRole('textbox')
-    const first = slots[0]
-    if (!first) throw new Error('No OTP slots rendered')
-    for (const slot of slots) await expect(slot).toBeDisabled()
-    await userEvent.type(first, '9')
-    await expect(first).toHaveValue('1')
-  }
-}
-
 export const Controlled: Story = {
   args: { length: 6, 'aria-label': 'Verification code' },
   render: () => {
@@ -172,55 +235,6 @@ export const Controlled: Story = {
     // Typing fills one character per slot and advances focus.
     await userEvent.type(first, '924')
     await expect(canvas.getByText('Vault code: 924')).toBeInTheDocument()
-  }
-}
-
-export const ControlSizes: Story = {
-  args: { length: 4 },
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => (
-        <OTPField size={size} length={4} aria-label={`Code ${size}`}>
-          <OTPFieldGroup>
-            {[1, 2, 3, 4].map((position) => (
-              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
-            ))}
-          </OTPFieldGroup>
-        </OTPField>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => {
-    await expectControlHeights(canvasElement)
-    // A slot is a square the height of the control.
-    for (const slot of canvasElement.querySelectorAll('input')) {
-      await expect(slot.getBoundingClientRect().width).toBe(slot.getBoundingClientRect().height)
-    }
-  }
-}
-
-export const Invalid: Story = {
-  args: { length: 6, defaultValue: '123456' },
-  render: (args) => (
-    <Field invalid>
-      <FieldLabel>Verification code</FieldLabel>
-      <OTPField {...args}>
-        <OTPFieldGroup>
-          {[0, 1, 2, 3, 4, 5].map((slot) => (
-            <OTPFieldSlot key={slot} />
-          ))}
-        </OTPFieldGroup>
-      </OTPField>
-      <FieldError match>That code has expired. Ask the Owl Office for a new one.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const slots = canvas.getAllByRole('textbox')
-    await expect(slots).toHaveLength(6)
-    for (const slot of slots) await expect(slot).toHaveAttribute('data-invalid')
-    // The first slot takes the field's label, the others their position.
-    await expect(slots[0]).toHaveAccessibleName('Verification code')
-    await expect(slots[1]).toHaveAccessibleName('Character 2 of 6')
   }
 }
 
@@ -295,24 +309,4 @@ export const NarrowRow: Story = {
     await expect(slots.length).toBe(6)
     for (const slot of slots) await expect(slot.getBoundingClientRect().width).toBeGreaterThan(20)
   }
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  args: { length: 4 },
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => (
-        <OTPField variant={variant} length={4} aria-label={`Code ${variant}`}>
-          <OTPFieldGroup>
-            {[1, 2, 3, 4].map((position) => (
-              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
-            ))}
-          </OTPFieldGroup>
-        </OTPField>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) =>
-    expectControlVariants(canvasElement, (cell) => cell.querySelector('input'))
 }

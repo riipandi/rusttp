@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -18,26 +18,10 @@ import { Input } from './input.component'
 const meta = {
   title: 'Base Components/Input',
   component: Input,
-  parameters: { layout: 'centered' },
   argTypes: {
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Input>
 
 type Story = StoryObj<typeof meta>
@@ -77,6 +61,58 @@ export const Playground: Story = {
   )
 }
 
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <Input variant={variant} aria-label={`Spell ${variant}`} placeholder='Spell' />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => <Input size={size} aria-label={`Spell ${size}`} placeholder='Spell' />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel htmlFor='input-invalid-email'>Owl post address</FieldLabel>
+            <Input id='input-invalid-email' type='email' defaultValue='ron.weasley@hogwarts' />
+            <FieldError match>That owl address is not registered with the Owl Office.</FieldError>
+          </Field>
+        ) : (
+          <Input
+            aria-label={`Seal ${state}`}
+            placeholder='Sealed by the Ministry'
+            disabled={state === 'disabled'}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const disabled = canvas.getByRole('textbox', { name: 'Seal disabled' })
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    await userEvent.type(disabled, 'alohomora')
+    await expect(disabled).toHaveValue('')
+
+    const invalid = canvas.getByRole('textbox', { name: 'Owl post address' })
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
+  }
+}
+
 export const WithLabel: Story = {
   name: 'With label',
   render: () => (
@@ -87,36 +123,6 @@ export const WithLabel: Story = {
       <Input id='input-with-label-email' placeholder='luna.lovegood@ravenclaw.edu' type='email' />
     </div>
   )
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <div {...stylex.props(styles.wrap)}>
-      <Input placeholder='Sealed by the Ministry' disabled />
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByPlaceholderText('Sealed by the Ministry')
-    await expect(el).toBeDisabled()
-    await userEvent.click(el)
-    await userEvent.type(el, 'alohomora')
-    await expect(el).toHaveValue('')
-  }
-}
-
-export const Invalid: Story = {
-  render: () => (
-    <Field invalid style={styles.narrow}>
-      <FieldLabel htmlFor='input-invalid-email'>Owl post address</FieldLabel>
-      <Input id='input-invalid-email' type='email' defaultValue='ron.weasley@hogwarts' />
-      <FieldError match>That owl address is not registered with the Owl Office.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByRole('textbox', { name: 'Owl post address' })
-    await expect(input).toHaveAttribute('aria-invalid', 'true')
-    await expect(input).toHaveAttribute('data-invalid')
-  }
 }
 
 export const File: Story = {
@@ -146,23 +152,4 @@ export const WithButton: Story = {
     await expect(el).toHaveValue('plexiglass')
     await expect(canvas.getByRole('button', { name: 'Accio' })).toBeEnabled()
   }
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => <Input size={size} aria-label={`Spell ${size}`} placeholder='Spell' />}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => <Input variant={variant} aria-label={`Spell ${variant}`} placeholder='Spell' />}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

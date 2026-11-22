@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
@@ -8,7 +7,8 @@ import {
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -19,18 +19,10 @@ import { Textarea } from './textarea.component'
 const meta = {
   title: 'Extra Components/Textarea',
   component: Textarea,
-  parameters: { layout: 'fullscreen' },
   argTypes: {
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Textarea>
 
 type Story = StoryObj<typeof meta>
@@ -79,6 +71,60 @@ export const Playground: Story = {
   }
 }
 
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <Textarea variant={variant} rows={1} aria-label={`Prophecy ${variant}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => <Textarea size={size} rows={1} aria-label={`Prophecy ${size}`} />}
+    </Axis>
+  ),
+  // A textarea is not one line: its sizes are minimum heights.
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement, { sm: 56, md: 64, lg: 72 })
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel>Symbologist bio</FieldLabel>
+            <Textarea defaultValue='Dear Editor,' />
+            <FieldError match>Your letter must be at least 10 characters.</FieldError>
+          </Field>
+        ) : (
+          <Textarea
+            aria-label={`Decree ${state}`}
+            placeholder='Locked by Ministry decree'
+            disabled={state === 'disabled'}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const disabled = canvas.getByRole('textbox', { name: 'Decree disabled' })
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    await userEvent.type(disabled, 'alohomora')
+    await expect(disabled).toHaveValue('')
+
+    const invalid = canvas.getByRole('textbox', { name: 'Symbologist bio' })
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
+    await expect(invalid).toHaveAccessibleDescription('Your letter must be at least 10 characters.')
+  }
+}
+
 export const WithField: Story = {
   name: 'With field',
   render: () => (
@@ -90,38 +136,6 @@ export const WithField: Story = {
       </FieldDescription>
     </Field>
   )
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <div {...stylex.props(styles.wrap)}>
-      <Textarea placeholder='Locked by Ministry decree' disabled />
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByPlaceholderText('Locked by Ministry decree')
-    await expect(el).toBeDisabled()
-    await userEvent.type(el, 'alohomora')
-    await expect(el).toHaveValue('')
-  }
-}
-
-export const Invalid: Story = {
-  render: () => (
-    <Field invalid style={styles.wrap}>
-      <FieldLabel>Symbologist bio</FieldLabel>
-      <Textarea defaultValue='Dear Editor,' />
-      <FieldError match>Your letter must be at least 10 characters.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const textarea = canvas.getByRole('textbox', { name: 'Symbologist bio' })
-    await expect(textarea).toHaveAttribute('aria-invalid', 'true')
-    await expect(textarea).toHaveAttribute('data-invalid')
-    await expect(textarea).toHaveAccessibleDescription(
-      'Your letter must be at least 10 characters.'
-    )
-  }
 }
 
 const MAX_CHARS = 280
@@ -173,24 +187,4 @@ export const AutoResize: Story = {
     await userEvent.type(el, 'a'.repeat(20))
     await expect(canvas.getByText('28/280')).toBeInTheDocument()
   }
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => <Textarea size={size} rows={1} aria-label={`Prophecy ${size}`} />}
-    </Axis>
-  ),
-  // A textarea is not one line: its sizes are minimum heights.
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement, { sm: 56, md: 64, lg: 72 })
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => <Textarea variant={variant} rows={1} aria-label={`Prophecy ${variant}`} />}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

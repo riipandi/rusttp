@@ -71,6 +71,8 @@ export const inputPhoneStyles = stylex.create({
     paddingInline: unit.x3,
     position: 'relative',
     userSelect: 'none',
+    // Overrides the Combobox trigger's `width: 100%`, which would leave the digits 24px.
+    width: 'auto',
     '::after': {
       backgroundColor: colors.borderNeutralFaded,
       content: '""',

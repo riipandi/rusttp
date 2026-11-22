@@ -33,6 +33,7 @@ const styles = stylex.create({
   },
   cell: { display: 'flex', flexDirection: 'column', gap: unit.x1, minWidth: 0 },
   cellFill: { flex: '1 1 0' },
+  cellWide: { flex: '1 1 12rem' },
   caption: {
     color: colors.foregroundNeutralFaded,
     fontFamily: fontFamily.body,
@@ -56,6 +57,8 @@ interface AxisCrossed<Row extends string, Column extends string> extends AxisBas
   /** A second prop crossed with the first (`color` over `variant`); each cell also carries `data-<columnAxis>`. */
   columnAxis: string
   columns: readonly Column[]
+  /** Cells share the row and grow to 12rem or more: for text-entry controls, which fill their cell. */
+  fill?: boolean
   children: (row: Row, column: Column) => React.ReactNode
 }
 
@@ -86,7 +89,7 @@ export function Axis<Row extends string, Column extends string = never>(
                 <div
                   key={column}
                   {...{ [`data-${axis}`]: row, [`data-${props.columnAxis}`]: column }}
-                  {...stylex.props(styles.cell)}
+                  {...stylex.props(styles.cell, props.fill && styles.cellWide)}
                 >
                   {props.children(row, column)}
                   <span aria-hidden='true' {...stylex.props(styles.caption)}>

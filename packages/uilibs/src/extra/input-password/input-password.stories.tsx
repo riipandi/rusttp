@@ -1,15 +1,16 @@
 import { EyeOff, Eye } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
 import {
+  cellOf,
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
@@ -18,23 +19,7 @@ import { InputPassword } from './input-password.component'
 const meta = {
   title: 'Extra Components/InputPassword',
   component: InputPassword,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof InputPassword>
 
 type Story = StoryObj<typeof meta>
@@ -58,6 +43,58 @@ export const Playground: Story = {
   ),
   argTypes: {
     disabled: { control: 'boolean' }
+  }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <InputPassword variant={variant} aria-label={`Password ${variant}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => <InputPassword size={size} aria-label={`Password ${size}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel htmlFor='input-password-invalid'>Vault passphrase</FieldLabel>
+            <InputPassword id='input-password-invalid' defaultValue='123' />
+            <FieldError>The passphrase must be at least 8 characters.</FieldError>
+          </Field>
+        ) : (
+          <InputPassword
+            aria-label={`Passphrase ${state}`}
+            placeholder='Sealed by the Ministry'
+            disabled={state === 'disabled'}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const disabled = cellOf(canvasElement, 'state', 'disabled').querySelector('input')
+    if (!disabled) throw new Error('No password input for disabled')
+    await expect(disabled).toBeDisabled()
+    const group = disabled.closest('[role="group"]')
+    if (!group) throw new Error('No password group')
+    await expectDisabledLook(group, { cursor: false })
+
+    const invalid = canvas.getByLabelText('Vault passphrase')
+    await expect(invalid).toHaveAttribute('data-invalid')
   }
 }
 
@@ -112,28 +149,6 @@ export const CustomIcons: Story = {
   )
 }
 
-export const Invalid: Story = {
-  render: () => (
-    <Field invalid style={styles.field}>
-      <FieldLabel htmlFor='input-password-invalid'>Vault passphrase</FieldLabel>
-      <InputPassword id='input-password-invalid' defaultValue='123' />
-      <FieldError>The passphrase must be at least 8 characters.</FieldError>
-    </Field>
-  )
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <div {...stylex.props(styles.field)}>
-      <InputPassword placeholder='Sealed by the Ministry' disabled />
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByPlaceholderText('Sealed by the Ministry')
-    await expect(el).toBeDisabled()
-  }
-}
-
 export const Interaction: Story = {
   render: () => (
     <div {...stylex.props(styles.field)}>
@@ -154,15 +169,6 @@ export const Interaction: Story = {
   }
 }
 
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => <InputPassword size={size} aria-label={`Password ${size}`} />}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
 export const Translated: Story = {
   render: () => (
     <InputPassword aria-label='Kata sandi' labels={{ show: 'Tampilkan', hide: 'Sembunyikan' }} />
@@ -172,14 +178,4 @@ export const Translated: Story = {
     await userEvent.click(toggle)
     await expect(canvas.getByRole('button', { name: 'Sembunyikan' })).toBeInTheDocument()
   }
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => <InputPassword variant={variant} aria-label={`Password ${variant}`} />}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

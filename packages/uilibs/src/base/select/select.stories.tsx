@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -24,26 +23,10 @@ import {
 const meta = {
   title: 'Base Components/Select',
   component: Select,
-  parameters: { layout: 'centered' },
   argTypes: {
     disabled: { control: 'boolean' }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Select>
 
 type Story = StoryObj<typeof meta>
@@ -100,8 +83,6 @@ const plansWithOptions = [
   { label: 'Ministry of Magic (contact us)', value: 'enterprise', disabled: true }
 ]
 
-const disabledFruits = [{ label: 'Phoenix feather', value: 'phoenix' }]
-
 const invalidPlans = [
   { label: 'Muggle', value: 'free' },
   { label: 'Prefect', value: 'pro' },
@@ -146,6 +127,89 @@ export const Playground: Story = {
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
     await expect(canvas.getByText('Dragon heartstring')).toBeInTheDocument()
+  }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <Select items={fruits}>
+          <SelectTrigger variant={variant} aria-label={`Wand core ${variant}`}>
+            <SelectValue placeholder='Wand core' />
+          </SelectTrigger>
+        </Select>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => (
+        <Select items={fruits}>
+          <SelectTrigger size={size} aria-label={`Wand core ${size}`}>
+            <SelectValue placeholder='Wand core' />
+          </SelectTrigger>
+        </Select>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel htmlFor='select-invalid-plan'>Gringotts plan</FieldLabel>
+            <Select items={invalidPlans}>
+              <SelectTrigger id='select-invalid-plan'>
+                <SelectValue placeholder='Select a Gringotts plan' />
+              </SelectTrigger>
+              <SelectContent>
+                {invalidPlans.map(({ label, value }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError match>Please select a Gringotts plan to continue.</FieldError>
+          </Field>
+        ) : (
+          <Select items={fruits} disabled={state === 'disabled'}>
+            <SelectTrigger aria-label={`Wand core ${state}`}>
+              <SelectValue placeholder='Wand core' />
+            </SelectTrigger>
+            <SelectContent>
+              {fruits.map(({ label, value }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const disabled = canvas.getByRole('combobox', { name: 'Wand core disabled' })
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    // A disabled trigger is out of the tab order.
+    await userEvent.tab()
+    await expect(disabled).not.toHaveFocus()
+
+    const invalid = canvas.getByRole('combobox', { name: 'Gringotts plan' })
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
   }
 }
 
@@ -210,73 +274,6 @@ export const DisabledOptions: Story = {
   )
 }
 
-export const Disabled: Story = {
-  args: { items: disabledFruits, disabled: true },
-  render: (args) => (
-    <Select {...args}>
-      <SelectTrigger aria-label='Wand core'>
-        <SelectValue placeholder='Disabled' />
-      </SelectTrigger>
-      <SelectContent>
-        {disabledFruits.map(({ label, value }) => (
-          <SelectItem key={value} value={value}>
-            {label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  ),
-  play: async ({ canvas }) => {
-    const trigger = canvas.getByRole('combobox', { name: 'Wand core' })
-    await expect(trigger).toBeDisabled()
-    // A disabled trigger is out of the tab order.
-    await userEvent.tab()
-    await expect(trigger).not.toHaveFocus()
-  }
-}
-
-export const Invalid: Story = {
-  args: { items: invalidPlans },
-  render: (args) => (
-    <Field invalid>
-      <FieldLabel htmlFor='select-invalid-plan'>Gringotts plan</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id='select-invalid-plan'>
-          <SelectValue placeholder='Select a Gringotts plan' />
-        </SelectTrigger>
-        <SelectContent>
-          {invalidPlans.map(({ label, value }) => (
-            <SelectItem key={value} value={value}>
-              {label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FieldError match>Please select a Gringotts plan to continue.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const trigger = canvas.getByRole('combobox', { name: 'Gringotts plan' })
-    await expect(trigger).toHaveAttribute('aria-invalid', 'true')
-    await expect(trigger).toHaveAttribute('data-invalid')
-  }
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => (
-        <Select items={fruits}>
-          <SelectTrigger size={size} aria-label={`Wand core ${size}`}>
-            <SelectValue placeholder='Wand core' />
-          </SelectTrigger>
-        </Select>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
 export const Keyboard: Story = {
   args: { items: fruits },
   render: (args) => (
@@ -322,20 +319,4 @@ export const Keyboard: Story = {
     await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => (
-        <Select items={fruits}>
-          <SelectTrigger variant={variant} aria-label={`Wand core ${variant}`}>
-            <SelectValue placeholder='Wand core' />
-          </SelectTrigger>
-        </Select>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

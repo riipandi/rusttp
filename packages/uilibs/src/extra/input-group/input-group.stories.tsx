@@ -1,6 +1,5 @@
 import { Copy, Search } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field } from '../../base/field'
@@ -26,23 +25,7 @@ import {
 const meta = {
   title: 'Extra Components/InputGroup',
   component: InputGroup,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof InputGroup>
 
 type Story = StoryObj<typeof meta>
@@ -79,6 +62,74 @@ export const Playground: Story = {
       </InputGroup>
     </div>
   )
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <InputGroup variant={variant}>
+          <InputGroupAddon>
+            <InputGroupText>@</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput aria-label={`Owl ${variant}`} placeholder='Owl' />
+          <InputGroupAddon align='inline-end'>
+            <InputGroupButton variant='outline'>Send</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => (
+        <InputGroup size={size}>
+          <InputGroupAddon>
+            <InputGroupText>@</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput aria-label={`Owl ${size}`} placeholder='Owl' />
+          <InputGroupAddon align='inline-end'>
+            <InputGroupButton variant='outline'>Send</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'invalid'] as const}>
+      {(state) => (
+        <Field invalid={state === 'invalid'}>
+          <InputGroup>
+            <InputGroupInput
+              aria-label={`Search ${state}`}
+              placeholder='Search the restricted stacks…'
+            />
+            <InputGroupAddon align='inline-end'>
+              <InputGroupButton>Expecto</InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+        </Field>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    // Base UI marks the inner control; the group root mirrors it via `:has()`.
+    await expect(canvas.getByRole('textbox', { name: 'Search invalid' })).toHaveAttribute(
+      'data-invalid'
+    )
+    await expect(canvas.getByRole('textbox', { name: 'Search default' })).not.toHaveAttribute(
+      'data-invalid'
+    )
+  }
 }
 
 export const Icon: Story = {
@@ -149,62 +200,4 @@ export const Textarea: Story = {
     await userEvent.type(textarea, 'Padfoot, the map is a fake.')
     await expect(textarea).toHaveValue('Padfoot, the map is a fake.')
   }
-}
-
-export const Invalid: Story = {
-  name: 'Invalid',
-  render: () => (
-    <Field invalid>
-      <InputGroup style={styles.group}>
-        <InputGroupInput placeholder='Search the restricted stacks…' />
-        <InputGroupAddon align='inline-end'>
-          <InputGroupButton>Expecto</InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    // Base UI marks the inner control; the group root mirrors it via `:has()`.
-    const input = canvas.getByPlaceholderText('Search the restricted stacks…')
-    await expect(input).toHaveAttribute('data-invalid')
-  }
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => (
-        <InputGroup size={size}>
-          <InputGroupAddon>
-            <InputGroupText>@</InputGroupText>
-          </InputGroupAddon>
-          <InputGroupInput aria-label={`Owl ${size}`} placeholder='Owl' />
-          <InputGroupAddon align='inline-end'>
-            <InputGroupButton variant='outline'>Send</InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => (
-        <InputGroup variant={variant}>
-          <InputGroupAddon>
-            <InputGroupText>@</InputGroupText>
-          </InputGroupAddon>
-          <InputGroupInput aria-label={`Owl ${variant}`} placeholder='Owl' />
-          <InputGroupAddon align='inline-end'>
-            <InputGroupButton variant='outline'>Send</InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

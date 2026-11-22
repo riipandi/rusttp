@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
   controlVariantNames,
   expectControlHeights,
-  expectControlVariants
+  expectControlVariants,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -22,23 +21,7 @@ import {
 const meta = {
   title: 'Base Components/Autocomplete',
   component: Autocomplete,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Autocomplete>
 
 type Story = StoryObj<typeof meta>
@@ -103,6 +86,79 @@ export const Playground: Story = {
   }
 }
 
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <Autocomplete items={['Hogwarts', 'Beauxbatons']}>
+          <AutocompleteInput
+            variant={variant}
+            aria-label={`School ${variant}`}
+            placeholder='School'
+          />
+        </Autocomplete>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => (
+        <Autocomplete items={['Hogwarts', 'Beauxbatons']}>
+          <AutocompleteInput size={size} aria-label={`School ${size}`} placeholder='School' />
+        </Autocomplete>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) => (
+        <Autocomplete items={tags} disabled={state === 'disabled'}>
+          {state === 'invalid' ? (
+            <Field invalid>
+              <FieldLabel>Spell</FieldLabel>
+              <AutocompleteInput placeholder='Search spells…' />
+              <FieldError match>Name a spell from the Restricted Section.</FieldError>
+            </Field>
+          ) : (
+            <AutocompleteInput aria-label={`Spell ${state}`} placeholder='Sealed by the Ministry' />
+          )}
+          <AutocompleteContent>
+            <AutocompleteEmpty>No spells found.</AutocompleteEmpty>
+            <AutocompleteList>
+              {(tag) => (
+                <AutocompleteItem key={tag} value={tag}>
+                  {tag}
+                </AutocompleteItem>
+              )}
+            </AutocompleteList>
+          </AutocompleteContent>
+        </Autocomplete>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const disabled = canvas.getByRole('combobox', { name: 'Spell disabled' })
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    await userEvent.type(disabled, 'lumos')
+    await expect(disabled).toHaveValue('')
+
+    const invalid = canvas.getByRole('combobox', { name: 'Spell' })
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
+    await expect(invalid).toHaveAccessibleDescription('Name a spell from the Restricted Section.')
+  }
+}
+
 export const AutoHighlight: Story = {
   args: { items: countries, autoHighlight: true },
   render: (args) => (
@@ -120,88 +176,4 @@ export const AutoHighlight: Story = {
       </AutocompleteContent>
     </Autocomplete>
   )
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <Axis axis='size' rows={controlSizeNames}>
-      {(size) => (
-        <Autocomplete items={['Hogwarts', 'Beauxbatons']}>
-          <AutocompleteInput size={size} aria-label={`School ${size}`} placeholder='School' />
-        </Autocomplete>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-export const Invalid: Story = {
-  args: { items: tags },
-  render: (args) => (
-    <Field invalid>
-      <FieldLabel>Spell</FieldLabel>
-      <Autocomplete {...args}>
-        <AutocompleteInput placeholder='Search spells…' />
-        <AutocompleteContent>
-          <AutocompleteEmpty>No spells found.</AutocompleteEmpty>
-          <AutocompleteList>
-            {(tag) => (
-              <AutocompleteItem key={tag} value={tag}>
-                {tag}
-              </AutocompleteItem>
-            )}
-          </AutocompleteList>
-        </AutocompleteContent>
-      </Autocomplete>
-      <FieldError match>Name a spell from the Restricted Section.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByRole('combobox', { name: 'Spell' })
-    await expect(input).toHaveAttribute('aria-invalid', 'true')
-    await expect(input).toHaveAttribute('data-invalid')
-    await expect(input).toHaveAccessibleDescription('Name a spell from the Restricted Section.')
-  }
-}
-
-export const Disabled: Story = {
-  args: { items: tags, disabled: true },
-  render: (args) => (
-    <Autocomplete {...args}>
-      <AutocompleteInput aria-label='Spell' placeholder='Sealed by the Ministry' />
-      <AutocompleteContent>
-        <AutocompleteList>
-          {(tag) => (
-            <AutocompleteItem key={tag} value={tag}>
-              {tag}
-            </AutocompleteItem>
-          )}
-        </AutocompleteList>
-      </AutocompleteContent>
-    </Autocomplete>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByRole('combobox', { name: 'Spell' })
-    await expect(input).toBeDisabled()
-    await userEvent.type(input, 'lumos')
-    await expect(input).toHaveValue('')
-  }
-}
-
-/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
-export const Variants: Story = {
-  render: () => (
-    <Axis axis='variant' rows={controlVariantNames}>
-      {(variant) => (
-        <Autocomplete items={['Hogwarts', 'Beauxbatons']}>
-          <AutocompleteInput
-            variant={variant}
-            aria-label={`School ${variant}`}
-            placeholder='School'
-          />
-        </Autocomplete>
-      )}
-    </Axis>
-  ),
-  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

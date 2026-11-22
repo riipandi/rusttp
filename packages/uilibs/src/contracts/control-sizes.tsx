@@ -34,8 +34,8 @@ export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: 
 }
 
 /** Height of the control in the cell of `size`. */
-export function measureControl(root: HTMLElement, size: string) {
-  const control = root.querySelector(`[data-size="${size}"]`)?.firstElementChild
+export function measureControl(root: HTMLElement, size: string, cell = '') {
+  const control = root.querySelector(`[data-size="${size}"]${cell}`)?.firstElementChild
   if (!control) throw new Error(`No control rendered for size ${size}`)
   return control.getBoundingClientRect().height
 }
@@ -43,11 +43,24 @@ export function measureControl(root: HTMLElement, size: string) {
 /** Asserts every size renders at its height from the scale (or at `heights` for a field that is not one line). */
 export async function expectControlHeights(
   root: HTMLElement,
-  heights: Partial<Record<DenseControlSize, number>> = controlHeights
+  heights: Partial<Record<DenseControlSize, number>> = controlHeights,
+  /** Narrows the cells when a second axis crosses the sizes (`[data-part="trigger"]`). */
+  cell = ''
 ) {
   for (const [size, height] of Object.entries(heights)) {
-    await expect(measureControl(root, size)).toBe(height)
+    await expect(measureControl(root, size, cell)).toBe(height)
   }
+}
+
+/**
+ * Asserts the disabled look of a control's box: half opacity and, for an element that takes the
+ * cursor itself (an input or a trigger), `not-allowed`. A wrapper that only dims (a group around an
+ * input) passes `cursor: false`.
+ */
+export async function expectDisabledLook(element: Element, { cursor = true } = {}) {
+  const style = getComputedStyle(element)
+  await expect(style.opacity).toBe('0.5')
+  if (cursor) await expect(style.cursor).toBe('not-allowed')
 }
 
 /** The fills of a text-entry control, in the order its `Variants` story draws them. */
@@ -103,4 +116,11 @@ export async function expectBoxSizes(
     const rect = element.getBoundingClientRect()
     await expect([rect.width, rect.height]).toEqual([width, height])
   }
+}
+
+/** The cell of an `Axis` story where `data-<axis>` is `value`; scope a query to it with `within`. */
+export function cellOf(root: HTMLElement, axis: string, value: string): HTMLElement {
+  const cell = root.querySelector(`[data-${axis}="${value}"]`)
+  if (!(cell instanceof HTMLElement)) throw new Error(`No ${axis} cell for ${value}`)
+  return cell
 }

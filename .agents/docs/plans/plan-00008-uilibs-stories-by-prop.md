@@ -33,12 +33,12 @@ phases:
       note: 26da235; 74 computed-style records identical (the only diff is the text color of the Avatar root, which holds no text)
     - id: 7
       title: Pilot - Button and Badge stories
-      status: in_progress
-      note: Button and Badge 30 -> 24 story ids, gate 956 -> 944 tests, no overflow at 390 px; awaiting the owner's review before batch A; commit hash lands with phase 8
+      status: committed
+      note: e83191d; Button and Badge 30 -> 24 story ids, gate 956 -> 944 tests, no overflow at 390 px
     - id: 8
       title: Batch A - text and form controls
-      status: pending
-      note: —
+      status: committed
+      note: 13 components regrouped, 110 -> 98 story ids, gate 944 -> 920 tests, no overflow at 390 px; fixed the InputPhone country trigger (inherited the Combobox trigger's width 100%, leaving the digits 24 px)
     - id: 9
       title: Batch B - press and selection controls
       status: pending
