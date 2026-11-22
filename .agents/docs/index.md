@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-22T19:21:58+07:00
+updated: 2026-11-22T23:36:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -46,11 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File | Status | Subject |
-| --- | --- | --- |
-| `plan-00008-uilibs-stories-by-prop.md` | awaiting-approval | Align uilibs props with Reshaped (`tone`→`color`, `solid | faded | outline | ghost`, new Button, Badge, text-entry, Tabs, Toggle, Avatar and surface props, Item and Icon renames, nothing lost), then group every component's stories by prop axis with a fluid canvas; 17 phases, phase 0 commits the audit work. |
+No live plan.
 
-Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -72,14 +70,14 @@ Parked improvements with a named unlock.
 
 Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary>`. The directory keeps `partial` handovers and the newest one; a `done` handover moves to the archive.
 
-| File                                     | Status  | Subject                                                                                                                                              |
-| ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `handover-00010-agent-docs-restructure.md` | done | Plan 00007 closed: rules split into rules/backend/frontend, slim and scoped `AGENTS.md`, handover titles by summary, roadmap-00001, refined skills, new `ui-audit`. |
+| File | Status | Subject |
+| --- | --- | --- |
+| `handover-00011-uilibs-stories-by-prop.md` | done | Plan 00008 closed: `tone` became `color`, the Reshaped props adopted, every uilibs story file grouped by prop axis on a fluid canvas, tests 888 to 910, audit-00002 F-09 fixed. |
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `audit-00002-ui-uilibs.md` (in_review, 2026-11-22: 14 findings, 4 fixed in tests and stories, 9 open, awaiting the owner's fix decision). `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
+Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `audit-00002-ui-uilibs.md` (in_review, 2026-11-22: 15 findings, 5 fixed, 9 open, 1 deferred, awaiting the owner's fix decision). `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22).
+Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22).

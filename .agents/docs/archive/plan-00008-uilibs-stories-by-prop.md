@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-22T19:00:00+07:00
-updated: 2026-11-22T19:21:58+07:00
+updated: 2026-11-22T23:35:00+07:00
 phases:
     - id: 0
       title: Commit the audit work already in the tree
@@ -65,12 +65,12 @@ phases:
       note: docs/ n/a (`rg -il "storybook|stories" docs` empty); frontend.md, architecture.md, packages/uilibs/AGENTS.md, the ui-audit checklist, and audit-00002 (F-09 fixed) synced; ui-components.md already carried every prop
     - id: 15
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: committed
+      note: plan archived, handover-00011 written, handover-00010 archived, index rows moved, audit-00002 F-15 added to the findings table
     - id: 16
       title: Final validation
-      status: pending
-      note: —
+      status: in_progress
+      note: runs after the phase 15 commit; results recorded in handover-00011
 ---
 
 # Align uilibs component props with Reshaped, then group every component's stories by prop axis

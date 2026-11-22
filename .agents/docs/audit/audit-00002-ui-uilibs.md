@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs (components, stories, Storybook gate)"
 status: in_review
 created_at: 2026-11-22T18:34:00+07:00
-updated_at: 2026-11-22T23:31:40+07:00
+updated_at: 2026-11-22T23:35:00+07:00
 completed_at: null
 scope:
     type: feature
@@ -94,6 +94,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | F-12 | info | a11y (WebKit) | `src/base/menubar/menubar.stories.tsx` | axe `aria-required-children` on the menubar in WebKit only | verified | deferred |
 | F-13 | low | a11y (2.5.8) | see F-13 | Several controls are under 24 px | unverified | open |
 | F-14 | low | a11y / console | `src/base/otp-field/otp-field.stories.tsx` | Eight stories log a Base UI warning about `aria-label` | unverified | open |
+| F-15 | low | defect | `src/extra/item/item.stylex.ts:92-101` | Item `sm` and `md` share one padding and gap | verified | open |
 
 ### F-01 The a11y gate never ran in dark
 
