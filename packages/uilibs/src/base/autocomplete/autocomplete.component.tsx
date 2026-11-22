@@ -37,7 +37,13 @@ import { Autocomplete as BaseAutocomplete } from '@base-ui/react/autocomplete'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants
+} from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { autocompleteStyles as s } from './autocomplete.stylex'
@@ -57,17 +63,26 @@ export const AutocompleteCollection = BaseAutocomplete.Collection
 
 export function AutocompleteInput({
   size = 'md',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style' | 'size'> &
   StyleProp & {
     /** Control height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <BaseAutocomplete.Input
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.input, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.input,
+        style
+      )}
     />
   )
 }

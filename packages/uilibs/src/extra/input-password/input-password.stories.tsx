@@ -5,7 +5,12 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { InputPassword } from './input-password.component'
@@ -167,4 +172,14 @@ export const Translated: Story = {
     await userEvent.click(toggle)
     await expect(canvas.getByRole('button', { name: 'Sembunyikan' })).toBeInTheDocument()
   }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <InputPassword variant={variant} aria-label={`Password ${variant}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

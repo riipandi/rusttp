@@ -3,7 +3,12 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, radius } from '../../styles/tokens.stylex'
@@ -290,4 +295,24 @@ export const NarrowRow: Story = {
     await expect(slots.length).toBe(6)
     for (const slot of slots) await expect(slot.getBoundingClientRect().width).toBeGreaterThan(20)
   }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  args: { length: 4 },
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <OTPField variant={variant} length={4} aria-label={`Code ${variant}`}>
+          <OTPFieldGroup>
+            {[1, 2, 3, 4].map((position) => (
+              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+            ))}
+          </OTPFieldGroup>
+        </OTPField>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectControlVariants(canvasElement, (cell) => cell.querySelector('input'))
 }

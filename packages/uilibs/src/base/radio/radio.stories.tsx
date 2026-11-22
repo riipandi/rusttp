@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent } from 'storybook/test'
+import { expectBoxSizes } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, radius, stroke } from '../../styles/tokens.stylex'
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '../field'
@@ -195,4 +197,20 @@ export const OnValueChange: StoryObj<{ handleChange: ReturnType<typeof fn> }> = 
     // onValueChange carries (value, eventDetails) — check the value arg.
     await expect(args.handleChange.mock.calls[0]?.[0]).toBe('Gryffindor')
   }
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => (
+        <RadioGroup defaultValue='house' aria-label={`House ${size}`}>
+          <label {...stylex.props(styles.label)}>
+            <RadioGroupItem value='house' size={size} /> {size}
+          </label>
+        </RadioGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, '[role="radio"]', { sm: [12, 12], md: [16, 16], lg: [20, 20] })
 }

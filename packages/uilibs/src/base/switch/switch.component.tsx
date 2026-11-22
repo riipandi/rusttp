@@ -17,7 +17,7 @@ import { switchStyles as s } from './switch.stylex'
 import { switchRootSizes as rootSizes } from './switch.stylex'
 import { switchThumbSizes as thumbSizes } from './switch.stylex'
 
-export type SwitchSize = 'sm' | 'md'
+export type SwitchSize = 'sm' | 'md' | 'lg'
 
 export interface SwitchProps extends Omit<
   React.ComponentProps<typeof BaseSwitch.Root>,

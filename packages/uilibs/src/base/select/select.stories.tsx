@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
@@ -317,4 +322,20 @@ export const Keyboard: Story = {
     await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <Select items={fruits}>
+          <SelectTrigger variant={variant} aria-label={`Wand core ${variant}`}>
+            <SelectValue placeholder='Wand core' />
+          </SelectTrigger>
+        </Select>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

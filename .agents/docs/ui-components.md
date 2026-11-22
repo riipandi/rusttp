@@ -9,6 +9,7 @@ The inventory of `packages/uilibs/src`: what each component is, where it imports
 - **Import path.** `uilibs/<path under src>`, resolved by the package `exports` map (`./src/*`, `./src/*/index.ts`, `./src/*.ts`, `./src/*.tsx`): `uilibs/base/button`, `uilibs/extra/card`, `uilibs/styles/tokens.stylex`, `uilibs/theme`. Inside the package, use the `#/*` alias (`src/*`) or a relative path.
 - **Anatomy.** One folder per component, `<name>/{<name>.component.tsx, <name>.stylex.ts, <name>.stories.tsx, index.ts}`; `index.ts` re-exports the component and its styles. Exceptions: `base/provider.tsx` (one file), `extra/input-password` (no styles file), `extra/data-grid` and `extra/sortable`/`extra/kanban` (larger modules), `charts/` (primitives plus one story per chart type), `icons/` (one file per brand).
 - **Styling.** StyleX only. Colors, spacing, type, radius, motion, and z-index come from `src/styles/` (`colors.stylex.ts`, `tokens.stylex.ts`, `popup.stylex.ts`, `utils.stylex.ts`, `themes.ts`), never from literals or non-StyleX imports. A component accepts `style` (StyleX styles) and merges it last in `stylex.props(...)`; it never takes `className` or a raw `style` object. Authoring rules: `stylex-authoring.md`; build setup: `stylex-installation.md`.
+- **Text-entry `variant`.** Input, Textarea, SelectTrigger, Combobox (input, trigger, chips), AutocompleteInput, NumberField, InputGroup, InputPassword, InputPhone, and OTPField take `variant` `outline` (default, the bordered box), `faded` (neutral fill, no edge), `ghost` (transparent until hover), or `headless` (no box). `faded`, `ghost`, and `headless` keep the focus ring and the critical edge when invalid but have no 3:1 edge at rest, so give them a visible label (`controlVariants` in `styles/control.stylex.ts`).
 - **Controls.** Every form control takes `size` (`sm` 32, `md` 36 default, `lg` 40; `xs` 28 on Button, Toggle, and Tabs) so a row of mixed controls shares one height; `size` sits on the part that is the box (`Input`, `SelectTrigger`, `ComboboxInput`/`ComboboxTrigger`/`ComboboxChips`, `AutocompleteInput`, `Textarea`) or on the root that holds the parts (`NumberField`, `OTPField`, `InputGroup`, `InputPassword`, `InputPhone`, `TabsList`, `Menubar`). A text control fills its container. Textarea, FileUpload, and Slider are Field controls like the rest. Built-in strings are one `labels` object per component with English defaults (never `text`, `label`, or `title` props); wrappers take `ref` as a prop. The recipes are in `stylex-authoring.md` ("Controls").
 - **Primitives.** Base UI (`@base-ui/react`) for behaviour and accessibility; a component's header comment links the Base UI page and shows its anatomy. TanStack Table v9 and `@tanstack/react-virtual` (data grid), `@tanstack/charts` (charts), `react-day-picker` (calendar), `react-phone-number-input` (phone input), `react-resizable-panels` (resizable), `@dnd-kit/*` (kanban, sortable).
 - **Stories.** Every component has `*.stories.tsx` beside it; `just storybook` serves them. Stories are grouped by prop axis and draw each axis with `Axis` (`src/contracts/story-axes.tsx`); the convention is `frontend.md` ("UI library"). Sample data follows `rules.md` ("Sample data"); the library's contracts are `frontend.md` ("UI library").
@@ -31,34 +32,34 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | :--- | :--- | :--- |
 | **Accordion** | `uilibs/base/accordion` | Collapsible panels with headings. |
 | **Alert Dialog** | `uilibs/base/alert-dialog` | Dialog that needs a user response; for destructive or high-risk confirmations (`AlertDialogAction color='critical'`). `AlertDialogAction` and `AlertDialogCancel` both close it; call `event.preventBaseUIHandler()` in the action's `onClick` to keep it open while work runs. |
-| **Autocomplete** | `uilibs/base/autocomplete` | Input that suggests options as you type; `size` on `AutocompleteInput`. |
+| **Autocomplete** | `uilibs/base/autocomplete` | Input that suggests options as you type; `size` and `variant` on `AutocompleteInput`. |
 | **Avatar** | `uilibs/base/avatar` | Image with a fallback. |
 | **Button** | `uilibs/base/button` | `variant` (the fill: `solid` default, `faded`, `outline`, `ghost`) and `color` (the role: `primary` default for `solid` and `neutral` for the other fills, `critical` for a destructive or irreversible action, plus `positive` and `warning`; every fill has every color) and `size` (`xs`, `sm`, `md` default, `lg`, plus `icon-xs`/`icon-sm`/`icon-md`/`icon-lg`); `rounded`, `fullWidth`, and `raised` are booleans; `icon` and `endIcon` take a glyph component (an icon-only button needs an `aria-label`); `loading` shows a spinner over the label, keeps the width and the name, and sets `aria-busy` (disabled but focusable). A link is a `LinkButton` (`render={<a href='…' />}` or `render={<Link to='…' />}`, `current` for `aria-current='page'`), which restores `role='link'`; `Button` itself can render another tag with `nativeButton={false}`, but it is then announced as a button. |
-| **Checkbox** | `uilibs/base/checkbox` | Checkbox and checkbox group; disabled, cursor, and focus ring come from `controlPress.root` (Radio and Switch too). |
+| **Checkbox** | `uilibs/base/checkbox` | Checkbox (`size` `sm` 12, `md` 16 default, `lg` 20) and checkbox group; disabled, cursor, and focus ring come from `controlPress.root` (Radio and Switch too). |
 | **Collapsible** | `uilibs/base/collapsible` | One expandable panel. |
-| **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. `size` on `ComboboxInput`, `ComboboxTrigger`, and `ComboboxChips`; `labels` (`clear`, `open`) on the input and `labels.remove(text)` on a chip (default `Remove <chip text>`); the chip's remove button has a 24px hit area. Name a standalone input or trigger with `aria-label`. |
+| **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. `size` and `variant` on `ComboboxInput`, `ComboboxTrigger`, and `ComboboxChips`; `labels` (`clear`, `open`) on the input and `labels.remove(text)` on a chip (default `Remove <chip text>`); the chip's remove button has a 24px hit area. Name a standalone input or trigger with `aria-label`. |
 | **Context Menu** | `uilibs/base/context-menu` | Menu at the pointer on right click or long press; its items are the dropdown menu's. |
 | **Dialog** | `uilibs/base/dialog` | Modal popup over the page; `labels.close` names the built-in close button (`showCloseButton={false}` removes it). |
 | **Drawer** | `uilibs/base/drawer` | Panel sliding in from an edge. |
 | **Dropdown Menu** | `uilibs/base/dropdown-menu` | Action menu (Base UI `Menu`); keep `DropdownMenuLabel` inside a `DropdownMenuGroup`. `DropdownMenuItem` takes `color='critical'` for a destructive item (Context Menu and Menubar items are the same component). |
 | **Field** | `uilibs/base/field` | Label, description, and validation around a control; also `FieldSet`, `FieldLegend`, `FieldGroup`. |
 | **Form** | `uilibs/base/form` | Native form with consolidated error handling. |
-| **Input** | `uilibs/base/input` | Text input; `size`. |
+| **Input** | `uilibs/base/input` | Text input; `size`, `variant`. |
 | **Menubar** | `uilibs/base/menubar` | Desktop-style menu bar; `size` on `Menubar`. |
 | **Meter** | `uilibs/base/meter` | Numeric value within a range. |
 | **Navigation Menu** | `uilibs/base/navigation-menu` | Links and menus for site navigation; `labels` name its two `nav` landmarks. |
-| **Number Field** | `uilibs/base/number-field` | Numeric input with steppers and a scrub area; `size` on `NumberField`, `labels` (`increase`, `decrease`) on the group. |
-| **OTP Field** | `uilibs/base/otp-field` | One-time code input in character slots; `size` on `OTPField`. An `aria-label` on the root names the first slot, the others are named `Character n of N` (`labels.slot`). |
+| **Number Field** | `uilibs/base/number-field` | Numeric input with steppers and a scrub area; `size` and `variant` on `NumberField`, `labels` (`increase`, `decrease`) on the group. |
+| **OTP Field** | `uilibs/base/otp-field` | One-time code input in character slots; `size` and `variant` on `OTPField`. An `aria-label` on the root names the first slot, the others are named `Character n of N` (`labels.slot`). |
 | **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, `collisionAvoidance`, and `collisionPadding`. |
 | **Preview Card** | `uilibs/base/preview-card` | Rich preview shown on hover or focus of a link. |
 | **Progress** | `uilibs/base/progress` | Progress of a long task. |
 | **Provider** | `uilibs/base/provider` | `UIProvider`: CSP nonce and text direction for Base UI. |
-| **Radio** | `uilibs/base/radio` | Radio and radio group. |
+| **Radio** | `uilibs/base/radio` | Radio and radio group; `size` (`sm`, `md` default, `lg`) on `RadioGroupItem`. |
 | **Scroll Area** | `uilibs/base/scroll-area` | Styled scroll container. |
-| **Select** | `uilibs/base/select` | Single-choice list in a popup; `size` on `SelectTrigger`. Name a standalone trigger with `aria-label`. |
+| **Select** | `uilibs/base/select` | Single-choice list in a popup; `size` and `variant` on `SelectTrigger`. Name a standalone trigger with `aria-label`. |
 | **Separator** | `uilibs/base/separator` | Visual divider. |
 | **Slider** | `uilibs/base/slider` | Value or range from a track; one thumb unless the value is an array, `thumbLabels` (or `aria-label` for one thumb) names the thumbs. |
-| **Switch** | `uilibs/base/switch` | On/off toggle. |
+| **Switch** | `uilibs/base/switch` | On/off toggle; `size` `sm`, `md` default, `lg`. |
 | **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`. |
 | **Toast** | `uilibs/base/toast` | Stacked notifications and anchored toasts, positioning configurable; `toast(title, { color })` (`success` and `error` imply `positive` and `critical`), `labels` on `Toaster` (`close`, `notification`). |
 | **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40. |
@@ -87,9 +88,9 @@ Compositions and components Base UI does not provide.
 | **Empty** | `uilibs/extra/empty` | `Empty`, `Header`, `Media`, `Title`, `Description`, `Content`. |
 | **File Upload** | `uilibs/extra/file-upload` | Drag-and-drop area and a Field control; the whole area stays clickable through its label, and a drop honors the input's `accept` and `multiple`. |
 | **Icon** | `uilibs/extra/icon` | Wrapper for SVG assets: inherits `currentColor`, `color` applies a foreground token, size defaults to `1em`. |
-| **Input Group** | `uilibs/extra/input-group` | `InputGroup` (`size`), `Addon`, `Button` (`xs`, `icon-xs`, `icon-sm`), `Text`, `Input`, `Textarea`. |
-| **Input Password** | `uilibs/extra/input-password` | Password input with a visibility toggle, on `InputGroup`; `size`, `labels` (`show`, `hide`). |
-| **Input Phone** | `uilibs/extra/input-phone` | International phone input with a searchable country selector; `size`, `labels` (`selectCountry`, `searchCountry`, `noCountry`). |
+| **Input Group** | `uilibs/extra/input-group` | `InputGroup` (`size`, `variant`), `Addon`, `Button` (`xs`, `icon-xs`, `icon-sm`), `Text`, `Input`, `Textarea`. |
+| **Input Password** | `uilibs/extra/input-password` | Password input with a visibility toggle, on `InputGroup`; `size`, `variant`, `labels` (`show`, `hide`). |
+| **Input Phone** | `uilibs/extra/input-phone` | International phone input with a searchable country selector; `size`, `variant`, `labels` (`selectCountry`, `searchCountry`, `noCountry`). |
 | **Item** | `uilibs/extra/item` | `ItemGroup`, `Item` (a `listitem` inside a group), `Media`, `Content`, `Title`, `Description`, `Actions`, `Header`, `Footer`, `Separator`: one-column rows; multi-column records use `Table`. |
 | **Kanban** | `uilibs/extra/kanban` | dnd-kit board with column and item drag-and-drop; `labels.columnHandle` plus the announcements (`pickedUp`, `movedOver`, `dropped`, `cancelled`, `instructions`: an item is named by its `aria-label` or text, never its id); item ids must be unique across columns. |
 | **Kbd** | `uilibs/extra/kbd` | `Kbd`, `KbdGroup`: keyboard shortcut label (only the label; the listener is separate, `@tanstack/react-hotkeys`, and the webapp renders a hotkey as keycaps through `components/shortcut.tsx`). |
@@ -103,7 +104,7 @@ Compositions and components Base UI does not provide.
 | **Spinner** | `uilibs/extra/spinner` | Busy indicator (Keyline `LoaderCircle`): a `status` named `labels.loading` on its own, hidden from assistive technology inside a Button. |
 | **Table** | `uilibs/extra/table` | `Table`, `Header`, `Body`, `Footer`, `Row`, `Head`, `Cell`, `Caption`; give an icon-only header `visuallyHidden` text. The wrapper scrolls sideways, so it is a focusable `role='region'` named by `labels.region` (default `Table`). |
 | **Text** | `uilibs/extra/text` | Typography: `variant` (`headline-1`..`3`, `featured-1`..`6` (render `h1`..`h6`; the rest render `div`), `body-1`/`2`, `caption-1`/`2`), `color`, `weight`, `align`, `maxLines`; `variant`, `weight`, and `align` take a value or one per breakpoint (`s`/`m`/`l`/`xl`). Renders the tag its variant implies unless `render` overrides it. |
-| **Textarea** | `uilibs/extra/textarea` | Multiline input and a Field control; `size` sets a minimum height (`sm` 56, `md` 64, `lg` 72) and the type, `autoResize`. |
+| **Textarea** | `uilibs/extra/textarea` | Multiline input and a Field control; `size` sets a minimum height (`sm` 56, `md` 64, `lg` 72) and the type, `variant`, `autoResize`. |
 
 ---
 

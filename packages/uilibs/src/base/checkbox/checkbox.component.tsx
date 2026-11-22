@@ -21,25 +21,34 @@ import { Check, Minus } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
-import { checkboxStyles, checkboxGroupStyles } from './checkbox.stylex'
+import { checkboxSizes, checkboxStyles, checkboxGroupStyles } from './checkbox.stylex'
+
+export type CheckboxSize = 'sm' | 'md' | 'lg'
+
+const glyphSize = { sm: 10, md: 12, lg: 14 } as const
 
 export interface CheckboxProps extends Omit<
   React.ComponentProps<typeof BaseCheckbox.Root>,
   'className' | 'style'
 > {
+  /** Box size: `sm` 12px, `md` 16px (default), `lg` 20px. */
+  size?: CheckboxSize
   style?: stylex.StyleXStyles
 }
 
-export function Checkbox({ style, ...props }: CheckboxProps) {
+export function Checkbox({ size = 'md', style, ...props }: CheckboxProps) {
   return (
-    <BaseCheckbox.Root {...props} {...stylex.props(controlPress.root, checkboxStyles.root, style)}>
+    <BaseCheckbox.Root
+      {...props}
+      {...stylex.props(controlPress.root, checkboxStyles.root, checkboxSizes[size], style)}
+    >
       <BaseCheckbox.Indicator
         render={(indicatorProps, state) => (
           <span {...indicatorProps} {...stylex.props(checkboxStyles.indicator)}>
             {state.indeterminate ? (
-              <Minus size={12} strokeWidth={2} aria-hidden />
+              <Minus size={glyphSize[size]} strokeWidth={2} aria-hidden />
             ) : (
-              <Check size={12} strokeWidth={2} aria-hidden />
+              <Check size={glyphSize[size]} strokeWidth={2} aria-hidden />
             )}
           </span>
         )}

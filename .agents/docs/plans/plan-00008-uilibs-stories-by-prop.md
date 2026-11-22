@@ -17,12 +17,12 @@ phases:
       note: 2b4096a; parity 74 of 76 identical (the 2 diffs are ghost critical border-top-color under border-style none); e2e 184 passed
     - id: 3
       title: Button and Badge new props and colors
-      status: in_progress
-      note: defaults identical to the phase 2 build (0 diffs of 76); gate 900 green in both themes; commit hash lands with phase 4
+      status: committed
+      note: 7ff3985; defaults identical to the phase 2 build (0 diffs of 76); gate 900 green in both themes
     - id: 4
       title: Text entry variant, Checkbox Radio Switch size
-      status: pending
-      note: —
+      status: in_progress
+      note: 86 computed-style records identical to HEAD (rest and settled focus); gate 924 green in both themes; commit hash lands with phase 5
     - id: 5
       title: Tabs, Toggle, ToggleGroup variants
       status: pending

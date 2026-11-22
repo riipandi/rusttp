@@ -4,7 +4,12 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldDescription, FieldError, FieldLabel } from '../../base/field'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, unit } from '../../styles/tokens.stylex'
@@ -178,4 +183,14 @@ export const ControlSizes: Story = {
   ),
   // A textarea is not one line: its sizes are minimum heights.
   play: async ({ canvasElement }) => expectControlHeights(canvasElement, { sm: 56, md: 64, lg: 72 })
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <Textarea variant={variant} rows={1} aria-label={`Prophecy ${variant}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

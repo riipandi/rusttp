@@ -15,7 +15,13 @@ import flags from 'react-phone-number-input/flags'
 import { comboboxCreateItems } from '../../base/combobox'
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput } from '../../base/combobox'
 import { ComboboxItem, ComboboxList, ComboboxTrigger } from '../../base/combobox'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
@@ -42,6 +48,8 @@ export interface InputPhoneProps extends Omit<
   withCountrySelect?: boolean
   /** Control height and type; `md` (36px) by default. */
   size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
   /** Visible and accessible strings; English by default. */
   labels?: Partial<InputPhoneLabels>
   /** Marks the field visually as invalid. */
@@ -83,6 +91,7 @@ interface CountrySelectProps {
 interface PhoneContextValue {
   containerRef: React.RefObject<HTMLDivElement | null>
   size: ControlSize
+  variant: ControlVariant
   labels: InputPhoneLabels
 }
 
@@ -193,6 +202,7 @@ function PhoneInputContainer({
       {...stylex.props(
         controlBase.root,
         controlBase.within,
+        controlVariantsWithin[phone?.variant ?? 'outline'],
         controlSizes[phone?.size ?? 'md'],
         s.root,
         style
@@ -221,6 +231,7 @@ export function InputPhone({
   addInternationalOption = true,
   withCountrySelect = true,
   size = 'md',
+  variant = 'outline',
   labels,
   invalid = false,
   disabled,
@@ -230,8 +241,8 @@ export function InputPhone({
 }: InputPhoneProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
   const context = React.useMemo(
-    () => ({ containerRef, size, labels: { ...defaultLabels, ...labels } }),
-    [size, labels]
+    () => ({ containerRef, size, variant, labels: { ...defaultLabels, ...labels } }),
+    [size, variant, labels]
   )
 
   return (

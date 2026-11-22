@@ -100,6 +100,52 @@ export const controlBase = stylex.create({
   }
 })
 
+/** The fill of a text-entry control: `outline` is the bordered box, the rest drop the 3:1 edge at rest. */
+export type ControlVariant = 'outline' | 'faded' | 'ghost' | 'headless'
+
+const quietEdge = {
+  default: 'transparent',
+  ':focus-visible': colors.foregroundPrimary,
+  '[data-invalid]': colors.borderCritical
+} as const
+
+const quietEdgeWithin = {
+  default: 'transparent',
+  ':has(:focus-visible)': colors.foregroundPrimary,
+  '[data-invalid]': colors.borderCritical,
+  ':has([data-invalid])': colors.borderCritical
+} as const
+
+/**
+ * Compose after `controlBase.root` and `controlSizes`. `outline` is `controlBase` as it is. `faded`
+ * is the neutral fill with no edge, `ghost` is transparent until hover, `headless` has no box at all
+ * (for a control inside a container that draws one). They keep the focus ring and the critical edge
+ * for invalid, but carry no 3:1 edge at rest, so they need a visible label.
+ */
+export const controlVariants = stylex.create({
+  outline: {},
+  faded: { backgroundColor: colors.backgroundNeutral, borderColor: quietEdge },
+  ghost: {
+    backgroundColor: {
+      default: 'transparent',
+      ':hover:not(:disabled)': colors.backgroundNeutralFaded
+    },
+    borderColor: quietEdge
+  },
+  headless: { backgroundColor: 'transparent', borderColor: quietEdge }
+})
+
+/** The same for a wrapper that holds the real input (`controlBase.within`): compose after it. */
+export const controlVariantsWithin = stylex.create({
+  outline: {},
+  faded: { backgroundColor: colors.backgroundNeutral, borderColor: quietEdgeWithin },
+  ghost: {
+    backgroundColor: { default: 'transparent', ':hover': colors.backgroundNeutralFaded },
+    borderColor: quietEdgeWithin
+  },
+  headless: { backgroundColor: 'transparent', borderColor: quietEdgeWithin }
+})
+
 /**
  * Press targets (Button, Toggle, Tab, Checkbox, Radio, Switch, menu triggers):
  * the pointer cursor, half-opacity disabled state, and a 2px ring drawn

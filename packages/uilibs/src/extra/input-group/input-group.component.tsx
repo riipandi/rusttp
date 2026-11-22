@@ -2,7 +2,12 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button, type ButtonProps } from '../../base/button'
 import { Input } from '../../base/input'
-import { type ControlSize, controlBase } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
 import { Textarea } from '../textarea'
 import { inputGroupStyles as s } from './input-group.stylex'
 import { inputGroupAddonAligns as addonAligns } from './input-group.stylex'
@@ -18,19 +23,28 @@ const InputGroupSizeContext = React.createContext<ControlSize>('md')
 
 export function InputGroup({
   size = 'md',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
   StyleProp & {
     /** Height and type of the input; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <InputGroupSizeContext.Provider value={size}>
       <div
         role='group'
         {...props}
-        {...stylex.props(controlBase.root, controlBase.within, s.root, style)}
+        {...stylex.props(
+          controlBase.root,
+          controlBase.within,
+          controlVariantsWithin[variant],
+          s.root,
+          style
+        )}
       />
     </InputGroupSizeContext.Provider>
   )

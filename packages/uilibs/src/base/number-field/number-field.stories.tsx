@@ -2,7 +2,13 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
-import { HiddenLabel, controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  HiddenLabel,
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -199,4 +205,22 @@ export const Keyboard: Story = {
     await userEvent.keyboard('{Home}')
     await expect(input).toHaveValue('0')
   }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <>
+          <NumberField variant={variant} defaultValue={7} id={`galleons-${variant}`}>
+            <NumberFieldGroup />
+          </NumberField>
+          <HiddenLabel htmlFor={`galleons-${variant}`}>Galleons</HiddenLabel>
+        </>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectControlVariants(canvasElement, (cell) => cell.querySelector('[role="group"]'))
 }

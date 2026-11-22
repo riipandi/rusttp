@@ -52,6 +52,10 @@ export const switchRootSizes = stylex.create({
   sm: {
     height: unit.x4,
     width: unit.x7
+  },
+  lg: {
+    height: unit.x6,
+    width: unit.x12
   }
 })
 
@@ -71,5 +75,13 @@ export const switchThumbSizes = stylex.create({
       '[data-checked]': `translateX(${unit.x3})`
     },
     width: unit.x3
+  },
+  lg: {
+    height: unit.x5,
+    transform: {
+      default: 'translateX(0)',
+      '[data-checked]': `translateX(${unit.x6})`
+    },
+    width: unit.x5
   }
 })

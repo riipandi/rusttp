@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
+import { expectBoxSizes } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
 import { Switch } from './switch.component'
@@ -76,17 +78,17 @@ export const Playground: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Label>
-        <Switch size='sm' defaultChecked />
-        House-elf
-      </Label>
-      <Label>
-        <Switch defaultChecked />
-        Half-giant
-      </Label>
-    </div>
-  )
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => (
+        <Label>
+          <Switch size={size} defaultChecked />
+          {size}
+        </Label>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, '[role="switch"]', { sm: [28, 16], md: [36, 20], lg: [48, 24] })
 }
 
 export const Description: Story = {

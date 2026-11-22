@@ -3,6 +3,8 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
+import { expectBoxSizes } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
 import { Checkbox, CheckboxGroup } from './checkbox.component'
@@ -251,4 +253,19 @@ export const GroupParentPlay: Story = {
       await expect(canvas.getByRole('checkbox', { name })).toHaveAttribute('aria-checked', 'false')
     }
   }
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => (
+        <Label>
+          <Checkbox size={size} defaultChecked aria-label={`House-elf ${size}`} />
+          {size}
+        </Label>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, '[role="checkbox"]', { sm: [12, 12], md: [16, 16], lg: [20, 20] })
 }

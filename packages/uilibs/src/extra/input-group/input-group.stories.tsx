@@ -4,7 +4,12 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field } from '../../base/field'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd } from '../kbd'
@@ -182,4 +187,24 @@ export const ControlSizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <InputGroup variant={variant}>
+          <InputGroupAddon>
+            <InputGroupText>@</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput aria-label={`Owl ${variant}`} placeholder='Owl' />
+          <InputGroupAddon align='inline-end'>
+            <InputGroupButton variant='outline'>Send</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
 }

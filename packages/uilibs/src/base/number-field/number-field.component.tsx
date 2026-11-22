@@ -25,7 +25,13 @@ import {
 } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
 import { numberFieldButtonSizes, numberFieldStyles as s } from './number-field.stylex'
 
 interface StyleProp {
@@ -40,19 +46,25 @@ export const NumberFieldScrubAreaCursor = BaseNumberField.ScrubAreaCursor
 
 /** The root's `size`, read by the group and its steppers. */
 const NumberFieldSizeContext = React.createContext<ControlSize>('md')
+const NumberFieldVariantContext = React.createContext<ControlVariant>('outline')
 
 export function NumberField({
   size = 'md',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseNumberField.Root>, 'className' | 'style' | 'size'> &
   StyleProp & {
     /** Control height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <NumberFieldSizeContext.Provider value={size}>
-      <BaseNumberField.Root {...props} {...stylex.props(s.root, style)} />
+      <NumberFieldVariantContext.Provider value={variant}>
+        <BaseNumberField.Root {...props} {...stylex.props(s.root, style)} />
+      </NumberFieldVariantContext.Provider>
     </NumberFieldSizeContext.Provider>
   )
 }
@@ -77,13 +89,21 @@ export function NumberFieldGroup({
     labels?: Partial<NumberFieldLabels>
   }) {
   const size = React.useContext(NumberFieldSizeContext)
+  const variant = React.useContext(NumberFieldVariantContext)
   const increase = labels?.increase ?? 'Increase'
   const decrease = labels?.decrease ?? 'Decrease'
 
   return (
     <BaseNumberField.Group
       {...props}
-      {...stylex.props(controlBase.root, controlBase.within, controlSizes[size], s.group, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlBase.within,
+        controlVariantsWithin[variant],
+        controlSizes[size],
+        s.group,
+        style
+      )}
     >
       {children ?? (
         <>

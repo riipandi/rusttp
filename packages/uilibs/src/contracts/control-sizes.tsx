@@ -49,3 +49,58 @@ export async function expectControlHeights(
     await expect(measureControl(root, size)).toBe(height)
   }
 }
+
+/** The fills of a text-entry control, in the order its `Variants` story draws them. */
+export const controlVariantNames = ['outline', 'faded', 'ghost', 'headless'] as const
+
+/**
+ * Asserts the fills of a `Variants` story (cells carry `data-variant`): `faded`, `ghost`, and
+ * `headless` each differ from `outline` in fill or edge, and every one shows a focus indicator when
+ * focused (they have no 3:1 edge at rest, so the ring is what marks the control). `find` picks the
+ * box in a cell when it is not the cell's first element.
+ */
+export async function expectControlVariants(
+  root: HTMLElement,
+  find: (cell: Element) => Element | null = (cell) => cell.firstElementChild
+) {
+  const box = (variant: string) => {
+    const cell = root.querySelector(`[data-variant="${variant}"]`)
+    const element = cell ? find(cell) : null
+    if (!(element instanceof HTMLElement)) throw new Error(`No control rendered for ${variant}`)
+    return element
+  }
+  const look = (variant: string) => {
+    const style = getComputedStyle(box(variant))
+    return { fill: style.backgroundColor, edge: style.borderTopColor }
+  }
+  const outline = look('outline')
+  await expect(look('faded').fill).not.toBe(outline.fill)
+  for (const variant of ['faded', 'ghost', 'headless']) {
+    await expect(look(variant).edge).not.toBe(outline.edge)
+  }
+  for (const variant of controlVariantNames) {
+    const element = box(variant)
+    const focusable = element.matches('input,textarea,button')
+      ? element
+      : element.querySelector<HTMLElement>('input,textarea,button')
+    if (!focusable) throw new Error(`Nothing to focus in ${variant}`)
+    focusable.focus()
+    await expect(focusable).toHaveFocus()
+    await expect(getComputedStyle(element).outlineStyle).not.toBe('none')
+    focusable.blur()
+  }
+}
+
+/** Asserts the rendered box (`width`, `height`) of `selector` in each `data-size` cell. */
+export async function expectBoxSizes(
+  root: HTMLElement,
+  selector: string,
+  boxes: Record<string, readonly [number, number]>
+) {
+  for (const [size, [width, height]] of Object.entries(boxes)) {
+    const element = root.querySelector(`[data-size="${size}"] ${selector}`)
+    if (!element) throw new Error(`No ${selector} rendered for size ${size}`)
+    const rect = element.getBoundingClientRect()
+    await expect([rect.width, rect.height]).toEqual([width, height])
+  }
+}

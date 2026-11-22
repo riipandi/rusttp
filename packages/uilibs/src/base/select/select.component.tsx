@@ -37,7 +37,13 @@ import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@keyline-icons/re
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants
+} from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { selectStyles as s } from './select.stylex'
@@ -56,6 +62,7 @@ export const SelectGroup = BaseSelect.Group
  */
 export function SelectTrigger({
   size = 'md',
+  variant = 'outline',
   style,
   children,
   ...props
@@ -63,11 +70,19 @@ export function SelectTrigger({
   StyleProp & {
     /** Control height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <BaseSelect.Trigger
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.trigger,
+        style
+      )}
     >
       {children}
       <BaseSelect.Icon {...stylex.props(s.icon)}>

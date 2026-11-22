@@ -33,7 +33,14 @@ import { Check, ChevronDown, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlSize,
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
@@ -58,6 +65,7 @@ function TriggerChevron() {
 // an `aria-label`, since the value or placeholder is its only text.
 export function ComboboxTrigger({
   size = 'md',
+  variant = 'outline',
   style,
   children,
   showChevron = true,
@@ -66,6 +74,8 @@ export function ComboboxTrigger({
   StyleProp & {
     /** Control height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
     /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
      * InputPhone country flag). Defaults to `true`. */
     showChevron?: boolean
@@ -73,7 +83,13 @@ export function ComboboxTrigger({
   return (
     <BaseCombobox.Trigger
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.trigger,
+        style
+      )}
     >
       {children}
       {showChevron ? (
@@ -98,6 +114,7 @@ export interface ComboboxInputLabels {
  */
 export function ComboboxInput({
   size = 'md',
+  variant = 'outline',
   style,
   inputStyle,
   showTrigger = true,
@@ -108,6 +125,8 @@ export function ComboboxInput({
   StyleProp & {
     /** Control height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
     /** Accessible names of the built-in buttons. */
     labels?: Partial<ComboboxInputLabels>
     /** Style applied directly to the inner input element. */
@@ -126,6 +145,7 @@ export function ComboboxInput({
         {...stylex.props(
           controlBase.root,
           controlSizes[size],
+          controlVariants[variant],
           s.input,
           showTrigger && showClear
             ? s.inputPaddingButtons2
@@ -163,12 +183,15 @@ export function ComboboxInput({
 // anchor (pass a ref to `ComboboxContent`'s `anchor`), so it forwards `ref`.
 export function ComboboxChips({
   size = 'md',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Chips>, 'className' | 'style'> &
   StyleProp & {
     /** Minimum height and type; `md` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <BaseCombobox.Chips
@@ -176,6 +199,7 @@ export function ComboboxChips({
       {...stylex.props(
         controlBase.root,
         controlBase.within,
+        controlVariantsWithin[variant],
         comboboxChipsSizes[size],
         s.chips,
         style

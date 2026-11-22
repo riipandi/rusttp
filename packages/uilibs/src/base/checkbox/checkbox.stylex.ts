@@ -23,11 +23,9 @@ export const checkboxStyles = stylex.create({
     borderWidth: stroke.ring1,
     display: 'inline-flex',
     flexShrink: 0,
-    height: unit.x4,
     justifyContent: 'center',
     padding: 0,
     position: 'relative',
-    width: unit.x4,
     // Invisible expanded hit area (larger touch target).
     '::after': {
       content: '""',
@@ -42,6 +40,13 @@ export const checkboxStyles = stylex.create({
     display: 'flex',
     justifyContent: 'center'
   }
+})
+
+// `md` is the box as it was before sizes existed.
+export const checkboxSizes = stylex.create({
+  sm: { height: unit.x3, width: unit.x3 },
+  md: { height: unit.x4, width: unit.x4 },
+  lg: { height: unit.x5, width: unit.x5 }
 })
 
 export const checkboxGroupStyles = stylex.create({
