@@ -145,7 +145,7 @@ Decision (2026-11-20, `plan-00001-uilibs-improvement`):
 
 - One `ControlSize` scale, `sm` 32 / `md` 36 / `lg` 40, default `md`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xs` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
 - Two focus languages by kind: text entry takes the primary border and a 2px inset outline, press targets a 2px outside ring (an inset ring clips a short label, an outside ring collides with a field's neighbours). Disabled is one recipe, `opacity: 0.5` and the not-allowed cursor.
-- `borderControl`, a token at 3:1 or more on the page and elevation surfaces in both themes, is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
+- `borderControl`, a token at 3:1 or more on the page, on `backgroundNeutral` (including its hover surface), and on elevation surfaces in both themes (light L 0.58, dark L 0.64 since plan 00005), is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
 - Wrappers are typed `React.ComponentProps<…>` (React 19 `ref` as a prop); no `forwardRef`. Built-in strings are per-component `labels` props with English defaults; no locale context.
 - Alert, Badge, and Toast take `tone` (`neutral | primary | positive | warning | critical`); `destructive` variants became `tone='critical'`. Alert is a polite `status` unless given `role='alert'`.
 - `LinkButton` lives in `base/button` and takes `render` (`<a href>` or a router `<Link to>`), so the library does not depend on the router; it puts `role='link'` back on the rendered element, which Base UI turns into `button`. A loading Button is disabled but focusable and reports `aria-busy`.
@@ -231,6 +231,32 @@ Alternatives considered:
 - `@axe-core/playwright` — rejected: a second dependency for one script injection and one call.
 - A test per defect only — rejected: it would pin the three audited bugs and miss the next one of the same kind.
 - Extending the Storybook gate to full pages — rejected: stories render components, and the defects live in the composition of layout and components.
+
+### The webapp's entry load has a budget, and the admin layout mounts one chrome
+
+Context (2026-11-22): plan 00004 left `issue-00003-ui-audit-leftovers`: the entry chunk grew from 303 to 363 KB and the cause was blamed on `useMessages`. Building the commits in between and summing the entry with its static imports showed 422 KB, then 457 KB (`useMessages`, about 35 KB), then 547 KB: the larger step (89 KB, 31 KB gzip) was `TooltipProvider` moved to the root, which pulled Base UI's tooltip into every page. The same audit parked a double-mounted admin chrome, two contrast gaps, and a 2.4k-line data grid.
+
+Decision (2026-11-22, owner, `plan-00005-ui-leftovers-remediation`):
+
+- The entry load is budgeted: `pnpm --filter webapp size` fails over 480 KB raw or 152 KB gzip (the measured 458 KB / 146 KB plus about 5%). `TooltipProvider` moves into the admin and customer layouts.
+- The admin layout renders the sidebar or the top bar by `useCompact()`, not both with a CSS hide. This reverses plan 00004 D12 (both stayed mounted for a clean tab order and two cheap subscriptions).
+- Chart series take the `foreground*` tokens and `borderControl` changes value (light L 0.58, dark L 0.64). This lifts plan 00004 D1 (tokens frozen) for those two cases; no token was added.
+- The data grid splits by responsibility, code moved unchanged: the cell controller into ops, editor, and controller; the table into head, body, and utils, with one-way dependencies and an identical public surface. This reverses plan 00004 D11 (structure kept, F-26 deferred).
+- A lazy per-language message catalog was built and measured, then dropped: Paraglide's `locale-modules` output still imports every language from its index, so the split had to live in `libraries/messages.ts` (an async language change, a top-level await in `main.tsx`); one language is 19.2 KB raw and 6.0 KB gzip, the entry went from 458.1 KB / 145.9 KB gzip to 442.8 KB / 146.6 KB, and the build gained chunks.
+
+Consequences:
+
+- (positive) a size regression fails a command instead of waiting for someone to look; the landing and auth pages no longer load Base UI's tooltip; one bell and one account menu are live per viewport; control edges and chart series pass 3:1 on neutral surfaces; no data-grid source file passes about 1250 lines.
+- (negative) a route outside the two layouts that shows a tooltip adds its own provider or gets Base UI's 600 ms delay; crossing 767px closes an open popover; control edges look stronger on the page (4.28 and 5.77 against 3.36 and 3.84); `git blame` on the grid goes through the move commits.
+
+Alternatives considered:
+
+- A lazy per-locale catalog — built and rejected on the numbers above; the route-group partition (a key partition by area, shared keys loaded twice, a loader per route) would save more but costs the most, and is reopened only if messages breach the budget.
+- Keeping the root provider and lazy-loading Base UI inside it — rejected: the provider is the import.
+- A size-limit dependency — rejected: 50 lines of Node read the manifest.
+- Keeping both chromes mounted — rejected: two live subscriptions are the reason the item existed; a shared popover host would add a layer for a swap this small.
+- New `chart*` tokens, labeling the weak series only, or lifting `backgroundNeutral` — rejected: more surface for the same effect, the status quo, and a change to every neutral surface.
+- Splitting `DataGridCellSelection` into hooks — rejected: a behavior refactor with no defect behind it.
 
 ## Parked
 
