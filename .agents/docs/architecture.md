@@ -1,8 +1,8 @@
 # Architecture
 
-updated: 2026-11-20T06:05:00+07:00
+updated: 2026-11-22T15:20:00+07:00
 
-The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`; this file keeps the why, so a settled decision is not re-litigated.
+The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`, `backend.md`, and `frontend.md`; this file keeps the why, so a settled decision is not re-litigated.
 
 ## Module anatomy
 
@@ -131,7 +131,7 @@ Alternatives considered:
 - `axum-connect` — rejected: thinner protocol coverage and less active than `connectrpc`, which passes the Connect conformance suite.
 - Connect at the root (`/<package.Service>/<Method>`) — rejected: it shares the namespace with SPA routes and needs a proxy entry per package.
 - Porting vite-rs — rejected: it serves `index.html` as built (one head for every page; templating is out of its scope, its README says), and it runs Vite as a child of the Rust process, so every Rust restart restarts Vite. Its dev proxy is the one part kept, in vixum.
-- Keeping Vite's `index.html` and writing the page head into it — replaced (2026-11-19, owner): the document's static parts belonged to the frontend package while the server owned the rest; the shell now lives with the server, and dev keeps Vite's tags through `transformIndexHtml` instead of hand-written HMR and preamble tags (the Saka/olivere-vite shape writes them by hand).
+- Keeping Vite's `index.html` and writing the page head into it — replaced (2026-11-19, owner): the document's static parts belonged to the frontend package while the server owned the rest; the shell now lives with the server, and dev keeps Vite's tags through `transformIndexHtml` instead of hand-written HMR and preamble tags.
 - Vite in front with a proxy to the server — rejected: two ports between dev and production, and the head stays static.
 - `rust-embed` — rejected: cache headers, precompression, and the SPA fallback would be hand-written; `tower-http` `ServeDir` — rejected: the binary would need `dist/` beside it at runtime.
 - watchexec restarting `cargo run` (with `systemfd`/`listenfd` holding the socket) — rejected: the server is down for the whole compile and stays down when the build fails; the plugin keeps the old server answering in both cases, with one process to run.
@@ -175,7 +175,7 @@ Context: the webapp's forms ran on TanStack Form with zod through a `createFormH
 Decision (2026-11-20, owner, `plan-00002-webapp-forms-formisch`):
 
 - Formisch with Valibot replaces both. The schema is the single source of the form's types, rules, and shape; `field.errors` arrives as strings and `handleSubmit` validates and focuses.
-- The forms keep the `uilibs` `Form` and `Field`; field components take the Formisch field store and are rendered by Formisch's `Field` (`shape.md`, `rules.md` "Webapp forms").
+- The forms keep the `uilibs` `Form` and `Field`; field components take the Formisch field store and are rendered by Formisch's `Field` (`frontend.md`, "Webapp forms").
 - zod and TanStack Form are removed outright, with no compatibility layer. zod remains in the lockfile only as a build-time dependency of `@tanstack/router-generator`; it does not reach the shipped SPA.
 
 Consequences:

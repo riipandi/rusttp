@@ -1,8 +1,8 @@
 # UI Components Index
 
-updated: 2026-11-20T06:09:00+07:00
+updated: 2026-11-22T15:20:00+07:00
 
-The inventory of `packages/uilibs/src`: what each component is, where it imports from, and what it is built on. Check it before writing a new component; extend an existing one when it already covers the need. The tree is a port of the shared library of the `saka` project; `packages/webapp` consumes it (`uilibs` dependency, StyleX plugin in its Vite config, `UIProvider` and `ThemeProvider` at the root; see `shape.md`).
+The inventory of `packages/uilibs/src`: what each component is, where it imports from, and what it is built on. Check it before writing a new component; extend an existing one when it already covers the need. `packages/webapp` consumes it (`uilibs` dependency, StyleX plugin in its Vite config, `UIProvider` and `ThemeProvider` at the root; see `frontend.md`).
 
 ## How to use and extend
 
@@ -11,7 +11,7 @@ The inventory of `packages/uilibs/src`: what each component is, where it imports
 - **Styling.** StyleX only. Colors, spacing, type, radius, motion, and z-index come from `src/styles/` (`colors.stylex.ts`, `tokens.stylex.ts`, `popup.stylex.ts`, `utils.stylex.ts`, `themes.ts`), never from literals or non-StyleX imports. A component accepts `style` (StyleX styles) and merges it last in `stylex.props(...)`; it never takes `className` or a raw `style` object. Authoring rules: `stylex-authoring.md`; build setup: `stylex-installation.md`.
 - **Controls.** Every form control takes `size` (`sm` 32, `md` 36 default, `lg` 40; `xs` 28 on Button, Toggle, and Tabs) so a row of mixed controls shares one height; `size` sits on the part that is the box (`Input`, `SelectTrigger`, `ComboboxInput`/`ComboboxTrigger`/`ComboboxChips`, `AutocompleteInput`, `Textarea`) or on the root that holds the parts (`NumberField`, `OTPField`, `InputGroup`, `InputPassword`, `InputPhone`, `TabsList`, `Menubar`). A text control fills its container. Textarea, FileUpload, and Slider are Field controls like the rest. Built-in strings are one `labels` object per component with English defaults (never `text`, `label`, or `title` props); wrappers take `ref` as a prop. The recipes are in `stylex-authoring.md` ("Controls").
 - **Primitives.** Base UI (`@base-ui/react`) for behaviour and accessibility; a component's header comment links the Base UI page and shows its anatomy. TanStack Table v9 and `@tanstack/react-virtual` (data grid), `@tanstack/charts` (charts), `react-day-picker` (calendar), `react-phone-number-input` (phone input), `react-resizable-panels` (resizable), `@dnd-kit/*` (kanban, sortable).
-- **Stories.** Every component has `*.stories.tsx` beside it; `just storybook` serves them. Sample data follows `rules.md` ("Sample data").
+- **Stories.** Every component has `*.stories.tsx` beside it; `just storybook` serves them. Sample data follows `rules.md` ("Sample data"); the library's contracts are `frontend.md` ("UI library").
 - **Theme.** `uilibs/theme` (`ThemeProvider`, `useTheme`, `ThemeSwitcher` (a ghost `Button`; `labels`: `toDark`, `toSystem`, `toLight`), `ThemeScript` from `uilibs/theme/theme-script` to set the theme before first paint); `data-theme` on the root carries `light`/`dark`. `UIProvider` (`base/provider`) sets CSP nonce and text direction for Base UI and goes at the app root.
 
 ---
