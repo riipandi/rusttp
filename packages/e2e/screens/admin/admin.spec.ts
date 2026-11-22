@@ -141,6 +141,23 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(toggle).toBeFocused()
   })
 
+  test('the rail shows the logo after a click, and the expand icon only on hover', async ({
+    admin
+  }) => {
+    await admin.openReady()
+    await admin.collapseButton().click()
+    await expect(admin.expandButton()).toBeVisible()
+    const [logo, icon] = await admin.expandButton().locator('span span').all()
+
+    // The click leaves focus on the button, but a pointer focus must not hold the icon.
+    await admin.page.mouse.move(700, 400)
+    await expect(logo!).toHaveCSS('opacity', '1')
+    await expect(icon!).toHaveCSS('opacity', '0')
+
+    await admin.expandButton().hover()
+    await expect(icon!).toHaveCSS('opacity', '1')
+  })
+
   test('Mod+B expands and collapses the sidebar', async ({ admin }) => {
     await admin.openReady()
     await expect(admin.collapseButton()).toBeVisible()

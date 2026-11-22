@@ -83,7 +83,7 @@ export const styles = stylex.create({
     opacity: {
       default: 1,
       [stylex.when.ancestor(':hover')]: 0,
-      [stylex.when.ancestor(':focus-within')]: 0
+      [stylex.when.ancestor(':has(:focus-visible)')]: 0
     }
   },
   swapIcon: {
@@ -92,7 +92,7 @@ export const styles = stylex.create({
     opacity: {
       default: 0,
       [stylex.when.ancestor(':hover')]: 1,
-      [stylex.when.ancestor(':focus-within')]: 1
+      [stylex.when.ancestor(':has(:focus-visible)')]: 1
     }
   },
   // The search-like command bar trigger, between the header and the navigation.
