@@ -17,7 +17,6 @@ import { KanbanColumn, KanbanColumnContent, KanbanColumnHandle } from './'
 
 const meta = {
   title: 'Extra Components/Kanban',
-  parameters: { layout: 'padded' },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Kanban>
 

@@ -11,7 +11,6 @@ import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.
 const meta = {
   title: 'Visualizations/Boxplot',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -51,8 +50,7 @@ const boxScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Charms: Story = {
-  name: 'Charms exam scores',
+export const Playground: Story = {
   render: () => {
     const definition = defineChart({
       marks: [

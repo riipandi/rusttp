@@ -57,8 +57,8 @@ phases:
       note: 8 folders regrouped, 49 -> 45 story ids, gate 920 -> 912 tests, no overflow at 390 px in 45 stories; new axis stories Separator and ScrollArea Orientations, AspectRatio Ratios, Pagination Sizes, Resizable Variants and Orientations, Calendar Modes and Layouts
     - id: 13
       title: Batch F - scenario components, data grid, charts, icons
-      status: pending
-      note: —
+      status: committed
+      note: 75 -> 74 story ids, gate 912 -> 910 tests, no overflow at 390 px in 77 stories; kanban, sortable, and the seven data-grid files keep their story counts; new axis stories BarChart Orientations and Layouts, AreaChart Layouts, LineChart Variants, Sortable Layouts; Axis gains wide
     - id: 14
       title: Docs sync and agent docs sync
       status: pending

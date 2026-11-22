@@ -10,7 +10,6 @@ import { canvasDecorator, seriesColors } from '../chart.samples'
 const meta = {
   title: 'Visualizations/ProgressCircle',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -96,8 +95,7 @@ function ProgressCircle({ fraction, label }: ProgressStoryProps) {
   )
 }
 
-export const Default: Story = {
-  name: 'Default',
+export const Playground: Story = {
   render: () => <ProgressCircle fraction={0.68} label='Shelves restocked' />,
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Shelves restocked' })

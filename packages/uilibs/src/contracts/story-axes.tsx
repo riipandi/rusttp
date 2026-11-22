@@ -49,6 +49,8 @@ interface AxisBase<Row extends string> {
 
 interface AxisOne<Row extends string> extends AxisBase<Row> {
   columns?: undefined
+  /** Lets the cell use the full canvas width, for charts and other content that fills it. */
+  wide?: boolean
   /** The control under test: it must be the cell's first element (a `play` measures `[data-<axis>]`'s first child). */
   children: (row: Row) => React.ReactNode
 }
@@ -73,7 +75,12 @@ export function Axis<Row extends string, Column extends string = never>(
 ) {
   const { axis, rows } = props
   return (
-    <div {...stylex.props(styles.root, props.columns === undefined && styles.rootNarrow)}>
+    <div
+      {...stylex.props(
+        styles.root,
+        props.columns === undefined && !props.wide && styles.rootNarrow
+      )}
+    >
       {rows.map((row) => (
         <div key={row} {...stylex.props(styles.row)}>
           <span aria-hidden='true' {...stylex.props(styles.label)}>

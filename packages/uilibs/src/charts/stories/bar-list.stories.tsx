@@ -8,7 +8,6 @@ import { canvasDecorator, hpBooks } from '../chart.samples'
 const meta = {
   title: 'Visualizations/BarList',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -97,8 +96,7 @@ function BarList({ rows, highlightFirst = true }: BarListProps) {
   )
 }
 
-export const Default: Story = {
-  name: 'Most borrowed books',
+export const Playground: Story = {
   render: () => <BarList rows={hpBooks.toSorted((a, b) => b.pages - a.pages)} />,
   play: async ({ canvas }) => {
     const list = canvas.getByRole('list', { name: 'Most borrowed Harry Potter books' })

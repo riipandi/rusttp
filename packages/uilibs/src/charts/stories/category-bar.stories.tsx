@@ -1,32 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
-import { houses, houseConfig } from '../chart.samples'
+import { canvasDecorator, houses, houseConfig } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/CategoryBar',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['659px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  decorators: [canvasDecorator]
 } satisfies Meta
 
 type Story = StoryObj<typeof meta>
@@ -207,8 +191,7 @@ export function CategoryBar() {
   )
 }
 
-export const HouseDistribution: Story = {
-  name: 'House points share',
+export const Playground: Story = {
   render: () => <CategoryBar />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: /House points distribution/ })).toBeVisible()

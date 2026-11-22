@@ -10,7 +10,6 @@ import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.
 const meta = {
   title: 'Visualizations/CumulativeHistogram',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -43,8 +42,7 @@ const scoreScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const OwlPotions: Story = {
-  name: 'OWL Potions scores',
+export const Playground: Story = {
   render: () => {
     const definition = defineChart({
       marks: [

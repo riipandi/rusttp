@@ -7,6 +7,8 @@ import { expect, userEvent, waitFor } from 'storybook/test'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/collapsible'
 import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { stroke, unit, duration, easing, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
@@ -17,7 +19,6 @@ import type { SortableCommitMeta } from './'
 
 const meta = {
   title: 'Extra Components/Sortable',
-  parameters: { layout: 'padded' },
   tags: [] // ['autodocs']
 } satisfies Meta
 
@@ -347,39 +348,40 @@ function FileTypeIcon({ type }: { type: FileEntry['type'] }) {
   )
 }
 
-export const BasicList: Story = {
-  name: 'List of items',
-  render: () => {
-    const [items, setItems] = useState(defaultFiles)
+function ListOfItems() {
+  const [items, setItems] = useState(defaultFiles)
 
-    return (
-      <div {...stylex.props(styles.page)}>
-        <Sortable
-          value={items}
-          onValueChange={setItems}
-          getItemValue={(item) => item.id}
-          style={styles.list}
-        >
-          {items.map((item) => (
-            <SortableItem key={item.id} value={item.id}>
-              <div {...stylex.props(styles.row)}>
-                <Handle />
-                <FileTypeIcon type={item.type} />
-                <div {...stylex.props(styles.rowBody)}>
-                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
-                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
-                </div>
-                <div {...stylex.props(styles.metaRow)}>
-                  <Badge variant='faded'>{item.type}</Badge>
-                  <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
-                </div>
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        getItemValue={(item) => item.id}
+        style={styles.list}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div {...stylex.props(styles.row)}>
+              <Handle />
+              <FileTypeIcon type={item.type} />
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
               </div>
-            </SortableItem>
-          ))}
-        </Sortable>
-      </div>
-    )
-  }
+              <div {...stylex.props(styles.metaRow)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+      </Sortable>
+    </div>
+  )
+}
+
+export const Playground: Story = {
+  render: () => <ListOfItems />
 }
 
 // -- c-sortable-2: grid layout ----------------------------------------------
@@ -452,47 +454,66 @@ const defaultGridItems: GridEntry[] = [
   }
 ]
 
-export const GridLayout: Story = {
-  name: 'Grid layout',
-  render: () => {
-    const [items, setItems] = useState(defaultGridItems)
+function GridOfItems() {
+  const [items, setItems] = useState(defaultGridItems)
 
-    return (
-      <div {...stylex.props(styles.page)}>
-        <Sortable
-          value={items}
-          onValueChange={setItems}
-          getItemValue={(item) => item.id}
-          strategy='grid'
-          style={styles.grid}
-        >
-          {items.map((item) => (
-            <SortableItem key={item.id} value={item.id}>
-              <div
-                {...stylex.props(
-                  styles.row,
-                  styles.gridCell,
-                  item.type === 'featured' && styles.rowMuted,
-                  item.type === 'featured' && styles.featuredCell
-                )}
-              >
-                <Handle style={styles.gridHandle} />
-                <div {...stylex.props(styles.rowBody)}>
-                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
-                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
-                </div>
-                <div {...stylex.props(styles.gridFooter)}>
-                  <Badge variant='faded'>{item.type}</Badge>
-                  {item.type !== 'featured' && (
-                    <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
-                  )}
-                </div>
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        getItemValue={(item) => item.id}
+        strategy='grid'
+        style={styles.grid}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div
+              {...stylex.props(
+                styles.row,
+                styles.gridCell,
+                item.type === 'featured' && styles.rowMuted,
+                item.type === 'featured' && styles.featuredCell
+              )}
+            >
+              <Handle style={styles.gridHandle} />
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
               </div>
-            </SortableItem>
-          ))}
-        </Sortable>
-      </div>
-    )
+              <div {...stylex.props(styles.gridFooter)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                {item.type !== 'featured' && (
+                  <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+                )}
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+      </Sortable>
+    </div>
+  )
+}
+
+/** The `strategy` of the list: items stacked in a column, or laid out on a grid. */
+export const Layouts: Story = {
+  render: () => (
+    <Axis axis='layout' rows={['vertical', 'grid'] as const} wide>
+      {(layout) => (layout === 'vertical' ? <ListOfItems /> : <GridOfItems />)}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = (layout: string) =>
+      Array.from(
+        cellOf(canvasElement, 'layout', layout).querySelectorAll('[data-slot="sortable-item"]')
+      ).map((el) => el.getBoundingClientRect())
+    const [v1, v2] = items('vertical')
+    const [g1, g2] = items('grid')
+    if (!v1 || !v2 || !g1 || !g2) throw new Error('Sortable items not found')
+    // A list stacks its items; a grid puts neighbours on one row.
+    await expect(v2.top).toBeGreaterThan(v1.top)
+    await expect(g2.top).toBe(g1.top)
+    await expect(g2.left).toBeGreaterThan(g1.left)
   }
 }
 

@@ -11,7 +11,6 @@ import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
 const meta = {
   title: 'Visualizations/Slopegraph',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -42,8 +41,7 @@ const slopeScales = {
   y: { scale: scaleLinear, nice: true, grid: false }
 } as const
 
-export const HouseCup: Story = {
-  name: 'House cup',
+export const Playground: Story = {
   render: () => {
     const definition = defineChart({
       marks: [

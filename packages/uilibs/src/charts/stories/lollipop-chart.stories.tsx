@@ -11,7 +11,6 @@ import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
 const meta = {
   title: 'Visualizations/LollipopChart',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -45,8 +44,7 @@ const masteryScales = {
   y: { scale: () => scaleBand().padding(0.35) }
 } as const
 
-export const Ranked: Story = {
-  name: 'Ranked mastery',
+export const Playground: Story = {
   render: () => {
     const definition = defineChart({
       marks: [

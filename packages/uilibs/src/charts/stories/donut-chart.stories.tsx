@@ -13,7 +13,6 @@ import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from '.
 const meta = {
   title: 'Visualizations/DonutChart',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -77,8 +76,7 @@ const styles = stylex.create({
   }
 })
 
-export const HousePoints: Story = {
-  name: 'House points',
+export const Playground: Story = {
   render: () => (
     <ChartContainer config={houseConfig}>
       <Chart definition={donutDefinition} ariaLabel='Hogwarts house points' height={220} />

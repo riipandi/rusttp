@@ -11,7 +11,6 @@ import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
 const meta = {
   title: 'Visualizations/Dumbbell',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -48,8 +47,7 @@ const dumbbellScales = {
   y: { scale: () => scaleBand().padding(0.4) }
 } as const
 
-export const OwlVsNewt: Story = {
-  name: 'OWL vs NEWT',
+export const Playground: Story = {
   render: () => {
     const definition = defineChart({
       marks: [

@@ -82,8 +82,7 @@ const styles = stylex.create({
   }
 })
 
-export const KpiRow: Story = {
-  name: 'KPI sparkline row',
+export const Playground: Story = {
   render: () => {
     const isMobile = useIsMobile()
     const sparkHeight = isMobile ? 36 : 48

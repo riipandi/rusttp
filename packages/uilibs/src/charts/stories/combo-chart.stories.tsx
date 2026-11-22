@@ -20,7 +20,6 @@ import {
 const meta = {
   title: 'Visualizations/ComboChart',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -29,8 +28,7 @@ type Story = StoryObj<typeof meta>
 
 export default meta
 
-export const BarsWithTrendLine: Story = {
-  name: 'Bars with trend line',
+export const Playground: Story = {
   parameters: {
     docs: {
       description: {

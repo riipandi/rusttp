@@ -1,32 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { duration, easing, fontSize, radius, unit } from '../../styles/tokens.stylex'
-import { shelfStatuses, statusColors, statusLabels } from '../chart.samples'
+import { canvasDecorator, shelfStatuses, statusColors, statusLabels } from '../chart.samples'
 import type { AvailabilityStatus } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/Tracker',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['659px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  decorators: [canvasDecorator]
 } satisfies Meta
 
 type Story = StoryObj<typeof meta>
@@ -128,8 +112,7 @@ function Tracker() {
   )
 }
 
-export const ShelfAvailability: Story = {
-  name: 'Shelf availability',
+export const Playground: Story = {
   render: () => <Tracker />,
   play: async ({ canvas }) => {
     await expect(
