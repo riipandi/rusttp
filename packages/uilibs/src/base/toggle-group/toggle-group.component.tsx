@@ -11,7 +11,7 @@ import { ToggleGroup as BaseToggleGroup } from '@base-ui/react/toggle-group'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Toggle } from '../toggle'
-import type { ToggleSize, ToggleVariant, ToggleProps } from '../toggle'
+import type { ToggleColor, ToggleSize, ToggleVariant, ToggleProps } from '../toggle'
 import { toggleGroupStyles as s } from './toggle-group.stylex'
 import { toggleGroupOrientations as orientations } from './toggle-group.stylex'
 import { toggleGroupJoinedItems as joinedItems } from './toggle-group.stylex'
@@ -19,13 +19,15 @@ import { toggleGroupJoinedOutline as joinedOutline } from './toggle-group.stylex
 
 interface ToggleGroupContextValue {
   variant: ToggleVariant
+  selectedColor: ToggleColor
   size: ToggleSize
   joined: boolean
   orientation: 'horizontal' | 'vertical'
 }
 
 const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
-  variant: 'default',
+  variant: 'ghost',
+  selectedColor: 'neutral',
   size: 'md',
   joined: false,
   orientation: 'horizontal'
@@ -36,6 +38,8 @@ export interface ToggleGroupProps extends Omit<
   'className' | 'style'
 > {
   variant?: ToggleVariant
+  /** The color of an item's pressed state; `neutral` by default. */
+  selectedColor?: ToggleColor
   size?: ToggleSize
   /** Item gap. `joined` fuses the items into one segmented control. */
   spacing?: 'gap' | 'joined'
@@ -44,7 +48,8 @@ export interface ToggleGroupProps extends Omit<
 }
 
 export function ToggleGroup({
-  variant = 'default',
+  variant = 'ghost',
+  selectedColor = 'neutral',
   size = 'md',
   spacing = 'gap',
   orientation = 'horizontal',
@@ -59,7 +64,7 @@ export function ToggleGroup({
       {...props}
       {...stylex.props(s.root, orientations[orientation], !joined && s.gap, style)}
     >
-      <ToggleGroupContext.Provider value={{ variant, size, joined, orientation }}>
+      <ToggleGroupContext.Provider value={{ variant, selectedColor, size, joined, orientation }}>
         {children}
       </ToggleGroupContext.Provider>
     </BaseToggleGroup>
@@ -67,10 +72,11 @@ export function ToggleGroup({
 }
 
 export function ToggleGroupItem({ style, ...props }: ToggleProps) {
-  const { variant, size, joined, orientation } = React.useContext(ToggleGroupContext)
+  const { variant, selectedColor, size, joined, orientation } = React.useContext(ToggleGroupContext)
   return (
     <Toggle
       variant={props.variant ?? variant}
+      selectedColor={props.selectedColor ?? selectedColor}
       size={props.size ?? size}
       {...props}
       style={[

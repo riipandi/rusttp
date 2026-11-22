@@ -60,10 +60,10 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Separator** | `uilibs/base/separator` | Visual divider. |
 | **Slider** | `uilibs/base/slider` | Value or range from a track; one thumb unless the value is an array, `thumbLabels` (or `aria-label` for one thumb) names the thumbs. |
 | **Switch** | `uilibs/base/switch` | On/off toggle; `size` `sm`, `md` default, `lg`. |
-| **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`. |
+| **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`: `pills` (default, a tinted list with a raised active pill), `bordered` (an underline on a border rail), `borderless` (the underline alone, for a parent that draws its own border). |
 | **Toast** | `uilibs/base/toast` | Stacked notifications and anchored toasts, positioning configurable; `toast(title, { color })` (`success` and `error` imply `positive` and `critical`), `labels` on `Toaster` (`close`, `notification`). |
-| **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40. |
-| **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size` as Toggle. |
+| **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40; `variant` `ghost` (default), `outline`, `solid` (a neutral fill at rest); `selectedColor` `neutral` (default), `primary`, `critical` colors the pressed state. |
+| **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size`, `variant`, and `selectedColor` as Toggle, passed to its items. |
 | **Toolbar** | `uilibs/base/toolbar` | Container for toolbar items. |
 | **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users. |
 

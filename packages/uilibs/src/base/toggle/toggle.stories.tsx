@@ -16,7 +16,7 @@ const meta = {
   component: Toggle,
   parameters: { layout: 'centered' },
   argTypes: {
-    variant: { control: 'radio', options: ['default', 'outline'] },
+    variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
     size: { control: 'radio', options: ['sm', 'md', 'lg'] },
     disabled: { control: 'boolean' }
   },
@@ -69,13 +69,54 @@ export const Playground: Story = {
   }
 }
 
-export const Outline: Story = {
-  args: { variant: 'outline' },
-  render: (args) => (
-    <Toggle {...args} aria-label='Toggle hex'>
-      Hex
-    </Toggle>
-  )
+const variantNames = ['ghost', 'outline', 'solid'] as const
+const colorNames = ['neutral', 'primary', 'critical'] as const
+
+/** The three fills at rest: transparent, with an edge, and on a neutral fill. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={variantNames}>
+      {(variant) => (
+        <Toggle variant={variant} aria-label={`Toggle ${variant}`}>
+          {variant}
+        </Toggle>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const style = (variant: string) =>
+      getComputedStyle(canvas.getByRole('button', { name: `Toggle ${variant}` }))
+    await expect(style('outline').borderTopWidth).toBe('1px')
+    await expect(style('ghost').borderTopWidth).toBe('0px')
+    await expect(style('solid').backgroundColor).not.toBe(style('ghost').backgroundColor)
+  }
+}
+
+/** The pressed state in every color of every fill; the a11y gate checks the contrast of each. */
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
+      {(variant, color) => (
+        <Toggle
+          variant={variant}
+          selectedColor={color}
+          defaultPressed
+          aria-label={`Pressed ${variant} ${color}`}
+        >
+          {color}
+        </Toggle>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const fill = (variant: string, color: string) =>
+      getComputedStyle(canvas.getByRole('button', { name: `Pressed ${variant} ${color}` }))
+        .backgroundColor
+    // The pressed state takes the color: three colors, three fills, in every variant.
+    for (const variant of variantNames) {
+      await expect(new Set(colorNames.map((color) => fill(variant, color))).size).toBe(3)
+    }
+  }
 }
 
 export const WithText: Story = {

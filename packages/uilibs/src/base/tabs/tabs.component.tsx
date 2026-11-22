@@ -17,18 +17,19 @@ import { Tabs as BaseTabs } from '@base-ui/react/tabs'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type DenseControlSize, controlPress } from '../../styles/control.stylex'
-import { tabsLineSizes, tabsSizes, tabsStyles as s } from './tabs.stylex'
+import { tabsSizes, tabsStyles as s, tabsUnderlineSizes } from './tabs.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
-export type TabsVariant = 'default' | 'line'
+/** `pills` a tinted list with a raised active pill; `bordered` an underline on a border rail; `borderless` the underline alone. */
+export type TabsVariant = 'pills' | 'bordered' | 'borderless'
 
 export type TabsSize = DenseControlSize
 
 const TabsListContext = React.createContext<{ variant: TabsVariant; size: TabsSize }>({
-  variant: 'default',
+  variant: 'pills',
   size: 'md'
 })
 
@@ -48,7 +49,7 @@ export function Tabs({
 
 export function TabsList({
   style,
-  variant = 'default',
+  variant = 'pills',
   size = 'md',
   ...props
 }: Omit<React.ComponentProps<typeof BaseTabs.List>, 'className' | 'style'> &
@@ -62,7 +63,12 @@ export function TabsList({
     <TabsListContext.Provider value={context}>
       <BaseTabs.List
         {...props}
-        {...stylex.props(s.list, variant === 'line' && s.listLine, style)}
+        {...stylex.props(
+          s.list,
+          variant === 'bordered' && s.listBordered,
+          variant === 'borderless' && s.listBorderless,
+          style
+        )}
       />
     </TabsListContext.Provider>
   )
@@ -79,8 +85,9 @@ export function TabsTrigger({
       {...stylex.props(
         controlPress.root,
         s.trigger,
-        variant === 'line' && s.triggerLine,
-        variant === 'line' ? tabsLineSizes[size] : tabsSizes[size],
+        variant !== 'pills' && s.triggerUnderline,
+        variant === 'borderless' && s.triggerBorderless,
+        variant === 'pills' ? tabsSizes[size] : tabsUnderlineSizes[size],
         style
       )}
     />

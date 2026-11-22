@@ -16,7 +16,7 @@ const meta = {
   component: ToggleGroup,
   parameters: { layout: 'centered' },
   argTypes: {
-    variant: { control: 'radio', options: ['default', 'outline'] },
+    variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
     size: { control: 'radio', options: ['sm', 'md', 'lg'] },
     spacing: { control: 'radio', options: ['gap', 'joined'] },
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
@@ -207,4 +207,29 @@ export const ControlSizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
+}
+
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={['ghost', 'outline', 'solid'] as const}>
+      {(variant) => (
+        <ToggleGroup variant={variant} selectedColor='primary' defaultValue={['left']}>
+          <ToggleGroupItem value='left' aria-label={`Left ${variant}`}>
+            <AlignLeft size={16} />
+          </ToggleGroupItem>
+          <ToggleGroupItem value='center' aria-label={`Center ${variant}`}>
+            <AlignCenter size={16} />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    for (const variant of ['ghost', 'outline', 'solid']) {
+      const pressed = getComputedStyle(canvas.getByRole('button', { name: `Left ${variant}` }))
+      const rest = getComputedStyle(canvas.getByRole('button', { name: `Center ${variant}` }))
+      // `selectedColor` reaches the items through the group: the pressed one is colored.
+      await expect(pressed.backgroundColor).not.toBe(rest.backgroundColor)
+    }
+  }
 }

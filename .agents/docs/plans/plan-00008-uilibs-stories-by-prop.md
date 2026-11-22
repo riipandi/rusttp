@@ -21,12 +21,12 @@ phases:
       note: 7ff3985; defaults identical to the phase 2 build (0 diffs of 76); gate 900 green in both themes
     - id: 4
       title: Text entry variant, Checkbox Radio Switch size
-      status: in_progress
-      note: 86 computed-style records identical to HEAD (rest and settled focus); gate 924 green in both themes; commit hash lands with phase 5
+      status: committed
+      note: 8f3382b; 86 computed-style records identical to HEAD (rest and settled focus); gate 924 green in both themes
     - id: 5
       title: Tabs, Toggle, ToggleGroup variants
-      status: pending
-      note: —
+      status: in_progress
+      note: 88 computed-style records identical under the old-to-new name map; commit hash lands with phase 6
     - id: 6
       title: Avatar, Progress, Meter, Spinner, Tooltip, Separator, Breadcrumb, Card, Popover, Item, Icon props
       status: pending

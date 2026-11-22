@@ -72,21 +72,32 @@ export const Playground: Story = {
   }
 }
 
-export const Line: Story = {
-  name: 'Line variant',
-  args: { defaultValue: 'overview' },
-  render: (args) => (
-    <Tabs {...args}>
-      <TabsList variant='line'>
-        <TabsTrigger value='overview'>Daily Prophet</TabsTrigger>
-        <TabsTrigger value='analytics'>The Quibbler</TabsTrigger>
-        <TabsTrigger value='reports'>Ministry Briefings</TabsTrigger>
-      </TabsList>
-      <TabsContent value='overview'>The latest from the Daily Prophet.</TabsContent>
-      <TabsContent value='analytics'>Theories from Luna Lovegood.</TabsContent>
-      <TabsContent value='reports'>Notices from the Ministry of Magic.</TabsContent>
-    </Tabs>
-  )
+/** The three lists: a tinted pill list, an underline on a border rail, and the underline alone. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={['pills', 'bordered', 'borderless'] as const}>
+      {(variant) => (
+        <Tabs defaultValue='overview'>
+          <TabsList variant={variant} aria-label={`Newspapers ${variant}`}>
+            <TabsTrigger value='overview'>Daily Prophet</TabsTrigger>
+            <TabsTrigger value='analytics'>The Quibbler</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const list = (variant: string) => {
+      const element = canvasElement.querySelector(`[data-variant="${variant}"] [role="tablist"]`)
+      if (!element) throw new Error(`No tab list for ${variant}`)
+      return getComputedStyle(element)
+    }
+    // Only `pills` has a tinted list; only `bordered` has the rail under it.
+    await expect(list('pills').backgroundColor).not.toBe(list('bordered').backgroundColor)
+    await expect(list('bordered').borderBottomWidth).toBe('1px')
+    await expect(list('borderless').borderBottomWidth).toBe('0px')
+    await expect(list('pills').borderBottomWidth).toBe('0px')
+  }
 }
 
 export const Disabled: Story = {
@@ -171,12 +182,12 @@ export const ControlSizes: Story = {
   }
 }
 
-export const LineControlSizes: Story = {
+export const BorderedControlSizes: Story = {
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Tabs defaultValue='one'>
-          <TabsList size={size} variant='line'>
+          <TabsList size={size} variant='bordered'>
             <TabsTrigger value='one'>Charms</TabsTrigger>
             <TabsTrigger value='two'>Potions</TabsTrigger>
           </TabsList>
@@ -185,6 +196,25 @@ export const LineControlSizes: Story = {
     </Axis>
   ),
   // The active tab's bar overlaps the list's bottom border, so the list is as tall as the tab.
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement, denseControlHeights)
+  }
+}
+
+export const BorderlessControlSizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={denseControlSizeNames}>
+      {(size) => (
+        <Tabs defaultValue='one'>
+          <TabsList size={size} variant='borderless'>
+            <TabsTrigger value='one'>Charms</TabsTrigger>
+            <TabsTrigger value='two'>Potions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+    </Axis>
+  ),
+  // With no rail the bar sits at the list's bottom edge: the list is as tall as the tab.
   play: async ({ canvasElement }) => {
     await expectControlHeights(canvasElement, denseControlHeights)
   }

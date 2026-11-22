@@ -25,11 +25,19 @@ export const tabsStyles = stylex.create({
     padding: unit.x1,
     width: 'fit-content'
   },
-  listLine: {
+  // `bordered`: the underline list sits on a border rail.
+  listBordered: {
     backgroundColor: 'transparent',
     borderBottomColor: colors.borderNeutralFaded,
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring1,
+    borderRadius: radius.none,
+    gap: 0,
+    padding: 0
+  },
+  // `borderless`: the same list with no rail, for a parent that draws its own border.
+  listBorderless: {
+    backgroundColor: 'transparent',
     borderRadius: radius.none,
     gap: 0,
     padding: 0
@@ -62,7 +70,7 @@ export const tabsStyles = stylex.create({
     whiteSpace: 'nowrap'
   },
   // Underline style: the active tab draws a bar over the list's bottom border.
-  triggerLine: {
+  triggerUnderline: {
     backgroundColor: 'transparent',
     borderBottomColor: {
       default: 'transparent',
@@ -74,6 +82,8 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     marginBottom: `calc(-1 * ${stroke.ring1})`
   },
+  // With no rail to overlap, the bar takes no negative margin.
+  triggerBorderless: { marginBottom: 0 },
   content: {
     color: colors.foregroundNeutral,
     fontSize: fontSize.body2,
@@ -84,7 +94,7 @@ export const tabsStyles = stylex.create({
 
 // The list is as tall as a control of its size (`xs` 28, `sm` 32, `md` 36, `lg` 40). A
 // pill list has 4px of padding around its tabs, so its tab is 8px shorter; an underline
-// list has none, so its tab is the full height.
+// list (`bordered`, `borderless`) has none, so its tab is the full height.
 export const tabsSizes = stylex.create({
   xs: { fontSize: fontSize.caption1, height: unit.x5 },
   sm: { fontSize: fontSize.body2, height: unit.x6 },
@@ -92,7 +102,7 @@ export const tabsSizes = stylex.create({
   lg: { fontSize: fontSize.body1, height: unit.x8 }
 })
 
-export const tabsLineSizes = stylex.create({
+export const tabsUnderlineSizes = stylex.create({
   xs: { fontSize: fontSize.caption1, height: unit.x7 },
   sm: { fontSize: fontSize.body2, height: unit.x8 },
   md: { fontSize: fontSize.body2, height: unit.x9 },

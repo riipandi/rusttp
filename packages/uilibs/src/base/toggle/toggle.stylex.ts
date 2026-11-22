@@ -4,20 +4,13 @@ import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
+const hover = ':hover:not(:disabled)'
+
 export const toggleStyles = stylex.create({
   root: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover:not(:disabled)': colors.backgroundNeutral,
-      '[data-pressed]': colors.backgroundNeutral
-    },
     borderRadius: radius.large,
     borderStyle: 'none',
-    color: {
-      default: colors.foregroundNeutral,
-      ':hover:not(:disabled)': colors.foregroundNeutral
-    },
     display: 'inline-flex',
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
@@ -30,8 +23,65 @@ export const toggleStyles = stylex.create({
   }
 })
 
+// The fill and text color of a `ghost` or `outline` toggle, by the color of its pressed state.
+export const toggleQuiet = stylex.create({
+  neutral: {
+    backgroundColor: {
+      default: 'transparent',
+      [hover]: colors.backgroundNeutral,
+      '[data-pressed]': colors.backgroundNeutral
+    },
+    color: { default: colors.foregroundNeutral, [hover]: colors.foregroundNeutral }
+  },
+  primary: {
+    backgroundColor: {
+      default: 'transparent',
+      [hover]: colors.backgroundNeutral,
+      '[data-pressed]': colors.backgroundPrimaryFaded
+    },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.foregroundPrimary }
+  },
+  critical: {
+    backgroundColor: {
+      default: 'transparent',
+      [hover]: colors.backgroundNeutral,
+      '[data-pressed]': colors.backgroundCriticalFaded
+    },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.foregroundCritical }
+  }
+})
+
+// A `solid` toggle rests on a neutral fill and presses to the solid color.
+export const toggleSolid = stylex.create({
+  neutral: {
+    backgroundColor: {
+      default: colors.backgroundNeutral,
+      [hover]: colors.backgroundNeutralHighlighted,
+      '[data-pressed]': colors.foregroundNeutral
+    },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.backgroundPage }
+  },
+  primary: {
+    backgroundColor: {
+      default: colors.backgroundNeutral,
+      [hover]: colors.backgroundNeutralHighlighted,
+      '[data-pressed]': colors.backgroundPrimary
+    },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.onBrand }
+  },
+  critical: {
+    backgroundColor: {
+      default: colors.backgroundNeutral,
+      [hover]: colors.backgroundNeutralHighlighted,
+      '[data-pressed]': colors.backgroundCritical
+    },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.onBackgroundCritical }
+  }
+})
+
 export const toggleVariants = stylex.create({
-  default: {},
+  ghost: {},
+  solid: {},
   outline: {
     borderColor: colors.borderNeutralFaded,
     borderStyle: 'solid',
