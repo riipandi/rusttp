@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-22T07:05:00+07:00
+updated: 2026-11-22T14:56:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -32,7 +32,11 @@ There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-None live. `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
+| File | Status | Subject |
+| --- | --- | --- |
+| `plan-00007-agent-docs-restructure.md` | awaiting-approval | Split rules into rules/backend/frontend, slim root and scoped `AGENTS.md`, handover titles by summary, roadmap for parked work, refined skills, new `ui-audit` skill. |
+
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
