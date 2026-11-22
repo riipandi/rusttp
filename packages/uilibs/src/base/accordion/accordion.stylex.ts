@@ -40,10 +40,6 @@ export const accordionStyles = stylex.create({
     gap: unit.x4,
     justifyContent: 'space-between',
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     // Read by the chevron below — StyleX has no child selectors, so the
     // trigger's [data-panel-open] state travels via a custom property.
     // No `default` here: StyleX emits it unlayered, beating the layered

@@ -27,17 +27,21 @@ export const descriptionListStyles = stylex.create({
   root: {
     display: 'grid',
     fontFamily: fontFamily.body,
-    fontSize: fontSize.body1,
-    gridTemplateColumns: '1fr',
-    lineHeight: fontLineHeight.body1,
-    '@media (min-width: 660px)': {
-      fontSize: fontSize.body2,
-      gridTemplateColumns: `min(50%, ${container.medium}) auto`,
-      lineHeight: fontLineHeight.body2
-    }
+    fontSize: { default: fontSize.body1, '@media (min-width: 660px)': fontSize.body2 },
+    gridTemplateColumns: {
+      default: '1fr',
+      '@media (min-width: 660px)': `min(50%, ${container.medium}) auto`
+    },
+    lineHeight: { default: fontLineHeight.body1, '@media (min-width: 660px)': fontLineHeight.body2 }
   },
   term: {
-    borderBottomColor: 'transparent',
+    borderBottomColor: {
+      default: 'transparent',
+      ':last-of-type': {
+        default: 'transparent',
+        '@media (min-width: 660px)': colors.borderNeutralFaded
+      }
+    },
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring1,
     borderTopColor: {
@@ -52,12 +56,7 @@ export const descriptionListStyles = stylex.create({
       default: 0,
       '@media (min-width: 660px)': unit.x3
     },
-    paddingBlockStart: unit.x3,
-    ':last-of-type': {
-      '@media (min-width: 660px)': {
-        borderBottomColor: colors.borderNeutralFaded
-      }
-    }
+    paddingBlockStart: unit.x3
   },
   details: {
     borderBottomColor: {
@@ -68,7 +67,10 @@ export const descriptionListStyles = stylex.create({
     borderBottomWidth: stroke.ring1,
     borderTopColor: {
       default: 'transparent',
-      '@media (min-width: 660px)': colors.borderNeutralFaded
+      '@media (min-width: 660px)': {
+        default: colors.borderNeutralFaded,
+        ':nth-child(2)': 'transparent'
+      }
     },
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,
@@ -77,11 +79,6 @@ export const descriptionListStyles = stylex.create({
     paddingBlockStart: {
       default: unit.x1,
       '@media (min-width: 660px)': unit.x3
-    },
-    ':nth-child(2)': {
-      '@media (min-width: 660px)': {
-        borderTopColor: 'transparent'
-      }
     }
   }
 })

@@ -1,12 +1,12 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { container, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
+import { container, unit } from 'uilibs/styles/tokens.stylex'
+import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 // The page's inset, shared by the page and the small-screen top bar so the bar's menu and bell
 // glyphs line up with the content's edge. It sits closer to the sidebar than the customer pages'
 // 3rem: beside a sidebar, a wide gutter reads as a gap.
-const inset = 'clamp(1.5rem, 3vw, 2rem)'
+const inset = layoutSize.adminInset
 
 export const styles = stylex.create({
   root: {
@@ -57,13 +57,6 @@ export const styles = stylex.create({
     flexDirection: 'column',
     gap: unit.x1
   },
-  title: {
-    margin: 0,
-    fontSize: fontSize.featured2,
-    fontWeight: fontWeight.bold,
-    lineHeight: 1.15,
-    letterSpacing: '-0.02em'
-  },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
@@ -77,9 +70,12 @@ export const styles = stylex.create({
   },
   // Like the sidebar: a column the full height of the viewport with its own divider, items inset by
   // the same step as the sidebar's nav, and the first item level with the page title.
+  // The groups stack with the sidebar's own step between them.
   settingsAside: {
     boxSizing: 'border-box',
-    display: { default: 'block', [breakpoints.compact]: 'none' },
+    display: { default: 'flex', [breakpoints.compact]: 'none' },
+    flexDirection: 'column',
+    gap: unit.x5,
     flexShrink: 0,
     position: 'sticky',
     top: 0,

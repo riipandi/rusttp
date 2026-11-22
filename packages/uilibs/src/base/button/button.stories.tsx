@@ -15,7 +15,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['primary', 'secondary', 'outline', 'ghost', 'destructive']
+      options: ['primary', 'secondary', 'outline', 'ghost']
     },
     size: { control: 'radio', options: Object.keys(buttonSizes) },
     disabled: { control: 'boolean' }
@@ -86,9 +86,22 @@ export const Ghost: Story = {
   render: (args) => <Button {...args}>Moaning Myrtle</Button>
 }
 
-export const Destructive: Story = {
-  args: { variant: 'destructive' },
+export const Critical: Story = {
+  args: { tone: 'critical' },
   render: (args) => <Button {...args}>Avada Kedavra</Button>
+}
+
+export const CriticalQuiet: Story = {
+  render: () => (
+    <div {...stylex.props(styles.row)}>
+      <Button variant='outline' tone='critical'>
+        Obliviate
+      </Button>
+      <Button variant='ghost' tone='critical'>
+        Confundo
+      </Button>
+    </div>
+  )
 }
 
 export const Sizes: Story = {

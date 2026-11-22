@@ -11,7 +11,7 @@
         "typecheck": "tsrs --noEmit --fast"
     },
     "devDependencies": {
-        "@stylexjs/unplugin": "^0.19.2",
+        "@stylexjs/unplugin": "catalog:",
         "@types/node": "catalog:",
         "tsrs": "catalog:",
         "vite": "catalog:"

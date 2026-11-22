@@ -1,20 +1,21 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
+import { PageTitle } from '#/components/page-title'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/settings/general')({
   component: RouteComponent,
-  staticData: { pageTitle: 'General settings' }
+  staticData: { pageTitle: () => getMessages().page_admin_settings_general() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>General settings</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Name, branding, and basic behavior of the instance.
-        </p>
+        <PageTitle>{m.page_admin_settings_general()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.page_admin_settings_general_description()}</p>
       </div>
     </main>
   )

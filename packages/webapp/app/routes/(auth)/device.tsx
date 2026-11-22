@@ -1,30 +1,41 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
+import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Icon } from 'uilibs/extra/icon'
 import { CodeField } from '#/components/form-fields'
-import { deviceSchema } from '#/schemas/device.schema'
+import { PageTitle } from '#/components/page-title'
+import { StatusIcon } from '#/components/status-icon'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
+import { deviceSchema, deviceSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/device')({
+  // The device shows `/device?token=...`; without a token the search fails validation and the route
+  // renders `InvalidLink` instead of the form.
   component: RouteComponent,
-  staticData: { pageTitle: 'Device login' }
+  errorComponent: InvalidLink,
+  validateSearch: deviceSearchSchema,
+  staticData: { pageTitle: () => getMessages().page_auth_device() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
-  const form = useForm({ schema: deviceSchema, initialInput: { code: '' } })
+  const { token } = Route.useSearch()
+  const form = useForm({ schema: deviceSchema, initialInput: { token, code: '' } })
+  useRevalidateOnLocale(form)
   // Demo only: there is no device-authorization endpoint yet, so a valid code opens the dashboard sample.
   const submit = handleSubmit(form, () => void navigate({ to: '/dashboard' }))
 
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Sign in on a device</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Enter the 8-character code shown on the device you want to link to your account.
-        </p>
+        <PageTitle>{m.auth_device_title()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_device_subtitle()}</p>
       </div>
 
       <Form
@@ -36,16 +47,43 @@ function RouteComponent() {
         }}
       >
         <Field of={form} path={['code']}>
-          {(field) => <CodeField field={field} label='Device code' length={8} split />}
+          {(field) => (
+            <CodeField
+              field={field}
+              label={m.auth_device_code()}
+              length={8}
+              split
+              characters='alphanumeric'
+              uppercase
+              focusFirst
+            />
+          )}
         </Field>
         <Button type='submit' size='lg' style={styles.submit}>
-          Continue
+          {m.auth_device_submit()}
         </Button>
-        <p {...stylex.props(styles.fine)}>
-          Only continue if you started this sign-in yourself. Anyone with the code can link a
-          device.
-        </p>
+        <p {...stylex.props(styles.fine)}>{m.auth_device_warning()}</p>
       </Form>
+    </>
+  )
+}
+
+function InvalidLink() {
+  const m = useMessages()
+  return (
+    <>
+      <div {...stylex.props(styles.heading)}>
+        <StatusIcon svg={CircleAlert} tone='critical' />
+        <PageTitle>{m.auth_device_invalid_title()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_device_invalid_subtitle()}</p>
+      </div>
+
+      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+        <span {...stylex.props(styles.backIcon)}>
+          <Icon svg={ArrowLeft} size={14} />
+        </span>
+        {m.auth_back_to_sign_in()}
+      </Link>
     </>
   )
 }

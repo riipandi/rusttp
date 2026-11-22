@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-20T06:39:00+07:00
+updated: 2026-11-22T07:05:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -25,7 +25,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-None live. `plan-00001-uilibs-improvement.md` and `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20) are in `.agents/docs/archive/`.
+None live. `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -34,6 +34,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
+| `issue-00003-ui-audit-leftovers.md` | considering (1 open, 5 considering) | What plan 00004 left out: entry chunk growth, palette contrast gaps, data grid size, double-mounted admin chrome, no webapp unit runner, the `AGENTS.md` line. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
@@ -45,11 +46,11 @@ Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five
 
 | File                                     | Status | Subject                                                                                       |
 | ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `handover-00001-cli-transport-vixum.md`  | done   | CLI scaffold, transport, vixum (server-rendered SPA), DX and Docker.                          |
-| `handover-00002-uilibs-audit-plan.md`    | done   | The `packages/uilibs` audit and the improvement plan, before any phase ran.                   |
 | `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
 | `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
 | `handover-00005-webapp-nav-container-demo.md` | partial | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme. |
+| `handover-00006-admin-sidebar-followups.md` | partial | Plan 00003 closed: tooltip gate, measured contrast, persisted sidebar collapse, rail logo link; issue 00002 open. |
+| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 open, the traps. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -57,4 +58,4 @@ Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `audit-00001-uilibs.md`.
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `audit-00001-uilibs.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00001-cli-transport-vixum.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).

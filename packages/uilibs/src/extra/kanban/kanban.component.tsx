@@ -57,18 +57,25 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { focusRing } from '../../styles/utils.stylex'
+import {
+  dragAccessibility,
+  defaultDragLabels,
+  nameOfElement,
+  type DragLabels
+} from '../sortable/drag-announcements'
 import { kanbanStyles } from './kanban.stylex'
 
 // ---------------------------------------------------------------------------
 // Contexts
 // ---------------------------------------------------------------------------
 
-export interface KanbanLabels {
+export interface KanbanLabels extends DragLabels {
   /** Name of a column's drag handle. Defaults to `Reorder column`. */
   columnHandle: string
 }
 
-const defaultLabels: KanbanLabels = { columnHandle: 'Reorder column' }
+const defaultLabels: KanbanLabels = { ...defaultDragLabels, columnHandle: 'Reorder column' }
 
 interface KanbanContextProps<T> {
   columns: Record<string, T[]>
@@ -511,6 +518,15 @@ function Kanban<T>({
     ]
   )
 
+  // A column is named by its `aria-label` (else its id); an item by its text.
+  const nameOfDraggable = useCallback(
+    (id: UniqueIdentifier) =>
+      isColumn(id)
+        ? nameOfElement(`[data-slot="kanban-column"][data-value="${id}"]`, id, false)
+        : nameOfElement(`[data-slot="kanban-item"][data-value="${String(id)}"]`, id),
+    [isColumn]
+  )
+
   const contextValue = useMemo(
     () => ({
       columns,
@@ -547,7 +563,7 @@ function Kanban<T>({
         sensors={sensors}
         collisionDetection={collisionDetectionStrategy}
         modifiers={modifiers}
-        accessibility={accessibility}
+        accessibility={dragAccessibility(contextValue.labels, nameOfDraggable, accessibility)}
         measuring={MEASURING_CONFIG}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
@@ -657,6 +673,7 @@ function KanbanColumn({ value, style, render, disabled, ...props }: KanbanColumn
           {
             ...stylex.props(
               stylex.defaultMarker(),
+              focusRing.root,
               kanbanStyles.column,
               !isOverlay && isSortableDragging && kanbanStyles.columnDragging,
               !isOverlay && isOver && !isSortableDragging && kanbanStyles.columnOver,
@@ -760,6 +777,7 @@ function KanbanItem({ value, style, render, disabled, ...props }: KanbanItemProp
       {
         ...stylex.props(
           stylex.defaultMarker(),
+          focusRing.root,
           kanbanStyles.item,
           !isOverlay && isSortableDragging && kanbanStyles.itemDragging,
           !isOverlay && isOver && !isSortableDragging && kanbanStyles.itemOver,

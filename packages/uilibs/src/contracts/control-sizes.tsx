@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect } from 'storybook/test'
 import type { ControlSize, DenseControlSize } from '../styles/control.stylex'
+import { visuallyHidden } from '../styles/utils.stylex'
 
 /** The height a control of each size has, in px (`controlSizes`). */
 export const controlHeights = { sm: 32, md: 36, lg: 40 } as const satisfies Record<
@@ -18,23 +19,13 @@ export const denseControlHeights = { xs: 28, ...controlHeights } as const satisf
 export const controlSizeNames = ['sm', 'md', 'lg'] as const satisfies readonly ControlSize[]
 
 const styles = stylex.create({
-  hidden: {
-    borderWidth: 0,
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: 1
-  },
   column: { display: 'flex', flexDirection: 'column', gap: 12, width: 320 }
 })
 
 /** A label that names a control without adding to the row, placed after the control so it stays the cell's first element. */
 export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} {...stylex.props(styles.hidden)}>
+    <label htmlFor={htmlFor} {...stylex.props(visuallyHidden.root)}>
       {children}
     </label>
   )

@@ -38,6 +38,7 @@ import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { Tone } from '../../styles/tone'
+import { focusRing } from '../../styles/utils.stylex'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
 import { toastStyles as s, toastTones as tones } from './toast.stylex'
 
@@ -123,8 +124,8 @@ function ToastList({
           <BaseToast.Title {...stylex.props(s.title)} />
           <BaseToast.Description {...stylex.props(s.description)} />
         </div>
-        <BaseToast.Action {...stylex.props(s.action)} />
-        <BaseToast.Close render={<CloseButton label={labels?.close} style={s.close} />} />
+        <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
+        <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
       </div>
     </BaseToast.Root>
   ))

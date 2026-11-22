@@ -264,3 +264,29 @@ export const Keyboard: Story = {
     await expect(slots[1]).toHaveFocus()
   }
 }
+
+/** The slots shrink to the row instead of overflowing a screen narrower than the code. */
+export const NarrowRow: Story = {
+  args: { length: 6, 'aria-label': 'Verification code' },
+  render: (args) => (
+    <div style={{ width: 220 }} data-testid='narrow'>
+      <OTPField {...args}>
+        <OTPFieldGroup>
+          <OTPFieldSlot />
+          <OTPFieldSlot />
+          <OTPFieldSlot />
+          <OTPFieldSlot />
+          <OTPFieldSlot />
+          <OTPFieldSlot />
+        </OTPFieldGroup>
+      </OTPField>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const row = canvas.getByTestId('narrow')
+    await expect(row.scrollWidth).toBeLessThanOrEqual(row.clientWidth)
+    const slots = canvas.getAllByRole('textbox')
+    await expect(slots.length).toBe(6)
+    for (const slot of slots) await expect(slot.getBoundingClientRect().width).toBeGreaterThan(20)
+  }
+}

@@ -9,8 +9,11 @@
  *
  * The `definition` is a plain TanStack `defineChart()` value; series keys in
  * the `config` map to mark `id`s so tooltips and legends can resolve labels
- * and colors. Mark colors must be concrete color strings — TanStack paints
- * them as SVG presentation attributes, which do not resolve CSS variables.
+ * and colors. A mark color is any CSS color, a theme token (`colors.backgroundPrimary`, a
+ * `var()` string) included: TanStack paints it as an SVG presentation attribute, and a browser
+ * resolves `var()` there (checked in Chromium, light and dark), so a series follows the theme.
+ * A series that carries meaning needs 3:1 against the page (WCAG 1.4.11) or a second cue: a
+ * label, a pattern, or a legend entry next to it.
  *
  * SSR and multi-chart hygiene: keep `initialWidth` stable across server and
  * client, and give every chart in the same document an explicit `idPrefix` so
@@ -100,7 +103,7 @@ export type ChartProps<
   TYValue extends ChartValue = ChartValue
 > = Omit<
   TanStackRendererChartProps<TDatum, TXValue, TYValue>,
-  'renderTooltipBody' | 'style' | 'renderer'
+  'renderTooltipBody' | 'style' | 'renderer' | 'className'
 > &
   ChartOwnProps<TDatum, TXValue, TYValue>
 
@@ -115,16 +118,14 @@ export function Chart<
   // Rich tooltip bodies stay opt-in via `renderTooltipBody`; the default is
   // the native body (title, per-series rows with swatches, locale formatting)
   // themed through the `--ts-chart-tooltip-*` variables on the host class.
+  const chartProps = stylex.props(s.chart, style)
   const chart = (
     <TanStackChart
       {...props}
       renderer={chartMotionRenderer}
       renderTooltipBody={renderTooltipBody}
-      className={
-        [props.className, stylex.props(s.chart, style).className].filter(Boolean).join(' ') ||
-        undefined
-      }
-      style={stylex.props(s.chart, style).style}
+      className={chartProps.className}
+      style={chartProps.style}
     />
   )
 

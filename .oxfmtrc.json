@@ -32,6 +32,8 @@
         "**/dist",
         "**/.tanstack",
         "**/routes.gen.ts",
+        "**/paraglide",
+        "**/project.inlang/cache",
         "**/*.md",
         "**/*.yml",
         "**/*.yaml",

@@ -74,6 +74,25 @@ export const Playground: Story = {
   }
 }
 
+// The a11y gate runs after `play`, when Playground's tooltip is closed again: this story keeps the
+// popup, its surface, and its arrow open so the gate checks them.
+export const Open: Story = {
+  args: { delay: 0 },
+  render: () => (
+    <TooltipProvider>
+      <Tooltip defaultOpen>
+        <TooltipTrigger render={<Button variant='outline' />}>Nox</TooltipTrigger>
+        <TooltipContent>Extinguish the wand light</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ),
+  play: async () => {
+    await waitFor(() =>
+      expect(within(document.body).getByText('Extinguish the wand light')).toBeVisible()
+    )
+  }
+}
+
 export const Sides: Story = {
   args: { delay: 0 },
   render: () => (

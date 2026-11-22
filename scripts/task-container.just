@@ -43,6 +43,7 @@ compose-cleanup:
 [group('container')]
 compose-pull:
     @docker compose -f {{ compose_file }} pull
+    @docker compose -f {{ compose_file }} --profile sre pull
 
 [doc('Build Docker image')]
 [group('container')]

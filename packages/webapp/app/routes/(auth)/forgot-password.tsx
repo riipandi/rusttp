@@ -6,15 +6,19 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { TextField } from '#/components/form-fields'
-import { forgotPasswordSchema } from '#/schemas/forgot-password.schema'
+import { PageTitle } from '#/components/page-title'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
+import { forgotPasswordSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/forgot-password')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Forgot password' }
+  staticData: { pageTitle: () => getMessages().page_auth_forgot_password() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const form = useForm({ schema: forgotPasswordSchema, initialInput: { email: '' } })
   // Demo only: there is no mailer wired in yet, so a valid form opens the reset page the emailed
@@ -23,15 +27,13 @@ function RouteComponent() {
     form,
     () => void navigate({ to: '/reset-password', search: { token: 'alohomora' } })
   )
+  useRevalidateOnLocale(form)
 
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Forgot your password?</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Enter the email you registered with and we will send you an email with the instructions to
-          reset your password.
-        </p>
+        <PageTitle>{m.auth_forgot_title()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_forgot_subtitle()}</p>
       </div>
 
       <Form
@@ -44,11 +46,16 @@ function RouteComponent() {
       >
         <Field of={form} path={['email']}>
           {(field) => (
-            <TextField field={field} label='Email address' inputMode='email' autoComplete='email' />
+            <TextField
+              field={field}
+              label={m.auth_email_label()}
+              inputMode='email'
+              autoComplete='email'
+            />
           )}
         </Field>
         <Button type='submit' size='lg' style={styles.submit}>
-          Send reset link
+          {m.auth_forgot_submit()}
         </Button>
       </Form>
 
@@ -56,7 +63,7 @@ function RouteComponent() {
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>
-        Back to sign in
+        {m.auth_back_to_sign_in()}
       </Link>
     </>
   )

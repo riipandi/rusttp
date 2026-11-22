@@ -3,15 +3,17 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints } from '#/styles/constants.stylex'
+import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   split: {
     minHeight: '100dvh',
     display: 'grid',
     gridTemplateColumns: {
-      default: '1fr',
-      [breakpoints.wide]: 'minmax(22rem, 5fr) 7fr'
+      // `minmax(0, …)`: a bare `1fr` is `minmax(auto, 1fr)`, so a wide child (a six-slot code)
+      // would stretch the column past the screen instead of shrinking.
+      default: 'minmax(0, 1fr)',
+      [breakpoints.wide]: 'minmax(22rem, 5fr) minmax(0, 7fr)'
     },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
@@ -70,7 +72,7 @@ export const styles = stylex.create({
     justifyContent: 'center',
     gap: unit.x8,
     width: '100%',
-    maxWidth: '26rem',
+    maxWidth: layoutSize.form,
     marginInline: 'auto',
     paddingBlock: unit.x10
   },
@@ -78,13 +80,6 @@ export const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x2
-  },
-  title: {
-    margin: 0,
-    fontSize: fontSize.featured2,
-    fontWeight: fontWeight.bold,
-    lineHeight: 1.15,
-    letterSpacing: '-0.02em'
   },
   subtitle: {
     margin: 0,
@@ -154,12 +149,13 @@ export const styles = stylex.create({
     },
     textDecorationLine: 'underline',
     textDecorationColor: {
-      default: 'transparent',
+      default: 'currentColor',
       ':hover': 'currentColor'
     },
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
     textUnderlineOffset: '0.25em',
     transitionDuration: duration.fast,
-    transitionProperty: 'color, text-decoration-color'
+    transitionProperty: 'color, text-decoration-thickness'
   },
   // A button that reads as one of the page's links (a placeholder action, not a navigation).
   linkButton: {
@@ -180,13 +176,11 @@ export const styles = stylex.create({
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.medium,
     textDecorationLine: 'underline',
-    textDecorationColor: {
-      default: 'transparent',
-      ':hover': 'currentColor'
-    },
+    textDecorationColor: 'currentColor',
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
     textUnderlineOffset: '0.25em',
     transitionDuration: duration.fast,
-    transitionProperty: 'text-decoration-color'
+    transitionProperty: 'text-decoration-thickness'
   },
   backLink: {
     display: 'inline-flex',

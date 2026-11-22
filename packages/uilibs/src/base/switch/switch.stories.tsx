@@ -110,6 +110,8 @@ export const Disabled: Story = {
   play: async ({ canvas }) => {
     const el = canvas.getByRole('switch', { name: /Disabled switch/ })
     await expect(el).toHaveAttribute('data-disabled')
+    await expect(getComputedStyle(el).opacity).toBe('0.5')
+    await expect(getComputedStyle(el).cursor).toBe('not-allowed')
     await userEvent.click(el)
     await expect(el).toHaveAttribute('aria-checked', 'false')
   }

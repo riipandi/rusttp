@@ -6,6 +6,7 @@ import { Button, LinkButton } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
 import { ThemeProvider } from 'uilibs/theme'
+import { useMessages } from '#/libraries/messages'
 import { styles as layout } from '#/styles/element/layout.stylex'
 
 function Boundary({
@@ -30,9 +31,7 @@ function Boundary({
       <div {...stylex.props(layout.root)}>
         <main {...stylex.props(layout.center)}>
           <Icon svg={icon} size={32} color='neutralFaded' />
-          <Text variant='featured-3' weight='bold'>
-            {title}
-          </Text>
+          <Text variant='featured-3' weight='bold' render={<h1>{title}</h1>} />
           <Text color='neutral-faded'>{description}</Text>
           {detail && (
             <Text variant='caption-1' color='neutral-faded' monospace>
@@ -47,34 +46,36 @@ function Boundary({
 }
 
 export function GlobalNotFound() {
+  const m = useMessages()
   const router = useRouter()
 
   return (
     <Boundary
       icon={SearchX}
-      title='Page not found'
-      description='The page may have moved, or the address may be mistyped.'
+      title={m.boundary_not_found_title()}
+      description={m.boundary_not_found_description()}
     >
-      <LinkButton render={<Link to='/' />}>Back to home</LinkButton>
+      <LinkButton render={<Link to='/' />}>{m.boundary_back_home()}</LinkButton>
       <Button variant='secondary' onClick={() => router.history.back()}>
-        Go back
+        {m.boundary_go_back()}
       </Button>
     </Boundary>
   )
 }
 
 export function GlobalError({ error, reset }: ErrorComponentProps) {
+  const m = useMessages()
   return (
     <Boundary
       icon={CircleAlert}
-      title='Something went wrong'
-      description='Try again. If it keeps happening, reload the page or come back later.'
+      title={m.boundary_error_title()}
+      description={m.boundary_error_description()}
       // The raw message is a developer aid, not copy for a visitor, so a production build omits it.
       detail={import.meta.env.DEV && error instanceof Error ? error.message : undefined}
     >
-      <Button onClick={reset}>Try again</Button>
+      <Button onClick={reset}>{m.boundary_try_again()}</Button>
       <LinkButton render={<Link to='/' />} variant='secondary'>
-        Back to home
+        {m.boundary_back_home()}
       </LinkButton>
     </Boundary>
   )

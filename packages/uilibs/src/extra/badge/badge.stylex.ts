@@ -14,10 +14,6 @@ export const badgeStyles = stylex.create({
     fontWeight: fontWeight.medium,
     gap: unit.x1,
     lineHeight: fontLineHeight.caption1,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
     paddingBlock: unit.x1,
     paddingInline: unit.x3,

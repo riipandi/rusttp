@@ -1,6 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { duration, fontSize, fontWeight, radius, unit } from 'uilibs/styles/tokens.stylex'
+import {
+  container,
+  duration,
+  fontSize,
+  fontWeight,
+  radius,
+  unit
+} from 'uilibs/styles/tokens.stylex'
 
 export const styles = stylex.create({
   // The avatar is the whole control: no box behind it, a ring with a gap around it on hover (neutral)
@@ -18,55 +25,57 @@ export const styles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: 'box-shadow'
   },
-  // The whole account row is the target: it fills the sidebar and takes the hover and open tint.
-  row: {
+  // The admin trigger's box: transparent, because the avatar inside is what reacts (`avatar`); the
+  // box only carries the focus ring, shaped like the avatar's hover state.
+  bare: {
+    height: unit.x8,
+    width: unit.x8,
+    borderRadius: radius.large,
+    backgroundColor: 'transparent'
+  },
+  // The drawer's trigger: the avatar with a short name and a chevron, as wide as its content and
+  // without a tint of its own. The avatar sits 4px from the start so its center is on the nav
+  // icons' column.
+  pill: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: unit.x3,
-    width: '100%',
-    height: unit.x12,
+    gap: unit.x2,
     minWidth: 0,
-    // The chevron glyph has about 5px of its own room on the right, so the end padding is smaller
-    // and the avatar and the chevron sit the same distance from the row's edges.
-    paddingInlineStart: unit.x3,
+    height: unit.x10,
+    paddingInlineStart: unit.x1,
     paddingInlineEnd: unit.x2,
-    borderRadius: radius.medium,
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': colors.backgroundNeutralFaded,
-      ':where([data-popup-open])': colors.backgroundNeutralFaded
-    },
-    textAlign: 'start'
+    borderRadius: radius.large,
+    backgroundColor: 'transparent'
   },
-  // The icon rail: the avatar alone is the control, so it gets the avatar's own circular ring on
-  // hover and while the menu is open (as `trigger` does), not the row's rectangular tint.
-  rowCollapsed: {
-    flexShrink: 0,
-    width: unit.x8,
-    height: unit.x8,
-    marginInline: 'auto',
-    paddingInlineStart: 0,
-    paddingInlineEnd: 0,
-    borderRadius: '50%',
-    backgroundColor: 'transparent',
+  // The avatar turns from a circle into a squircle, with a ring, while the trigger is hovered or its
+  // menu is open (the neutral ring, then the brand one). The trigger carries the default marker.
+  avatar: {
+    borderRadius: {
+      default: '50%',
+      [stylex.when.ancestor(':hover')]: radius.large,
+      [stylex.when.ancestor(':where([data-popup-open])')]: radius.large
+    },
     boxShadow: {
       default: 'none',
-      ':hover': `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.borderNeutral}`,
-      '[data-popup-open]': `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.foregroundPrimary}`
+      [stylex.when.ancestor(':hover')]:
+        `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.borderNeutral}`,
+      [stylex.when.ancestor(':where([data-popup-open])')]:
+        `0 0 0 2px ${colors.backgroundPage}, 0 0 0 3px ${colors.foregroundPrimary}`
     },
     transitionDuration: duration.fast,
-    transitionProperty: 'box-shadow'
+    transitionProperty: 'border-radius, box-shadow'
   },
-  rowIdentity: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
+  pillName: {
     minWidth: 0,
-    fontSize: fontSize.caption1,
-    lineHeight: 1.3
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: colors.foregroundNeutral,
+    fontSize: fontSize.body2,
+    fontWeight: fontWeight.medium
   },
-  rowChevron: {
+  pillChevron: {
     display: 'flex',
     flexShrink: 0
   },
@@ -76,13 +85,7 @@ export const styles = stylex.create({
   },
   menu: {
     minWidth: '14rem',
-    maxWidth: '18rem'
-  },
-  // The sidebar's menu is as wide as the row that opened it; a long name or email truncates.
-  menuRow: {
-    minWidth: 0,
-    maxWidth: 'none',
-    width: 'var(--anchor-width)'
+    maxWidth: container.small
   },
   menuLabel: {
     display: 'flex',
@@ -99,6 +102,14 @@ export const styles = stylex.create({
   },
   menuEmailSmall: {
     fontSize: fontSize.caption1
+  },
+  // The label wraps instead of truncating: a long address stays readable without a native tooltip
+  // (a `title` pops over the first item).
+  menuTextWrap: {
+    overflow: 'visible',
+    textOverflow: 'clip',
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere'
   },
   menuName: {
     overflow: 'hidden',

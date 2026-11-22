@@ -7,10 +7,10 @@ export class NotFoundScreen extends AppScreen {
   }
 
   heading() {
-    return this.page.getByRole('heading', { name: '404' })
+    return this.page.getByRole('heading', { name: 'Page not found' })
   }
 
   homeLink() {
-    return this.page.getByRole('link', { name: 'Back to main page' })
+    return this.page.getByRole('link', { name: 'Back to home' })
   }
 }

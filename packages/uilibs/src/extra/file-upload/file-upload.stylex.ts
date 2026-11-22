@@ -27,17 +27,13 @@ export const fileUploadStyles = stylex.create({
   root: {
     display: 'block',
     borderRadius: radius.large,
-    ':focus-within': {
-      boxShadow: shadow.outline
-    }
+    boxShadow: { default: 'none', ':focus-within': shadow.outline }
   },
   inline: {
     display: 'inline-block',
     verticalAlign: 'top',
     borderRadius: radius.medium,
-    ':focus-within': {
-      boxShadow: 'none'
-    }
+    boxShadow: 'none'
   },
   layer: {
     alignItems: 'center',
@@ -57,22 +53,17 @@ export const fileUploadStyles = stylex.create({
   },
   layerCompact: {
     borderRadius: radius.medium,
-    ':focus-within': {
-      boxShadow: shadow.outline
-    }
+    boxShadow: { default: 'none', ':focus-within': shadow.outline }
   },
   outline: {
-    backgroundColor: 'transparent',
+    backgroundColor: { default: 'transparent', ':hover': colors.backgroundNeutralHighlightedFaded },
     borderColor: {
       default: colors.borderNeutral,
       ':has([data-invalid])': colors.borderCritical
     },
     borderStyle: 'dashed',
     borderWidth: stroke.ring1,
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: colors.backgroundNeutralHighlightedFaded
-    }
+    cursor: 'pointer'
   },
   highlighted: {
     backgroundColor: colors.backgroundPrimaryHighlightedFaded,
@@ -82,12 +73,10 @@ export const fileUploadStyles = stylex.create({
     cursor: 'default'
   },
   disabled: {
+    backgroundColor: 'transparent',
     borderColor: colors.borderDisabled,
     cursor: 'not-allowed',
-    opacity: 0.5,
-    ':hover': {
-      backgroundColor: 'transparent'
-    }
+    opacity: 0.5
   },
   trigger: {
     display: 'contents'

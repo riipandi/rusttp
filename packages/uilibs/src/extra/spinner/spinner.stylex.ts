@@ -7,7 +7,8 @@ export const spinnerSpin = stylex.keyframes({
 
 export const spinnerStyles = stylex.create({
   root: {
-    animationDuration: '1s',
+    // Slowed, not stopped: a stopped spinner reads as a frozen page.
+    animationDuration: { default: '1s', '@media (prefers-reduced-motion: reduce)': '3s' },
     animationIterationCount: 'infinite',
     animationName: spinnerSpin,
     animationTimingFunction: 'linear',

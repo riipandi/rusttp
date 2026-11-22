@@ -1,5 +1,4 @@
-import { Menu } from '@keyline-icons/react'
-import type { LayoutDashboard } from '@keyline-icons/react'
+import { type LayoutDashboard, Menu } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
@@ -18,6 +17,8 @@ import {
   SheetTitle,
   SheetTrigger
 } from 'uilibs/extra/sheet'
+import { useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 import { styles } from '#/styles/element/nav-sheet.stylex'
 
 export interface NavItem {
@@ -83,7 +84,7 @@ function SheetEntry({
   }
 
   return (
-    <Button variant='ghost' size='lg' style={style}>
+    <Button variant='ghost' size='lg' style={style} onClick={notWired(item.label)}>
       {content}
     </Button>
   )
@@ -158,6 +159,7 @@ export function NavSheet({
   dense?: boolean
   triggerStyle?: stylex.StyleXStyles
 }) {
+  const m = useMessages()
   const [open, setOpen] = React.useState(false)
   const close = () => setOpen(false)
   // Links in the host's `footer` (the account menu) cannot reach `close`, so any navigation closes it.
@@ -175,14 +177,19 @@ export function NavSheet({
           <Button
             variant='ghost'
             size='icon-md'
-            aria-label='Open navigation'
+            aria-label={m.nav_sheet_open()}
             style={[styles.trigger, triggerStyle]}
           />
         }
       >
         <Icon svg={Menu} size={20} />
       </SheetTrigger>
-      <SheetContent side='left' showCloseButton={false} style={styles.sheetContent}>
+      <SheetContent
+        side='left'
+        showCloseButton={false}
+        aria-label={m.nav_sheet_dialog()}
+        style={styles.sheetContent}
+      >
         <SheetHeader style={[styles.sheetProfile, !profile && styles.sheetHeaderBrand]}>
           {profile ? (
             <>
@@ -190,7 +197,14 @@ export function NavSheet({
                 <Avatar size='md'>
                   <AvatarFallback>{profile.initials}</AvatarFallback>
                 </Avatar>
-                <SheetClose render={<CloseButton style={styles.sheetClose} />} />
+                <SheetClose
+                  render={
+                    <CloseButton
+                      labels={{ close: m.nav_sheet_close() }}
+                      style={styles.sheetClose}
+                    />
+                  }
+                />
               </div>
               <SheetTitle style={styles.sheetName}>{profile.name}</SheetTitle>
               <SheetDescription style={styles.sheetEmail}>{profile.email}</SheetDescription>
@@ -198,7 +212,11 @@ export function NavSheet({
           ) : (
             <div {...stylex.props(styles.sheetProfileTop)}>
               <SheetTitle style={styles.sheetBrand}>{brand}</SheetTitle>
-              <SheetClose render={<CloseButton style={styles.sheetClose} />} />
+              <SheetClose
+                render={
+                  <CloseButton labels={{ close: m.nav_sheet_close() }} style={styles.sheetClose} />
+                }
+              />
             </div>
           )}
         </SheetHeader>
@@ -207,7 +225,7 @@ export function NavSheet({
           <Separator style={styles.sheetSeparator} />
           {account ? (
             <SheetList
-              label='Account'
+              label={m.nav_sheet_account()}
               groups={[{ items: account }]}
               secondary
               dense={dense}

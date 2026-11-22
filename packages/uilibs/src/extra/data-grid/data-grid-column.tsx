@@ -32,6 +32,7 @@ import {
 import { Input } from '../../base/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover'
 import { Separator } from '../../base/separator'
+import { focusRing } from '../../styles/utils.stylex'
 import { Badge } from '../badge'
 import { getColumnHeaderLabel, rekey, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
@@ -142,7 +143,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
                     type='button'
                     aria-pressed={isSelected}
                     onClick={toggleOption}
-                    {...stylex.props(sFilter.optionRow)}
+                    {...stylex.props(focusRing.root, sFilter.optionRow)}
                   >
                     <div
                       {...stylex.props(
@@ -174,7 +175,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
                 <button
                   type='button'
                   onClick={() => column?.setFilterValue(undefined)}
-                  {...stylex.props(sFilter.optionRow, sFilter.clearRow)}
+                  {...stylex.props(focusRing.root, sFilter.optionRow, sFilter.clearRow)}
                 >
                   {i18n.labels.filterClear}
                 </button>

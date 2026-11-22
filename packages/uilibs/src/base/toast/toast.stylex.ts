@@ -117,10 +117,6 @@ export const toastStyles = stylex.create({
     fontWeight: fontWeight.medium,
     height: unit.x6,
     justifyContent: 'center',
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     paddingInline: unit.x2
   },
   // Smaller than the shared `CloseButton`, which supplies the look.

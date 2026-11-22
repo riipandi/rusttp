@@ -4,9 +4,9 @@ packages:
   - packages/*
 
 allowBuilds:
-  esbuild: true
   # Ships prebuilt binaries per platform; the install script only compiles a missing one.
   '@parcel/watcher': false
+  esbuild: true
 
 verifyDepsBeforeRun: false
 
@@ -14,18 +14,19 @@ minimumReleaseAge: 0
 
 # One Vite for every package, whatever a plugin asks for.
 overrides:
+  glob: "^14.0.6"
   vite@*: "catalog:"
 
 peerDependencyRules:
   allowAny:
-    - vite
     # jsx-email ships its own esbuild, older than the one Vite's optional peer names.
     - esbuild
+    - vite
   allowedVersions:
-    vite: "*"
     # jsx-email pins exact React type versions; any React 19 typings work.
     "@types/react": "19"
     "@types/react-dom": "19"
+    vite: "*"
 
 catalogMode: prefer
 
@@ -35,23 +36,68 @@ catalog:
   "@types/react-dom": ^19.3.0
   "@vitejs/plugin-react": ^6.3.0
   '@formisch/react': ^1.2.0
+  '@github-ui/storybook-addon-performance-panel': ^1.3.1
+  '@inlang/paraglide-js': ^3.2.2
+  '@inlang/plugin-message-format': ^4.6.0
   '@jsx-email/plugin-clean': ^1.0.0
   '@jsx-email/plugin-inline': ^2.0.0
   '@jsx-email/plugin-minify': ^2.0.0
   '@jsx-email/plugin-pretty': ^2.0.0
   '@jsx-email/plugin-url': ^1.0.0
+  '@keyline-icons/react': ^2.9.0
   '@playwright/test': ^1.65.1
-  '@tanstack/devtools-vite': ^0.8.6
-  '@tanstack/react-devtools': ^0.10.14
-  '@tanstack/react-query-devtools': ^5.108.0
+  '@storybook/addon-a11y': 10.6.8
+  '@storybook/addon-docs': 10.6.8
+  '@storybook/addon-links': 10.6.8
+  '@storybook/addon-mcp': ^10.6.8
+  '@storybook/addon-vitest': 10.6.8
+  '@storybook/tanstack-react': 10.6.8
+  '@stylexjs/atoms': ^0.19.2
+  '@stylexjs/stylex': ^0.19.2
+  '@stylexjs/unplugin': ^0.19.2
+  '@tanstack/charts': ^1.5.0
+  '@tanstack/devtools-vite': ^0.8.7
+  '@tanstack/react-devtools': ^0.10.15
+  '@tanstack/react-hotkeys': ^0.27.1
+  '@tanstack/react-query': ^5.108.2
+  '@tanstack/react-query-devtools': ^5.108.2
+  '@tanstack/react-router': ^1.170.46
   '@tanstack/react-router-devtools': ^1.167.4
+  '@tanstack/react-store': ^0.11.2
+  '@tanstack/react-table': ^9.3.1
+  '@tanstack/react-virtual': ^3.14.26
   '@tanstack/router-cli': ^1.168.0
+  '@tanstack/router-plugin': ^1.169.0
+  '@tanstack/store': ^0.11.2
+  axe-core: ^4.14.1
   date-fns: ^4.4.0
   jsx-email: ^3.2.1
+  oxc-transform-react: ^0.158.0
   playwright: ^1.65.1
   react-dom: ^19.3.1
+  react-resizable-panels: ^4.24.1
   react: ^19.3.1
-  tsrs: 7.1.0-beta.tsrs3
+  storybook: 10.6.8
+  tsrs: 7.1.0-beta.tsrs4
   valibot: ^1.5.0
   vite-plugin-devtools-json: ^1.1.2
   vite: ^8.3.8
+
+permissions:
+  '@tanstack/charts':
+    skills: [build-chart-interactions, compose-marks-and-views, configure-scales-guides-color, coordinate-charts-with-tanstack, debug-and-verify-charts, design-a-chart, design-responsive-charts, extend-tanstack-charts, migrate-to-tanstack-charts, prepare-chart-data, ship-accessible-charts, update-and-animate-charts]
+  '@tanstack/devtools-vite':
+    skills: true
+  '@tanstack/react-hotkeys':
+    skills: true
+  '@tanstack/react-router':
+    skills: [router-query, migrate-from-react-router, react-router]
+  '@tanstack/react-table':
+    skills: [getting-started, migrate-v8-to-v9, table-state]
+  '@tanstack/router-plugin':
+    skills: true
+
+skills:
+  dirs:
+    - .agents/skills
+    - .claude/skills

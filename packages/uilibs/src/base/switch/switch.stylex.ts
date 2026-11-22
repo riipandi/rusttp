@@ -9,23 +9,18 @@ export const switchStyles = stylex.create({
     backgroundColor: {
       default: colors.borderControl,
       '[data-checked]': colors.backgroundPrimary,
-      '[data-invalid]': colors.backgroundCritical
+      '[data-invalid]': colors.backgroundCritical,
+      // Forced colors: the track is an outlined box that fills with Highlight when on.
+      '@media (forced-colors: active)': { default: 'Canvas', '[data-checked]': 'Highlight' }
     },
+    borderColor: { default: 'transparent', '@media (forced-colors: active)': 'CanvasText' },
     borderRadius: radius.full,
-    borderStyle: 'none',
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
+    borderStyle: 'solid',
+    borderWidth: { default: 0, '@media (forced-colors: active)': stroke.ring1 },
     display: 'inline-flex',
     flexShrink: 0,
-    opacity: { default: 1, ':disabled': 0.5 },
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
-    outlineOffset: stroke.ring2,
     padding: unit.x0_5,
     position: 'relative',
-    transitionDuration: duration.fast,
-    transitionProperty: 'background-color',
     // Invisible expanded hit area (larger touch target).
     '::after': {
       content: '""',
@@ -35,7 +30,10 @@ export const switchStyles = stylex.create({
     }
   },
   thumb: {
-    backgroundColor: colors.backgroundPage,
+    backgroundColor: {
+      default: colors.backgroundPage,
+      '@media (forced-colors: active)': 'CanvasText'
+    },
     borderRadius: radius.full,
     transitionDuration: duration.fast,
     transitionProperty: {

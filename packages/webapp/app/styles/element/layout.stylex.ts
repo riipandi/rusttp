@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { layoutSize } from '#/styles/constants.stylex'
 
 // The shell every route shares. `container` is the one content width (header, page, footer line up);
 // `center` is a single reading column for pages with nothing else on them (404, error).
@@ -15,9 +16,9 @@ export const styles = stylex.create({
   container: {
     boxSizing: 'border-box',
     width: '100%',
-    maxWidth: '80rem',
+    maxWidth: layoutSize.page,
     marginInline: 'auto',
-    paddingInline: 'clamp(1.5rem, 4vw, 3rem)'
+    paddingInline: layoutSize.gutter
   },
   header: {
     position: 'sticky',
@@ -56,7 +57,7 @@ export const styles = stylex.create({
     justifyContent: 'center',
     gap: unit.x4,
     width: '100%',
-    maxWidth: '36rem',
+    maxWidth: layoutSize.reading,
     marginInline: 'auto',
     padding: unit.x6
   },

@@ -18,6 +18,7 @@ import { Accordion as BaseAccordion } from '@base-ui/react/accordion'
 import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { focusRing } from '../../styles/utils.stylex'
 import { accordionStyles as s } from './accordion.stylex'
 
 interface StyleXStyleProps {
@@ -48,7 +49,7 @@ export function AccordionTrigger({
   StyleXStyleProps) {
   return (
     <BaseAccordion.Header {...stylex.props(s.header)}>
-      <BaseAccordion.Trigger {...props} {...stylex.props(s.trigger, style)}>
+      <BaseAccordion.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
         {children}
         <ChevronDown size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.chevron)} />
       </BaseAccordion.Trigger>

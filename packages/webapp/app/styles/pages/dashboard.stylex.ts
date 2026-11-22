@@ -77,13 +77,6 @@ export const styles = stylex.create({
     flexDirection: 'column',
     gap: unit.x1
   },
-  title: {
-    margin: 0,
-    fontSize: fontSize.featured2,
-    fontWeight: fontWeight.bold,
-    lineHeight: 1.15,
-    letterSpacing: '-0.02em'
-  },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded

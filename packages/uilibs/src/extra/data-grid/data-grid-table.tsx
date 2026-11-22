@@ -9,11 +9,12 @@ import type { CSSProperties, ReactNode, Ref, RefObject } from 'react'
 import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from 'react'
 import { Button } from '../../base/button'
 import { Checkbox } from '../../base/checkbox'
+import { focusRing } from '../../styles/utils.stylex'
 import { Spinner } from '../spinner'
 import { getDataGridCellSelectionCellAttrs, toDataGridDomId, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from './data-grid'
 import { dataGridTableViewportStyles, dataGridTableStyles as s } from './data-grid-table.stylex'
-import { dataGridCellSelectionStyles } from './data-grid.stylex'
+import { dataGridCellSelectionStyles, gridLayer } from './data-grid.stylex'
 
 type DataGridCellSelectionAttrs = ReturnType<typeof getDataGridCellSelectionCellAttrs>
 
@@ -502,7 +503,7 @@ function getPinningStyles<TData extends object>(
     transform: isPinned ? 'translateZ(0)' : undefined,
     contain: isPinned ? 'paint' : undefined,
     width: column.getSize(),
-    zIndex: isPinned ? 30 : undefined,
+    zIndex: isPinned ? gridLayer.pinned : undefined,
     backgroundClip: isPinned ? 'padding-box' : undefined
   }
 }
@@ -2043,7 +2044,7 @@ function DataGridTableRowPin<TData extends object>({
                 row.pin('top')
               }
             }}
-            {...stylex.props(s.rowPinButton)}
+            {...stylex.props(focusRing.root, s.rowPinButton)}
           >
             {isPinned ? (
               <PinFilled size={16} aria-hidden />
@@ -2163,7 +2164,7 @@ function DataGridTableRowExpand<TData extends object>({
             event.stopPropagation()
             row.toggleExpanded()
           }}
-          {...stylex.props(s.rowExpandButton)}
+          {...stylex.props(focusRing.root, s.rowExpandButton)}
         >
           {children ?? (
             <ChevronDown

@@ -12,13 +12,15 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import { buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
+import { buttonCriticalTone, buttonSizes, buttonStyles, buttonVariants } from './button.stylex'
 
 export interface ButtonProps extends Omit<
   React.ComponentProps<typeof BaseButton>,
   'className' | 'style'
 > {
   variant?: keyof typeof buttonVariants
+  /** `critical` marks a destructive or irreversible action: a solid fill, or critical text on a quiet variant. */
+  tone?: 'critical'
   size?: keyof typeof buttonSizes
   /**
    * Shows a spinner over the label and ignores presses until it clears. The button keeps its
@@ -30,6 +32,7 @@ export interface ButtonProps extends Omit<
 
 export function Button({
   variant = 'primary',
+  tone,
   size = 'md',
   loading = false,
   disabled,
@@ -49,6 +52,10 @@ export function Button({
         controlPress.root,
         buttonStyles.root,
         buttonVariants[variant],
+        tone === 'critical' &&
+          (variant === 'outline' || variant === 'ghost'
+            ? buttonCriticalTone.quiet
+            : buttonCriticalTone.filled),
         (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
         buttonSizes[size],
         loading && buttonStyles.loading,

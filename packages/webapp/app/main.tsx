@@ -19,8 +19,10 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
   interface StaticDataRouteOption {
-    pageTitle?: string
-    pageDescription?: string
+    // Functions, so the title follows the language: the browser calls them on render,
+    // and the build (vixum) calls them once in English for the server's document.
+    pageTitle?: () => string
+    pageDescription?: () => string
   }
 }
 

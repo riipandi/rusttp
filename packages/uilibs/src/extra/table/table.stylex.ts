@@ -7,6 +7,7 @@ import { duration } from '../../styles/tokens.stylex'
 
 export const tableStyles = stylex.create({
   container: {
+    outlineOffset: `calc(-1 * ${stroke.ring2})`,
     overflowX: 'auto',
     position: 'relative',
     width: '100%'

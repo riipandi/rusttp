@@ -1,6 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
@@ -53,10 +52,6 @@ export const navigationMenuStyles = stylex.create({
     height: unit.x9,
     justifyContent: 'center',
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,
     transitionDuration: duration.fast,
@@ -87,10 +82,6 @@ export const navigationMenuStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x2,
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     padding: unit.x2,
     textDecoration: 'none',
     transitionDuration: duration.fast,

@@ -7,6 +7,7 @@ import type { JSX, PointerEvent, ReactNode } from 'react'
 import { Button } from '../../base/button'
 import { SelectContent, SelectTrigger, SelectValue } from '../../base/select'
 import { Select, SelectItem } from '../../base/select'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import { Skeleton } from '../skeleton'
 import { useDataGrid, type DataGridTableInstance } from './data-grid'
 import { dataGridPaginationStyles } from './data-grid-table.stylex'
@@ -242,7 +243,9 @@ function DataGridPagination<TData extends object>(
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
-                  <span {...stylex.props(s.srOnly)}>{mergedProps.previousPageLabel}</span>
+                  <span {...stylex.props(visuallyHidden.root)}>
+                    {mergedProps.previousPageLabel}
+                  </span>
                   <ChevronLeft {...stylex.props(s.arrowIcon)} />
                 </Button>
 
@@ -259,7 +262,7 @@ function DataGridPagination<TData extends object>(
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >
-                  <span {...stylex.props(s.srOnly)}>{mergedProps.nextPageLabel}</span>
+                  <span {...stylex.props(visuallyHidden.root)}>{mergedProps.nextPageLabel}</span>
                   <ChevronRight {...stylex.props(s.arrowIcon)} />
                 </Button>
               </div>

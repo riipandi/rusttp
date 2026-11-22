@@ -2,7 +2,7 @@ import { MoreVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect, within } from 'storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   DropdownMenu,
@@ -182,7 +182,7 @@ export const Actions: Story = {
                     <DropdownMenuItem>Edit title</DropdownMenuItem>
                     <DropdownMenuItem>Send an owl</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant='destructive'>Expel</DropdownMenuItem>
+                    <DropdownMenuItem tone='critical'>Expel</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -192,4 +192,36 @@ export const Actions: Story = {
       </Table>
     </div>
   )
+}
+
+/** A table wider than its column scrolls inside a named, focusable region a keyboard can reach. */
+export const ScrollRegion: Story = {
+  render: () => (
+    <div style={{ width: 240 }}>
+      <Table labels={{ region: 'Hogwarts timetable' }}>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Subject</TableHead>
+            <TableHead>Professor</TableHead>
+            <TableHead>Classroom</TableHead>
+            <TableHead>Time</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>Defence Against the Dark Arts</TableCell>
+            <TableCell>Remus Lupin</TableCell>
+            <TableCell>Third floor, East Wing</TableCell>
+            <TableCell>Monday 09:00</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const region = canvas.getByRole('region', { name: 'Hogwarts timetable' })
+    await expect(region.scrollWidth).toBeGreaterThan(region.clientWidth)
+    await userEvent.tab()
+    await expect(region).toHaveFocus()
+  }
 }

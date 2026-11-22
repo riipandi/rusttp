@@ -40,8 +40,14 @@ export const tabsStyles = stylex.create({
       default: 'transparent',
       '[data-active]': colors.backgroundPage
     },
+    borderColor: { default: 'transparent', '@media (forced-colors: active)': 'Highlight' },
     borderRadius: radius.small,
-    borderStyle: 'none',
+    borderStyle: { default: 'none', '@media (forced-colors: active)': 'solid' },
+    // Forced colors drop the active pill's background: the active tab gets an edge instead.
+    borderWidth: {
+      default: 0,
+      '@media (forced-colors: active)': { default: 0, '[data-active]': stroke.ring1 }
+    },
     color: { default: colors.foregroundNeutralFaded, '[data-active]': colors.foregroundNeutral },
     display: 'inline-flex',
     fontFamily: fontFamily.body,
@@ -60,7 +66,8 @@ export const tabsStyles = stylex.create({
     backgroundColor: 'transparent',
     borderBottomColor: {
       default: 'transparent',
-      '[data-active]': colors.backgroundPrimary
+      '[data-active]': colors.backgroundPrimary,
+      '@media (forced-colors: active)': { default: 'Canvas', '[data-active]': 'Highlight' }
     },
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring2,

@@ -28,7 +28,10 @@ export const loaderTextStyles = stylex.create({
     color: 'transparent',
     gridArea: '1 / 1',
     transitionDuration: duration.medium,
-    transitionProperty: 'opacity, transform',
+    transitionProperty: {
+      default: 'opacity, transform',
+      '@media (prefers-reduced-motion: reduce)': 'opacity'
+    },
     transitionTimingFunction: easing.standard,
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent'
@@ -36,11 +39,8 @@ export const loaderTextStyles = stylex.create({
   textShimmer: {
     animationDuration: '2.5s',
     animationIterationCount: 'infinite',
-    animationName: shimmer,
-    animationTimingFunction: 'linear',
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: null
-    }
+    animationName: { default: shimmer, '@media (prefers-reduced-motion: reduce)': null },
+    animationTimingFunction: 'linear'
   },
   textExit: {
     opacity: 0,
@@ -51,7 +51,10 @@ export const loaderTextStyles = stylex.create({
     opacity: 0,
     transform: 'translateY(-100%)',
     transitionDuration: duration.medium,
-    transitionProperty: 'opacity, transform',
+    transitionProperty: {
+      default: 'opacity, transform',
+      '@media (prefers-reduced-motion: reduce)': 'opacity'
+    },
     transitionTimingFunction: easing.standard
   },
   completedTextEnter: {

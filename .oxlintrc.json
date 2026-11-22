@@ -2,6 +2,7 @@
     "$schema": "./node_modules/oxlint/configuration_schema.json",
     "plugins": ["typescript", "react", "unicorn", "import", "jsx-a11y", "eslint", "oxc"],
     "options": { "typeAware": true },
+    "jsPlugins": [{ "name": "paraglide", "specifier": "@inlang/paraglide-js/eslint" }],
     "env": { "browser": true, "builtin": true },
     "categories": { "correctness": "error", "suspicious": "error" },
     "rules": {
@@ -10,7 +11,19 @@
         "no-console": "off",
         "no-debugger": "warn",
         "no-empty": ["error", { "allowEmptyCatch": true }],
+        "no-restricted-imports": [
+            "error",
+            {
+                "patterns": [
+                    {
+                        "group": ["#/paraglide/messages"],
+                        "message": "Read messages through useMessages() (#/libraries/messages) so a language change re-renders the caller."
+                    }
+                ]
+            }
+        ],
         "no-unused-vars": ["error", { "args": "after-used" }],
+        "paraglide/no-dynamic-message-access": "error",
         "react/jsx-key": "error",
         "react/no-array-index-key": "error",
         "react/react-in-jsx-scope": "off",
@@ -22,6 +35,13 @@
         "typescript/triple-slash-reference": "allow"
     },
     "overrides": [
+        {
+            "files": [
+                "packages/webapp/app/libraries/messages.ts",
+                "packages/webapp/app/schemas/*.ts"
+            ],
+            "rules": { "no-restricted-imports": "off" }
+        },
         {
             "files": ["packages/uilibs/**"],
             "rules": {
@@ -45,5 +65,5 @@
             }
         }
     ],
-    "ignorePatterns": ["**/dist", "**/.tanstack", "**/routes.gen.ts"]
+    "ignorePatterns": ["**/dist", "**/.tanstack", "**/routes.gen.ts", "**/paraglide"]
 }

@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['primary', 'secondary', 'outline', 'ghost', 'destructive']
+      options: ['primary', 'secondary', 'outline', 'ghost']
     }
   },
   tags: [], // ['autodocs']

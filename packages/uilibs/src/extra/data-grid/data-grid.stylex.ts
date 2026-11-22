@@ -16,6 +16,19 @@ import {
 } from '../../styles/tokens.stylex'
 
 /**
+ * The grid's own stacking ladder, local to its stacking context (the tokens' `zIndex` ladder is for
+ * the page): sticky chrome above the cells it scrolls over, from `raised` up to `overlay`.
+ */
+export const gridLayer = stylex.defineConsts({
+  raised: 10,
+  scrollbar: 20,
+  pinned: 30,
+  outline: 35,
+  header: 40,
+  overlay: 50
+})
+
+/**
  * Shared data-grid chrome: the container slot, the scroll-area viewport /
  * scrollbar pieces, the cell-selection feature chrome (selection tints,
  * fill-drag outline, built-in cell editor, bulk selection bar), and the
@@ -75,7 +88,7 @@ export const dataGridScrollAreaStyles = stylex.create({
     pointerEvents: 'none',
     position: 'absolute',
     top: 'var(--data-grid-scrollbar-header-height)',
-    zIndex: 20,
+    zIndex: gridLayer.scrollbar,
     height: 'var(--data-grid-scrollbar-track-height)'
   },
   overlayTrack: {
@@ -279,7 +292,7 @@ export const dataGridCellSelectionFeatureStyles = stylex.create({
     outlineWidth: stroke.ring1,
     pointerEvents: 'none',
     position: 'absolute',
-    zIndex: 35
+    zIndex: gridLayer.outline
   }
 })
 
@@ -342,7 +355,7 @@ export const dataGridCellEditorStyles = stylex.create({
     resize: 'none',
     top: m.top,
     width: m.width,
-    zIndex: 35,
+    zIndex: gridLayer.outline,
     fontFamily: m.fontFamily,
     fontSize: m.fontSize,
     fontStyle: m.fontStyle,
@@ -394,7 +407,7 @@ export const dataGridSelectionBarStyles = stylex.create({
     paddingBlock: unit.x2,
     paddingInline: unit.x4,
     position: 'sticky',
-    zIndex: 40
+    zIndex: gridLayer.header
   },
   label: {
     color: colors.foregroundNeutral,
@@ -555,10 +568,6 @@ export const dataGridColumnFilterStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x2,
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,

@@ -249,3 +249,27 @@ export const DialogHotkey: Story = {
     await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
   }
 }
+
+export const TranslatedDialog: Story = {
+  render: () => (
+    <CommandDialog
+      open
+      labels={{ title: 'Palet perintah', description: 'Cari perintah untuk dijalankan' }}
+    >
+      <Command items={commands} itemToStringValue={itemLabel}>
+        <CommandInput placeholder='Cari…' />
+        <CommandList>
+          {(item: CommandEntry) => (
+            <CommandItem key={item.value} value={item}>
+              {item.label}
+            </CommandItem>
+          )}
+        </CommandList>
+      </Command>
+    </CommandDialog>
+  ),
+  play: async () => {
+    const dialog = await within(document.body).findByRole('dialog', { name: 'Palet perintah' })
+    await expect(dialog).toHaveAccessibleDescription('Cari perintah untuk dijalankan')
+  }
+}

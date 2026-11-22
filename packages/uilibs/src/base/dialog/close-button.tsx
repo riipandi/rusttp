@@ -1,6 +1,7 @@
 import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { focusRing } from '../../styles/utils.stylex'
 import { closeButtonStyles as s } from './close-button.stylex'
 
 /** Accessible names of the dismiss button in Dialog, Sheet, and Toast. */
@@ -15,15 +16,20 @@ export interface CloseLabels {
  * behavior; position it with `style`.
  */
 export function CloseButton({
-  label = 'Close',
+  labels,
   style,
   ...props
 }: Omit<React.ComponentProps<'button'>, 'className' | 'style'> & {
-  label?: string
+  labels?: Partial<CloseLabels>
   style?: stylex.StyleXStyles
 }) {
   return (
-    <button type='button' aria-label={label} {...props} {...stylex.props(s.root, style)}>
+    <button
+      type='button'
+      aria-label={{ close: 'Close', ...labels }.close}
+      {...props}
+      {...stylex.props(focusRing.root, s.root, style)}
+    >
       <X size={16} strokeWidth={1.5} aria-hidden />
     </button>
   )

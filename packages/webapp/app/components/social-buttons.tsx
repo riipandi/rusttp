@@ -4,6 +4,8 @@ import { Separator } from 'uilibs/base/separator'
 import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, unit } from 'uilibs/styles/tokens.stylex'
+import { useMessages } from '#/libraries/messages'
+import { notWired } from '#/libraries/not-wired'
 
 const styles = stylex.create({
   group: {
@@ -25,21 +27,22 @@ const styles = stylex.create({
 
 // Placeholders for the OAuth providers: the buttons do nothing until the backend has a provider flow.
 export function SocialButtons() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.group)}>
-        <Button type='button' variant='outline' size='lg'>
+        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with Google')}>
           <GoogleIcon size={18} aria-hidden='true' />
           Google
         </Button>
-        <Button type='button' variant='outline' size='lg'>
+        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with GitHub')}>
           <GitHubIcon size={18} aria-hidden='true' />
           GitHub
         </Button>
       </div>
       <div {...stylex.props(styles.divider)}>
         <Separator style={styles.line} />
-        or continue with email
+        {m.social_divider()}
         <Separator style={styles.line} />
       </div>
     </>

@@ -1,20 +1,21 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
+import { PageTitle } from '#/components/page-title'
+import { getMessages, useMessages } from '#/libraries/messages'
 import { styles } from '#/styles/pages/admin.stylex'
 
 export const Route = createFileRoute('/admin/users')({
   component: RouteComponent,
-  staticData: { pageTitle: 'Users' }
+  staticData: { pageTitle: () => getMessages().page_admin_users() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   return (
     <main {...stylex.props(styles.main)}>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Users</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Browse, invite, and manage the people who can sign in.
-        </p>
+        <PageTitle>{m.page_admin_users()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.page_admin_users_description()}</p>
       </div>
     </main>
   )

@@ -24,7 +24,7 @@ import type { ChartConfig } from './chart.component'
 // runtime var() strings), so every paint — SVG attributes and HTML styles —
 // follows light/dark themes through `themes.ts`.
 export const seriesColors = {
-  langdon: colors.backgroundPrimary, // brand blue
+  langdon: colors.backgroundPrimary, // brand orange
   potter: colors.backgroundPositive, // positive green
   brand: colors.backgroundPrimary,
   green: colors.backgroundPositive,

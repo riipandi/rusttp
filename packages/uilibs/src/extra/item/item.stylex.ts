@@ -22,10 +22,6 @@ export const itemStyles = stylex.create({
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     textDecoration: 'none',
     transitionDuration: duration.fast,
     transitionProperty: 'background-color, border-color',

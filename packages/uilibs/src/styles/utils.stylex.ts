@@ -53,3 +53,19 @@ export const visuallyHidden = stylex.create({
     width: 1
   }
 })
+
+/**
+ * The keyboard focus ring: a 2px outline in the primary color, drawn on `:focus-visible` only.
+ * Compose it before the component's own style (`stylex.props(focusRing.root, s.root, style)`);
+ * set `outlineOffset` locally when the ring must sit inside a clipped box. A StyleX constant
+ * cannot carry the value across files (`defineConsts` takes static values, a color variable is
+ * not), so the recipe is a style, not a string.
+ */
+export const focusRing = stylex.create({
+  root: {
+    outline: {
+      default: 'none',
+      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    }
+  }
+})

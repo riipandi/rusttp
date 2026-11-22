@@ -41,13 +41,5 @@ export const paginationStyles = stylex.create({
     height: unit.x8,
     justifyContent: 'center',
     width: unit.x8
-  },
-  srOnly: {
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    overflow: 'hidden',
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px'
   }
 })

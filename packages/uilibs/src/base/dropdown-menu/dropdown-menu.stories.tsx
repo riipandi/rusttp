@@ -199,14 +199,14 @@ export const Destructive: Story = {
         <DropdownMenuItem>Revise</DropdownMenuItem>
         <DropdownMenuItem>Gemino</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant='destructive'>Evanesco</DropdownMenuItem>
+        <DropdownMenuItem tone='critical'>Evanesco</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
 export const Submenu: Story = {
-  name: 'Submenu, shortcuts, destructive',
+  name: 'Submenu, shortcuts, critical',
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant='outline' />}>Quill actions</DropdownMenuTrigger>
@@ -223,7 +223,7 @@ export const Submenu: Story = {
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant='destructive'>
+        <DropdownMenuItem tone='critical'>
           Evanesco
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

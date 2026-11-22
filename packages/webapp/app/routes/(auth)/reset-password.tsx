@@ -1,14 +1,16 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
-import { ArrowLeft } from '@keyline-icons/react'
-import { CircleAlert } from '@keyline-icons/react'
+import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { PasswordField } from '#/components/form-fields'
+import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
-import { resetPasswordSchema, resetSearchSchema } from '#/schemas/reset-password.schema'
+import { getMessages, useMessages } from '#/libraries/messages'
+import { useRevalidateOnLocale } from '#/libraries/use-revalidate-on-locale'
+import { resetPasswordSchema, resetSearchSchema } from '#/schemas/auth.schema'
 import { styles } from '#/styles/pages/auth.stylex'
 
 export const Route = createFileRoute('/(auth)/reset-password')({
@@ -17,16 +19,18 @@ export const Route = createFileRoute('/(auth)/reset-password')({
   component: RouteComponent,
   errorComponent: InvalidLink,
   validateSearch: resetSearchSchema,
-  staticData: { pageTitle: 'Reset password' }
+  staticData: { pageTitle: () => getMessages().page_auth_reset_password() }
 })
 
 function RouteComponent() {
+  const m = useMessages()
   const navigate = useNavigate()
   const { token } = Route.useSearch()
   const form = useForm({
     schema: resetPasswordSchema,
     initialInput: { token, password: '', confirm: '' }
   })
+  useRevalidateOnLocale(form)
   // Demo only: there is no reset endpoint yet, so a valid form returns to sign in. The token travels
   // with the new password in the submitted values.
   const submit = handleSubmit(form, () => void navigate({ to: '/login' }))
@@ -34,11 +38,8 @@ function RouteComponent() {
   return (
     <>
       <div {...stylex.props(styles.heading)}>
-        <h1 {...stylex.props(styles.title)}>Choose a new password</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          Pick one you have not used here before. <br />
-          You will sign in with it next.
-        </p>
+        <PageTitle>{m.auth_reset_title()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_reset_subtitle()}</p>
       </div>
 
       <Form
@@ -52,17 +53,25 @@ function RouteComponent() {
         <div {...stylex.props(styles.fields)}>
           <Field of={form} path={['password']}>
             {(field) => (
-              <PasswordField field={field} label='New password' autoComplete='new-password' />
+              <PasswordField
+                field={field}
+                label={m.auth_reset_new_password()}
+                autoComplete='new-password'
+              />
             )}
           </Field>
           <Field of={form} path={['confirm']}>
             {(field) => (
-              <PasswordField field={field} label='Confirm password' autoComplete='new-password' />
+              <PasswordField
+                field={field}
+                label={m.auth_reset_confirm_password()}
+                autoComplete='new-password'
+              />
             )}
           </Field>
         </div>
         <Button type='submit' size='lg' style={styles.submit}>
-          Reset password
+          {m.auth_reset_submit()}
         </Button>
       </Form>
     </>
@@ -70,26 +79,24 @@ function RouteComponent() {
 }
 
 function InvalidLink() {
+  const m = useMessages()
   return (
     <>
       <div {...stylex.props(styles.heading)}>
         <StatusIcon svg={CircleAlert} tone='critical' />
-        <h1 {...stylex.props(styles.title)}>This reset link is not valid</h1>
-        <p {...stylex.props(styles.subtitle)}>
-          It may have expired or already been used. <br />
-          Request a new one and we will email it to you.
-        </p>
+        <PageTitle>{m.auth_reset_invalid_title()}</PageTitle>
+        <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 
       <LinkButton render={<Link to='/forgot-password' />} size='lg'>
-        Request a new link
+        {m.auth_reset_invalid_action()}
       </LinkButton>
 
       <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>
-        Back to sign in
+        {m.auth_back_to_sign_in()}
       </Link>
     </>
   )

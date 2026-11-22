@@ -56,7 +56,7 @@ The webapp has no `index.html`. Vite's build input is the entry module with `bui
 - serves `POST /__vixum/transform?url=…` (the document through `transformIndexHtml`) and `GET /__vixum/routes.json` in dev;
 - writes `routes.json` into the build output.
 
-The route table comes from the route tree itself: the plugin loads it through Vite's SSR graph, builds a router over it, and writes every navigable full path with its `staticData.pageTitle` and `pageDescription` (the nearest up the parent chain):
+The route table comes from the route tree itself: the plugin loads it through Vite's SSR graph, builds a router over it, and writes every navigable full path with its `staticData.pageTitle` and `pageDescription` (the nearest up the parent chain; a string, or a function the plugin calls once, as the webapp's translated titles are):
 
 ```json
 [{ "path": "/", "title": "Home" }, { "path": "/vaults/$vaultId", "title": "Vault", "description": "A vault at Gringotts." }]

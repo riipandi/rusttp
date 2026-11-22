@@ -1,3 +1,8 @@
+// Compiled, these Formisch fields stop updating (validation messages never show,
+// the captcha never toggles) and the compiler reports nothing; e2e `auth.spec.ts`
+// catches it.
+'use no memo'
+
 import type { FieldElementProps } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
@@ -8,19 +13,9 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs
 import { InputPassword } from 'uilibs/extra/input-password'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontLineHeight, fontSize, radius, unit } from 'uilibs/styles/tokens.stylex'
+import { useMessages } from '#/libraries/messages'
 
 const styles = stylex.create({
-  srOnly: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    margin: -1,
-    padding: 0,
-    overflow: 'hidden',
-    clip: 'rect(0, 0, 0, 0)',
-    whiteSpace: 'nowrap',
-    borderWidth: 0
-  },
   hint: {
     marginBlockStart: `calc(-1 * ${unit.x1})`,
     paddingInline: unit.x1,
@@ -71,11 +66,6 @@ const styles = stylex.create({
   },
   captchaInvalid: {
     borderColor: colors.borderCritical
-  },
-  captchaBadge: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption2,
-    textAlign: 'end'
   }
 })
 
@@ -94,7 +84,7 @@ const messagesOf = (field: Pick<FieldLike<unknown>, 'errors'>) =>
 
 interface TextFieldProps {
   field: FieldLike<string>
-  /** The accessible name; shown as the placeholder, not as a visible label. */
+  /** The visible label above the field, which is also its accessible name. */
   label: string
   description?: string
   autoComplete?: string
@@ -108,16 +98,13 @@ export function TextField({ field, label, description, autoComplete, inputMode }
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
-      <FieldLabel htmlFor={id} style={styles.srOnly}>
-        {label}
-      </FieldLabel>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
         {...field.props}
         id={id}
         size='lg'
         inputMode={inputMode}
         autoComplete={autoComplete}
-        placeholder={label}
         value={field.input ?? ''}
       />
       {messages.length > 0 ? (
@@ -135,21 +122,20 @@ export function PasswordField({
   description,
   autoComplete
 }: Omit<TextFieldProps, 'inputMode'>) {
+  const m = useMessages()
   const id = React.useId()
   const messages = messagesOf(field)
   const [capsLock, setCapsLock] = React.useState(false)
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
-      <FieldLabel htmlFor={id} style={styles.srOnly}>
-        {label}
-      </FieldLabel>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <InputPassword
         {...field.props}
         id={id}
         size='lg'
         autoComplete={autoComplete}
-        placeholder={label}
+        labels={{ show: m.form_password_show(), hide: m.form_password_hide() }}
         value={field.input ?? ''}
         onBlur={() => {
           field.props.onBlur()
@@ -163,7 +149,7 @@ export function PasswordField({
       ) : (
         description && <FieldDescription style={styles.hint}>{description}</FieldDescription>
       )}
-      {capsLock && <output {...stylex.props(styles.warning)}>Caps Lock is on.</output>}
+      {capsLock && <output {...stylex.props(styles.warning)}>{m.form_caps_lock()}</output>}
     </Field>
   )
 }
@@ -197,6 +183,7 @@ export function CheckboxField({ field, label }: { field: FieldLike<boolean>; lab
 // Placeholder for a captcha widget (Turnstile, hCaptcha, reCAPTCHA): a checkbox challenge with
 // nothing verifying it. Swap the body for the provider's widget; the schema already requires it.
 export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
+  const m = useMessages()
   const messages = messagesOf(field)
   const invalid = field.errors !== null
   const id = React.useId()
@@ -206,51 +193,72 @@ export function CaptchaField({ field }: { field: FieldLike<boolean> }) {
       <div {...stylex.props(styles.captcha, invalid && styles.captchaInvalid)}>
         <label htmlFor={id} {...stylex.props(styles.check)}>
           <FieldCheckbox field={field} id={id} />
-          I am not a robot
+          {m.form_captcha_label()}
         </label>
-        <span {...stylex.props(styles.captchaBadge)}>Captcha placeholder</span>
       </div>
       {invalid && <FieldError errors={messages} style={styles.hint} />}
     </Field>
   )
 }
 
-/** A one-time code in character slots: one group of `length`, or two halves when `split` is set. */
+// Idempotent, as Base UI requires: it may normalize the same value more than once.
+const toUpperCase = (value: string) => value.toUpperCase()
+
+/**
+ * A one-time code in character slots: one group of `length`, or two halves when `split` is set.
+ * `characters` is what the slots accept (digits by default) and `uppercase` turns typed or pasted
+ * letters into capitals; the schema still decides what is valid. `focusFirst` puts the caret in the
+ * first slot when the page opens.
+ */
 export function CodeField({
   field,
   label,
   length,
-  split = false
+  split = false,
+  characters = 'numeric',
+  uppercase = false,
+  focusFirst = false
 }: {
   field: FieldLike<string>
   label: string
   length: number
   split?: boolean
+  characters?: 'numeric' | 'alphanumeric'
+  uppercase?: boolean
+  focusFirst?: boolean
 }) {
+  const m = useMessages()
   const messages = messagesOf(field)
   const half = length / 2
+  const labelId = React.useId()
   // The first slot takes the ref, so a failed submit focuses the code.
   const slots = (from: number, to: number) =>
     Array.from({ length: to - from }, (_, index) => (
       <OTPFieldSlot
         key={from + index}
         ref={from + index === 0 ? field.props.ref : undefined}
+        // oxlint-disable-next-line jsx-a11y/no-autofocus -- deliberate: opt-in, for pages whose only task is this code
+        autoFocus={focusFirst && from + index === 0}
         style={styles.slot}
       />
     ))
 
   return (
     <Field name={field.props.name} invalid={field.errors !== null}>
+      <FieldLabel id={labelId}>{label}</FieldLabel>
       <OTPField
         size='lg'
         style={styles.code}
         name={field.props.name}
         length={length}
+        validationType={characters}
+        normalizeValue={uppercase ? toUpperCase : undefined}
         value={field.input ?? ''}
         onValueChange={field.onChange}
         onFocus={field.props.onFocus}
         onBlur={field.props.onBlur}
-        aria-label={label}
+        aria-labelledby={labelId}
+        labels={{ slot: (position, total) => m.form_code_slot({ position, length: total }) }}
       >
         {split ? (
           <>

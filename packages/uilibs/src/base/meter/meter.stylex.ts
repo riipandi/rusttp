@@ -21,15 +21,20 @@ export const meterStyles = stylex.create({
     borderRadius: radius.full,
     display: 'flex',
     height: unit.x1,
+    // Forced colors drop backgrounds: the track gets an edge and the fill a system color.
+    outline: { default: 'none', '@media (forced-colors: active)': '1px solid CanvasText' },
     overflowX: 'hidden',
     position: 'relative',
     width: '100%'
   },
   indicator: {
-    backgroundColor: colors.backgroundPrimary,
+    backgroundColor: {
+      default: colors.backgroundPrimary,
+      '@media (forced-colors: active)': 'Highlight'
+    },
     height: '100%',
     transitionDuration: duration.fast,
-    transitionProperty: 'width',
+    transitionProperty: { default: 'width', '@media (prefers-reduced-motion: reduce)': 'none' },
     transitionTimingFunction: easing.decelerate
   },
   label: {

@@ -1,58 +1,44 @@
 import { Monitor, Moon, Sun } from '@keyline-icons/react'
-import * as stylex from '@stylexjs/stylex'
-import { colors } from '../styles/colors.stylex'
-import { radius } from '../styles/tokens.stylex'
+import { Button } from '../base/button'
 import { useTheme } from './theme'
 
 const cycle: Record<string, string> = { light: 'dark', dark: 'system', system: 'light' }
 
-const labels: Record<string, string> = {
-  light: 'Switch to dark mode',
-  dark: 'Switch to system mode',
-  system: 'Switch to light mode'
+/** Accessible names of the switcher's button: it names the theme a press switches to. */
+export interface ThemeSwitcherLabels {
+  /** Shown while the theme is light. Defaults to `Switch to dark mode`. */
+  toDark: string
+  /** Shown while the theme is dark. Defaults to `Switch to system mode`. */
+  toSystem: string
+  /** Shown while the theme follows the system. Defaults to `Switch to light mode`. */
+  toLight: string
 }
 
-const styles = stylex.create({
-  wrapper: {
-    display: 'inline-flex'
-  },
-  base: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '2.25rem',
-    height: '2.25rem',
-    borderRadius: radius.large,
-    color: { default: colors.foregroundNeutralFaded, ':hover': colors.foregroundNeutral },
-    backgroundColor: { default: 'transparent', ':hover': colors.backgroundNeutralFaded },
-    borderWidth: 0,
-    cursor: 'pointer',
-    transitionProperty: 'background-color, color',
-    transitionDuration: '150ms'
-  },
-  icon: {
-    height: '1rem',
-    width: '1rem',
-    stroke: 'currentColor'
-  }
-})
+const defaultLabels: ThemeSwitcherLabels = {
+  toDark: 'Switch to dark mode',
+  toSystem: 'Switch to system mode',
+  toLight: 'Switch to light mode'
+}
 
-export function ThemeSwitcher() {
+export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels> }) {
   const { theme, setTheme } = useTheme()
   const current = theme ?? 'system'
+  const names = { ...defaultLabels, ...labels }
+  const byTheme: Record<string, string> = {
+    light: names.toDark,
+    dark: names.toSystem,
+    system: names.toLight
+  }
+  const Icon = current === 'light' ? Sun : current === 'dark' ? Moon : Monitor
 
   return (
-    <div {...stylex.props(styles.wrapper)}>
-      <button
-        type='button'
-        onClick={() => setTheme(cycle[current] ?? 'light')}
-        {...stylex.props(styles.base)}
-        aria-label={labels[current]}
-      >
-        {current === 'light' && <Sun {...stylex.props(styles.icon)} />}
-        {current === 'dark' && <Moon {...stylex.props(styles.icon)} />}
-        {current === 'system' && <Monitor {...stylex.props(styles.icon)} />}
-      </button>
-    </div>
+    <Button
+      variant='ghost'
+      size='icon-md'
+      onClick={() => setTheme(cycle[current] ?? 'light')}
+      aria-label={byTheme[current]}
+    >
+      <Icon size={16} aria-hidden />
+    </Button>
   )
 }

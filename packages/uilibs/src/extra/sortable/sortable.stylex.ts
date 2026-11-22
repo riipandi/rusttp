@@ -21,7 +21,11 @@ export const sortableStyles = stylex.create({
     position: 'relative',
     touchAction: 'manipulation',
     transitionDuration: duration.medium,
-    transitionProperty: 'opacity, transform, background-color, border-color, box-shadow',
+    transitionProperty: {
+      default: 'opacity, transform, background-color, border-color, box-shadow',
+      '@media (prefers-reduced-motion: reduce)':
+        'opacity, background-color, border-color, box-shadow'
+    },
     transitionTimingFunction: easing.decelerate
   },
   itemFaded: {
