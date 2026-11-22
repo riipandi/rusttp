@@ -47,6 +47,16 @@ export {
   DataGridTable,
   DataGridTableAddRow,
   DataGridTableBase,
+  DataGridTableHeader,
+  DataGridTableViewport
+} from './data-grid-table'
+export {
+  DataGridTableHead,
+  DataGridTableHeadRow,
+  DataGridTableHeadRowCell,
+  DataGridTableHeadRowCellResize
+} from './data-grid-table-head'
+export {
   DataGridTableBody,
   DataGridTableBodyRow,
   DataGridTableBodyRowCell,
@@ -54,24 +64,20 @@ export {
   DataGridTableBodyRowSkeleton,
   DataGridTableBodyRowSkeletonCell,
   DataGridTableEmpty,
-  DataGridTableFillBodyCell,
-  DataGridTableFillHeadCell,
   DataGridTableFoot,
   DataGridTableFootRow,
   DataGridTableFootRowCell,
-  DataGridTableHead,
-  DataGridTableHeadRow,
-  DataGridTableHeadRowCell,
-  DataGridTableHeadRowCellResize,
-  DataGridTableHeader,
   DataGridTableLoader,
   DataGridTableRenderedRow,
   DataGridTableRowExpand,
   DataGridTableRowPin,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-  DataGridTableRowSpacer,
-  DataGridTableViewport,
+  DataGridTableRowSpacer
+} from './data-grid-table-body'
+export {
+  DataGridTableFillBodyCell,
+  DataGridTableFillHeadCell,
   getDataGridScrollAreaViewport,
   getDataGridTableMergedHeaderGroups,
   getDataGridTableResolvedRows,
@@ -79,8 +85,8 @@ export {
   getDataGridTreeIndentStyle,
   getPinningStyles,
   hasDataGridTableRightPinnedColumns
-} from './data-grid-table'
-export type { DataGridTablePinnedBoundary } from './data-grid-table'
+} from './data-grid-table-utils'
+export type { DataGridTablePinnedBoundary } from './data-grid-table-utils'
 export { DataGridCellSelection } from './data-grid-cell'
 export { DataGridSelectionBar } from './data-grid-cell-editor'
 export {

@@ -8,28 +8,30 @@ import type { CSSProperties, ReactNode, Ref } from 'react'
 import { Spinner } from '../spinner'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
+import { DataGridTableAddRow, DataGridTableBase, DataGridTableViewport } from './data-grid-table'
 import {
-  DataGridTableAddRow,
-  DataGridTableBase,
   DataGridTableBody,
   DataGridTableEmpty,
-  DataGridTableFillBodyCell,
-  DataGridTableFillHeadCell,
   DataGridTableFoot,
+  DataGridTableRenderedRow,
+  DataGridTableRowSpacer
+} from './data-grid-table-body'
+import {
   DataGridTableHead,
   DataGridTableHeadRow,
   DataGridTableHeadRowCell,
-  DataGridTableHeadRowCellResize,
-  DataGridTableRenderedRow,
-  DataGridTableRowSpacer,
-  DataGridTableViewport,
+  DataGridTableHeadRowCellResize
+} from './data-grid-table-head'
+import {
+  DataGridTableFillBodyCell,
+  DataGridTableFillHeadCell,
   getDataGridScrollAreaViewport,
   getDataGridTableMergedHeaderGroups,
   getDataGridTableRowSections,
   getPinningStyles,
   hasDataGridTableRightPinnedColumns
-} from './data-grid-table'
-import type { DataGridTablePinnedBoundary } from './data-grid-table'
+} from './data-grid-table-utils'
+import type { DataGridTablePinnedBoundary } from './data-grid-table-utils'
 import { dataGridTableVirtualStyles as s3 } from './data-grid-table.stylex'
 
 interface DataGridTableVirtualScrollElements {

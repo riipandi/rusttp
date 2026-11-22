@@ -47,8 +47,8 @@ import { createPortal } from 'react-dom'
 import { Button } from '../../base/button'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
+import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'
 import {
-  DataGridTableBase,
   DataGridTableBody,
   DataGridTableBodyRow,
   DataGridTableBodyRowCell,
@@ -56,16 +56,16 @@ import {
   DataGridTableBodyRowSkeleton,
   DataGridTableBodyRowSkeletonCell,
   DataGridTableEmpty,
-  DataGridTableFillBodyCell,
-  DataGridTableFillHeadCell,
   DataGridTableFoot,
+  DataGridTableRowSpacer
+} from './data-grid-table-body'
+import {
   DataGridTableHead,
   DataGridTableHeadRow,
   DataGridTableHeadRowCell,
-  DataGridTableHeadRowCellResize,
-  DataGridTableRowSpacer,
-  DataGridTableViewport
-} from './data-grid-table'
+  DataGridTableHeadRowCellResize
+} from './data-grid-table-head'
+import { DataGridTableFillBodyCell, DataGridTableFillHeadCell } from './data-grid-table-utils'
 import {
   dndCellDragStyle,
   dndGripCursorStyles,
