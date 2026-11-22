@@ -1,7 +1,7 @@
 ---
 status: done
 created: 2026-11-22T19:00:00+07:00
-updated: 2026-11-22T23:35:00+07:00
+updated: 2026-11-22T23:59:09+07:00
 phases:
     - id: 0
       title: Commit the audit work already in the tree
@@ -69,8 +69,8 @@ phases:
       note: plan archived, handover-00011 written, handover-00010 archived, index rows moved, audit-00002 F-15 added to the findings table
     - id: 16
       title: Final validation
-      status: in_progress
-      note: runs after the phase 15 commit; results recorded in handover-00011
+      status: done
+      note: Chromium gate 910 green (Firefox 910 green; WebKit fails only the known menubar F-12 and the WebKit-flaky select Keyboard); 390 px probe over 459 stories x 2 themes clean except two Contracts stories; test-web 75, E2E 184, size 461.1 KB / 146.7 KB gzip; fixes made on the way are in the closing commit
 ---
 
 # Align uilibs component props with Reshaped, then group every component's stories by prop axis

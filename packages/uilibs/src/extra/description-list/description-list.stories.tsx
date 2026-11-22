@@ -48,7 +48,7 @@ const order = {
   vat: 'GB 000 0000 00'
 }
 
-export const Default: Story = {
+export const Playground: Story = {
   render: (args) => (
     <DescriptionList {...args} style={styles.frame}>
       <DescriptionTerm>Order number</DescriptionTerm>

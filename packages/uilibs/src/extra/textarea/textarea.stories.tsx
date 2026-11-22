@@ -29,6 +29,7 @@ type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   wrap: {
+    maxWidth: '100%',
     width: container.large
   },
   fill: {

@@ -100,7 +100,8 @@ export const Playground: Story = {
     const before = panel?.getBoundingClientRect().width ?? 0
     handle.focus()
     await userEvent.keyboard('{ArrowRight}')
-    await expect(getComputedStyle(handle).boxShadow).not.toBe('none')
+    // The glow fades in with a transition, so wait for it.
+    await waitFor(() => expect(getComputedStyle(handle).boxShadow).not.toBe('none'))
     await expect(panel?.getBoundingClientRect().width ?? 0).toBeGreaterThan(before)
   }
 }

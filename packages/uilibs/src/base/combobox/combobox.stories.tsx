@@ -117,9 +117,11 @@ export const Playground: Story = {
     await expect(options.length).toBe(1)
     await expect(target).toHaveTextContent('Hogwarts')
 
-    // Selecting fills the input and closes the popup.
+    // Selecting fills the input and closes the popup. axe runs right after `play`, and a popup
+    // still closing (WebKit under load) is a listbox without a name, so wait for it to go.
     await userEvent.click(target)
     await waitFor(() => expect(input).toHaveValue('Hogwarts'))
+    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
   }
 }
 

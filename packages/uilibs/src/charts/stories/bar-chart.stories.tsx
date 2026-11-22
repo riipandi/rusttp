@@ -5,7 +5,7 @@ import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -236,9 +236,14 @@ export const Layouts: Story = {
       await expect(rectCount(cell)).toBeGreaterThanOrEqual(checkouts.length * 2)
     }
     // Stacked bars share the month's slot: grouped ones are narrower.
+    // The bars animate in from zero width, so wait until both are measurable.
     const barWidth = (layout: string) =>
       cellOf(canvasElement, 'layout', layout).querySelector('rect')?.getBoundingClientRect()
         .width ?? 0
+    await waitFor(async () => {
+      await expect(barWidth('stacked')).toBeGreaterThan(0)
+      await expect(barWidth('grouped')).toBeGreaterThan(0)
+    })
     await expect(barWidth('grouped')).toBeLessThan(barWidth('stacked'))
   }
 }

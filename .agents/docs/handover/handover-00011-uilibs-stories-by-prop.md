@@ -1,6 +1,6 @@
 ---
 status: done
-created: 2026-11-22T23:35:00+07:00
+created: 2026-11-22T23:59:09+07:00
 plan: plan-00008-uilibs-stories-by-prop
 ---
 
@@ -29,10 +29,19 @@ Ledger moves: `plan-00008` archived; `handover-00010` archived; `audit-00002` st
 - `docs(agents): sync the story convention, the color and variant model, and the new props`
 - The closing commit (this handover, the archive moves).
 
+## Final validation (phase 16)
+
+- Chromium gate 910 of 910 (light and dark, axe, console gate), `just test-web` 75, E2E Chromium 184, `just size` 461.1 KB of 480 and 146.7 KB gzip of 152, lint, format, and typecheck clean.
+- Firefox 910 of 910. WebKit: only the menubar (F-12, known) and `select > Keyboard` (WebKit-flaky since F-06) fail in a full run.
+- 390 px probe of all 459 stories in both themes: clean, except two `Contracts` stories left alone (`Control heights per size` 426 px over, `Ref as a prop` 22 px over). The probe also found a fixed-width Textarea story (now `maxWidth: '100%'`).
+- Flakes the final run exposed, fixed in the stories: bar-chart `Layouts` read bar width mid-animation (Firefox), resizable `Playground` read the focus glow mid-transition, and combobox `Playground` left a closing popup for axe to flag in WebKit. WebKit was not rerun in full after the combobox fix; the story passes alone in both themes.
+- Every story folder has a `Playground`; calendar and description-list got theirs by renaming `Controlled` and `Default`.
+
 ## What stayed open / the trap
 
 - `audit-00002`: F-02, F-03, F-04, F-08, F-10, F-11, F-13, F-14, F-15 open, F-12 deferred; all wait for the owner's fix decision.
 - Chart stories that draw different data per story (bollinger-band, boxplot, dumbbell, and others) only got the fluid canvas and a `Playground` name: they have no prop axis. `progress-circle` and `donut-chart` have no `variant`, so the plan's axis stories for them were not written.
+- The two wide `Contracts` stories above (audit-00002 F-09 note).
 - The plan's permanent overflow gate (an `afterEach` check for horizontal overflow) was left out of scope; open an issue if wanted.
 
 Trap: a story that shows one axis per row inside a flex column stretches an `Icon` (its root is a column child), so measure the `svg`, or wrap the icon in a row. And never run Storybook while `pnpm --filter uilibs test` runs: both want port 6006.
