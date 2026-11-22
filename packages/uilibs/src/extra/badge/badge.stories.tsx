@@ -2,7 +2,7 @@ import { Check } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect } from 'storybook/test'
+import { expect, fn, userEvent } from 'storybook/test'
 import { Spinner } from '../spinner'
 import { Badge } from './badge.component'
 
@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['primary', 'secondary', 'outline', 'ghost']
+      options: ['solid', 'faded', 'outline', 'ghost']
     }
   },
   tags: [], // ['autodocs']
@@ -123,5 +123,52 @@ export const Link: Story = {
   play: async ({ canvas }) => {
     const link = canvas.getByRole('link', { name: "New at Weasleys'" })
     await expect(link).toHaveAttribute('href', '#new-release')
+  }
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <div {...stylex.props(styles.row)}>
+      {(['sm', 'md', 'lg'] as const).map((size) => (
+        <Badge key={size} size={size}>
+          {size}
+        </Badge>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const height = (name: string) => canvas.getByText(name).getBoundingClientRect().height
+    await expect(height('sm')).toBeLessThan(height('md'))
+    await expect(height('md')).toBeLessThan(height('lg'))
+  }
+}
+
+export const Squared: Story = {
+  render: () => <Badge rounded={false}>Owl Post</Badge>,
+  play: async ({ canvas }) => {
+    await expect(getComputedStyle(canvas.getByText('Owl Post')).borderTopLeftRadius).toBe('6px')
+  }
+}
+
+export const WithGlyph: Story = {
+  name: 'With glyph prop',
+  render: () => (
+    <Badge icon={Check} color='positive'>
+      Ministry approved
+    </Badge>
+  )
+}
+
+export const Dismissible: Story = {
+  args: { onDismiss: fn() },
+  render: (args) => (
+    <Badge variant='faded' onDismiss={args.onDismiss}>
+      Detention
+    </Badge>
+  ),
+  play: async ({ args, canvas }) => {
+    const dismiss = canvas.getByRole('button', { name: 'Dismiss' })
+    await userEvent.click(dismiss)
+    await expect(args.onDismiss).toHaveBeenCalledOnce()
   }
 }

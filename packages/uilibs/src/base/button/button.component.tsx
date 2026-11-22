@@ -12,10 +12,13 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import { buttonFills, buttonSizes, buttonStyles } from './button.stylex'
+import { buttonFills, buttonModifiers, buttonSizes, buttonStyles } from './button.stylex'
 
 export type ButtonVariant = keyof typeof buttonFills
-export type ButtonColor = 'primary' | 'neutral' | 'critical'
+export type ButtonColor = 'primary' | 'neutral' | 'critical' | 'positive' | 'warning'
+
+/** A glyph component, such as a Keyline icon; the button sizes it and hides it from assistive technology. */
+export type ButtonGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
 
 /** The style of a fill in a color; the color is `primary` for `solid` and `neutral` for the other fills unless given. */
 export function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
@@ -31,6 +34,16 @@ export interface ButtonProps extends Omit<
   /** The role. `primary` for `solid`, `neutral` for the other fills, by default; `critical` marks a destructive or irreversible action. */
   color?: ButtonColor
   size?: keyof typeof buttonSizes
+  /** Fully rounded ends. */
+  rounded?: boolean
+  /** Fills the width of its container. */
+  fullWidth?: boolean
+  /** Lifts the button with the raised shadow. */
+  raised?: boolean
+  /** A glyph before the label. With no children the button is icon-only and needs an `aria-label`. */
+  icon?: ButtonGlyph
+  /** A glyph after the label. */
+  endIcon?: ButtonGlyph
   /**
    * Shows a spinner over the label and ignores presses until it clears. The button keeps its
    * width and its name, stays focusable, and reports `aria-busy` (a screen reader keeps the label).
@@ -43,12 +56,25 @@ export function Button({
   variant = 'solid',
   color,
   size = 'md',
+  rounded = false,
+  fullWidth = false,
+  raised = false,
+  icon: Icon,
+  endIcon: EndIcon,
   loading = false,
   disabled,
   children,
   style,
   ...props
 }: ButtonProps) {
+  const glyph = size === 'xs' ? 14 : size === 'lg' ? 18 : 16
+  const content = (
+    <>
+      {Icon ? <Icon size={glyph} aria-hidden /> : null}
+      {children}
+      {EndIcon ? <EndIcon size={glyph} aria-hidden /> : null}
+    </>
+  )
   return (
     <BaseButton
       {...props}
@@ -63,6 +89,9 @@ export function Button({
         buttonFill(variant, color),
         (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
         buttonSizes[size],
+        rounded && buttonModifiers.rounded,
+        fullWidth && buttonModifiers.fullWidth,
+        raised && buttonModifiers.raised,
         loading && buttonStyles.loading,
         style
       )}
@@ -71,14 +100,14 @@ export function Button({
         {loading ? (
           <>
             <span {...stylex.props(buttonStyles.content, buttonStyles.contentHidden)}>
-              {children}
+              {content}
             </span>
             <span {...stylex.props(buttonStyles.spinner)}>
               <Spinner />
             </span>
           </>
         ) : (
-          children
+          content
         )}
       </LabelledControlContext.Provider>
     </BaseButton>

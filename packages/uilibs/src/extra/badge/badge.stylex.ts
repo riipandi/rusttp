@@ -10,14 +10,49 @@ export const badgeStyles = stylex.create({
     borderRadius: radius.full,
     display: 'inline-flex',
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium,
     gap: unit.x1,
-    lineHeight: fontLineHeight.caption1,
     outlineOffset: stroke.ring2,
-    paddingBlock: unit.x1,
-    paddingInline: unit.x3,
     whiteSpace: 'nowrap'
+  },
+  squared: { borderRadius: radius.small },
+  dismiss: {
+    alignItems: 'center',
+    appearance: 'none',
+    backgroundColor: 'transparent',
+    borderRadius: radius.full,
+    borderStyle: 'none',
+    color: 'inherit',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    justifyContent: 'center',
+    marginInlineEnd: `calc(-1 * ${unit.x1})`,
+    padding: 0,
+    // The dismiss target keeps a 24px hit area (WCAG 2.5.8) without growing the badge.
+    position: 'relative',
+    '::after': { content: '""', inset: `calc(-1 * ${unit.x1})`, position: 'absolute' }
+  }
+})
+
+// `md` is the badge as it was before sizes existed.
+export const badgeSizes = stylex.create({
+  sm: {
+    fontSize: fontSize.caption2,
+    lineHeight: fontLineHeight.caption2,
+    paddingBlock: unit.x0_5,
+    paddingInline: unit.x2
+  },
+  md: {
+    fontSize: fontSize.caption1,
+    lineHeight: fontLineHeight.caption1,
+    paddingBlock: unit.x1,
+    paddingInline: unit.x3
+  },
+  lg: {
+    fontSize: fontSize.body2,
+    lineHeight: fontLineHeight.body2,
+    paddingBlock: unit.x1_5,
+    paddingInline: unit.x4
   }
 })
 

@@ -13,12 +13,12 @@ phases:
       note: 4dce9b2; Axis replaces ControlSizesColumn and DenseControlSizesColumn in 14 story files
     - id: 2
       title: Rename tone to color, rename Button and Badge variants
-      status: in_progress
-      note: parity 74 of 76 identical (the 2 diffs are ghost critical border-top-color under border-style none); e2e 184 passed; commit hash lands with phase 3
+      status: committed
+      note: 2b4096a; parity 74 of 76 identical (the 2 diffs are ghost critical border-top-color under border-style none); e2e 184 passed
     - id: 3
       title: Button and Badge new props and colors
-      status: pending
-      note: —
+      status: in_progress
+      note: defaults identical to the phase 2 build (0 diffs of 76); gate 900 green in both themes; commit hash lands with phase 4
     - id: 4
       title: Text entry variant, Checkbox Radio Switch size
       status: pending

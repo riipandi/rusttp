@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -73,6 +73,20 @@ export const buttonSolid = stylex.create({
       [hover]: colors.backgroundCriticalHighlighted
     },
     color: colors.onBackgroundCritical
+  },
+  positive: {
+    backgroundColor: {
+      default: colors.backgroundPositive,
+      [hover]: colors.backgroundPositiveHighlighted
+    },
+    color: colors.onBackgroundPositive
+  },
+  warning: {
+    backgroundColor: {
+      default: colors.backgroundWarning,
+      [hover]: colors.backgroundWarningHighlighted
+    },
+    color: colors.onBackgroundWarning
   }
 })
 
@@ -97,6 +111,20 @@ export const buttonFaded = stylex.create({
       [hover]: colors.backgroundCriticalHighlightedFaded
     },
     color: colors.foregroundCritical
+  },
+  positive: {
+    backgroundColor: {
+      default: colors.backgroundPositiveFaded,
+      [hover]: colors.backgroundPositiveHighlightedFaded
+    },
+    color: colors.foregroundPositive
+  },
+  warning: {
+    backgroundColor: {
+      default: colors.backgroundWarningFaded,
+      [hover]: colors.backgroundWarningHighlightedFaded
+    },
+    color: colors.foregroundWarning
   }
 })
 
@@ -124,6 +152,20 @@ export const buttonOutline = stylex.create({
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
     color: colors.foregroundCritical
+  },
+  positive: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundPositiveFaded },
+    borderColor: colors.borderPositive,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    color: colors.foregroundPositive
+  },
+  warning: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundWarningFaded },
+    borderColor: colors.borderWarning,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    color: colors.foregroundWarning
   }
 })
 
@@ -139,6 +181,14 @@ export const buttonGhost = stylex.create({
   critical: {
     backgroundColor: { default: 'transparent', [hover]: colors.backgroundCriticalFaded },
     color: colors.foregroundCritical
+  },
+  positive: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundPositiveFaded },
+    color: colors.foregroundPositive
+  },
+  warning: {
+    backgroundColor: { default: 'transparent', [hover]: colors.backgroundWarningFaded },
+    color: colors.foregroundWarning
   }
 })
 
@@ -148,6 +198,13 @@ export const buttonFills = {
   outline: buttonOutline,
   ghost: buttonGhost
 }
+
+// Boolean props that change the box, composed after the fill and the size.
+export const buttonModifiers = stylex.create({
+  rounded: { borderRadius: radius.full },
+  fullWidth: { width: '100%' },
+  raised: { boxShadow: shadow.raised }
+})
 
 export const buttonSizes = stylex.create({
   xs: { fontSize: fontSize.caption1, gap: unit.x1, height: unit.x7, paddingInline: unit.x2 },

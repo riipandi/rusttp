@@ -1,4 +1,4 @@
-import { Plus } from '@keyline-icons/react'
+import { ArrowRight, Plus } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
@@ -16,7 +16,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['primary', 'secondary', 'outline', 'ghost']
+      options: ['solid', 'faded', 'outline', 'ghost']
     },
     size: { control: 'radio', options: Object.keys(buttonSizes) },
     disabled: { control: 'boolean' }
@@ -50,9 +50,9 @@ const styles = stylex.create({
     flexWrap: 'wrap',
     gap: 8
   },
-  rounded: { borderRadius: radius.full },
   pill: { borderRadius: radius.full },
-  wide: { paddingInline: 48 }
+  wide: { paddingInline: 48 },
+  wideBox: { width: 320 }
 })
 
 export default meta
@@ -88,7 +88,7 @@ export const Ghost: Story = {
 }
 
 const fillNames = ['solid', 'faded', 'outline', 'ghost'] as const
-const colorNames = ['primary', 'neutral', 'critical'] as const
+const colorNames = ['primary', 'neutral', 'critical', 'positive', 'warning'] as const
 
 /** Every fill in every color; the a11y gate checks the contrast of each pair. */
 export const Colors: Story = {
@@ -112,7 +112,9 @@ export const Colors: Story = {
     }
     // Color and fill are independent: every pair renders and no two colors share a look.
     for (const variant of fillNames) {
-      await expect(new Set(colorNames.map((color) => look(variant, color))).size).toBe(3)
+      await expect(new Set(colorNames.map((color) => look(variant, color))).size).toBe(
+        colorNames.length
+      )
     }
   }
 }
@@ -217,7 +219,54 @@ export const Disabled: Story = {
 }
 
 export const Rounded: Story = {
-  render: () => <Button style={styles.rounded}>Golden Snitch</Button>
+  render: () => <Button rounded>Golden Snitch</Button>,
+  play: async ({ canvas }) => {
+    await expect(
+      getComputedStyle(canvas.getByRole('button', { name: 'Golden Snitch' })).borderTopLeftRadius
+    ).toBe('999px')
+  }
+}
+
+export const Icons: Story = {
+  render: () => (
+    <div {...stylex.props(styles.row)}>
+      <Button icon={Plus}>Add a spell</Button>
+      <Button endIcon={ArrowRight} variant='outline'>
+        Next chapter
+      </Button>
+      <Button icon={Plus} aria-label='Accio' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    // The glyphs are decoration: the names are the labels (and the aria-label when icon-only).
+    await expect(canvas.getByRole('button', { name: 'Add a spell' })).toBeInTheDocument()
+    await expect(canvas.getByRole('button', { name: 'Next chapter' })).toBeInTheDocument()
+    await expect(canvas.getByRole('button', { name: 'Accio' })).toBeInTheDocument()
+  }
+}
+
+export const FullWidth: Story = {
+  name: 'Full width',
+  render: () => (
+    <div {...stylex.props(styles.wideBox)}>
+      <Button fullWidth>Apparate to Hogsmeade</Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'Apparate to Hogsmeade' })
+    await expect(button.getBoundingClientRect().width).toBe(
+      button.parentElement?.getBoundingClientRect().width
+    )
+  }
+}
+
+export const Raised: Story = {
+  render: () => <Button raised>Quidditch Cup</Button>,
+  play: async ({ canvas }) => {
+    await expect(
+      getComputedStyle(canvas.getByRole('button', { name: 'Quidditch Cup' })).boxShadow
+    ).not.toBe('none')
+  }
 }
 
 export const AsLink: Story = {
