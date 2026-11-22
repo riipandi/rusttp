@@ -1,8 +1,8 @@
 ---
 status: considering
 created: 2026-11-22T07:00:00+07:00
-updated: 2026-11-22T13:15:00+07:00
-summary: "What plan 00004 left out or found on the way, re-checked 2026-11-22: the entry load grew mostly because of TooltipProvider at the root, not useMessages (open); two palette contrast gaps, the data grid size, the double-mounted admin chrome, and no webapp unit runner stay parked; the AGENTS.md line is resolved."
+updated: 2026-11-22T14:10:00+07:00
+summary: "Re-checked 2026-11-22; plan 00005 resolved five of six: the entry load (the root TooltipProvider, not useMessages), the contrast gaps, the data grid size, the double-mounted admin chrome, and the AGENTS.md line. Only the missing webapp unit test runner stays parked."
 count: 6
 ---
 
@@ -10,35 +10,39 @@ count: 6
 
 ## Entry load grew 29% and most of it is the root TooltipProvider
 
-- status: open
+- status: resolved (2026-11-22)
   area: frontend/webapp
   summary: Measured 2026-11-22 by building `ce3393d` (before the i18n slice), the intermediate commits, and `HEAD`, and summing the entry chunk plus every chunk it imports statically (`.vite/manifest.json`; gzip level 9). `ce3393d`: 422 KB (137 KB gzip). `a2e7a76` (`useMessages`): 457 KB (146 KB gzip), so `libraries/messages.ts` costs about 35 KB (9 KB gzip); the catalogs sit in one shared `messages-*.js` chunk (63.6 KB, 295 keys in both locales) that `main` imports statically, so per-message tree shaking is gone but the cost is bounded. `e7618a0`: 547 KB (177 KB gzip), a further 89 KB (31 KB gzip): `routes/__root.tsx` now wraps the app in `TooltipProvider` (it was only in `routes/admin/-sidebar.tsx`), which pulls Base UI's tooltip, popover positioning, and their dependencies into the entry for the landing and auth pages too. Rebuilding `b9e992d` without the root provider gives 458 KB (146 KB gzip), confirming it. The earlier note blamed `useMessages` alone and quoted `main` only (303 → 363 KB), which hid this. `Tooltip` is used in `components/notifications.tsx`, `routes/admin/-commandbar.tsx`, and the sidebar; none of them renders outside `/admin`, `(app)`'s header, or the popover.
-  plan: none yet (a plan awaits the owner's choice of approach)
-  trigger: The owner picks an approach. Options: render `TooltipProvider` only in the layouts that show tooltips (`routes/admin/route.tsx`, `routes/(app)/route.tsx`) so the landing and auth pages never load it, and code-split what remains; `forLocale` stays whole-namespace: a lazy per-language catalog was built and measured on 2026-11-22 (plan 00005 D8) and saves nothing, one language being 6.0 KB gzip.
+  plan: plan-00005-ui-leftovers-remediation
+  trigger: None — closed.
+  resolution: `TooltipProvider` moved from the root into the admin and customer layouts and `pnpm --filter webapp size` fails over 480 KB / 152 KB gzip: 546.6 KB / 177.0 KB gzip became 458.1 KB / 145.9 KB; the entry, landing, and login chunks no longer contain the tooltip. A lazy per-language catalog was built and dropped (one language is 6.0 KB gzip; plan 00005 D8) (`3affca4`, `a9cd234`).
 
 ## Two palette contrast gaps need token values
 
-- status: considering (trigger: the owner opens the palette, `colors.stylex.ts` and `themes.ts`)
+- status: resolved (2026-11-22)
   area: frontend/uilibs
   summary: Verified 2026-11-22 by converting the OKLCH tokens to sRGB and computing WCAG ratios. Chart series on the page background (`charts/chart.samples.tsx:26`): `backgroundWarning` 1.86:1 and `backgroundNeutralHighlighted` 1.30:1 (light), neutral 1.79:1 and `backgroundPrimary` 3.77:1 (dark; positive 3.81 and critical 4.24 pass the 3:1 non-text bound). `borderControl` on `backgroundNeutral`: 2.82:1 (light), 2.51:1 (dark), so a bordered control directly on that surface falls under 3:1; on the page it is 3.36 / 3.84. Plan 00004 D1 left tokens alone; `ui-components.md` §3 tells authors to label such a series.
-  plan: plan-00004-ui-audit-remediation (D1)
-  trigger: The owner's palette change.
+  plan: plan-00004-ui-audit-remediation (D1), lifted by plan-00005-ui-leftovers-remediation
+  trigger: None — closed.
+  resolution: chart series use the `foreground*` tokens (5.6:1 or better on the page) and `borderControl` is L 0.58 light, 0.64 dark: 3.59 / 3.77 on `backgroundNeutral`, 3.30 / 3.22 on its hover surface (`045ae52`).
 
 ## Data grid is two 2.4k-line files
 
-- status: considering (trigger: a defect that depends on the file size, or a need to import less of the grid)
+- status: resolved (2026-11-22)
   area: frontend/uilibs
   summary: Verified 2026-11-22: `extra/data-grid/data-grid-cell.tsx` is 2459 lines and `data-grid-table.tsx` 2491 (the folder is 11096 lines; audit F-26, plan 00004 D11). Only its style conditions and literals changed.
-  plan: none yet
-  trigger: As stated above.
+  plan: plan-00005-ui-leftovers-remediation
+  trigger: None — closed.
+  resolution: `data-grid-cell.tsx` is 1243 lines (ops 1008, editor 250) and `data-grid-table.tsx` 465 (body 1091, head 680, utils 333), code moved unchanged, public exports identical (`7a18377`, `f930e23`).
 
 ## Admin sidebar and top bar both mount their popover and menu
 
-- status: considering (trigger: a measured cost, or a bug from two live subscriptions)
+- status: resolved (2026-11-22)
   area: frontend/webapp
   summary: Verified 2026-11-22 against the running server: at 1440px and at 390px `/admin` holds two `Notifications, 3 unread` buttons, one visible and one hidden (`routes/admin/route.tsx` renders `Sidebar` and `AdminTopBar`; `styles/pages/admin.stylex.ts` hides one with `display: none` at the compact breakpoint). Both read the one `notificationsStore`, so the counts agree; a popover's content mounts only when it opens, so the cost is two bells and two menu triggers. Open risk: a popover left open while the window crosses the breakpoint (plan 00004 D12).
-  plan: none yet
-  trigger: As stated above.
+  plan: plan-00005-ui-leftovers-remediation
+  trigger: None — closed.
+  resolution: the layout renders the sidebar or the top bar by `useCompact()`; an E2E spec asserts one bell at 1440px and at 390px and the swap across 767px (`8bd85e9`).
 
 ## The webapp has no unit test runner
 

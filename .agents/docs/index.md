@@ -32,7 +32,7 @@ There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-Live: `plan-00005-ui-leftovers-remediation.md` (in-progress, phases 1-4 committed, 11 phases: the entry budget and the root `TooltipProvider`, one admin chrome per viewport, series and `borderControl` contrast, the data grid split; phase 5, the lazy language catalog, was measured and cancelled; issue-00003 items 1-4). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
+None live. `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), `plan-00004-ui-audit-remediation.md`, and `plan-00005-ui-leftovers-remediation.md` (both done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -41,7 +41,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
-| `issue-00003-ui-audit-leftovers.md` | considering (1 open, 4 considering, 1 resolved) | What plan 00004 left out: entry load growth (mostly the root `TooltipProvider`), palette contrast gaps, data grid size, double-mounted admin chrome, no webapp unit runner; the `AGENTS.md` line is resolved. |
+| `issue-00003-ui-audit-leftovers.md` | considering (1 considering, 5 resolved) | What plan 00004 left out; plan 00005 resolved the entry load (root `TooltipProvider`), contrast gaps, data grid size, double-mounted admin chrome, and the `AGENTS.md` line. Open: no webapp unit test runner. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
@@ -49,15 +49,12 @@ Parked improvements with a named unlock. None yet; the dual-edition idea is park
 
 ## Handovers (`.agents/docs/handover/`)
 
-Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five newest.
+Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the newest and the ones with open threads, the finished ones move to the archive.
 
-| File                                     | Status | Subject                                                                                       |
-| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
-| `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
-| `handover-00005-webapp-nav-container-demo.md` | done | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme; every open thread closed (re-checked 2026-11-22). |
-| `handover-00006-admin-sidebar-followups.md` | done | Plan 00003 closed: tooltip gate, measured contrast, persisted sidebar collapse; issue 00002 resolved, the rail logo is no longer a link (since `fe1415a`). |
-| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 (re-measured: the entry growth is mostly the root `TooltipProvider`), the traps. |
+| File                                     | Status  | Subject                                                                                                                                              |
+| ---------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 (re-measured), the traps.                                                          |
+| `handover-00008-ui-leftovers-remediation.md` | partial | Plan 00005 closed: entry budget, per-layout tooltip, one admin chrome, contrast, data grid split, the dropped lazy catalog; issue 00003 item 5 open. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -65,4 +62,4 @@ Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `audit-00001-uilibs.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00001-cli-transport-vixum.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).
+Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).

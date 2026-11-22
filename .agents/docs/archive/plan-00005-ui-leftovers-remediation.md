@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-22T13:20:00+07:00
-updated: 2026-11-22T14:03:00+07:00
+updated: 2026-11-22T14:10:00+07:00
 phases:
     - id: 1
       title: Entry-load budget check (fails on the current tree)
@@ -33,20 +33,20 @@ phases:
       note: "The table commit. data-grid-table.tsx 2491 -> 465 lines (body 1091, head 680, utils 333; utils is .tsx, not .ts as D6 wrote, because the fill-column cells are JSX); acyclic: utils <- head, body <- table; same checks as phase 6, export list of 103 names identical; uilibs 92 files, 444 tests. data-grid-table-virtual.tsx (1186) was not touched by the split."
     - id: 8
       title: Docs sync (docs/)
-      status: pending
-      note: —
+      status: done
+      note: "n/a: `rg -n -i "sidebar|bundle|palette|tooltip|chart|data grid" docs` finds nothing (exit 1); `docs/` has no UI content."
     - id: 9
       title: Agent docs sync (.agents/docs and AGENTS.md)
-      status: pending
-      note: —
+      status: committed
+      note: "a220a85. rules.md (Webapp bundle, borderControl values, the rebuild trap, the tooltip line), shape.md (size recipe, data-grid layout, admin chrome), ui-components.md, architecture.md (decision record with D1, D11, D12 reversals), the index "Terms" paragraph from phase 5's revision; `rumdl check .` clean."
     - id: 10
       title: Ledger close and handover
-      status: pending
-      note: —
+      status: done
+      note: "handover-00008 written; plan archived; issue-00003 items 1-4 resolved, item 5 left; handovers 00003-00006 (done) archived; index moved. Closing commit made on the owner's grant of 2026-11-22."
     - id: 11
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: "Run before the ledger close, over the unchanged code tree: format, lint, typecheck (all packages), rumdl, frozen lockfile green; `just size` 458.1 KB / 145.9 KB gzip; uilibs 92 files / 444 tests (last run after phase 7, no code change since); full Chromium E2E 184 passed against a rebuilt server (a11y sweep 0 findings, the new admin-chrome spec included); dependency diff: one `size` script line in packages/webapp/package.json; server `/admin` 200, log without error. Not run: Firefox and WebKit (Chromium only by plan), Rust gates (no Rust file touched)."
 ---
 
 # Close the UI audit leftovers — shrink the entry load, mount one admin chrome, lift two contrast gaps, load one locale at a time, split the data grid
