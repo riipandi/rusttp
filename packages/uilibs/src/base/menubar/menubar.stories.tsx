@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -192,7 +193,7 @@ export const Submenu: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <Menubar size={size}>
           <MenubarMenu>
@@ -209,7 +210,7 @@ export const ControlSizes: Story = {
           </MenubarMenu>
         </Menubar>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement)
 }

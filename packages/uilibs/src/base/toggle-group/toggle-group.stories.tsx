@@ -4,10 +4,11 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
-  DenseControlSizesColumn,
   denseControlHeights,
+  denseControlSizeNames,
   expectControlHeights
 } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
 const meta = {
@@ -192,7 +193,7 @@ export const Disabled: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <DenseControlSizesColumn>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <ToggleGroup size={size} variant='outline' defaultValue={['bold']}>
           <ToggleGroupItem value='bold' aria-label={`Toggle charm ${size}`}>
@@ -203,7 +204,7 @@ export const ControlSizes: Story = {
           </ToggleGroupItem>
         </ToggleGroup>
       )}
-    </DenseControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
 }

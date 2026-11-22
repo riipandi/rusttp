@@ -4,7 +4,8 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field } from '../../base/field'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd } from '../kbd'
 import { Spinner } from '../spinner'
@@ -166,7 +167,7 @@ export const Invalid: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <InputGroup size={size}>
           <InputGroupAddon>
@@ -178,7 +179,7 @@ export const ControlSizes: Story = {
           </InputGroupAddon>
         </InputGroup>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

@@ -3,7 +3,8 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, radius } from '../../styles/tokens.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -172,7 +173,7 @@ export const Controlled: Story = {
 export const ControlSizes: Story = {
   args: { length: 4 },
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <OTPField size={size} length={4} aria-label={`Code ${size}`}>
           <OTPFieldGroup>
@@ -182,7 +183,7 @@ export const ControlSizes: Story = {
           </OTPFieldGroup>
         </OTPField>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => {
     await expectControlHeights(canvasElement)

@@ -2,11 +2,8 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
-import {
-  ControlSizesColumn,
-  HiddenLabel,
-  expectControlHeights
-} from '../../contracts/control-sizes'
+import { HiddenLabel, controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldError, FieldLabel } from '../field'
 import { NumberField, NumberFieldGroup } from './number-field.component'
@@ -115,7 +112,7 @@ export const Formatted: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <>
           <NumberField size={size} defaultValue={7} id={`galleons-${size}`}>
@@ -124,14 +121,14 @@ export const ControlSizes: Story = {
           <HiddenLabel htmlFor={`galleons-${size}`}>Galleons</HiddenLabel>
         </>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }
 
 export const SideControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <>
           <NumberField size={size} defaultValue={7} id={`sickles-${size}`}>
@@ -140,7 +137,7 @@ export const SideControlSizes: Story = {
           <HiddenLabel htmlFor={`sickles-${size}`}>Sickles</HiddenLabel>
         </>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

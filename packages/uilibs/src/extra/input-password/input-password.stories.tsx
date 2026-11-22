@@ -5,7 +5,8 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { InputPassword } from './input-password.component'
 
@@ -150,9 +151,9 @@ export const Interaction: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => <InputPassword size={size} aria-label={`Password ${size}`} />}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

@@ -3,7 +3,8 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { InputPhone } from './input-phone.component'
 
@@ -174,9 +175,9 @@ export const Interaction: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => <InputPhone size={size} aria-label={`Phone ${size}`} />}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

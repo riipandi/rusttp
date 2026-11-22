@@ -18,9 +18,11 @@ export const denseControlHeights = { xs: 28, ...controlHeights } as const satisf
 
 export const controlSizeNames = ['sm', 'md', 'lg'] as const satisfies readonly ControlSize[]
 
-const styles = stylex.create({
-  column: { display: 'flex', flexDirection: 'column', gap: 12, width: 320 }
-})
+/** The scale with `xs` first, for Button, Toggle, and Tabs. */
+export const denseControlSizeNames = [
+  'xs',
+  ...controlSizeNames
+] as const satisfies readonly DenseControlSize[]
 
 /** A label that names a control without adding to the row, placed after the control so it stays the cell's first element. */
 export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -29,42 +31,6 @@ export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: 
       {children}
     </label>
   )
-}
-
-function SizeCells<S extends DenseControlSize>({
-  sizes,
-  children
-}: {
-  sizes: readonly S[]
-  children: (size: S) => React.ReactNode
-}) {
-  return (
-    <div {...stylex.props(styles.column)}>
-      {sizes.map((size) => (
-        <div key={size} data-size={size}>
-          {children(size)}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-/** One cell per size of the scale; the control under test is the cell's first element. */
-export function ControlSizesColumn({
-  children
-}: {
-  children: (size: ControlSize) => React.ReactNode
-}) {
-  return <SizeCells sizes={controlSizeNames}>{children}</SizeCells>
-}
-
-/** The same with `xs` first, for Button, Toggle, and Tabs. */
-export function DenseControlSizesColumn({
-  children
-}: {
-  children: (size: DenseControlSize) => React.ReactNode
-}) {
-  return <SizeCells sizes={['xs', ...controlSizeNames] as const}>{children}</SizeCells>
 }
 
 /** Height of the control in the cell of `size`. */

@@ -13,6 +13,9 @@ const gateMode = (value: unknown) => (value === 'todo' || value === 'off' ? valu
 
 const preview: Preview = {
   parameters: {
+    // The fluid canvas: a story's content is padded and never given a minimum width, so a 390 px
+    // viewport shows the layout a phone gets. A file opts out only for `fullscreen`.
+    layout: 'padded',
     options: {
       // Top-level groups, in the order the sidebar shows them; inside a group stories keep file order.
       storySort: {

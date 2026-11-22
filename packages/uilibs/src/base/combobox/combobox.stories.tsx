@@ -3,7 +3,8 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
@@ -305,20 +306,20 @@ export const AutoHighlight: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <Combobox items={frameworks}>
           <ComboboxInput size={size} aria-label={`School ${size}`} placeholder='School' />
         </Combobox>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }
 
 export const TriggerControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <Combobox items={frameworks}>
           <ComboboxTrigger size={size} aria-label={`School ${size}`}>
@@ -326,14 +327,14 @@ export const TriggerControlSizes: Story = {
           </ComboboxTrigger>
         </Combobox>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }
 
 export const ChipsControlSizes: Story = {
   render: () => (
-    <ControlSizesColumn>
+    <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
         <Combobox items={frameworks} multiple>
           <ComboboxChips size={size}>
@@ -341,7 +342,7 @@ export const ChipsControlSizes: Story = {
           </ComboboxChips>
         </Combobox>
       )}
-    </ControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

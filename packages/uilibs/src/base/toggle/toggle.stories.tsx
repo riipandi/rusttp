@@ -4,10 +4,11 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
-  DenseControlSizesColumn,
   denseControlHeights,
+  denseControlSizeNames,
   expectControlHeights
 } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Toggle } from './toggle.component'
 
 const meta = {
@@ -108,13 +109,13 @@ export const Sizes: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <DenseControlSizesColumn>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Toggle size={size} aria-label={`Toggle charm ${size}`}>
           Charm
         </Toggle>
       )}
-    </DenseControlSizesColumn>
+    </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
 }

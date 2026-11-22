@@ -4,10 +4,11 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import {
-  DenseControlSizesColumn,
   denseControlHeights,
+  denseControlSizeNames,
   expectControlHeights
 } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
 
@@ -153,7 +154,7 @@ export const Icons: Story = {
 
 export const ControlSizes: Story = {
   render: () => (
-    <DenseControlSizesColumn>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Tabs defaultValue='one'>
           <TabsList size={size}>
@@ -162,7 +163,7 @@ export const ControlSizes: Story = {
           </TabsList>
         </Tabs>
       )}
-    </DenseControlSizesColumn>
+    </Axis>
   ),
   // The list, tab padding included, is as tall as a control of its size.
   play: async ({ canvasElement }) => {
@@ -172,7 +173,7 @@ export const ControlSizes: Story = {
 
 export const LineControlSizes: Story = {
   render: () => (
-    <DenseControlSizesColumn>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Tabs defaultValue='one'>
           <TabsList size={size} variant='line'>
@@ -181,7 +182,7 @@ export const LineControlSizes: Story = {
           </TabsList>
         </Tabs>
       )}
-    </DenseControlSizesColumn>
+    </Axis>
   ),
   // The active tab's bar overlaps the list's bottom border, so the list is as tall as the tab.
   play: async ({ canvasElement }) => {
