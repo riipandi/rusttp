@@ -45,7 +45,7 @@ export const colors = stylex.defineVars({
   backgroundWarningHighlighted: 'oklch(0.738 0.22 80)',
   backgroundWarning: 'oklch(0.82 0.22 80)',
   borderCriticalFaded: 'oklch(0.94 0.02 20.28)',
-  borderControl: 'oklch(0.64 0 89.88)',
+  borderControl: 'oklch(0.58 0 89.88)',
   borderCritical: 'oklch(0.55 0.205 20.28)',
   borderDisabled: 'oklch(0 0 89.88 / 0.06)',
   borderNeutralFaded: 'oklch(0 0 89.88 / 0.08)',

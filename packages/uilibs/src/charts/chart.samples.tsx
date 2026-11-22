@@ -22,15 +22,18 @@ import type { ChartConfig } from './chart.component'
 
 // Series colors reference core theme tokens directly (defineVars values are
 // runtime var() strings), so every paint — SVG attributes and HTML styles —
-// follows light/dark themes through `themes.ts`.
+// follows light/dark themes through `themes.ts`. They are the `foreground*`
+// tokens: those keep text-grade contrast against the page in both themes,
+// where the `background*` fills fall under the 3:1 a mark needs (warning and
+// neutral in light, neutral and primary in dark).
 export const seriesColors = {
-  langdon: colors.backgroundPrimary, // brand orange
-  potter: colors.backgroundPositive, // positive green
-  brand: colors.backgroundPrimary,
-  green: colors.backgroundPositive,
-  amber: colors.backgroundWarning,
-  red: colors.backgroundCritical,
-  neutral: colors.backgroundNeutralHighlighted
+  langdon: colors.foregroundPrimary, // brand orange
+  potter: colors.foregroundPositive, // positive green
+  brand: colors.foregroundPrimary,
+  green: colors.foregroundPositive,
+  amber: colors.foregroundWarning,
+  red: colors.foregroundCritical,
+  neutral: colors.foregroundNeutralFaded
 } as const
 
 /**

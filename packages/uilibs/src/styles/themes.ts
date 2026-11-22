@@ -35,7 +35,7 @@ const darkColors = stylex.createTheme(colors, {
   backgroundWarningHighlighted: 'oklch(0.7297 0.176 80)',
   backgroundWarning: 'oklch(0.8108 0.176 80)',
   borderCriticalFaded: 'oklch(0.3 0.0167 20.28)',
-  borderControl: 'oklch(0.54 0 89.88)',
+  borderControl: 'oklch(0.64 0 89.88)',
   borderCritical: 'oklch(0.6842 0.164 20.28)',
   borderDisabled: 'oklch(1 0 89.88 / 0.06)',
   borderNeutralFaded: 'oklch(1 0 89.88 / 0.08)',
