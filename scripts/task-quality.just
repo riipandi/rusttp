@@ -33,7 +33,7 @@ lint *args:
 test *args:
     @if command -v cargo-nextest >/dev/null; then cargo nextest run --workspace --no-tests=pass {{ args }}; else cargo test --workspace {{ args }}; fi
 
-[doc('Run the webapp unit tests (Chromium; extra arguments go to Vitest)')]
+[doc('Run the webapp unit tests (default to Chromium)')]
 [group('quality')]
 test-web *args:
     @pnpm --silent --filter webapp test {{ args }}
@@ -43,17 +43,17 @@ test-web *args:
 test-web-ui:
     @pnpm --silent --filter webapp test:ui
 
-[doc('Run the webapp unit tests with a coverage report (.output/coverage)')]
+[doc('Run the webapp unit tests with a coverage report')]
 [group('quality')]
 test-web-coverage:
     @pnpm --silent --filter webapp test:coverage
 
-[doc('Run Hurl API specs')]
+[doc('Run Hurl API specs, default to 127.0.0.1:3000')]
 [group('quality')]
 test-api url="http://127.0.0.1:3000":
     @hurl --test --variable base_url={{ url }} --glob 'api/specs/**/*.hurl'
 
-[doc('Fail when the built SPA entry load passes its budget (build first)')]
+[doc('Fail when the built SPA entry load passes its budget')]
 [group('quality')]
 size:
     @pnpm --silent --filter webapp size
