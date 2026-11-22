@@ -1,47 +1,28 @@
 import { Check } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { Spinner } from '../spinner'
 import { Badge } from './badge.component'
 
 const meta = {
   title: 'Extra Components/Badge',
   component: Badge,
-  parameters: { layout: 'centered' },
   argTypes: {
-    variant: {
+    variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
+    color: {
       control: 'radio',
-      options: ['solid', 'faded', 'outline', 'ghost']
-    }
+      options: ['neutral', 'primary', 'positive', 'warning', 'critical']
+    },
+    size: { control: 'radio', options: ['sm', 'md', 'lg'] }
   },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Badge>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  grid: {
-    display: 'grid',
-    gap: 8,
-    gridTemplateColumns: 'repeat(5, max-content)'
-  },
   icon: { height: 14, width: 14 },
   spinner: { height: 12, width: 12 },
   row: {
@@ -59,49 +40,90 @@ export const Playground: Story = {
   render: (args) => <Badge {...args}>Gryffindor</Badge>
 }
 
+const variantNames = ['solid', 'faded', 'outline', 'ghost'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+/** The four fills at the default color. */
 export const Variants: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Badge variant='faded'>Hufflepuff</Badge>
-      <Badge variant='outline'>Ravenclaw</Badge>
-      <Badge color='critical'>Azkaban</Badge>
-    </div>
-  )
+    <Axis axis='variant' rows={variantNames}>
+      {(variant) => <Badge variant={variant}>Hufflepuff</Badge>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const look = (variant: string) => {
+      const el = canvasElement.querySelector(`[data-variant="${variant}"]`)?.firstElementChild
+      if (!el) throw new Error(`No badge for ${variant}`)
+      const style = getComputedStyle(el)
+      return `${style.backgroundColor}|${style.color}|${style.borderTopColor}|${style.borderTopWidth}`
+    }
+    await expect(new Set(variantNames.map(look)).size).toBe(variantNames.length)
+  }
 }
 
-const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
-const variantNames = ['solid', 'faded', 'outline', 'ghost'] as const
-
-/** Every variant in every color; the a11y gate checks the contrast of each pair. */
+/** Every fill in every color; the a11y gate checks the contrast of each pair. */
 export const Colors: Story = {
   render: () => (
-    <div {...stylex.props(styles.grid)}>
-      {variantNames.map((variant) =>
-        colorNames.map((color) => (
-          <Badge key={`${variant}-${color}`} variant={variant} color={color}>
-            {`${variant} ${color}`}
-          </Badge>
-        ))
+    <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
+      {(variant, color) => (
+        <Badge variant={variant} color={color}>
+          {`${variant} ${color}`}
+        </Badge>
       )}
-    </div>
+    </Axis>
   ),
-  play: async ({ canvas }) => {
+  play: async ({ canvasElement }) => {
+    const look = (variant: string, color: string) => {
+      const el = canvasElement.querySelector(
+        `[data-variant="${variant}"][data-color="${color}"]`
+      )?.firstElementChild
+      if (!el) throw new Error(`No badge for ${variant} ${color}`)
+      const style = getComputedStyle(el)
+      return `${style.backgroundColor}|${style.color}|${style.borderTopColor}`
+    }
+    // Color and fill are independent: in every fill, no two colors share a look.
     for (const variant of variantNames) {
-      for (const color of colorNames) {
-        await expect(canvas.getByText(`${variant} ${color}`)).toBeInTheDocument()
-      }
+      await expect(new Set(colorNames.map((color) => look(variant, color))).size).toBe(
+        colorNames.length
+      )
     }
   }
 }
 
-export const Icon: Story = {
-  name: 'With icon',
+export const Sizes: Story = {
   render: () => (
-    <Badge variant='faded'>
-      <Check {...stylex.props(styles.icon)} />
-      Ministry approved
-    </Badge>
-  )
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => <Badge size={size}>{size}</Badge>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      canvasElement
+        .querySelector(`[data-size="${size}"]`)
+        ?.firstElementChild?.getBoundingClientRect().height ?? 0
+    await expect(height('sm')).toBeLessThan(height('md'))
+    await expect(height('md')).toBeLessThan(height('lg'))
+  }
+}
+
+/** A badge that can be dismissed carries a named button. */
+export const States: Story = {
+  args: { onDismiss: fn() },
+  render: (args) => (
+    <Axis axis='state' rows={['default', 'dismissible'] as const}>
+      {(state) => (
+        <Badge variant='faded' onDismiss={state === 'dismissible' ? args.onDismiss : undefined}>
+          {state === 'dismissible' ? 'Detention' : 'Owl Post'}
+        </Badge>
+      )}
+    </Axis>
+  ),
+  play: async ({ args, canvas }) => {
+    // Only the dismissible badge has a button (the canvas overlay's own button is not named Dismiss).
+    await expect(canvas.getAllByRole('button', { name: 'Dismiss' })).toHaveLength(1)
+    await userEvent.click(canvas.getByRole('button', { name: 'Dismiss' }))
+    await expect(args.onDismiss).toHaveBeenCalledOnce()
+  }
 }
 
 export const WithSpinner: Story = {
@@ -126,23 +148,6 @@ export const Link: Story = {
   }
 }
 
-export const Sizes: Story = {
-  render: () => (
-    <div {...stylex.props(styles.row)}>
-      {(['sm', 'md', 'lg'] as const).map((size) => (
-        <Badge key={size} size={size}>
-          {size}
-        </Badge>
-      ))}
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const height = (name: string) => canvas.getByText(name).getBoundingClientRect().height
-    await expect(height('sm')).toBeLessThan(height('md'))
-    await expect(height('md')).toBeLessThan(height('lg'))
-  }
-}
-
 export const Squared: Story = {
   render: () => <Badge rounded={false}>Owl Post</Badge>,
   play: async ({ canvas }) => {
@@ -157,18 +162,4 @@ export const WithGlyph: Story = {
       Ministry approved
     </Badge>
   )
-}
-
-export const Dismissible: Story = {
-  args: { onDismiss: fn() },
-  render: (args) => (
-    <Badge variant='faded' onDismiss={args.onDismiss}>
-      Detention
-    </Badge>
-  ),
-  play: async ({ args, canvas }) => {
-    const dismiss = canvas.getByRole('button', { name: 'Dismiss' })
-    await userEvent.click(dismiss)
-    await expect(args.onDismiss).toHaveBeenCalledOnce()
-  }
 }

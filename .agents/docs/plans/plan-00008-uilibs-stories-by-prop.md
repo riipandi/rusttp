@@ -29,12 +29,12 @@ phases:
       note: dcf11ab; 88 computed-style records identical under the old-to-new name map
     - id: 6
       title: Avatar, Progress, Meter, Spinner, Tooltip, Separator, Breadcrumb, Card, Popover, Item, Icon props
-      status: in_progress
-      note: 74 computed-style records identical (the only diff is the text color of the Avatar root, which holds no text); commit hash lands with phase 7
+      status: committed
+      note: 26da235; 74 computed-style records identical (the only diff is the text color of the Avatar root, which holds no text)
     - id: 7
       title: Pilot - Button and Badge stories
-      status: pending
-      note: —
+      status: in_progress
+      note: Button and Badge 30 -> 24 story ids, gate 956 -> 944 tests, no overflow at 390 px; awaiting the owner's review before batch A; commit hash lands with phase 8
     - id: 8
       title: Batch A - text and form controls
       status: pending

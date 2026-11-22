@@ -1,9 +1,14 @@
 import { ArrowRight, Plus } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
+import {
+  denseControlHeights,
+  denseControlSizeNames,
+  expectBoxSizes,
+  expectControlHeights
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { radius } from '../../styles/tokens.stylex'
 import { Button, LinkButton } from './button.component'
@@ -12,32 +17,14 @@ import { buttonSizes } from './button.stylex'
 const meta = {
   title: 'Base Components/Button',
   component: Button,
-  parameters: { layout: 'centered' },
   argTypes: {
-    variant: {
-      control: 'radio',
-      options: ['solid', 'faded', 'outline', 'ghost']
-    },
+    variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
+    color: { control: 'radio', options: ['primary', 'neutral', 'critical', 'positive', 'warning'] },
     size: { control: 'radio', options: Object.keys(buttonSizes) },
     disabled: { control: 'boolean' }
   },
   tags: [], // ['autodocs']
-  args: { onClick: fn() },
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  args: { onClick: fn() }
 } satisfies Meta<typeof Button>
 
 type Story = StoryObj<typeof meta>
@@ -67,28 +54,27 @@ export const Playground: Story = {
   )
 }
 
-export const Default: Story = {
-  args: { variant: 'solid' },
-  render: (args) => <Button {...args}>Expelliarmus</Button>
-}
-
-export const Secondary: Story = {
-  args: { variant: 'faded' },
-  render: (args) => <Button {...args}>Protego</Button>
-}
-
-export const Outline: Story = {
-  args: { variant: 'outline' },
-  render: (args) => <Button {...args}>Petrificus Totalus</Button>
-}
-
-export const Ghost: Story = {
-  args: { variant: 'ghost' },
-  render: (args) => <Button {...args}>Moaning Myrtle</Button>
-}
-
 const fillNames = ['solid', 'faded', 'outline', 'ghost'] as const
 const colorNames = ['primary', 'neutral', 'critical', 'positive', 'warning'] as const
+
+/** The four fills at the default color. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={fillNames}>
+      {(variant) => <Button variant={variant}>Expelliarmus</Button>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const look = (variant: string) => {
+      const el = canvasElement.querySelector(`[data-variant="${variant}"]`)?.firstElementChild
+      if (!el) throw new Error(`No button for ${variant}`)
+      const style = getComputedStyle(el)
+      return `${style.backgroundColor}|${style.color}|${style.borderTopColor}|${style.borderTopWidth}`
+    }
+    // Every fill renders and none looks like another.
+    await expect(new Set(fillNames.map(look)).size).toBe(fillNames.length)
+  }
+}
 
 /** Every fill in every color; the a11y gate checks the contrast of each pair. */
 export const Colors: Story = {
@@ -119,66 +105,72 @@ export const Colors: Story = {
   }
 }
 
+const sizeLabels = { xs: 'Fairy', sm: 'House-elf', md: 'Wizard', lg: 'Giant' } as const
+
 export const Sizes: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Button size='xs' variant='outline'>
-        Fairy
-      </Button>
-      <Button size='sm' variant='outline'>
-        House-elf
-      </Button>
-      <Button size='md' variant='outline'>
-        Wizard
-      </Button>
-      <Button size='lg' variant='outline'>
-        Giant
-      </Button>
-    </div>
-  )
+    <Axis axis='size' rows={denseControlSizeNames}>
+      {(size) => (
+        <Button size={size} variant='outline'>
+          {sizeLabels[size]}
+        </Button>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement, denseControlHeights)
 }
 
-export const Icon: Story = {
-  render: () => (
-    <Button size='icon-md' variant='outline' aria-label='Accio'>
-      <Plus {...stylex.props(styles.icon)} />
-    </Button>
-  )
-}
+const iconSizes = ['icon-xs', 'icon-sm', 'icon-md', 'icon-lg'] as const
 
+/** The square icon-only sizes; each needs an `aria-label`. */
 export const IconSizes: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Button size='icon-xs' variant='outline' aria-label='Accio'>
-        <Plus {...stylex.props(styles.icon)} />
-      </Button>
-      <Button size='icon-sm' variant='outline' aria-label='Accio'>
-        <Plus {...stylex.props(styles.icon)} />
-      </Button>
-      <Button size='icon-md' variant='outline' aria-label='Accio'>
-        <Plus {...stylex.props(styles.icon)} />
-      </Button>
-      <Button size='icon-lg' variant='outline' aria-label='Accio'>
-        <Plus {...stylex.props(styles.icon)} />
-      </Button>
-    </div>
-  )
+    <Axis axis='size' rows={iconSizes}>
+      {(size) => (
+        <Button size={size} variant='outline' aria-label={`Accio ${size}`}>
+          <Plus {...stylex.props(styles.icon)} />
+        </Button>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, 'button', {
+      'icon-xs': [28, 28],
+      'icon-sm': [32, 32],
+      'icon-md': [36, 36],
+      'icon-lg': [40, 40]
+    })
 }
 
-export const Loading: Story = {
-  args: { onClick: fn() },
+/** Press states that are visible without interaction. */
+export const States: Story = {
   render: (args) => (
-    <Button {...args} loading>
-      Apparating…
-    </Button>
+    <Axis axis='state' rows={['default', 'disabled', 'loading'] as const}>
+      {(state) => (
+        <Button
+          variant='outline'
+          onClick={args.onClick}
+          disabled={state === 'disabled'}
+          loading={state === 'loading'}
+        >
+          {{ default: 'Open the cryptex', disabled: 'Petrified', loading: 'Apparating…' }[state]}
+        </Button>
+      )}
+    </Axis>
   ),
   play: async ({ args, canvas }) => {
-    const button = canvas.getByRole('button', { name: 'Apparating…' })
-    // Busy but not disabled: it keeps its name and stays in the tab order.
-    await expect(button).toHaveAttribute('aria-busy', 'true')
-    await userEvent.tab()
-    await expect(button).toHaveFocus()
-    await userEvent.click(button)
+    const petrified = canvas.getByRole('button', { name: 'Petrified' })
+    await expect(petrified).toBeDisabled()
+    // A disabled look is half opacity and a not-allowed cursor.
+    await expect(getComputedStyle(petrified).opacity).toBe('0.5')
+    await expect(getComputedStyle(petrified).cursor).toBe('not-allowed')
+
+    // Loading is busy, not disabled: it keeps its name, stays focusable, and ignores presses.
+    const apparating = canvas.getByRole('button', { name: 'Apparating…' })
+    await expect(apparating).toHaveAttribute('aria-busy', 'true')
+    apparating.focus()
+    await expect(apparating).toHaveFocus()
+    await userEvent.click(apparating)
     await expect(args.onClick).not.toHaveBeenCalled()
     // The spinner is hidden from assistive technology: one name, no second live region.
     await expect(canvas.queryByRole('status')).toBeNull()
@@ -202,19 +194,6 @@ export const LoadingKeepsWidth: Story = {
     await userEvent.click(button)
     await expect(button).toHaveAttribute('aria-busy', 'true')
     await expect(button.getBoundingClientRect().width).toBe(width)
-  }
-}
-
-export const Disabled: Story = {
-  name: 'disabled',
-  render: () => (
-    <Button disabled variant='solid'>
-      Petrified
-    </Button>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getAllByRole('button')[0]
-    await expect(el).toBeDisabled()
   }
 }
 
