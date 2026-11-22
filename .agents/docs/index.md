@@ -32,7 +32,7 @@ There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-Live: `plan-00005-ui-leftovers-remediation.md` (in-progress, 11 phases: the entry budget and the root `TooltipProvider`, one admin chrome per viewport, series and `borderControl` contrast, the on-demand language catalog, the data grid split; issue-00003 items 1-4). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
+Live: `plan-00005-ui-leftovers-remediation.md` (in-progress, phases 1-4 committed, 11 phases: the entry budget and the root `TooltipProvider`, one admin chrome per viewport, series and `borderControl` contrast, the data grid split; phase 5, the lazy language catalog, was measured and cancelled; issue-00003 items 1-4). Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
