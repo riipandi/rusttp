@@ -45,10 +45,13 @@ export interface PopoverContentProps
       React.ComponentProps<typeof BasePopover.Positioner>,
       'align' | 'alignOffset' | 'collisionAvoidance' | 'collisionPadding' | 'side' | 'sideOffset'
     > {
+  /** Depth of the shadow: `overlay` (default) or the lighter `raised`. */
+  elevation?: 'overlay' | 'raised'
   style?: stylex.StyleXStyles
 }
 
 export function PopoverContent({
+  elevation = 'overlay',
   style,
   side = 'bottom',
   sideOffset = 4,
@@ -76,7 +79,7 @@ export function PopoverContent({
             popupFx.fade,
             popupFx.pose,
             s.popup,
-            ring({ shadow: shadow.raised }),
+            ring({ shadow: elevation === 'raised' ? shadow.outline : shadow.raised }),
             style
           )}
         />

@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, waitFor } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import {
   Avatar,
   AvatarBadge,
@@ -146,5 +147,47 @@ export const GroupCount: Story = {
   play: async ({ canvas }) => {
     // The trailing count and each avatar render in the stack.
     await expect(canvas.getByText('+3')).toBeInTheDocument()
+  }
+}
+
+const variantNames = ['faded', 'solid'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+/** The fallback in every fill and role; the a11y gate checks the contrast of each pair. */
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
+      {(variant, color) => (
+        <Avatar variant={variant} color={color}>
+          <AvatarFallback>HP</AvatarFallback>
+        </Avatar>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const fill = (variant: string, color: string) => {
+      const avatar = canvasElement.querySelector(
+        `[data-variant="${variant}"][data-color="${color}"]`
+      )?.firstElementChild
+      if (!avatar) throw new Error(`No avatar for ${variant} ${color}`)
+      return getComputedStyle(avatar).backgroundColor
+    }
+    for (const variant of variantNames) {
+      await expect(new Set(colorNames.map((color) => fill(variant, color))).size).toBe(5)
+    }
+  }
+}
+
+export const Squared: Story = {
+  render: () => (
+    <Avatar squared data-testid='squared'>
+      <AvatarFallback>HG</AvatarFallback>
+    </Avatar>
+  ),
+  play: async ({ canvas }) => {
+    const root = canvas.getByTestId('squared')
+    await expect(getComputedStyle(root).borderTopLeftRadius).toBe('8px')
+    // The fallback follows the root's corners.
+    await expect(getComputedStyle(canvas.getByText('HG')).borderTopLeftRadius).toBe('8px')
   }
 }

@@ -67,7 +67,7 @@ export const Playground: Story = {
           <Switch defaultChecked aria-label='Protego Totalum' />
         </ItemActions>
       </Item>
-      <Item variant='muted'>
+      <Item variant='faded'>
         <ItemMedia variant='icon'>
           <Info {...stylex.props(styles.icon)} />
         </ItemMedia>
@@ -96,7 +96,7 @@ export const Playground: Story = {
 export const Variants: Story = {
   render: () => (
     <ItemGroup style={styles.group}>
-      <Item variant='default'>
+      <Item variant='ghost'>
         <ItemContent>
           <ItemTitle>Madam Malkin's robes</ItemTitle>
           <ItemDescription>Standard fit, no embellishments.</ItemDescription>
@@ -108,7 +108,7 @@ export const Variants: Story = {
           <ItemDescription>House colours with a bold border.</ItemDescription>
         </ItemContent>
       </Item>
-      <Item variant='muted'>
+      <Item variant='faded'>
         <ItemContent>
           <ItemTitle>Dress robes</ItemTitle>
           <ItemDescription>Soft tones for the Yule Ball.</ItemDescription>

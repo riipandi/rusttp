@@ -25,7 +25,7 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   // The label stays in the row and fades, so the icon never moves while the width animates.
   const content = (
     <>
-      <Icon svg={icon} size={16} color={to ? undefined : 'neutralFaded'} />
+      <Icon svg={icon} size={16} color={to ? undefined : 'neutral-faded'} />
       <span {...stylex.props(styles.label, collapsed && styles.faded)}>{label}</span>
     </>
   )

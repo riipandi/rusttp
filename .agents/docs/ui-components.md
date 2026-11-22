@@ -33,7 +33,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Accordion** | `uilibs/base/accordion` | Collapsible panels with headings. |
 | **Alert Dialog** | `uilibs/base/alert-dialog` | Dialog that needs a user response; for destructive or high-risk confirmations (`AlertDialogAction color='critical'`). `AlertDialogAction` and `AlertDialogCancel` both close it; call `event.preventBaseUIHandler()` in the action's `onClick` to keep it open while work runs. |
 | **Autocomplete** | `uilibs/base/autocomplete` | Input that suggests options as you type; `size` and `variant` on `AutocompleteInput`. |
-| **Avatar** | `uilibs/base/avatar` | Image with a fallback. |
+| **Avatar** | `uilibs/base/avatar` | Image with a fallback; `size` (`sm`, `md` default, `lg`), `variant` (`faded` default, `solid`) and `color` (`neutral` default, `primary`, `positive`, `warning`, `critical`) tint the fallback, `squared` for rounded corners instead of a circle. |
 | **Button** | `uilibs/base/button` | `variant` (the fill: `solid` default, `faded`, `outline`, `ghost`) and `color` (the role: `primary` default for `solid` and `neutral` for the other fills, `critical` for a destructive or irreversible action, plus `positive` and `warning`; every fill has every color) and `size` (`xs`, `sm`, `md` default, `lg`, plus `icon-xs`/`icon-sm`/`icon-md`/`icon-lg`); `rounded`, `fullWidth`, and `raised` are booleans; `icon` and `endIcon` take a glyph component (an icon-only button needs an `aria-label`); `loading` shows a spinner over the label, keeps the width and the name, and sets `aria-busy` (disabled but focusable). A link is a `LinkButton` (`render={<a href='…' />}` or `render={<Link to='…' />}`, `current` for `aria-current='page'`), which restores `role='link'`; `Button` itself can render another tag with `nativeButton={false}`, but it is then announced as a button. |
 | **Checkbox** | `uilibs/base/checkbox` | Checkbox (`size` `sm` 12, `md` 16 default, `lg` 20) and checkbox group; disabled, cursor, and focus ring come from `controlPress.root` (Radio and Switch too). |
 | **Collapsible** | `uilibs/base/collapsible` | One expandable panel. |
@@ -46,18 +46,18 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Form** | `uilibs/base/form` | Native form with consolidated error handling. |
 | **Input** | `uilibs/base/input` | Text input; `size`, `variant`. |
 | **Menubar** | `uilibs/base/menubar` | Desktop-style menu bar; `size` on `Menubar`. |
-| **Meter** | `uilibs/base/meter` | Numeric value within a range. |
+| **Meter** | `uilibs/base/meter` | Numeric value within a range; `color` (`primary` default, `neutral`, `positive`, `warning`, `critical`) and `size` (`sm` 2px, `md` 4px default) on `Meter`. Do not carry meaning by color alone: keep the label. |
 | **Navigation Menu** | `uilibs/base/navigation-menu` | Links and menus for site navigation; `labels` name its two `nav` landmarks. |
 | **Number Field** | `uilibs/base/number-field` | Numeric input with steppers and a scrub area; `size` and `variant` on `NumberField`, `labels` (`increase`, `decrease`) on the group. |
 | **OTP Field** | `uilibs/base/otp-field` | One-time code input in character slots; `size` and `variant` on `OTPField`. An `aria-label` on the root names the first slot, the others are named `Character n of N` (`labels.slot`). |
-| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, `collisionAvoidance`, and `collisionPadding`. |
+| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, `collisionAvoidance`, and `collisionPadding`; `elevation` (`overlay` default, the existing shadow, or the lighter `raised`). |
 | **Preview Card** | `uilibs/base/preview-card` | Rich preview shown on hover or focus of a link. |
-| **Progress** | `uilibs/base/progress` | Progress of a long task. |
+| **Progress** | `uilibs/base/progress` | Progress of a long task; `color` and `size` as Meter. |
 | **Provider** | `uilibs/base/provider` | `UIProvider`: CSP nonce and text direction for Base UI. |
 | **Radio** | `uilibs/base/radio` | Radio and radio group; `size` (`sm`, `md` default, `lg`) on `RadioGroupItem`. |
 | **Scroll Area** | `uilibs/base/scroll-area` | Styled scroll container. |
 | **Select** | `uilibs/base/select` | Single-choice list in a popup; `size` and `variant` on `SelectTrigger`. Name a standalone trigger with `aria-label`. |
-| **Separator** | `uilibs/base/separator` | Visual divider. |
+| **Separator** | `uilibs/base/separator` | Visual divider; `color` (`neutral-faded` default, `neutral`) and `inset` (stops short of the container's edges). |
 | **Slider** | `uilibs/base/slider` | Value or range from a track; one thumb unless the value is an array, `thumbLabels` (or `aria-label` for one thumb) names the thumbs. |
 | **Switch** | `uilibs/base/switch` | On/off toggle; `size` `sm`, `md` default, `lg`. |
 | **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`: `pills` (default, a tinted list with a raised active pill), `bordered` (an underline on a border rail), `borderless` (the underline alone, for a parent that draws its own border). |
@@ -65,7 +65,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40; `variant` `ghost` (default), `outline`, `solid` (a neutral fill at rest); `selectedColor` `neutral` (default), `primary`, `critical` colors the pressed state. |
 | **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size`, `variant`, and `selectedColor` as Toggle, passed to its items. |
 | **Toolbar** | `uilibs/base/toolbar` | Container for toolbar items. |
-| **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users. |
+| **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users; `TooltipContent` takes `color` (`neutral` default, `inverted`). |
 
 ---
 
@@ -78,20 +78,20 @@ Compositions and components Base UI does not provide.
 | **Alert** | `uilibs/extra/alert` | `Alert` (`color`; a polite `status` by default, `role='alert'` to interrupt, `role={undefined}` to not announce), `AlertTitle` (`level` 1 to 6, default 5), `AlertDescription`, `AlertAction` (top-right slot for a dismiss or undo). |
 | **Aspect Ratio** | `uilibs/extra/aspect-ratio` | Fixed-ratio container. |
 | **Badge** | `uilibs/extra/badge` | Compact status label: `variant` (the fill: `solid` default, `faded`, `outline`, `ghost`) and `color` (`neutral`, `primary`, `positive`, `warning`, `critical`; `primary` for `solid` and `neutral` for the others by default), `size` (`sm`, `md` default, `lg`), `rounded` (default `true`, a pill; `false` is squarer), `icon` (a glyph component), and `onDismiss` (a trailing dismiss button named by `labels.dismiss`, `Dismiss` by default; not with a link `render`). |
-| **Breadcrumb** | `uilibs/extra/breadcrumb` | `Breadcrumb`, `List`, `Item`, `Link`, `Page`, `Separator`, `Ellipsis`; `labels` (`breadcrumb`, `more`). |
+| **Breadcrumb** | `uilibs/extra/breadcrumb` | `Breadcrumb`, `List`, `Item`, `Link`, `Page`, `Separator`, `Ellipsis`; `labels` (`breadcrumb`, `more`); `color` on `Breadcrumb` (`neutral` default, `primary` for the links). |
 | **Button Group** | `uilibs/extra/button-group` | Fuses its children into one segmented control by cloning element children with position styles through `style`, so every child must accept `style` (a wrapper that does not, such as a menu root, is styled by hand); Fragments are opened up, text is kept, and filled Buttons get a divider where bordered children share an edge. |
 | **Calendar** | `uilibs/extra/calendar` | Date picker on `react-day-picker`, with Base UI selects for month and year; a day's name starts with its visible number (override through `labels.labelDayButton`). |
-| **Card** | `uilibs/extra/card` | `Card`, `Header`, `Title`, `Description`, `Action`, `Content`, `Footer`. |
+| **Card** | `uilibs/extra/card` | `Card`, `Header`, `Title`, `Description`, `Action`, `Content`, `Footer`; `size` (`sm`, `md`), `raised` (the raised shadow), `selected` (a doubled primary edge and `data-selected`; name the choice for assistive technology yourself). |
 | **Command** | `uilibs/extra/command` | Command palette on Base UI Autocomplete in `inline open` mode: pass `items` to the root (a search matches `itemToStringValue`, so include any keywords there); `CommandList` takes a render function over the filtered items `(group, index)` and scrolls in a `ScrollArea`; `CommandInput` and `CommandSeparator` use the shared `Separator`; `CommandDialog` takes `labels` (`title`, `description`: read, not shown), `finalFocus` (`false` leaves focus where it is on close) and `initialFocus` (a ref to the element to focus on open, for a panel with no field) and opens 15% from the top. |
 | **Data Grid** | `uilibs/extra/data-grid` | Virtualized TanStack Table grid: column pinning and reordering, inline cell editing, drag-and-drop rows, infinite loading, footers, pager; exports `DataGrid`, `DataGridContainer`, `DataGridProvider`, `useDataGrid`. Source split: `data-grid-cell*.ts(x)` (controller, ops, editor) and `data-grid-table*.tsx` (table, head, body, utils); `index.ts` is the public surface (layout in `shape.md`). |
 | **Description List** | `uilibs/extra/description-list` | `DescriptionList`, `DescriptionTerm`, `DescriptionDetails`: key-value rows with hairlines; terms and details are direct children of the list. |
 | **Empty** | `uilibs/extra/empty` | `Empty`, `Header`, `Media`, `Title`, `Description`, `Content`. |
 | **File Upload** | `uilibs/extra/file-upload` | Drag-and-drop area and a Field control; the whole area stays clickable through its label, and a drop honors the input's `accept` and `multiple`. |
-| **Icon** | `uilibs/extra/icon` | Wrapper for SVG assets: inherits `currentColor`, `color` applies a foreground token, size defaults to `1em`. |
+| **Icon** | `uilibs/extra/icon` | Wrapper for SVG assets: inherits `currentColor`, `color` applies a foreground token (`neutral`, `neutral-faded`, `primary`, `positive`, `warning`, `critical`, `disabled`), size defaults to `1em`. |
 | **Input Group** | `uilibs/extra/input-group` | `InputGroup` (`size`, `variant`), `Addon`, `Button` (`xs`, `icon-xs`, `icon-sm`), `Text`, `Input`, `Textarea`. |
 | **Input Password** | `uilibs/extra/input-password` | Password input with a visibility toggle, on `InputGroup`; `size`, `variant`, `labels` (`show`, `hide`). |
 | **Input Phone** | `uilibs/extra/input-phone` | International phone input with a searchable country selector; `size`, `variant`, `labels` (`selectCountry`, `searchCountry`, `noCountry`). |
-| **Item** | `uilibs/extra/item` | `ItemGroup`, `Item` (a `listitem` inside a group), `Media`, `Content`, `Title`, `Description`, `Actions`, `Header`, `Footer`, `Separator`: one-column rows; multi-column records use `Table`. |
+| **Item** | `uilibs/extra/item` | `ItemGroup`, `Item` (a `listitem` inside a group; `variant` `ghost` default, `outline`, `faded`; `size` `xs`, `sm`, `md`), `Media`, `Content`, `Title`, `Description`, `Actions`, `Header`, `Footer`, `Separator`: one-column rows; multi-column records use `Table`. |
 | **Kanban** | `uilibs/extra/kanban` | dnd-kit board with column and item drag-and-drop; `labels.columnHandle` plus the announcements (`pickedUp`, `movedOver`, `dropped`, `cancelled`, `instructions`: an item is named by its `aria-label` or text, never its id); item ids must be unique across columns. |
 | **Kbd** | `uilibs/extra/kbd` | `Kbd`, `KbdGroup`: keyboard shortcut label (only the label; the listener is separate, `@tanstack/react-hotkeys`, and the webapp renders a hotkey as keycaps through `components/shortcut.tsx`). |
 | **Label** | `uilibs/extra/label` | Standalone label, for use outside a `Field`. |
@@ -101,7 +101,7 @@ Compositions and components Base UI does not provide.
 | **Sheet** | `uilibs/extra/sheet` | Dialog-based overlay from `top`, `right`, `bottom`, or `left`: `Sheet`, `Trigger`, `Close`, `Portal`, `Overlay`, `Content` (`labels.close`), `Header`, `Footer`, `Title`, `Description`. |
 | **Skeleton** | `uilibs/extra/skeleton` | Pulse placeholder block. |
 | **Sortable** | `uilibs/extra/sortable` | dnd-kit reorderable list: `Sortable` (`value`, `onValueChange`, `getItemValue`, `labels.handle` and the same announcements as Kanban), `SortableItem`, `SortableItemHandle`; an item with a handle is dragged by the handle only, so it can hold other controls. |
-| **Spinner** | `uilibs/extra/spinner` | Busy indicator (Keyline `LoaderCircle`): a `status` named `labels.loading` on its own, hidden from assistive technology inside a Button. |
+| **Spinner** | `uilibs/extra/spinner` | Busy indicator (Keyline `LoaderCircle`): a `status` named `labels.loading` on its own, hidden from assistive technology inside a Button; `size` (`sm` 12, `md` 16 default, `lg` 20) and `color` (`inherit` default draws in the text color, `primary`, `positive`, `warning`, `critical`). |
 | **Table** | `uilibs/extra/table` | `Table`, `Header`, `Body`, `Footer`, `Row`, `Head`, `Cell`, `Caption`; give an icon-only header `visuallyHidden` text. The wrapper scrolls sideways, so it is a focusable `role='region'` named by `labels.region` (default `Table`). |
 | **Text** | `uilibs/extra/text` | Typography: `variant` (`headline-1`..`3`, `featured-1`..`6` (render `h1`..`h6`; the rest render `div`), `body-1`/`2`, `caption-1`/`2`), `color`, `weight`, `align`, `maxLines`; `variant`, `weight`, and `align` take a value or one per breakpoint (`s`/`m`/`l`/`xl`). Renders the tag its variant implies unless `render` overrides it. |
 | **Textarea** | `uilibs/extra/textarea` | Multiline input and a Field control; `size` sets a minimum height (`sm` 56, `md` 64, `lg` 72) and the type, `variant`, `autoResize`. |

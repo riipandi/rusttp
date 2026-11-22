@@ -71,13 +71,13 @@ export const itemStyles = stylex.create({
 })
 
 export const itemVariants = stylex.create({
-  default: {
+  ghost: {
     borderColor: 'transparent'
   },
   outline: {
     borderColor: colors.borderNeutralFaded
   },
-  muted: {
+  faded: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`,
     borderColor: 'transparent'
   }

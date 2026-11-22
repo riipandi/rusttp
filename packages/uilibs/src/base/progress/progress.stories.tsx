@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Progress, ProgressLabel, ProgressValue } from './progress.component'
@@ -114,5 +115,47 @@ export const Controlled: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Decrypt next ring' }))
     await userEvent.click(canvas.getByRole('button', { name: 'Decrypt next ring' }))
     await expect(bar).toHaveAttribute('aria-valuenow', '60')
+  }
+}
+
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+const barParts = (canvasElement: HTMLElement, selector: string) => {
+  const root = canvasElement.querySelector(selector)
+  const track = root?.firstElementChild
+  const indicator = track?.firstElementChild
+  if (!track || !indicator) throw new Error(`No progress bar for ${selector}`)
+  return { track: getComputedStyle(track), indicator: getComputedStyle(indicator) }
+}
+
+export const Colors: Story = {
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => <Progress value={60} color={color} aria-label={`Brewing ${color}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const fills = colorNames.map(
+      (color) =>
+        barParts(canvasElement, `[data-color="${color}"] [role="progressbar"]`).indicator
+          .backgroundColor
+    )
+    await expect(new Set(fills).size).toBe(5)
+  }
+}
+
+export const Sizes: Story = {
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='size' rows={['sm', 'md'] as const}>
+      {(size) => <Progress value={60} size={size} aria-label={`Brewing ${size}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      barParts(canvasElement, `[data-size="${size}"] [role="progressbar"]`).track.height
+    await expect(height('sm')).toBe('2px')
+    await expect(height('md')).toBe('4px')
   }
 }

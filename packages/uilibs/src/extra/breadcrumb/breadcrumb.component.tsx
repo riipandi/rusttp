@@ -16,6 +16,10 @@ export interface BreadcrumbLabels {
   more: string
 }
 
+export type BreadcrumbColor = 'neutral' | 'primary'
+
+const BreadcrumbColorContext = React.createContext<BreadcrumbColor>('neutral')
+
 const defaultLabels: BreadcrumbLabels = { breadcrumb: 'Breadcrumb', more: 'More' }
 
 interface LabelsProps {
@@ -23,16 +27,24 @@ interface LabelsProps {
 }
 
 export function Breadcrumb({
+  color = 'neutral',
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style' | 'color'> &
+  StyleXStyleProps &
+  LabelsProps & {
+    /** The role of the links; `neutral` (default) or `primary`. */
+    color?: BreadcrumbColor
+  }) {
   return (
-    <nav
-      aria-label={{ ...defaultLabels, ...labels }.breadcrumb}
-      {...props}
-      {...stylex.props(style)}
-    />
+    <BreadcrumbColorContext.Provider value={color}>
+      <nav
+        aria-label={{ ...defaultLabels, ...labels }.breadcrumb}
+        {...props}
+        {...stylex.props(style)}
+      />
+    </BreadcrumbColorContext.Provider>
   )
 }
 
@@ -54,7 +66,8 @@ export function BreadcrumbLink({
   style,
   ...props
 }: Omit<React.ComponentProps<'a'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <a {...props} {...stylex.props(s.link, style)} />
+  const color = React.useContext(BreadcrumbColorContext)
+  return <a {...props} {...stylex.props(s.link, color === 'primary' && s.linkPrimary, style)} />
 }
 
 export function BreadcrumbPage({

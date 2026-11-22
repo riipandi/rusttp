@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontFamily, fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Separator } from './separator.component'
@@ -41,6 +42,7 @@ const notifications = [
 ]
 
 const styles = stylex.create({
+  insetBox: { display: 'flex', flexDirection: 'column', gap: 12, width: 240 },
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -132,4 +134,34 @@ export const List: Story = {
       ))}
     </div>
   )
+}
+
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='color' rows={['neutral-faded', 'neutral'] as const}>
+      {(color) => <Separator color={color} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const fill = (color: string) => {
+      const line = canvasElement.querySelector(`[data-color="${color}"] [role="separator"]`)
+      if (!line) throw new Error(`No separator for ${color}`)
+      return getComputedStyle(line).backgroundColor
+    }
+    await expect(fill('neutral')).not.toBe(fill('neutral-faded'))
+  }
+}
+
+export const Inset: Story = {
+  render: () => (
+    <div {...stylex.props(styles.insetBox)}>
+      <Separator data-testid='full' />
+      <Separator inset data-testid='inset' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const width = (id: string) => canvas.getByTestId(id).getBoundingClientRect().width
+    // The inset line stops 12px short of each edge.
+    await expect(width('full') - width('inset')).toBe(24)
+  }
 }

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { colors } from '../../styles/colors.stylex'
 import { Button } from '../button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip.component'
 
@@ -35,6 +36,8 @@ type Story = StoryObj<typeof meta>
 const sides = ['top', 'right', 'bottom', 'left'] as const
 
 const styles = stylex.create({
+  pair: { display: 'flex', gap: 160, paddingTop: 64 },
+  neutralSurface: { backgroundColor: colors.backgroundElevationOverlay, height: 1, width: 1 },
   row: {
     alignItems: 'center',
     display: 'flex',
@@ -124,4 +127,26 @@ export const DisabledButton: Story = {
       </Tooltip>
     </TooltipProvider>
   )
+}
+
+/** The inverted surface, open so the a11y gate checks its contrast; the probe is the neutral one. */
+export const Colors: Story = {
+  render: () => (
+    <TooltipProvider>
+      <div {...stylex.props(styles.pair)}>
+        <Tooltip defaultOpen>
+          <TooltipTrigger render={<Button variant='outline' />}>inverted</TooltipTrigger>
+          <TooltipContent color='inverted'>Tooltip inverted</TooltipContent>
+        </Tooltip>
+        <div data-testid='neutral-surface' {...stylex.props(styles.neutralSurface)} />
+      </div>
+    </TooltipProvider>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const inverted = await body.findByText('Tooltip inverted')
+    await expect(getComputedStyle(inverted).backgroundColor).not.toBe(
+      getComputedStyle(canvas.getByTestId('neutral-surface')).backgroundColor
+    )
+  }
 }

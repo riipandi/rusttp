@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Meter, MeterLabel, MeterValue } from './meter.component'
 
@@ -73,5 +74,46 @@ export const CustomRange: Story = {
     await expect(el).toHaveAttribute('aria-valuemax', '90')
     await expect(el).toHaveAttribute('aria-valuenow', '72')
     await expect(canvas.getByText('72 psi')).toBeInTheDocument()
+  }
+}
+
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+const barParts = (canvasElement: HTMLElement, selector: string) => {
+  const root = canvasElement.querySelector(selector)
+  const track = root?.firstElementChild
+  const indicator = track?.firstElementChild
+  if (!track || !indicator) throw new Error(`No meter for ${selector}`)
+  return { track: getComputedStyle(track), indicator: getComputedStyle(indicator) }
+}
+
+export const Colors: Story = {
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => <Meter value={60} color={color} aria-label={`Gauge ${color}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const fills = colorNames.map(
+      (color) =>
+        barParts(canvasElement, `[data-color="${color}"] [role="meter"]`).indicator.backgroundColor
+    )
+    await expect(new Set(fills).size).toBe(5)
+  }
+}
+
+export const Sizes: Story = {
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='size' rows={['sm', 'md'] as const}>
+      {(size) => <Meter value={60} size={size} aria-label={`Gauge ${size}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      barParts(canvasElement, `[data-size="${size}"] [role="meter"]`).track.height
+    await expect(height('sm')).toBe('2px')
+    await expect(height('md')).toBe('4px')
   }
 }

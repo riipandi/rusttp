@@ -12,20 +12,37 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { separatorStyles as s } from './separator.stylex'
 import { separatorOrientations as orientations } from './separator.stylex'
+import { separatorColors, separatorInsets } from './separator.stylex'
 
 export interface SeparatorProps extends Omit<
   React.ComponentProps<typeof BaseSeparator>,
-  'className' | 'style'
+  'className' | 'style' | 'color'
 > {
+  /** The line: `neutral-faded` (default, a soft divider) or `neutral`. */
+  color?: 'neutral-faded' | 'neutral'
+  /** Stops short of the container's edges. */
+  inset?: boolean
   style?: stylex.StyleXStyles
 }
 
-export function Separator({ orientation = 'horizontal', style, ...props }: SeparatorProps) {
+export function Separator({
+  orientation = 'horizontal',
+  color = 'neutral-faded',
+  inset = false,
+  style,
+  ...props
+}: SeparatorProps) {
   return (
     <BaseSeparator
       orientation={orientation}
       {...props}
-      {...stylex.props(s.root, orientations[orientation], style)}
+      {...stylex.props(
+        s.root,
+        separatorColors[color],
+        orientations[orientation],
+        inset && separatorInsets[orientation],
+        style
+      )}
     />
   )
 }

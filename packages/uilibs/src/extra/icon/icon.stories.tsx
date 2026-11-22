@@ -134,7 +134,7 @@ export const Color: Story = {
       <div {...stylex.props(styles.row)}>
         <Icon svg={Zap} size={20} />
         <Icon svg={Zap} color='neutral' size={20} />
-        <Icon svg={Zap} color='neutralFaded' size={20} />
+        <Icon svg={Zap} color='neutral-faded' size={20} />
         <Icon svg={Zap} color='primary' size={20} />
         <Icon svg={Zap} color='positive' size={20} />
         <Icon svg={Zap} color='warning' size={20} />

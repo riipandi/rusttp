@@ -39,15 +39,18 @@ export const TooltipTrigger = BaseTooltip.Trigger
 
 export interface TooltipContentProps
   extends
-    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style' | 'color'>,
     Pick<
       React.ComponentProps<typeof BaseTooltip.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     > {
+  /** The surface: `neutral` (default) matches the other popups; `inverted` is the foreground color on the page. */
+  color?: 'neutral' | 'inverted'
   style?: stylex.StyleXStyles
 }
 
 export function TooltipContent({
+  color = 'neutral',
   style,
   children,
   side = 'top',
@@ -72,6 +75,7 @@ export function TooltipContent({
             popupFx.fade,
             popupFx.pose,
             s.popup,
+            color === 'inverted' && s.popupInverted,
             ring({ shadow: shadow.raised }),
             style
           )}
@@ -85,8 +89,14 @@ export function TooltipContent({
               aria-hidden='true'
               {...stylex.props(s.arrowSvg)}
             >
-              <path d='M0 6 L6 0 L12 6 Z' {...stylex.props(s.arrowFill)} />
-              <path d='M0 6 L6 0 L12 6' {...stylex.props(s.arrowStroke)} />
+              <path
+                d='M0 6 L6 0 L12 6 Z'
+                {...stylex.props(s.arrowFill, color === 'inverted' && s.arrowFillInverted)}
+              />
+              <path
+                d='M0 6 L6 0 L12 6'
+                {...stylex.props(s.arrowStroke, color === 'inverted' && s.arrowStrokeInverted)}
+              />
             </svg>
           </BaseTooltip.Arrow>
         </BaseTooltip.Popup>

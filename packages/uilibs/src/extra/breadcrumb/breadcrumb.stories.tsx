@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
+import { Axis } from '../../contracts/story-axes'
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -194,5 +195,35 @@ export const Translated: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('navigation', { name: 'Jejak halaman' })).toBeInTheDocument()
     await expect(canvas.getByText('Lainnya')).toBeInTheDocument()
+  }
+}
+
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='color' rows={['neutral', 'primary'] as const}>
+      {(color) => (
+        <Breadcrumb color={color} labels={{ breadcrumb: `Trail ${color}` }}>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href='#hogwarts'>{`Hogwarts ${color}`}</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Great Hall</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const link = (color: string) => getComputedStyle(canvas.getByText(`Hogwarts ${color}`)).color
+    await expect(link('primary')).not.toBe(link('neutral'))
+    // The current page keeps the text color in both.
+    for (const page of canvas.getAllByText('Great Hall')) {
+      await expect(getComputedStyle(page).color).toBe(
+        getComputedStyle(canvas.getAllByText('Great Hall')[0]!).color
+      )
+    }
   }
 }

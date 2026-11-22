@@ -32,7 +32,7 @@ export const iconStyles = stylex.create({
 /** Foreground token presets for the `color` prop. */
 export const iconColors = stylex.create({
   neutral: { color: colors.foregroundNeutral },
-  neutralFaded: { color: colors.foregroundNeutralFaded },
+  'neutral-faded': { color: colors.foregroundNeutralFaded },
   primary: { color: colors.foregroundPrimary },
   positive: { color: colors.foregroundPositive },
   warning: { color: colors.foregroundWarning },

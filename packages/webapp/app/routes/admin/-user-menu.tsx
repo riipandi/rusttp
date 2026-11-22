@@ -75,7 +75,7 @@ export function AdminUserMenu({
           <>
             <span {...stylex.props(styles.pillName)}>{adminProfile.firstName}</span>
             <span {...stylex.props(styles.pillChevron)}>
-              <Icon svg={ChevronDown} size={14} color='neutralFaded' />
+              <Icon svg={ChevronDown} size={14} color='neutral-faded' />
             </span>
           </>
         )}
@@ -112,7 +112,7 @@ export function AdminUserMenu({
               render={<Link to={to} />}
               style={mobile ? styles.menuItemTouch : undefined}
             >
-              <Icon svg={icon} size={16} color='neutralFaded' />
+              <Icon svg={icon} size={16} color='neutral-faded' />
               {label}
             </DropdownMenuItem>
           ))}
@@ -125,7 +125,7 @@ export function AdminUserMenu({
               render={<Link to={to} />}
               style={mobile ? styles.menuItemTouch : undefined}
             >
-              <Icon svg={icon} size={16} color='neutralFaded' />
+              <Icon svg={icon} size={16} color='neutral-faded' />
               {label}
             </DropdownMenuItem>
           ))}
@@ -138,7 +138,7 @@ export function AdminUserMenu({
           render={<Link to={signOutTo} />}
           style={mobile ? styles.menuItemTouch : undefined}
         >
-          <Icon svg={LogOut} size={16} color='neutralFaded' />
+          <Icon svg={LogOut} size={16} color='neutral-faded' />
           {m.user_menu_sign_out()}
         </DropdownMenuItem>
       </DropdownMenuContent>

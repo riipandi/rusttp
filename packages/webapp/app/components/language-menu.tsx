@@ -25,7 +25,7 @@ export function LanguageMenu({ style }: { style?: stylex.StyleXStyles }) {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger style={style}>
-        <Icon svg={Globe} size={16} color='neutralFaded' />
+        <Icon svg={Globe} size={16} color='neutral-faded' />
         {m.language_label()}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>

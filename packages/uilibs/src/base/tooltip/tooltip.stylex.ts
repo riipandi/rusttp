@@ -23,6 +23,8 @@ export const tooltipStyles = stylex.create({
     paddingBlock: unit.x1_5,
     paddingInline: unit.x3
   },
+  // `inverted`: the foreground color as the surface, so a tooltip stands out from a light or dark page.
+  popupInverted: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
   // The arrow is a 12x6 SVG that points up for a tooltip below its anchor and is turned for the other
   // sides, so it can carry the popup's ring on its two slanted edges (a filled square cannot: its ring
   // would show inside the popup). Its base sits on the popup's edge; the fill covers the ring between
@@ -59,6 +61,8 @@ export const tooltipStyles = stylex.create({
   arrowFill: {
     fill: colors.backgroundElevationOverlay
   },
+  arrowFillInverted: { fill: colors.foregroundNeutral },
+  arrowStrokeInverted: { stroke: colors.foregroundNeutral },
   arrowStroke: {
     fill: 'none',
     stroke: colors.borderNeutralFaded,

@@ -20,7 +20,6 @@ export const meterStyles = stylex.create({
     backgroundColor: colors.backgroundNeutral,
     borderRadius: radius.full,
     display: 'flex',
-    height: unit.x1,
     // Forced colors drop backgrounds: the track gets an edge and the fill a system color.
     outline: { default: 'none', '@media (forced-colors: active)': '1px solid CanvasText' },
     overflowX: 'hidden',
@@ -28,10 +27,6 @@ export const meterStyles = stylex.create({
     width: '100%'
   },
   indicator: {
-    backgroundColor: {
-      default: colors.backgroundPrimary,
-      '@media (forced-colors: active)': 'Highlight'
-    },
     height: '100%',
     transitionDuration: duration.fast,
     transitionProperty: { default: 'width', '@media (prefers-reduced-motion: reduce)': 'none' },
@@ -49,4 +44,23 @@ export const meterStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     marginLeft: 'auto'
   }
+})
+
+// The fill by role; forced colors give every role the system highlight.
+const fill = (color: string) => ({
+  backgroundColor: { default: color, '@media (forced-colors: active)': 'Highlight' }
+})
+
+export const meterColors = stylex.create({
+  neutral: fill(colors.foregroundNeutralFaded),
+  primary: fill(colors.backgroundPrimary),
+  positive: fill(colors.backgroundPositive),
+  warning: fill(colors.backgroundWarning),
+  critical: fill(colors.backgroundCritical)
+})
+
+// `md` is the bar as it was before sizes existed.
+export const meterSizes = stylex.create({
+  sm: { height: unit.x0_5 },
+  md: { height: unit.x1 }
 })

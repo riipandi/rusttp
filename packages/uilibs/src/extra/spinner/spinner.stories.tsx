@@ -3,6 +3,7 @@ import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Button } from '../../base/button'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Badge } from '../badge'
 import { Spinner } from './spinner.component'
@@ -32,8 +33,6 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  iconXs: { height: 14, width: 14 },
-  iconLg: { height: 24, width: 24 },
   spinnerSm: { height: 12, width: 12 },
   row: {
     alignItems: 'center',
@@ -85,12 +84,30 @@ export const Alone: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Spinner style={styles.iconXs} />
-      <Spinner />
-      <Spinner style={styles.iconLg} />
-    </div>
-  )
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => <Spinner size={size} labels={{ loading: `Loading ${size}` }} />}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const side = (size: string) =>
+      canvas.getByRole('status', { name: `Loading ${size}` }).getBoundingClientRect().width
+    await expect([side('sm'), side('md'), side('lg')]).toEqual([12, 16, 20])
+  }
+}
+
+export const Colors: Story = {
+  render: () => (
+    <Axis axis='color' rows={['inherit', 'primary', 'positive', 'warning', 'critical'] as const}>
+      {(color) => <Spinner color={color} labels={{ loading: `Loading ${color}` }} />}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const tint = (color: string) =>
+      getComputedStyle(canvas.getByRole('status', { name: `Loading ${color}` })).color
+    await expect(
+      new Set(['inherit', 'primary', 'positive', 'warning', 'critical'].map(tint)).size
+    ).toBe(5)
+  }
 }
 
 export const Composition: Story = {

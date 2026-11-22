@@ -36,7 +36,8 @@ export function ItemSeparator({ ...props }: React.ComponentProps<typeof Separato
   )
 }
 
-export type ItemVariant = 'default' | 'outline' | 'muted'
+/** `ghost` is the bare row, `outline` adds an edge, `faded` a soft neutral fill. */
+export type ItemVariant = 'ghost' | 'outline' | 'faded'
 export type ItemSize = 'xs' | 'sm' | 'md'
 
 export interface ItemProps
@@ -45,7 +46,7 @@ export interface ItemProps
   size?: ItemSize
 }
 
-export function Item({ variant = 'default', size = 'md', style, render, ...props }: ItemProps) {
+export function Item({ variant = 'ghost', size = 'md', style, render, ...props }: ItemProps) {
   const inGroup = React.useContext(ItemGroupContext)
   return useRender({
     defaultTagName: 'div',

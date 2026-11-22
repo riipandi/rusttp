@@ -66,7 +66,7 @@ export function UserMenu() {
         <DropdownMenuGroup>
           {accountItems(m).map((item) => (
             <DropdownMenuItem key={item.label} render={<Link to={item.to} />}>
-              <Icon svg={item.icon} size={16} color='neutralFaded' />
+              <Icon svg={item.icon} size={16} color='neutral-faded' />
               {item.label}
             </DropdownMenuItem>
           ))}
@@ -76,7 +76,7 @@ export function UserMenu() {
         <LanguageMenu />
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link to='/' />}>
-          <Icon svg={LogOut} size={16} color='neutralFaded' />
+          <Icon svg={LogOut} size={16} color='neutral-faded' />
           {m.user_menu_sign_out()}
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -16,24 +16,44 @@
 import { Progress as BaseProgress } from '@base-ui/react/progress'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { progressStyles as s } from './progress.stylex'
+import { progressColors, progressSizes, progressStyles as s } from './progress.stylex'
+
+export type ProgressColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
+export type ProgressSize = 'sm' | 'md'
+
+/** The root's `color` and `size`, read by its track and indicator. */
+const ProgressLookContext = React.createContext<{ color: ProgressColor; size: ProgressSize }>({
+  color: 'primary',
+  size: 'md'
+})
 
 interface StyleXStyleProps {
   style?: stylex.StyleXStyles
 }
 
 export function Progress({
+  color = 'primary',
+  size = 'md',
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseProgress.Root>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseProgress.Root>, 'className' | 'style' | 'color'> &
+  StyleXStyleProps & {
+    /** The role of the fill; `primary` by default. Pair a non-neutral color with a label: color alone is not meaning. */
+    color?: ProgressColor
+    /** Bar thickness: `sm` 2px, `md` 4px (default). */
+    size?: ProgressSize
+  }) {
+  const look = React.useMemo(() => ({ color, size }), [color, size])
   return (
-    <BaseProgress.Root {...props} {...stylex.props(s.root, style)}>
-      {children}
-      <ProgressTrack>
-        <ProgressIndicator />
-      </ProgressTrack>
-    </BaseProgress.Root>
+    <ProgressLookContext.Provider value={look}>
+      <BaseProgress.Root {...props} {...stylex.props(s.root, style)}>
+        {children}
+        <ProgressTrack>
+          <ProgressIndicator />
+        </ProgressTrack>
+      </BaseProgress.Root>
+    </ProgressLookContext.Provider>
   )
 }
 
@@ -42,7 +62,8 @@ export function ProgressTrack({
   ...props
 }: Omit<React.ComponentProps<typeof BaseProgress.Track>, 'className' | 'style'> &
   StyleXStyleProps) {
-  return <BaseProgress.Track {...props} {...stylex.props(s.track, style)} />
+  const { size } = React.useContext(ProgressLookContext)
+  return <BaseProgress.Track {...props} {...stylex.props(s.track, progressSizes[size], style)} />
 }
 
 export function ProgressIndicator({
@@ -50,7 +71,13 @@ export function ProgressIndicator({
   ...props
 }: Omit<React.ComponentProps<typeof BaseProgress.Indicator>, 'className' | 'style'> &
   StyleXStyleProps) {
-  return <BaseProgress.Indicator {...props} {...stylex.props(s.indicator, style)} />
+  const { color } = React.useContext(ProgressLookContext)
+  return (
+    <BaseProgress.Indicator
+      {...props}
+      {...stylex.props(s.indicator, progressColors[color], style)}
+    />
+  )
 }
 
 export function ProgressLabel({

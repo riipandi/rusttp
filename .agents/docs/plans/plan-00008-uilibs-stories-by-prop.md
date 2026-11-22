@@ -25,12 +25,12 @@ phases:
       note: 8f3382b; 86 computed-style records identical to HEAD (rest and settled focus); gate 924 green in both themes
     - id: 5
       title: Tabs, Toggle, ToggleGroup variants
-      status: in_progress
-      note: 88 computed-style records identical under the old-to-new name map; commit hash lands with phase 6
+      status: committed
+      note: dcf11ab; 88 computed-style records identical under the old-to-new name map
     - id: 6
       title: Avatar, Progress, Meter, Spinner, Tooltip, Separator, Breadcrumb, Card, Popover, Item, Icon props
-      status: pending
-      note: —
+      status: in_progress
+      note: 74 computed-style records identical (the only diff is the text color of the Avatar root, which holds no text); commit hash lands with phase 7
     - id: 7
       title: Pilot - Button and Badge stories
       status: pending

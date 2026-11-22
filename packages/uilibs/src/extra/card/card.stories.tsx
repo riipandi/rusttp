@@ -4,6 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import {
   Card,
@@ -105,4 +106,29 @@ export const Small: Story = {
       </CardFooter>
     </Card>
   )
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'raised', 'selected'] as const}>
+      {(state) => (
+        <Card
+          raised={state === 'raised'}
+          selected={state === 'selected'}
+          data-testid={state}
+          style={styles.card}
+        >
+          <CardContent>{state}</CardContent>
+        </Card>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const style = (state: string) => getComputedStyle(canvas.getByTestId(state))
+    await expect(style('raised').boxShadow).not.toBe(style('default').boxShadow)
+    await expect(style('selected').borderTopColor).not.toBe(style('default').borderTopColor)
+    // Selected also doubles the edge, so it is not told by color alone.
+    await expect(style('selected').outlineWidth).toBe('1px')
+    await expect(canvas.getByTestId('selected')).toHaveAttribute('data-selected')
+  }
 }

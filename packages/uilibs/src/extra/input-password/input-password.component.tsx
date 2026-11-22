@@ -59,8 +59,8 @@ export interface InputPasswordProps extends Omit<
   toggleSize?: InputGroupButtonSize
 }
 
-const defaultShowIcon = <Icon svg={Eye} size={16} color='neutralFaded' />
-const defaultHideIcon = <Icon svg={EyeOff} size={16} color='neutralFaded' />
+const defaultShowIcon = <Icon svg={Eye} size={16} color='neutral-faded' />
+const defaultHideIcon = <Icon svg={EyeOff} size={16} color='neutral-faded' />
 
 /** Resolve a controlled or uncontrolled boolean. */
 function useUncontrolledState(

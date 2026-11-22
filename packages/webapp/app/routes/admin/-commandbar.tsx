@@ -350,7 +350,7 @@ function CommandBarDialog({ open }: { open: boolean }) {
                       }}
                     >
                       <span {...stylex.props(styles.itemIcon)}>
-                        <Icon svg={item.icon} size={16} color='neutralFaded' />
+                        <Icon svg={item.icon} size={16} color='neutral-faded' />
                       </span>
                       <span {...stylex.props(styles.itemLabel)}>
                         {item.label}

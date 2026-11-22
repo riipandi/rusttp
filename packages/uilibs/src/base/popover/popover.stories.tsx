@@ -43,6 +43,7 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
+  pair: { display: 'flex', gap: 160, paddingTop: 64 },
   form: {
     display: 'flex',
     flexDirection: 'column',
@@ -140,4 +141,26 @@ export const Form: Story = {
       </PopoverContent>
     </Popover>
   )
+}
+
+/** The two shadow depths, side by side; both stay open so the a11y gate sees them. */
+export const Elevations: Story = {
+  render: () => (
+    <div {...stylex.props(styles.pair)}>
+      {(['overlay', 'raised'] as const).map((elevation) => (
+        <Popover key={elevation} defaultOpen>
+          <PopoverTrigger render={<Button variant='outline' />}>{elevation}</PopoverTrigger>
+          <PopoverContent elevation={elevation} side='bottom' aria-label={`${elevation} notice`}>
+            {`Elevation ${elevation}`}
+          </PopoverContent>
+        </Popover>
+      ))}
+    </div>
+  ),
+  play: async () => {
+    const body = within(document.body)
+    const shadow = async (elevation: string) =>
+      getComputedStyle(await body.findByText(`Elevation ${elevation}`)).boxShadow
+    await expect(await shadow('raised')).not.toBe(await shadow('overlay'))
+  }
 }

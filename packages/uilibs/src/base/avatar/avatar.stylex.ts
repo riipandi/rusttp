@@ -7,7 +7,6 @@ import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
 export const avatarStyles = stylex.create({
   root: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundNeutral,
     borderRadius: radius.full,
     display: 'inline-flex',
     // Fixed-size chrome: never let a flex row squeeze the avatar.
@@ -20,16 +19,17 @@ export const avatarStyles = stylex.create({
     userSelect: 'none',
     verticalAlign: 'middle'
   },
+  // The image and fallback take the root's corners, so `squared` reaches them.
+  squared: { borderRadius: radius.medium },
   image: {
-    borderRadius: radius.full,
+    borderRadius: 'inherit',
     height: '100%',
     objectFit: 'cover',
     width: '100%'
   },
   fallback: {
     alignItems: 'center',
-    borderRadius: radius.full,
-    color: colors.foregroundNeutralFaded,
+    borderRadius: 'inherit',
     display: 'flex',
     fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
@@ -79,6 +79,24 @@ export const avatarStyles = stylex.create({
     justifyContent: 'center'
   }
 })
+
+// The fallback's fill and initials color: `faded` is a soft tint, `solid` a full fill.
+export const avatarFills = {
+  faded: stylex.create({
+    neutral: { backgroundColor: colors.backgroundNeutral, color: colors.foregroundNeutralFaded },
+    primary: { backgroundColor: colors.backgroundPrimaryFaded, color: colors.foregroundPrimary },
+    positive: { backgroundColor: colors.backgroundPositiveFaded, color: colors.foregroundPositive },
+    warning: { backgroundColor: colors.backgroundWarningFaded, color: colors.foregroundWarning },
+    critical: { backgroundColor: colors.backgroundCriticalFaded, color: colors.foregroundCritical }
+  }),
+  solid: stylex.create({
+    neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
+    primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBrand },
+    positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },
+    warning: { backgroundColor: colors.backgroundWarning, color: colors.onBackgroundWarning },
+    critical: { backgroundColor: colors.backgroundCritical, color: colors.onBackgroundCritical }
+  })
+}
 
 export const avatarSizes = stylex.create({
   sm: { height: unit.x8, width: unit.x8 },

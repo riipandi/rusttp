@@ -66,7 +66,7 @@ function Row({ item }: { item: NotificationResponse }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='end'>
             <DropdownMenuItem style={styles.menuItem} onClick={() => setRead(item.id, !item.read)}>
-              <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutralFaded' />
+              <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutral-faded' />
               {item.read ? m.notifications_mark_unread() : m.notifications_mark_read()}
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -182,7 +182,7 @@ export function NotificationsPopover({
                 disabled={unread === 0}
                 onClick={markAllRead}
               >
-                <Icon svg={MailOpen} size={14} color='neutralFaded' />
+                <Icon svg={MailOpen} size={14} color='neutral-faded' />
                 {m.notifications_mark_all_read()}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -210,7 +210,7 @@ export function NotificationsPopover({
           <Empty style={styles.empty}>
             <EmptyHeader>
               <EmptyMedia variant='icon'>
-                <Icon svg={Inbox} size={20} color='neutralFaded' />
+                <Icon svg={Inbox} size={20} color='neutral-faded' />
               </EmptyMedia>
               <EmptyTitle>{m.notifications_empty_title()}</EmptyTitle>
               <EmptyDescription>{m.notifications_empty_description()}</EmptyDescription>

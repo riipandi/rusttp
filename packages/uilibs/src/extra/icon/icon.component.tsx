@@ -27,7 +27,7 @@ import { iconColors, iconStyles as s } from './icon.stylex'
 
 export type IconColor =
   | 'neutral'
-  | 'neutralFaded'
+  | 'neutral-faded'
   | 'primary'
   | 'positive'
   | 'warning'

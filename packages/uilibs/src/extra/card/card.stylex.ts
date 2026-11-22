@@ -63,6 +63,16 @@ export const cardStyles = stylex.create({
   }
 })
 
+// `selected` doubles the edge (the border plus an inner outline), so it is not told by color alone.
+export const cardStates = stylex.create({
+  selected: {
+    borderColor: colors.borderPrimary,
+    outline: `${stroke.ring1} solid ${colors.borderPrimary}`,
+    outlineOffset: `calc(-1 * ${stroke.ring1})`
+  },
+  raised: { boxShadow: shadow.raised }
+})
+
 export const cardSizes = stylex.create({
   md: {},
   sm: { '--card-spacing': unit.x4 }

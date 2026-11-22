@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
+import { colors } from '../../styles/colors.stylex'
 
 export const spinnerSpin = stylex.keyframes({
   from: { transform: 'rotate(0deg)' },
@@ -14,4 +15,12 @@ export const spinnerStyles = stylex.create({
     animationTimingFunction: 'linear',
     flexShrink: 0
   }
+})
+
+// `inherit` has no style: the spinner draws in the text color around it.
+export const spinnerColors = stylex.create({
+  primary: { color: colors.foregroundPrimary },
+  positive: { color: colors.foregroundPositive },
+  warning: { color: colors.foregroundWarning },
+  critical: { color: colors.foregroundCritical }
 })
