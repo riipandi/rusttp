@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-22T19:02:00+07:00
+updated: 2026-11-22T19:16:12+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `plan-00008-uilibs-stories-by-prop.md` | awaiting-approval | Group uilibs stories by prop axis (`Variants`, `Colors`, `Sizes`, `States`) for every component, rename `tone` to `color` and the Button and Badge fills to `solid | faded | outline | ghost` (Reshaped model, no look lost), fluid story canvas; 13 phases, phase 0 commits the audit work. |
+| `plan-00008-uilibs-stories-by-prop.md` | awaiting-approval | Align uilibs props with Reshaped (`tone`→`color`, `solid | faded | outline | ghost`, new Button, Badge, text-entry, Tabs, Toggle, Avatar and surface props, nothing lost), then group every component's stories by prop axis with a fluid canvas; 17 phases, phase 0 commits the audit work. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 
