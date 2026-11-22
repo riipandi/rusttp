@@ -10,6 +10,7 @@ import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
 import { useMessages } from '#/libraries/messages'
 import { sidebarStore } from '#/libraries/sidebar.store'
+import { useCompact } from '#/libraries/viewport'
 import { styles } from '#/styles/pages/admin.stylex'
 import { CommandBar, useAdminHotkeys } from './-commandbar'
 import { Sidebar, useFoldSidebarOnSettings } from './-sidebar'
@@ -66,10 +67,13 @@ function resetAdminUi() {
   })
 }
 
-// Reads no store itself: the shortcuts and the sidebar's buttons call the store actions, so a
-// collapse or an open command bar renders only the parts that show it, not the whole layout.
+// Reads no store itself, only the viewport: the shortcuts and the sidebar's buttons call the store
+// actions, so a collapse or an open command bar renders only the parts that show it, not the whole
+// layout. Crossing the compact breakpoint swaps the sidebar for the top bar, which closes an open
+// popover; the stores keep the collapse and the unread count.
 function AdminLayout() {
   const m = useMessages()
+  const compact = useCompact()
   useFoldSidebarOnSettings()
   useAdminHotkeys()
   React.useEffect(() => resetAdminUi, [])
@@ -81,8 +85,8 @@ function AdminLayout() {
     <TooltipProvider>
       <div {...stylex.props(styles.root)}>
         <SkipLink />
-        <Sidebar />
-        <AdminTopBar />
+        {/* One chrome, not both hidden by CSS: a hidden one still ran its subscriptions. */}
+        {compact ? <AdminTopBar /> : <Sidebar />}
         <div {...stylex.props(styles.content)}>
           <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
             {m.admin_banner_demo_notice()}

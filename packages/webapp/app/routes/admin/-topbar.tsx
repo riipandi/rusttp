@@ -9,7 +9,7 @@ import { styles } from '#/styles/pages/admin.stylex'
 import { groups } from './-nav'
 import { AdminUserMenu } from './-user-menu'
 
-// The small-screen counterpart of the sidebar: it only shows below the compact breakpoint. The
+// The small-screen counterpart of the sidebar: it only renders below the compact breakpoint. The
 // drawer carries the sidebar's own account menu at its bottom.
 export function AdminTopBar() {
   const m = useMessages()

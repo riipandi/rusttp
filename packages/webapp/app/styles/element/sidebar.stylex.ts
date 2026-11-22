@@ -2,15 +2,15 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { container, duration, easing } from 'uilibs/styles/tokens.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints, motion } from '#/styles/constants.stylex'
+import { motion } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer, a column
-// beside the page whose two dividers run edge to edge. Below the compact breakpoint it is gone: the
-// top bar and its navigation sheet take over (`routes/admin/-topbar.tsx`).
+// beside the page whose two dividers run edge to edge. Below the compact breakpoint it is not
+// rendered: the top bar and its navigation sheet take over (`routes/admin/route.tsx`).
 export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
-    display: { default: 'flex', [breakpoints.compact]: 'none' },
+    display: 'flex',
     flexDirection: 'column',
     flexShrink: 0,
     // 16rem plus a half step (264px): the next container token (18rem) is a 32px jump.

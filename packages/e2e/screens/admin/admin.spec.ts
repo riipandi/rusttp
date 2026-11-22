@@ -266,3 +266,34 @@ test.describe('skip link and not-wired controls', () => {
     await expect(admin.page.locator('main')).toBeFocused()
   })
 })
+
+test.describe('admin chrome', () => {
+  test.skip(({ isMobile }) => isMobile, 'The test sets the viewport itself')
+
+  test('mounts the sidebar or the top bar, never both, and swaps across the breakpoint', async ({
+    admin
+  }) => {
+    const { page } = admin
+    const bell = page.getByRole('button', { name: /^Notifications/ })
+    const sidebar = admin.sidebar()
+    const topBar = page.locator('header').filter({ has: bell })
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await admin.openReady()
+    await expect(sidebar).toHaveCount(1)
+    await expect(bell).toHaveCount(1)
+    await expect(bell).toBeVisible()
+    await expect(topBar).toHaveCount(0)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(sidebar).toHaveCount(0)
+    await expect(bell).toHaveCount(1)
+    await expect(bell).toBeVisible()
+    await expect(topBar).toHaveCount(1)
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await expect(sidebar).toHaveCount(1)
+    await expect(bell).toHaveCount(1)
+    await expect(topBar).toHaveCount(0)
+  })
+})

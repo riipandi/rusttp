@@ -20,10 +20,10 @@ export const styles = stylex.create({
     flex: 1,
     minWidth: 0
   },
-  // Below the compact breakpoint the sidebar is gone and this bar stands in: the menu trigger, the
+  // Below the compact breakpoint the sidebar is not rendered and this bar stands in: the menu trigger, the
   // brand centered, and the notification trigger, in three equal-weight zones.
   topbar: {
-    display: { default: 'none', [breakpoints.compact]: 'grid' },
+    display: 'grid',
     gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'center',
     gap: unit.x2,
