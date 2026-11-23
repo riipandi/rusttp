@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-24T00:10:00+07:00
+updated: 2026-11-24T01:30:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -33,8 +33,8 @@ phases:
       note: 'Written by five parallel subagents (29 folders) and merged here. index.json holds 29 Extra Components docs entries plus one Data Grid entry (the data grid has no single stories file, so its page attaches to data-grid-basics.stories under Data Grid/Basics); the folder with the Extra Components/Icons stories shares the icon page. The scratch diff found no listed prop missing from the code. Spot pages (data-grid, kanban, table, calendar, input-phone) rendered at 1440 and 390 px in both themes with no page overflow. The data grid page marks props nothing reads as not read; filed as issue-00004 (one is a backwards-compatibility shim, border on DataGridContainer). Gate 942 of 942; one earlier run failed Table Borders in dark under load (a phase 2 story read the edges before the stylesheet applied them; it passes alone three times and in the full run), so its play now waits for the edges. issue-00004 was resolved afterwards (2026-11-24): border and rowId wired with stories, the other five props removed on the owner decision; gate 946 of 946.'
     - id: 8
       title: Docs sync and agent docs sync
-      status: pending
-      note: ''
+      status: done
+      note: 'Human docs: rg -il "storybook|stories" docs is empty, so docs/ is n/a (recorded 2026-11-24). Agent docs: ui-components.md rows carry every prop of Phases 1 to 4 and the .mdx anatomy, frontend.md has the component layout, the props page shape, the same-commit rule, the media and dark colors, and the backdropOf helper; stylex-authoring.md has the unit-step recipe and the constant-color rule; architecture.md has the D1 to D8 record with the rejected alternatives; packages/uilibs/AGENTS.md has the page line. Every path the changed docs name resolves; the four props named in the validation each appear in ui-components.md. There is no llms.txt.'
     - id: 9
       title: Ledger close and handover
       status: pending

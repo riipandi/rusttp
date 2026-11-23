@@ -1,6 +1,6 @@
 # Architecture
 
-updated: 2026-11-22T15:16:00+07:00
+updated: 2026-11-24T01:30:00+07:00
 
 The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`, `backend.md`, and `frontend.md`; this file keeps the why, so a settled decision is not re-litigated.
 
@@ -283,3 +283,33 @@ Alternatives considered:
 - `@vitest/coverage-istanbul` — rejected: it instruments code and fights the React Compiler and StyleX pipeline.
 - A coverage threshold now — rejected: the figure would be arbitrary before a baseline exists.
 - Vitest versions inline in the packages that use them — rejected: two sources of one version.
+
+### The UI library takes the safe Reshaped props, and each component has a props page
+
+Context (2026-11-23): after `plan-00008` the props followed Reshaped's `color` and `variant` model, but props Reshaped has were still missing. The owner had them curated against Base UI and asked for a props reference beside each component.
+
+Decision (`plan-00009-uilibs-reshaped-props-docs`):
+
+- D1: every prop judged safe is implemented, 29 in all; a prop is safe when it changes only the look (a StyleX style, an attribute Base UI already emits, an `aria-hidden` glyph) and touches none of Base UI's state, focus, keyboard handling, ARIA roles, portal, or positioning. The rest are left out: Button `loadingAriaLabel`, Badge `hidden` and `Badge.Container`, Switch `reversed`, Separator `contentPosition` and `blank`, `startSlot`/`endSlot`/`prefix`/`suffix` on Input and Select, menu item `selected` and `highlighted`, and the responsive `{ s, m, l }` values.
+- D2: `padding` and `bleed` take Reshaped's number, counted in `unit` steps (`UnitStep`, `0` to `20`). A map of static styles on the `unit` tokens (Popover `padding`) or, for a value known only at run time or given as a CSS length, one dynamic style fed by `unitLength` (Skeleton, Table cells, Alert `bleed`). No token was added.
+- D3: `media` (Button) and `dark` (Tooltip) read the constants `colors.white` and `colors.black` and `color-mix`, so they look the same in both themes. Axe checks them on a black backdrop.
+- D4: a visual-only prop emits no new data attribute. `highlighted` holds the hover fill through StyleX and sets no `data-highlighted`, which Base UI menu items own.
+- D5: every default renders as before, proven per phase by a computed-style comparison of the touched components before and after (96, 86, 174, and 72 elements; the only difference was a Skeleton animation frame).
+- D6: value sets Reshaped does not fix: Toggle `selectedColor` adds `positive` and `warning` (not `media` or `inherit`, a pressed state must stay distinguishable); Toggle `selectedVariant` is `ghost | outline | solid`, unset follows `variant` with `outline` pressing to the `ghost` tint; Dialog `size` is `sm | md` (`lg` needs a container token, left to the owner); `blurredOverlay` blurs by `unit.x1`; Button `inherit` has no cut-out `solid` (a tint instead).
+- D7 and D8: each component folder has `<name>.mdx`, a props reference with no usage examples, attached to the stories with `<Meta of={Stories} />`; a prop change updates it in the same commit. The shape is in `frontend.md` ("UI library"). The name is `<name>.mdx`: Storybook 10 cannot index `<name>.stories.mdx` (addon-docs excludes it, `preset.js:865`), found in Phase 5.
+- Along the way the data grid's declared-but-unread props were settled (`issue-00004`): `DataGridContainer` `border` and `DataGridTableHeadRow` `rowId` (as `data-header-row-id`, because the cell logic reads `data-row-id`) were wired and covered by stories, and `sizesInfo`, `sizesLabel`, `sizesDescription`, `more`, and `pinnable` were removed.
+
+Consequences:
+
+- (positive) the look the owner asked for is one prop away, the Base UI behavior is untouched, and a reader finds a component's added props in Storybook without reading its source; the Storybook MCP addon serves the same pages to agents.
+- (negative) 65 pages to keep in step with their components, by convention only (no script checks them); a Toggle pressed look is set through variables, which is harder to read than a flat map.
+
+Alternatives considered:
+
+- Implementing Reshaped's full prop set — rejected: it would break Base UI's state and ARIA model.
+- Named steps (`sm | md | lg`) or free pixel values for `padding` and `bleed` — rejected: the first is further from Reshaped, the second escapes the token scale.
+- `<ArgTypes>`/`<Controls>` for the props page — rejected: react-docgen lists every inherited Base UI and DOM prop and buries the ones this library adds.
+- A usage section on each page — rejected: it repeats the stories.
+- `<name>.docs.mdx` — rejected: it needs the same glob change and gains nothing over `<name>.mdx`.
+- A new token for a media or dark surface — rejected: the constants already carry it.
+

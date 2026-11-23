@@ -213,6 +213,8 @@ const styles = stylex.create({
 
 A size prop that takes Reshaped's number counts `unit` steps (`3` is 12px) and also accepts a CSS length (`'60%'`). Type it `UnitStep | (string & {})`, turn it into a length with `unitLength` from `styles/utils.stylex.ts`, and pass the result to a dynamic style (`width: (value: string) => ({ width: value })`). A value known only at run time then reaches the stylesheet through a variable, and no token is added (`Skeleton`, `TableCell`, `Alert` `bleed`).
 
+A color that must not follow the theme (Button `color='media'`, Tooltip `color='dark'`) reads the constants `colors.white` and `colors.black` and `color-mix(in srgb, <color> N%, transparent)` for its tints, so it looks the same in both themes and needs no token. `inherit` takes `currentColor` and mixes it into the fill and the edge the same way; it has no cut-out `solid`, because `currentColor` is the element's own color. A story shows `media` on a black backdrop (`colors.black`) so axe checks white on black, not white on the page.
+
 ---
 
 ## Defining constants
