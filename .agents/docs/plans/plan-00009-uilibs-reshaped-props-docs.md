@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T20:30:00+07:00
+updated: 2026-11-23T22:00:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -21,8 +21,8 @@ phases:
       note: 'Parity 72 of 72 elements identical with the popups open (menu item hover included, both themes); gate 942 of 942 (6 new stories); 390 px probe 86 of 86 clean. Popover padding is a static style per unit step (popoverPadding). Dialog and Sheet overlays are blurred through blurredOverlay on the content, which passes it to the overlay. The backdrop is not the popup previous sibling (a focus guard sits between), so the Overlays plays use a new backdropOf helper in contracts/control-sizes.tsx. The Dialog Sizes play caps the expected width at the viewport minus 32px, because the content keeps maxWidth.'
     - id: 5
       title: Component docs pilot - template, Button, Badge
-      status: pending
-      note: ''
+      status: done
+      note: 'Storybook 10.6.8 refused .stories.mdx (addon-docs excludes it, preset.js:865); the owner chose <name>.mdx with the glob ../src/**/*.mdx. Build green; index.json holds base-components-button--docs and extra-components-badge--docs attached to their stories; gate still 942 of 942 (docs entries are not tests). Pages screenshotted light and dark at 1440 and 390 px. The 390 px render overflowed by 144 px until docs-container.tsx got a rule that makes a props table scroll inside the page.'
     - id: 6
       title: Component docs - base
       status: pending
@@ -49,7 +49,7 @@ phases:
 
 ## Objective
 
-After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` model, but several Reshaped props are still missing. The owner had the missing props curated against Base UI and chose to implement every prop judged safe. A prop is safe when it changes only the look: a StyleX style, an attribute Base UI already emits, or an `aria-hidden` glyph. It must not touch Base UI's state, focus, keyboard handling, ARIA roles, portal, or positioning. The owner also wants a short docs page next to each component (`<name>.stories.mdx`) that lists its props. Usage examples stay in the stories. After this plan, the 29 curated props exist with defaults that render exactly as today, every new value has an axis story that passes axe in light and dark, and every `base` and `extra` component folder holds a props page attached to its stories. Base UI behavior, the size names, and the design tokens do not change.
+After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` model, but several Reshaped props are still missing. The owner had the missing props curated against Base UI and chose to implement every prop judged safe. A prop is safe when it changes only the look: a StyleX style, an attribute Base UI already emits, or an `aria-hidden` glyph. It must not touch Base UI's state, focus, keyboard handling, ARIA roles, portal, or positioning. The owner also wants a short docs page next to each component (`<name>.mdx`) that lists its props. Usage examples stay in the stories. After this plan, the 29 curated props exist with defaults that render exactly as today, every new value has an axis story that passes axe in light and dark, and every `base` and `extra` component folder holds a props page attached to its stories. Base UI behavior, the size names, and the design tokens do not change.
 
 ## Current state (verified in the tree, 2026-11-23)
 
@@ -91,8 +91,8 @@ After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` mode
   - Skeleton has `width`, `height`, and `borderRadius` (documented props, not in the 4.3.0 type file).
 - **No component docs page exists.**
   - `find packages/uilibs/src -name '*.mdx'` is empty. The only MDX file is `.storybook/stories/introduction.mdx`.
-  - `.storybook/main.ts` indexes `../src/**/*.stories.@(mdx|jsx|tsx)` with `remark-gfm`, so tables render.
-  - Storybook is 10.6.8, and its dist has no special case for the `.stories.mdx` name (`rg -lF "stories.mdx" node_modules/storybook/dist` is empty), so the file indexes as a docs entry.
+  - `.storybook/main.ts` indexed `../src/**/*.stories.@(mdx|jsx|tsx)` with `remark-gfm`, so tables render. Phase 5 changes the glob to `'../src/**/*.mdx', '../src/**/*.stories.@(jsx|tsx)'`.
+  - Storybook is 10.6.8 and refuses the `.stories.mdx` name: `storybook build` fails with `No matching indexer found`, because addon-docs excludes `/(stories|story)\.mdx$/` from its MDX rule (`@storybook/addon-docs` `dist/preset.js:865`). Found in Phase 5 (2026-11-23); this plan first assumed the name was free. A plain `<name>.mdx` with `<Meta of={Stories} />` indexes as a docs entry attached to the component's stories (`index.json` holds `base-components-button--docs`, `storiesImports` the stories file).
   - Autodocs is off in every story file (87 files set `tags: []`), so a page attached with `<Meta of={…} />` does not collide with an autodocs "Docs" entry.
   - There are 35 `base` component folders and 30 `extra` folders.
 - **Gate baseline:** `pnpm --filter uilibs test` runs 910 tests, green (handover-00011). The tree is clean at `fb66e56`.
@@ -121,12 +121,13 @@ After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` mode
   - Skeleton `width` and `height` take a CSS length or a number in `unit` steps (D2). A CSS length uses one dynamic StyleX style (`stylex.create` with a function), the documented way for runtime values. `borderRadius` takes a `radius` key.
   - Table cell `width` and `minWidth` follow Skeleton's rule.
   - Alert `bleed` sets a negative inline margin and drops the inline edges and corners.
-- **D7 (2026-11-23, owner): each component folder gets `<name>.stories.mdx`, a short props reference with no usage examples.** The page holds:
+- **D7 (2026-11-23, owner): each component folder gets `<name>.mdx`, a short props reference with no usage examples.** The page holds:
   - `<Meta of={Stories} />`, which attaches it to the component's stories as their Docs entry.
   - The component name and one sentence on what it is for.
   - A link to the Base UI part it wraps, with a line saying the other Base UI props pass through.
   - One GFM table per exported part listing only the props this library adds or narrows: prop, values, default, and one short note.
   - Examples stay in the stories, so the page carries no code block.
+  - Rejected: the name `<name>.stories.mdx`, which Storybook 10 cannot index (see Current state). Also rejected: `<name>.docs.mdx`, which needs a glob change as well and gains nothing over `<name>.mdx`.
   - Rejected: `<ArgTypes>`/`<Controls>`, because react-docgen lists every inherited Base UI and DOM prop and buries ours. Also rejected: usage sections that repeat the stories.
 - **D8 (2026-11-23, derived): the docs page is part of the component's contract.**
   - `frontend.md` ("UI library") and `packages/uilibs/AGENTS.md` add the file to the component layout.
@@ -137,7 +138,7 @@ After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` mode
 
 | What | Where | The record |
 | --- | --- | --- |
-| New props, values, defaults | `ui-components.md` rows of each touched component; the component's `.stories.mdx` | each prop and its default |
+| New props, values, defaults | `ui-components.md` rows of each touched component; the component's `<name>.mdx` | each prop and its default |
 | Props page convention (D7, D8) | `frontend.md` "UI library" (component layout line 20 and the stories bullet); `packages/uilibs/AGENTS.md` | the file, its shape, the same-commit rule |
 | Unit-step numbers (D2), `media`/`dark` from constants (D3) | `stylex-authoring.md` (a short recipe for a unit-step prop map) | how to add the next one |
 | Decision record | `architecture.md` | D1 to D8 with the rejected alternatives |
@@ -204,13 +205,13 @@ After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` mode
     - Axe runs with the popups open in both themes, and the Phase 1 gates are green.
 
    _Commit: `feat(uilibs): add Tooltip dark, Popover padding and radius, menu item icon and primary, Dialog size and blurred overlay`._
-5. **Component docs pilot: template, Button, Badge.** Write `button.stories.mdx` (Button, LinkButton) and `badge.stories.mdx` in the D7 shape. Validation:
+5. **Component docs pilot: template, Button, Badge.** Change the stories glob in `.storybook/main.ts` to `'../src/**/*.mdx', '../src/**/*.stories.@(jsx|tsx)'`, then write `button.mdx` (Button, LinkButton) and `badge.mdx` in the D7 shape. Validation:
     - `pnpm storybook:build` succeeds.
     - `.output/storybook/index.json` holds a `type: "docs"` entry for each page, attached to the Button and Badge titles.
     - Both pages are screenshotted in light and dark and inspected: tables render, the theme follows the toolbar, and nothing overflows at 390 px.
     - The story gate count is unchanged, because docs entries are not tests.
     - The owner reviews this phase before Phases 6 and 7, because it fixes the page shape.
-    - If Storybook refuses `.stories.mdx`, the phase stops and asks the owner.
+    - Storybook refused `.stories.mdx`, so the phase stopped and the owner chose `<name>.mdx` with the glob change above (2026-11-23).
 
    _Commit: `docs(uilibs): add the props reference page for Button and Badge`._
 6. **Component docs: `base` (35 folders, Button already done).** One page per folder, each table read from the component's props interface. Validation:
@@ -224,7 +225,7 @@ After plan-00008 the `uilibs` props follow Reshaped's `color` and `variant` mode
     - Human docs: `rg -il "storybook|stories" docs` is expected empty, which makes `docs/` n/a; the search is recorded.
     - Agent docs (this is the LLM-docs sync; there is no `llms.txt`):
         - `ui-components.md`: every new prop and default from Phases 1 to 4.
-        - `frontend.md` "UI library": the component layout gains `.stories.mdx`, plus the page shape and the same-commit rule (D7, D8).
+        - `frontend.md` "UI library": the component layout gains `<name>.mdx`, plus the page shape and the same-commit rule (D7, D8).
         - `stylex-authoring.md`: the unit-step prop map recipe (D2) and the constant-color rule for `media`/`dark` (D3).
         - `architecture.md`: the D1 to D8 decision record.
         - `packages/uilibs/AGENTS.md`: one line on the docs page.

@@ -1,0 +1,25 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './badge.stories'
+
+<Meta of={Stories} />
+
+# Badge
+
+A compact status label. The fill is `variant` and the role is `color`.
+
+Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through.
+
+## Badge
+
+| Prop          | Values                                                  | Default                                    | Note                                                                    |
+| ------------- | ------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
+| `variant`     | `solid`, `faded`, `outline`, `ghost`                    | `solid`                                    | The fill.                                                               |
+| `color`       | `neutral`, `primary`, `positive`, `warning`, `critical` | `primary` for `solid`, `neutral` otherwise | The role.                                                               |
+| `size`        | `sm`, `md`, `lg`                                        | `md`                                       | Type and padding.                                                       |
+| `rounded`     | `boolean`                                               | `true`                                     | A pill; `false` gives squarer corners.                                  |
+| `icon`        | glyph component                                         | none                                       | A glyph before the label.                                               |
+| `endIcon`     | glyph component                                         | none                                       | A glyph after the label, before the dismiss button.                     |
+| `highlighted` | `boolean`                                               | `false`                                    | Fades the badge to 0.8 opacity.                                         |
+| `onDismiss`   | `() => void`                                            | none                                       | Adds a trailing dismiss button. Do not combine it with a link `render`. |
+| `labels`      | `{ dismiss }`                                           | `Dismiss`                                  | Name of the dismiss button.                                             |
+| `style`       | StyleX styles                                           | none                                       | Replaces the `className` and `style` props.                             |

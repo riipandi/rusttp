@@ -48,6 +48,9 @@ function useThemeGlobal(): StorybookTheme {
   return theme
 }
 
+// A props table is wider than a phone: it scrolls inside the page instead of widening it.
+const docsTableCss = `.sbdocs table { display: block; max-width: 100%; overflow-x: auto; }`
+
 export function ThemedDocsContainer({
   children,
   context
@@ -64,7 +67,7 @@ export function ThemedDocsContainer({
         forcedTheme={theme === 'system' ? undefined : theme}
         storage={ephemeralStorage}
       >
-        <style dangerouslySetInnerHTML={{ __html: canvasBackgroundCss }} />
+        <style dangerouslySetInnerHTML={{ __html: canvasBackgroundCss + docsTableCss }} />
         <DocsContainer context={context} theme={dark ? themes.dark : themes.light}>
           {children}
         </DocsContainer>
