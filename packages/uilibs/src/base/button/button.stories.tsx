@@ -10,7 +10,8 @@ import {
   expectControlHeights
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { radius } from '../../styles/tokens.stylex'
+import { colors } from '../../styles/colors.stylex'
+import { radius, unit } from '../../styles/tokens.stylex'
 import { Button, LinkButton } from './button.component'
 import { buttonSizes } from './button.stylex'
 
@@ -19,7 +20,10 @@ const meta = {
   component: Button,
   argTypes: {
     variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
-    color: { control: 'radio', options: ['primary', 'neutral', 'critical', 'positive', 'warning'] },
+    color: {
+      control: 'radio',
+      options: ['primary', 'neutral', 'critical', 'positive', 'warning', 'media', 'inherit']
+    },
     size: { control: 'radio', options: Object.keys(buttonSizes) },
     disabled: { control: 'boolean' }
   },
@@ -38,6 +42,11 @@ const styles = stylex.create({
     gap: 8
   },
   pill: { borderRadius: radius.full },
+  // `media` is for a photo or a dark surface, so its cells sit on black: the a11y gate then checks
+  // white on black, which is what the color is for, not white on the page.
+  backdrop: { backgroundColor: colors.black, borderRadius: radius.medium, padding: unit.x2 },
+  // `inherit` takes the parent's text color; a parent with its own color shows that it does.
+  parent: { color: colors.foregroundPrimary },
   wide: { paddingInline: 48 },
   wideBox: { width: 320 }
 })
@@ -55,7 +64,8 @@ export const Playground: Story = {
 }
 
 const fillNames = ['solid', 'faded', 'outline', 'ghost'] as const
-const colorNames = ['primary', 'neutral', 'critical', 'positive', 'warning'] as const
+const roleNames = ['primary', 'neutral', 'critical', 'positive', 'warning'] as const
+const colorNames = [...roleNames, 'media', 'inherit'] as const
 
 /** The four fills at the default color. */
 export const Variants: Story = {
@@ -76,30 +86,47 @@ export const Variants: Story = {
   }
 }
 
-/** Every fill in every color; the a11y gate checks the contrast of each pair. */
+/**
+ * Every fill in every color; the a11y gate checks the contrast of each pair. `media` sits on a
+ * black backdrop and `inherit` in a parent with its own text color.
+ */
 export const Colors: Story = {
   render: () => (
     <Axis axis='variant' rows={fillNames} columnAxis='color' columns={colorNames}>
-      {(variant, color) => (
-        <Button variant={variant} color={color}>
-          Obliviate
-        </Button>
-      )}
+      {(variant, color) => {
+        const button = (
+          <Button variant={variant} color={color}>
+            Obliviate
+          </Button>
+        )
+        if (color === 'media') return <div {...stylex.props(styles.backdrop)}>{button}</div>
+        if (color === 'inherit') return <div {...stylex.props(styles.parent)}>{button}</div>
+        return button
+      }}
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const look = (variant: string, color: string) => {
-      const el = canvasElement.querySelector(
-        `[data-variant="${variant}"][data-color="${color}"]`
-      )?.firstElementChild
+    const buttonOf = (variant: string, color: string) => {
+      const el = canvasElement
+        .querySelector(`[data-variant="${variant}"][data-color="${color}"]`)
+        ?.querySelector('button')
       if (!el) throw new Error(`No button for ${variant} ${color}`)
-      const style = getComputedStyle(el)
+      return el
+    }
+    const look = (variant: string, color: string) => {
+      const style = getComputedStyle(buttonOf(variant, color))
       return `${style.backgroundColor}|${style.color}|${style.borderTopColor}`
     }
-    // Color and fill are independent: every pair renders and no two colors share a look.
     for (const variant of fillNames) {
-      await expect(new Set(colorNames.map((color) => look(variant, color))).size).toBe(
-        colorNames.length
+      // Color and fill are independent: every role and `media` renders and no two share a look.
+      await expect(new Set([...roleNames, 'media'].map((color) => look(variant, color))).size).toBe(
+        roleNames.length + 1
+      )
+      // `inherit` takes the text color of its parent, not a role's.
+      const parent = buttonOf(variant, 'inherit').parentElement
+      if (!parent) throw new Error(`No parent for ${variant} inherit`)
+      await expect(getComputedStyle(buttonOf(variant, 'inherit')).color).toBe(
+        getComputedStyle(parent).color
       )
     }
   }
@@ -145,20 +172,35 @@ export const IconSizes: Story = {
 /** Press states that are visible without interaction. */
 export const States: Story = {
   render: (args) => (
-    <Axis axis='state' rows={['default', 'disabled', 'loading'] as const}>
+    <Axis axis='state' rows={['default', 'highlighted', 'disabled', 'loading'] as const}>
       {(state) => (
         <Button
-          variant='outline'
+          variant='faded'
           onClick={args.onClick}
+          highlighted={state === 'highlighted'}
           disabled={state === 'disabled'}
           loading={state === 'loading'}
         >
-          {{ default: 'Open the cryptex', disabled: 'Petrified', loading: 'Apparating…' }[state]}
+          {
+            {
+              default: 'Open the cryptex',
+              highlighted: 'Marauder’s Map',
+              disabled: 'Petrified',
+              loading: 'Apparating…'
+            }[state]
+          }
         </Button>
       )}
     </Axis>
   ),
   play: async ({ args, canvas }) => {
+    // Highlighted shows the hover fill at rest, so it differs from the default look.
+    await expect(
+      getComputedStyle(canvas.getByRole('button', { name: 'Marauder’s Map' })).backgroundColor
+    ).not.toBe(
+      getComputedStyle(canvas.getByRole('button', { name: 'Open the cryptex' })).backgroundColor
+    )
+
     const petrified = canvas.getByRole('button', { name: 'Petrified' })
     await expect(petrified).toBeDisabled()
     // A disabled look is half opacity and a not-allowed cursor.

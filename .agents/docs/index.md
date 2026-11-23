@@ -46,7 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-No live plan.
+| File | Status | Subject |
+| --- | --- | --- |
+| `plan-00009-uilibs-reshaped-props-docs.md` | in-progress | Add the curated safe Reshaped props to `uilibs` and a props reference page (`<name>.stories.mdx`) beside each component. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
 

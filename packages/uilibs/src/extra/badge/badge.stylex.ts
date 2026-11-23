@@ -16,6 +16,7 @@ export const badgeStyles = stylex.create({
     whiteSpace: 'nowrap'
   },
   squared: { borderRadius: radius.small },
+  highlighted: { opacity: 0.8 },
   dismiss: {
     alignItems: 'center',
     appearance: 'none',

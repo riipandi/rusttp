@@ -39,6 +39,10 @@ export interface BadgeProps extends Omit<
   rounded?: boolean
   /** A glyph before the label. */
   icon?: BadgeGlyph
+  /** A glyph after the label, before the dismiss button. */
+  endIcon?: BadgeGlyph
+  /** Fades the badge to show it is the current one, such as the hovered item of a list; Reshaped does the same. */
+  highlighted?: boolean
   /**
    * Adds a trailing dismiss button that calls this. Do not combine it with a link `render`:
    * a button cannot sit inside a link.
@@ -64,6 +68,8 @@ export function Badge({
   size = 'md',
   rounded = true,
   icon: Icon,
+  endIcon: EndIcon,
+  highlighted = false,
   onDismiss,
   labels,
   children,
@@ -81,6 +87,7 @@ export function Badge({
         variants[variant],
         badgeSizes[size],
         !rounded && s.squared,
+        highlighted && s.highlighted,
         colorStyles[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')],
         style
       ),
@@ -90,6 +97,7 @@ export function Badge({
           <>
             {Icon ? <Icon size={glyph} aria-hidden /> : null}
             {children}
+            {EndIcon ? <EndIcon size={glyph} aria-hidden /> : null}
             {onDismiss ? (
               <button
                 type='button'

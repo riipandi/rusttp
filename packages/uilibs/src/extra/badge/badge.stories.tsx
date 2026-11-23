@@ -1,4 +1,4 @@
-import { Check } from '@keyline-icons/react'
+import { Check, ChevronRight } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent } from 'storybook/test'
@@ -106,19 +106,27 @@ export const Sizes: Story = {
   }
 }
 
-/** A badge that can be dismissed carries a named button. */
+/** A badge that can be dismissed carries a named button; a highlighted one fades. */
 export const States: Story = {
   args: { onDismiss: fn() },
   render: (args) => (
-    <Axis axis='state' rows={['default', 'dismissible'] as const}>
+    <Axis axis='state' rows={['default', 'highlighted', 'dismissible'] as const}>
       {(state) => (
-        <Badge variant='faded' onDismiss={state === 'dismissible' ? args.onDismiss : undefined}>
-          {state === 'dismissible' ? 'Detention' : 'Owl Post'}
+        <Badge
+          variant='faded'
+          highlighted={state === 'highlighted'}
+          onDismiss={state === 'dismissible' ? args.onDismiss : undefined}
+        >
+          {{ default: 'Owl Post', highlighted: 'Floo Network', dismissible: 'Detention' }[state]}
         </Badge>
       )}
     </Axis>
   ),
   play: async ({ args, canvas }) => {
+    // Highlighted is the same badge, faded.
+    await expect(getComputedStyle(canvas.getByText('Floo Network')).opacity).toBe('0.8')
+    await expect(getComputedStyle(canvas.getByText('Owl Post')).opacity).toBe('1')
+
     // Only the dismissible badge has a button (the canvas overlay's own button is not named Dismiss).
     await expect(canvas.getAllByRole('button', { name: 'Dismiss' })).toHaveLength(1)
     await userEvent.click(canvas.getByRole('button', { name: 'Dismiss' }))
@@ -155,11 +163,33 @@ export const Squared: Story = {
   }
 }
 
-export const WithGlyph: Story = {
-  name: 'With glyph prop',
+/** A glyph before the label, after it, or both; the dismiss button stays last. */
+export const Icons: Story = {
   render: () => (
-    <Badge icon={Check} color='positive'>
-      Ministry approved
-    </Badge>
-  )
+    <div {...stylex.props(styles.row)}>
+      <Badge icon={Check} color='positive'>
+        Ministry approved
+      </Badge>
+      <Badge endIcon={ChevronRight} variant='outline'>
+        Next chapter
+      </Badge>
+      <Badge endIcon={ChevronRight} variant='faded' onDismiss={() => {}}>
+        Triwizard Tournament
+      </Badge>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    // The glyphs are decoration, so the name of each badge is its text.
+    const approved = canvas.getByText('Ministry approved')
+    await expect(approved.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+
+    const next = canvas.getByText('Next chapter')
+    await expect(next.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    await expect(next.lastElementChild?.tagName.toLowerCase()).toBe('svg')
+
+    // The end glyph sits before the dismiss button.
+    const tournament = canvas.getByText('Triwizard Tournament')
+    const children = Array.from(tournament.children).map((child) => child.tagName.toLowerCase())
+    await expect(children).toEqual(['svg', 'button'])
+  }
 }

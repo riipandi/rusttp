@@ -12,10 +12,23 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import { buttonFills, buttonModifiers, buttonSizes, buttonStyles } from './button.stylex'
+import {
+  buttonFills,
+  buttonHighlighted,
+  buttonModifiers,
+  buttonSizes,
+  buttonStyles
+} from './button.stylex'
 
 export type ButtonVariant = keyof typeof buttonFills
-export type ButtonColor = 'primary' | 'neutral' | 'critical' | 'positive' | 'warning'
+export type ButtonColor =
+  | 'primary'
+  | 'neutral'
+  | 'critical'
+  | 'positive'
+  | 'warning'
+  | 'media'
+  | 'inherit'
 
 /** A glyph component, such as a Keyline icon; the button sizes it and hides it from assistive technology. */
 export type ButtonGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
@@ -25,13 +38,23 @@ export function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
   return buttonFills[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')]
 }
 
+/** The hover fill of a fill in a color, held at rest. */
+function buttonHighlight(variant: ButtonVariant, color?: ButtonColor) {
+  return buttonHighlighted[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')]
+}
+
 export interface ButtonProps extends Omit<
   React.ComponentProps<typeof BaseButton>,
   'className' | 'style' | 'color'
 > {
   /** The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). */
   variant?: ButtonVariant
-  /** The role. `primary` for `solid`, `neutral` for the other fills, by default; `critical` marks a destructive or irreversible action. */
+  /**
+   * The role. `primary` for `solid`, `neutral` for the other fills, by default; `critical` marks a
+   * destructive or irreversible action. `media` is white on a photo or a dark surface, the same in
+   * both themes. `inherit` takes the parent's text color for the label, the edge, and a tinted fill;
+   * `solid` has no cut-out label in `inherit`, so it is a stronger tint.
+   */
   color?: ButtonColor
   size?: keyof typeof buttonSizes
   /** Fully rounded ends. */
@@ -40,6 +63,8 @@ export interface ButtonProps extends Omit<
   fullWidth?: boolean
   /** Lifts the button with the raised shadow. */
   raised?: boolean
+  /** Shows the hover fill without the pointer, such as for the current item of a list of buttons. Ignored while disabled or loading. */
+  highlighted?: boolean
   /** A glyph before the label. With no children the button is icon-only and needs an `aria-label`. */
   icon?: ButtonGlyph
   /** A glyph after the label. */
@@ -59,6 +84,7 @@ export function Button({
   rounded = false,
   fullWidth = false,
   raised = false,
+  highlighted = false,
   icon: Icon,
   endIcon: EndIcon,
   loading = false,
@@ -87,6 +113,7 @@ export function Button({
         controlPress.root,
         buttonStyles.root,
         buttonFill(variant, color),
+        highlighted && !disabled && !loading && buttonHighlight(variant, color),
         (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
         buttonSizes[size],
         rounded && buttonModifiers.rounded,
