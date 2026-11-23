@@ -24,7 +24,7 @@ Each line is a question with the contract it comes from. A "no" with evidence is
 - Any literal color, size, duration, or z-index instead of a `src/styles/` token? (`stylex-authoring.md`)
 - Any `className`, raw `style`, top-level pseudo-class or media query, or non-StyleX import in a style?
 - Does each control take `size` and compose `controlBase` or `controlPress`, with the caller's `style` last?
-- Does a webapp page reuse a `uilibs` component that already exists (`ui-components.md`), and use `PageTitle`, `layoutSize`, `breakpoints`?
+- Does a webapp page reuse a `uilibs` component that already exists (the catalog, `packages/uilibs/.storybook/stories/components.mdx`), and use `PageTitle`, `layoutSize`, `breakpoints`?
 - Does `base` import from `extra` (other than Button's `Spinner`)?
 
 ## Responsive layout

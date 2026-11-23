@@ -15,7 +15,7 @@ Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), t
 | `.agents/docs/backend.md` | Rust contracts and traps: dependency direction, modules, data and migrations, errors and transport, the SPA document, Rust code, CLI, tests. |
 | `.agents/docs/frontend.md` | `packages/` contracts and traps: layout, UI library, webapp forms, state, i18n, accessibility, shortcuts, bundle, tests. |
 | `.agents/docs/architecture.md` | Module anatomy, lifecycle, and the decision records with rejected alternatives. |
-| `.agents/docs/ui-components.md` | The `packages/uilibs` inventory: import paths, parts, primitives, `size`, `color`, `labels`. |
+| `packages/uilibs/.storybook/stories/components.mdx` | The `packages/uilibs` catalog, shown in Storybook as "Components": conventions, look-alikes, every component with a link to its page. Read it before building or changing any UI. |
 | `.agents/docs/stylex-authoring.md` | How to write StyleX styles and the control recipes. Read before touching any `*.stylex.ts`. |
 | `.agents/docs/stylex-installation.md` | StyleX build setup. Read when changing the compiler pipeline. |
 

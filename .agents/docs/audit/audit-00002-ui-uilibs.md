@@ -213,7 +213,7 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 - **Problem**: the track could shrink to 0 while the column refused to go under 288 px, so each column spilled over the next and the last one was cut off.
 - **Evidence**: verified with a bounding-box probe over the 7 Kanban stories at 390, 900, 1100 and 1440 px, light and dark. Before: 6 stories had overlapping columns at 900 and 1100 px (`placeholder-overlay`, `dynamic-overlay`, `frame-columns`: 3 overlapping pairs; `stacked-frame`, `feature-roadmap`, `persisted-to-backend`: 2 at 900 px); 390 and 1440 were clean.
 - **Fix (done)**: tracks are `minmax(container.small, 1fr)` from 660 px up and the board scrolls sideways (`overflowX: 'auto'`, `padding: unit.x1` so the columns' ring and shadow are not clipped); under 660 px the stack keeps `minmax(0, 1fr)`. The board takes focus through its columns' handles and items, and a focused column in view scrolls the board to it (tab to the last column at 900 px: `scrollLeft` 380 of 380).
-- **After**: 0 overlapping pairs in all 56 story, width and theme cases. No prop changed, so the `.mdx` page and `ui-components.md` stay as they are.
+- **After**: 0 overlapping pairs in all 56 story, width and theme cases. No prop changed, so the `.mdx` page and the component catalog stay as they are.
 - **Confidence**: high. **Status**: fixed.
 
 ## Cleanup candidates

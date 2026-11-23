@@ -12,6 +12,7 @@ Always-on rules. Detail lives in `.agents/docs/` (map: `index.md`); a scoped `AG
 - Chat follows the user's language. Files, code, identifiers, and commit messages are English.
 - Sample data comes from Dan Brown's novels and Harry Potter, never `John Doe`, `foo`, or lorem ipsum (`rules.md`, "Sample data").
 - Never print a secret or rewrite a `.env` without consent. The default credentials in `container/` and `.env.example` are development-only by the owner's choice: not findings, never reused outside local dev.
+- **UI work starts at the component catalog.** Before building, changing, or reviewing any UI (a page, a form, a component, a story), read `packages/uilibs/.storybook/stories/components.mdx` and the `<name>.mdx` page of each component you use. Reuse a `uilibs` component before writing one; style through `style` with tokens (`.storybook/stories/styling.mdx`), never a literal value or `className`.
 - Never run a migration rollback, database reset, or drop without explicit consent in the same turn.
 
 ## Ambiguous decisions

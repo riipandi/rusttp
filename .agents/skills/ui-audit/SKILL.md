@@ -12,7 +12,7 @@ metadata:
 
 # UI audit
 
-Find real UI defects in `packages/webapp` and `packages/uilibs`, prove each one, and report them in the ledger. The contracts audited against are `.agents/docs/frontend.md`, `.agents/docs/stylex-authoring.md`, and `.agents/docs/ui-components.md`; `AGENTS.md` and those files win over this skill. A rule `rules.md` or `architecture.md` settles (the dev-only credentials, a recorded decision such as the dropped lazy catalog) is not a finding.
+Find real UI defects in `packages/webapp` and `packages/uilibs`, prove each one, and report them in the ledger. The contracts audited against are `.agents/docs/frontend.md`, `.agents/docs/stylex-authoring.md`, and `packages/uilibs/.storybook/stories/components.mdx`; `AGENTS.md` and those files win over this skill. A rule `rules.md` or `architecture.md` settles (the dev-only credentials, a recorded decision such as the dropped lazy catalog) is not a finding.
 
 The report shape, numbering, statuses, confirmation protocol, and fix phase are `deep-audit`'s: `.agents/skills/deep-audit/SKILL.md` ("Confirmation protocol", "Phase 5", "Phase 6") and `references/report-template.md`. Save to `.agents/docs/audit/audit-<nnnnn>-ui-<topic>.md`. The report file is English; chat follows the user's language.
 

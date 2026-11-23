@@ -1,0 +1,125 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta
+  title='Components'
+  parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }}
+/>
+
+# Components
+
+The catalog of `packages/uilibs/src`. Check it before you write a component, and extend an existing one when it already does the job. Each name opens that component's page: import, anatomy, examples, props, data attributes, and caveats.
+
+## Conventions
+
+- **Imports.** `uilibs/<path under src>`: `uilibs/base/button`, `uilibs/extra/card`, `uilibs/styles/tokens.stylex`, `uilibs/theme`. Inside the package use the `#/*` alias or a relative path.
+- **Layout.** A component is a folder: `<name>.component.tsx`, `<name>.stylex.ts`, `<name>.stories.tsx`, `<name>.mdx`, `index.ts`. A new, renamed, or removed component updates this page in the same change.
+- **Styling.** StyleX only, with tokens from `uilibs/styles/`. A component takes `style` and never `className`. See [Styling](?path=/docs/styling--docs) and [Theming](?path=/docs/theming--docs).
+- **Color and fill.** `color` is the role: `primary`, `neutral`, `positive`, `warning`, `critical`. `variant` is the fill: `solid`, `faded`, `outline`, `ghost`. Text-entry controls use `variant` for the box: `outline`, `faded`, `ghost`, `headless`.
+- **Size.** Form controls take `size`: `sm` 32px, `md` 36px (default), `lg` 40px, and `xs` 28px on Button, Toggle, and Tabs. A row of mixed controls shares one height.
+- **Text.** Built-in strings are one `labels` object per component, with English defaults. There are no `text`, `label`, or `title` props. Wrappers take `ref` as a prop.
+- **Behavior.** Base components wrap [Base UI](https://base-ui.com) and keep its props, events, and ARIA behavior. Props not listed on a page pass through.
+
+## Choosing between look-alikes
+
+- **Sheet or Drawer.** Sheet is a Dialog that slides in from an edge. Drawer is a swipe panel with snap points, for touch.
+- **Dialog or Alert Dialog.** Dialog is content the user may dismiss. Alert Dialog needs an answer.
+- **Select, Combobox, Autocomplete, or Command.** Select picks one value from a short list. Combobox searches a list, and `ComboboxChips` takes several values. Autocomplete suggests free text that may match nothing. Command is a palette of actions.
+- **Tooltip, Popover, or Preview Card.** Tooltip names a control and holds no interactive content. Popover holds interactive content. Preview Card previews a link on hover.
+- **Item or Table.** Item is a one-column row. A record with several columns is a Table.
+
+## Base
+
+Styled wrappers over Base UI parts. Import from `uilibs/base/<folder>`. `UIProvider` (`uilibs/base/provider`) sets the CSP nonce and text direction once at the app root.
+
+| Component                                                           | What it is                                                                                         |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [Accordion](?path=/docs/base-components-accordion--docs)            | Headings that each open and close a panel.                                                         |
+| [Alert Dialog](?path=/docs/base-components-alertdialog--docs)       | A dialog the user must answer, for destructive or high-risk actions.                               |
+| [Autocomplete](?path=/docs/base-components-autocomplete--docs)      | An input that suggests options as you type; free text is allowed.                                  |
+| [Avatar](?path=/docs/base-components-avatar--docs)                  | An image with a fallback; `squared`, `variant`, `color`.                                           |
+| [Button](?path=/docs/base-components-button--docs)                  | `variant` is the fill, `color` is the role. Also `LinkButton` for navigation.                      |
+| [Checkbox](?path=/docs/base-components-checkbox--docs)              | A checkbox and a checkbox group.                                                                   |
+| [Collapsible](?path=/docs/base-components-collapsible--docs)        | One expandable panel.                                                                              |
+| [Combobox](?path=/docs/base-components-combobox--docs)              | A searchable select; `ComboboxChips` takes several values.                                         |
+| [Context Menu](?path=/docs/base-components-contextmenu--docs)       | A menu at the pointer on right click or long press. Its items are the Dropdown Menu items.         |
+| [Dialog](?path=/docs/base-components-dialog--docs)                  | A modal popup the user may dismiss.                                                                |
+| [Drawer](?path=/docs/base-components-drawer--docs)                  | A swipe panel with snap points, for touch.                                                         |
+| [Dropdown Menu](?path=/docs/base-components-dropdownmenu--docs)     | An action menu opened by a trigger.                                                                |
+| [Field](?path=/docs/base-components-field--docs)                    | Label, description, and validation around a control; also `FieldSet`, `FieldGroup`, `FieldLegend`. |
+| [Form](?path=/docs/base-components-form--docs)                      | A native form with one place for errors.                                                           |
+| [Input](?path=/docs/base-components-input--docs)                    | A single-line text input.                                                                          |
+| [Menubar](?path=/docs/base-components-menubar--docs)                | A desktop-style menu bar.                                                                          |
+| [Meter](?path=/docs/base-components-meter--docs)                    | A value within a known range.                                                                      |
+| [Navigation Menu](?path=/docs/base-components-navigationmenu--docs) | Links and menus for site navigation.                                                               |
+| [Number Field](?path=/docs/base-components-numberfield--docs)       | A numeric input with steppers and a scrub area.                                                    |
+| [OTP Field](?path=/docs/base-components-otpfield--docs)             | A one-time code, one character per slot.                                                           |
+| [Popover](?path=/docs/base-components-popover--docs)                | Interactive content in a popup, opened by a trigger.                                               |
+| [Preview Card](?path=/docs/base-components-previewcard--docs)       | A preview shown when a link is hovered or focused.                                                 |
+| [Progress](?path=/docs/base-components-progress--docs)              | The progress of a task.                                                                            |
+| [Radio](?path=/docs/base-components-radio--docs)                    | A radio and a radio group.                                                                         |
+| [Scroll Area](?path=/docs/base-components-scrollarea--docs)         | A scroll container with overlay scrollbars.                                                        |
+| [Select](?path=/docs/base-components-select--docs)                  | One value from a short fixed list.                                                                 |
+| [Separator](?path=/docs/base-components-separator--docs)            | A visual divider.                                                                                  |
+| [Slider](?path=/docs/base-components-slider--docs)                  | A value or a range along a track.                                                                  |
+| [Switch](?path=/docs/base-components-switch--docs)                  | An on/off control.                                                                                 |
+| [Tabs](?path=/docs/base-components-tabs--docs)                      | Content split into tabbed panels.                                                                  |
+| [Toast](?path=/docs/base-components-toast--docs)                    | Stacked notifications.                                                                             |
+| [Toggle](?path=/docs/base-components-toggle--docs)                  | A button that is pressed or unpressed.                                                             |
+| [Toggle Group](?path=/docs/base-components-togglegroup--docs)       | Toggles that share one state.                                                                      |
+| [Toolbar](?path=/docs/base-components-toolbar--docs)                | A container that moves focus between its controls.                                                 |
+| [Tooltip](?path=/docs/base-components-tooltip--docs)                | A hint for a control, on hover or focus.                                                           |
+
+## Extra
+
+Compositions, and components Base UI does not provide. Import from `uilibs/extra/<folder>`.
+
+| Component                                                              | What it is                                                   |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [Alert](?path=/docs/extra-components-alert--docs)                      | A notice with a title, a description, and an action.         |
+| [Aspect Ratio](?path=/docs/extra-components-aspectratio--docs)         | A container with a fixed ratio.                              |
+| [Badge](?path=/docs/extra-components-badge--docs)                      | A compact status label; can show icons and a dismiss button. |
+| [Breadcrumb](?path=/docs/extra-components-breadcrumb--docs)            | The path to the current page.                                |
+| [Button Group](?path=/docs/extra-components-buttongroup--docs)         | Fuses buttons into one segmented control.                    |
+| [Calendar](?path=/docs/extra-components-calendar--docs)                | A date picker on `react-day-picker`.                         |
+| [Card](?path=/docs/extra-components-card--docs)                        | A surface with header, content, and footer.                  |
+| [Command](?path=/docs/extra-components-command--docs)                  | A command palette, rendered inline or in a dialog.           |
+| [Description List](?path=/docs/extra-components-descriptionlist--docs) | Key-value rows.                                              |
+| [Empty](?path=/docs/extra-components-empty--docs)                      | The state of a view with nothing to show.                    |
+| [File Upload](?path=/docs/extra-components-fileupload--docs)           | A drag-and-drop area that works as a Field control.          |
+| [Icon](?path=/docs/extra-components-icon--docs)                        | Sizes and colors any SVG icon.                               |
+| [Input Group](?path=/docs/extra-components-inputgroup--docs)           | An input with addons, buttons, and text.                     |
+| [Input Password](?path=/docs/extra-components-inputpassword--docs)     | A password input with a show/hide button.                    |
+| [Input Phone](?path=/docs/extra-components-inputphone--docs)           | An international phone input with a country selector.        |
+| [Item](?path=/docs/extra-components-item--docs)                        | A one-column row with media, text, and actions.              |
+| [Kanban](?path=/docs/extra-components-kanban--docs)                    | A board with draggable columns and items, on dnd-kit.        |
+| [Kbd](?path=/docs/extra-components-kbd--docs)                          | A keyboard shortcut label. It registers no shortcut.         |
+| [Label](?path=/docs/extra-components-label--docs)                      | A label for use outside a `Field`.                           |
+| [Loader Text](?path=/docs/extra-components-loadertext--docs)           | Animated text that shows work in progress.                   |
+| [Pagination](?path=/docs/extra-components-pagination--docs)            | Page links.                                                  |
+| [Resizable](?path=/docs/extra-components-resizable--docs)              | Panel groups the user can resize.                            |
+| [Sheet](?path=/docs/extra-components-sheet--docs)                      | A dialog that slides in from an edge.                        |
+| [Skeleton](?path=/docs/extra-components-skeleton--docs)                | A pulsing placeholder block.                                 |
+| [Sortable](?path=/docs/extra-components-sortable--docs)                | A reorderable list or grid, on dnd-kit.                      |
+| [Spinner](?path=/docs/extra-components-spinner--docs)                  | A busy indicator.                                            |
+| [Table](?path=/docs/extra-components-table--docs)                      | A styled HTML table.                                         |
+| [Text](?path=/docs/extra-components-text--docs)                        | Typography: variants, colors, weights, responsive values.    |
+| [Textarea](?path=/docs/extra-components-textarea--docs)                | A multiline input; `autoResize`.                             |
+
+## Data Grid
+
+[Data Grid](?path=/docs/data-grid-basics--data-grid) is a virtualized TanStack Table grid: column pinning and reordering, inline editing, drag-and-drop rows, infinite loading, footers, and a pager. Import from `uilibs/extra/data-grid`.
+
+## Charts
+
+Primitives on TanStack Charts: `ChartContainer` (takes `config`), `Chart` (takes a `defineChart()` definition, `ariaLabel`, and `height`), `ChartLegend`, and `useChartConfig`. Import from `uilibs/charts`. `charts/stories/` holds one recipe per chart type.
+
+- A series key in `config` matches a mark `id`. A mark color is any CSS color, including a theme token.
+- A series that carries meaning needs 3:1 against the page, or a second cue such as a label or legend entry. The `foreground*` tokens pass in both themes. A `background*` fill as a series color does not, so label it.
+- Give each chart in a document an explicit `idPrefix`.
+
+## Icons, hooks, and assets
+
+- **Icons.** `uilibs/icons` has the brand icons: `FacebookIcon`, `GitHubIcon`, `GoogleIcon`, `InstagramIcon`, `LinkedInIcon`, `TelegramIcon`, `ViteIcon`, `WhatsAppIcon`, `XIcon`. General icons come from `@keyline-icons/react`; wrap them in `Icon` to size and color them.
+- **Hooks.** `uilibs/hooks/use-media-query` exports `useMediaQuery` and `useIsMobile`.
+- **Styles.** `uilibs/styles/*`: `colors.stylex`, `tokens.stylex`, `control.stylex` (`controlSizes`, `controlBase`, `controlPress`), `popup.stylex` (`popupFx`), `utils.stylex` (`ring`, `focusRing`, `visuallyHidden`, `unitLength`), and `themes`.
+- **Assets.** `uilibs/assets/*.css`: `reset.css`, `fontface.css`, `globals.css`.

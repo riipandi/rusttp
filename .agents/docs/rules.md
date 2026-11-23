@@ -12,7 +12,7 @@ The cross-area rules behind `AGENTS.md`. Area rules: `backend.md` (Rust: `apps/`
 | A contract or trap across areas | this file |
 | A decision and its rejected alternatives | `architecture.md` |
 | A path, tool, or command | `shape.md` |
-| A `uilibs` component added, removed, renamed | `ui-components.md` |
+| A `uilibs` component added, removed, renamed | `packages/uilibs/.storybook/stories/components.mdx` (the catalog) and its own `<name>.mdx` |
 | A shipped endpoint | `api/specs/<area>/*.hurl` (and `api/connect/*.proto` for RPC) and `docs/` |
 | A user-visible behavior | `docs/` |
 | A new or moved agent document | `index.md` |

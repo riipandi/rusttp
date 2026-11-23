@@ -18,7 +18,7 @@ The owner had the missing Reshaped props curated against Base UI and chose to im
 - Defaults render as before: a computed-style comparison before and after each of Phases 1 to 4 (96, 86, 174, 72 elements) found no difference, except one Skeleton animation frame.
 - Docs: `<name>.mdx` per component folder (35 base, 30 extra, the data grid page attached to its Basics stories), attached to the stories with `<Meta of={Stories} />`. The first plan name, `<name>.stories.mdx`, cannot be indexed by Storybook 10 (addon-docs excludes it, `preset.js:865`); the owner chose `<name>.mdx` with the glob `../src/**/*.mdx` in `.storybook/main.ts`. `.storybook/docs-container.tsx` lets a table scroll inside the page. Phases 6 and 7 were written by parallel subagents and merged here.
 - Data grid, outside the phase list: `issue-00004` (props that nothing read). `DataGridContainer` `border` and `DataGridTableHeadRow` `rowId` (as `data-header-row-id`) were wired and got stories; `sizesInfo`, `sizesLabel`, `sizesDescription`, `more`, `pinnable` were removed on the owner's decision. The issue is archived.
-- Agent docs: `ui-components.md`, `frontend.md` (props page shape and the same-commit rule), `stylex-authoring.md` (unit-step recipe, constant-color rule), `architecture.md` (D1 to D8), `packages/uilibs/AGENTS.md`.
+- Agent docs: `ui-components.md` (since moved to `packages/uilibs/.storybook/stories/components.mdx`), `frontend.md` (props page shape and the same-commit rule), `stylex-authoring.md` (unit-step recipe, constant-color rule), `architecture.md` (D1 to D8), `packages/uilibs/AGENTS.md`.
 
 ## Commits (this slice)
 
