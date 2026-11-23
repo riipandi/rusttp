@@ -17,6 +17,7 @@ import { Tabs as BaseTabs } from '@base-ui/react/tabs'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type DenseControlSize, controlPress } from '../../styles/control.stylex'
+import { focusRing } from '../../styles/utils.stylex'
 import { tabsSizes, tabsStyles as s, tabsUnderlineSizes } from './tabs.stylex'
 
 interface StyleProp {
@@ -115,5 +116,5 @@ export function TabsContent({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseTabs.Panel>, 'className' | 'style'> & StyleProp) {
-  return <BaseTabs.Panel {...props} {...stylex.props(s.content, style)} />
+  return <BaseTabs.Panel {...props} {...stylex.props(focusRing.root, s.content, style)} />
 }

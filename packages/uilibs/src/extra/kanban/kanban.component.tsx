@@ -715,6 +715,7 @@ function KanbanColumnHandle({ style, render, cursor = true, ...props }: KanbanCo
         'aria-label': labels.columnHandle,
         ...stylex.props(
           stylex.defaultMarker(),
+          focusRing.root,
           kanbanStyles.columnHandle,
           cursor &&
             (isDragging ? kanbanStyles.columnHandleDragging : kanbanStyles.columnHandleGrab),

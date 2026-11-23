@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs (components, stories, Storybook gate)"
 status: in_review
 created_at: 2026-11-22T18:34:00+07:00
-updated_at: 2026-11-22T23:59:09+07:00
+updated_at: 2026-11-23T19:40:00+07:00
 completed_at: null
 scope:
     type: feature
@@ -47,9 +47,9 @@ generated_by: ui-audit
 
 - The library is in good shape: every one of the 444 stories passes axe in light and dark, lint, typecheck and format are clean, nothing is unnamed, nothing animates forever under `prefers-reduced-motion`, Firefox passes all 444 stories, WebKit passes after one story fix.
 - The most important finding is about the safety net, not a component: **the gate that claims "axe in light and dark" never ran dark** (F-01). The decorator's theme global is `system`, headless Chromium reports `prefers-color-scheme: light`, so every story, play and axe check ran in light only. Running dark immediately found a real contrast failure (F-05). Fixed in `vite.config.ts`.
-- Real component defects, all about keyboard focus: the Tabs panel, the Sortable handle and the Kanban column handle show no focus indicator (F-02, F-03). A `ButtonGroup` with a Fragment child logs a React duplicate-key error (F-04).
-- Counts: 0 critical, 0 high, 3 medium, 9 low, 2 info (14). 4 fixed (all in tests and stories), 1 deferred, 9 open.
-- Fix first: **F-02 and F-03** (a keyboard user cannot see where focus is), then **F-04**.
+- Real component defects, all about keyboard focus: the Tabs panel, the Sortable handle and the Kanban column handle showed no focus indicator (F-02, F-03, fixed 2026-11-23). A `ButtonGroup` with a Fragment child logs a React duplicate-key error (F-04).
+- Counts: 0 critical, 0 high, 3 medium, 11 low, 2 info (16). 8 fixed, 1 deferred, 7 open.
+- Fix first: **F-04**. F-02 and F-03 are fixed; F-16 (Kanban columns overlapped at 900 and 1100 px) was found and fixed the same day.
 
 ## Scope and flow inventory
 
@@ -81,8 +81,8 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | ID | Severity | Category | Location | Title | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | F-01 | medium | test quality | `packages/uilibs/vite.config.ts`, `.storybook/decorator.tsx` | The a11y gate never ran in dark | verified | fixed |
-| F-02 | medium | a11y (2.4.7) | `src/base/tabs/tabs.stylex.ts:81` | Tabs panel is a tab stop with no focus indicator | verified | open |
-| F-03 | medium | a11y (2.4.7) | `src/extra/sortable/sortable.stylex.ts:70`, `src/extra/kanban/kanban.stylex.ts` (column handle) | Drag handles show no focus indicator | verified | open |
+| F-02 | medium | a11y (2.4.7) | `src/base/tabs/tabs.stylex.ts:81` | Tabs panel is a tab stop with no focus indicator | verified | fixed |
+| F-03 | medium | a11y (2.4.7) | `src/extra/sortable/sortable.stylex.ts:70`, `src/extra/kanban/kanban.stylex.ts` (column handle) | Drag handles show no focus indicator | verified | fixed |
 | F-04 | low | defect | `src/extra/button-group/button-group.component.tsx:23-29,57-77` | A Fragment child gives duplicate React keys | verified | open |
 | F-05 | low | story / contrast | `src/extra/kbd/kbd.stories.tsx:36-40,74` | Kbd in a Tooltip is 1.12:1 in dark | verified | fixed |
 | F-06 | low | test quality | `src/base/select/select.stories.tsx:274-306` | `Keyboard` story flaky on Chromium, failing on WebKit | verified | fixed |
@@ -95,6 +95,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | F-13 | low | a11y (2.5.8) | see F-13 | Several controls are under 24 px | unverified | open |
 | F-14 | low | a11y / console | `src/base/otp-field/otp-field.stories.tsx` | Eight stories log a Base UI warning about `aria-label` | unverified | open |
 | F-15 | low | defect | `src/extra/item/item.stylex.ts:92-101` | Item `sm` and `md` share one padding and gap | verified | open |
+| F-16 | low | layout | `src/extra/kanban/kanban.stylex.ts` (`board`) | Kanban columns overlap between 660 and about 1150 px | verified | fixed |
 
 ### F-01 The a11y gate never ran in dark
 
@@ -115,7 +116,9 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 - **Impact**: WCAG 2.4.7 fails on every Tabs story; 6 stories.
 - **Evidence**: verified. `src/contracts/focus-visible.stories.tsx > Tabs panel` fails on `expected outline or shadow to be true, received false`; its control (`Button`) passes, so the helper can tell. The story carries `tags: ['!test']`; remove the tag to reproduce.
 - **Fix**: compose `focusRing.root` on `s.content` (the recipe in `styles/utils.stylex.ts`, set `outlineOffset` locally if the panel is clipped). Remove the tag.
-- **Confidence**: high. **Status**: open.
+- **Fix (done)**: `TabsContent` composes `focusRing.root` and `s.content` no longer sets `outline: 'none'`; the `!test` tag is gone, so `focus-visible.stories.tsx > Tabs panel` runs in the gate.
+- **Verified after**: Tab, Tab to the panel gives `outline: solid 2px` in the primary color in light and dark; screenshots `.amp/in/artifacts/audit/focus-after-{light,dark}-tabs-panel.png` against `focus-before-*` (outline forced off).
+- **Confidence**: high. **Status**: fixed.
 
 ### F-03 Drag handles show no focus indicator
 
@@ -124,8 +127,9 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 - **Scenario**: Tab to "Drag to reorder" or "Reorder column": no ring, no background change. Screenshot of the focused kanban handle: only the grip and the status dot, identical to unfocused. Probe: 17 stories have a Tab stop with no outline, box shadow or ancestor ring: Tabs 6 (F-02), Sortable 6 and Kanban 1 (this finding; four more Kanban stories lose the ring only under forced colors), Command 2 (F-11), the data grid 1, and the Calendar date-and-time inputs 1 (a probe false positive: a screenshot diff shows the 2px ring).
 - **Impact**: a keyboard user cannot tell which item will be picked up. WCAG 2.4.7.
 - **Evidence**: verified. `focus-visible.stories.tsx > Sortable handle` and `> Kanban column handle` fail the same way; both are tagged `!test`.
-- **Fix**: compose `focusRing.root` in the handle (and keep `handleHiddenDuringDrag`). Remove the tags.
-- **Confidence**: high. **Status**: open.
+- **Fix (done)**: `SortableItemHandle` and `KanbanColumnHandle` compose `focusRing.root`; `outline: 'none'` is removed from `handle` and `columnHandle`; `handleHiddenDuringDrag` is kept. The two `!test` tags are gone. The ring is an outline, so it also survives forced colors (the four Kanban stories the probe flagged there share this handle); the forced-colors probe was not re-run.
+- **Verified after**: both handles show `outline: solid 2px` in light and dark (`focus-after-*-{sortable,kanban}-handle.png`); the three proofs run in the gate: `pnpm --filter uilibs test` 952 passed (946 + 3 stories × 2 themes).
+- **Confidence**: high. **Status**: fixed.
 - **Hypothesis, not counted**: `data-grid-editing > Spreadsheet editing` also showed no visible change when the `table[role=grid]` took focus. The grid moves focus into cells with `aria-activedescendant`-style handling (`data-grid-cell.tsx:142`); whether the active cell draws a ring was not verified.
 
 ### F-04 `ButtonGroup` gives duplicate React keys for Fragment children
@@ -203,6 +207,15 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 
 `item.stylex.ts:92-101`: `itemSizes.sm` and `itemSizes.md` both set `gap: unit.x3`, `paddingBlock: unit.x3`, and `paddingInline: unit.x3`; only `xs` differs. The `Sizes` story measures both rows at 70 px. Found while regrouping the stories (plan-00008, batch D). The story asserts `sm <= md` until the sizes are told apart; decision for the owner: give `md` more padding, or drop one size.
 
+### F-16 Kanban columns overlap at desktop widths
+
+- **Location**: `kanban.stylex.ts` `board` (`gridAutoColumns: 'minmax(0, 1fr)'`) against `column` (`minWidth: container.small`, 288 px).
+- **Problem**: the track could shrink to 0 while the column refused to go under 288 px, so each column spilled over the next and the last one was cut off.
+- **Evidence**: verified with a bounding-box probe over the 7 Kanban stories at 390, 900, 1100 and 1440 px, light and dark. Before: 6 stories had overlapping columns at 900 and 1100 px (`placeholder-overlay`, `dynamic-overlay`, `frame-columns`: 3 overlapping pairs; `stacked-frame`, `feature-roadmap`, `persisted-to-backend`: 2 at 900 px); 390 and 1440 were clean.
+- **Fix (done)**: tracks are `minmax(container.small, 1fr)` from 660 px up and the board scrolls sideways (`overflowX: 'auto'`, `padding: unit.x1` so the columns' ring and shadow are not clipped); under 660 px the stack keeps `minmax(0, 1fr)`. The board takes focus through its columns' handles and items, and a focused column in view scrolls the board to it (tab to the last column at 900 px: `scrollLeft` 380 of 380).
+- **After**: 0 overlapping pairs in all 56 story, width and theme cases. No prop changed, so the `.mdx` page and `ui-components.md` stay as they are.
+- **Confidence**: high. **Status**: fixed.
+
 ## Cleanup candidates
 
 | Item | Type | Evidence of non-use | Confidence | Proposal | Status |
@@ -251,6 +264,7 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 
 ## Change log
 
+- 2026-11-23T19:40:00+07:00: F-02 and F-03 fixed (focus ring on the Tabs panel and both drag handles, three `!test` tags removed); F-16 found and fixed (Kanban board grid). Open question 1 is answered for F-02 and F-03; F-04 stays open.
 - 2026-11-22T23:59:09+07:00: plan-00008 final validation: the 390 px sweep named two `Contracts` stories still wider than the canvas (under F-09).
 - 2026-11-22T23:31:40+07:00: F-09 fixed by plan-00008 (fluid canvas, no `minWidth`, 390 px probe clean); open question 3 (per-component state and size stories) is answered by the same plan, which gave every component `Sizes` and `States` stories.
 - 2026-11-22: F-15 added (Item `sm` and `md` identical) during plan-00008 batch D.

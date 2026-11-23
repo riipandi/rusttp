@@ -1,5 +1,6 @@
 import { GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Button } from '../base/button'
@@ -9,14 +10,17 @@ import {
   KanbanBoard,
   KanbanColumn,
   KanbanColumnContent,
-  KanbanColumnHandle
+  KanbanColumnHandle,
+  KanbanItem
 } from '../extra/kanban'
 import { Sortable, SortableItem, SortableItemHandle } from '../extra/sortable'
+import { colors } from '../styles/colors.stylex'
+import { container, radius, stroke, unit } from '../styles/tokens.stylex'
+import { fontFamily, fontLineHeight, fontSize, fontWeight } from '../styles/tokens.stylex'
 
 const meta = {
   title: 'Contracts/Focus is visible',
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component:
@@ -29,6 +33,54 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+// The rows and the column header mirror the Sortable and Kanban stories, so the ring is judged on a
+// real-looking surface: a handle and its label on one line, inside a framed row.
+const styles = stylex.create({
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: unit.x2,
+    maxWidth: container.large,
+    width: '100%'
+  },
+  row: {
+    alignItems: 'center',
+    backgroundColor: colors.backgroundElevationBase,
+    borderColor: colors.borderNeutralFaded,
+    borderRadius: radius.medium,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1,
+    boxSizing: 'border-box',
+    color: colors.foregroundNeutral,
+    display: 'flex',
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.body2,
+    fontWeight: fontWeight.medium,
+    gap: unit.x3,
+    lineHeight: fontLineHeight.body2,
+    paddingBlock: unit.x3,
+    paddingInline: unit.x3,
+    width: '100%'
+  },
+  columnHeader: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: unit.x2,
+    justifyContent: 'space-between'
+  },
+  columnTitle: {
+    color: colors.foregroundNeutral,
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.body2,
+    fontWeight: fontWeight.semibold,
+    lineHeight: fontLineHeight.body2
+  },
+  tabsFrame: {
+    maxWidth: container.large,
+    width: '100%'
+  }
+})
 
 /** What a keyboard user sees on the focused element: an outline or a box shadow. */
 async function expectFocusIndicator(element: HTMLElement) {
@@ -49,12 +101,11 @@ export const ButtonRing: Story = {
   }
 }
 
-// audit-00002 F-02: the story is excluded from the run (`!test`) until the fix lands; remove the tag to reproduce.
+// audit-00002 F-02: the panel is a tab stop, so it draws the ring too.
 export const TabsPanel: Story = {
   name: 'Tabs panel',
-  tags: ['!test'],
   render: () => (
-    <Tabs defaultValue='account'>
+    <Tabs defaultValue='account' style={styles.tabsFrame}>
       <TabsList aria-label='Vault settings'>
         <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
         <TabsTrigger value='keys'>Vault Keys</TabsTrigger>
@@ -71,20 +122,26 @@ export const TabsPanel: Story = {
   }
 }
 
-// audit-00002 F-03: see TabsPanel.
+// audit-00002 F-03: the handle is the keyboard drag control, so it draws the ring.
 export const SortableHandle: Story = {
   name: 'Sortable handle',
-  tags: ['!test'],
   render: () => {
     const [items, setItems] = useState(['Hedwig', 'Crookshanks', 'Scabbers'])
     return (
-      <Sortable value={items} onValueChange={setItems} getItemValue={(item) => item}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        getItemValue={(item) => item}
+        style={styles.list}
+      >
         {items.map((item) => (
           <SortableItem key={item} value={item}>
-            <SortableItemHandle aria-label={`Move ${item}`}>
-              <GripVertical size={16} />
-            </SortableItemHandle>
-            {item}
+            <div {...stylex.props(styles.row)}>
+              <SortableItemHandle aria-label={`Move ${item}`}>
+                <GripVertical size={16} />
+              </SortableItemHandle>
+              {item}
+            </div>
           </SortableItem>
         ))}
       </Sortable>
@@ -96,13 +153,12 @@ export const SortableHandle: Story = {
   }
 }
 
-// audit-00002 F-03: see TabsPanel.
+// audit-00002 F-03: the handle is the keyboard drag control, so it draws the ring.
 export const KanbanColumnHandleRing: Story = {
   name: 'Kanban column handle',
-  tags: ['!test'],
   render: () => {
     const [value, setValue] = useState<Record<string, string[]>>({
-      Todo: ['Brew Polyjuice Potion'],
+      Todo: ['Brew Polyjuice Potion', 'Decode the Voynich cryptex'],
       Doing: ['Find the Horcrux']
     })
     return (
@@ -110,11 +166,19 @@ export const KanbanColumnHandleRing: Story = {
         <KanbanBoard>
           {Object.keys(value).map((column) => (
             <KanbanColumn key={column} value={column}>
-              {column}
-              <KanbanColumnHandle aria-label={`Reorder ${column}`}>
-                <GripVertical size={16} />
-              </KanbanColumnHandle>
-              <KanbanColumnContent value={column}>{null}</KanbanColumnContent>
+              <div {...stylex.props(styles.columnHeader)}>
+                <span {...stylex.props(styles.columnTitle)}>{column}</span>
+                <KanbanColumnHandle aria-label={`Reorder ${column}`}>
+                  <GripVertical size={16} />
+                </KanbanColumnHandle>
+              </div>
+              <KanbanColumnContent value={column}>
+                {value[column]?.map((task) => (
+                  <KanbanItem key={task} value={task}>
+                    {task}
+                  </KanbanItem>
+                ))}
+              </KanbanColumnContent>
             </KanbanColumn>
           ))}
         </KanbanBoard>

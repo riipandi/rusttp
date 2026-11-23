@@ -29,9 +29,17 @@ export const kanbanStyles = stylex.create({
   board: {
     display: 'grid',
     gap: unit.x4,
-    gridAutoColumns: 'minmax(0, 1fr)',
+    // A track never shrinks below its column's `minWidth`: when the columns outgrow the board it
+    // scrolls sideways instead of letting a column spill over the next. The padding keeps the
+    // columns' focus ring and outline inside the scroll box, which would clip them.
+    gridAutoColumns: {
+      default: `minmax(${container.small}, 1fr)`,
+      '@media (max-width: 659px)': 'minmax(0, 1fr)'
+    },
     gridAutoFlow: { default: 'column', '@media (max-width: 659px)': 'row' },
-    gridTemplateColumns: { default: null, '@media (max-width: 659px)': '1fr' }
+    gridTemplateColumns: { default: null, '@media (max-width: 659px)': '1fr' },
+    overflowX: 'auto',
+    padding: unit.x1
   },
   column: {
     backgroundColor: colors.backgroundElevationBase,
@@ -87,7 +95,6 @@ export const kanbanStyles = stylex.create({
     flexShrink: 0,
     height: { default: unit.x6, '@media (max-width: 659px)': unit.x7 },
     justifyContent: 'center',
-    outline: 'none',
     padding: unit.x1,
     touchAction: 'none',
     transitionDuration: {

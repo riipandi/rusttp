@@ -64,6 +64,7 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
   defaultDragLabels,
@@ -494,6 +495,7 @@ function SortableItemHandle({ style, render, cursor = true, ...props }: Sortable
         'aria-label': labels.handle,
         ...(isOverlay ? {} : { ...attributes, ...listeners }),
         ...stylex.props(
+          focusRing.root,
           s.handle,
           cursor && isDragging && s.handleDragging,
           // Handles on non-dragged items hide while a drag is in flight.

@@ -109,8 +109,7 @@ export const tabsStyles = stylex.create({
   content: {
     color: colors.foregroundNeutral,
     fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    outline: 'none'
+    lineHeight: fontLineHeight.body2
   }
 })
 
