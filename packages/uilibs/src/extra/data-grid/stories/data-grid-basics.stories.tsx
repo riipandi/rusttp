@@ -10,6 +10,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
+import { expect } from 'storybook/test'
 import {
   DataGrid,
   DataGridContainer,
@@ -457,5 +458,68 @@ export const AutoWidthTableLayout: Story = {
         </div>
       </DataGrid>
     )
+  }
+}
+
+const plainColumns: ColumnDef<DataGridFeatures, IBook>[] = [
+  { accessorKey: 'title', header: 'Title', size: 220 },
+  { accessorKey: 'author', header: 'Author', size: 180 }
+]
+
+/** `border` on the container draws an edge around the grid; the default has none. */
+export const ContainerBorder: Story = {
+  name: 'Container border',
+  render: () => {
+    const table = useDemoTable(plainColumns)
+    return (
+      <DataGrid table={table} recordCount={demoData?.length || 0}>
+        <div {...stylex.props(s.stack)}>
+          {[false, true].map((border) => (
+            <div key={String(border)} data-border={String(border)}>
+              <DataGridContainer border={border}>
+                <DataGridScrollArea table={table}>
+                  <DataGridTable table={table} />
+                </DataGridScrollArea>
+              </DataGridContainer>
+            </div>
+          ))}
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const container = (border: string) => {
+      const el = canvasElement.querySelector(`[data-border="${border}"] [data-slot="data-grid"]`)
+      if (!el) throw new Error(`No container for border ${border}`)
+      return getComputedStyle(el)
+    }
+    await expect(container('false').borderTopWidth).toBe('0px')
+    await expect(container('true').borderTopWidth).toBe('1px')
+    await expect(container('true').borderTopLeftRadius).toBe('10px')
+  }
+}
+
+/** Each header row carries the id of its header group as `data-header-row-id`, so a test or a script can find it. */
+export const HeaderRowId: Story = {
+  name: 'Header row id',
+  render: () => {
+    const table = useDemoTable(plainColumns)
+    return (
+      <DataGrid table={table} recordCount={demoData?.length || 0}>
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector('thead tr[data-header-row-id]')
+    // The grid merges the pinned sections of one header row into a single id.
+    await expect(row?.getAttribute('data-header-row-id')).toBe('start_0:center_0:end_0')
+    // The data rows keep their own attribute: the header row must not match their selector.
+    await expect(canvasElement.querySelector('thead tr[data-row-id]')).toBeNull()
+    await expect(canvasElement.querySelector('tbody tr[data-row-id]')).not.toBeNull()
   }
 }

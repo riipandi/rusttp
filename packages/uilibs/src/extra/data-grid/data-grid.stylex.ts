@@ -42,6 +42,13 @@ export const dataGridStyles = stylex.create({
     overflow: 'hidden',
     position: 'relative',
     width: '100%'
+  },
+  // `border` on DataGridContainer: an edge around the grid, rounded like a card.
+  containerBordered: {
+    borderColor: colors.borderNeutralFaded,
+    borderRadius: radius.large,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1
   }
 })
 

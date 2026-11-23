@@ -990,15 +990,19 @@ function DataGrid<TData extends object>({ children, table, ...props }: DataGridP
 
 function DataGridContainer({
   children,
-  style
+  style,
+  border = false
 }: {
   children: ReactNode
   style?: StyleXStyles
-  /** Accepted for backwards compatibility; currently has no effect. */
+  /** Draws an edge around the grid, with rounded corners. */
   border?: boolean
 }) {
   return (
-    <div data-slot='data-grid' {...stylex.props(dataGridStyles.container, style)}>
+    <div
+      data-slot='data-grid'
+      {...stylex.props(dataGridStyles.container, border && dataGridStyles.containerBordered, style)}
+    >
       {children}
     </div>
   )

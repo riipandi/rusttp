@@ -83,11 +83,7 @@ function applyMetrics(element: HTMLElement, metrics: ScrollbarMetrics) {
 
 interface DataGridPaginationProps {
   sizes?: number[]
-  sizesInfo?: string
-  sizesLabel?: string
-  sizesDescription?: string
   sizesSkeleton?: ReactNode
-  more?: boolean
   moreLimit?: number
   info?: string
   infoSkeleton?: ReactNode

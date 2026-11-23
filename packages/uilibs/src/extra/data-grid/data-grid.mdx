@@ -91,11 +91,11 @@ Set on `columnDef.meta` (`DataGridColumnMeta`).
 
 The element that wraps the grid parts.
 
-| Prop       | Values        | Default  | Note                                        |
-| ---------- | ------------- | -------- | ------------------------------------------- |
-| `children` | `ReactNode`   | required | The grid parts.                             |
-| `border`   | `boolean`     | none     | Accepted; has no effect.                    |
-| `style`    | StyleX styles | none     | Replaces the `className` and `style` props. |
+| Prop       | Values        | Default  | Note                                                 |
+| ---------- | ------------- | -------- | ---------------------------------------------------- |
+| `children` | `ReactNode`   | required | The grid parts.                                      |
+| `border`   | `boolean`     | `false`  | Draws an edge around the grid, with rounded corners. |
+| `style`    | StyleX styles | none     | Replaces the `className` and `style` props.          |
 
 ## DataGridTable
 
@@ -179,16 +179,15 @@ The grip inside a draggable row.
 
 A header cell with title, sort, and a menu for pinning, moving, and hiding.
 
-| Prop         | Values        | Default            | Note                                                                   |
-| ------------ | ------------- | ------------------ | ---------------------------------------------------------------------- |
-| `table`      | table         | required           | The grid's table instance.                                             |
-| `column`     | column        | required           | The column this header belongs to.                                     |
-| `title`      | `string`      | `meta.headerTitle` | Falls back to a string `header`, then the column id.                   |
-| `icon`       | `ReactNode`   | none               | Shown beside the title.                                                |
-| `filter`     | `ReactNode`   | none               | A filter control, usually `DataGridColumnFilter`.                      |
-| `visibility` | `boolean`     | `false`            | Adds the columns submenu; needs `tableLayout.columnsVisibility`.       |
-| `pinnable`   | `boolean`     | none               | Reserved; pin items follow `columnsPinnable` and `column.getCanPin()`. |
-| `style`      | StyleX styles | none               | Replaces the `className` and `style` props.                            |
+| Prop         | Values        | Default            | Note                                                             |
+| ------------ | ------------- | ------------------ | ---------------------------------------------------------------- |
+| `table`      | table         | required           | The grid's table instance.                                       |
+| `column`     | column        | required           | The column this header belongs to.                               |
+| `title`      | `string`      | `meta.headerTitle` | Falls back to a string `header`, then the column id.             |
+| `icon`       | `ReactNode`   | none               | Shown beside the title.                                          |
+| `filter`     | `ReactNode`   | none               | A filter control, usually `DataGridColumnFilter`.                |
+| `visibility` | `boolean`     | `false`            | Adds the columns submenu; needs `tableLayout.columnsVisibility`. |
+| `style`      | StyleX styles | none               | Replaces the `className` and `style` props.                      |
 
 The type also extends the `div` attributes without `className` and `style`, but the component does not forward them.
 
@@ -226,10 +225,6 @@ Page-size select, record range, and page buttons. Takes `table` (required).
 | `previousPageLabel` | `string`      | `i18n`               | Name of the previous button.                   |
 | `nextPageLabel`     | `string`      | `i18n`               | Name of the next button.                       |
 | `ellipsisText`      | `string`      | `i18n`               | Text of the group-jump buttons.                |
-| `more`              | `boolean`     | none                 | Declared; not read.                            |
-| `sizesInfo`         | `string`      | none                 | Declared; not read.                            |
-| `sizesLabel`        | `string`      | none                 | Declared; not read.                            |
-| `sizesDescription`  | `string`      | none                 | Declared; not read.                            |
 | `style`             | StyleX styles | none                 | Replaces the `className` and `style` props.    |
 
 ## DataGridScrollArea
@@ -291,10 +286,10 @@ A bar with the selected row count, a slot for actions, and a clear button. Hidde
 
 ### DataGridTableHeadRow
 
-| Prop       | Values      | Default  | Note                |
-| ---------- | ----------- | -------- | ------------------- |
-| `children` | `ReactNode` | required | The header cells.   |
-| `rowId`    | `string`    | required | Declared; not read. |
+| Prop       | Values      | Default  | Note                                         |
+| ---------- | ----------- | -------- | -------------------------------------------- |
+| `children` | `ReactNode` | required | The header cells.                            |
+| `rowId`    | `string`    | required | Rendered as `data-header-row-id` on the row. |
 
 ### DataGridTableHeadRowCell
 

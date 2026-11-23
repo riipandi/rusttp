@@ -199,8 +199,6 @@ interface DataGridColumnHeaderProps<TData extends object, TValue> extends Omit<
   /** When omitted, uses `column.columnDef.meta.headerTitle`, then a string `columnDef.header`, then `column.id`. */
   title?: string
   icon?: ReactNode
-  /** Reserved; pin controls are gated by tableLayout.columnsPinnable + column.getCanPin(). */
-  pinnable?: boolean
   filter?: ReactNode
   visibility?: boolean
   style?: StyleXStyles

@@ -292,11 +292,13 @@ function DataGridTableHead({ children }: { children: ReactNode }) {
   )
 }
 
-function DataGridTableHeadRow({ children }: { children: ReactNode; rowId: string }) {
+function DataGridTableHeadRow({ children, rowId }: { children: ReactNode; rowId: string }) {
   const { props } = useDataGrid()
 
   return (
     <tr
+      // Not `data-row-id`: the cell logic reads that attribute to find data rows.
+      data-header-row-id={rowId}
       aria-rowindex={props.tableLayout?.cellSelection ? 1 : undefined}
       {...stylex.props(props.tableStyles?.headerRow)}
     >
