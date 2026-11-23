@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T16:45:00+07:00
+updated: 2026-11-23T17:40:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -9,8 +9,8 @@ phases:
       note: 'Parity 96 of 96 identical; gate 910 of 910. Deviations from the text, found while building: Button inherit solid is a 16 percent currentColor tint (a cut-out label is impossible, currentColor is the button own color, and a darker tint failed axe at 4.1:1); Badge highlighted is opacity 0.8 as in Reshaped, because our Badge has no hover fill; the Badge Icons story replaces WithGlyph.'
     - id: 2
       title: Alert, Skeleton, Table props
-      status: pending
-      note: ''
+      status: done
+      note: 'Parity 86 of 86 elements identical in both themes, except the Skeleton pulse opacity, which is animation timing; gate 920 of 920 (5 new stories); 390 px probe 32 of 32 clean. Added unitLength and UnitStep to styles/utils.stylex.ts, the shared unit-step helper (D2). Alert inline wraps the action under the text when the row is narrow. Table border and columnBorder drop the HTML border attribute from the Table props.'
     - id: 3
       title: Tabs, Toggle, ToggleGroup, Accordion, Select, ScrollArea props
       status: pending

@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from './colors.stylex'
-import { stroke } from './tokens.stylex'
+import { stroke, unit } from './tokens.stylex'
 
 /**
  * `ring` — the Tailwind `ring-*` equivalent, defined once as a StyleX dynamic
@@ -33,6 +33,36 @@ export const ring = ({
   color = colors.borderNeutralFaded,
   shadow: drop = null
 }: RingOptions = {}) => recipes.boxShadow(`0 0 0 ${width} ${color}${drop ? `, ${drop}` : ''}`)
+
+/** A count of `unit` steps (one step is `unit.x1`, 4px): the keys of `unit`, as numbers. */
+export type UnitStep =
+  | 0
+  | 0.5
+  | 1
+  | 1.5
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 12
+  | 14
+  | 16
+  | 18
+  | 20
+
+/**
+ * The CSS length of a size prop: a number counts `unit` steps (`3` is 12px, as in Reshaped), a
+ * string is a CSS length taken as written (`'50%'`, `'12rem'`). Pass the result to a dynamic
+ * style, such as `stylex.create({ width: (value: string) => ({ width: value }) })`, so a value
+ * known only at run time still reaches the stylesheet through a variable and no token is added.
+ */
+export const unitLength = (value: UnitStep | (string & {})) =>
+  typeof value === 'number' ? `calc(${value} * ${unit.x1})` : value
 
 /**
  * Text for assistive technology only: out of sight and out of the layout, still read. Name an

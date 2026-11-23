@@ -10,6 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import {
   Table,
@@ -64,7 +66,10 @@ const styles = stylex.create({
   right: {
     textAlign: 'right'
   },
-  icon: { height: 16, width: 16 }
+  icon: { height: 16, width: 16 },
+  stack: { display: 'flex', flexDirection: 'column', gap: 24 },
+  tall: { height: 64 },
+  fit: { width: 'auto' }
 })
 
 export default meta
@@ -214,5 +219,155 @@ export const ScrollRegion: Story = {
     await expect(region.scrollWidth).toBeGreaterThan(region.clientWidth)
     await userEvent.tab()
     await expect(region).toHaveFocus()
+  }
+}
+
+const edges = ['none', 'border', 'columnBorder', 'both'] as const
+
+/** An edge around the table, between its columns, or both. */
+export const Borders: Story = {
+  render: () => (
+    <Axis axis='edge' rows={edges} wide>
+      {(edge) => (
+        <Table
+          border={edge === 'border' || edge === 'both'}
+          columnBorder={edge === 'columnBorder' || edge === 'both'}
+          labels={{ region: `Ledger, ${edge}` }}
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHead>Ledger no.</TableHead>
+              <TableHead>Method</TableHead>
+              <TableHead>Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>GRN001</TableCell>
+              <TableCell>Owl post</TableCell>
+              <TableCell>$150.00</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement, canvas }) => {
+    const region = (edge: string) => canvas.getByRole('region', { name: `Ledger, ${edge}` })
+    const cell = (edge: string, index: number) => {
+      const el = cellOf(canvasElement, 'edge', edge).querySelectorAll('td')[index]
+      if (!el) throw new Error(`No cell ${index} for ${edge}`)
+      return getComputedStyle(el).borderInlineEndWidth
+    }
+    for (const edge of edges) {
+      const bordered = edge === 'border' || edge === 'both'
+      const columns = edge === 'columnBorder' || edge === 'both'
+      await expect(getComputedStyle(region(edge)).borderTopWidth).toBe(bordered ? '1px' : '0px')
+      // The edge sits between columns: every cell but the last in its row.
+      await expect(cell(edge, 0)).toBe(columns ? '1px' : '0px')
+      await expect(cell(edge, 2)).toBe('0px')
+    }
+  }
+}
+
+/** A highlighted row holds a tint, so a selected row reads apart from a hovered one. */
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'highlighted'] as const} wide>
+      {(state) => (
+        <Table labels={{ region: `Scholars, ${state}` }}>
+          <TableBody>
+            <TableRow highlighted={state === 'highlighted'}>
+              <TableCell>Hermione Granger</TableCell>
+              <TableCell>Arithmancy</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const tint = (state: string) => {
+      const row = cellOf(canvasElement, 'state', state).querySelector('tr')
+      if (!row) throw new Error(`No row for ${state}`)
+      return getComputedStyle(row).backgroundColor
+    }
+    await expect(tint('highlighted')).not.toBe(tint('default'))
+  }
+}
+
+const aligns = ['start', 'center', 'end'] as const
+
+/** Content alignment of a cell on both axes, and a cell's width as a count of `unit` steps or a CSS length. */
+export const Alignment: Story = {
+  render: () => (
+    <div {...stylex.props(styles.stack)}>
+      <Axis axis='align' rows={aligns} wide>
+        {(align) => (
+          <Table labels={{ region: `Horizontal, ${align}` }}>
+            <TableHeader>
+              <TableRow>
+                <TableHead align={align}>Vault</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell align={align}>713</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        )}
+      </Axis>
+      <Axis axis='valign' rows={aligns} wide>
+        {(verticalAlign) => (
+          <Table labels={{ region: `Vertical, ${verticalAlign}` }}>
+            <TableBody>
+              <TableRow>
+                <TableCell style={styles.tall}>Tall cell</TableCell>
+                <TableCell verticalAlign={verticalAlign}>{verticalAlign}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        )}
+      </Axis>
+      <Axis axis='width' rows={['width', 'minWidth'] as const} wide>
+        {(prop) => (
+          <Table style={styles.fit} labels={{ region: `Size, ${prop}` }}>
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  width={prop === 'width' ? 20 : undefined}
+                  minWidth={prop === 'minWidth' ? '10rem' : undefined}
+                >
+                  Narrow
+                </TableCell>
+                <TableCell>Rest</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        )}
+      </Axis>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const first = (axis: string, value: string, tag: 'td' | 'th') => {
+      const el = cellOf(canvasElement, axis, value).querySelector(tag)
+      if (!el) throw new Error(`No ${tag} for ${axis} ${value}`)
+      return el
+    }
+    for (const align of aligns) {
+      await expect(getComputedStyle(first('align', align, 'th')).textAlign).toBe(align)
+      await expect(getComputedStyle(first('align', align, 'td')).textAlign).toBe(align)
+    }
+    const vertical = { start: 'top', center: 'middle', end: 'bottom' } as const
+    for (const align of aligns) {
+      const cells = cellOf(canvasElement, 'valign', align).querySelectorAll('td')
+      await expect(
+        getComputedStyle(cells[1] ?? cellOf(canvasElement, 'valign', align)).verticalAlign
+      ).toBe(vertical[align])
+    }
+    // 20 steps is 80px; the table fits its content, so the cell is as wide as asked.
+    await expect(first('width', 'width', 'td').getBoundingClientRect().width).toBe(80)
+    await expect(getComputedStyle(first('width', 'minWidth', 'td')).minWidth).toBe('160px')
   }
 }

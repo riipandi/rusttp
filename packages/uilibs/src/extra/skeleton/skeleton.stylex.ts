@@ -16,5 +16,18 @@ export const skeletonStyles = stylex.create({
     animationTimingFunction: 'cubic-bezier(0.4, 0, 0.6, 1)',
     backgroundColor: colors.backgroundNeutral,
     borderRadius: radius.medium
-  }
+  },
+  // A size is a CSS length or a count of `unit` steps, known only at run time: a dynamic style.
+  width: (value: string) => ({ width: value }),
+  height: (value: string) => ({ height: value })
+})
+
+export const skeletonRadius = stylex.create({
+  xsmall: { borderRadius: radius.xsmall },
+  small: { borderRadius: radius.small },
+  medium: { borderRadius: radius.medium },
+  large: { borderRadius: radius.large },
+  xlarge: { borderRadius: radius.xlarge },
+  full: { borderRadius: radius.full },
+  none: { borderRadius: radius.none }
 })

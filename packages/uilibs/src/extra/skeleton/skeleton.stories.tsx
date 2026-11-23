@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { container, radius } from '../../styles/tokens.stylex'
 import { Skeleton } from './skeleton.component'
 
@@ -132,4 +133,45 @@ export const List: Story = {
       ))}
     </div>
   )
+}
+
+const shapes = {
+  avatar: { width: 12, height: 12, borderRadius: 'full' },
+  line: { width: '60%', height: 4, borderRadius: 'small' },
+  block: { width: 20, height: 10, borderRadius: 'large' }
+} as const
+
+/** Size and corner by prop: a count of `unit` steps (`12` is 48px) or a CSS length, and a radius token. */
+export const Shapes: Story = {
+  render: () => (
+    <Axis axis='shape' rows={['avatar', 'line', 'block'] as const}>
+      {(shape) => <Skeleton {...shapes[shape]} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const skeleton = (shape: string) => {
+      const el = canvasElement.querySelector(`[data-shape="${shape}"]`)?.firstElementChild
+      if (!(el instanceof HTMLElement)) throw new Error(`No skeleton for ${shape}`)
+      return el
+    }
+    const avatar = getComputedStyle(skeleton('avatar'))
+    await expect([avatar.width, avatar.height, avatar.borderTopLeftRadius]).toEqual([
+      '48px',
+      '48px',
+      '999px'
+    ])
+    const line = skeleton('line')
+    // A CSS length is taken as written: 60% of the cell.
+    await expect(line.getBoundingClientRect().width).toBeCloseTo(
+      (line.parentElement?.getBoundingClientRect().width ?? 0) * 0.6,
+      0
+    )
+    await expect(getComputedStyle(line).height).toBe('16px')
+    const block = getComputedStyle(skeleton('block'))
+    await expect([block.width, block.height, block.borderTopLeftRadius]).toEqual([
+      '80px',
+      '40px',
+      '10px'
+    ])
+  }
 }

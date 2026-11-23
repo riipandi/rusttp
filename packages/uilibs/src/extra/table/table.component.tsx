@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { focusRing } from '../../styles/utils.stylex'
-import { tableStyles as s } from './table.stylex'
+import { focusRing, unitLength, type UnitStep } from '../../styles/utils.stylex'
+import { tableAlign, tableCellSize, tableStyles as s, tableVerticalAlign } from './table.stylex'
 
 interface StyleXStyleProps {
   style?: stylex.StyleXStyles
@@ -14,17 +14,45 @@ export interface TableLabels {
 
 const defaultLabels: TableLabels = { region: 'Table' }
 
+const ColumnBorderContext = React.createContext(false)
+
+/** The props `TableHead` and `TableCell` share: alignment and size. */
+interface CellProps {
+  /** Horizontal alignment of the content; the cell's own default if unset (`left` in a head). */
+  align?: keyof typeof tableAlign
+  verticalAlign?: keyof typeof tableVerticalAlign
+  /** A count of `unit` steps (`12` is 48px) or a CSS length (`'30%'`). */
+  width?: UnitStep | (string & {})
+  minWidth?: UnitStep | (string & {})
+}
+
+function cellStyles({ align, verticalAlign, width, minWidth }: CellProps, columnBorder: boolean) {
+  return [
+    align && tableAlign[align],
+    verticalAlign && tableVerticalAlign[verticalAlign],
+    width !== undefined && tableCellSize.width(unitLength(width)),
+    minWidth !== undefined && tableCellSize.minWidth(unitLength(minWidth)),
+    columnBorder && s.columnBorder
+  ]
+}
+
 /**
  * The wrapper scrolls sideways when the table is wider than its column, so it is a focusable,
  * named region: a keyboard user can scroll it, and it is announced. Give the table a
  * `<caption>` or pass `labels.region` to say which table it is.
  */
 export function Table({
+  border = false,
+  columnBorder = false,
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'table'>, 'className' | 'style'> &
+}: Omit<React.ComponentProps<'table'>, 'className' | 'style' | 'border'> &
   StyleXStyleProps & {
+    /** Draws an edge around the table, with rounded corners. */
+    border?: boolean
+    /** Draws an edge between the columns. */
+    columnBorder?: boolean
     /** Name of the scroll region; English by default. */
     labels?: Partial<TableLabels>
   }) {
@@ -36,9 +64,11 @@ export function Table({
       // A scrollable region must be focusable for keyboard users (axe: scrollable-region-focusable).
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
-      {...stylex.props(focusRing.root, s.container)}
+      {...stylex.props(focusRing.root, s.container, border && s.bordered)}
     >
-      <table {...props} {...stylex.props(s.table, style)} />
+      <ColumnBorderContext.Provider value={columnBorder}>
+        <table {...props} {...stylex.props(s.table, style)} />
+      </ColumnBorderContext.Provider>
     </div>
   )
 }
@@ -65,24 +95,61 @@ export function TableFooter({
 }
 
 export function TableRow({
+  highlighted = false,
   style,
   ...props
-}: Omit<React.ComponentProps<'tr'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <tr {...props} {...stylex.props(s.row, style)} />
+}: Omit<React.ComponentProps<'tr'>, 'className' | 'style'> &
+  StyleXStyleProps & {
+    /** Tints the row, such as for the selected one. Visual only: pair it with `aria-selected` where the table is selectable. */
+    highlighted?: boolean
+  }) {
+  return <tr {...props} {...stylex.props(s.row, highlighted && s.highlighted, style)} />
 }
 
 export function TableHead({
+  align,
+  verticalAlign,
+  width,
+  minWidth,
   style,
   ...props
-}: Omit<React.ComponentProps<'th'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <th {...props} {...stylex.props(s.head, style)} />
+}: Omit<React.ComponentProps<'th'>, 'className' | 'style' | 'align' | 'width'> &
+  StyleXStyleProps &
+  CellProps) {
+  const columnBorder = React.useContext(ColumnBorderContext)
+  return (
+    <th
+      {...props}
+      {...stylex.props(
+        s.head,
+        cellStyles({ align, verticalAlign, width, minWidth }, columnBorder),
+        style
+      )}
+    />
+  )
 }
 
 export function TableCell({
+  align,
+  verticalAlign,
+  width,
+  minWidth,
   style,
   ...props
-}: Omit<React.ComponentProps<'td'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <td {...props} {...stylex.props(s.cell, style)} />
+}: Omit<React.ComponentProps<'td'>, 'className' | 'style' | 'align' | 'width'> &
+  StyleXStyleProps &
+  CellProps) {
+  const columnBorder = React.useContext(ColumnBorderContext)
+  return (
+    <td
+      {...props}
+      {...stylex.props(
+        s.cell,
+        cellStyles({ align, verticalAlign, width, minWidth }, columnBorder),
+        style
+      )}
+    />
+  )
 }
 
 export function TableCaption({

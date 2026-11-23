@@ -211,6 +211,8 @@ const styles = stylex.create({
 <div {...stylex.props(styles.positioned(mouseX, mouseY))} />
 ```
 
+A size prop that takes Reshaped's number counts `unit` steps (`3` is 12px) and also accepts a CSS length (`'60%'`). Type it `UnitStep | (string & {})`, turn it into a length with `unitLength` from `styles/utils.stylex.ts`, and pass the result to a dynamic style (`width: (value: string) => ({ width: value })`). A value known only at run time then reaches the stylesheet through a variable, and no token is added (`Skeleton`, `TableCell`, `Alert` `bleed`).
+
 ---
 
 ## Defining constants

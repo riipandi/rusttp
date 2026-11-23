@@ -1,10 +1,12 @@
+import { Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { container } from '../../styles/tokens.stylex'
+import { colors } from '../../styles/colors.stylex'
+import { container, radius, unit } from '../../styles/tokens.stylex'
 import { Alert, AlertAction, AlertDescription, AlertTitle } from './alert.component'
 
 const meta = {
@@ -27,6 +29,16 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 12
+  },
+  // A padded panel for `bleed` to run out of: 4 unit steps is 16px, the panel's padding.
+  panel: {
+    borderColor: colors.borderNeutralFaded,
+    borderRadius: radius.large,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    maxWidth: '100%',
+    padding: unit.x4,
+    width: container.xlarge
   }
 })
 
@@ -115,5 +127,79 @@ export const Roles: Story = {
     await expect(
       canvas.getByRole('heading', { name: 'Not announced', level: 2 })
     ).toBeInTheDocument()
+  }
+}
+
+/** A glyph before the text, the action beside it, and the notice running out of its parent. */
+export const Layouts: Story = {
+  render: () => (
+    <Axis axis='layout' rows={['icon', 'inline', 'bleed'] as const} wide>
+      {(layout) => {
+        if (layout === 'icon') {
+          return (
+            <Alert icon={Info} color='primary' style={styles.alert}>
+              <AlertTitle>Floo powder</AlertTitle>
+              <AlertDescription>Say your destination clearly before you step in.</AlertDescription>
+            </Alert>
+          )
+        }
+        if (layout === 'inline') {
+          return (
+            <Alert inline style={styles.alert}>
+              <AlertTitle>Owl delivered</AlertTitle>
+              <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
+              <AlertAction>
+                <Button size='xs' variant='outline'>
+                  Open
+                </Button>
+              </AlertAction>
+            </Alert>
+          )
+        }
+        return (
+          <div {...stylex.props(styles.panel)}>
+            <Alert bleed={4} color='warning'>
+              <AlertTitle>Restricted Section</AlertTitle>
+              <AlertDescription>Readers need a signed note from a professor.</AlertDescription>
+            </Alert>
+          </div>
+        )
+      }}
+    </Axis>
+  ),
+  play: async ({ canvasElement, canvas }) => {
+    const alertOf = (layout: string) => {
+      const el = cellOf(canvasElement, 'layout', layout).querySelector('[role="status"]')
+      if (!(el instanceof HTMLElement)) throw new Error(`No alert for ${layout}`)
+      return el
+    }
+
+    // The glyph is decoration and comes before the text.
+    const icon = alertOf('icon')
+    await expect(icon.firstElementChild?.tagName.toLowerCase()).toBe('svg')
+    await expect(icon.firstElementChild).toHaveAttribute('aria-hidden', 'true')
+    await expect(canvas.getByRole('heading', { name: 'Floo powder' })).toBeInTheDocument()
+
+    // Inline: the action is part of the row, not pinned over the text; it sits beside the text, or
+    // under it when the notice is too narrow for both.
+    const inline = alertOf('inline')
+    const open = canvas.getByRole('button', { name: 'Open' })
+    const action = open.parentElement
+    if (!action) throw new Error('No action slot')
+    await expect(getComputedStyle(action).position).toBe('static')
+    const description = canvas
+      .getByText('Your letter from Hogwarts has arrived.')
+      .getBoundingClientRect()
+    const slot = action.getBoundingClientRect()
+    await expect(slot.left >= description.right || slot.top >= description.bottom).toBe(true)
+    await expect(inline.contains(action)).toBe(true)
+
+    // Bleed: the notice spans its panel edge to edge, with no side edges and square corners.
+    const bleed = alertOf('bleed')
+    const panel = bleed.parentElement
+    if (!panel) throw new Error('No panel')
+    await expect(bleed.getBoundingClientRect().width).toBe(panel.getBoundingClientRect().width - 2)
+    await expect(getComputedStyle(bleed).borderInlineStartWidth).toBe('0px')
+    await expect(getComputedStyle(bleed).borderTopLeftRadius).toBe('0px')
   }
 }
