@@ -46,11 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File | Status | Subject |
-| --- | --- | --- |
-| `plan-00009-uilibs-reshaped-props-docs.md` | in-progress | Add the curated safe Reshaped props to `uilibs` and a props reference page (`<name>.mdx`) beside each component. |
+No live plan.
 
-Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) are in `.agents/docs/archive/`.
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) and `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24, phase 10 not run) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -74,7 +72,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `handover-00011-uilibs-stories-by-prop.md` | done | Plan 00008 closed: `tone` became `color`, the Reshaped props adopted, every uilibs story file grouped by prop axis on a fluid canvas, tests 888 to 910, audit-00002 F-09 fixed. |
+| `handover-00012-uilibs-reshaped-props-docs.md` | done | Plan 00009 closed: the safe Reshaped props in uilibs, a `<name>.mdx` props page per component, the data grid's unread props settled, tests 910 to 946, phase 10 still to run. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -82,4 +80,4 @@ Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `au
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22), `issue-00004-data-grid-unread-props.md` (resolved 2026-11-24).
+Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `plan-00009-uilibs-reshaped-props-docs.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `handover-00011-uilibs-stories-by-prop.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22), `issue-00004-data-grid-unread-props.md` (resolved 2026-11-24).

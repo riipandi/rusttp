@@ -1,48 +1,48 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-24T01:30:00+07:00
+updated: 2026-11-24T02:00:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
-      status: done
+      status: committed (33fd62c)
       note: 'Parity 96 of 96 identical; gate 910 of 910. Deviations from the text, found while building: Button inherit solid is a 16 percent currentColor tint (a cut-out label is impossible, currentColor is the button own color, and a darker tint failed axe at 4.1:1); Badge highlighted is opacity 0.8 as in Reshaped, because our Badge has no hover fill; the Badge Icons story replaces WithGlyph.'
     - id: 2
       title: Alert, Skeleton, Table props
-      status: done
+      status: committed (131fdf9)
       note: 'Parity 86 of 86 elements identical in both themes, except the Skeleton pulse opacity, which is animation timing; gate 920 of 920 (5 new stories); 390 px probe 32 of 32 clean. Added unitLength and UnitStep to styles/utils.stylex.ts, the shared unit-step helper (D2). Alert inline wraps the action under the text when the row is narrow. Table border and columnBorder drop the HTML border attribute from the Table props.'
     - id: 3
       title: Tabs, Toggle, ToggleGroup, Accordion, Select, ScrollArea props
-      status: done
+      status: committed (c23bf3b)
       note: 'Parity 174 of 174 elements identical (Toggle pressed and hover included, both themes); gate 930 of 930 (5 new stories); 390 px probe 84 of 84 clean. Toggle pressed look is set through defineVars (togglePressed) so selectedVariant x selectedColor is 15 styles plus 2 rest styles, not 45; the old toggleQuiet and toggleSolid are replaced. Toggle selectedVariant unset follows variant, with outline pressing to the ghost tint, which keeps today default. Existing keyboard plays pass unchanged.'
     - id: 4
       title: Tooltip, Popover, menu item, Dialog, Sheet props
-      status: done
+      status: committed (3eb236e)
       note: 'Parity 72 of 72 elements identical with the popups open (menu item hover included, both themes); gate 942 of 942 (6 new stories); 390 px probe 86 of 86 clean. Popover padding is a static style per unit step (popoverPadding). Dialog and Sheet overlays are blurred through blurredOverlay on the content, which passes it to the overlay. The backdrop is not the popup previous sibling (a focus guard sits between), so the Overlays plays use a new backdropOf helper in contracts/control-sizes.tsx. The Dialog Sizes play caps the expected width at the viewport minus 32px, because the content keeps maxWidth.'
     - id: 5
       title: Component docs pilot - template, Button, Badge
-      status: done
+      status: committed (050cb09)
       note: 'Storybook 10.6.8 refused .stories.mdx (addon-docs excludes it, preset.js:865); the owner chose <name>.mdx with the glob ../src/**/*.mdx. Build green; index.json holds base-components-button--docs and extra-components-badge--docs attached to their stories; gate still 942 of 942 (docs entries are not tests). Pages screenshotted light and dark at 1440 and 390 px. The 390 px render overflowed by 144 px until docs-container.tsx got a rule that makes a props table scroll inside the page.'
     - id: 6
       title: Component docs - base
-      status: done
+      status: committed (82fcf19)
       note: 'Written by four parallel subagents (34 folders), merged and checked here. index.json holds 35 base docs entries, one per Base Components title, each with storiesImports. A heuristic scratch diff of table rows against the component sources found no listed prop missing from the code; the only unmatched row is side on MenubarContent, which it inherits from DropdownMenuContent. Convention settled in the pass: a part whose only added prop is style is named in one sentence, not given a table. Five spot pages (combobox, dropdown-menu, tabs, dialog, toast) rendered at 1440 and 390 px in both themes with no page overflow.'
     - id: 7
       title: Component docs - extra
-      status: done
-      note: 'Written by five parallel subagents (29 folders) and merged here. index.json holds 29 Extra Components docs entries plus one Data Grid entry (the data grid has no single stories file, so its page attaches to data-grid-basics.stories under Data Grid/Basics); the folder with the Extra Components/Icons stories shares the icon page. The scratch diff found no listed prop missing from the code. Spot pages (data-grid, kanban, table, calendar, input-phone) rendered at 1440 and 390 px in both themes with no page overflow. The data grid page marks props nothing reads as not read; filed as issue-00004 (one is a backwards-compatibility shim, border on DataGridContainer). Gate 942 of 942; one earlier run failed Table Borders in dark under load (a phase 2 story read the edges before the stylesheet applied them; it passes alone three times and in the full run), so its play now waits for the edges. issue-00004 was resolved afterwards (2026-11-24): border and rowId wired with stories, the other five props removed on the owner decision; gate 946 of 946.'
+      status: committed (25a9e5e)
+      note: 'Written by five parallel subagents (29 folders) and merged here. index.json holds 29 Extra Components docs entries plus one Data Grid entry (the data grid has no single stories file, so its page attaches to data-grid-basics.stories under Data Grid/Basics); the folder with the Extra Components/Icons stories shares the icon page. The scratch diff found no listed prop missing from the code. Spot pages (data-grid, kanban, table, calendar, input-phone) rendered at 1440 and 390 px in both themes with no page overflow. The data grid page marks props nothing reads as not read; filed as issue-00004 (one is a backwards-compatibility shim, border on DataGridContainer). Gate 942 of 942 (946 after the data grid commit b5839ec); one earlier run failed Table Borders in dark under load (a phase 2 story read the edges before the stylesheet applied them; it passes alone three times and in the full run), so its play now waits for the edges. issue-00004 was resolved afterwards (2026-11-24): border and rowId wired with stories, the other five props removed on the owner decision; gate 946 of 946.'
     - id: 8
       title: Docs sync and agent docs sync
-      status: done
+      status: committed (bc4130d)
       note: 'Human docs: rg -il "storybook|stories" docs is empty, so docs/ is n/a (recorded 2026-11-24). Agent docs: ui-components.md rows carry every prop of Phases 1 to 4 and the .mdx anatomy, frontend.md has the component layout, the props page shape, the same-commit rule, the media and dark colors, and the backdropOf helper; stylex-authoring.md has the unit-step recipe and the constant-color rule; architecture.md has the D1 to D8 record with the rejected alternatives; packages/uilibs/AGENTS.md has the page line. Every path the changed docs name resolves; the four props named in the validation each appear in ui-components.md. There is no llms.txt.'
     - id: 9
       title: Ledger close and handover
-      status: pending
-      note: ''
+      status: done
+      note: 'Plan archived, handover-00012 written, handover-00011 archived, index rows moved.'
     - id: 10
       title: Final validation
-      status: pending
-      note: ''
+      status: partially-done (not run)
+      note: 'Not approved by the owner when the plan closed. Each phase ran its own gates (gate 946 of 946 after the data grid commit, lint, format, typecheck, parity for Phases 1 to 4, a 390 px probe for the stories of Phases 2 to 4). Still to run over the whole tree: the full matrix (Firefox, WebKit, just test-web, E2E Chromium, just size, the 390 px probe of all stories) and a check that a props table scrolls inside its container at 390 px (the Button page screenshot showed the Default column cut off).'
 ---
 
 # Add the safe Reshaped props to uilibs and document each component beside its stories
