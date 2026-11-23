@@ -78,6 +78,8 @@ export const dropdownMenuStyles = stylex.create({
     paddingRight: unit.x8,
     position: 'relative'
   },
+  // The glyph takes the item's text color and never shrinks.
+  itemIcon: { flexShrink: 0 },
   indicator: {
     alignItems: 'center',
     display: 'flex',
@@ -95,6 +97,16 @@ export const dropdownMenuStyles = stylex.create({
     },
     color: {
       default: colors.foregroundCritical,
+      '[data-disabled]': colors.foregroundNeutralFaded
+    }
+  },
+  itemPrimary: {
+    backgroundColor: {
+      default: 'transparent',
+      '[data-highlighted]': colors.backgroundPrimaryHighlightedFaded
+    },
+    color: {
+      default: colors.foregroundPrimary,
       '[data-disabled]': colors.foregroundNeutralFaded
     }
   },

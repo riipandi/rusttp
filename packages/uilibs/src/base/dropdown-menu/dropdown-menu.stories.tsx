@@ -1,3 +1,4 @@
+import { Bin, Copy, Mail } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
@@ -107,7 +108,7 @@ export const States: Story = {
   }
 }
 
-/** The item `color`: `critical` marks the item that destroys something. */
+/** The item `color`: `primary` marks the recommended item, `critical` the one that destroys something. */
 export const Colors: Story = {
   render: () => (
     <DropdownMenu>
@@ -116,7 +117,7 @@ export const Colors: Story = {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>Revise</DropdownMenuItem>
-        <DropdownMenuItem>Gemino</DropdownMenuItem>
+        <DropdownMenuItem color='primary'>Gemino</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem color='critical'>Evanesco</DropdownMenuItem>
       </DropdownMenuContent>
@@ -126,8 +127,42 @@ export const Colors: Story = {
     const body = within(document.body)
     await userEvent.click(canvas.getByRole('button', { name: 'Prophet article options' }))
     await body.findByRole('menu')
-    await expect(getComputedStyle(body.getByRole('menuitem', { name: 'Evanesco' })).color).not.toBe(
-      getComputedStyle(body.getByRole('menuitem', { name: 'Revise' })).color
+    const color = (name: string) => getComputedStyle(body.getByRole('menuitem', { name })).color
+    // Three roles, three text colors.
+    await expect(new Set([color('Revise'), color('Gemino'), color('Evanesco')]).size).toBe(3)
+  }
+}
+
+/** A glyph before the label; it is decoration, so each item is still named by its label. */
+export const Icons: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant='outline' />}>Owl post</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem icon={Mail}>Send an owl</DropdownMenuItem>
+        <DropdownMenuItem icon={Copy}>Gemino</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem icon={Bin} color='critical'>
+          Evanesco
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Owl post' }))
+    await body.findByRole('menu')
+    for (const name of ['Send an owl', 'Gemino', 'Evanesco']) {
+      // The name is the label alone, and the hidden glyph comes first.
+      const item = body.getByRole('menuitem', { name })
+      await expect(item).toHaveAccessibleName(name)
+      await expect(item.firstElementChild?.tagName.toLowerCase()).toBe('svg')
+      await expect(item.firstElementChild).toHaveAttribute('aria-hidden', 'true')
+    }
+    // The glyph takes the item's text color, so a critical item's glyph is critical too.
+    const evanesco = body.getByRole('menuitem', { name: 'Evanesco' })
+    await expect(getComputedStyle(evanesco.firstElementChild ?? evanesco).color).toBe(
+      getComputedStyle(evanesco).color
     )
   }
 }

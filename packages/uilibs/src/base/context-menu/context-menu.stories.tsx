@@ -148,14 +148,14 @@ export const States: Story = {
   }
 }
 
-/** The item `color`: `critical` marks the item that destroys something. */
+/** The item `color`: `primary` marks the recommended item, `critical` the one that destroys something. */
 export const Colors: Story = {
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem>Re-ink the map</ContextMenuItem>
-        <ContextMenuItem>Duplicate parchment</ContextMenuItem>
+        <ContextMenuItem color='primary'>Duplicate parchment</ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem color='critical'>Mischief managed</ContextMenuItem>
       </ContextMenuContent>
@@ -168,9 +168,11 @@ export const Colors: Story = {
       target: canvas.getByText('Right-click the map')
     })
     await body.findByRole('menu')
+    const color = (name: string) => getComputedStyle(body.getByRole('menuitem', { name })).color
     await expect(
-      getComputedStyle(body.getByRole('menuitem', { name: 'Mischief managed' })).color
-    ).not.toBe(getComputedStyle(body.getByRole('menuitem', { name: 'Re-ink the map' })).color)
+      new Set([color('Re-ink the map'), color('Duplicate parchment'), color('Mischief managed')])
+        .size
+    ).toBe(3)
   }
 }
 

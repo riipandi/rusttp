@@ -27,8 +27,8 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
-import { ring } from '../../styles/utils.stylex'
-import { popoverStyles as s } from './popover.stylex'
+import { ring, type UnitStep } from '../../styles/utils.stylex'
+import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
 
 interface StyleProp {
   style?: stylex.StyleXStyles
@@ -47,11 +47,17 @@ export interface PopoverContentProps
     > {
   /** Depth of the shadow: `overlay` (default) or the lighter `raised`. */
   elevation?: 'overlay' | 'raised'
+  /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
+  padding?: UnitStep
+  /** Corner radius: `medium` (default) or `large`. */
+  borderRadius?: 'medium' | 'large'
   style?: stylex.StyleXStyles
 }
 
 export function PopoverContent({
   elevation = 'overlay',
+  padding = 4,
+  borderRadius = 'medium',
   style,
   side = 'bottom',
   sideOffset = 4,
@@ -79,6 +85,8 @@ export function PopoverContent({
             popupFx.fade,
             popupFx.pose,
             s.popup,
+            popoverPadding[padding],
+            popoverRadii[borderRadius],
             ring({ shadow: elevation === 'raised' ? shadow.outline : shadow.raised }),
             style
           )}

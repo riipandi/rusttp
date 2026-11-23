@@ -16,30 +16,42 @@ export const SheetClose = BaseDialog.Close
 export const SheetPortal = BaseDialog.Portal
 
 export function SheetOverlay({
+  blurredOverlay = false,
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleXStyleProps) {
-  return <BaseDialog.Backdrop {...props} {...stylex.props(s.overlay, style)} />
+  StyleXStyleProps & {
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
+  }) {
+  return (
+    <BaseDialog.Backdrop
+      {...props}
+      {...stylex.props(s.overlay, blurredOverlay && s.overlayBlurred, style)}
+    />
+  )
 }
 
 export function SheetContent({
   style,
   children,
   side = 'right',
+  blurredOverlay = false,
   showCloseButton = true,
   labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
   StyleXStyleProps & {
     side?: SheetSide
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
     showCloseButton?: boolean
     /** Accessible names of the built-in close button; English by default. */
     labels?: Partial<CloseLabels>
   }) {
   return (
     <BaseDialog.Portal>
-      <SheetOverlay />
+      <SheetOverlay blurredOverlay={blurredOverlay} />
       <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
         {children}
         {showCloseButton && (

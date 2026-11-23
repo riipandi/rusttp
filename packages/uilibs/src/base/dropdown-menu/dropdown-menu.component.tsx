@@ -91,22 +91,43 @@ export function DropdownMenuContent({
   )
 }
 
+/** A glyph component, such as a Keyline icon; the item sizes it and hides it from assistive technology. */
+export type MenuGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
+
 export interface DropdownMenuItemProps
   extends
     Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
     StyleProp {
-  /** `critical` marks a destructive or irreversible item. */
-  color?: 'neutral' | 'critical'
+  /** `critical` marks a destructive or irreversible item; `primary` a recommended one. */
+  color?: 'neutral' | 'critical' | 'primary'
+  /** A glyph before the label; it is decoration, so the item's name is still its label. */
+  icon?: MenuGlyph
   /** Indents the item to align with checkbox/radio item labels. */
   inset?: boolean
 }
 
-export function DropdownMenuItem({ style, color, inset, ...props }: DropdownMenuItemProps) {
+export function DropdownMenuItem({
+  style,
+  color,
+  icon: Icon,
+  inset,
+  children,
+  ...props
+}: DropdownMenuItemProps) {
   return (
     <BaseMenu.Item
       {...props}
-      {...stylex.props(s.item, inset && s.itemInset, color === 'critical' && s.itemCritical, style)}
-    />
+      {...stylex.props(
+        s.item,
+        inset && s.itemInset,
+        color === 'critical' && s.itemCritical,
+        color === 'primary' && s.itemPrimary,
+        style
+      )}
+    >
+      {Icon ? <Icon size={16} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
+      {children}
+    </BaseMenu.Item>
   )
 }
 

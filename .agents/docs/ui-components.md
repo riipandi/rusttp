@@ -39,9 +39,9 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Collapsible** | `uilibs/base/collapsible` | One expandable panel. |
 | **Combobox** | `uilibs/base/combobox` | Searchable select; `ComboboxChips` for multiple values. `size` and `variant` on `ComboboxInput`, `ComboboxTrigger`, and `ComboboxChips`; `labels` (`clear`, `open`) on the input and `labels.remove(text)` on a chip (default `Remove <chip text>`); the chip's remove button has a 24px hit area. Name a standalone input or trigger with `aria-label`. |
 | **Context Menu** | `uilibs/base/context-menu` | Menu at the pointer on right click or long press; its items are the dropdown menu's. |
-| **Dialog** | `uilibs/base/dialog` | Modal popup over the page; `labels.close` names the built-in close button (`showCloseButton={false}` removes it). |
+| **Dialog** | `uilibs/base/dialog` | Modal popup over the page; `DialogContent` takes `size` (`md` default, 32rem, or the narrower `sm`, 24rem) and `blurredOverlay` (blurs the page behind the backdrop by one `unit` step; also on `DialogOverlay`); `labels.close` names the built-in close button (`showCloseButton={false}` removes it). |
 | **Drawer** | `uilibs/base/drawer` | Panel sliding in from an edge. |
-| **Dropdown Menu** | `uilibs/base/dropdown-menu` | Action menu (Base UI `Menu`); keep `DropdownMenuLabel` inside a `DropdownMenuGroup`. `DropdownMenuItem` takes `color='critical'` for a destructive item (Context Menu and Menubar items are the same component). |
+| **Dropdown Menu** | `uilibs/base/dropdown-menu` | Action menu (Base UI `Menu`); keep `DropdownMenuLabel` inside a `DropdownMenuGroup`. `DropdownMenuItem` takes `color` (`critical` for a destructive item, `primary` for a recommended one) and `icon` (a glyph before the label, `aria-hidden`); Context Menu and Menubar items are the same component. |
 | **Field** | `uilibs/base/field` | Label, description, and validation around a control; also `FieldSet`, `FieldLegend`, `FieldGroup`. |
 | **Form** | `uilibs/base/form` | Native form with consolidated error handling. |
 | **Input** | `uilibs/base/input` | Text input; `size`, `variant`. |
@@ -50,7 +50,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Navigation Menu** | `uilibs/base/navigation-menu` | Links and menus for site navigation; `labels` name its two `nav` landmarks. |
 | **Number Field** | `uilibs/base/number-field` | Numeric input with steppers and a scrub area; `size` and `variant` on `NumberField`, `labels` (`increase`, `decrease`) on the group. |
 | **OTP Field** | `uilibs/base/otp-field` | One-time code input in character slots; `size` and `variant` on `OTPField`. An `aria-label` on the root names the first slot, the others are named `Character n of N` (`labels.slot`). |
-| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, `collisionAvoidance`, and `collisionPadding`; `elevation` (`overlay` default, the existing shadow, or the lighter `raised`). |
+| **Popover** | `uilibs/base/popover` | Rich content in a portal, opened by a trigger; `PopoverContent` takes `side`, `align`, `alignOffset`, `sideOffset`, `collisionAvoidance`, and `collisionPadding`; `elevation` (`overlay` default, the existing shadow, or the lighter `raised`), `padding` in `unit` steps (`4` default, 16px), and `borderRadius` (`medium` default, `large`). |
 | **Preview Card** | `uilibs/base/preview-card` | Rich preview shown on hover or focus of a link. |
 | **Progress** | `uilibs/base/progress` | Progress of a long task; `color` and `size` as Meter. |
 | **Provider** | `uilibs/base/provider` | `UIProvider`: CSP nonce and text direction for Base UI. |
@@ -65,7 +65,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40; `variant` `ghost` (default), `outline`, `solid` (a neutral fill at rest); `selectedColor` `neutral` (default), `primary`, `critical`, `positive`, `warning` colors the pressed state and `selectedVariant` (`ghost` tint, `outline` inside edge, `solid` fill; follows `variant` when unset, `outline` presses to the `ghost` tint) shapes it. |
 | **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size`, `variant`, `selectedVariant`, and `selectedColor` as Toggle, passed to its items. |
 | **Toolbar** | `uilibs/base/toolbar` | Container for toolbar items. |
-| **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users; `TooltipContent` takes `color` (`neutral` default, `inverted`). |
+| **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users; `TooltipContent` takes `color` (`neutral` default, `inverted`, and `dark`: black with white text in both themes). |
 
 ---
 
@@ -98,7 +98,7 @@ Compositions and components Base UI does not provide.
 | **Loader Text** | `uilibs/extra/loader-text` | Animated text placeholder. |
 | **Pagination** | `uilibs/extra/pagination` | `Pagination`, `Content`, `Item`, `Link` (a `LinkButton`, so `role='link'`), `Previous`, `Next`, `Ellipsis`; `labels` (`pagination`, `previous`, `previousPage`, `next`, `nextPage`, `morePages`; an empty `previous`/`next` makes an icon-only link). |
 | **Resizable** | `uilibs/extra/resizable` | Resizable panel groups on `react-resizable-panels`; `orientation` is the panel flow direction. |
-| **Sheet** | `uilibs/extra/sheet` | Dialog-based overlay from `top`, `right`, `bottom`, or `left`: `Sheet`, `Trigger`, `Close`, `Portal`, `Overlay`, `Content` (`labels.close`), `Header`, `Footer`, `Title`, `Description`. |
+| **Sheet** | `uilibs/extra/sheet` | Dialog-based overlay from `top`, `right`, `bottom`, or `left`: `Sheet`, `Trigger`, `Close`, `Portal`, `Overlay`, `Content` (`labels.close`; `blurredOverlay` as on Dialog, also on `Overlay`), `Header`, `Footer`, `Title`, `Description`. |
 | **Skeleton** | `uilibs/extra/skeleton` | Pulse placeholder block: `width` and `height` take `unit` steps (`12` is 48px) or a CSS length (`'60%'`), `borderRadius` a `radius` key (`medium` default, `full` for an avatar). |
 | **Sortable** | `uilibs/extra/sortable` | dnd-kit reorderable list: `Sortable` (`value`, `onValueChange`, `getItemValue`, `labels.handle` and the same announcements as Kanban), `SortableItem`, `SortableItemHandle`; an item with a handle is dragged by the handle only, so it can hold other controls. |
 | **Spinner** | `uilibs/extra/spinner` | Busy indicator (Keyline `LoaderCircle`): a `status` named `labels.loading` on its own, hidden from assistive technology inside a Button; `size` (`sm` 12, `md` 16 default, `lg` 20) and `color` (`inherit` default draws in the text color, `primary`, `positive`, `warning`, `critical`). |

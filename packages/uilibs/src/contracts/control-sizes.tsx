@@ -126,6 +126,19 @@ export function cellOf(root: HTMLElement, axis: string, value: string): HTMLElem
 }
 
 /**
+ * The backdrop of a modal popup (a dialog or a sheet): its sibling in the portal that paints a
+ * background. A focus guard sits between them, so it is not the popup's previous sibling.
+ */
+export function backdropOf(popup: HTMLElement): HTMLElement {
+  const backdrop = Array.from(popup.parentElement?.children ?? []).find(
+    (el): el is HTMLElement =>
+      el instanceof HTMLElement && getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'
+  )
+  if (!backdrop) throw new Error('No backdrop beside the popup')
+  return backdrop
+}
+
+/**
  * Asserts a docked popup (a sheet or a drawer) sits flush against `edge` of the viewport. It
  * waits, since the popup slides in from its edge.
  */

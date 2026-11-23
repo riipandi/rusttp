@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T19:10:00+07:00
+updated: 2026-11-23T20:30:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -17,8 +17,8 @@ phases:
       note: 'Parity 174 of 174 elements identical (Toggle pressed and hover included, both themes); gate 930 of 930 (5 new stories); 390 px probe 84 of 84 clean. Toggle pressed look is set through defineVars (togglePressed) so selectedVariant x selectedColor is 15 styles plus 2 rest styles, not 45; the old toggleQuiet and toggleSolid are replaced. Toggle selectedVariant unset follows variant, with outline pressing to the ghost tint, which keeps today default. Existing keyboard plays pass unchanged.'
     - id: 4
       title: Tooltip, Popover, menu item, Dialog, Sheet props
-      status: pending
-      note: ''
+      status: done
+      note: 'Parity 72 of 72 elements identical with the popups open (menu item hover included, both themes); gate 942 of 942 (6 new stories); 390 px probe 86 of 86 clean. Popover padding is a static style per unit step (popoverPadding). Dialog and Sheet overlays are blurred through blurredOverlay on the content, which passes it to the overlay. The backdrop is not the popup previous sibling (a focus guard sits between), so the Overlays plays use a new backdropOf helper in contracts/control-sizes.tsx. The Dialog Sizes play caps the expected width at the viewport minus 32px, because the content keeps maxWidth.'
     - id: 5
       title: Component docs pilot - template, Button, Badge
       status: pending

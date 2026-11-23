@@ -20,6 +20,8 @@ export const sheetStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.absolute
   },
+  // `blurredOverlay`: the page behind the backdrop is blurred by one unit step.
+  overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
     boxShadow: shadow.overlay,

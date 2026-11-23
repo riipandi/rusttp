@@ -37,14 +37,25 @@ export const DialogPortal = BaseDialog.Portal
 export const DialogClose = BaseDialog.Close
 
 export function DialogOverlay({
+  blurredOverlay = false,
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleXStyleProps) {
-  return <BaseDialog.Backdrop {...props} {...stylex.props(s.overlay, style)} />
+  StyleXStyleProps & {
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
+  }) {
+  return (
+    <BaseDialog.Backdrop
+      {...props}
+      {...stylex.props(s.overlay, blurredOverlay && s.overlayBlurred, style)}
+    />
+  )
 }
 
 export function DialogContent({
+  size = 'md',
+  blurredOverlay = false,
   style,
   children,
   showCloseButton = true,
@@ -52,18 +63,23 @@ export function DialogContent({
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
   StyleXStyleProps & {
+    /** Width: `md` (default, 32rem) or the narrower `sm` (24rem). */
+    size?: 'sm' | 'md'
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
     showCloseButton?: boolean
     /** Accessible names of the built-in close button; English by default. */
     labels?: Partial<CloseLabels>
   }) {
   return (
     <BaseDialog.Portal>
-      <DialogOverlay />
+      <DialogOverlay blurredOverlay={blurredOverlay} />
       <BaseDialog.Popup
         {...props}
         {...stylex.props(
           stylex.defaultMarker(),
           s.content,
+          size === 'sm' && s.contentSmall,
           ring({ shadow: shadow.overlay }),
           style
         )}

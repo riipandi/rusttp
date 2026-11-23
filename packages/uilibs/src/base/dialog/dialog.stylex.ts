@@ -20,6 +20,8 @@ export const dialogStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.absolute
   },
+  // `blurredOverlay`: the page behind the backdrop is blurred by one unit step.
+  overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
     borderRadius: radius.xlarge,
@@ -52,6 +54,8 @@ export const dialogStyles = stylex.create({
     width: container.xxlarge,
     zIndex: zIndex.absolute
   },
+  // `size='sm'`: a narrower dialog; `md` is the base width.
+  contentSmall: { width: container.large },
   // Position only: the look is `CloseButton`.
   close: {
     position: 'absolute',

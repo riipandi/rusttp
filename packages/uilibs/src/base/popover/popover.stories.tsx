@@ -29,6 +29,8 @@ type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   pair: { display: 'flex', gap: 160, paddingTop: 64 },
+  // A row tall enough for the open popup to the right of its trigger, so open popups do not overlap.
+  slot: { minHeight: 96 },
   form: {
     display: 'flex',
     flexDirection: 'column',
@@ -166,5 +168,73 @@ export const Elevations: Story = {
     const shadow = async (elevation: string) =>
       getComputedStyle(await body.findByText(`Elevation ${elevation}`)).boxShadow
     await expect(await shadow('raised')).not.toBe(await shadow('overlay'))
+  }
+}
+
+const steps = { '0': 0, '2': 2, '4': 4, '8': 8 } as const
+const paddings = ['0', '2', '4', '8'] as const
+
+/** Padding counts `unit` steps: `4` (16px) is the default, `0` leaves the content flush. All stay open for the a11y gate. */
+export const Paddings: Story = {
+  render: () => (
+    <Axis axis='padding' rows={paddings}>
+      {(padding) => (
+        <div {...stylex.props(styles.slot)}>
+          <Popover defaultOpen>
+            <PopoverTrigger
+              render={<Button variant='outline' />}
+            >{`padding ${padding}`}</PopoverTrigger>
+            <PopoverContent
+              side='right'
+              align='start'
+              padding={steps[padding]}
+              aria-label={`Padding ${padding}`}
+            >
+              {`Padding ${padding}`}
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async () => {
+    const body = within(document.body)
+    const padding = async (name: string) =>
+      getComputedStyle(await body.findByRole('dialog', { name: `Padding ${name}` })).paddingTop
+    // One step is 4px; the default is four steps.
+    for (const name of paddings) await expect(await padding(name)).toBe(`${steps[name] * 4}px`)
+  }
+}
+
+const radii = ['medium', 'large'] as const
+
+/** The corner radius of the popup; `medium` is the default. */
+export const Radii: Story = {
+  render: () => (
+    <Axis axis='radius' rows={radii}>
+      {(radius) => (
+        <div {...stylex.props(styles.slot)}>
+          <Popover defaultOpen>
+            <PopoverTrigger render={<Button variant='outline' />}>{radius}</PopoverTrigger>
+            <PopoverContent
+              side='right'
+              align='start'
+              borderRadius={radius}
+              aria-label={`Radius ${radius}`}
+            >
+              {`Radius ${radius}`}
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async () => {
+    const body = within(document.body)
+    const corner = async (radius: string) =>
+      getComputedStyle(await body.findByRole('dialog', { name: `Radius ${radius}` }))
+        .borderTopLeftRadius
+    await expect(await corner('medium')).toBe('8px')
+    await expect(await corner('large')).toBe('10px')
   }
 }

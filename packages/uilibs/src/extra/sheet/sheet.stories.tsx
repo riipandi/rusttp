@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
-import { cellOf, expectDockedTo } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectDockedTo } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../label'
 import {
@@ -150,4 +150,41 @@ export const NoCloseButton: Story = {
       </SheetContent>
     </Sheet>
   )
+}
+
+const overlays = ['plain', 'blurred'] as const
+
+/** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
+export const Overlays: Story = {
+  render: () => (
+    <Axis axis='overlay' rows={overlays}>
+      {(overlay) => (
+        <Sheet>
+          <SheetTrigger render={<Button variant='outline' />}>{`Open ${overlay}`}</SheetTrigger>
+          <SheetContent blurredOverlay={overlay === 'blurred'}>
+            <SheetHeader>
+              <SheetTitle>{`Overlay ${overlay}`}</SheetTitle>
+              <SheetDescription>The castle fades behind the passage.</SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const filters: string[] = []
+    for (const overlay of overlays) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'overlay', overlay)).getByRole('button', {
+          name: `Open ${overlay}`
+        })
+      )
+      const sheet = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      filters.push(getComputedStyle(backdropOf(sheet)).backdropFilter)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+    await expect(filters).toEqual(['none', 'blur(4px)'])
+  }
 }

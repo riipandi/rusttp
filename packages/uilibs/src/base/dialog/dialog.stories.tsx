@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { backdropOf, cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { container, fontSize, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Input } from '../input'
@@ -198,4 +200,80 @@ export const NoCloseButton: Story = {
       </DialogContent>
     </Dialog>
   )
+}
+
+const sizes = ['sm', 'md'] as const
+
+/** `md` is the default width (32rem); `sm` is the narrower 24rem. */
+export const Sizes: Story = {
+  render: () => (
+    <Axis axis='size' rows={sizes}>
+      {(size) => (
+        <Dialog>
+          <DialogTrigger render={<Button variant='outline' />}>{`Open ${size}`}</DialogTrigger>
+          <DialogContent size={size}>
+            <DialogHeader>
+              <DialogTitle>{`Dialog ${size}`}</DialogTitle>
+              <DialogDescription>The Room of Requirement fits the occasion.</DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const widths: number[] = []
+    for (const size of sizes) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'size', size)).getByRole('button', { name: `Open ${size}` })
+      )
+      const dialog = await body.findByRole('dialog', { name: `Dialog ${size}` })
+      // The popup scales in from 0.97, so wait for the full width before reading it.
+      await waitFor(() => expect(dialog.getBoundingClientRect().width).toBeGreaterThan(0))
+      widths.push(Math.round(parseFloat(getComputedStyle(dialog).width)))
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+    // The popup keeps 16px of room on each side of a narrow viewport.
+    const room = window.innerWidth - 32
+    await expect(widths).toEqual([Math.min(384, room), Math.min(512, room)])
+  }
+}
+
+const overlays = ['plain', 'blurred'] as const
+
+/** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
+export const Overlays: Story = {
+  render: () => (
+    <Axis axis='overlay' rows={overlays}>
+      {(overlay) => (
+        <Dialog>
+          <DialogTrigger render={<Button variant='outline' />}>{`Open ${overlay}`}</DialogTrigger>
+          <DialogContent blurredOverlay={overlay === 'blurred'}>
+            <DialogHeader>
+              <DialogTitle>{`Overlay ${overlay}`}</DialogTitle>
+              <DialogDescription>The castle fades behind the portrait.</DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const filters: string[] = []
+    for (const overlay of overlays) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'overlay', overlay)).getByRole('button', {
+          name: `Open ${overlay}`
+        })
+      )
+      const dialog = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      filters.push(getComputedStyle(backdropOf(dialog)).backdropFilter)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+    await expect(filters).toEqual(['none', 'blur(4px)'])
+  }
 }

@@ -21,8 +21,7 @@ type Story = StoryObj<typeof meta>
 const sides = ['top', 'right', 'bottom', 'left'] as const
 
 const styles = stylex.create({
-  pair: { display: 'flex', gap: 160, paddingTop: 64 },
-  neutralSurface: { backgroundColor: colors.backgroundElevationOverlay, height: 1, width: 1 },
+  blackSurface: { backgroundColor: colors.black, color: colors.white, height: 1, width: 1 },
   // Disabled native buttons don't fire pointer events, so the tooltip
   // trigger has to be the wrapping span instead of the button itself.
   trigger: {
@@ -138,24 +137,42 @@ export const States: Story = {
   }
 }
 
-/** The inverted surface, open so the a11y gate checks its contrast; the probe is the neutral one. */
+const colorNames = ['neutral', 'inverted', 'dark'] as const
+
+/**
+ * Every surface, each in its own provider and open, so the a11y gate checks the contrast of all
+ * three. The probe is the constant black: `dark` is the same black in both themes.
+ */
 export const Colors: Story = {
   render: () => (
-    <TooltipProvider>
-      <div {...stylex.props(styles.pair)}>
-        <Tooltip defaultOpen>
-          <TooltipTrigger render={<Button variant='outline' />}>inverted</TooltipTrigger>
-          <TooltipContent color='inverted'>Tooltip inverted</TooltipContent>
-        </Tooltip>
-        <div data-testid='neutral-surface' {...stylex.props(styles.neutralSurface)} />
-      </div>
-    </TooltipProvider>
+    <div>
+      <Axis axis='color' rows={colorNames}>
+        {(color) => (
+          <TooltipProvider>
+            <Tooltip defaultOpen>
+              <TooltipTrigger render={<Button variant='outline' />}>{color}</TooltipTrigger>
+              <TooltipContent color={color} side='right'>{`Tooltip ${color}`}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </Axis>
+      <div data-testid='black-surface' {...stylex.props(styles.blackSurface)} />
+    </div>
   ),
   play: async ({ canvas }) => {
     const body = within(document.body)
-    const inverted = await body.findByText('Tooltip inverted')
-    await expect(getComputedStyle(inverted).backgroundColor).not.toBe(
-      getComputedStyle(canvas.getByTestId('neutral-surface')).backgroundColor
-    )
+    const black = getComputedStyle(canvas.getByTestId('black-surface'))
+    const surfaces = new Map<string, CSSStyleDeclaration>()
+    for (const color of colorNames) {
+      surfaces.set(color, getComputedStyle(await body.findByText(`Tooltip ${color}`)))
+    }
+    const look = (color: string) => {
+      const style = surfaces.get(color)
+      if (!style) throw new Error(`No tooltip for ${color}`)
+      return `${style.backgroundColor}|${style.color}`
+    }
+    // Three colors, three looks; `dark` is black with white text, whatever the theme.
+    await expect(new Set(colorNames.map(look)).size).toBe(colorNames.length)
+    await expect(look('dark')).toBe(`${black.backgroundColor}|${black.color}`)
   }
 }
