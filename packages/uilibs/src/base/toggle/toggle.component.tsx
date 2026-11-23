@@ -12,12 +12,12 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type DenseControlSize, controlPress, controlSizes } from '../../styles/control.stylex'
 import { toggleStyles as s } from './toggle.stylex'
-import { toggleQuiet, toggleSizes, toggleSolid, toggleVariants } from './toggle.stylex'
+import { toggleRest, toggleSelected, toggleSizes, toggleVariants } from './toggle.stylex'
 
 /** The fill: `ghost` is transparent until hover, `outline` adds an edge, `solid` rests on a neutral fill. */
 export type ToggleVariant = 'ghost' | 'outline' | 'solid'
 /** The color of the pressed state. */
-export type ToggleColor = 'neutral' | 'primary' | 'critical'
+export type ToggleColor = 'neutral' | 'primary' | 'critical' | 'positive' | 'warning'
 export type ToggleSize = DenseControlSize
 
 export interface ToggleProps extends Omit<
@@ -25,6 +25,11 @@ export interface ToggleProps extends Omit<
   'className' | 'style'
 > {
   variant?: ToggleVariant
+  /**
+   * The fill of the pressed state: `ghost` a tint of `selectedColor`, `outline` an edge in it, and
+   * `solid` its fill. Follows `variant` when unset, with `outline` pressing to the `ghost` tint.
+   */
+  selectedVariant?: ToggleVariant
   /** The color of the pressed state; `neutral` by default. */
   selectedColor?: ToggleColor
   size?: ToggleSize
@@ -34,6 +39,7 @@ export interface ToggleProps extends Omit<
 
 export function Toggle({
   variant = 'ghost',
+  selectedVariant = variant === 'solid' ? 'solid' : 'ghost',
   selectedColor = 'neutral',
   size = 'md',
   style,
@@ -46,7 +52,8 @@ export function Toggle({
         controlPress.root,
         s.root,
         toggleVariants[variant],
-        (variant === 'solid' ? toggleSolid : toggleQuiet)[selectedColor],
+        toggleRest[variant === 'solid' ? 'solid' : 'quiet'],
+        toggleSelected[selectedVariant][selectedColor],
         size !== 'xs' && controlSizes[size],
         toggleSizes[size],
         style

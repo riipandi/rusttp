@@ -19,6 +19,7 @@ import { toggleGroupJoinedOutline as joinedOutline } from './toggle-group.stylex
 
 interface ToggleGroupContextValue {
   variant: ToggleVariant
+  selectedVariant?: ToggleVariant
   selectedColor: ToggleColor
   size: ToggleSize
   joined: boolean
@@ -38,6 +39,8 @@ export interface ToggleGroupProps extends Omit<
   'className' | 'style'
 > {
   variant?: ToggleVariant
+  /** The fill of an item's pressed state; follows `variant` when unset (see `Toggle`). */
+  selectedVariant?: ToggleVariant
   /** The color of an item's pressed state; `neutral` by default. */
   selectedColor?: ToggleColor
   size?: ToggleSize
@@ -49,6 +52,7 @@ export interface ToggleGroupProps extends Omit<
 
 export function ToggleGroup({
   variant = 'ghost',
+  selectedVariant,
   selectedColor = 'neutral',
   size = 'md',
   spacing = 'gap',
@@ -64,7 +68,9 @@ export function ToggleGroup({
       {...props}
       {...stylex.props(s.root, orientations[orientation], !joined && s.gap, style)}
     >
-      <ToggleGroupContext.Provider value={{ variant, selectedColor, size, joined, orientation }}>
+      <ToggleGroupContext.Provider
+        value={{ variant, selectedVariant, selectedColor, size, joined, orientation }}
+      >
         {children}
       </ToggleGroupContext.Provider>
     </BaseToggleGroup>
@@ -72,10 +78,12 @@ export function ToggleGroup({
 }
 
 export function ToggleGroupItem({ style, ...props }: ToggleProps) {
-  const { variant, selectedColor, size, joined, orientation } = React.useContext(ToggleGroupContext)
+  const { variant, selectedVariant, selectedColor, size, joined, orientation } =
+    React.useContext(ToggleGroupContext)
   return (
     <Toggle
       variant={props.variant ?? variant}
+      selectedVariant={props.selectedVariant ?? selectedVariant}
       selectedColor={props.selectedColor ?? selectedColor}
       size={props.size ?? size}
       {...props}

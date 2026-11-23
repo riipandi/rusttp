@@ -50,38 +50,68 @@ export const Playground: Story = {
 }
 
 const variantNames = ['ghost', 'outline', 'solid'] as const
-const colorNames = ['neutral', 'primary', 'critical'] as const
+const selectedNames = ['rest', 'ghost', 'outline', 'solid'] as const
+const colorNames = ['neutral', 'primary', 'critical', 'positive', 'warning'] as const
 
-/** The three fills at rest: transparent, with an edge, and on a neutral fill. */
+/**
+ * The three fills at rest (the `rest` column), and each fill of the pressed state: `selectedVariant`
+ * decides how a toggle looks once pressed, whatever it looks like at rest.
+ */
 export const Variants: Story = {
   render: () => (
-    <Axis axis='variant' rows={variantNames}>
-      {(variant) => (
-        <Toggle variant={variant} aria-label={`Toggle ${variant}`}>
-          {variant}
+    <Axis axis='variant' rows={variantNames} columnAxis='selected' columns={selectedNames}>
+      {(variant, selected) => (
+        <Toggle
+          variant={variant}
+          selectedVariant={selected === 'rest' ? undefined : selected}
+          selectedColor='primary'
+          defaultPressed={selected !== 'rest'}
+          aria-label={`Charm ${variant} ${selected}`}
+        >
+          Charm
         </Toggle>
       )}
     </Axis>
   ),
   play: async ({ canvas }) => {
-    const style = (variant: string) =>
-      getComputedStyle(canvas.getByRole('button', { name: `Toggle ${variant}` }))
-    await expect(style('outline').borderTopWidth).toBe('1px')
-    await expect(style('ghost').borderTopWidth).toBe('0px')
-    await expect(style('solid').backgroundColor).not.toBe(style('ghost').backgroundColor)
+    const toggle = (variant: string, selected: string) =>
+      canvas.getByRole('button', { name: `Charm ${variant} ${selected}` })
+    const style = (variant: string, selected: string) => getComputedStyle(toggle(variant, selected))
+    await expect(style('outline', 'rest').borderTopWidth).toBe('1px')
+    await expect(style('ghost', 'rest').borderTopWidth).toBe('0px')
+    await expect(style('solid', 'rest').backgroundColor).not.toBe(
+      style('ghost', 'rest').backgroundColor
+    )
+
+    for (const variant of variantNames) {
+      // The pressed fill follows `selectedVariant`, not `variant`: three fills, three looks.
+      const looks = selectedNames
+        .filter((selected) => selected !== 'rest')
+        .map((selected) => {
+          const pressed = style(variant, selected)
+          return `${pressed.backgroundColor}|${pressed.color}|${pressed.boxShadow}`
+        })
+      await expect(new Set(looks).size).toBe(3)
+      // An outline edge is drawn inside the box, so pressing never resizes the toggle.
+      await expect(toggle(variant, 'outline').getBoundingClientRect().width).toBe(
+        toggle(variant, 'ghost').getBoundingClientRect().width
+      )
+    }
+    // Unset, `selectedVariant` follows `variant`: a solid toggle presses to a solid fill.
+    await expect(style('solid', 'solid').backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
   }
 }
 
 /** The pressed state in every color of every fill; the a11y gate checks the contrast of each. */
 export const Colors: Story = {
   render: () => (
-    <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
-      {(variant, color) => (
+    <Axis axis='selected' rows={variantNames} columnAxis='color' columns={colorNames}>
+      {(selected, color) => (
         <Toggle
-          variant={variant}
+          selectedVariant={selected}
           selectedColor={color}
           defaultPressed
-          aria-label={`Pressed ${variant} ${color}`}
+          aria-label={`Pressed ${selected} ${color}`}
         >
           {color}
         </Toggle>
@@ -89,12 +119,17 @@ export const Colors: Story = {
     </Axis>
   ),
   play: async ({ canvas }) => {
-    const fill = (variant: string, color: string) =>
-      getComputedStyle(canvas.getByRole('button', { name: `Pressed ${variant} ${color}` }))
-        .backgroundColor
-    // The pressed state takes the color: three colors, three fills, in every variant.
-    for (const variant of variantNames) {
-      await expect(new Set(colorNames.map((color) => fill(variant, color))).size).toBe(3)
+    const look = (selected: string, color: string) => {
+      const style = getComputedStyle(
+        canvas.getByRole('button', { name: `Pressed ${selected} ${color}` })
+      )
+      return `${style.backgroundColor}|${style.color}|${style.boxShadow}`
+    }
+    // The pressed state takes the color: five colors, five looks, in every fill.
+    for (const selected of variantNames) {
+      await expect(new Set(colorNames.map((color) => look(selected, color))).size).toBe(
+        colorNames.length
+      )
     }
   }
 }

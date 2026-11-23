@@ -30,7 +30,7 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 
 | Component | Import path | Description |
 | :--- | :--- | :--- |
-| **Accordion** | `uilibs/base/accordion` | Collapsible panels with headings. |
+| **Accordion** | `uilibs/base/accordion` | Collapsible panels with headings; `iconPosition` (`end` default, `start`) on `AccordionTrigger` moves the chevron before the label through flex `order`, so DOM and focus order stay. |
 | **Alert Dialog** | `uilibs/base/alert-dialog` | Dialog that needs a user response; for destructive or high-risk confirmations (`AlertDialogAction color='critical'`). `AlertDialogAction` and `AlertDialogCancel` both close it; call `event.preventBaseUIHandler()` in the action's `onClick` to keep it open while work runs. |
 | **Autocomplete** | `uilibs/base/autocomplete` | Input that suggests options as you type; `size` and `variant` on `AutocompleteInput`. |
 | **Avatar** | `uilibs/base/avatar` | Image with a fallback; `size` (`sm`, `md` default, `lg`), `variant` (`faded` default, `solid`) and `color` (`neutral` default, `primary`, `positive`, `warning`, `critical`) tint the fallback, `squared` for rounded corners instead of a circle. |
@@ -55,15 +55,15 @@ Thin, styled wrappers over Base UI parts; the part names mirror Base UI's anatom
 | **Progress** | `uilibs/base/progress` | Progress of a long task; `color` and `size` as Meter. |
 | **Provider** | `uilibs/base/provider` | `UIProvider`: CSP nonce and text direction for Base UI. |
 | **Radio** | `uilibs/base/radio` | Radio and radio group; `size` (`sm`, `md` default, `lg`) on `RadioGroupItem`. |
-| **Scroll Area** | `uilibs/base/scroll-area` | Styled scroll container. |
-| **Select** | `uilibs/base/select` | Single-choice list in a popup; `size` and `variant` on `SelectTrigger`. Name a standalone trigger with `aria-label`. |
+| **Scroll Area** | `uilibs/base/scroll-area` | Styled scroll container; `orientation` (`vertical` default, `horizontal`, `both` with the corner) draws a bar per axis, `scrollbarDisplay` (`hover` default, `scroll`, `visible`, `hidden`) says when it shows (also `display` on `ScrollBar`); `fade` masks the edges. |
+| **Select** | `uilibs/base/select` | Single-choice list in a popup; `size`, `variant`, and `icon` (a glyph before the value, `aria-hidden`) on `SelectTrigger`. Name a standalone trigger with `aria-label`. |
 | **Separator** | `uilibs/base/separator` | Visual divider; `color` (`neutral-faded` default, `neutral`) and `inset` (stops short of the container's edges). |
 | **Slider** | `uilibs/base/slider` | Value or range from a track; one thumb unless the value is an array, `thumbLabels` (or `aria-label` for one thumb) names the thumbs. |
 | **Switch** | `uilibs/base/switch` | On/off toggle; `size` `sm`, `md` default, `lg`. |
-| **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`: `pills` (default, a tinted list with a raised active pill), `bordered` (an underline on a border rail), `borderless` (the underline alone, for a parent that draws its own border). |
+| **Tabs** | `uilibs/base/tabs` | Content split into tabbed panels; `size` (`xs` to `lg`) and `variant` on `TabsList`: `pills` (default, a tinted list with a raised active pill), `pills-raised` (the same list on the raised surface with the `shadow.raised` ring), `bordered` (an underline on a border rail), `borderless` (the underline alone, for a parent that draws its own border); `itemWidth='equal'` on `TabsList` spans the parent with equal triggers. |
 | **Toast** | `uilibs/base/toast` | Stacked notifications and anchored toasts, positioning configurable; `toast(title, { color })` (`success` and `error` imply `positive` and `critical`), `labels` on `Toaster` (`close`, `notification`). |
-| **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40; `variant` `ghost` (default), `outline`, `solid` (a neutral fill at rest); `selectedColor` `neutral` (default), `primary`, `critical` colors the pressed state. |
-| **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size`, `variant`, and `selectedColor` as Toggle, passed to its items. |
+| **Toggle** | `uilibs/base/toggle` | Pressed/unpressed button; `size` `xs` 28 to `lg` 40; `variant` `ghost` (default), `outline`, `solid` (a neutral fill at rest); `selectedColor` `neutral` (default), `primary`, `critical`, `positive`, `warning` colors the pressed state and `selectedVariant` (`ghost` tint, `outline` inside edge, `solid` fill; follows `variant` when unset, `outline` presses to the `ghost` tint) shapes it. |
+| **Toggle Group** | `uilibs/base/toggle-group` | Connected group of toggles; `size`, `variant`, `selectedVariant`, and `selectedColor` as Toggle, passed to its items. |
 | **Toolbar** | `uilibs/base/toolbar` | Container for toolbar items. |
 | **Tooltip** | `uilibs/base/tooltip` | Hint on hover or focus; mount `TooltipProvider` once above its users; `TooltipContent` takes `color` (`neutral` default, `inverted`). |
 

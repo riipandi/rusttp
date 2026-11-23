@@ -23,67 +23,175 @@ export const toggleStyles = stylex.create({
   }
 })
 
-// The fill and text color of a `ghost` or `outline` toggle, by the color of its pressed state.
-export const toggleQuiet = stylex.create({
-  neutral: {
+// The pressed look is chosen by two props: `selectedVariant` (its fill) and `selectedColor` (its
+// role). The rest look is chosen by `variant`. They are set apart so the combinations stay 3 + 15
+// styles, not 45: a pressed style only sets these variables, and the rest style reads them under
+// `[data-pressed]`.
+export const togglePressed = stylex.defineVars({
+  background: 'transparent',
+  color: 'inherit',
+  // The border color of an `outline` toggle while pressed.
+  edge: 'transparent',
+  // An inset edge for a pressed toggle that has no border at rest.
+  ring: 'none'
+})
+
+// `ghost` and `outline` rest transparent and tint on hover; `solid` rests on a neutral fill.
+export const toggleRest = stylex.create({
+  quiet: {
     backgroundColor: {
       default: 'transparent',
       [hover]: colors.backgroundNeutral,
-      '[data-pressed]': colors.backgroundNeutral
+      '[data-pressed]': togglePressed.background
     },
-    color: { default: colors.foregroundNeutral, [hover]: colors.foregroundNeutral }
+    boxShadow: { default: 'none', '[data-pressed]': togglePressed.ring },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': togglePressed.color }
   },
-  primary: {
+  solid: {
     backgroundColor: {
-      default: 'transparent',
-      [hover]: colors.backgroundNeutral,
-      '[data-pressed]': colors.backgroundPrimaryFaded
+      default: colors.backgroundNeutral,
+      [hover]: colors.backgroundNeutralHighlighted,
+      '[data-pressed]': togglePressed.background
     },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.foregroundPrimary }
-  },
-  critical: {
-    backgroundColor: {
-      default: 'transparent',
-      [hover]: colors.backgroundNeutral,
-      '[data-pressed]': colors.backgroundCriticalFaded
-    },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.foregroundCritical }
+    boxShadow: { default: 'none', '[data-pressed]': togglePressed.ring },
+    color: { default: colors.foregroundNeutral, '[data-pressed]': togglePressed.color }
   }
 })
 
-// A `solid` toggle rests on a neutral fill and presses to the solid color.
-export const toggleSolid = stylex.create({
+const roles = {
   neutral: {
-    backgroundColor: {
-      default: colors.backgroundNeutral,
-      [hover]: colors.backgroundNeutralHighlighted,
-      '[data-pressed]': colors.foregroundNeutral
-    },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.backgroundPage }
+    tint: colors.backgroundNeutral,
+    text: colors.foregroundNeutral,
+    edge: colors.borderNeutral,
+    fill: colors.foregroundNeutral,
+    onFill: colors.backgroundPage
   },
   primary: {
-    backgroundColor: {
-      default: colors.backgroundNeutral,
-      [hover]: colors.backgroundNeutralHighlighted,
-      '[data-pressed]': colors.backgroundPrimary
-    },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.onBrand }
+    tint: colors.backgroundPrimaryFaded,
+    text: colors.foregroundPrimary,
+    edge: colors.borderPrimary,
+    fill: colors.backgroundPrimary,
+    onFill: colors.onBrand
   },
   critical: {
-    backgroundColor: {
-      default: colors.backgroundNeutral,
-      [hover]: colors.backgroundNeutralHighlighted,
-      '[data-pressed]': colors.backgroundCritical
-    },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': colors.onBackgroundCritical }
+    tint: colors.backgroundCriticalFaded,
+    text: colors.foregroundCritical,
+    edge: colors.borderCritical,
+    fill: colors.backgroundCritical,
+    onFill: colors.onBackgroundCritical
+  },
+  positive: {
+    tint: colors.backgroundPositiveFaded,
+    text: colors.foregroundPositive,
+    edge: colors.borderPositive,
+    fill: colors.backgroundPositive,
+    onFill: colors.onBackgroundPositive
+  },
+  warning: {
+    tint: colors.backgroundWarningFaded,
+    text: colors.foregroundWarning,
+    edge: colors.borderWarning,
+    fill: colors.backgroundWarning,
+    onFill: colors.onBackgroundWarning
   }
-})
+}
+
+// `ghost`: a tint of the role. `outline`: an edge in the role, drawn inside the box so the toggle
+// does not grow. `solid`: the role's fill.
+export const toggleSelected = {
+  ghost: stylex.create({
+    neutral: {
+      [togglePressed.background]: roles.neutral.tint,
+      [togglePressed.color]: roles.neutral.text,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    primary: {
+      [togglePressed.background]: roles.primary.tint,
+      [togglePressed.color]: roles.primary.text,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    critical: {
+      [togglePressed.background]: roles.critical.tint,
+      [togglePressed.color]: roles.critical.text,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    positive: {
+      [togglePressed.background]: roles.positive.tint,
+      [togglePressed.color]: roles.positive.text,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    warning: {
+      [togglePressed.background]: roles.warning.tint,
+      [togglePressed.color]: roles.warning.text,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    }
+  }),
+  outline: stylex.create({
+    neutral: {
+      [togglePressed.background]: 'transparent',
+      [togglePressed.color]: roles.neutral.text,
+      [togglePressed.edge]: roles.neutral.edge,
+      [togglePressed.ring]: `inset 0 0 0 ${stroke.ring1} ${roles.neutral.edge}`
+    },
+    primary: {
+      [togglePressed.background]: 'transparent',
+      [togglePressed.color]: roles.primary.text,
+      [togglePressed.edge]: roles.primary.edge,
+      [togglePressed.ring]: `inset 0 0 0 ${stroke.ring1} ${roles.primary.edge}`
+    },
+    critical: {
+      [togglePressed.background]: 'transparent',
+      [togglePressed.color]: roles.critical.text,
+      [togglePressed.edge]: roles.critical.edge,
+      [togglePressed.ring]: `inset 0 0 0 ${stroke.ring1} ${roles.critical.edge}`
+    },
+    positive: {
+      [togglePressed.background]: 'transparent',
+      [togglePressed.color]: roles.positive.text,
+      [togglePressed.edge]: roles.positive.edge,
+      [togglePressed.ring]: `inset 0 0 0 ${stroke.ring1} ${roles.positive.edge}`
+    },
+    warning: {
+      [togglePressed.background]: 'transparent',
+      [togglePressed.color]: roles.warning.text,
+      [togglePressed.edge]: roles.warning.edge,
+      [togglePressed.ring]: `inset 0 0 0 ${stroke.ring1} ${roles.warning.edge}`
+    }
+  }),
+  solid: stylex.create({
+    neutral: {
+      [togglePressed.background]: roles.neutral.fill,
+      [togglePressed.color]: roles.neutral.onFill,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    primary: {
+      [togglePressed.background]: roles.primary.fill,
+      [togglePressed.color]: roles.primary.onFill,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    critical: {
+      [togglePressed.background]: roles.critical.fill,
+      [togglePressed.color]: roles.critical.onFill,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    positive: {
+      [togglePressed.background]: roles.positive.fill,
+      [togglePressed.color]: roles.positive.onFill,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    },
+    warning: {
+      [togglePressed.background]: roles.warning.fill,
+      [togglePressed.color]: roles.warning.onFill,
+      [togglePressed.edge]: colors.borderNeutralFaded
+    }
+  })
+}
 
 export const toggleVariants = stylex.create({
   ghost: {},
   solid: {},
   outline: {
-    borderColor: colors.borderNeutralFaded,
+    borderColor: { default: colors.borderNeutralFaded, '[data-pressed]': togglePressed.edge },
     borderStyle: 'solid',
     borderWidth: stroke.ring1
   }

@@ -32,6 +32,18 @@ export const selectStyles = stylex.create({
     color: colors.foregroundNeutralFaded,
     display: 'flex'
   },
+  // With a leading glyph the glyph and the value sit together, so the chevron alone is pushed to
+  // the far edge.
+  lead: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: unit.x2,
+    minWidth: 0
+  },
+  glyph: {
+    color: colors.foregroundNeutralFaded,
+    flexShrink: 0
+  },
   // Shared frames (positioner/shift/fade/pose) live in `popupFx`. The base
   // popup only fades out; the closed pose applies in anchored mode below.
   popup: {

@@ -42,6 +42,16 @@ export const scrollAreaStyles = stylex.create({
   }
 })
 
+// `scrollbarDisplay`: `hover` is the base style above; the others replace its opacity.
+export const scrollAreaDisplays = stylex.create({
+  scroll: {
+    opacity: { default: 0, '[data-scrolling]': 1 },
+    transitionDelay: { default: duration.slow, '[data-scrolling]': '0s' }
+  },
+  visible: { opacity: 1 },
+  hidden: { opacity: 0, pointerEvents: 'none' }
+})
+
 export const scrollAreaScrollbarOrientations = stylex.create({
   vertical: {
     height: '100%',

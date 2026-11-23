@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T17:40:00+07:00
+updated: 2026-11-23T19:10:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -13,8 +13,8 @@ phases:
       note: 'Parity 86 of 86 elements identical in both themes, except the Skeleton pulse opacity, which is animation timing; gate 920 of 920 (5 new stories); 390 px probe 32 of 32 clean. Added unitLength and UnitStep to styles/utils.stylex.ts, the shared unit-step helper (D2). Alert inline wraps the action under the text when the row is narrow. Table border and columnBorder drop the HTML border attribute from the Table props.'
     - id: 3
       title: Tabs, Toggle, ToggleGroup, Accordion, Select, ScrollArea props
-      status: pending
-      note: ''
+      status: done
+      note: 'Parity 174 of 174 elements identical (Toggle pressed and hover included, both themes); gate 930 of 930 (5 new stories); 390 px probe 84 of 84 clean. Toggle pressed look is set through defineVars (togglePressed) so selectedVariant x selectedColor is 15 styles plus 2 rest styles, not 45; the old toggleQuiet and toggleSolid are replaced. Toggle selectedVariant unset follows variant, with outline pressing to the ghost tint, which keeps today default. Existing keyboard plays pass unchanged.'
     - id: 4
       title: Tooltip, Popover, menu item, Dialog, Sheet props
       status: pending

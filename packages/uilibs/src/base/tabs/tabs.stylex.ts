@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -41,6 +41,28 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     gap: 0,
     padding: 0
+  },
+  // `pills-raised`: the pill list lifts off the page on the raised surface; the active pill takes
+  // the neutral tint, since the list is no longer tinted.
+  listRaised: {
+    backgroundColor: colors.backgroundElevationBase,
+    boxShadow: shadow.raised
+  },
+  triggerRaised: {
+    backgroundColor: {
+      default: 'transparent',
+      '[data-active]': colors.backgroundNeutral
+    }
+  },
+  // `itemWidth='equal'`: the list spans its parent and every trigger takes an equal share of it. A
+  // vertical list stays as wide as its widest trigger, so the shares there are the triggers' own.
+  listEqual: {
+    width: { default: '100%', '[data-orientation="vertical"]': 'fit-content' }
+  },
+  triggerEqual: {
+    flexBasis: { default: 0, '[data-orientation="vertical"]': 'auto' },
+    flexGrow: { default: 1, '[data-orientation="vertical"]': 0 },
+    minWidth: 0
   },
   trigger: {
     alignItems: 'center',

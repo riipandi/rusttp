@@ -1,3 +1,4 @@
+import { Sparkles } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
@@ -144,6 +145,59 @@ export const Variants: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+/** A glyph before the value: decoration only, so the trigger keeps its name and the chevron stays at the edge. */
+export const Icons: Story = {
+  render: () => (
+    <Axis axis='icon' rows={['none', 'leading'] as const}>
+      {(icon) => (
+        <Select items={fruits} defaultValue='phoenix'>
+          <SelectTrigger
+            icon={icon === 'leading' ? Sparkles : undefined}
+            aria-label={`Wand core ${icon}`}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {fruits.map(({ label, value }) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('combobox', { name: 'Wand core leading' })
+    const glyph = trigger.querySelector('svg')
+    if (!glyph) throw new Error('No glyph')
+    await expect(glyph).toHaveAttribute('aria-hidden', 'true')
+    // The name is the label alone, and the glyph comes before the value text.
+    await expect(trigger).toHaveAccessibleName('Wand core leading')
+    const value = within(trigger).getByText('Phoenix feather').getBoundingClientRect()
+    await expect(glyph.getBoundingClientRect().right).toBeLessThan(value.left)
+    // The chevron is still the last thing in the trigger, on the trailing edge.
+    const chevron = Array.from(trigger.querySelectorAll('svg')).at(-1)
+    await expect(chevron).not.toBe(glyph)
+    await expect(
+      Math.round(
+        trigger.getBoundingClientRect().right - (chevron?.getBoundingClientRect().right ?? 0)
+      )
+    ).toBeLessThan(16)
+    // Same height with or without the glyph.
+    const plain = canvas.getByRole('combobox', { name: 'Wand core none' })
+    await expect(trigger.getBoundingClientRect().height).toBe(plain.getBoundingClientRect().height)
+
+    // The glyph does not block opening: a press on it opens the list (the keyboard is covered by
+    // the `Keyboard` story).
+    await userEvent.click(glyph)
+    await within(document.body).findByRole('listbox')
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(within(document.body).queryByRole('listbox')).toBeNull())
+  }
 }
 
 export const Sizes: Story = {

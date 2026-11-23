@@ -87,6 +87,55 @@ export const States: Story = {
   }
 }
 
+/** The chevron before or after the label; only the look moves, so the keyboard works the same. */
+export const IconPositions: Story = {
+  render: () => (
+    <Axis axis='icon' rows={['end', 'start'] as const}>
+      {(position) => (
+        <Accordion>
+          <AccordionItem value='item-1'>
+            <AccordionTrigger
+              iconPosition={position}
+            >{`Chamber of Secrets ${position}`}</AccordionTrigger>
+            <AccordionContent>Only the heir of Slytherin may open it.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const parts = (position: string) => {
+      const trigger = cellOf(canvasElement, 'icon', position).querySelector('button')
+      const chevron = trigger?.querySelector('svg')
+      if (!trigger || !chevron) throw new Error(`No trigger for ${position}`)
+      return {
+        trigger,
+        chevron: chevron.getBoundingClientRect(),
+        box: trigger.getBoundingClientRect()
+      }
+    }
+    // `end` pins the chevron to the trailing edge; `start` puts it on the leading edge, before the label.
+    const end = parts('end')
+    await expect(Math.round(end.box.right - end.chevron.right)).toBe(0)
+    const start = parts('start')
+    await expect(Math.round(start.chevron.left - start.box.left)).toBe(0)
+    const range = document.createRange()
+    range.selectNodeContents(start.trigger)
+    const label = Array.from(start.trigger.childNodes).find(
+      (node) => node.nodeType === Node.TEXT_NODE
+    )
+    if (!label) throw new Error('No label')
+    range.selectNodeContents(label)
+    await expect(range.getBoundingClientRect().left).toBeGreaterThan(start.chevron.right)
+
+    // The DOM order is unchanged, so the label is still the first child and the keyboard opens it.
+    await expect(start.trigger.firstChild?.nodeType).toBe(Node.TEXT_NODE)
+    start.trigger.focus()
+    await userEvent.keyboard('{Enter}')
+    await expect(start.trigger).toHaveAttribute('aria-expanded', 'true')
+  }
+}
+
 export const Multiple: Story = {
   args: { multiple: true, defaultValue: ['item-1', 'item-2'] },
   render: (args) => (

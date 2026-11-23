@@ -42,16 +42,29 @@ export function AccordionItem({
 }
 
 export function AccordionTrigger({
+  iconPosition = 'end',
   style,
   children,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAccordion.Trigger>, 'className' | 'style'> &
-  StyleXStyleProps) {
+  StyleXStyleProps & {
+    /** Which side of the label the chevron is on: `end` (default) or `start`. */
+    iconPosition?: 'start' | 'end'
+  }) {
+  const start = iconPosition === 'start'
   return (
     <BaseAccordion.Header {...stylex.props(s.header)}>
-      <BaseAccordion.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
+      <BaseAccordion.Trigger
+        {...props}
+        {...stylex.props(focusRing.root, s.trigger, start && s.triggerIconStart, style)}
+      >
         {children}
-        <ChevronDown size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.chevron)} />
+        <ChevronDown
+          size={16}
+          strokeWidth={1.5}
+          aria-hidden
+          {...stylex.props(s.chevron, start && s.chevronStart)}
+        />
       </BaseAccordion.Trigger>
     </BaseAccordion.Header>
   )

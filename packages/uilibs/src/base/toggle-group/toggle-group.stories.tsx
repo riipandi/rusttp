@@ -104,6 +104,54 @@ export const Variants: Story = {
   }
 }
 
+const colorNames = ['neutral', 'primary', 'critical', 'positive', 'warning'] as const
+
+/** `selectedVariant` and `selectedColor` reach every item through the group; the a11y gate checks each pair. */
+export const Colors: Story = {
+  render: () => (
+    <Axis
+      axis='selected'
+      rows={['ghost', 'outline', 'solid'] as const}
+      columnAxis='color'
+      columns={colorNames}
+    >
+      {(selected, color) => (
+        <ToggleGroup
+          selectedVariant={selected}
+          selectedColor={color}
+          spacing='joined'
+          defaultValue={['left']}
+        >
+          <ToggleGroupItem value='left' aria-label={`Left ${selected} ${color}`}>
+            <AlignLeft size={16} />
+          </ToggleGroupItem>
+          <ToggleGroupItem value='center' aria-label={`Center ${selected} ${color}`}>
+            <AlignCenter size={16} />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const look = (selected: string, color: string) => {
+      const style = getComputedStyle(
+        canvas.getByRole('button', { name: `Left ${selected} ${color}` })
+      )
+      return `${style.backgroundColor}|${style.color}|${style.boxShadow}`
+    }
+    for (const selected of ['ghost', 'outline', 'solid']) {
+      await expect(new Set(colorNames.map((color) => look(selected, color))).size).toBe(
+        colorNames.length
+      )
+      // The item that is not pressed keeps its rest look in every color.
+      const rest = getComputedStyle(
+        canvas.getByRole('button', { name: `Center ${selected} primary` })
+      )
+      await expect(rest.boxShadow).toBe('none')
+    }
+  }
+}
+
 const items = (root: HTMLElement) => Array.from(root.querySelectorAll('button'))
 
 export const Orientations: Story = {

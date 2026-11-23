@@ -52,6 +52,9 @@ interface StyleProp {
   style?: stylex.StyleXStyles
 }
 
+/** A glyph component, such as a Keyline icon; the trigger sizes it and hides it from assistive technology. */
+export type SelectGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
+
 export const Select = BaseSelect.Root
 export const SelectValue = BaseSelect.Value
 export const SelectGroup = BaseSelect.Group
@@ -63,6 +66,7 @@ export const SelectGroup = BaseSelect.Group
 export function SelectTrigger({
   size = 'md',
   variant = 'outline',
+  icon: Icon,
   style,
   children,
   ...props
@@ -72,6 +76,8 @@ export function SelectTrigger({
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
+    /** A glyph before the value; it is decoration, so the name still comes from the label. */
+    icon?: SelectGlyph
   }) {
   return (
     <BaseSelect.Trigger
@@ -84,7 +90,14 @@ export function SelectTrigger({
         style
       )}
     >
-      {children}
+      {Icon ? (
+        <span {...stylex.props(s.lead)}>
+          <Icon size={16} aria-hidden {...stylex.props(s.glyph)} />
+          {children}
+        </span>
+      ) : (
+        children
+      )}
       <BaseSelect.Icon {...stylex.props(s.icon)}>
         <ChevronsUpDown size={16} strokeWidth={1.5} aria-hidden />
       </BaseSelect.Icon>
