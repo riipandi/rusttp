@@ -1,31 +1,58 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './spinner.stories'
 
 <Meta of={Stories} />
 
 # Spinner
 
-A busy indicator. Alone it is a `status` live region; inside a Button it is hidden from assistive technology.
+A busy indicator: a named `status` on its own, hidden from assistive technology inside a Button.
+
+## Import
+
+```jsx
+import { Spinner } from 'uilibs/extra/spinner'
+```
 
 Draws Keyline `LoaderCircle`, an `svg`. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Spinner } from 'uilibs/extra/spinner'
+- **Spinner:** the rotating glyph.
 
-;<Spinner />
+```jsx
+<Spinner />
 ```
 
-For a busy button, set `loading` on `Button` instead of placing a `Spinner` in it.
+## Examples
 
-## Props
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### On its own
+
+A standalone spinner is a live region named by `labels.loading`.
+
+<Canvas of={Stories.Alone} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Spinner
 
-| Prop     | Values                                                  | Default   | Note                                                        |
-| -------- | ------------------------------------------------------- | --------- | ----------------------------------------------------------- |
-| `size`   | `sm`, `md`, `lg`                                        | `md`      | Glyph size: 12px, 16px, or 20px.                            |
-| `color`  | `inherit`, `primary`, `positive`, `warning`, `critical` | `inherit` | The role color; `inherit` takes the surrounding text color. |
-| `labels` | `{ loading }`                                           | `Loading` | Accessible name when the spinner stands alone.              |
-| `style`  | StyleX styles                                           | none      | Replaces `className` and `style`.                           |
+| Prop     | Description                                                                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `size`   | `sm`, `md`, `lg` <br /> The glyph size: 12px, 16px, or 20px. Default `md`.                                                                       |
+| `color`  | `inherit`, `primary`, `positive`, `warning`, `critical` <br /> The role color; `inherit` draws in the surrounding text color. Default `inherit`. |
+| `labels` | `{ loading: string }` <br /> The accessible name of a standalone spinner. Default `Loading`.                                                     |
+
+## Caveats
+
+- For a busy button, set `loading` on `Button` instead of placing a `Spinner` in it.
+- Inside a Button the spinner gets `aria-hidden`, so `labels.loading` is not read there.
+- Under `prefers-reduced-motion: reduce` the rotation slows from 1s to 3s; it does not stop.

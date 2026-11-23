@@ -1,15 +1,13 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './card.stories'
 
 <Meta of={Stories} />
 
 # Card
 
-A surface that groups related content, with a header, content, and footer.
+A surface that groups related content, with a header, a content area, and a footer.
 
-A plain `div`. Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -21,8 +19,22 @@ import {
   CardHeader,
   CardTitle
 } from 'uilibs/extra/card'
+```
 
-;<Card>
+Plain `div`, `h3`, and `p` elements, not built on Base UI. Props not listed here pass through.
+
+## Anatomy
+
+- **Card:** the root surface. It sets the size, the raised shadow, and the selected edge.
+- **CardHeader:** a two-column grid that holds the title, the description, and the action.
+- **CardTitle:** the heading, an `h3`.
+- **CardDescription:** supporting text under the title, a `p`.
+- **CardAction:** optional slot for a header control, pinned to the top-right corner of the header.
+- **CardContent:** the main area.
+- **CardFooter:** the bottom row, for actions or metadata.
+
+```jsx
+<Card>
   <CardHeader>
     <CardTitle />
     <CardDescription />
@@ -33,16 +45,38 @@ import {
 </Card>
 ```
 
-`CardAction` sits in `CardHeader` and is pinned to its top-right corner. `CardTitle` renders an `h3` and `CardDescription` a `p`.
+## Examples
 
-## Props
+### Sizes
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Action
+
+<Canvas of={Stories.Action} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Card
 
-| Prop       | Values     | Default | Note                                                                                   |
-| ---------- | ---------- | ------- | -------------------------------------------------------------------------------------- |
-| `size`     | `sm`, `md` | `md`    | Padding and gaps.                                                                      |
-| `selected` | `boolean`  | `false` | A primary edge and `data-selected`. Name the choice for assistive technology yourself. |
-| `raised`   | `boolean`  | `false` | Lifts the card with the raised shadow.                                                 |
+| Prop       | Description                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------- |
+| `size`     | `sm`, `md` <br /> Padding and gaps. Default `md`.                                                       |
+| `selected` | `boolean` <br /> Marks the card as chosen: a doubled primary edge and `data-selected`. Default `false`. |
+| `raised`   | `boolean` <br /> Lifts the card with the raised shadow. Default `false`.                                |
+
+| Data attribute  | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `data-selected` | Set by this library while `selected` is `true`. |
+
+## Caveats
+
+- `selected` is visual only. Name the choice for assistive technology yourself, with a `role` and `aria-selected` or a control inside the card.
+- `CardTitle` always renders an `h3`; the level cannot be changed through a prop.
+- `CardAction` belongs inside `CardHeader`, which gives it the right-hand grid column.

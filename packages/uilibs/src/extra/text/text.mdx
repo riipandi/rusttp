@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './text.stories'
 
 <Meta of={Stories} />
@@ -7,33 +7,65 @@ import * as Stories from './text.stories'
 
 Typography for body copy, captions, and headings.
 
+## Import
+
+```jsx
+import { Text } from 'uilibs/extra/text'
+```
+
 Built on Base UI [useRender](https://base-ui.com/react/utils/use-render). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Text } from 'uilibs/extra/text'
+- **Text:** the text element. It renders a `div`, or the heading its `variant` implies for `featured-1` to `featured-6` (`h1` to `h6`). Set `render` to use another element.
 
-;<Text>Text</Text>
+```jsx
+<Text />
 ```
 
-`Text` renders a `div`. The `featured-1` to `featured-6` variants render `h1` to `h6`, and with a responsive `variant` the tag follows the largest breakpoint's value. Set `render` to use another element.
+## Examples
 
-## Props
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Responsive values
+
+Pass an object keyed `s`, `m`, `l`, and `xl`, mobile first.
+
+<Canvas of={Stories.Responsive} />
+
+### Another element
+
+<Canvas of={Stories.Render} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Text
 
-`variant`, `weight`, and `align` take one value for every viewport, or an object with the breakpoint keys `s`, `m`, `l`, and `xl`, mobile first.
+`variant`, `weight`, and `align` take one value for every viewport, or an object with the keys `s`, `m`, `l`, and `xl`.
 
-| Prop         | Values                                                                                                                           | Default  | Note                                          |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------- |
-| `variant`    | `headline-1`, `headline-2`, `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2`; responsive | `body-1` | Size and line height.                         |
-| `color`      | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled`                                             | none     | The text color; unset inherits.               |
-| `weight`     | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black`; responsive                                               | none     | Overrides the weight of the variant.          |
-| `align`      | `start`, `center`, `end`; responsive                                                                                             | none     | Text alignment.                               |
-| `decoration` | `underline`, `line-through`                                                                                                      | none     | Text decoration.                              |
-| `maxLines`   | `number`                                                                                                                         | none     | Clamps the text to this many lines.           |
-| `wrap`       | `balance`, `nowrap`                                                                                                              | none     | Balances the lines or keeps them on one line. |
-| `monospace`  | `boolean`                                                                                                                        | `false`  | Uses the monospace font.                      |
-| `numeric`    | `boolean`                                                                                                                        | `false`  | Uses tabular figures.                         |
-| `style`      | StyleX styles                                                                                                                    | none     | Replaces `className` and `style`.             |
+| Prop         | Description                                                                                                                                                             |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`    | `headline-1` to `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2` <br /> The size and line height. Responsive. Default `body-1`. |
+| `color`      | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled` <br /> The text color. Unset inherits.                                             |
+| `weight`     | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black` <br /> Overrides the weight of the variant. Responsive.                                          |
+| `align`      | `start`, `center`, `end` <br /> The text alignment. Responsive.                                                                                                         |
+| `decoration` | `underline`, `line-through` <br /> The text decoration.                                                                                                                 |
+| `maxLines`   | `number` <br /> Clamps the text to this many lines.                                                                                                                     |
+| `wrap`       | `balance`, `nowrap` <br /> Balances the lines, or keeps them on one line.                                                                                               |
+| `monospace`  | `boolean` <br /> Uses the monospace font. Default `false`.                                                                                                              |
+| `numeric`    | `boolean` <br /> Uses tabular figures. Default `false`.                                                                                                                 |
+
+## Caveats
+
+- With a responsive `variant`, the tag follows the value at the largest breakpoint given, not the smallest.
+- The heading level follows the variant, not the page outline. Set `render` when the document needs another level.
+- `maxLines={1}` also sets `word-break: break-all`, so a long word breaks mid-word instead of overflowing.
+- `color='disabled'` only changes the color; it adds no `aria-disabled`.

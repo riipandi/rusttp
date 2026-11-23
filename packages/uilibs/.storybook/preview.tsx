@@ -21,6 +21,9 @@ const preview: Preview = {
       storySort: {
         order: [
           'Introduction',
+          'Components',
+          'Styling',
+          'Theming',
           'Base Components',
           'Extra Components',
           'Data Grid',

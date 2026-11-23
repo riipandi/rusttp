@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './calendar.stories'
 
 <Meta of={Stories} />
@@ -7,27 +7,79 @@ import * as Stories from './calendar.stories'
 
 A month grid to pick a day, several days, or a range.
 
-Built on [react-day-picker](https://daypicker.dev) `DayPicker`; month and year dropdowns use the library's Select. Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import { Calendar } from 'uilibs/extra/calendar'
-
-<Calendar mode='single' selected={…} onSelect={…} />
 ```
 
-`mode` is `single`, `multiple`, or `range`, and `selected` and `onSelect` hold the choice. `Calendar` draws the grid, the previous and next buttons, and the caption itself, so it has no child parts.
+Built on [react-day-picker](https://daypicker.dev) `DayPicker`; the month and year dropdowns use the library's Select. Props not listed here pass through.
 
-## Props
+## Anatomy
 
-| Prop              | Values                                                    | Default                                     | Note                                               |
-| ----------------- | --------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------- |
-| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost`                      | `ghost`                                     | The fill of the previous and next buttons.         |
-| `showOutsideDays` | `boolean`                                                 | `true`                                      | Shows the days of the neighbouring months.         |
-| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` | `label`                                     | `label` shows the month as text.                   |
-| `startMonth`      | `Date`                                                    | January 1900                                | The first month the calendar can show.             |
-| `endMonth`        | `Date`                                                    | December 2100                               | The last month the calendar can show.              |
-| `labels`          | react-day-picker's `labels` functions                     | `labelDayButton` starts with the day number | Your functions replace the defaults one by one.    |
-| `formatters`      | react-day-picker's `formatters` functions                 | `formatMonthDropdown` is the short month    | Your functions replace the defaults one by one.    |
-| `style`           | StyleX styles                                             | none                                        | Styles the root; replaces `className` and `style`. |
+- **Calendar:** the whole picker. It draws the grid, the previous and next buttons, and the caption itself, so it has no child parts. `mode` is `single`, `multiple`, or `range`, and `selected` and `onSelect` hold the choice.
+
+```jsx
+<Calendar mode='single' selected={date} onSelect={setDate} />
+```
+
+## Examples
+
+### Modes
+
+<Canvas of={Stories.Modes} />
+
+### Layouts
+
+<Canvas of={Stories.Layouts} />
+
+### Date picker
+
+A calendar in a Popover.
+
+<Canvas of={Stories.DatePickerSingle} />
+
+### Week numbers
+
+<Canvas of={Stories.WeekNumbers} />
+
+## API reference
+
+`Calendar` also takes `style`: StyleX styles that replace `className` and `style`. They land on the root. See [Styling](?path=/docs/styling--docs).
+
+### Calendar
+
+| Prop              | Description                                                                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost` <br /> The fill of the previous and next buttons. Default `ghost`.                                             |
+| `showOutsideDays` | `boolean` <br /> Shows the days of the neighbouring months. Default `true`.                                                                         |
+| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` <br /> `label` shows the month as text. Default `label`.                                  |
+| `startMonth`      | `Date` <br /> The first month the calendar can show. Default January 1900.                                                                          |
+| `endMonth`        | `Date` <br /> The last month the calendar can show. Default December 2100.                                                                          |
+| `labels`          | react-day-picker's `labels` functions <br /> Your functions replace the defaults one by one. Default: `labelDayButton` starts with the day number.  |
+| `formatters`      | react-day-picker's `formatters` functions <br /> Your functions replace the defaults one by one. Default: `formatMonthDropdown` is the short month. |
+
+Set by this library on each day button:
+
+| Data attribute         | Description                                                           |
+| ---------------------- | --------------------------------------------------------------------- |
+| `data-day`             | The date, formatted by `toLocaleDateString` in the calendar's locale. |
+| `data-selected-single` | `true` for a selected day that is not part of a range.                |
+| `data-range-start`     | `true` on the first day of a range.                                   |
+| `data-range-end`       | `true` on the last day of a range.                                    |
+| `data-range-middle`    | `true` on the days between the ends.                                  |
+
+Set by react-day-picker on each day cell:
+
+| Data attribute  | Description                                 |
+| --------------- | ------------------------------------------- |
+| `data-today`    | Present on today's date.                    |
+| `data-outside`  | Present on a day of a neighbouring month.   |
+| `data-disabled` | Present on a disabled day.                  |
+| `data-focused`  | Present on the day that has keyboard focus. |
+
+## Caveats
+
+- Several calendars on one page each need their own `labels.labelNav`, or axe reports duplicate landmark names.
+- The default day name starts with the visible number, as WCAG 2.5.3 asks; a `labels.labelDayButton` of your own replaces it.
+- Navigation stops at January 1900 and December 2100 unless you set `startMonth` and `endMonth`.

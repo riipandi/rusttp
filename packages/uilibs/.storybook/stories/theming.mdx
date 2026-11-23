@@ -1,0 +1,149 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title='Theming' parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }} />
+
+# Theming
+
+Every color, shadow, radius, and motion value is a StyleX variable, so a theme is a set of replacement values. The light values are the defaults. The dark values are one `stylex.createTheme` that `ThemeProvider` switches on. A component never checks which theme is active.
+
+## Setup
+
+Put `UIProvider` and `ThemeProvider` once at the root of the app, and render `ThemeSwitcher` wherever the user should change theme.
+
+```tsx
+import { UIProvider } from 'uilibs/base/provider'
+import { ThemeProvider, ThemeSwitcher } from 'uilibs/theme'
+
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <UIProvider>
+      <ThemeProvider attribute='data-theme' defaultTheme='system'>
+        <ThemeSwitcher />
+        {children}
+      </ThemeProvider>
+    </UIProvider>
+  )
+}
+```
+
+`ThemeProvider` sets the theme on the `<html>` element before first paint, so the page does not flash the wrong theme. It stores the choice, follows the system setting while the theme is `system`, and syncs across tabs.
+
+### ThemeProvider
+
+| Prop                        | Description                                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `defaultTheme`              | `string` <br /> The theme before the user picks one. `system` follows the operating system. Default `system`.    |
+| `enableSystem`              | `boolean` <br /> Lets `system` resolve to light or dark from `prefers-color-scheme`. Default `true`.             |
+| `forcedTheme`               | `string` <br /> Pins the theme for the page, ignoring the stored choice.                                         |
+| `themes`                    | `string[]` <br /> The theme names. Default `['light', 'dark']`.                                                  |
+| `attribute`                 | `class`, `data-*`, or an array <br /> The attribute written on `<html>`. Use `data-theme`. Default `data-theme`. |
+| `value`                     | `Record<string, string>` <br /> Maps a theme name to the attribute value you want.                               |
+| `storage`                   | `localStorage`, `cookie`, or an adapter <br /> Where the choice is kept. Default `localStorage`.                 |
+| `storageKey`                | `string` <br /> The key the choice is stored under. Default `theme`.                                             |
+| `enableColorScheme`         | `boolean` <br /> Sets the CSS `color-scheme` so built-in controls and scrollbars match. Default `true`.          |
+| `disableTransitionOnChange` | `boolean` <br /> Turns off CSS transitions while the theme switches, so colors change at once. Default `false`.  |
+
+### useTheme
+
+`useTheme()` reads and sets the theme from any component under the provider.
+
+| Value           | Description                                                                            |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `theme`         | `string` <br /> The chosen theme, such as `light`, `dark`, or `system`.                |
+| `resolvedTheme` | `string` <br /> The theme in effect. It is `light` or `dark` when `theme` is `system`. |
+| `systemTheme`   | `light`, `dark` <br /> The operating system's preference.                              |
+| `setTheme`      | `(theme: string) => void` <br /> Changes the theme and stores it.                      |
+| `forcedTheme`   | `string` <br /> The pinned theme, when the provider has one.                           |
+| `themes`        | `string[]` <br /> The theme names, plus `system` when it is enabled.                   |
+
+### ThemeSwitcher
+
+A ghost icon button that cycles light, dark, and system. Its accessible name says which theme a press switches to.
+
+| Prop     | Description                                                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labels` | `{ toDark, toSystem, toLight }` <br /> The button's name in each state. Default `Switch to dark mode`, `Switch to system mode`, `Switch to light mode`. |
+
+## What the root element carries
+
+| On `<html>`               | Meaning                                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `data-theme`              | `light` or `dark`. Target it in plain CSS, such as `html[data-theme='dark']`. A StyleX style does not need it. |
+| A generated class         | The compiled dark theme. It is present only while the theme is `dark`.                                         |
+| `style="color-scheme: …"` | Set when `enableColorScheme` is on.                                                                            |
+
+## Tokens
+
+Import tokens from `uilibs/styles/`. Use a token instead of a literal value, so a theme change reaches your styles.
+
+| Token                                          | Description                                                                                                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colors`                                       | Roles `primary`, `neutral`, `positive`, `warning`, `critical`, each as `background`, `foreground`, and `border`. See below. From `colors.stylex`. |
+| `shadow`                                       | `outline`, `raised`, `overlay`. From `colors.stylex`.                                                                                             |
+| `radius`                                       | `xsmall` to `xlarge`, `full`, `none`. From `tokens.stylex`.                                                                                       |
+| `fontFamily`, `fontSize`, `fontLineHeight`     | The type scale from `headline1` to `caption2`, and `monospace`. From `tokens.stylex`.                                                             |
+| `duration`, `easing`                           | `rapid` to `slow`, and `standard`, `accelerate`, `decelerate`. From `tokens.stylex`.                                                              |
+| `unit`                                         | Spacing in 4px steps, `x0_5` to `x20`. From `tokens.stylex`.                                                                                      |
+| `stroke`, `container`, `zIndex`, `breakpoints` | Ring widths, popup and panel widths, layers, and media queries. From `tokens.stylex`.                                                             |
+
+Tokens made with `defineVars` (`colors`, `shadow`, `radius`, the type scale, `duration`, `easing`) can be replaced by a theme. Tokens made with `defineConsts` (`unit`, `stroke`, `container`, `zIndex`, `breakpoints`, `fontWeight`) are fixed at build time.
+
+### Color tokens
+
+A color token is a role plus a part: `backgroundPrimary`, `foregroundCritical`, `borderPositive`. Most come in modifiers.
+
+| Modifier           | Use                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `Faded`            | A soft tint. Pair a `foreground` token with a `Faded` background for readable text.    |
+| `Highlighted`      | The hover and pressed state of a solid background.                                     |
+| `HighlightedFaded` | The hover state of a faded background.                                                 |
+| `onBackground*`    | The text color for a solid background of that role. Use it instead of picking a color. |
+
+Also: `backgroundPage` and `backgroundPageFaded` for the page, `backgroundElevationBase` and `backgroundElevationOverlay` for raised surfaces, `borderControl` for the edge of a form control, `borderDisabled` and `foregroundDisabled` for disabled parts, and the constants `black`, `white`, and `brand`, which are the same in both themes.
+
+## Customizing
+
+### Across the app
+
+The library ships as source, so the tokens are yours to change. Edit the light values in `colors.stylex.ts` and the dark values in `themes.ts`. A dark theme is a `stylex.createTheme` that lists only the tokens that differ.
+
+```tsx
+const darkColors = stylex.createTheme(colors, {
+  backgroundPage: 'oklch(0.16 0 89.88)',
+  backgroundPrimary: 'oklch(0.55 0.135 39.4)',
+  foregroundPrimary: 'oklch(0.756 0.115 45.84)'
+})
+```
+
+Change the primary role as a group: its background, highlighted, faded, border, and foreground values. Text pairs need a 4.5:1 contrast ratio and control edges 3:1, and the story tests check them in both themes.
+
+### In one part of the page
+
+Create a theme with `stylex.createTheme` and apply it to an element with `stylex.props`. Everything inside takes the new values.
+
+```tsx
+import * as stylex from '@stylexjs/stylex'
+import { colors } from 'uilibs/styles/colors.stylex'
+
+const slytherin = stylex.createTheme(colors, {
+  backgroundPrimary: 'oklch(0.45 0.12 150)',
+  backgroundPrimaryHighlighted: 'oklch(0.4 0.12 150)',
+  backgroundPrimaryFaded: 'oklch(0.97 0.02 150)',
+  foregroundPrimary: 'oklch(0.4 0.12 150)',
+  borderPrimary: 'oklch(0.4 0.12 150)'
+})
+
+export function House({ children }: { children: React.ReactNode }) {
+  return <section {...stylex.props(slytherin)}>{children}</section>
+}
+```
+
+To force one part of the page to stay dark, apply `darkColors` and `darkShadows` from `uilibs/styles/themes` the same way.
+
+## Caveats
+
+- **Portaled popups.** A dialog, menu, popover, or tooltip renders under `body`, outside the element that carries a local theme, so it keeps the app theme. Use a local theme for inline content, or change the tokens for the whole app.
+- **One provider.** A `ThemeProvider` inside another is ignored and passes its children through.
+- **Only `dark` gets the dark class.** A theme name other than `light` or `dark` sets the attribute and nothing else. You style it yourself.
+- **Custom storage and the first paint.** The inline script that applies the theme before first paint supports `localStorage` and `cookie`. A custom storage adapter skips it, so the page can flash the default theme until React runs.
+- **Server rendering.** The server renders the default theme. With `defaultTheme='system'`, the inline script corrects it before paint, so keep the provider at the root.

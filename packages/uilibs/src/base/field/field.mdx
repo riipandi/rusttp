@@ -1,15 +1,13 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './field.stories'
 
 <Meta of={Stories} />
 
 # Field
 
-A label, description, and validation message around a form control. `FieldSet`, `FieldLegend`, and `FieldGroup` group several fields.
+A label, a description and a validation message around one form control, with `FieldSet`, `FieldLegend` and `FieldGroup` to group several fields.
 
-Built on Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset). Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -21,10 +19,28 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSeparator,
-  FieldSet
+  FieldSet,
+  FieldTitle
 } from 'uilibs/base/field'
+```
 
-;<FieldSet>
+Built on Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset). `FieldContent`, `FieldGroup`, `FieldSeparator` and `FieldTitle` are plain `div` elements. Props not listed here pass through.
+
+## Anatomy
+
+- **FieldSet:** optional. Groups related fields under a legend.
+- **FieldLegend:** the caption of a `FieldSet`.
+- **FieldGroup:** optional. Stacks several fields with the shared spacing.
+- **Field:** the root of one field. A Base UI control placed inside it joins it, so the label, description and error wire themselves to the control.
+- **FieldLabel:** the label of the control.
+- **FieldDescription:** helper text linked to the control.
+- **FieldError:** the validation message. Base UI shows it according to the field's validity; `match` overrides that.
+- **FieldContent:** optional. Holds the label and description beside a control in a horizontal field.
+- **FieldTitle:** a label-styled `div`, for text inside a `FieldLabel` that wraps a whole choice card.
+- **FieldSeparator:** a line between fields. Its children, if any, show as text on the line.
+
+```jsx
+<FieldSet>
   <FieldLegend />
   <FieldGroup>
     <Field>
@@ -45,26 +61,73 @@ import {
 </FieldSet>
 ```
 
-A Base UI control inside a `Field` joins it, so the label, description, and error wire themselves to the control. `FieldSet`, `FieldLegend`, and `FieldGroup` are optional. `FieldSeparator` draws a line and shows its children as text on it. `FieldTitle` is a label-styled `div` for a choice card inside a `FieldLabel`.
+## Examples
 
-## Props
+### A fieldset of fields
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Playground} />
+
+### Legend variants
+
+<Canvas of={Stories.Variants} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Field
 
-| Prop          | Values                   | Default    | Note                                                              |
-| ------------- | ------------------------ | ---------- | ----------------------------------------------------------------- |
-| `orientation` | `vertical`, `horizontal` | `vertical` | Stacks the label above the control, or lays the two out in a row. |
+| Prop          | Description                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `orientation` | `vertical`, `horizontal` <br /> Stacks the label above the control, or puts them in a row. Default `vertical`. |
 
-### FieldLegend
+| Data attribute  | Description                                 |
+| --------------- | ------------------------------------------- |
+| `data-disabled` | Present when the field is disabled.         |
+| `data-invalid`  | Present when the field is invalid.          |
+| `data-valid`    | Present when the field is valid.            |
+| `data-touched`  | Present after the control has been touched. |
+| `data-dirty`    | Present when the value has changed.         |
+| `data-filled`   | Present when the field has a value.         |
+| `data-focused`  | Present while the control has focus.        |
 
-| Prop      | Values            | Default  | Note                                          |
-| --------- | ----------------- | -------- | --------------------------------------------- |
-| `variant` | `legend`, `label` | `legend` | `label` styles the legend like a field label. |
+### FieldLabel
+
+It carries the same data attributes as `Field`. This library colors the label with the critical color while `data-invalid` is present.
+
+### FieldDescription
+
+It carries the same data attributes as `Field`.
 
 ### FieldError
 
-| Prop     | Values                                         | Default | Note                                                                                                                                                                              |
-| -------- | ---------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `errors` | array of `{ message?: string }` or `undefined` | none    | External errors, such as from a form library, deduplicated by message. Once set, even to `[]`, the field's own validation never shows; leave it `undefined` to show that instead. |
+| Prop     | Description                                                                                                                                                                               |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `errors` | `Array<{ message?: string } or undefined>` <br /> External errors, such as from a form library, deduplicated by message. Leave it `undefined` to show the field's own validation instead. |
+
+It carries the same data attributes as `Field`, and adds these.
+
+| Data attribute        | Description                              |
+| --------------------- | ---------------------------------------- |
+| `data-starting-style` | Present as the message begins to appear. |
+| `data-ending-style`   | Present as the message disappears.       |
+
+### FieldLegend
+
+| Prop      | Description                                                                             |
+| --------- | --------------------------------------------------------------------------------------- |
+| `variant` | `legend`, `label` <br /> `label` sizes the legend like a field label. Default `legend`. |
+
+| Data attribute  | Description                            |
+| --------------- | -------------------------------------- |
+| `data-disabled` | Present when the fieldset is disabled. |
+
+## Caveats
+
+- Once `errors` is set on `FieldError`, even to `[]`, the field's own validation message never shows.
+- With `errors`, the message renders as a `div` with `role='alert'` and none of the Base UI data attributes, and it is shown whenever the array has a message.
+- `FieldTitle` is a `div`, not a label. The wrapping `FieldLabel` is what names the control.

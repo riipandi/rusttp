@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './toggle.stories'
 
 <Meta of={Stories} />
@@ -7,26 +7,58 @@ import * as Stories from './toggle.stories'
 
 A button that is pressed or unpressed.
 
+## Import
+
+```jsx
+import { Toggle } from 'uilibs/base/toggle'
+```
+
 Built on Base UI [Toggle](https://base-ui.com/react/components/toggle). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Toggle } from 'uilibs/base/toggle'
+- **Toggle:** the button. It has no parts.
 
-;<Toggle>Label</Toggle>
+```jsx
+<Toggle />
 ```
 
-A toggle with only an icon needs an `aria-label`.
+## Examples
 
-## Props
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Pressed colors
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+## API reference
+
+`Toggle` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Toggle
 
-| Prop              | Values                                                  | Default                                | Note                                                                                                               |
-| ----------------- | ------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `variant`         | `ghost`, `outline`, `solid`                             | `ghost`                                | The fill at rest. `ghost` is transparent until hover, `outline` adds an edge, and `solid` rests on a neutral fill. |
-| `selectedVariant` | `ghost`, `outline`, `solid`                             | `solid` for `solid`, `ghost` otherwise | The fill of the pressed state: a tint, an edge, or a fill of `selectedColor`.                                      |
-| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` | `neutral`                              | The color of the pressed state.                                                                                    |
-| `size`            | `xs`, `sm`, `md`, `lg`                                  | `md`                                   | Height on the control scale.                                                                                       |
-| `style`           | StyleX styles                                           | none                                   | Replaces `className` and `style`.                                                                                  |
+| Prop              | Description                                                                                                                                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`         | `ghost`, `outline`, `solid` <br /> The fill at rest. `ghost` is transparent until hover, `outline` adds an edge, and `solid` rests on a neutral fill. Default `ghost`.                                                                 |
+| `selectedVariant` | `ghost`, `outline`, `solid` <br /> The fill of the pressed state: a tint, an edge, or a fill of `selectedColor`. Follows `variant`, except that `outline` presses to the `ghost` tint. Default `solid` for `solid`, `ghost` otherwise. |
+| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` <br /> The color of the pressed state. Default `neutral`.                                                                                                                      |
+| `size`            | `xs`, `sm`, `md`, `lg` <br /> Height on the control scale. Default `md`.                                                                                                                                                               |
+
+| Data attribute  | Description                          |
+| --------------- | ------------------------------------ |
+| `data-pressed`  | Present while the toggle is pressed. |
+| `data-disabled` | Present when the toggle is disabled. |
+
+## Caveats
+
+- A toggle with only an icon needs an `aria-label`.

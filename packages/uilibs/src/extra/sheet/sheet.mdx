@@ -1,15 +1,13 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './sheet.stories'
 
 <Meta of={Stories} />
 
 # Sheet
 
-A Dialog that slides in from an edge of the screen and holds focus until it closes. Use Drawer for a swipe panel with snap points.
+A Dialog that slides in from an edge of the screen; use Drawer for a swipe panel with snap points.
 
-Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through. `Sheet`, `SheetTrigger`, `SheetClose`, and `SheetPortal` are the Dialog parts unchanged.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -19,11 +17,29 @@ import {
   SheetDescription,
   SheetFooter,
   SheetHeader,
+  SheetOverlay,
+  SheetPortal,
   SheetTitle,
   SheetTrigger
 } from 'uilibs/extra/sheet'
+```
 
-;<Sheet>
+Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through. `Sheet`, `SheetTrigger`, `SheetClose`, and `SheetPortal` are the Dialog parts unchanged.
+
+## Anatomy
+
+- **Sheet:** the root. It holds the open state.
+- **SheetTrigger:** the button that opens the sheet.
+- **SheetContent:** the panel that slides in. It renders the portal, the overlay, and a close button itself.
+- **SheetHeader:** a container for the title and description.
+- **SheetTitle:** the sheet's heading.
+- **SheetDescription:** a short description under the title.
+- **SheetFooter:** a container for the actions.
+- **SheetClose:** a button that closes the sheet.
+- **SheetPortal** and **SheetOverlay:** the portal and the backdrop. They are exported only for custom compositions.
+
+```jsx
+<Sheet>
   <SheetTrigger />
   <SheetContent>
     <SheetHeader>
@@ -37,23 +53,80 @@ import {
 </Sheet>
 ```
 
-`SheetContent` renders the portal, the overlay, and a close button. `SheetPortal` and `SheetOverlay` are exported only for custom compositions.
+## Examples
 
-## Props
+### Sides
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`. On `SheetContent` it styles the popup.
+<Canvas of={Stories.Sides} />
 
-### SheetContent
+### Overlays
 
-| Prop              | Values                           | Default | Note                                |
-| ----------------- | -------------------------------- | ------- | ----------------------------------- |
-| `side`            | `top`, `right`, `bottom`, `left` | `right` | The edge the sheet slides in from.  |
-| `blurredOverlay`  | `boolean`                        | `false` | Blurs the page behind the backdrop. |
-| `showCloseButton` | `boolean`                        | `true`  | Renders the built-in close button.  |
-| `labels`          | `{ close }`                      | `Close` | Name of the built-in close button.  |
+<Canvas of={Stories.Overlays} />
+
+### Close button
+
+`labels.close` names the built-in close button.
+
+<Canvas of={Stories.CloseButton} />
+
+### Without the close button
+
+<Canvas of={Stories.NoCloseButton} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `SheetContent` it styles the popup.
+
+### SheetTrigger
+
+| Data attribute    | Description                           |
+| ----------------- | ------------------------------------- |
+| `data-popup-open` | Present while the sheet is open.      |
+| `data-disabled`   | Present when the trigger is disabled. |
 
 ### SheetOverlay
 
-| Prop             | Values    | Default | Note                                |
-| ---------------- | --------- | ------- | ----------------------------------- |
-| `blurredOverlay` | `boolean` | `false` | Blurs the page behind the backdrop. |
+| Prop             | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop. Default `false`. |
+
+| Data attribute        | Description                          |
+| --------------------- | ------------------------------------ |
+| `data-open`           | Present while the sheet is open.     |
+| `data-closed`         | Present while the sheet is closed.   |
+| `data-starting-style` | Present as the sheet begins to open. |
+| `data-ending-style`   | Present as the sheet closes.         |
+
+### SheetContent
+
+| Prop              | Description                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| `side`            | `top`, `right`, `bottom`, `left` <br /> The edge the sheet slides in from. Default `right`.   |
+| `blurredOverlay`  | `boolean` <br /> Blurs the page behind the backdrop. Default `false`.                         |
+| `showCloseButton` | `boolean` <br /> Renders the built-in close button. Default `true`.                           |
+| `labels`          | `{ close: string }` <br /> The accessible name of the built-in close button. Default `Close`. |
+
+| Data attribute            | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| `data-open`               | Present while the sheet is open.                    |
+| `data-closed`             | Present while the sheet is closed.                  |
+| `data-starting-style`     | Present as the sheet begins to open.                |
+| `data-ending-style`       | Present as the sheet closes.                        |
+| `data-nested`             | Present when the sheet is nested in another dialog. |
+| `data-nested-dialog-open` | Present when another dialog is open inside it.      |
+
+| CSS variable       | Description                            |
+| ------------------ | -------------------------------------- |
+| `--nested-dialogs` | How many dialogs are nested inside it. |
+
+### SheetClose
+
+| Data attribute  | Description                          |
+| --------------- | ------------------------------------ |
+| `data-disabled` | Present when the button is disabled. |
+
+## Caveats
+
+- `SheetContent` already renders `SheetPortal` and `SheetOverlay`; do not wrap it in them.
+- With `showCloseButton={false}`, give the sheet a `SheetClose`.
+- `blurredOverlay` on `SheetContent` is forwarded to its overlay. Set it on `SheetOverlay` only in a custom composition.

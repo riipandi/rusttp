@@ -1,24 +1,41 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './label.stories'
 
 <Meta of={Stories} />
 
 # Label
 
-The caption of a form control, for use outside a `Field`. Inside a `Field`, use `FieldLabel`.
+The caption of a form control used outside a `Field`; inside a `Field`, use `FieldLabel`.
+
+## Import
+
+```jsx
+import { Label } from 'uilibs/extra/label'
+```
 
 A plain `label` element. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Label } from 'uilibs/extra/label'
+- **Label:** the caption. It can wrap the control or point at it with `htmlFor`.
 
-;<Label>Text</Label>
+```jsx
+<Label htmlFor='owl-name'>Owl name</Label>
 ```
 
-Wrap the control in the label, or set `htmlFor` to the control's `id`, so a click on the text reaches the control.
+## Examples
 
-## Props
+### Wrap a control
 
-`Label` adds only `style`: StyleX styles that replace `className` and `style`.
+A click on the text reaches the control inside the label.
+
+<Canvas of={Stories.Playground} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+## Caveats
+
+- Without a wrapped control or an `htmlFor` that matches the control's `id`, the label names nothing.
+- The text is `user-select: none`, so a visitor cannot select it.

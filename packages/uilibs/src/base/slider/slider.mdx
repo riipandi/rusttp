@@ -1,30 +1,69 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './slider.stories'
 
 <Meta of={Stories} />
 
 # Slider
 
-Selects a value or a range from a track. One thumb unless the value is an array.
+Picks a value, or a range of values, by dragging a thumb along a track.
+
+## Import
+
+```jsx
+import { Slider } from 'uilibs/base/slider'
+```
 
 Built on Base UI [Slider](https://base-ui.com/react/components/slider). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Slider } from 'uilibs/base/slider'
+- **Slider:** the root. It renders the control, track, filled range and one thumb per entry of `value` or `defaultValue` itself, so it takes no children.
 
-;<Slider />
+```jsx
+<Slider />
 ```
 
-`Slider` renders the control, track, range, and one thumb per entry of `value` or `defaultValue`, so it takes no children.
+## Examples
 
-## Props
+### Orientations
 
-`Slider` also takes `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Orientations} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Range
+
+Pass an array to get one thumb per entry, and name each with `thumbLabels`.
+
+<Canvas of={Stories.Range} />
+
+### Controlled
+
+<Canvas of={Stories.Controlled} />
+
+## API reference
+
+`Slider` also takes `style`: StyleX styles that replace `className` and `style`. It lands on the root. See [Styling](?path=/docs/styling--docs).
 
 ### Slider
 
-| Prop          | Values     | Default | Note                                                                                |
-| ------------- | ---------- | ------- | ----------------------------------------------------------------------------------- |
-| `thumbLabels` | `string[]` | none    | Accessible name of each thumb, in order. A single thumb falls back to `aria-label`. |
+| Prop          | Description                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `thumbLabels` | `string[]` <br /> The accessible name of each thumb, in order. A slider with one thumb uses its `aria-label` when this is not set. |
+
+| Data attribute     | Description                                               |
+| ------------------ | --------------------------------------------------------- |
+| `data-orientation` | `horizontal` or `vertical`.                               |
+| `data-dragging`    | Present while a thumb is being dragged.                   |
+| `data-disabled`    | Present when the slider is disabled.                      |
+| `data-invalid`     | Present when a surrounding `Field` marks it invalid.      |
+| `data-index`       | Set on each thumb: its position among the thumbs, from 0. |
+
+## Caveats
+
+- A thumb has no text. Give a single thumb an `aria-label` on `Slider`, and a range `thumbLabels`.
+- The number of thumbs is read from `value` or `defaultValue` at render; without an array there is one.
+- `min` defaults to `0`, `max` to `100`, and `thumbAlignment` to `edge`, which keeps the thumb inside the track.
+- There is no value readout; the Controlled story shows one beside the slider.

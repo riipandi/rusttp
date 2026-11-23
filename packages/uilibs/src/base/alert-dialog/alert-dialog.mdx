@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './alert-dialog.stories'
 
 <Meta of={Stories} />
@@ -7,9 +7,7 @@ import * as Stories from './alert-dialog.stories'
 
 A modal dialog that needs an answer before the user continues, for destructive or high-risk confirmations. Use Dialog for content the user may dismiss.
 
-Built on Base UI [Alert Dialog](https://base-ui.com/react/components/alert-dialog). Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -21,11 +19,31 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogMedia,
+  AlertDialogOverlay,
+  AlertDialogPortal,
   AlertDialogTitle,
   AlertDialogTrigger
 } from 'uilibs/base/alert-dialog'
+```
 
-;<AlertDialog>
+Built on Base UI [Alert Dialog](https://base-ui.com/react/components/alert-dialog). Props not listed here pass through.
+
+## Anatomy
+
+- **AlertDialog:** the root. It holds the open state.
+- **AlertDialogTrigger:** the button that opens the dialog.
+- **AlertDialogContent:** the popup. It renders the portal and the overlay itself, and has no close button.
+- **AlertDialogHeader:** groups the media, title, and description.
+- **AlertDialogMedia:** an icon tile above the title. Optional.
+- **AlertDialogTitle:** the dialog's name.
+- **AlertDialogDescription:** what the user is confirming.
+- **AlertDialogFooter:** holds the buttons.
+- **AlertDialogCancel:** a button that closes the dialog.
+- **AlertDialogAction:** the confirming button. It also closes the dialog.
+- **AlertDialogPortal**, **AlertDialogOverlay:** exported only for custom compositions. `AlertDialogContent` already includes both.
+
+```jsx
+<AlertDialog>
   <AlertDialogTrigger />
   <AlertDialogContent>
     <AlertDialogHeader>
@@ -41,36 +59,85 @@ import {
 </AlertDialog>
 ```
 
-`AlertDialogContent` renders the portal and the overlay, and has no close button. `AlertDialogMedia` is optional. `AlertDialogPortal` and `AlertDialogOverlay` are exported only for custom compositions.
+## Examples
 
-## Props
+### Sizes
 
-Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` also takes `style`: StyleX styles that replace `className` and `style`. On `AlertDialogContent` it styles the popup. On `AlertDialogAction` and `AlertDialogCancel` it styles the button.
+<Canvas of={Stories.Sizes} />
+
+### Action looks
+
+The action and the cancel button take the Button `variant`.
+
+<Canvas of={Stories.Variants} />
+
+### Action colors
+
+<Canvas of={Stories.Colors} />
+
+### Keep it open while work runs
+
+<Canvas of={Stories.Destructive} />
+
+## API reference
+
+Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `AlertDialogContent` it styles the popup; on `AlertDialogAction` and `AlertDialogCancel` it styles the button.
+
+### AlertDialogTrigger
+
+| Data attribute    | Description                           |
+| ----------------- | ------------------------------------- |
+| `data-popup-open` | Present while the dialog is open.     |
+| `data-disabled`   | Present when the trigger is disabled. |
+
+### AlertDialogOverlay
+
+| Data attribute        | Description                           |
+| --------------------- | ------------------------------------- |
+| `data-open`           | Present while the dialog is open.     |
+| `data-closed`         | Present while the dialog is closed.   |
+| `data-starting-style` | Present as the dialog begins to open. |
+| `data-ending-style`   | Present as the dialog closes.         |
 
 ### AlertDialogContent
 
-| Prop   | Values     | Default | Note                 |
-| ------ | ---------- | ------- | -------------------- |
-| `size` | `sm`, `md` | `md`    | Width of the dialog. |
+| Prop   | Description                                              |
+| ------ | -------------------------------------------------------- |
+| `size` | `sm`, `md` <br /> The width of the dialog. Default `md`. |
+
+| Data attribute            | Description                                       |
+| ------------------------- | ------------------------------------------------- |
+| `data-open`               | Present while the dialog is open.                 |
+| `data-closed`             | Present while the dialog is closed.               |
+| `data-starting-style`     | Present as the dialog begins to open.             |
+| `data-ending-style`       | Present as the dialog closes.                     |
+| `data-nested`             | Present when the dialog is inside another dialog. |
+| `data-nested-dialog-open` | Present when another dialog is open inside it.    |
+
+| CSS variable       | Description                                  |
+| ------------------ | -------------------------------------------- |
+| `--nested-dialogs` | How many dialogs are nested inside this one. |
 
 ### AlertDialogAction
 
-The confirming button. It closes the dialog after its `onClick` runs; call `event.preventBaseUIHandler()` there to keep it open while work runs.
-
-| Prop      | Values                                                                      | Default          | Note                                                             |
-| --------- | --------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------- |
-| `variant` | `solid`, `faded`, `outline`, `ghost`                                        | `solid`          | The fill, as on Button.                                          |
-| `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` | Button's default | The role, as on Button. Use `critical` for a destructive action. |
-| `size`    | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg`          | `md`             | As on Button.                                                    |
-| `loading` | `boolean`                                                                   | `false`          | As on Button.                                                    |
+| Prop      | Description                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The fill, as on Button. Default `solid`.                                                                                     |
+| `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` <br /> The role, as on Button. Use `critical` for a destructive action. Default is Button's. |
+| `size`    | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` <br /> As on Button. Default `md`.                                                                    |
+| `loading` | `boolean` <br /> Shows a spinner over the label, as on Button.                                                                                                           |
 
 ### AlertDialogCancel
 
-The dismissing button. It closes the dialog like `AlertDialogAction`.
+| Prop      | Description                                                                                                                     |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The fill, as on Button. Default `outline`.                                          |
+| `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` <br /> The role, as on Button. Default is Button's. |
+| `size`    | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` <br /> As on Button. Default `md`.                           |
+| `loading` | `boolean` <br /> Shows a spinner over the label, as on Button.                                                                  |
 
-| Prop      | Values                                                                      | Default          | Note                    |
-| --------- | --------------------------------------------------------------------------- | ---------------- | ----------------------- |
-| `variant` | `solid`, `faded`, `outline`, `ghost`                                        | `outline`        | The fill, as on Button. |
-| `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` | Button's default | The role, as on Button. |
-| `size`    | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg`          | `md`             | As on Button.           |
-| `loading` | `boolean`                                                                   | `false`          | As on Button.           |
+## Caveats
+
+- `AlertDialogAction` and `AlertDialogCancel` both close the dialog. To keep it open while work runs, call `event.preventBaseUIHandler()` in the action's `onClick` and close through the dialog's `open` state later.
+- `AlertDialogContent` already wraps itself in a portal with an overlay. Do not add `AlertDialogPortal` around it.
+- `md` is wider than `sm` only at 660px and up. Below that both sizes have the same width.

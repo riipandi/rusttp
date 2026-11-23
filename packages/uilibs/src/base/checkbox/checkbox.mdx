@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './checkbox.stories'
 
 <Meta of={Stories} />
@@ -7,26 +7,75 @@ import * as Stories from './checkbox.stories'
 
 A box that is checked or not, alone or in a group that shares checked state.
 
+## Import
+
+```jsx
+import { Checkbox, CheckboxGroup } from 'uilibs/base/checkbox'
+```
+
 Built on Base UI [Checkbox](https://base-ui.com/react/components/checkbox) and [Checkbox Group](https://base-ui.com/react/components/checkbox-group). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Checkbox, CheckboxGroup } from 'uilibs/base/checkbox'
+- **Checkbox:** the box. It renders its check or indeterminate mark itself and works with or without a group.
+- **CheckboxGroup:** optional. It shares checked state across the checkboxes inside it.
 
-;<CheckboxGroup>
+```jsx
+<CheckboxGroup>
   <Checkbox name='…' />
 </CheckboxGroup>
 ```
 
-`Checkbox` also works without a group, and renders its check or indeterminate mark itself. In a group, give each `Checkbox` a `name` and control the group with `value` or `defaultValue` (arrays of names). A `parent` checkbox needs `allValues` on the group.
+## Examples
 
-## Props
+### Sizes
 
-Both parts also take `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Group
+
+Give each `Checkbox` a `name` and control the group with `value` or `defaultValue`, arrays of names.
+
+<Canvas of={Stories.Group} />
+
+### Group with a parent
+
+A `parent` checkbox checks or clears every child and shows the indeterminate mark when only some are checked.
+
+<Canvas of={Stories.GroupWithParent} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Checkbox
 
-| Prop   | Values           | Default | Note                        |
-| ------ | ---------------- | ------- | --------------------------- |
-| `size` | `sm`, `md`, `lg` | `md`    | Box size: 12, 16, or 20 px. |
+| Prop   | Description                                                      |
+| ------ | ---------------------------------------------------------------- |
+| `size` | `sm`, `md`, `lg` <br /> Box size: 12, 16 or 20 px. Default `md`. |
+
+| Data attribute       | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `data-checked`       | Present when the box is checked.                     |
+| `data-unchecked`     | Present when the box is not checked.                 |
+| `data-indeterminate` | Present when the box is indeterminate.               |
+| `data-disabled`      | Present when the checkbox is disabled.               |
+| `data-readonly`      | Present when the checkbox is read-only.              |
+| `data-required`      | Present when the checkbox is required.               |
+| `data-invalid`       | Present when a surrounding `Field` marks it invalid. |
+
+### CheckboxGroup
+
+| Data attribute  | Description                         |
+| --------------- | ----------------------------------- |
+| `data-disabled` | Present when the group is disabled. |
+
+## Caveats
+
+- `Checkbox` renders a `span`, not an `input`, so `:disabled` never matches; style the disabled look with `[data-disabled]`.
+- A checkbox has no text of its own. Wrap it in a `Label` or a horizontal `Field`, or give it an `aria-label`; a group also needs an `aria-label`.
+- A `parent` checkbox needs `allValues` on the group.

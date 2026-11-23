@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './menubar.stories'
 
 <Meta of={Stories} />
@@ -7,17 +7,18 @@ import * as Stories from './menubar.stories'
 
 A desktop-style bar of menus. Its menu parts are Dropdown Menu's.
 
-Built on Base UI [Menubar](https://base-ui.com/react/components/menubar). Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
   Menubar,
   MenubarCheckboxItem,
   MenubarContent,
+  MenubarGroup,
   MenubarItem,
+  MenubarLabel,
   MenubarMenu,
+  MenubarPortal,
   MenubarRadioGroup,
   MenubarRadioItem,
   MenubarSeparator,
@@ -27,8 +28,27 @@ import {
   MenubarSubTrigger,
   MenubarTrigger
 } from 'uilibs/base/menubar'
+```
 
-;<Menubar>
+Built on Base UI [Menubar](https://base-ui.com/react/components/menubar). Props not listed here pass through.
+
+## Anatomy
+
+- **Menubar:** the bar that holds the menus.
+- **MenubarMenu:** one menu: a trigger and its content.
+- **MenubarTrigger:** the bar item that opens its menu.
+- **MenubarContent:** the popup. It renders the portal and the positioner itself.
+- **MenubarGroup**, **MenubarLabel:** a group of items and its heading. The label must sit inside a group or radio group.
+- **MenubarItem:** an action. It can hold a `MenubarShortcut`.
+- **MenubarShortcut:** the key hint at the end of an item.
+- **MenubarCheckboxItem:** an item that toggles on and off, with a check indicator.
+- **MenubarRadioGroup**, **MenubarRadioItem:** a set of choices, of which one is chosen.
+- **MenubarSeparator:** a divider between items.
+- **MenubarSub**, **MenubarSubTrigger**, **MenubarSubContent:** a submenu. The trigger renders the chevron itself.
+- **MenubarPortal:** exported only for custom compositions. `MenubarContent` already includes it.
+
+```jsx
+<Menubar>
   <MenubarMenu>
     <MenubarTrigger />
     <MenubarContent>
@@ -51,27 +71,58 @@ import {
 </Menubar>
 ```
 
-Each `MenubarMenu` holds one trigger and its content. `MenubarContent` renders the portal and the positioner. `MenubarGroup`, `MenubarLabel`, and `MenubarPortal` are also exported.
+## Examples
 
-## Props
+### Several menus
 
-Every part except `MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `MenubarContent` and `MenubarSubContent` it styles the popup.
+<Canvas of={Stories.Playground} />
 
-Every part other than `Menubar`, `MenubarTrigger`, and `MenubarContent` is the matching Dropdown Menu part (`MenubarItem` is `DropdownMenuItem`), with the same props.
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Checkbox items
+
+<Canvas of={Stories.Checkbox} />
+
+## API reference
+
+Every part except `MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `MenubarContent` and `MenubarSubContent` it styles the popup.
+
+Every part other than `Menubar`, `MenubarTrigger`, and `MenubarContent` is the matching Dropdown Menu part under another name (`MenubarItem` is `DropdownMenuItem`). Their props and data attributes (`color`, `icon`, `inset`, `data-highlighted`, and the rest) are listed on the Dropdown Menu page.
 
 ### Menubar
 
-| Prop   | Values           | Default | Note                                                     |
-| ------ | ---------------- | ------- | -------------------------------------------------------- |
-| `size` | `sm`, `md`, `lg` | `md`    | Bar height and type, as the control scale: `md` is 36px. |
+| Prop   | Description                                                                                    |
+| ------ | ---------------------------------------------------------------------------------------------- |
+| `size` | `sm`, `md`, `lg` <br /> Bar height and type, as the control scale: `md` is 36px. Default `md`. |
+
+| Data attribute          | Description                                   |
+| ----------------------- | --------------------------------------------- |
+| `data-orientation`      | `horizontal` or `vertical`.                   |
+| `data-modal`            | Present when the menubar is modal.            |
+| `data-has-submenu-open` | Present while any submenu in the bar is open. |
+
+### MenubarTrigger
+
+| Data attribute    | Description                                                            |
+| ----------------- | ---------------------------------------------------------------------- |
+| `data-popup-open` | Present while its menu is open. The trigger takes a neutral fill then. |
+| `data-pressed`    | Present while the trigger is pressed.                                  |
+| `data-disabled`   | Present when the trigger is disabled.                                  |
 
 ### MenubarContent
 
-The popup. It takes the `DropdownMenuContent` placement props with different defaults.
+The popup. It takes the `DropdownMenuContent` props and data attributes, with other defaults, and it sizes to its content rather than to the trigger.
 
-| Prop          | Values                                                         | Default  | Note                                          |
-| ------------- | -------------------------------------------------------------- | -------- | --------------------------------------------- |
-| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` | `bottom` | Which side of the trigger the popup opens on. |
-| `sideOffset`  | `number` or a function                                         | `8`      | Distance from the trigger in pixels.          |
-| `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the chosen side.              |
-| `alignOffset` | `number` or a function                                         | `-4`     | Offset along the alignment axis in pixels.    |
+| Prop          | Description                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` <br /> Which side of the trigger the popup opens on. Default `bottom`. |
+| `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `8`.                                                      |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                     |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `-4`.                                               |
+
+## Caveats
+
+- `MenubarTrigger` renders a `menuitem` inside the `menubar` role, not a `button`. Query it by that role.
+- In WebKit, axe reports `aria-required-children` on the menubar because Base UI's focus guards lack `aria-hidden`. It is an upstream issue with no component change and the gate runs in Chromium only (audit finding F-12).

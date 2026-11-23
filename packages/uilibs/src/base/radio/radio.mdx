@@ -1,32 +1,77 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './radio.stories'
 
 <Meta of={Stories} />
 
 # Radio
 
-A radio group for choosing one option, with its items.
+A group of radio buttons for choosing one option.
+
+## Import
+
+```jsx
+import { RadioGroup, RadioGroupItem } from 'uilibs/base/radio'
+```
 
 Built on Base UI [Radio](https://base-ui.com/react/components/radio) and [Radio Group](https://base-ui.com/react/components/radio-group). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { RadioGroup, RadioGroupItem } from 'uilibs/base/radio'
+- **RadioGroup:** the root. It holds the selected `value`.
+- **RadioGroupItem:** one option. It renders its own indicator and has a `value`.
 
-;<RadioGroup>
+```jsx
+<RadioGroup>
   <RadioGroupItem value='…' />
 </RadioGroup>
 ```
 
-`RadioGroupItem` renders its own indicator. It has no text, so put each item in a label or a horizontal `Field`, and name the group with `aria-label`.
+## Examples
 
-## Props
+### Sizes
 
-Both parts also take `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### With descriptions
+
+<Canvas of={Stories.Description} />
+
+### Choice card
+
+The label wraps the whole card, so clicking anywhere on it selects the option.
+
+<Canvas of={Stories.ChoiceCard} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### RadioGroup
+
+| Data attribute  | Description                         |
+| --------------- | ----------------------------------- |
+| `data-disabled` | Present when the group is disabled. |
 
 ### RadioGroupItem
 
-| Prop   | Values           | Default | Note                              |
-| ------ | ---------------- | ------- | --------------------------------- |
-| `size` | `sm`, `md`, `lg` | `md`    | Circle size: 12px, 16px, or 20px. |
+| Prop   | Description                                                         |
+| ------ | ------------------------------------------------------------------- |
+| `size` | `sm`, `md`, `lg` <br /> Circle size: 12, 16 or 20 px. Default `md`. |
+
+| Data attribute   | Description                                          |
+| ---------------- | ---------------------------------------------------- |
+| `data-checked`   | Present when the option is selected.                 |
+| `data-unchecked` | Present when the option is not selected.             |
+| `data-disabled`  | Present when the option is disabled.                 |
+| `data-readonly`  | Present when the option is read-only.                |
+| `data-required`  | Present when the option is required.                 |
+| `data-invalid`   | Present when a surrounding `Field` marks it invalid. |
+
+## Caveats
+
+- `RadioGroupItem` has no text. Put each item in a `label` or a horizontal `Field`, and name the group with `aria-label`.
+- An item renders a `span`, not an `input`, so `:disabled` never matches; style the disabled look with `[data-disabled]`.

@@ -1,31 +1,57 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './skeleton.stories'
 
 <Meta of={Stories} />
 
 # Skeleton
 
-A placeholder block shown while content loads.
+A pulsing placeholder block shown while content loads.
+
+## Import
+
+```jsx
+import { Skeleton } from 'uilibs/extra/skeleton'
+```
 
 A plain `div`. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Skeleton } from 'uilibs/extra/skeleton'
+- **Skeleton:** one empty block. It has no children; build the shape of the content from several blocks.
 
-;<Skeleton />
+```jsx
+<Skeleton />
 ```
 
-It has no children. Build the shape of the content from several blocks, sized with `width` and `height`.
+## Examples
 
-## Props
+### Shapes
+
+Size each block with `width`, `height`, and `borderRadius`.
+
+<Canvas of={Stories.Shapes} />
+
+### Card
+
+<Canvas of={Stories.Card} />
+
+### List
+
+<Canvas of={Stories.List} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Skeleton
 
-| Prop           | Values                                                         | Default  | Note                                                                    |
-| -------------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| `width`        | a count of `unit` steps (`0` to `20`) or a CSS length string   | none     | One step is 4px, so `12` is 48px. Unset leaves the width to the layout. |
-| `height`       | a count of `unit` steps (`0` to `20`) or a CSS length string   | none     | One step is 4px. Unset leaves the height to the layout.                 |
-| `borderRadius` | `xsmall`, `small`, `medium`, `large`, `xlarge`, `full`, `none` | `medium` | A corner radius token; `full` suits an avatar.                          |
-| `style`        | StyleX styles                                                  | none     | Replaces `className` and `style`.                                       |
+| Prop           | Description                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `width`        | `UnitStep`, `string` <br /> A count of `unit` steps (one step is 4px, so `12` is 48px) or a CSS length such as `'60%'`. Unset leaves the width to the layout. |
+| `height`       | `UnitStep`, `string` <br /> The same as `width`, for the height. Unset leaves the height to the layout.                                                       |
+| `borderRadius` | `xsmall`, `small`, `medium`, `large`, `xlarge`, `full`, `none` <br /> A corner radius token; `full` suits an avatar. Default `medium`.                        |
+
+## Caveats
+
+- A unit step must be one of `0`, `0.5`, `1`, `1.5`, `2` to `10`, then `12`, `14`, `16`, `18`, `20`; any other length is a string.
+- The block is an empty `div` with no role or name, so it tells assistive technology nothing about the loading state.

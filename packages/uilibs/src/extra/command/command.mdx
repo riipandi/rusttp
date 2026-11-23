@@ -1,15 +1,13 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './command.stories'
 
 <Meta of={Stories} />
 
 # Command
 
-A command palette: a search field over a filtered list of actions, rendered in place with no popup. To pick a form value, use Select, Combobox, or Autocomplete.
+A search field over a filtered list of actions, for a command palette; to pick a form value, use Select, Combobox, or Autocomplete instead.
 
-Built on Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete). `Command` sets `inline` and `open` itself, so it does not take them. Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -20,44 +18,106 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
   CommandShortcut
 } from 'uilibs/extra/command'
+```
 
-<Command items={…}>
-  <CommandInput />
-  <CommandEmpty />
-  <CommandList>
-    {(group) => (
-      <CommandGroup heading={…}>
-        <CommandItem value={…}>
-          <CommandShortcut />
-        </CommandItem>
-      </CommandGroup>
-    )}
-  </CommandList>
-</Command>
+Built on Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete) in `inline open` mode, so the list renders in place with no popup. Props not listed here pass through.
 
+## Anatomy
+
+- **CommandDialog:** an optional wrapper that shows the palette in a dialog. It renders the dialog, a hidden title and description, and no close button.
+- **Command:** the root. It takes `items` and wraps the parts in a `div`.
+- **CommandInput:** the search field. It renders the search icon and a separator under the field.
+- **CommandEmpty:** the message shown when no item matches.
+- **CommandList:** the results, in a scroll area. Its children are a render function over the filtered items.
+- **CommandGroup:** a labeled section of items. The label comes from `heading`.
+- **CommandItem:** one action.
+- **CommandShortcut:** a `span` for the shortcut text at the end of an item.
+- **CommandSeparator:** a line between groups.
+
+```jsx
 <CommandDialog open={…} onOpenChange={…}>
-  <Command items={…}>…</Command>
+  <Command items={…}>
+    <CommandInput />
+    <CommandEmpty />
+    <CommandList>
+      {(group) => (
+        <>
+          <CommandGroup heading={…}>
+            <CommandItem value={…}>
+              <CommandShortcut />
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+        </>
+      )}
+    </CommandList>
+  </Command>
 </CommandDialog>
 ```
 
-`items` goes on `Command`, and `CommandList` takes a render function over the filtered items. A search matches `itemToStringValue`, so include any keywords there. For groups, pass group objects that each hold their own `items`, and put a `CommandSeparator` between the groups in the render function. `CommandDialog` has no trigger: control it with `open` and `onOpenChange`. It renders the dialog and a hidden title and description itself, with no close button.
+## Examples
 
-## Props
+### Filter a list
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`. On `CommandInput` it styles the wrapper around the field, on `CommandList` the list inside the scroll area, and on `CommandDialog` the dialog content. `CommandShortcut` renders a `span`.
+<Canvas of={Stories.Playground} />
+
+### Groups
+
+Pass group objects that each hold their own `items`, and put a `CommandSeparator` between groups.
+
+<Canvas of={Stories.Groups} />
+
+### In a dialog
+
+`CommandDialog` has no trigger, so the story opens it with a button and a hotkey.
+
+<Canvas of={Stories.DialogHotkey} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Command` it styles the wrapping `div`, on `CommandInput` the wrapper around the field, on `CommandList` the list inside the scroll area, and on `CommandDialog` the dialog content.
 
 ### CommandDialog
 
-| Prop           | Values                          | Default                                           | Note                                                                               |
-| -------------- | ------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `labels`       | `{ title, description }`        | `Command Palette`, `Search for a command to run…` | Name and description of the dialog, read but not shown.                            |
-| `initialFocus` | `boolean`, a ref, or a function | the first focusable element                       | Where focus goes on open. Pass the container for a panel with no field to type in. |
-| `finalFocus`   | `boolean`, a ref, or a function | the element that opened the dialog                | Where focus goes on close. `false` leaves it where it is.                          |
+| Prop           | Description                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labels`       | `{ title, description }` <br /> The dialog's name and description, read by screen readers but not shown. Default `Command Palette` and `Search for a command to run…`.       |
+| `initialFocus` | `boolean`, a ref, or a function <br /> Where focus goes when the dialog opens. Pass the container for a panel with no field to type in. Default the first focusable element. |
+| `finalFocus`   | `boolean`, a ref, or a function <br /> Where focus goes when the dialog closes; `false` leaves it where it is. Default the element that opened the dialog.                   |
+
+| Data attribute        | Description                           |
+| --------------------- | ------------------------------------- |
+| `data-open`           | Present while the dialog is open.     |
+| `data-closed`         | Present once the dialog is closed.    |
+| `data-starting-style` | Present as the dialog begins to open. |
+| `data-ending-style`   | Present as the dialog closes.         |
+
+### CommandInput
+
+| Data attribute    | Description                              |
+| ----------------- | ---------------------------------------- |
+| `data-disabled`   | Present when the field is disabled.      |
+| `data-list-empty` | Present when no item matches the search. |
 
 ### CommandGroup
 
-| Prop      | Values      | Default | Note               |
-| --------- | ----------- | ------- | ------------------ |
-| `heading` | `ReactNode` | none    | The group's label. |
+| Prop      | Description                                                               |
+| --------- | ------------------------------------------------------------------------- |
+| `heading` | `ReactNode` <br /> The group's label. Nothing renders when it is omitted. |
+
+### CommandItem
+
+| Data attribute     | Description                            |
+| ------------------ | -------------------------------------- |
+| `data-highlighted` | Present while the item is highlighted. |
+| `data-disabled`    | Present when the item is disabled.     |
+
+## Caveats
+
+- `Command` sets `inline` and `open` itself and does not take them.
+- A search matches the text from `itemToStringValue`, so include any keywords there.
+- `CommandInput` draws no focus ring on purpose: the field is always focused while the palette is open, so the caret is the indicator.
+- `CommandShortcut` only shows text. It registers no hotkey; the story uses `@tanstack/react-hotkeys` for that.

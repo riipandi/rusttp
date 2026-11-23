@@ -1,26 +1,53 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './separator.stories'
 
 <Meta of={Stories} />
 
 # Separator
 
-A visual divider between pieces of content.
+A line that divides two pieces of content.
+
+## Import
+
+```jsx
+import { Separator } from 'uilibs/base/separator'
+```
 
 Built on Base UI [Separator](https://base-ui.com/react/components/separator). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Separator } from 'uilibs/base/separator'
+- **Separator:** the line. It has no children.
 
-;<Separator />
+```jsx
+<Separator />
 ```
 
-## Props
+## Examples
 
-| Prop    | Values                     | Default         | Note                                           |
-| ------- | -------------------------- | --------------- | ---------------------------------------------- |
-| `color` | `neutral-faded`, `neutral` | `neutral-faded` | The line; `neutral-faded` is the soft divider. |
-| `inset` | `boolean`                  | `false`         | Stops short of the container's edges.          |
-| `style` | StyleX styles              | none            | Replaces `className` and `style`.              |
+### Orientations
+
+<Canvas of={Stories.Orientations} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Inset
+
+<Canvas of={Stories.Inset} />
+
+## API reference
+
+`Separator` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Separator
+
+| Prop    | Description                                                                                                     |
+| ------- | --------------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral-faded`, `neutral` <br /> The line color; `neutral-faded` is the soft divider. Default `neutral-faded`. |
+| `inset` | `boolean` <br /> Stops short of the container's edges. Default `false`.                                         |
+
+| Data attribute     | Description                 |
+| ------------------ | --------------------------- |
+| `data-orientation` | `horizontal` or `vertical`. |

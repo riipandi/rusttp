@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './autocomplete.stories'
 
 <Meta of={Stories} />
@@ -7,9 +7,7 @@ import * as Stories from './autocomplete.stories'
 
 An input that suggests options as you type. Choose it over Combobox when any typed value is allowed and the list only suggests.
 
-Built on Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete). Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -22,10 +20,29 @@ import {
   AutocompleteItem,
   AutocompleteLabel,
   AutocompleteList,
-  AutocompleteSeparator
+  AutocompleteSeparator,
+  AutocompleteValue
 } from 'uilibs/base/autocomplete'
+```
 
-;<Autocomplete items={…}>
+Built on Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete). `Autocomplete`, `AutocompleteCollection` and `AutocompleteValue` are Base UI's parts, re-exported unchanged. Props not listed here pass through.
+
+## Anatomy
+
+- **Autocomplete:** the root. Pass `items` to it.
+- **AutocompleteInput:** the text input. Any typed value is accepted.
+- **AutocompleteContent:** the popup. It renders the portal and the positioner itself.
+- **AutocompleteEmpty:** the message shown when no item matches. It renders nothing, and takes no space, while results exist.
+- **AutocompleteList:** the list of suggestions. Its children can be a render function over the filtered items.
+- **AutocompleteItem:** one suggestion.
+- **AutocompleteSeparator:** a line between items or groups.
+- **AutocompleteGroup:** a set of items under one label.
+- **AutocompleteLabel:** the heading of a group.
+- **AutocompleteCollection:** renders the items of a group from a render function.
+- **AutocompleteValue:** renders the current input value, for custom displays. Not used in the tree below.
+
+```jsx
+<Autocomplete items={…}>
   <AutocompleteInput />
   <AutocompleteContent>
     <AutocompleteEmpty />
@@ -43,31 +60,96 @@ import {
 </Autocomplete>
 ```
 
-`AutocompleteContent` renders the portal and the positioner. `Autocomplete`, `AutocompleteCollection`, and `AutocompleteValue` are Base UI's parts, re-exported unchanged.
+## Examples
 
-## Props
+### Variants
 
-Every part except `Autocomplete`, `AutocompleteCollection`, and `AutocompleteValue` also takes `style`: StyleX styles that replace `className` and `style`. On `AutocompleteContent` it styles the popup.
+<Canvas of={Stories.Variants} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Auto highlight
+
+Set `autoHighlight` on `Autocomplete` to highlight the first match while typing.
+
+<Canvas of={Stories.AutoHighlight} />
+
+## API reference
+
+Every part except `Autocomplete`, `AutocompleteCollection` and `AutocompleteValue` also takes `style`: StyleX styles that replace `className` and `style`. On `AutocompleteContent` it lands on the popup. See [Styling](?path=/docs/styling--docs).
 
 ### AutocompleteInput
 
-| Prop      | Values                                  | Default   | Note                     |
-| --------- | --------------------------------------- | --------- | ------------------------ |
-| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type. |
-| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                 |
+| Prop      | Description                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------- |
+| `size`    | `sm`, `md`, `lg` <br /> Height and type: 32, 36 or 40 px. Default `md`.                     |
+| `variant` | `outline`, `faded`, `ghost`, `headless` <br /> The box around the input. Default `outline`. |
+
+| Data attribute    | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `data-popup-open` | Present while the popup is open.                      |
+| `data-disabled`   | Present when the input is disabled.                   |
+| `data-readonly`   | Present when the input is read-only.                  |
+| `data-invalid`    | Present when a surrounding `Field` marks it invalid.  |
+| `data-filled`     | Present when the input has a value, inside a `Field`. |
+| `data-focused`    | Present while the input has focus, inside a `Field`.  |
+| `data-list-empty` | Present when no item matches.                         |
 
 ### AutocompleteContent
 
-| Prop          | Values                                                         | Default  | Note                                        |
-| ------------- | -------------------------------------------------------------- | -------- | ------------------------------------------- |
-| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` | `bottom` | Which side of the anchor the popup sits on. |
-| `sideOffset`  | `number` or an offset function                                 | `6`      | Distance from the anchor, in px.            |
-| `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the anchor's edge.          |
-| `alignOffset` | `number` or an offset function                                 | `0`      | Offset along the alignment axis, in px.     |
-| `anchor`      | element, ref, virtual element, or a function returning one     | none     | What the popup positions against.           |
+| Prop          | Description                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `bottom`. |
+| `sideOffset`  | `number` or an offset function <br /> Distance from the anchor, in px. Default `6`.                                                 |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the anchor's edge. Default `start`.                                                 |
+| `alignOffset` | `number` or an offset function <br /> Offset along the alignment axis, in px. Default `0`.                                          |
+| `anchor`      | element, ref, virtual element or a function returning one <br /> What the popup positions against. Default the input.               |
+
+| Data attribute        | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `data-open`           | Present while the popup is open.                 |
+| `data-side`           | The side of the anchor the popup is on.          |
+| `data-align`          | `start`, `center` or `end`.                      |
+| `data-starting-style` | Present as the popup begins to open.             |
+| `data-ending-style`   | Present as the popup closes.                     |
+| `data-empty`          | Present when no item matches.                    |
+| `data-anchor-hidden`  | Present when the anchor is scrolled out of view. |
+
+| CSS variable         | Description                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| `--anchor-width`     | The anchor's width. The popup is set to this width.                                             |
+| `--anchor-height`    | The anchor's height.                                                                            |
+| `--available-width`  | Space between the anchor and the viewport edge, horizontally.                                   |
+| `--available-height` | Space between the anchor and the viewport edge, vertically. The popup's height is capped by it. |
+| `--transform-origin` | The point the popup grows from, for animations.                                                 |
 
 ### AutocompleteList
 
-| Prop       | Values                            | Default | Note                                             |
-| ---------- | --------------------------------- | ------- | ------------------------------------------------ |
-| `children` | static items or a render function | none    | The render function receives the filtered items. |
+| Prop       | Description                                                                               |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| `children` | static items or a render function <br /> The render function receives the filtered items. |
+
+### AutocompleteItem
+
+| Data attribute     | Description                            |
+| ------------------ | -------------------------------------- |
+| `data-highlighted` | Present while the item is highlighted. |
+| `data-disabled`    | Present when the item is disabled.     |
+
+### AutocompleteSeparator
+
+| Data attribute     | Description                 |
+| ------------------ | --------------------------- |
+| `data-orientation` | `horizontal` or `vertical`. |
+
+## Caveats
+
+- Name a standalone input with `aria-label` or a `FieldLabel`; a placeholder is not a name.
+- The CSS variables are set on the positioner that `AutocompleteContent` renders, so the popup and its children inherit them.
+- `AutocompleteContent` positions against the input unless you pass `anchor`.

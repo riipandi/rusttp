@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './description-list.stories'
 
 <Meta of={Stories} />
@@ -7,21 +7,45 @@ import * as Stories from './description-list.stories'
 
 Key-value rows in a definition list, separated by hairlines.
 
+## Import
+
+```jsx
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
+```
+
 Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): the parts render `dl`, `dt`, and `dd`, and `render` swaps the element. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
+- **DescriptionList:** the root `dl`. Each term and details pair takes one grid row.
+- **DescriptionTerm:** the muted key, a `dt`.
+- **DescriptionDetails:** the emphasized value, a `dd`.
 
-;<DescriptionList>
+```jsx
+<DescriptionList>
   <DescriptionTerm />
   <DescriptionDetails />
 </DescriptionList>
 ```
 
-Terms and details are direct children of the list, one pair per row, so the grid and separators line up. `DescriptionTerm` is the muted key and `DescriptionDetails` the emphasized value.
+## Examples
 
-## Props
+### Basic
 
-No part adds props beyond `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Playground} />
+
+### Badges as values
+
+<Canvas of={Stories.WithBadges} />
+
+### Inside a card
+
+<Canvas of={Stories.InACard} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). No part adds props or data attributes.
+
+## Caveats
+
+- Terms and details must be direct children of the list, or the grid layout and the separators do not line up.

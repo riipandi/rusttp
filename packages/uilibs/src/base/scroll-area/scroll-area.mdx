@@ -1,38 +1,74 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './scroll-area.stories'
 
 <Meta of={Stories} />
 
 # Scroll Area
 
-A styled scroll container with overlay scrollbars.
+A scroll container with overlay scrollbars that match the theme.
+
+## Import
+
+```jsx
+import { ScrollArea, ScrollBar } from 'uilibs/base/scroll-area'
+```
 
 Built on Base UI [Scroll Area](https://base-ui.com/react/components/scroll-area). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { ScrollArea } from 'uilibs/base/scroll-area'
+- **ScrollArea:** the root. It renders the viewport around your content, a `ScrollBar` for each axis, and the corner itself.
+- **ScrollBar:** one scrollbar with its thumb. `ScrollArea` renders it, so you do not place it.
 
-;<ScrollArea>{content}</ScrollArea>
+```jsx
+<ScrollArea>{content}</ScrollArea>
 ```
 
-`ScrollArea` renders the viewport, a `ScrollBar` for each axis, and the corner itself, so `ScrollBar` is not placed by hand.
+## Examples
 
-## Props
+### Orientations
 
-Both parts also take `style`: StyleX styles that replace `className` and `style`. On `ScrollArea` it lands on the root, not the viewport.
+<Canvas of={Stories.Orientations} />
+
+### Scrollbar display
+
+<Canvas of={Stories.Displays} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ScrollArea` it lands on the root, not the viewport.
 
 ### ScrollArea
 
-| Prop               | Values                                 | Default    | Note                                                                      |
-| ------------------ | -------------------------------------- | ---------- | ------------------------------------------------------------------------- |
-| `fade`             | `boolean`                              | `false`    | Masks the edges that can be scrolled towards.                             |
-| `orientation`      | `vertical`, `horizontal`, `both`       | `vertical` | Which scrollbars are drawn; `both` adds the corner.                       |
-| `scrollbarDisplay` | `visible`, `hover`, `scroll`, `hidden` | `hover`    | When the bar shows: always, on hover or scroll, only on scroll, or never. |
+| Prop               | Description                                                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `fade`             | `boolean` <br /> Masks the edges that can be scrolled towards. Default `false`.                                                          |
+| `orientation`      | `vertical`, `horizontal`, `both` <br /> Which scrollbars are drawn, one per axis named. Default `vertical`.                              |
+| `scrollbarDisplay` | `visible`, `hover`, `scroll`, `hidden` <br /> When the bar shows: always, on hover or scroll, only on scroll, or never. Default `hover`. |
+
+| Data attribute                                 | Description                                                                |
+| ---------------------------------------------- | -------------------------------------------------------------------------- |
+| `data-scrolling`                               | Present while the user scrolls.                                            |
+| `data-has-overflow-x`, `data-has-overflow-y`   | Present when the content is wider or taller than the viewport.             |
+| `data-overflow-x-start`, `data-overflow-x-end` | Present when there is more content before or after on the horizontal axis. |
+| `data-overflow-y-start`, `data-overflow-y-end` | Present when there is more content above or below.                         |
+
+| CSS variable                                                | Description             |
+| ----------------------------------------------------------- | ----------------------- |
+| `--scroll-area-corner-width`, `--scroll-area-corner-height` | The size of the corner. |
 
 ### ScrollBar
 
-| Prop      | Values                                 | Default | Note                                       |
-| --------- | -------------------------------------- | ------- | ------------------------------------------ |
-| `display` | `visible`, `hover`, `scroll`, `hidden` | `hover` | When the bar shows, as `scrollbarDisplay`. |
+| Prop      | Description                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------- |
+| `display` | `visible`, `hover`, `scroll`, `hidden` <br /> When the bar shows, as `scrollbarDisplay`. Default `hover`. |
+
+| Data attribute     | Description                                 |
+| ------------------ | ------------------------------------------- |
+| `data-orientation` | `vertical` or `horizontal`.                 |
+| `data-hovering`    | Present while the pointer is over the area. |
+| `data-scrolling`   | Present while the user scrolls.             |
+
+| CSS variable                                              | Description            |
+| --------------------------------------------------------- | ---------------------- |
+| `--scroll-area-thumb-width`, `--scroll-area-thumb-height` | The size of the thumb. |

@@ -48,8 +48,10 @@ function useThemeGlobal(): StorybookTheme {
   return theme
 }
 
-// A props table is wider than a phone: it scrolls inside the page instead of widening it.
-const docsTableCss = `.sbdocs table { display: block; max-width: 100%; overflow-x: auto; }`
+// A props table is wider than a phone: it scrolls inside the page instead of widening it. Inline
+// code in a paragraph or list wraps, so a long JSX snippet does not widen the page either.
+const docsTableCss = `.sbdocs table { display: block; max-width: 100%; overflow-x: auto; }
+.sbdocs :is(p, li) code { overflow-wrap: anywhere; white-space: normal; }`
 
 export function ThemedDocsContainer({
   children,

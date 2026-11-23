@@ -1,36 +1,81 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './textarea.stories'
 
 <Meta of={Stories} />
 
 # Textarea
 
-A multiline text control. Inside a `Field` it takes the label, description, error, and invalid state.
+A multiline text control; inside a `Field` it takes the label, description, error, and invalid state.
+
+## Import
+
+```jsx
+import { Field, FieldDescription, FieldError, FieldLabel } from 'uilibs/base/field'
+import { Textarea } from 'uilibs/extra/textarea'
+```
 
 Built on Base UI [Field](https://base-ui.com/react/components/field) `Field.Control`, rendered as a `textarea`. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Field, FieldError, FieldLabel } from 'uilibs/base/field'
-import { Textarea } from 'uilibs/extra/textarea'
+- **Textarea:** the `textarea`. It is the `Field` control, so it works alone or inside a `Field`.
+- **Field**, **FieldLabel**, **FieldDescription**, **FieldError:** the optional `Field` parts around it, from `uilibs/base/field`.
 
-;<Field>
+```jsx
+<Field>
   <FieldLabel />
   <Textarea />
+  <FieldDescription />
   <FieldError />
 </Field>
 ```
 
-Outside a `Field`, name the textarea with `aria-label`.
+## Examples
 
-## Props
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+The invalid state comes from the surrounding `Field`.
+
+<Canvas of={Stories.States} />
+
+### Auto resize
+
+<Canvas of={Stories.AutoResize} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Textarea
 
-| Prop         | Values                                  | Default   | Note                                              |
-| ------------ | --------------------------------------- | --------- | ------------------------------------------------- |
-| `size`       | `sm`, `md`, `lg`                        | `md`      | Minimum height and type.                          |
-| `variant`    | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                          |
-| `autoResize` | `boolean`                               | `false`   | Grows with its content instead of a fixed height. |
-| `style`      | StyleX styles                           | none      | Replaces `className` and `style`.                 |
+| Prop         | Description                                                                                                      |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `size`       | `sm`, `md`, `lg` <br /> The minimum height (56, 64, or 72px) and the type. Default `md`.                         |
+| `variant`    | `outline`, `faded`, `ghost`, `headless` <br /> The box. Default `outline`.                                       |
+| `autoResize` | `boolean` <br /> Grows with its content instead of a fixed height, and drops the resize handle. Default `false`. |
+
+| Data attribute  | Description                              |
+| --------------- | ---------------------------------------- |
+| `data-disabled` | Present when the field is disabled.      |
+| `data-invalid`  | Present when the field is invalid.       |
+| `data-valid`    | Present when the field is valid.         |
+| `data-touched`  | Present once the field has been touched. |
+| `data-dirty`    | Present once the value has changed.      |
+| `data-filled`   | Present while the field has a value.     |
+| `data-focused`  | Present while the textarea has focus.    |
+
+## Caveats
+
+- Outside a `Field`, name the textarea with `aria-label`.
+- `Textarea` has no `invalid` prop. Set `invalid` on the `Field`, or let its validation set it.
+- `autoResize` writes an inline `height` from the content, so a height in `style` does not apply.
+- `autoResize` measures on mount and on typing only. A `value` set from outside does not re-measure.
+- `faded`, `ghost`, and `headless` have no visible edge at rest, so give the textarea a visible label.

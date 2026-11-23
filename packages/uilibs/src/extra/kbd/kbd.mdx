@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './kbd.stories'
 
 <Meta of={Stories} />
@@ -7,20 +7,44 @@ import * as Stories from './kbd.stories'
 
 A keyboard key cap. `KbdGroup` joins several keys into one shortcut.
 
-Plain `kbd` elements, no Base UI parts. Props not listed here pass through. `Kbd` only draws the key; it registers no shortcut.
-
-## Anatomy
+## Import
 
 ```jsx
 import { Kbd, KbdGroup } from 'uilibs/extra/kbd'
+```
 
-;<KbdGroup>
+Plain `kbd` elements, no Base UI parts. Props not listed here pass through.
+
+## Anatomy
+
+- **KbdGroup:** optional for a single key. Lays several keys out in a row. It renders a `kbd`.
+- **Kbd:** one key cap, a `kbd`.
+
+```jsx
+<KbdGroup>
   <Kbd>…</Kbd>
 </KbdGroup>
 ```
 
-`KbdGroup` is optional for a single key. Both parts render a `kbd`, so a group is a `kbd` around `kbd` elements.
+## Examples
 
-## Props
+### Several keys
 
-No part adds props beyond `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Group} />
+
+### In a button
+
+<Canvas of={Stories.InButton} />
+
+### In a tooltip
+
+<Canvas of={Stories.InTooltip} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). No part adds props or data attributes.
+
+## Caveats
+
+- `Kbd` only draws the key; it registers no shortcut. The listener is separate, such as `@tanstack/react-hotkeys`.
+- `Kbd` sets `pointer-events: none` and `user-select: none`, so a key cap cannot be selected or clicked.

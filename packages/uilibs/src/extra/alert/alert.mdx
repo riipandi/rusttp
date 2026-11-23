@@ -1,45 +1,76 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './alert.stories'
 
 <Meta of={Stories} />
 
 # Alert
 
-A notice with an optional glyph, title, description, and action.
+An inline notice with an optional glyph, title, description, and action.
 
-A plain `div`. Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import { Alert, AlertAction, AlertDescription, AlertTitle } from 'uilibs/extra/alert'
+```
 
-;<Alert>
+Plain `div` and heading elements, not built on Base UI. Props not listed here pass through.
+
+## Anatomy
+
+- **Alert:** the root. It is a polite live region (`role='status'`) and draws the optional glyph.
+- **AlertTitle:** the heading, an `h5` unless `level` says otherwise.
+- **AlertDescription:** the body text.
+- **AlertAction:** optional slot for a dismiss or undo control, pinned to the top-right corner. It must be a direct child of `Alert`.
+
+```jsx
+<Alert>
   <AlertTitle />
   <AlertDescription />
   <AlertAction />
 </Alert>
 ```
 
-`AlertAction` must be a direct child of `Alert`. The root is a polite live region (`role="status"`): pass `role="alert"` for an error the user must act on at once, or `role={undefined}` for a notice that should not be announced.
+## Examples
 
-## Props
+### Colors
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`.
+<Canvas of={Stories.Colors} />
+
+### Layouts
+
+A glyph, an inline action, and a notice that runs out of its parent.
+
+<Canvas of={Stories.Layouts} />
+
+### Action
+
+<Canvas of={Stories.Action} />
+
+### Roles
+
+<Canvas of={Stories.Roles} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Alert
 
-| Prop     | Values                                                            | Default   | Note                                                                                                                     |
-| -------- | ----------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `color`  | `neutral`, `primary`, `positive`, `warning`, `critical`           | `neutral` | The role.                                                                                                                |
-| `icon`   | glyph component                                                   | none      | A glyph before the text, in the role's color.                                                                            |
-| `inline` | `boolean`                                                         | `false`   | Puts `AlertAction` on the row with the text; it wraps under the text when space is short.                                |
-| `bleed`  | `0`, `0.5`, `1`, `1.5`, `2` to `10`, `12`, `14`, `16`, `18`, `20` | none      | Runs the notice past its parent's padding by this many `unit` steps, with square corners; `0` only drops the side edges. |
+| Prop     | Description                                                                                                                                                                                           |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color`  | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role of the notice. Default `neutral`.                                                                                             |
+| `icon`   | glyph component <br /> A glyph before the text, in the role's color. The alert sizes it to 20 and hides it from assistive technology.                                                                 |
+| `inline` | `boolean` <br /> Puts `AlertAction` on the row with the text; it wraps under the text when space is short. Default `false`.                                                                           |
+| `bleed`  | `0`, `0.5`, `1`, `1.5`, `2` to `10`, `12`, `14`, `16`, `18`, `20` <br /> Runs the notice out past its parent's padding by this many `unit` steps, with square corners. `0` only drops the side edges. |
 
 ### AlertTitle
 
-Renders a heading element.
+| Prop    | Description                                                                       |
+| ------- | --------------------------------------------------------------------------------- |
+| `level` | `1`, `2`, `3`, `4`, `5`, `6` <br /> The heading level, `h1` to `h6`. Default `5`. |
 
-| Prop    | Values                       | Default | Note                                                       |
-| ------- | ---------------------------- | ------- | ---------------------------------------------------------- |
-| `level` | `1`, `2`, `3`, `4`, `5`, `6` | `5`     | The heading level, `h1` to `h6`; match the page's outline. |
+## Caveats
+
+- The default `role='status'` is announced politely when the alert changes. Pass `role='alert'` for an error the user must act on at once, or `role={undefined}` for a notice that is static on load.
+- `AlertAction` must be a direct child of `Alert`: `inline` moves only the actions it finds among the direct children.
+- `AlertTitle` is a real heading, so set `level` to fit the page's outline.

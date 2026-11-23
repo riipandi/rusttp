@@ -1,15 +1,13 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './table.stories'
 
 <Meta of={Stories} />
 
 # Table
 
-A data table in a scrollable, focusable region. For single-column rows, use Item instead.
+A data table in a scrollable, focusable region; for single-column rows, use Item instead.
 
-Built on the native table elements (`table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, `caption`). Props not listed here pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import {
@@ -22,8 +20,23 @@ import {
   TableHeader,
   TableRow
 } from 'uilibs/extra/table'
+```
 
-;<Table>
+Built on the native table elements (`table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, `caption`). Props not listed here pass through.
+
+## Anatomy
+
+- **Table:** the `table`. It renders a `div` with `role="region"` around itself, which scrolls sideways and takes focus.
+- **TableCaption:** the caption. It is optional and sits below the table.
+- **TableHeader:** the `thead`. It is optional.
+- **TableBody:** the `tbody`.
+- **TableFooter:** the `tfoot`. It is optional.
+- **TableRow:** a `tr`. It goes in a header, body, or footer.
+- **TableHead:** a `th`. It goes in a row.
+- **TableCell:** a `td`. It goes in a row.
+
+```jsx
+<Table>
   <TableCaption />
   <TableHeader>
     <TableRow>
@@ -43,33 +56,62 @@ import {
 </Table>
 ```
 
-`Table` renders the `div` with `role="region"` that scrolls sideways and takes focus; the `table` sits inside it. Header, footer, and caption are optional. Keep the native nesting: rows go in a header, body, or footer, and cells in rows.
+## Examples
 
-## Props
+### Borders
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`. On `Table` it styles the `table`; the region's `style` is not exposed.
+<Canvas of={Stories.Borders} />
+
+### Highlighted row
+
+<Canvas of={Stories.States} />
+
+### Alignment and width
+
+<Canvas of={Stories.Alignment} />
+
+### Scroll region
+
+A table wider than its column scrolls inside a named region a keyboard can reach.
+
+<Canvas of={Stories.ScrollRegion} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Table` it styles the `table`; the region's `style` is not exposed.
 
 ### Table
 
-| Prop           | Values       | Default | Note                                                                                           |
-| -------------- | ------------ | ------- | ---------------------------------------------------------------------------------------------- |
-| `border`       | `boolean`    | `false` | Draws an edge around the table, with rounded corners.                                          |
-| `columnBorder` | `boolean`    | `false` | Draws an edge between the columns.                                                             |
-| `labels`       | `{ region }` | `Table` | Name of the scroll region. Set it, or add a `TableCaption`, so the table says which one it is. |
+| Prop           | Description                                                                             |
+| -------------- | --------------------------------------------------------------------------------------- |
+| `border`       | `boolean` <br /> Draws an edge around the table, with rounded corners. Default `false`. |
+| `columnBorder` | `boolean` <br /> Draws an edge between the columns. Default `false`.                    |
+| `labels`       | `{ region: string }` <br /> The name of the scroll region. Default `Table`.             |
 
 ### TableRow
 
-| Prop          | Values    | Default | Note                                                                                    |
-| ------------- | --------- | ------- | --------------------------------------------------------------------------------------- |
-| `highlighted` | `boolean` | `false` | Tints the row. Visual only: pair it with `aria-selected` where the table is selectable. |
+| Prop          | Description                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `highlighted` | `boolean` <br /> Tints the row. Visual only; pair it with `aria-selected` where the table is selectable. Default `false`. |
 
-### TableHead and TableCell
+### TableHead
 
-Both take the same added props. They replace the native `align` and `width` attributes.
+Replaces the native `align` and `width` attributes.
 
-| Prop            | Values                                                       | Default            | Note                                 |
-| --------------- | ------------------------------------------------------------ | ------------------ | ------------------------------------ |
-| `align`         | `start`, `center`, `end`                                     | the cell's default | Horizontal alignment of the content. |
-| `verticalAlign` | `start`, `center`, `end`                                     | the cell's default | Vertical alignment of the content.   |
-| `width`         | a count of `unit` steps (`0` to `20`) or a CSS length string | none               | Column width.                        |
-| `minWidth`      | a count of `unit` steps (`0` to `20`)                        | none               | Minimum column width.                |
+| Prop            | Description                                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `align`         | `start`, `center`, `end` <br /> Horizontal alignment of the content. Unset keeps the cell's own default.              |
+| `verticalAlign` | `start`, `center`, `end` <br /> Vertical alignment of the content. Unset keeps the cell's own default.                |
+| `width`         | `UnitStep`, `string` <br /> The column width: a count of `unit` steps (`12` is 48px) or a CSS length such as `'30%'`. |
+| `minWidth`      | `UnitStep` <br /> The minimum column width, as a count of `unit` steps.                                               |
+
+### TableCell
+
+Takes the same props as `TableHead`.
+
+## Caveats
+
+- Name each table with `labels.region` or a `TableCaption`, so a screen reader can tell regions apart.
+- Give an icon-only header cell text wrapped in `visuallyHidden` from `uilibs/styles/utils.stylex`.
+- A unit step is one of `0`, `0.5`, `1`, `1.5`, `2` to `10`, then `12`, `14`, `16`, `18`, `20`; any other width is a string.
+- Cells do not wrap: `TableHead` and `TableCell` set `white-space: nowrap`, so long text widens the table and scrolls it.

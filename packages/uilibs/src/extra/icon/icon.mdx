@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './icon.stories'
 
 <Meta of={Stories} />
@@ -7,26 +7,58 @@ import * as Stories from './icon.stories'
 
 Sizes and colors an SVG asset. It inherits the parent's text color unless `color` is set.
 
+## Import
+
+```jsx
+import { Icon } from 'uilibs/extra/icon'
+```
+
 Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): it renders a `span`, and `render` swaps the element. Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Icon } from 'uilibs/extra/icon'
+- **Icon:** the root `span` that wraps the SVG. It is `aria-hidden` unless `render` is set.
 
-;<Icon svg={…} />
+```jsx
+<Icon svg={…} />
 ```
 
-`svg` takes a component, such as an icon from `@keyline-icons/react`, or an SVG element. The default `span` is `aria-hidden`, so an icon that carries meaning needs a text label beside it. With `render`, the element owns its accessibility semantics.
+## Examples
 
-## Props
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Fluid size
+
+With the default size of `1em`, the icon scales with the surrounding text.
+
+<Canvas of={Stories.FluidSize} />
+
+### Swap the element
+
+<Canvas of={Stories.Render} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Icon` it styles the root `span`.
 
 ### Icon
 
-| Prop        | Values                                                                               | Default             | Note                                               |
-| ----------- | ------------------------------------------------------------------------------------ | ------------------- | -------------------------------------------------- |
-| `svg`       | SVG component, SVG element, or `null`                                                | required            | The asset to draw.                                 |
-| `size`      | `number`, `string`                                                                   | `1em`               | A number is px; a string is any CSS size.          |
-| `color`     | `neutral`, `neutral-faded`, `primary`, `positive`, `warning`, `critical`, `disabled` | parent's text color | A foreground token.                                |
-| `autoWidth` | `boolean`                                                                            | `false`             | Uses the width of the SVG instead of a square box. |
-| `style`     | StyleX styles                                                                        | none                | Replaces `className` and `style`.                  |
+| Prop        | Description                                                                                                                                                    |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `svg`       | SVG component, SVG element, or `null` <br /> The asset to draw, such as an icon from `@keyline-icons/react`. Required.                                         |
+| `size`      | `number` or `string` <br /> A number is px; a string is any CSS size. Default `1em`.                                                                           |
+| `color`     | `neutral`, `neutral-faded`, `primary`, `positive`, `warning`, `critical`, `disabled` <br /> A foreground token. Inherits the parent's text color when omitted. |
+| `autoWidth` | `boolean` <br /> Uses the width of the SVG instead of a square box. Default `false`.                                                                           |
+
+## Caveats
+
+- The default `span` is `aria-hidden`, so an icon that carries meaning needs a text label beside it.
+- With `render`, `aria-hidden` is not set and the rendered element owns its accessibility semantics, such as an `aria-label` on a link.
+- `size` takes one value, not a responsive object. A number is px, not a multiple of a spacing token.
+- The component overrides the `display`, `height`, and `width` set on the SVG itself.

@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './collapsible.stories'
 
 <Meta of={Stories} />
@@ -7,21 +7,73 @@ import * as Stories from './collapsible.stories'
 
 One panel that expands and collapses.
 
+## Import
+
+```jsx
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'uilibs/base/collapsible'
+```
+
 Built on Base UI [Collapsible](https://base-ui.com/react/components/collapsible). Props not listed here pass through.
 
 ## Anatomy
 
-```jsx
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'uilibs/base/collapsible'
+- **Collapsible:** the root. It holds the open state.
+- **CollapsibleTrigger:** the button that toggles the panel. It has no styles of its own.
+- **CollapsibleContent:** the panel. It animates its height as it opens and closes. Base UI calls this part `Panel`.
 
-;<Collapsible>
+```jsx
+<Collapsible>
   <CollapsibleTrigger />
   <CollapsibleContent />
 </Collapsible>
 ```
 
-`CollapsibleTrigger` has no styles of its own: bring your own, for example `render={<Button />}`. `CollapsibleContent` animates open and closed.
+## Examples
 
-## Props
+### Toggle a panel
 
-No part adds props. `CollapsibleContent` also takes `style`: StyleX styles that replace `className` and `style`. `Collapsible` and `CollapsibleTrigger` are the Base UI parts unchanged.
+<Canvas of={Stories.Playground} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Nested folders
+
+<Canvas of={Stories.FileTree} />
+
+## API reference
+
+Only `CollapsibleContent` takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). `Collapsible` and `CollapsibleTrigger` are the Base UI parts unchanged. No part adds props.
+
+### Collapsible
+
+| Data attribute | Description                        |
+| -------------- | ---------------------------------- |
+| `data-open`    | Present while the panel is open.   |
+| `data-closed`  | Present while the panel is closed. |
+
+### CollapsibleTrigger
+
+| Data attribute    | Description                      |
+| ----------------- | -------------------------------- |
+| `data-panel-open` | Present while the panel is open. |
+
+### CollapsibleContent
+
+| Data attribute        | Description                          |
+| --------------------- | ------------------------------------ |
+| `data-open`           | Present while the panel is open.     |
+| `data-closed`         | Present while the panel is closed.   |
+| `data-starting-style` | Present as the panel begins to open. |
+| `data-ending-style`   | Present as the panel closes.         |
+
+| CSS variable                 | Description                           |
+| ---------------------------- | ------------------------------------- |
+| `--collapsible-panel-height` | The panel's height, for animating it. |
+| `--collapsible-panel-width`  | The panel's width.                    |
+
+## Caveats
+
+- Bring your own trigger look, for example `render={<Button />}`: `CollapsibleTrigger` is unstyled.
+- The panel hides overflow while it animates, so content that must spill outside it, such as a shadow, gets clipped.

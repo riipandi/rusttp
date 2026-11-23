@@ -1,35 +1,62 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './loader-text.stories'
 
 <Meta of={Stories} />
 
 # LoaderText
 
-A line of text with a shimmer while work is in progress. When the work completes, it can cross-fade to a second line.
+A line of text with a shimmer while work is in progress, which can cross-fade to a second line when the work completes.
 
-Renders this library's `Text`. It takes only the props below; others do not pass through.
-
-## Anatomy
+## Import
 
 ```jsx
 import { LoaderText } from 'uilibs/extra/loader-text'
-
-;<LoaderText>Text</LoaderText>
 ```
 
-With `icon`, the glyph sits before the text. Without `completedText`, `completed` only stops the shimmer. With it, both texts stay mounted and cross-fade.
+Renders this library's `Text`. It takes only the props below; other props do not pass through.
 
-## Props
+## Anatomy
+
+- **LoaderText:** the line. It renders an optional icon, the loading text, and the completed text when one is given.
+
+```jsx
+<LoaderText />
+```
+
+## Examples
+
+### Loading and completed
+
+<Canvas of={Stories.States} />
+
+### Complete on demand
+
+Set `completed` from state to run the cross-fade.
+
+<Canvas of={Stories.Completed} />
+
+### Text only
+
+<Canvas of={Stories.WithoutIcon} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### LoaderText
 
-| Prop            | Values                                                                                                                                            | Default  | Note                                                              |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
-| `children`      | node                                                                                                                                              | none     | The text while loading.                                           |
-| `variant`       | `headline-1`, `headline-2`, `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2`, or one value per breakpoint | `body-2` | Type style, as in `Text`.                                         |
-| `weight`        | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black`, or one value per breakpoint                                               | none     | Font weight, as in `Text`.                                        |
-| `color`         | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled`                                                              | none     | Text color, as in `Text`.                                         |
-| `icon`          | glyph component                                                                                                                                   | none     | A glyph before the text, sized to the text.                       |
-| `completedText` | node                                                                                                                                              | none     | Text that cross-fades with `children` once `completed` is `true`. |
-| `completed`     | `boolean`                                                                                                                                         | `false`  | Stops the shimmer.                                                |
-| `style`         | StyleX styles                                                                                                                                     | none     | Replaces `className` and `style`.                                 |
+| Prop            | Description                                                                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `children`      | `ReactNode` <br /> The text shown while loading.                                                                                                                |
+| `variant`       | `headline-1` to `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2` <br /> The type style, as on `Text`. Default `body-2`. |
+| `weight`        | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black` <br /> The font weight, as on `Text`.                                                    |
+| `color`         | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled` <br /> The text color, as on `Text`.                                       |
+| `icon`          | `ComponentType<IconProps>` <br /> A glyph before the text, sized to it.                                                                                         |
+| `completedText` | `ReactNode` <br /> The text that cross-fades with `children` once `completed` is `true`.                                                                        |
+| `completed`     | `boolean` <br /> Stops the shimmer. Default `false`.                                                                                                            |
+
+## Caveats
+
+- Without `completedText`, `completed` only stops the shimmer; nothing replaces the text.
+- Both texts stay mounted for the cross-fade, and only the current one is visible.
+- `variant` and `weight` also accept one value per breakpoint, as on `Text`.
