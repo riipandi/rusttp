@@ -1,0 +1,12 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './description-list.stories'
+
+<Meta of={Stories} />
+
+# DescriptionList
+
+A definition list of key-value rows with hairline separators.
+
+Each part renders its native element through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through.
+
+`DescriptionList` (`dl`), `DescriptionTerm` (`dt`, the muted key), and `DescriptionDetails` (`dd`, the emphasized value) take only `style` (StyleX styles that replace `className` and `style`). Keep terms and details as direct children of the list so the grid and separators line up.

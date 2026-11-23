@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './skeleton.stories'
+
+<Meta of={Stories} />
+
+# Skeleton
+
+A placeholder block shown while content loads.
+
+Renders a `div`; its other props pass through.
+
+## Skeleton
+
+| Prop           | Values                                                         | Default  | Note                                           |
+| -------------- | -------------------------------------------------------------- | -------- | ---------------------------------------------- |
+| `width`        | a count of `unit` steps (`0` to `20`) or a CSS length string   | none     | Unset leaves the width to the layout.          |
+| `height`       | a count of `unit` steps (`0` to `20`) or a CSS length string   | none     | Unset leaves the height to the layout.         |
+| `borderRadius` | `xsmall`, `small`, `medium`, `large`, `xlarge`, `full`, `none` | `medium` | A corner radius token; `full` suits an avatar. |
+| `style`        | StyleX styles                                                  | none     | Replaces the `className` and `style` props.    |

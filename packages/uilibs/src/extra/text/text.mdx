@@ -1,0 +1,27 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './text.stories'
+
+<Meta of={Stories} />
+
+# Text
+
+Typography for body copy, captions, and headings. `variant`, `weight`, and `align` take one value or a value per breakpoint.
+
+Renders a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. The `featured-*` variants render `h1` to `h6` by default. Its other props pass through.
+
+## Text
+
+A responsive value is one value for every viewport, or an object with the breakpoint keys `s`, `m`, `l`, and `xl`, mobile first.
+
+| Prop         | Values                                                                                                                           | Default  | Note                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------- |
+| `variant`    | `headline-1`, `headline-2`, `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2`; responsive | `body-1` | Size and line height.                         |
+| `color`      | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled`                                             | none     | The text color; unset inherits.               |
+| `weight`     | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black`; responsive                                               | none     | Overrides the weight of the variant.          |
+| `align`      | `start`, `center`, `end`; responsive                                                                                             | none     | Text alignment.                               |
+| `decoration` | `underline`, `line-through`                                                                                                      | none     | Text decoration.                              |
+| `maxLines`   | `number`                                                                                                                         | none     | Clamps the text to this many lines.           |
+| `wrap`       | `balance`, `nowrap`                                                                                                              | none     | Balances the lines or keeps them on one line. |
+| `monospace`  | `boolean`                                                                                                                        | `false`  | Uses the monospace font.                      |
+| `numeric`    | `boolean`                                                                                                                        | `false`  | Uses tabular figures.                         |
+| `style`      | StyleX styles                                                                                                                    | none     | Replaces the `className` and `style` props.   |

@@ -1,0 +1,27 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './resizable.stories'
+
+<Meta of={Stories} />
+
+# Resizable
+
+Panels that the user resizes by dragging the handle between them.
+
+Built on [react-resizable-panels](https://github.com/bvaughn/react-resizable-panels). Its other props pass through.
+
+`ResizablePanel` takes only `style` (StyleX styles that replace `className` and `style`), applied to an inner element so padding never stops the panel from shrinking to zero. Add `overflow` there to scroll within the panel.
+
+## ResizablePanelGroup
+
+| Prop          | Values                   | Default      | Note                                                                     |
+| ------------- | ------------------------ | ------------ | ------------------------------------------------------------------------ |
+| `orientation` | `horizontal`, `vertical` | `horizontal` | The direction the panels flow. `horizontal` is a row with vertical bars. |
+| `style`       | StyleX styles            | none         | Replaces the `className` and `style` props.                              |
+
+## ResizableHandle
+
+| Prop         | Values                      | Default | Note                                                                      |
+| ------------ | --------------------------- | ------- | ------------------------------------------------------------------------- |
+| `variant`    | `pill`, `spring`, `capsule` | `pill`  | The look of the grip shown by `withHandle`; `capsule` also boxes the bar. |
+| `withHandle` | `boolean`                   | `false` | Shows a grip on the bar.                                                  |
+| `style`      | StyleX styles               | none    | Replaces the `className` and `style` props.                               |

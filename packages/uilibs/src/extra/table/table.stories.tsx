@@ -1,7 +1,7 @@
 import { MoreVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   DropdownMenu,
@@ -262,9 +262,12 @@ export const Borders: Story = {
     for (const edge of edges) {
       const bordered = edge === 'border' || edge === 'both'
       const columns = edge === 'columnBorder' || edge === 'both'
-      await expect(getComputedStyle(region(edge)).borderTopWidth).toBe(bordered ? '1px' : '0px')
+      // One full-gate run read the edges before the stylesheet had applied them (dark, under load).
+      await waitFor(() =>
+        expect(getComputedStyle(region(edge)).borderTopWidth).toBe(bordered ? '1px' : '0px')
+      )
       // The edge sits between columns: every cell but the last in its row.
-      await expect(cell(edge, 0)).toBe(columns ? '1px' : '0px')
+      await waitFor(() => expect(cell(edge, 0)).toBe(columns ? '1px' : '0px'))
       await expect(cell(edge, 2)).toBe('0px')
     }
   }

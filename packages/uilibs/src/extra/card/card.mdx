@@ -1,0 +1,21 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './card.stories'
+
+<Meta of={Stories} />
+
+# Card
+
+A surface that groups related content, with a header, content, and footer.
+
+Renders a `div`; its other props pass through.
+
+`CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent`, and `CardFooter` take only `style` (StyleX styles that replace `className` and `style`). `CardTitle` renders an `h3`, `CardDescription` a `p`, and the others a `div`. `CardAction` is pinned to the top-right corner of the header.
+
+## Card
+
+| Prop       | Values        | Default | Note                                                                                   |
+| ---------- | ------------- | ------- | -------------------------------------------------------------------------------------- |
+| `size`     | `sm`, `md`    | `md`    | Padding and gaps.                                                                      |
+| `selected` | `boolean`     | `false` | A primary edge and `data-selected`. Name the choice for assistive technology yourself. |
+| `raised`   | `boolean`     | `false` | Lifts the card with the raised shadow.                                                 |
+| `style`    | StyleX styles | none    | Replaces the `className` and `style` props.                                            |

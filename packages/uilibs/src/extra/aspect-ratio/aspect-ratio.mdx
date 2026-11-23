@@ -1,0 +1,17 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './aspect-ratio.stories'
+
+<Meta of={Stories} />
+
+# Aspect Ratio
+
+A box that holds a fixed width-to-height ratio, for an image, a video, or a map.
+
+Renders a `div`; its other props pass through.
+
+## AspectRatio
+
+| Prop    | Values        | Default  | Note                                              |
+| ------- | ------------- | -------- | ------------------------------------------------- |
+| `ratio` | `number`      | required | Width divided by height, such as `16 / 9` or `1`. |
+| `style` | StyleX styles | none     | Replaces the `className` and `style` props.       |

@@ -1,0 +1,29 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './input-phone.stories'
+
+<Meta of={Stories} />
+
+# Input Phone
+
+A phone number input with a searchable country selector.
+
+Wraps [react-phone-number-input](https://www.npmjs.com/package/react-phone-number-input), with the country selector drawn as a Base UI [Combobox](https://base-ui.com/react/components/combobox). Its other props pass through.
+
+## InputPhone
+
+| Prop                     | Values                                        | Default                                                  | Note                                                           |
+| ------------------------ | --------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
+| `value`                  | E.164 string, such as `+12135551234`          | none                                                     | Use it for a controlled field.                                 |
+| `onChange`               | `(value) => void`                             | none                                                     | Called with the E.164 value, or `''` when cleared.             |
+| `defaultCountry`         | country code                                  | `US`                                                     | The country shown first.                                       |
+| `countries`              | country codes                                 | all countries                                            | Limits the country list.                                       |
+| `onCountryChange`        | `(country) => void`                           | none                                                     | Called when the selected country changes.                      |
+| `addInternationalOption` | `boolean`                                     | `true`                                                   | Shows the "International" entry in the list.                   |
+| `withCountrySelect`      | `boolean`                                     | `true`                                                   | Set `false` for a digits-only field.                           |
+| `size`                   | `sm`, `md`, `lg`                              | `md`                                                     | Control height and type.                                       |
+| `variant`                | `outline`, `faded`, `ghost`, `headless`       | `outline`                                                | The box.                                                       |
+| `labels`                 | `{ selectCountry, searchCountry, noCountry }` | `Select country`, `Search country…`, `No country found.` | Names of the country button, the search, and the empty result. |
+| `invalid`                | `boolean`                                     | `false`                                                  | Marks the field as invalid.                                    |
+| `disabled`               | `boolean`                                     | none                                                     | Disables the input and the country selector.                   |
+| `readOnly`               | `boolean`                                     | none                                                     | Makes the field read-only.                                     |
+| `style`                  | StyleX styles                                 | none                                                     | Styles the group; replaces the `className` and `style` props.  |

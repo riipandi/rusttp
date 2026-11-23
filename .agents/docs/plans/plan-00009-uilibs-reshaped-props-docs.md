@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T23:00:00+07:00
+updated: 2026-11-24T00:10:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -29,8 +29,8 @@ phases:
       note: 'Written by four parallel subagents (34 folders), merged and checked here. index.json holds 35 base docs entries, one per Base Components title, each with storiesImports. A heuristic scratch diff of table rows against the component sources found no listed prop missing from the code; the only unmatched row is side on MenubarContent, which it inherits from DropdownMenuContent. Convention settled in the pass: a part whose only added prop is style is named in one sentence, not given a table. Five spot pages (combobox, dropdown-menu, tabs, dialog, toast) rendered at 1440 and 390 px in both themes with no page overflow.'
     - id: 7
       title: Component docs - extra
-      status: pending
-      note: ''
+      status: done
+      note: 'Written by five parallel subagents (29 folders) and merged here. index.json holds 29 Extra Components docs entries plus one Data Grid entry (the data grid has no single stories file, so its page attaches to data-grid-basics.stories under Data Grid/Basics); the folder with the Extra Components/Icons stories shares the icon page. The scratch diff found no listed prop missing from the code. Spot pages (data-grid, kanban, table, calendar, input-phone) rendered at 1440 and 390 px in both themes with no page overflow. The data grid page marks props nothing reads as not read; filed as issue-00004 (one is a backwards-compatibility shim, border on DataGridContainer). Gate 942 of 942; one earlier run failed Table Borders in dark under load (a phase 2 story read the edges before the stylesheet applied them; it passes alone three times and in the full run), so its play now waits for the edges.'
     - id: 8
       title: Docs sync and agent docs sync
       status: pending

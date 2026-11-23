@@ -1,0 +1,49 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './input-group.stories'
+
+<Meta of={Stories} />
+
+# Input Group
+
+An input or textarea with addons, buttons, and text inside one box.
+
+`InputGroup`, `InputGroupAddon`, and `InputGroupText` render a `div`, a `div`, and a `span`; their other props pass through. `InputGroupInput` takes the `Input` props and `InputGroupTextarea` the `Textarea` props. `InputGroupButton` takes the `Button` props.
+
+`InputGroupText` takes only `style` (StyleX styles that replace `className` and `style`).
+
+## InputGroup
+
+| Prop      | Values                                  | Default   | Note                                                                 |
+| --------- | --------------------------------------- | --------- | -------------------------------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Height and type of the input; the input and textarea inside read it. |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                                             |
+| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props.                          |
+
+## InputGroupAddon
+
+| Prop    | Values                                                   | Default        | Note                                                               |
+| ------- | -------------------------------------------------------- | -------------- | ------------------------------------------------------------------ |
+| `align` | `inline-start`, `inline-end`, `block-start`, `block-end` | `inline-start` | Which side of the input it sits on. Clicking it focuses the input. |
+| `style` | StyleX styles                                            | none           | Replaces the `className` and `style` props.                        |
+
+## InputGroupButton
+
+| Prop      | Values                               | Default | Note                                                    |
+| --------- | ------------------------------------ | ------- | ------------------------------------------------------- |
+| `variant` | `solid`, `faded`, `outline`, `ghost` | `ghost` | The `Button` fill.                                      |
+| `size`    | `xs`, `icon-xs`, `icon-sm`           | `xs`    | The `icon-*` sizes are square and need an `aria-label`. |
+| `style`   | StyleX styles                        | none    | Replaces the `className` and `style` props.             |
+
+## InputGroupInput
+
+| Prop    | Values           | Default          | Note                                        |
+| ------- | ---------------- | ---------------- | ------------------------------------------- |
+| `size`  | `sm`, `md`, `lg` | the group's size | Control height and type.                    |
+| `style` | StyleX styles    | none             | Replaces the `className` and `style` props. |
+
+## InputGroupTextarea
+
+| Prop    | Values           | Default          | Note                                        |
+| ------- | ---------------- | ---------------- | ------------------------------------------- |
+| `size`  | `sm`, `md`, `lg` | the group's size | Minimum height and type.                    |
+| `style` | StyleX styles    | none             | Replaces the `className` and `style` props. |

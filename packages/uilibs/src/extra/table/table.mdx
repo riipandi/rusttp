@@ -1,0 +1,42 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './table.stories'
+
+<Meta of={Stories} />
+
+# Table
+
+A data table in a scrollable, focusable region.
+
+Each part renders its native table element (`table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, `caption`); its other props pass through.
+
+`TableHeader`, `TableBody`, `TableFooter`, and `TableCaption` take only `style` (StyleX styles that replace `className` and `style`).
+
+## Table
+
+The `table` sits in a `div` with `role="region"` that scrolls sideways and takes focus. The region's `style` is not exposed; `style` applies to the `table`. Give the table a `caption` or `labels.region` to say which table it is.
+
+| Prop           | Values        | Default | Note                                                  |
+| -------------- | ------------- | ------- | ----------------------------------------------------- |
+| `border`       | `boolean`     | `false` | Draws an edge around the table, with rounded corners. |
+| `columnBorder` | `boolean`     | `false` | Draws an edge between the columns.                    |
+| `labels`       | `{ region }`  | `Table` | Name of the scroll region.                            |
+| `style`        | StyleX styles | none    | Replaces the `className` and `style` props.           |
+
+## TableRow
+
+| Prop          | Values        | Default | Note                                                                                    |
+| ------------- | ------------- | ------- | --------------------------------------------------------------------------------------- |
+| `highlighted` | `boolean`     | `false` | Tints the row. Visual only: pair it with `aria-selected` where the table is selectable. |
+| `style`       | StyleX styles | none    | Replaces the `className` and `style` props.                                             |
+
+## TableHead and TableCell
+
+Both take the same added props. They replace the native `align` and `width` attributes.
+
+| Prop            | Values                                                       | Default            | Note                                        |
+| --------------- | ------------------------------------------------------------ | ------------------ | ------------------------------------------- |
+| `align`         | `start`, `center`, `end`                                     | the cell's default | Horizontal alignment of the content.        |
+| `verticalAlign` | `start`, `center`, `end`                                     | the cell's default | Vertical alignment of the content.          |
+| `width`         | a count of `unit` steps (`0` to `20`) or a CSS length string | none               | Column width.                               |
+| `minWidth`      | a count of `unit` steps (`0` to `20`)                        | none               | Minimum column width.                       |
+| `style`         | StyleX styles                                                | none               | Replaces the `className` and `style` props. |

@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './sortable.stories'
+
+<Meta of={Stories} />
+
+# Sortable
+
+A list or grid whose items the user reorders by drag and drop, with the pointer, touch, or the keyboard.
+
+Built on [dnd-kit](https://docs.dndkit.com). `Sortable`, `SortableItem`, and `SortableItemHandle` render a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Their other props pass through. `SortableItemContext` is exported for custom handles.
+
+## Sortable
+
+The root owns the order: it calls `onValueChange` with the reordered array after a drop.
+
+| Prop            | Values                                                                                                  | Default                                          | Note                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| `value`         | `T[]`                                                                                                   | required                                         | The items in their current order.                                                     |
+| `onValueChange` | `(value: T[]) => void`                                                                                  | required                                         | Called with the reordered items after a drop.                                         |
+| `getItemValue`  | `(item: T) => string`                                                                                   | required                                         | The id of an item. Ids must be unique.                                                |
+| `children`      | `ReactNode`                                                                                             | required                                         | The `SortableItem` children, each with a `value` matching an id.                      |
+| `strategy`      | `vertical`, `horizontal`, `grid`                                                                        | `vertical`                                       | How items move aside while one is dragged.                                            |
+| `onMove`        | `(event: { event, activeIndex, overIndex }) => void`                                                    | none                                             | Takes over the reorder: when set, `onValueChange` and `onValueCommit` are not called. |
+| `onValueCommit` | `(value: T[], meta: { event, activeIndex, overIndex, previousValue }) => void`                          | none                                             | Called after `onValueChange` with the move's details.                                 |
+| `onDragStart`   | dnd-kit `DragStartEvent` handler                                                                        | none                                             | Called when a drag starts.                                                            |
+| `onDragEnd`     | dnd-kit `DragEndEvent` handler                                                                          | none                                             | Called when a drag ends, before the reorder.                                          |
+| `onDragCancel`  | dnd-kit `DragCancelEvent` handler                                                                       | none                                             | Called when a drag is cancelled.                                                      |
+| `accessibility` | dnd-kit `DndContext` `accessibility` prop                                                               | none                                             | Overrides the screen reader texts that `labels` sets.                                 |
+| `modifiers`     | dnd-kit `Modifiers`                                                                                     | none                                             | Applied to the drag overlay.                                                          |
+| `labels`        | `{ instructions, pickedUp(name), movedOver(name, over), dropped(name, over), cancelled(name), handle }` | English sentences; `handle` is `Drag to reorder` | Screen reader texts and the name of the drag handle.                                  |
+| `style`         | StyleX styles                                                                                           | none                                             | Replaces the `className` and `style` props.                                           |
+
+## SortableItem
+
+| Prop       | Values        | Default  | Note                                        |
+| ---------- | ------------- | -------- | ------------------------------------------- |
+| `value`    | `string`      | required | The item's id, matching `getItemValue`.     |
+| `disabled` | `boolean`     | none     | Keeps the item from being dragged.          |
+| `style`    | StyleX styles | none     | Replaces the `className` and `style` props. |
+
+## SortableItemHandle
+
+The drag control. With a handle inside, the item is only the row and the handle starts the drag.
+
+| Prop     | Values        | Default | Note                                                 |
+| -------- | ------------- | ------- | ---------------------------------------------------- |
+| `cursor` | `boolean`     | `true`  | Shows the grabbing cursor while the item is dragged. |
+| `style`  | StyleX styles | none    | Replaces the `className` and `style` props.          |
+
+## SortableOverlay
+
+Renders the dragged item's clone in a portal, for a custom look. It takes the dnd-kit `DragOverlay` props except `style`; its other props pass through.
+
+| Prop       | Values                                            | Default | Note                                                                   |
+| ---------- | ------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| `children` | `ReactNode` or `(params: { value }) => ReactNode` | none    | The overlay content; the function receives the id of the dragged item. |

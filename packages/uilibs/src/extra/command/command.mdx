@@ -1,0 +1,30 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './command.stories'
+
+<Meta of={Stories} />
+
+# Command
+
+A command palette: a search field over a filtered list that renders in place, with no popup.
+
+Wraps Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete) in its `inline` and `open` mode, so `Command` does not take those two props. Its other props pass through, and `items` goes on `Command`.
+
+`Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandItem`, `CommandSeparator`, and `CommandShortcut` take only `style` (StyleX styles that replace `className` and `style`). `CommandList` also takes a render function over the filtered items as `children`, and `CommandShortcut` renders a `span`.
+
+## CommandDialog
+
+Shows the palette in a dialog. It wraps the library's Dialog root, so its other props pass through.
+
+| Prop           | Values                          | Default                                           | Note                                                                               |
+| -------------- | ------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `labels`       | `{ title, description }`        | `Command Palette`, `Search for a command to run…` | Name and description of the dialog, read but not shown.                            |
+| `initialFocus` | `boolean`, a ref, or a function | the first focusable element                       | Where focus goes on open. Pass the container for a panel with no field to type in. |
+| `finalFocus`   | `boolean`, a ref, or a function | the element that opened the dialog                | Where focus goes on close. `false` leaves it where it is.                          |
+| `style`        | StyleX styles                   | none                                              | Styles the dialog content; replaces the `className` and `style` props.             |
+
+## CommandGroup
+
+| Prop      | Values        | Default | Note                                        |
+| --------- | ------------- | ------- | ------------------------------------------- |
+| `heading` | `ReactNode`   | none    | The group's label.                          |
+| `style`   | StyleX styles | none    | Replaces the `className` and `style` props. |

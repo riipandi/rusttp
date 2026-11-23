@@ -1,0 +1,81 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './kanban.stories'
+
+<Meta of={Stories} />
+
+# Kanban
+
+A board of columns whose items and columns can be dragged to reorder. You own the data: the board reports each change through `onValueChange`.
+
+Built on [dnd-kit](https://docs.dndkit.com). Its parts render a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element, and their other props pass through. Item ids must be unique across every column.
+
+`KanbanBoard` takes only `style` (StyleX styles that replace `className` and `style`).
+
+## Kanban
+
+The root. It holds the state of a drag and provides it to the other parts.
+
+| Prop              | Values                                                                    | Default                        | Note                                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `value`           | `Record<string, T[]>`                                                     | required                       | The items of each column, keyed by column id. The key order is the column order.                                           |
+| `onValueChange`   | `(value) => void`                                                         | required                       | Called with the new value as items and columns move.                                                                       |
+| `getItemValue`    | `(item) => string`                                                        | required                       | The id of an item.                                                                                                         |
+| `children`        | node                                                                      | required                       | The board and the overlay.                                                                                                 |
+| `onMove`          | `(event: KanbanMoveEvent) => void`                                        | none                           | Takes over item moves: the board no longer reorders items itself and reports the drop here.                                |
+| `onValueCommit`   | `(value, meta: KanbanCommitMeta) => void`                                 | none                           | Called once when a drop changed the order, with the previous value.                                                        |
+| `restoreOnCancel` | `boolean`                                                                 | `false`                        | Restores the value from the start of the drag when it is cancelled.                                                        |
+| `onDragStart`     | `(event: DragStartEvent) => void`                                         | none                           | A dnd-kit event.                                                                                                           |
+| `onDragEnd`       | `(event: DragEndEvent) => void`                                           | none                           | A dnd-kit event.                                                                                                           |
+| `onDragCancel`    | `(event: DragCancelEvent) => void`                                        | none                           | A dnd-kit event.                                                                                                           |
+| `accessibility`   | dnd-kit `accessibility` prop                                              | none                           | Overrides the announcements and instructions built from `labels`.                                                          |
+| `modifiers`       | dnd-kit `Modifiers`                                                       | none                           | Restricts or transforms the drag movement.                                                                                 |
+| `labels`          | `{ columnHandle, instructions, pickedUp, movedOver, dropped, cancelled }` | English text, `Reorder column` | Name of the column handle and the screen reader announcements. An item is named by its `aria-label` or text, never its id. |
+| `style`           | StyleX styles                                                             | none                           | Replaces the `className` and `style` props.                                                                                |
+
+## KanbanColumn
+
+A column that can be dragged to reorder.
+
+| Prop       | Values        | Default  | Note                                        |
+| ---------- | ------------- | -------- | ------------------------------------------- |
+| `value`    | `string`      | required | The column id: a key of the root `value`.   |
+| `disabled` | `boolean`     | `false`  | Stops the column from being dragged.        |
+| `style`    | StyleX styles | none     | Replaces the `className` and `style` props. |
+
+## KanbanColumnHandle
+
+The drag handle of a column, inside `KanbanColumn`.
+
+| Prop     | Values        | Default | Note                                        |
+| -------- | ------------- | ------- | ------------------------------------------- |
+| `cursor` | `boolean`     | `true`  | Shows the grab cursor.                      |
+| `style`  | StyleX styles | none    | Replaces the `className` and `style` props. |
+
+## KanbanColumnContent
+
+The list of items inside a column.
+
+| Prop    | Values        | Default  | Note                                                               |
+| ------- | ------------- | -------- | ------------------------------------------------------------------ |
+| `value` | `string`      | required | The column id. It throws when the root `value` has no such column. |
+| `style` | StyleX styles | none     | Replaces the `className` and `style` props.                        |
+
+## KanbanItem
+
+An item that can be dragged to reorder or to another column. The whole item is the drag surface.
+
+| Prop       | Values        | Default  | Note                                        |
+| ---------- | ------------- | -------- | ------------------------------------------- |
+| `value`    | `string`      | required | The item id, as `getItemValue` returns it.  |
+| `disabled` | `boolean`     | `false`  | Stops the item from being dragged.          |
+| `style`    | StyleX styles | none     | Replaces the `className` and `style` props. |
+
+## KanbanOverlay
+
+The ghost that follows the pointer during a drag. It renders into `document.body` once mounted on the client.
+
+| Prop       | Values                                                                        | Default | Note                                                          |
+| ---------- | ----------------------------------------------------------------------------- | ------- | ------------------------------------------------------------- |
+| `children` | node, or `({ value, variant }) => node` where `variant` is `column` or `item` | none    | What the ghost shows. The function receives the dragged id.   |
+| `render`   | component type                                                                | none    | Passed to dnd-kit's `DragOverlay` with the other props.       |
+| `style`    | StyleX styles                                                                 | none    | Styles the ghost; replaces the `className` and `style` props. |

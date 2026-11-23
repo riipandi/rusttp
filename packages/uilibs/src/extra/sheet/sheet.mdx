@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './sheet.stories'
+
+<Meta of={Stories} />
+
+# Sheet
+
+A panel that slides in from an edge of the screen and holds focus until it closes.
+
+Wraps Base UI [Dialog](https://base-ui.com/react/components/dialog). Its other props pass through.
+
+`Sheet`, `SheetTrigger`, `SheetClose`, and `SheetPortal` are the Base UI Dialog parts unchanged.
+
+`SheetHeader` and `SheetFooter` render a `div`. `SheetHeader`, `SheetFooter`, `SheetTitle`, and `SheetDescription` take only `style` (StyleX styles that replace `className` and `style`).
+
+## SheetOverlay
+
+The backdrop behind the sheet. `SheetContent` renders one for you.
+
+| Prop             | Values        | Default | Note                                        |
+| ---------------- | ------------- | ------- | ------------------------------------------- |
+| `blurredOverlay` | `boolean`     | `false` | Blurs the page behind the backdrop.         |
+| `style`          | StyleX styles | none    | Replaces the `className` and `style` props. |
+
+## SheetContent
+
+Renders the portal, the backdrop, and the popup, with a close button inside.
+
+| Prop              | Values                           | Default | Note                                                     |
+| ----------------- | -------------------------------- | ------- | -------------------------------------------------------- |
+| `side`            | `top`, `right`, `bottom`, `left` | `right` | The edge the sheet slides in from.                       |
+| `blurredOverlay`  | `boolean`                        | `false` | Blurs the page behind the backdrop.                      |
+| `showCloseButton` | `boolean`                        | `true`  | Renders the built-in close button.                       |
+| `labels`          | `{ close }`                      | `Close` | Name of the built-in close button.                       |
+| `style`           | StyleX styles                    | none    | Replaces the `className` and `style` props on the popup. |

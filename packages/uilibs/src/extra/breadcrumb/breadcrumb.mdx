@@ -1,0 +1,27 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './breadcrumb.stories'
+
+<Meta of={Stories} />
+
+# Breadcrumb
+
+A trail of links that shows where the page sits in the site.
+
+Renders a `nav` with `ol`, `li`, `a`, and `span` parts; their other props pass through.
+
+`BreadcrumbList`, `BreadcrumbItem`, and `BreadcrumbLink` take only `style` (StyleX styles that replace `className` and `style`). `BreadcrumbLink` follows the `color` of its `Breadcrumb`. `BreadcrumbPage` and `BreadcrumbSeparator` take only `style` too: the page marks the current location (`aria-current="page"`), and the separator shows a chevron unless it has children.
+
+## Breadcrumb
+
+| Prop     | Values               | Default      | Note                                        |
+| -------- | -------------------- | ------------ | ------------------------------------------- |
+| `color`  | `neutral`, `primary` | `neutral`    | The role of the links.                      |
+| `labels` | `{ breadcrumb }`     | `Breadcrumb` | Name of the `nav` landmark.                 |
+| `style`  | StyleX styles        | none         | Replaces the `className` and `style` props. |
+
+## BreadcrumbEllipsis
+
+| Prop     | Values        | Default | Note                                           |
+| -------- | ------------- | ------- | ---------------------------------------------- |
+| `labels` | `{ more }`    | `More`  | Text for assistive technology on the ellipsis. |
+| `style`  | StyleX styles | none    | Replaces the `className` and `style` props.    |

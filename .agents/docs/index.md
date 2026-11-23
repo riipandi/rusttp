@@ -59,6 +59,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
+| `issue-00004-data-grid-unread-props.md` | considering (4 considering) | Data grid parts declare props nothing reads (`DataGridPagination`, `DataGridTableHeadRow`, `DataGridContainer`, `DataGridColumnHeader`). |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 

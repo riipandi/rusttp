@@ -1,0 +1,23 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './loader-text.stories'
+
+<Meta of={Stories} />
+
+# LoaderText
+
+A line of text with a shimmer while work is in progress. When the work completes, it can cross-fade to a second line.
+
+Renders this library's `Text`, and takes only the props below.
+
+## LoaderText
+
+| Prop            | Values                                                                                                                                            | Default  | Note                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
+| `children`      | node                                                                                                                                              | none     | The text while loading.                                           |
+| `variant`       | `headline-1`, `headline-2`, `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2`, or one value per breakpoint | `body-2` | Type style, as in `Text`.                                         |
+| `weight`        | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black`, or one value per breakpoint                                               | none     | Font weight, as in `Text`.                                        |
+| `color`         | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled`                                                              | none     | Text color, as in `Text`.                                         |
+| `icon`          | glyph component                                                                                                                                   | none     | A glyph before the text, sized to the text.                       |
+| `completedText` | node                                                                                                                                              | none     | Text that cross-fades with `children` once `completed` is `true`. |
+| `completed`     | `boolean`                                                                                                                                         | `false`  | Stops the shimmer.                                                |
+| `style`         | StyleX styles                                                                                                                                     | none     | Replaces the `className` and `style` props.                       |

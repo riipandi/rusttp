@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './icon.stories'
+
+<Meta of={Stories} />
+
+# Icon
+
+A wrapper that sizes and colors an SVG asset. It inherits the parent's text color unless `color` is set.
+
+Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through. In the default form the root is `aria-hidden`; with `render`, the element owns its accessibility semantics.
+
+## Icon
+
+| Prop        | Values                                                                               | Default             | Note                                               |
+| ----------- | ------------------------------------------------------------------------------------ | ------------------- | -------------------------------------------------- |
+| `svg`       | SVG component, SVG element, or `null`                                                | required            | The asset to draw.                                 |
+| `size`      | `number`, `string`                                                                   | `1em`               | A number is px; a string is any CSS size.          |
+| `color`     | `neutral`, `neutral-faded`, `primary`, `positive`, `warning`, `critical`, `disabled` | parent's text color | A foreground token.                                |
+| `autoWidth` | `boolean`                                                                            | `false`             | Uses the width of the SVG instead of a square box. |
+| `style`     | StyleX styles                                                                        | none                | Replaces the `className` and `style` props.        |

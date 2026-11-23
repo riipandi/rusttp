@@ -1,0 +1,26 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './file-upload.stories'
+
+<Meta of={Stories} />
+
+# File Upload
+
+A file input and drop area. Inside a `Field` it takes the label, error, and invalid state.
+
+Renders a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through.
+
+`FileUploadTrigger` is a `span` that keeps a nested trigger in the text flow; it takes the `span` props.
+
+## FileUpload
+
+| Prop              | Values                                          | Default   | Note                                                                           |
+| ----------------- | ----------------------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| `name`            | `string`                                        | required  | Name of the file input.                                                        |
+| `onChange`        | `({ name, value, event }) => void`              | none      | Called with the chosen or dropped files as `value`, a `File[]`.                |
+| `disabled`        | `boolean`                                       | `false`   | Disables the input and the drop area.                                          |
+| `variant`         | `outline`, `headless`                           | `outline` | `headless` has no box, for a custom trigger such as a `Button`.                |
+| `inline`          | `boolean`                                       | `false`   | A more compact layout.                                                         |
+| `height`          | `string`, `number`                              | none      | A CSS height, or a number of px.                                               |
+| `children`        | node, or a function receiving `{ highlighted }` | none      | `highlighted` is `true` while files are dragged over the area.                 |
+| `inputAttributes` | `input` props                                   | none      | Passed to the file input, such as `accept` and `multiple`; a drop honors both. |
+| `style`           | StyleX styles                                   | none      | Replaces the `className` and `style` props.                                    |
