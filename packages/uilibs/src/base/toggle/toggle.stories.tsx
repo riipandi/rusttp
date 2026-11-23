@@ -93,8 +93,9 @@ export const Variants: Story = {
         })
       await expect(new Set(looks).size).toBe(3)
       // An outline edge is drawn inside the box, so pressing never resizes the toggle.
-      await expect(toggle(variant, 'outline').getBoundingClientRect().width).toBe(
-        toggle(variant, 'ghost').getBoundingClientRect().width
+      await expect(toggle(variant, 'outline').getBoundingClientRect().width).toBeCloseTo(
+        toggle(variant, 'ghost').getBoundingClientRect().width,
+        0
       )
     }
     // Unset, `selectedVariant` follows `variant`: a solid toggle presses to a solid fill.

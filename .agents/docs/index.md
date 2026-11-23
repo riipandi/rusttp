@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 No live plan.
 
-Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) and `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24, phase 10 not run) are in `.agents/docs/archive/`.
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) and `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -72,7 +72,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `handover-00012-uilibs-reshaped-props-docs.md` | done | Plan 00009 closed: the safe Reshaped props in uilibs, a `<name>.mdx` props page per component, the data grid's unread props settled, tests 910 to 946, phase 10 still to run. |
+| `handover-00012-uilibs-reshaped-props-docs.md` | done | Plan 00009 closed: the safe Reshaped props in uilibs, a `<name>.mdx` props page per component, the data grid's unread props settled, tests 910 to 946, phase 10 done, Firefox and WebKit green apart from the known failures. |
 
 ## Audits (`.agents/docs/audit/`)
 

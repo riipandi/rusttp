@@ -8,7 +8,7 @@ plan: plan-00009-uilibs-reshaped-props-docs
 
 ## What this session did
 
-The owner had the missing Reshaped props curated against Base UI and chose to implement every prop judged safe (visual only: a StyleX style, an attribute Base UI already emits, or an `aria-hidden` glyph), then asked for a props reference page next to each component. Plan 00009 (D1 to D8, in `architecture.md`) settled the shape. Phases 1 to 9 ran one commit each on the owner's go-ahead per batch. Phase 10 (final validation) was not approved and did not run.
+The owner had the missing Reshaped props curated against Base UI and chose to implement every prop judged safe (visual only: a StyleX style, an attribute Base UI already emits, or an `aria-hidden` glyph), then asked for a props reference page next to each component. Plan 00009 (D1 to D8, in `architecture.md`) settled the shape. Phases 1 to 9 ran one commit each on the owner's go-ahead per batch. Phase 10 (final validation) ran afterwards on the owner's go-ahead; its result is below.
 
 - Props, by phase:
     - Button `color` `media` and `inherit` and `highlighted`; Badge `endIcon` and `highlighted`.
@@ -35,11 +35,18 @@ The owner had the missing Reshaped props curated against Base UI and chose to im
 
 ## State of the gates
 
-Last full run after the data grid commit: Chromium gate 946 of 946 (910 at the start; +36 from the new axis stories and the two data grid stories), lint, format, typecheck clean. Docs entries are not tests, so the 65 pages do not move the count. Not run: Firefox, WebKit, `just test-web`, E2E, `just size`, the 390 px probe over all stories (Phase 10). The 390 px probe of the stories of Phases 2 to 4 was clean. No `packages/webapp` file changed.
+Phase 10, run 2026-11-24 over the tree:
+
+- Chromium gate 946 of 946 (910 at the start; +36 from the new axis stories and the two data grid stories). Docs entries are not tests, so the 65 pages do not move the count.
+- Firefox 946 of 946 after two story precision fixes: accordion `IconPositions` read `-0` for a zero offset, and toggle `Variants` compared two widths to the last float bit (now `Math.abs` and `toBeCloseTo`).
+- WebKit 943 of 946: only menubar `Playground` (F-12, both themes) and `select > Keyboard` (dark) fail, the known ones.
+- Lint, format, typecheck clean. `just test-web` 75 of 75. E2E Chromium 184 of 184 (no `packages/webapp` file changed). `just size` 461.1 KB of 480 and 146.7 KB gzip of 152.
+- `pnpm storybook:build` green. 390 px probe of 477 stories in both themes: only the two known `Contracts` stories overflow (control heights per size 426 px, ref as a prop 22 px). Two timeouts under shared load (alert `Colors` dark, kanban `Frame columns` light) were clean when rerun alone.
+- 390 px probe of the 65 docs pages in both themes: no page overflow and no table past the viewport. Button at 390 px: the table scrolls inside its container (310 px visible, 455 px of content, `overflow-x: auto`), so Default and Note are reachable by scrolling; the cut-off in the earlier screenshot was the scroll edge, not a loss. `docs-container.tsx` stays. There is no visual hint that the table scrolls.
 
 ## What stayed open / the trap
 
-- Phase 10, still to run. The owner asked it to include a check that a props table on a docs page scrolls inside its container at 390 px and does not widen the page: the `docs-base-components-button-390-light` screenshot showed the Default column cut off. `docs-container.tsx` sets `.sbdocs table { display: block; overflow-x: auto }`, which cut the table to the viewport; verify the table really scrolls (and the cut column is reachable), or change it.
+- Phase 10 is done (above). The two precision fixes it needed in the accordion and toggle stories are in the tree and not committed; the closing commit takes them.
 - The prop pages are kept in step with the components by convention only; the scratch script that diffed the tables against the sources was heuristic and is not committed.
 - `audit-00002`: F-02, F-03, F-04, F-08, F-10, F-11, F-13, F-14, F-15 open, F-12 deferred; unchanged.
 - Flaky plays hardened with `waitFor` after one full-gate failure each: Table `Borders` (dark) and Alert `Layouts` (bleed margin). The root cause is not proven; both pass alone and in later full runs.

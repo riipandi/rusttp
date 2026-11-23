@@ -116,9 +116,9 @@ export const IconPositions: Story = {
     }
     // `end` pins the chevron to the trailing edge; `start` puts it on the leading edge, before the label.
     const end = parts('end')
-    await expect(Math.round(end.box.right - end.chevron.right)).toBe(0)
+    await expect(Math.abs(Math.round(end.box.right - end.chevron.right))).toBe(0)
     const start = parts('start')
-    await expect(Math.round(start.chevron.left - start.box.left)).toBe(0)
+    await expect(Math.abs(Math.round(start.chevron.left - start.box.left))).toBe(0)
     const range = document.createRange()
     range.selectNodeContents(start.trigger)
     const label = Array.from(start.trigger.childNodes).find(

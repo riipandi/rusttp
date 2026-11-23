@@ -41,8 +41,8 @@ phases:
       note: 'Plan archived, handover-00012 written, handover-00011 archived, index rows moved.'
     - id: 10
       title: Final validation
-      status: partially-done (not run)
-      note: 'Not approved by the owner when the plan closed. Each phase ran its own gates (gate 946 of 946 after the data grid commit, lint, format, typecheck, parity for Phases 1 to 4, a 390 px probe for the stories of Phases 2 to 4). Still to run over the whole tree: the full matrix (Firefox, WebKit, just test-web, E2E Chromium, just size, the 390 px probe of all stories) and a check that a props table scrolls inside its container at 390 px (the Button page screenshot showed the Default column cut off).'
+      status: done
+      note: 'Run 2026-11-24 over the tree: Chromium gate 946 of 946; Firefox 946 of 946 after two story precision fixes (accordion IconPositions read -0 for a 0 offset, toggle Variants compared widths to the last float bit: Math.abs and toBeCloseTo); WebKit 943 of 946, failing only menubar Playground (F-12, both themes) and select Keyboard (dark); lint, format, typecheck clean; just test-web 75 of 75; E2E Chromium 184 of 184; just size 461.1 KB of 480 and 146.7 KB gzip of 152; storybook build green; 390 px probe of 477 stories in both themes: only the two known Contracts stories overflow (control heights per size 426 px, ref as a prop 22 px), and two timeouts under shared load (alert Colors dark, kanban Frame columns light) were clean when rerun alone; 390 px probe of 65 docs pages in both themes: no page overflow and no table past the viewport. Button 390 px: the table scrolls inside its container (310 px visible, 455 px of content, overflow-x auto); Default and Note are reachable by scrolling, nothing was clipped for good, so docs-container.tsx stays. The fixes made in this phase (the two story precision fixes) are not committed.'
 ---
 
 # Add the safe Reshaped props to uilibs and document each component beside its stories
