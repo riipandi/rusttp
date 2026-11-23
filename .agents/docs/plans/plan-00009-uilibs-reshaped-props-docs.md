@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-23T15:32:00+07:00
-updated: 2026-11-23T22:00:00+07:00
+updated: 2026-11-23T23:00:00+07:00
 phases:
     - id: 1
       title: Button and Badge props
@@ -25,8 +25,8 @@ phases:
       note: 'Storybook 10.6.8 refused .stories.mdx (addon-docs excludes it, preset.js:865); the owner chose <name>.mdx with the glob ../src/**/*.mdx. Build green; index.json holds base-components-button--docs and extra-components-badge--docs attached to their stories; gate still 942 of 942 (docs entries are not tests). Pages screenshotted light and dark at 1440 and 390 px. The 390 px render overflowed by 144 px until docs-container.tsx got a rule that makes a props table scroll inside the page.'
     - id: 6
       title: Component docs - base
-      status: pending
-      note: ''
+      status: done
+      note: 'Written by four parallel subagents (34 folders), merged and checked here. index.json holds 35 base docs entries, one per Base Components title, each with storiesImports. A heuristic scratch diff of table rows against the component sources found no listed prop missing from the code; the only unmatched row is side on MenubarContent, which it inherits from DropdownMenuContent. Convention settled in the pass: a part whose only added prop is style is named in one sentence, not given a table. Five spot pages (combobox, dropdown-menu, tabs, dialog, toast) rendered at 1440 and 390 px in both themes with no page overflow.'
     - id: 7
       title: Component docs - extra
       status: pending

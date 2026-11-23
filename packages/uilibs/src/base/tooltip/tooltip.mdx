@@ -1,0 +1,31 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './tooltip.stories'
+
+<Meta of={Stories} />
+
+# Tooltip
+
+A hint that appears on hover or focus. It names a control and holds no interactive content.
+
+Wraps Base UI [Tooltip](https://base-ui.com/react/components/tooltip). Its other props pass through.
+
+`Tooltip` and `TooltipTrigger` are the Base UI parts unchanged.
+
+## TooltipProvider
+
+Mount it once above the tooltips.
+
+| Prop    | Values        | Default | Note                                                       |
+| ------- | ------------- | ------- | ---------------------------------------------------------- |
+| `delay` | `number` (ms) | `0`     | Time before a tooltip opens. Base UI's own default is 600. |
+
+## TooltipContent
+
+| Prop          | Values                                                         | Default   | Note                                                                                                         |
+| ------------- | -------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------ |
+| `color`       | `neutral`, `inverted`, `dark`                                  | `neutral` | The surface. `inverted` is the foreground color on the page. `dark` is black with white text in both themes. |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` | `top`     | Which side of the trigger the popup sits on.                                                                 |
+| `sideOffset`  | `number` (px)                                                  | `4`       | Gap between the trigger and the popup.                                                                       |
+| `align`       | `start`, `center`, `end`                                       | `center`  | Alignment along the trigger's edge.                                                                          |
+| `alignOffset` | `number` (px)                                                  | `0`       | Shift along the aligned edge.                                                                                |
+| `style`       | StyleX styles                                                  | none      | Replaces the `className` and `style` props.                                                                  |

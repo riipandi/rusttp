@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './progress.stories'
+
+<Meta of={Stories} />
+
+# Progress
+
+The status of a task that takes a long time. `color` and `size` sit on the root and reach the track and the indicator.
+
+Wraps Base UI [Progress](https://base-ui.com/react/components/progress). Its other props pass through.
+
+`ProgressTrack`, `ProgressIndicator`, `ProgressLabel`, and `ProgressValue` take only `style`, which replaces the `className` and `style` props.
+
+## Progress
+
+| Prop    | Values                                                  | Default   | Note                                                         |
+| ------- | ------------------------------------------------------- | --------- | ------------------------------------------------------------ |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` | `primary` | The role of the fill. Pair a non-neutral color with a label. |
+| `size`  | `sm`, `md`                                              | `md`      | Bar thickness: `sm` is 2px, `md` is 4px.                     |
+| `style` | StyleX styles                                           | none      | Replaces the `className` and `style` props.                  |

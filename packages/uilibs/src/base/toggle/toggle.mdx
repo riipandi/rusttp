@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toggle.stories'
+
+<Meta of={Stories} />
+
+# Toggle
+
+A button that is pressed or unpressed.
+
+Wraps Base UI [Toggle](https://base-ui.com/react/components/toggle). Its other props pass through.
+
+## Toggle
+
+| Prop              | Values                                                  | Default                                | Note                                                                                                               |
+| ----------------- | ------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `variant`         | `ghost`, `outline`, `solid`                             | `ghost`                                | The fill at rest. `ghost` is transparent until hover, `outline` adds an edge, and `solid` rests on a neutral fill. |
+| `selectedVariant` | `ghost`, `outline`, `solid`                             | `solid` for `solid`, `ghost` otherwise | The fill of the pressed state: a tint, an edge, or a fill of `selectedColor`.                                      |
+| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` | `neutral`                              | The color of the pressed state.                                                                                    |
+| `size`            | `xs`, `sm`, `md`, `lg`                                  | `md`                                   | Height on the control scale.                                                                                       |
+| `style`           | StyleX styles                                           | none                                   | Replaces the `className` and `style` props.                                                                        |

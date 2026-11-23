@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './radio.stories'
+
+<Meta of={Stories} />
+
+# Radio
+
+A radio group for choosing one option, with its items.
+
+Wraps Base UI [Radio](https://base-ui.com/react/components/radio) and [Radio Group](https://base-ui.com/react/components/radio-group). Its other props pass through.
+
+`RadioGroup` takes only `style`, which replaces the `className` and `style` props.
+
+## RadioGroupItem
+
+| Prop    | Values           | Default | Note                                        |
+| ------- | ---------------- | ------- | ------------------------------------------- |
+| `size`  | `sm`, `md`, `lg` | `md`    | Circle size: 12px, 16px, or 20px.           |
+| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |

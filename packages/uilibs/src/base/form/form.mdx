@@ -1,0 +1,16 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './form.stories'
+
+<Meta of={Stories} />
+
+# Form
+
+A native form with consolidated error handling. It validates the Fields inside it and takes external errors, such as from a server action, keyed by Field `name`.
+
+Wraps Base UI [Form](https://base-ui.com/react/components/form). Its other props pass through.
+
+## Form
+
+| Prop    | Values        | Default | Note                                        |
+| ------- | ------------- | ------- | ------------------------------------------- |
+| `style` | StyleX styles | none    | Replaces the `className` and `style` props. |

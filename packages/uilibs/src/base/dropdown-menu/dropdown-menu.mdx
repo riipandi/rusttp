@@ -1,0 +1,54 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './dropdown-menu.stories'
+
+<Meta of={Stories} />
+
+# Dropdown Menu
+
+A menu of actions or commands that opens from a trigger. Context Menu and Menubar items are the same components.
+
+Wraps Base UI [Menu](https://base-ui.com/react/components/menu). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+
+`DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` are the Base UI parts unchanged. `DropdownMenuCheckboxItem`, `DropdownMenuRadioItem`, `DropdownMenuShortcut`, and `DropdownMenuSeparator` only add styling.
+
+## DropdownMenuContent
+
+The popup. It renders its own portal and positioner, and takes the positioner's placement props.
+
+| Prop          | Values                                                         | Default  | Note                                          |
+| ------------- | -------------------------------------------------------------- | -------- | --------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` | `bottom` | Which side of the trigger the popup opens on. |
+| `sideOffset`  | `number` or a function                                         | `4`      | Distance from the trigger in pixels.          |
+| `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the chosen side.              |
+| `alignOffset` | `number` or a function                                         | `0`      | Offset along the alignment axis in pixels.    |
+
+## DropdownMenuSubContent
+
+The popup of a submenu. It takes the `DropdownMenuContent` props with different defaults.
+
+| Prop          | Values                                                         | Default | Note                                          |
+| ------------- | -------------------------------------------------------------- | ------- | --------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` | `right` | Which side of the trigger the popup opens on. |
+| `sideOffset`  | `number` or a function                                         | `0`     | Distance from the trigger in pixels.          |
+| `align`       | `start`, `center`, `end`                                       | `start` | Alignment along the chosen side.              |
+| `alignOffset` | `number` or a function                                         | `-4`    | Offset along the alignment axis in pixels.    |
+
+## DropdownMenuItem
+
+| Prop    | Values                           | Default | Note                                                                              |
+| ------- | -------------------------------- | ------- | --------------------------------------------------------------------------------- |
+| `color` | `neutral`, `critical`, `primary` | none    | `critical` marks a destructive or irreversible item; `primary` a recommended one. |
+| `icon`  | glyph component                  | none    | A glyph before the label, hidden from assistive technology.                       |
+| `inset` | `boolean`                        | none    | Indents the item to align with checkbox and radio item labels.                    |
+
+## DropdownMenuSubTrigger
+
+| Prop    | Values    | Default | Note                                                              |
+| ------- | --------- | ------- | ----------------------------------------------------------------- |
+| `inset` | `boolean` | none    | Indents the trigger to align with checkbox and radio item labels. |
+
+## DropdownMenuLabel
+
+| Prop    | Values    | Default | Note                                                            |
+| ------- | --------- | ------- | --------------------------------------------------------------- |
+| `inset` | `boolean` | none    | Indents the label to align with checkbox and radio item labels. |

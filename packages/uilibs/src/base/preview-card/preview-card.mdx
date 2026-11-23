@@ -1,0 +1,24 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './preview-card.stories'
+
+<Meta of={Stories} />
+
+# Preview Card
+
+A rich preview shown on hover or focus of a link.
+
+Wraps Base UI [Preview Card](https://base-ui.com/react/components/preview-card). Its other props pass through.
+
+`PreviewCard` and `PreviewCardTrigger` are the Base UI parts unchanged.
+
+## PreviewCardContent
+
+Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+
+| Prop          | Values                                                         | Default  | Note                                         |
+| ------------- | -------------------------------------------------------------- | -------- | -------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` | `bottom` | Which side of the trigger the card opens on. |
+| `sideOffset`  | `number` or a function                                         | `4`      | Gap from the trigger.                        |
+| `align`       | `start`, `center`, `end`                                       | `center` | Alignment along the side.                    |
+| `alignOffset` | `number` or a function                                         | `4`      | Shift along the alignment axis.              |
+| `style`       | StyleX styles                                                  | none     | Replaces the `className` and `style` props.  |

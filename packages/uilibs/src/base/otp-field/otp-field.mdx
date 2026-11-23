@@ -1,0 +1,21 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './otp-field.stories'
+
+<Meta of={Stories} />
+
+# OTP Field
+
+A one-time code input in character slots. `size` and `variant` sit on the root and reach every slot.
+
+Wraps Base UI [OTP Field](https://base-ui.com/react/components/otp-field). Its other props pass through.
+
+`OTPFieldGroup`, `OTPFieldSlot`, and `OTPFieldSeparator` take only `style`, which replaces the `className` and `style` props.
+
+## OTPField
+
+| Prop      | Values                                  | Default            | Note                                                                        |
+| --------- | --------------------------------------- | ------------------ | --------------------------------------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                        | `md`               | Slot height and type.                                                       |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline`          | The box.                                                                    |
+| `labels`  | `{ slot }`                              | `Character n of N` | Names the slots after the first; `slot(position, length)` returns the name. |
+| `style`   | StyleX styles                           | none               | Replaces the `className` and `style` props.                                 |

@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './meter.stories'
+
+<Meta of={Stories} />
+
+# Meter
+
+A bar that shows a numeric value within a range.
+
+Wraps Base UI [Meter](https://base-ui.com/react/components/meter). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+
+`MeterTrack`, `MeterIndicator`, `MeterLabel`, and `MeterValue` only add styling; they read `color` and `size` from `Meter`.
+
+## Meter
+
+| Prop    | Values                                                  | Default   | Note                                                                                     |
+| ------- | ------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` | `primary` | The role of the fill. Keep a label with a non-neutral color: color alone is not meaning. |
+| `size`  | `sm`, `md`                                              | `md`      | Bar thickness: `sm` 2px, `md` 4px.                                                       |

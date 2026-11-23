@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './checkbox.stories'
+
+<Meta of={Stories} />
+
+# Checkbox
+
+A checkbox, and a group that shares checked state across checkboxes.
+
+Wraps Base UI [Checkbox](https://base-ui.com/react/components/checkbox) and [Checkbox Group](https://base-ui.com/react/components/checkbox-group). Their other props pass through.
+
+`CheckboxGroup` takes only `style` (StyleX styles that replace `className` and `style`). Give each child `Checkbox` a `name` and control the group with `value` or `defaultValue` (arrays of names).
+
+## Checkbox
+
+| Prop    | Values           | Default | Note                                        |
+| ------- | ---------------- | ------- | ------------------------------------------- |
+| `size`  | `sm`, `md`, `lg` | `md`    | Box size: 12, 16, or 20 px.                 |
+| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |

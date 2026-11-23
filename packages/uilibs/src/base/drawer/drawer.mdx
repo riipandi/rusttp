@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './drawer.stories'
+
+<Meta of={Stories} />
+
+# Drawer
+
+A swipe panel that slides in from the edge of the screen, a touch-first sheet.
+
+Wraps Base UI [Drawer](https://base-ui.com/react/components/drawer). Its other props pass through. Every part but `Drawer` takes StyleX `style` in place of `className` and `style`.
+
+`DrawerTrigger`, `DrawerClose`, and `DrawerPortal` are the Base UI parts unchanged. `DrawerOverlay`, `DrawerContent`, `DrawerSwipeHandle`, `DrawerHeader`, `DrawerFooter`, `DrawerTitle`, and `DrawerDescription` only add styling.
+
+## Drawer
+
+The root defaults `modal` to `true` and `swipeDirection` to `down`, and shares both with the parts below: `DrawerContent` shows the overlay only when modal, and places itself on the edge the swipe direction names.
+
+| Prop              | Values    | Default | Note                                                        |
+| ----------------- | --------- | ------- | ----------------------------------------------------------- |
+| `showSwipeHandle` | `boolean` | `false` | Shows a grab handle on the popup, on the side of the swipe. |

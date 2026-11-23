@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './select.stories'
+
+<Meta of={Stories} />
+
+# Select
+
+A single-choice list in a popup. Name a standalone trigger with `aria-label`.
+
+Wraps Base UI [Select](https://base-ui.com/react/components/select). Its other props pass through.
+
+`Select`, `SelectValue`, and `SelectGroup` are the Base UI parts unchanged. `SelectItem`, `SelectLabel`, and `SelectSeparator` take only `style`, which replaces the `className` and `style` props.
+
+## SelectTrigger
+
+| Prop      | Values                                  | Default   | Note                                                                                |
+| --------- | --------------------------------------- | --------- | ----------------------------------------------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type.                                                            |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                                                            |
+| `icon`    | glyph component                         | none      | A glyph before the value. It is decoration, so the name still comes from the label. |
+| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props.                                         |
+
+## SelectContent
+
+Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+
+| Prop                   | Values                                                         | Default  | Note                                                               |
+| ---------------------- | -------------------------------------------------------------- | -------- | ------------------------------------------------------------------ |
+| `side`                 | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` | `bottom` | Which side of the trigger the popup opens on.                      |
+| `sideOffset`           | `number` or a function                                         | `4`      | Gap from the trigger.                                              |
+| `align`                | `start`, `center`, `end`                                       | `center` | Alignment along the side.                                          |
+| `alignOffset`          | `number` or a function                                         | `0`      | Shift along the alignment axis.                                    |
+| `alignItemWithTrigger` | `boolean`                                                      | `false`  | Overlaps the trigger so the selected text lines up with the value. |
+| `style`                | StyleX styles                                                  | none     | Replaces the `className` and `style` props.                        |

@@ -1,0 +1,29 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './popover.stories'
+
+<Meta of={Stories} />
+
+# Popover
+
+Rich, interactive content in a portal, opened by a trigger.
+
+Wraps Base UI [Popover](https://base-ui.com/react/components/popover). Its other props pass through.
+
+`Popover`, `PopoverTrigger`, and `PopoverClose` are the Base UI parts unchanged. `PopoverHeader`, `PopoverTitle`, and `PopoverDescription` take only `style`, which replaces the `className` and `style` props.
+
+## PopoverContent
+
+Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+
+| Prop                 | Values                                                                                             | Default   | Note                                                 |
+| -------------------- | -------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------- |
+| `elevation`          | `overlay`, `raised`                                                                                | `overlay` | Depth of the shadow; `raised` is the lighter one.    |
+| `padding`            | `0`, `0.5`, `1`, `1.5`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `12`, `14`, `16`, `18`, `20` | `4`       | Space inside the popup in `unit` steps; `4` is 16px. |
+| `borderRadius`       | `medium`, `large`                                                                                  | `medium`  | Corner radius.                                       |
+| `side`               | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end`                                     | `bottom`  | Which side of the trigger the popup opens on.        |
+| `sideOffset`         | `number` or a function                                                                             | `4`       | Gap from the trigger.                                |
+| `align`              | `start`, `center`, `end`                                                                           | `center`  | Alignment along the side.                            |
+| `alignOffset`        | `number` or a function                                                                             | `0`       | Shift along the alignment axis.                      |
+| `collisionAvoidance` | Base UI positioner value                                                                           | none      | How the popup moves to stay in view.                 |
+| `collisionPadding`   | Base UI positioner value                                                                           | none      | Space kept from the viewport edge.                   |
+| `style`              | StyleX styles                                                                                      | none      | Replaces the `className` and `style` props.          |

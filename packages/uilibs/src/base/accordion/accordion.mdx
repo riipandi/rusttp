@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './accordion.stories'
+
+<Meta of={Stories} />
+
+# Accordion
+
+A set of collapsible panels with headings.
+
+Wraps Base UI [Accordion](https://base-ui.com/react/components/accordion). Its other props pass through.
+
+`Accordion` and `AccordionItem` take only `style` (StyleX styles that replace `className` and `style`). `AccordionContent` takes only `style` too, applied to the inner wrapper of the panel.
+
+## AccordionTrigger
+
+| Prop           | Values         | Default | Note                                                                              |
+| -------------- | -------------- | ------- | --------------------------------------------------------------------------------- |
+| `iconPosition` | `start`, `end` | `end`   | Which side of the label the chevron is on. The DOM and focus order stay the same. |
+| `style`        | StyleX styles  | none    | Replaces the `className` and `style` props on the trigger button.                 |

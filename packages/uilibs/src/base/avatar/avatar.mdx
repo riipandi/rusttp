@@ -1,0 +1,31 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './avatar.stories'
+
+<Meta of={Stories} />
+
+# Avatar
+
+An image with a fallback. `variant` and `color` tint the fallback.
+
+Wraps Base UI [Avatar](https://base-ui.com/react/components/avatar). Its other props pass through.
+
+`AvatarImage`, `AvatarFallback`, `AvatarBadge`, and `AvatarGroup` take only `style` (StyleX styles that replace `className` and `style`). `AvatarBadge` is a `div` anchored to the bottom-right corner of an `Avatar`. `AvatarGroup` is a `div` that overlaps its `Avatar` and `AvatarGroupCount` children.
+
+## Avatar
+
+| Prop      | Values                                                  | Default   | Note                                        |
+| --------- | ------------------------------------------------------- | --------- | ------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                                        | `md`      | Width and height.                           |
+| `variant` | `faded`, `solid`                                        | `faded`   | The fallback's fill.                        |
+| `color`   | `neutral`, `primary`, `positive`, `warning`, `critical` | `neutral` | The fallback's role color.                  |
+| `squared` | `boolean`                                               | `false`   | Rounded corners instead of a circle.        |
+| `style`   | StyleX styles                                           | none      | Replaces the `className` and `style` props. |
+
+## AvatarGroupCount
+
+A trailing "+N" indicator for an `AvatarGroup`. It is a `span`.
+
+| Prop    | Values           | Default | Note                                        |
+| ------- | ---------------- | ------- | ------------------------------------------- |
+| `size`  | `sm`, `md`, `lg` | `md`    | Matches the `Avatar` sizes.                 |
+| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |

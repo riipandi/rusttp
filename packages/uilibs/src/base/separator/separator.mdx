@@ -1,0 +1,18 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './separator.stories'
+
+<Meta of={Stories} />
+
+# Separator
+
+A visual divider between pieces of content.
+
+Wraps Base UI [Separator](https://base-ui.com/react/components/separator). Its other props pass through.
+
+## Separator
+
+| Prop    | Values                     | Default         | Note                                           |
+| ------- | -------------------------- | --------------- | ---------------------------------------------- |
+| `color` | `neutral-faded`, `neutral` | `neutral-faded` | The line; `neutral-faded` is the soft divider. |
+| `inset` | `boolean`                  | `false`         | Stops short of the container's edges.          |
+| `style` | StyleX styles              | none            | Replaces the `className` and `style` props.    |

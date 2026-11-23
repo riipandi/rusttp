@@ -1,0 +1,17 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './slider.stories'
+
+<Meta of={Stories} />
+
+# Slider
+
+Selects a value or a range from a track. One thumb unless the value is an array.
+
+Wraps Base UI [Slider](https://base-ui.com/react/components/slider). Its other props pass through.
+
+## Slider
+
+| Prop          | Values        | Default | Note                                                                                |
+| ------------- | ------------- | ------- | ----------------------------------------------------------------------------------- |
+| `thumbLabels` | `string[]`    | none    | Accessible name of each thumb, in order. A single thumb falls back to `aria-label`. |
+| `style`       | StyleX styles | none    | Replaces the `className` and `style` props.                                         |

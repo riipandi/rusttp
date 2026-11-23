@@ -1,0 +1,21 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './navigation-menu.stories'
+
+<Meta of={Stories} />
+
+# Navigation Menu
+
+A collection of links and menus for site navigation.
+
+Wraps Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+
+`NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, and `NavigationMenuLink` only add styling. `NavigationMenuPositioner` renders the shared popup and viewport, and defaults `side` to `bottom`, `sideOffset` to `8`, `align` to `start`, and `alignOffset` to `0`.
+
+## NavigationMenu
+
+The root renders the positioner itself, so `align` is set here.
+
+| Prop     | Values                   | Default                | Note                                                                                                           |
+| -------- | ------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `align`  | `start`, `center`, `end` | `start`                | Alignment of the popup relative to the menu.                                                                   |
+| `labels` | `{ menu, popup }`        | `Main`, `Main details` | Accessible names of the menu's `nav` landmark and of the popup's, which is a second landmark while it is open. |

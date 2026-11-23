@@ -1,0 +1,44 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './number-field.stories'
+
+<Meta of={Stories} />
+
+# Number Field
+
+A numeric input with steppers and a scrub area. `size` and `variant` sit on the root and reach the group and its steppers.
+
+Wraps Base UI [Number Field](https://base-ui.com/react/components/number-field). Its other props pass through.
+
+`NumberFieldScrubArea` and `NumberFieldScrubAreaCursor` are the Base UI parts unchanged. `NumberFieldInput` takes only `style`, which replaces the `className` and `style` props.
+
+## NumberField
+
+| Prop      | Values                                  | Default   | Note                                        |
+| --------- | --------------------------------------- | --------- | ------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type.                    |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                    |
+| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props. |
+
+## NumberFieldGroup
+
+| Prop       | Values                   | Default                | Note                                        |
+| ---------- | ------------------------ | ---------------------- | ------------------------------------------- |
+| `controls` | `stacked`, `sides`       | `stacked`              | Where the built-in steppers sit.            |
+| `labels`   | `{ increase, decrease }` | `Increase`, `Decrease` | Names of the built-in steppers.             |
+| `style`    | StyleX styles            | none                   | Replaces the `className` and `style` props. |
+
+## NumberFieldDecrement
+
+| Prop       | Values                  | Default                                   | Note                                        |
+| ---------- | ----------------------- | ----------------------------------------- | ------------------------------------------- |
+| `icon`     | `chevron-down`, `minus` | `chevron-down` when stacked, else `minus` | The built-in glyph.                         |
+| `controls` | `stacked`, `sides`      | `sides`                                   | Placement style of the button.              |
+| `style`    | StyleX styles           | none                                      | Replaces the `className` and `style` props. |
+
+## NumberFieldIncrement
+
+| Prop       | Values               | Default                                | Note                                        |
+| ---------- | -------------------- | -------------------------------------- | ------------------------------------------- |
+| `icon`     | `chevron-up`, `plus` | `chevron-up` when stacked, else `plus` | The built-in glyph.                         |
+| `controls` | `stacked`, `sides`   | `sides`                                | Placement style of the button.              |
+| `style`    | StyleX styles        | none                                   | Replaces the `className` and `style` props. |

@@ -1,0 +1,25 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toggle-group.stories'
+
+<Meta of={Stories} />
+
+# Toggle Group
+
+A group of toggles that share one look.
+
+Wraps Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group). Its other props pass through.
+
+## ToggleGroup
+
+| Prop              | Values                                                  | Default           | Note                                                 |
+| ----------------- | ------------------------------------------------------- | ----------------- | ---------------------------------------------------- |
+| `variant`         | `ghost`, `outline`, `solid`                             | `ghost`           | The fill of the items at rest.                       |
+| `selectedVariant` | `ghost`, `outline`, `solid`                             | follows `variant` | The fill of an item's pressed state, as on `Toggle`. |
+| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` | `neutral`         | The color of an item's pressed state.                |
+| `size`            | `xs`, `sm`, `md`, `lg`                                  | `md`              | Height of the items.                                 |
+| `spacing`         | `gap`, `joined`                                         | `gap`             | `joined` fuses the items into one segmented control. |
+| `style`           | StyleX styles                                           | none              | Replaces the `className` and `style` props.          |
+
+## ToggleGroupItem
+
+Takes the `Toggle` props. `variant`, `selectedVariant`, `selectedColor`, and `size` default to the group's values.

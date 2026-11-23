@@ -1,0 +1,30 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './field.stories'
+
+<Meta of={Stories} />
+
+# Field
+
+A label, description, and validation message around a form control. `FieldSet`, `FieldLegend`, and `FieldGroup` group several fields.
+
+Wraps Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset). Their other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+
+`FieldSet`, `FieldGroup`, `FieldContent`, `FieldLabel`, `FieldTitle`, `FieldDescription`, and `FieldSeparator` only add styling.
+
+## Field
+
+| Prop          | Values                   | Default    | Note                                                              |
+| ------------- | ------------------------ | ---------- | ----------------------------------------------------------------- |
+| `orientation` | `vertical`, `horizontal` | `vertical` | Stacks the label above the control, or lays the two out in a row. |
+
+## FieldLegend
+
+| Prop      | Values            | Default  | Note                                          |
+| --------- | ----------------- | -------- | --------------------------------------------- |
+| `variant` | `legend`, `label` | `legend` | `label` styles the legend like a field label. |
+
+## FieldError
+
+| Prop     | Values                                         | Default | Note                                                                                                                                               |
+| -------- | ---------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `errors` | array of `{ message?: string }` or `undefined` | none    | External errors, such as from a form library. They render unconditionally, deduplicated by message; without them the field's own validation shows. |

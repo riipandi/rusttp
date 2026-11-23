@@ -1,0 +1,18 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './input.stories'
+
+<Meta of={Stories} />
+
+# Input
+
+A text input that fills its container and joins a surrounding Field.
+
+Wraps Base UI [Input](https://base-ui.com/react/components/input). Its other props pass through.
+
+## Input
+
+| Prop      | Values                                  | Default   | Note                                                                                          |
+| --------- | --------------------------------------- | --------- | --------------------------------------------------------------------------------------------- |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type: `sm` 32px, `md` 36px, `lg` 40px.                                     |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box. `faded`, `ghost`, and `headless` have no edge at rest, so give them a visible label. |
+| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props.                                                   |

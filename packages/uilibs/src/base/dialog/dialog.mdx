@@ -1,0 +1,38 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './dialog.stories'
+
+<Meta of={Stories} />
+
+# Dialog
+
+A modal popup that opens on top of the page, for content the user may dismiss.
+
+Wraps Base UI [Dialog](https://base-ui.com/react/components/dialog). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+
+`Dialog`, `DialogTrigger`, `DialogPortal`, `DialogClose`, `DialogHeader`, `DialogFooter`, `DialogTitle`, and `DialogDescription` are the Base UI parts unchanged, apart from the styling.
+
+## DialogOverlay
+
+| Prop             | Values    | Default | Note                                |
+| ---------------- | --------- | ------- | ----------------------------------- |
+| `blurredOverlay` | `boolean` | `false` | Blurs the page behind the backdrop. |
+
+## DialogContent
+
+The popup. It renders its own portal and overlay, and a close button.
+
+| Prop              | Values      | Default | Note                                          |
+| ----------------- | ----------- | ------- | --------------------------------------------- |
+| `size`            | `sm`, `md`  | `md`    | Width: `md` is 32rem, `sm` is 24rem.          |
+| `blurredOverlay`  | `boolean`   | `false` | Blurs the page behind the backdrop.           |
+| `showCloseButton` | `boolean`   | `true`  | Shows the built-in close button.              |
+| `labels`          | `{ close }` | `Close` | Accessible name of the built-in close button. |
+
+## CloseButton
+
+The dismiss button inside `DialogContent`, shared with Sheet and Toast. It is rendered through a Close part and takes the props of a `button`.
+
+| Prop     | Values        | Default | Note                                        |
+| -------- | ------------- | ------- | ------------------------------------------- |
+| `labels` | `{ close }`   | `Close` | Accessible name of the button.              |
+| `style`  | StyleX styles | none    | Replaces the `className` and `style` props. |

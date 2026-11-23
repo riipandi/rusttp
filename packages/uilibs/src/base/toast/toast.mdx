@@ -1,0 +1,28 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toast.stories'
+
+<Meta of={Stories} />
+
+# Toast
+
+Stacked notifications, raised by an imperative `toast` call from anywhere.
+
+Wraps Base UI [Toast](https://base-ui.com/react/components/toast). Its other props pass through.
+
+## Toaster
+
+Mount it once inside `ToastProvider`. It renders the toast stack.
+
+| Prop             | Values                                             | Default                 | Note                                                      |
+| ---------------- | -------------------------------------------------- | ----------------------- | --------------------------------------------------------- |
+| `swipeDirection` | `up`, `down`, `left`, `right`, or an array of them | `['down', 'right']`     | Directions a toast can be swiped to dismiss.              |
+| `labels`         | `{ close, notification }`                          | `Close`, `Notification` | Names of the close button and of a toast without a title. |
+| `style`          | StyleX styles                                      | none                    | Styles for the viewport, merged last.                     |
+
+## toast
+
+The options of `toast`, `toast.success`, and `toast.error` are the Base UI toast options without `title` and `data`, plus:
+
+| Prop    | Values                                                  | Default   | Note                                                                            |
+| ------- | ------------------------------------------------------- | --------- | ------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` | `neutral` | The accent color. `success` and `error` toasts imply `positive` and `critical`. |
