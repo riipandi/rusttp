@@ -5,15 +5,28 @@ import * as Stories from './checkbox.stories'
 
 # Checkbox
 
-A checkbox, and a group that shares checked state across checkboxes.
+A box that is checked or not, alone or in a group that shares checked state.
 
-Wraps Base UI [Checkbox](https://base-ui.com/react/components/checkbox) and [Checkbox Group](https://base-ui.com/react/components/checkbox-group). Their other props pass through.
+Built on Base UI [Checkbox](https://base-ui.com/react/components/checkbox) and [Checkbox Group](https://base-ui.com/react/components/checkbox-group). Props not listed here pass through.
 
-`CheckboxGroup` takes only `style` (StyleX styles that replace `className` and `style`). Give each child `Checkbox` a `name` and control the group with `value` or `defaultValue` (arrays of names).
+## Anatomy
 
-## Checkbox
+```jsx
+import { Checkbox, CheckboxGroup } from 'uilibs/base/checkbox'
 
-| Prop    | Values           | Default | Note                                        |
-| ------- | ---------------- | ------- | ------------------------------------------- |
-| `size`  | `sm`, `md`, `lg` | `md`    | Box size: 12, 16, or 20 px.                 |
-| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |
+;<CheckboxGroup>
+  <Checkbox name='…' />
+</CheckboxGroup>
+```
+
+`Checkbox` also works without a group, and renders its check or indeterminate mark itself. In a group, give each `Checkbox` a `name` and control the group with `value` or `defaultValue` (arrays of names). A `parent` checkbox needs `allValues` on the group.
+
+## Props
+
+Both parts also take `style`: StyleX styles that replace `className` and `style`.
+
+### Checkbox
+
+| Prop   | Values           | Default | Note                        |
+| ------ | ---------------- | ------- | --------------------------- |
+| `size` | `sm`, `md`, `lg` | `md`    | Box size: 12, 16, or 20 px. |

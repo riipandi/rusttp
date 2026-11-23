@@ -5,15 +5,30 @@ import * as Stories from './preview-card.stories'
 
 # Preview Card
 
-A rich preview shown on hover or focus of a link.
+A preview shown when the user hovers or focuses a link. Use Popover when the content is interactive.
 
-Wraps Base UI [Preview Card](https://base-ui.com/react/components/preview-card). Its other props pass through.
+Built on Base UI [Preview Card](https://base-ui.com/react/components/preview-card). Props not listed here pass through.
 
-`PreviewCard` and `PreviewCardTrigger` are the Base UI parts unchanged.
+## Anatomy
 
-## PreviewCardContent
+```jsx
+import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from 'uilibs/base/preview-card'
 
-Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+;<PreviewCard>
+  <PreviewCardTrigger />
+  <PreviewCardContent />
+</PreviewCard>
+```
+
+`PreviewCardContent` renders the portal and the positioner.
+
+## Props
+
+`PreviewCardContent` also takes `style`: StyleX styles that replace `className` and `style`. It styles the popup. `PreviewCard` and `PreviewCardTrigger` are the Base UI parts unchanged.
+
+### PreviewCardContent
+
+The positioner props go to the positioner.
 
 | Prop          | Values                                                         | Default  | Note                                         |
 | ------------- | -------------------------------------------------------------- | -------- | -------------------------------------------- |
@@ -21,4 +36,3 @@ Renders the portal, the positioner, and the popup. The positioner props below go
 | `sideOffset`  | `number` or a function                                         | `4`      | Gap from the trigger.                        |
 | `align`       | `start`, `center`, `end`                                       | `center` | Alignment along the side.                    |
 | `alignOffset` | `number` or a function                                         | `4`      | Shift along the alignment axis.              |
-| `style`       | StyleX styles                                                  | none     | Replaces the `className` and `style` props.  |

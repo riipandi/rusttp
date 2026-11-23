@@ -7,11 +7,24 @@ import * as Stories from './switch.stories'
 
 An on/off control.
 
-Wraps Base UI [Switch](https://base-ui.com/react/components/switch). Its other props pass through.
+Built on Base UI [Switch](https://base-ui.com/react/components/switch). Props not listed here pass through.
 
-## Switch
+## Anatomy
 
-| Prop    | Values           | Default | Note                                        |
-| ------- | ---------------- | ------- | ------------------------------------------- |
-| `size`  | `sm`, `md`, `lg` | `md`    | Track and thumb size.                       |
-| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |
+```jsx
+import { Switch } from 'uilibs/base/switch'
+
+;<Switch />
+```
+
+`Switch` renders its own thumb. It has no text, so wrap it in a label, pair it with a `FieldLabel`, or set `aria-label`.
+
+## Props
+
+`Switch` also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Switch
+
+| Prop   | Values           | Default | Note                  |
+| ------ | ---------------- | ------- | --------------------- |
+| `size` | `sm`, `md`, `lg` | `md`    | Track and thumb size. |

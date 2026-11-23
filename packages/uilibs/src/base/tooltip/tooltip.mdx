@@ -5,21 +5,36 @@ import * as Stories from './tooltip.stories'
 
 # Tooltip
 
-A hint that appears on hover or focus. It names a control and holds no interactive content.
+A hint that appears on hover or focus. It names a control and holds no interactive content; use Popover for interactive content.
 
-Wraps Base UI [Tooltip](https://base-ui.com/react/components/tooltip). Its other props pass through.
+Built on Base UI [Tooltip](https://base-ui.com/react/components/tooltip). Props not listed here pass through.
+
+## Anatomy
+
+```jsx
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
+
+;<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger />
+    <TooltipContent />
+  </Tooltip>
+</TooltipProvider>
+```
+
+`TooltipContent` renders the portal, the positioner, and the arrow itself. Mount `TooltipProvider` once above the tooltips.
+
+## Props
 
 `Tooltip` and `TooltipTrigger` are the Base UI parts unchanged.
 
-## TooltipProvider
-
-Mount it once above the tooltips.
+### TooltipProvider
 
 | Prop    | Values        | Default | Note                                                       |
 | ------- | ------------- | ------- | ---------------------------------------------------------- |
 | `delay` | `number` (ms) | `0`     | Time before a tooltip opens. Base UI's own default is 600. |
 
-## TooltipContent
+### TooltipContent
 
 | Prop          | Values                                                         | Default   | Note                                                                                                         |
 | ------------- | -------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------ |
@@ -28,4 +43,4 @@ Mount it once above the tooltips.
 | `sideOffset`  | `number` (px)                                                  | `4`       | Gap between the trigger and the popup.                                                                       |
 | `align`       | `start`, `center`, `end`                                       | `center`  | Alignment along the trigger's edge.                                                                          |
 | `alignOffset` | `number` (px)                                                  | `0`       | Shift along the aligned edge.                                                                                |
-| `style`       | StyleX styles                                                  | none      | Replaces the `className` and `style` props.                                                                  |
+| `style`       | StyleX styles                                                  | none      | Replaces `className` and `style`.                                                                            |

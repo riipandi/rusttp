@@ -5,15 +5,47 @@ import * as Stories from './drawer.stories'
 
 # Drawer
 
-A swipe panel that slides in from the edge of the screen, a touch-first sheet.
+A touch-first panel that slides in from an edge and closes by swipe. Use Sheet for a navigation or settings panel.
 
-Wraps Base UI [Drawer](https://base-ui.com/react/components/drawer). Its other props pass through. Every part but `Drawer` takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Drawer](https://base-ui.com/react/components/drawer). Props not listed here pass through.
 
-`DrawerTrigger`, `DrawerClose`, and `DrawerPortal` are the Base UI parts unchanged. `DrawerOverlay`, `DrawerContent`, `DrawerSwipeHandle`, `DrawerHeader`, `DrawerFooter`, `DrawerTitle`, and `DrawerDescription` only add styling.
+## Anatomy
 
-## Drawer
+```jsx
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from 'uilibs/base/drawer'
 
-The root defaults `modal` to `true` and `swipeDirection` to `down`, and shares both with the parts below: `DrawerContent` shows the overlay only when modal, and places itself on the edge the swipe direction names.
+;<Drawer>
+  <DrawerTrigger />
+  <DrawerContent>
+    <DrawerHeader>
+      <DrawerTitle />
+      <DrawerDescription />
+    </DrawerHeader>
+    <DrawerFooter>
+      <DrawerClose />
+    </DrawerFooter>
+  </DrawerContent>
+</Drawer>
+```
+
+`DrawerContent` renders the portal, the overlay (only while `modal`), the viewport, the popup, and the swipe handle (when `showSwipeHandle` is set). `DrawerPortal`, `DrawerOverlay`, and `DrawerSwipeHandle` are exported only for custom compositions.
+
+## Props
+
+Every part except `Drawer`, `DrawerTrigger`, `DrawerClose`, and `DrawerPortal` also takes `style`: StyleX styles that replace `className` and `style`. On `DrawerContent` it styles the popup.
+
+### Drawer
+
+`modal` defaults to `true` and `swipeDirection` to `down`. The parts read both: `DrawerContent` docks to the edge the swipe direction names.
 
 | Prop              | Values    | Default | Note                                                        |
 | ----------------- | --------- | ------- | ----------------------------------------------------------- |

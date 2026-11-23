@@ -7,21 +7,53 @@ import * as Stories from './breadcrumb.stories'
 
 A trail of links that shows where the page sits in the site.
 
-Renders a `nav` with `ol`, `li`, `a`, and `span` parts; their other props pass through.
+Plain `nav`, `ol`, `li`, `a`, and `span` elements. Props not listed here pass through.
 
-`BreadcrumbList`, `BreadcrumbItem`, and `BreadcrumbLink` take only `style` (StyleX styles that replace `className` and `style`). `BreadcrumbLink` follows the `color` of its `Breadcrumb`. `BreadcrumbPage` and `BreadcrumbSeparator` take only `style` too: the page marks the current location (`aria-current="page"`), and the separator shows a chevron unless it has children.
+## Anatomy
 
-## Breadcrumb
+```jsx
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
+} from 'uilibs/extra/breadcrumb'
 
-| Prop     | Values               | Default      | Note                                        |
-| -------- | -------------------- | ------------ | ------------------------------------------- |
-| `color`  | `neutral`, `primary` | `neutral`    | The role of the links.                      |
-| `labels` | `{ breadcrumb }`     | `Breadcrumb` | Name of the `nav` landmark.                 |
-| `style`  | StyleX styles        | none         | Replaces the `className` and `style` props. |
+;<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href='…' />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage />
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
 
-## BreadcrumbEllipsis
+`BreadcrumbSeparator` is an `li` between items, not inside one, and shows a chevron unless it has children. `BreadcrumbEllipsis` is optional; `BreadcrumbPage` marks the current location with `aria-current="page"`.
 
-| Prop     | Values        | Default | Note                                           |
-| -------- | ------------- | ------- | ---------------------------------------------- |
-| `labels` | `{ more }`    | `More`  | Text for assistive technology on the ellipsis. |
-| `style`  | StyleX styles | none    | Replaces the `className` and `style` props.    |
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. On `Breadcrumb` it lands on the `nav`.
+
+### Breadcrumb
+
+| Prop     | Values               | Default      | Note                                             |
+| -------- | -------------------- | ------------ | ------------------------------------------------ |
+| `color`  | `neutral`, `primary` | `neutral`    | The role of the links in every `BreadcrumbLink`. |
+| `labels` | `{ breadcrumb }`     | `Breadcrumb` | Name of the `nav` landmark.                      |
+
+### BreadcrumbEllipsis
+
+| Prop     | Values     | Default | Note                                           |
+| -------- | ---------- | ------- | ---------------------------------------------- |
+| `labels` | `{ more }` | `More`  | Text for assistive technology on the ellipsis. |

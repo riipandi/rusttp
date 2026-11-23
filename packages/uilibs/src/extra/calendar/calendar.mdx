@@ -7,17 +7,27 @@ import * as Stories from './calendar.stories'
 
 A month grid to pick a day, several days, or a range.
 
-Wraps [react-day-picker](https://daypicker.dev) `DayPicker`. Its other props, such as `mode`, `selected`, and `onSelect`, pass through. Month and year dropdowns use the library's Select.
+Built on [react-day-picker](https://daypicker.dev) `DayPicker`; month and year dropdowns use the library's Select. Props not listed here pass through.
 
-## Calendar
+## Anatomy
 
-| Prop              | Values                                                    | Default                                     | Note                                                         |
-| ----------------- | --------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
-| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost`                      | `ghost`                                     | The fill of the previous and next buttons.                   |
-| `showOutsideDays` | `boolean`                                                 | `true`                                      | Shows the days of the neighbouring months.                   |
-| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` | `label`                                     | `label` shows the month as text.                             |
-| `startMonth`      | `Date`                                                    | January 1900                                | The first month the calendar can show.                       |
-| `endMonth`        | `Date`                                                    | December 2100                               | The last month the calendar can show.                        |
-| `labels`          | react-day-picker's `labels` functions                     | `labelDayButton` starts with the day number | Your functions replace the defaults one by one.              |
-| `formatters`      | react-day-picker's `formatters` functions                 | `formatMonthDropdown` is the short month    | Your functions replace the defaults one by one.              |
-| `style`           | StyleX styles                                             | none                                        | Styles the root; replaces the `className` and `style` props. |
+```jsx
+import { Calendar } from 'uilibs/extra/calendar'
+
+<Calendar mode='single' selected={…} onSelect={…} />
+```
+
+`mode` is `single`, `multiple`, or `range`, and `selected` and `onSelect` hold the choice. `Calendar` draws the grid, the previous and next buttons, and the caption itself, so it has no child parts.
+
+## Props
+
+| Prop              | Values                                                    | Default                                     | Note                                               |
+| ----------------- | --------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------- |
+| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost`                      | `ghost`                                     | The fill of the previous and next buttons.         |
+| `showOutsideDays` | `boolean`                                                 | `true`                                      | Shows the days of the neighbouring months.         |
+| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` | `label`                                     | `label` shows the month as text.                   |
+| `startMonth`      | `Date`                                                    | January 1900                                | The first month the calendar can show.             |
+| `endMonth`        | `Date`                                                    | December 2100                               | The last month the calendar can show.              |
+| `labels`          | react-day-picker's `labels` functions                     | `labelDayButton` starts with the day number | Your functions replace the defaults one by one.    |
+| `formatters`      | react-day-picker's `formatters` functions                 | `formatMonthDropdown` is the short month    | Your functions replace the defaults one by one.    |
+| `style`           | StyleX styles                                             | none                                        | Styles the root; replaces `className` and `style`. |

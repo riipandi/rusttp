@@ -5,26 +5,67 @@ import * as Stories from './menubar.stories'
 
 # Menubar
 
-A desktop-style bar of menus. Its menus are Dropdown Menu parts.
+A desktop-style bar of menus. Its menu parts are Dropdown Menu's.
 
-Wraps Base UI [Menubar](https://base-ui.com/react/components/menubar). Its other props pass through.
+Built on Base UI [Menubar](https://base-ui.com/react/components/menubar). Props not listed here pass through.
 
-`MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, `MenubarRadioGroup`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarShortcut`, `MenubarSubTrigger`, and `MenubarSubContent` are the Dropdown Menu parts unchanged, with the same props.
+## Anatomy
 
-## Menubar
+```jsx
+import {
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger
+} from 'uilibs/base/menubar'
 
-| Prop    | Values           | Default | Note                                                     |
-| ------- | ---------------- | ------- | -------------------------------------------------------- |
-| `size`  | `sm`, `md`, `lg` | `md`    | Bar height and type, as the control scale: `md` is 36px. |
-| `style` | StyleX styles    | none    | Replaces the `className` and `style` props.              |
+;<Menubar>
+  <MenubarMenu>
+    <MenubarTrigger />
+    <MenubarContent>
+      <MenubarItem>
+        <MenubarShortcut />
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarCheckboxItem />
+      <MenubarRadioGroup>
+        <MenubarRadioItem />
+      </MenubarRadioGroup>
+      <MenubarSub>
+        <MenubarSubTrigger />
+        <MenubarSubContent>
+          <MenubarItem />
+        </MenubarSubContent>
+      </MenubarSub>
+    </MenubarContent>
+  </MenubarMenu>
+</Menubar>
+```
 
-## MenubarTrigger
+Each `MenubarMenu` holds one trigger and its content. `MenubarContent` renders the portal and the positioner. `MenubarGroup`, `MenubarLabel`, and `MenubarPortal` are also exported.
 
-| Prop    | Values        | Default | Note                                        |
-| ------- | ------------- | ------- | ------------------------------------------- |
-| `style` | StyleX styles | none    | Replaces the `className` and `style` props. |
+## Props
 
-## MenubarContent
+Every part except `MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `MenubarContent` and `MenubarSubContent` it styles the popup.
+
+Every part other than `Menubar`, `MenubarTrigger`, and `MenubarContent` is the matching Dropdown Menu part (`MenubarItem` is `DropdownMenuItem`), with the same props.
+
+### Menubar
+
+| Prop   | Values           | Default | Note                                                     |
+| ------ | ---------------- | ------- | -------------------------------------------------------- |
+| `size` | `sm`, `md`, `lg` | `md`    | Bar height and type, as the control scale: `md` is 36px. |
+
+### MenubarContent
 
 The popup. It takes the `DropdownMenuContent` placement props with different defaults.
 

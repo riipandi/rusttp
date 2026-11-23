@@ -7,11 +7,26 @@ import * as Stories from './meter.stories'
 
 A bar that shows a numeric value within a range.
 
-Wraps Base UI [Meter](https://base-ui.com/react/components/meter). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Meter](https://base-ui.com/react/components/meter). Props not listed here pass through.
 
-`MeterTrack`, `MeterIndicator`, `MeterLabel`, and `MeterValue` only add styling; they read `color` and `size` from `Meter`.
+## Anatomy
 
-## Meter
+```jsx
+import { Meter, MeterLabel, MeterValue } from 'uilibs/base/meter'
+
+;<Meter>
+  <MeterLabel />
+  <MeterValue />
+</Meter>
+```
+
+`Meter` renders the track and the indicator itself, after its children, so `MeterTrack` and `MeterIndicator` are not placed by hand. Without a `MeterLabel`, give the meter an `aria-label`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Meter
 
 | Prop    | Values                                                  | Default   | Note                                                                                     |
 | ------- | ------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------- |

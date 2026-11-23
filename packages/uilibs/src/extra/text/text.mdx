@@ -5,13 +5,25 @@ import * as Stories from './text.stories'
 
 # Text
 
-Typography for body copy, captions, and headings. `variant`, `weight`, and `align` take one value or a value per breakpoint.
+Typography for body copy, captions, and headings.
 
-Renders a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. The `featured-*` variants render `h1` to `h6` by default. Its other props pass through.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render). Props not listed here pass through.
 
-## Text
+## Anatomy
 
-A responsive value is one value for every viewport, or an object with the breakpoint keys `s`, `m`, `l`, and `xl`, mobile first.
+```jsx
+import { Text } from 'uilibs/extra/text'
+
+;<Text>Text</Text>
+```
+
+`Text` renders a `div`. The `featured-1` to `featured-6` variants render `h1` to `h6`, and with a responsive `variant` the tag follows the largest breakpoint's value. Set `render` to use another element.
+
+## Props
+
+### Text
+
+`variant`, `weight`, and `align` take one value for every viewport, or an object with the breakpoint keys `s`, `m`, `l`, and `xl`, mobile first.
 
 | Prop         | Values                                                                                                                           | Default  | Note                                          |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------- |
@@ -24,4 +36,4 @@ A responsive value is one value for every viewport, or an object with the breakp
 | `wrap`       | `balance`, `nowrap`                                                                                                              | none     | Balances the lines or keeps them on one line. |
 | `monospace`  | `boolean`                                                                                                                        | `false`  | Uses the monospace font.                      |
 | `numeric`    | `boolean`                                                                                                                        | `false`  | Uses tabular figures.                         |
-| `style`      | StyleX styles                                                                                                                    | none     | Replaces the `className` and `style` props.   |
+| `style`      | StyleX styles                                                                                                                    | none     | Replaces `className` and `style`.             |

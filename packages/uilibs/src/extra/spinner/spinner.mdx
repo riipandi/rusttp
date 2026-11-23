@@ -7,13 +7,25 @@ import * as Stories from './spinner.stories'
 
 A busy indicator. Alone it is a `status` live region; inside a Button it is hidden from assistive technology.
 
-Renders an `svg` glyph; its other props pass through.
+Draws Keyline `LoaderCircle`, an `svg`. Props not listed here pass through.
 
-## Spinner
+## Anatomy
+
+```jsx
+import { Spinner } from 'uilibs/extra/spinner'
+
+;<Spinner />
+```
+
+For a busy button, set `loading` on `Button` instead of placing a `Spinner` in it.
+
+## Props
+
+### Spinner
 
 | Prop     | Values                                                  | Default   | Note                                                        |
 | -------- | ------------------------------------------------------- | --------- | ----------------------------------------------------------- |
 | `size`   | `sm`, `md`, `lg`                                        | `md`      | Glyph size: 12px, 16px, or 20px.                            |
 | `color`  | `inherit`, `primary`, `positive`, `warning`, `critical` | `inherit` | The role color; `inherit` takes the surrounding text color. |
 | `labels` | `{ loading }`                                           | `Loading` | Accessible name when the spinner stands alone.              |
-| `style`  | StyleX styles                                           | none      | Replaces the `className` and `style` props.                 |
+| `style`  | StyleX styles                                           | none      | Replaces `className` and `style`.                           |

@@ -5,21 +5,45 @@ import * as Stories from './dialog.stories'
 
 # Dialog
 
-A modal popup that opens on top of the page, for content the user may dismiss.
+A modal popup over the page, for content the user may dismiss. Use Alert Dialog when the user must answer.
 
-Wraps Base UI [Dialog](https://base-ui.com/react/components/dialog). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through.
 
-`Dialog`, `DialogTrigger`, `DialogPortal`, `DialogClose`, `DialogHeader`, `DialogFooter`, `DialogTitle`, and `DialogDescription` are the Base UI parts unchanged, apart from the styling.
+## Anatomy
 
-## DialogOverlay
+```jsx
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from 'uilibs/base/dialog'
 
-| Prop             | Values    | Default | Note                                |
-| ---------------- | --------- | ------- | ----------------------------------- |
-| `blurredOverlay` | `boolean` | `false` | Blurs the page behind the backdrop. |
+;<Dialog>
+  <DialogTrigger />
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle />
+      <DialogDescription />
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose />
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
 
-## DialogContent
+`DialogContent` renders the portal, the overlay, and a close button. `DialogPortal` and `DialogOverlay` are exported only for custom compositions.
 
-The popup. It renders its own portal and overlay, and a close button.
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### DialogContent
 
 | Prop              | Values      | Default | Note                                          |
 | ----------------- | ----------- | ------- | --------------------------------------------- |
@@ -28,11 +52,16 @@ The popup. It renders its own portal and overlay, and a close button.
 | `showCloseButton` | `boolean`   | `true`  | Shows the built-in close button.              |
 | `labels`          | `{ close }` | `Close` | Accessible name of the built-in close button. |
 
-## CloseButton
+### DialogOverlay
 
-The dismiss button inside `DialogContent`, shared with Sheet and Toast. It is rendered through a Close part and takes the props of a `button`.
+| Prop             | Values    | Default | Note                                |
+| ---------------- | --------- | ------- | ----------------------------------- |
+| `blurredOverlay` | `boolean` | `false` | Blurs the page behind the backdrop. |
 
-| Prop     | Values        | Default | Note                                        |
-| -------- | ------------- | ------- | ------------------------------------------- |
-| `labels` | `{ close }`   | `Close` | Accessible name of the button.              |
-| `style`  | StyleX styles | none    | Replaces the `className` and `style` props. |
+### CloseButton
+
+The dismiss button inside `DialogContent`, shared with Sheet and Toast. It takes the props of a `button`.
+
+| Prop     | Values      | Default | Note                           |
+| -------- | ----------- | ------- | ------------------------------ |
+| `labels` | `{ close }` | `Close` | Accessible name of the button. |

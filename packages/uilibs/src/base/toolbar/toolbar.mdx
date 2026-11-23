@@ -5,26 +5,37 @@ import * as Stories from './toolbar.stories'
 
 # Toolbar
 
-A container for toolbar items. Compose buttons, toggles, and inputs through the `render` prop.
+A container that groups buttons, toggles, links, and inputs.
 
-Wraps Base UI [Toolbar](https://base-ui.com/react/components/toolbar). Its other props pass through.
+Built on Base UI [Toolbar](https://base-ui.com/react/components/toolbar). Props not listed here pass through.
 
-`ToolbarButton`, `ToolbarLink`, and `ToolbarInput` are the Base UI parts unchanged.
+## Anatomy
 
-## Toolbar
+```jsx
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarInput,
+  ToolbarLink,
+  ToolbarSeparator
+} from 'uilibs/base/toolbar'
+import { Button } from 'uilibs/base/button'
+import { Toggle } from 'uilibs/base/toggle'
 
-| Prop    | Values        | Default | Note                                        |
-| ------- | ------------- | ------- | ------------------------------------------- |
-| `style` | StyleX styles | none    | Replaces the `className` and `style` props. |
+;<Toolbar>
+  <ToolbarGroup>
+    <ToolbarButton render={<Toggle />} />
+  </ToolbarGroup>
+  <ToolbarSeparator />
+  <ToolbarButton render={<Button />} />
+  <ToolbarLink />
+  <ToolbarInput />
+</Toolbar>
+```
 
-## ToolbarGroup
+`ToolbarButton`, `ToolbarLink`, and `ToolbarInput` carry no styles. Render a `Button`, `Toggle`, or `Input` through `render` to get theirs. To add a toggle group, place `ToggleGroup` in the toolbar and render each item through `ToolbarButton render={<ToggleGroupItem />}`.
 
-| Prop    | Values        | Default | Note                                        |
-| ------- | ------------- | ------- | ------------------------------------------- |
-| `style` | StyleX styles | none    | Replaces the `className` and `style` props. |
+## Props
 
-## ToolbarSeparator
-
-| Prop    | Values        | Default | Note                                        |
-| ------- | ------------- | ------- | ------------------------------------------- |
-| `style` | StyleX styles | none    | Replaces the `className` and `style` props. |
+No part adds props. `Toolbar`, `ToolbarGroup`, and `ToolbarSeparator` also take `style`: StyleX styles that replace `className` and `style`. `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` are the Base UI parts unchanged.

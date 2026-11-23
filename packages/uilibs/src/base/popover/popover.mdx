@@ -5,15 +5,44 @@ import * as Stories from './popover.stories'
 
 # Popover
 
-Rich, interactive content in a portal, opened by a trigger.
+Interactive content in a floating panel opened by a trigger. Use Tooltip to name a control, and Preview Card to preview a link on hover.
 
-Wraps Base UI [Popover](https://base-ui.com/react/components/popover). Its other props pass through.
+Built on Base UI [Popover](https://base-ui.com/react/components/popover). Props not listed here pass through.
 
-`Popover`, `PopoverTrigger`, and `PopoverClose` are the Base UI parts unchanged. `PopoverHeader`, `PopoverTitle`, and `PopoverDescription` take only `style`, which replaces the `className` and `style` props.
+## Anatomy
 
-## PopoverContent
+```jsx
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger
+} from 'uilibs/base/popover'
 
-Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+;<Popover>
+  <PopoverTrigger />
+  <PopoverContent>
+    <PopoverHeader>
+      <PopoverTitle />
+      <PopoverDescription />
+    </PopoverHeader>
+    <PopoverClose />
+  </PopoverContent>
+</Popover>
+```
+
+`PopoverContent` renders the portal and the positioner. `PopoverHeader` is a layout wrapper and optional. A popover without a `PopoverTitle` needs an `aria-label` on `PopoverContent`.
+
+## Props
+
+`PopoverHeader`, `PopoverTitle`, `PopoverDescription`, and `PopoverContent` also take `style`: StyleX styles that replace `className` and `style`. On `PopoverContent` it styles the popup.
+
+### PopoverContent
+
+The positioner props go to the positioner.
 
 | Prop                 | Values                                                                                             | Default   | Note                                                 |
 | -------------------- | -------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------- |
@@ -26,4 +55,3 @@ Renders the portal, the positioner, and the popup. The positioner props below go
 | `alignOffset`        | `number` or a function                                                                             | `0`       | Shift along the alignment axis.                      |
 | `collisionAvoidance` | Base UI positioner value                                                                           | none      | How the popup moves to stay in view.                 |
 | `collisionPadding`   | Base UI positioner value                                                                           | none      | Space kept from the viewport edge.                   |
-| `style`              | StyleX styles                                                                                      | none      | Replaces the `className` and `style` props.          |

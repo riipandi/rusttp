@@ -7,15 +7,34 @@ import * as Stories from './otp-field.stories'
 
 A one-time code input in character slots. `size` and `variant` sit on the root and reach every slot.
 
-Wraps Base UI [OTP Field](https://base-ui.com/react/components/otp-field). Its other props pass through.
+Built on Base UI [OTP Field](https://base-ui.com/react/components/otp-field). Props not listed here pass through.
 
-`OTPFieldGroup`, `OTPFieldSlot`, and `OTPFieldSeparator` take only `style`, which replaces the `className` and `style` props.
+## Anatomy
 
-## OTPField
+```jsx
+import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs/base/otp-field'
+
+;<OTPField length={6}>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+  <OTPFieldSeparator />
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>
+```
+
+Render one `OTPFieldSlot` per character of `length`. `OTPFieldGroup` joins its slots into one box and `OTPFieldSeparator` is a divider with a minus glyph; both are optional. Name the field with `aria-label`, `aria-labelledby`, or a `FieldLabel`: the first slot takes that name and the others are named `Character n of N`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### OTPField
 
 | Prop      | Values                                  | Default            | Note                                                                        |
 | --------- | --------------------------------------- | ------------------ | --------------------------------------------------------------------------- |
 | `size`    | `sm`, `md`, `lg`                        | `md`               | Slot height and type.                                                       |
 | `variant` | `outline`, `faded`, `ghost`, `headless` | `outline`          | The box.                                                                    |
 | `labels`  | `{ slot }`                              | `Character n of N` | Names the slots after the first; `slot(position, length)` returns the name. |
-| `style`   | StyleX styles                           | none               | Replaces the `className` and `style` props.                                 |

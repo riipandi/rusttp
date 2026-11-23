@@ -7,9 +7,21 @@ import * as Stories from './input-phone.stories'
 
 A phone number input with a searchable country selector.
 
-Wraps [react-phone-number-input](https://www.npmjs.com/package/react-phone-number-input), with the country selector drawn as a Base UI [Combobox](https://base-ui.com/react/components/combobox). Its other props pass through.
+Wraps [react-phone-number-input](https://www.npmjs.com/package/react-phone-number-input), with the country selector drawn as a Base UI [Combobox](https://base-ui.com/react/components/combobox). Props not listed here pass through.
 
-## InputPhone
+## Anatomy
+
+```jsx
+import { InputPhone } from 'uilibs/extra/input-phone'
+
+;<InputPhone />
+```
+
+`InputPhone` renders the group, the country button with its search list, and the digits field, so there are no parts to assemble. `withCountrySelect={false}` drops the country selector.
+
+## Props
+
+### InputPhone
 
 | Prop                     | Values                                        | Default                                                  | Note                                                           |
 | ------------------------ | --------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
@@ -26,4 +38,4 @@ Wraps [react-phone-number-input](https://www.npmjs.com/package/react-phone-numbe
 | `invalid`                | `boolean`                                     | `false`                                                  | Marks the field as invalid.                                    |
 | `disabled`               | `boolean`                                     | none                                                     | Disables the input and the country selector.                   |
 | `readOnly`               | `boolean`                                     | none                                                     | Makes the field read-only.                                     |
-| `style`                  | StyleX styles                                 | none                                                     | Styles the group; replaces the `className` and `style` props.  |
+| `style`                  | StyleX styles                                 | none                                                     | Styles the group; replaces `className` and `style`.            |

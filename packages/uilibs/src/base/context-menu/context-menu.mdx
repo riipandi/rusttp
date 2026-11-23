@@ -5,19 +5,63 @@ import * as Stories from './context-menu.stories'
 
 # Context Menu
 
-A menu that opens at the pointer on right click or long press.
+A menu that opens at the pointer on right click or long press. Use Dropdown Menu for a menu opened from a button.
 
-Wraps Base UI [Context Menu](https://base-ui.com/react/components/context-menu). Its other props pass through.
+Built on Base UI [Context Menu](https://base-ui.com/react/components/context-menu). Props not listed here pass through.
 
-`ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `ContextMenuSub`, and `ContextMenuRadioGroup` are the Base UI parts unchanged.
+## Anatomy
 
-`ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuSubTrigger`, `ContextMenuShortcut`, `ContextMenuSeparator`, and `ContextMenuLabel` are the Dropdown Menu parts, styled the same and taking the same props.
+```jsx
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger
+} from 'uilibs/base/context-menu'
 
-`ContextMenuTrigger` takes only `style` (StyleX styles that replace `className` and `style`).
+;<ContextMenu>
+  <ContextMenuTrigger />
+  <ContextMenuContent>
+    <ContextMenuItem>
+      <ContextMenuShortcut />
+    </ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuGroup>
+      <ContextMenuLabel />
+      <ContextMenuCheckboxItem />
+    </ContextMenuGroup>
+    <ContextMenuRadioGroup>
+      <ContextMenuRadioItem />
+    </ContextMenuRadioGroup>
+    <ContextMenuSub>
+      <ContextMenuSubTrigger />
+      <ContextMenuSubContent>
+        <ContextMenuItem />
+      </ContextMenuSubContent>
+    </ContextMenuSub>
+  </ContextMenuContent>
+</ContextMenu>
+```
 
-## ContextMenuContent
+`ContextMenuContent` renders the portal and the positioner. `ContextMenuLabel` must sit inside a `ContextMenuGroup` or `ContextMenuRadioGroup`, and a radio item inside a `ContextMenuRadioGroup`.
 
-Renders the portal and the positioner around the popup.
+## Props
+
+Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `ContextMenuSub`, and `ContextMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `ContextMenuContent` and `ContextMenuSubContent` it styles the popup.
+
+`ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuSubTrigger`, `ContextMenuShortcut`, `ContextMenuSeparator`, and `ContextMenuLabel` are the Dropdown Menu parts, with the same props (`color`, `icon`, and `inset` are documented there).
+
+### ContextMenuContent
 
 | Prop          | Values                                                         | Default | Note                                        |
 | ------------- | -------------------------------------------------------------- | ------- | ------------------------------------------- |
@@ -25,9 +69,8 @@ Renders the portal and the positioner around the popup.
 | `sideOffset`  | `number` or an offset function                                 | `0`     | Distance from the anchor, in px.            |
 | `align`       | `start`, `center`, `end`                                       | `start` | Alignment along the anchor's edge.          |
 | `alignOffset` | `number` or an offset function                                 | `4`     | Offset along the alignment axis, in px.     |
-| `style`       | StyleX styles                                                  | none    | Replaces the `className` and `style` props. |
 
-## ContextMenuSubContent
+### ContextMenuSubContent
 
 The popup of a submenu. It takes the `ContextMenuContent` props with other defaults.
 
@@ -37,4 +80,3 @@ The popup of a submenu. It takes the `ContextMenuContent` props with other defau
 | `sideOffset`  | `number` or an offset function                                 | `0`     | Distance from the anchor, in px.            |
 | `align`       | `start`, `center`, `end`                                       | `start` | Alignment along the anchor's edge.          |
 | `alignOffset` | `number` or an offset function                                 | `-4`    | Offset along the alignment axis, in px.     |
-| `style`       | StyleX styles                                                  | none    | Replaces the `className` and `style` props. |

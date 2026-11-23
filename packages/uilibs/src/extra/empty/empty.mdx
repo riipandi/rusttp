@@ -5,15 +5,40 @@ import * as Stories from './empty.stories'
 
 # Empty
 
-A placeholder for a view with nothing to show, built from media, a title, a description, and actions.
+A placeholder for a view with nothing to show: media, a title, a description, and actions.
 
-Each part renders a `div`; its other props pass through.
+Plain `div` elements, no Base UI parts. Props not listed here pass through.
 
-`Empty`, `EmptyHeader`, `EmptyTitle`, `EmptyDescription`, and `EmptyContent` take only `style` (StyleX styles that replace `className` and `style`).
+## Anatomy
 
-## EmptyMedia
+```jsx
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from 'uilibs/extra/empty'
+
+;<Empty>
+  <EmptyHeader>
+    <EmptyMedia />
+    <EmptyTitle />
+    <EmptyDescription />
+  </EmptyHeader>
+  <EmptyContent />
+</Empty>
+```
+
+Every part is optional. `EmptyContent` holds the actions, such as a `Button`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### EmptyMedia
 
 | Prop      | Values            | Default   | Note                                             |
 | --------- | ----------------- | --------- | ------------------------------------------------ |
 | `variant` | `default`, `icon` | `default` | `icon` sets the glyph on a rounded neutral tile. |
-| `style`   | StyleX styles     | none      | Replaces the `className` and `style` props.      |

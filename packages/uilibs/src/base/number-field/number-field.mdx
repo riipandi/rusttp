@@ -7,38 +7,63 @@ import * as Stories from './number-field.stories'
 
 A numeric input with steppers and a scrub area. `size` and `variant` sit on the root and reach the group and its steppers.
 
-Wraps Base UI [Number Field](https://base-ui.com/react/components/number-field). Its other props pass through.
+Built on Base UI [Number Field](https://base-ui.com/react/components/number-field). Props not listed here pass through.
 
-`NumberFieldScrubArea` and `NumberFieldScrubAreaCursor` are the Base UI parts unchanged. `NumberFieldInput` takes only `style`, which replaces the `className` and `style` props.
+## Anatomy
 
-## NumberField
+```jsx
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+  NumberFieldScrubAreaCursor
+} from 'uilibs/base/number-field'
 
-| Prop      | Values                                  | Default   | Note                                        |
-| --------- | --------------------------------------- | --------- | ------------------------------------------- |
-| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type.                    |
-| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                    |
-| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props. |
+;<NumberField>
+  <NumberFieldScrubArea>
+    <NumberFieldScrubAreaCursor />
+  </NumberFieldScrubArea>
+  <NumberFieldGroup>
+    <NumberFieldDecrement />
+    <NumberFieldInput />
+    <NumberFieldIncrement />
+  </NumberFieldGroup>
+</NumberField>
+```
 
-## NumberFieldGroup
+A `NumberFieldGroup` with no children renders the input and both steppers itself, so most uses are `<NumberFieldGroup />` alone. `NumberFieldScrubArea` and `NumberFieldScrubAreaCursor` are Base UI's parts, re-exported unchanged. Name the field with a label or a `FieldLabel`.
 
-| Prop       | Values                   | Default                | Note                                        |
-| ---------- | ------------------------ | ---------------------- | ------------------------------------------- |
-| `controls` | `stacked`, `sides`       | `stacked`              | Where the built-in steppers sit.            |
-| `labels`   | `{ increase, decrease }` | `Increase`, `Decrease` | Names of the built-in steppers.             |
-| `style`    | StyleX styles            | none                   | Replaces the `className` and `style` props. |
+## Props
 
-## NumberFieldDecrement
+Every part except `NumberFieldScrubArea` and `NumberFieldScrubAreaCursor` also takes `style`: StyleX styles that replace `className` and `style`.
 
-| Prop       | Values                  | Default                                   | Note                                        |
-| ---------- | ----------------------- | ----------------------------------------- | ------------------------------------------- |
-| `icon`     | `chevron-down`, `minus` | `chevron-down` when stacked, else `minus` | The built-in glyph.                         |
-| `controls` | `stacked`, `sides`      | `sides`                                   | Placement style of the button.              |
-| `style`    | StyleX styles           | none                                      | Replaces the `className` and `style` props. |
+### NumberField
 
-## NumberFieldIncrement
+| Prop      | Values                                  | Default   | Note                     |
+| --------- | --------------------------------------- | --------- | ------------------------ |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type. |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                 |
 
-| Prop       | Values               | Default                                | Note                                        |
-| ---------- | -------------------- | -------------------------------------- | ------------------------------------------- |
-| `icon`     | `chevron-up`, `plus` | `chevron-up` when stacked, else `plus` | The built-in glyph.                         |
-| `controls` | `stacked`, `sides`   | `sides`                                | Placement style of the button.              |
-| `style`    | StyleX styles        | none                                   | Replaces the `className` and `style` props. |
+### NumberFieldGroup
+
+| Prop       | Values                   | Default                | Note                                                    |
+| ---------- | ------------------------ | ---------------------- | ------------------------------------------------------- |
+| `controls` | `stacked`, `sides`       | `stacked`              | Where the built-in steppers sit. Ignored with children. |
+| `labels`   | `{ increase, decrease }` | `Increase`, `Decrease` | Names of the built-in steppers.                         |
+
+### NumberFieldDecrement
+
+| Prop       | Values                  | Default                                   | Note                                                                            |
+| ---------- | ----------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `icon`     | `chevron-down`, `minus` | `chevron-down` when stacked, else `minus` | The built-in glyph.                                                             |
+| `controls` | `stacked`, `sides`      | `sides`                                   | Styles the button for its placement: in the group's stack, or beside the input. |
+
+### NumberFieldIncrement
+
+| Prop       | Values               | Default                                | Note                                                                            |
+| ---------- | -------------------- | -------------------------------------- | ------------------------------------------------------------------------------- |
+| `icon`     | `chevron-up`, `plus` | `chevron-up` when stacked, else `plus` | The built-in glyph.                                                             |
+| `controls` | `stacked`, `sides`   | `sides`                                | Styles the button for its placement: in the group's stack, or beside the input. |

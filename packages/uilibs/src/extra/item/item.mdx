@@ -5,25 +5,56 @@ import * as Stories from './item.stories'
 
 # Item
 
-A row for a list of things, with media, content, and actions. `ItemGroup` holds several.
+A row with media, content, and actions; `ItemGroup` stacks several as a list. For multi-column records, use Table.
 
-`Item` renders a `div` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. The other parts render a `div`, except `ItemDescription`, which renders a `p`. Their other props pass through.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Item` renders a `div` and `render` swaps the element. The other parts render a `div`, except `ItemDescription` (`p`) and `ItemSeparator`, which is the library's `Separator`. Props not listed here pass through.
 
-`ItemGroup`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, and `ItemFooter` take only `style` (StyleX styles that replace `className` and `style`).
+## Anatomy
 
-`ItemSeparator` is `Separator` unchanged; inside an `ItemGroup` it drops its separator role so the list stays valid.
+```jsx
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle
+} from 'uilibs/extra/item'
 
-## Item
+;<ItemGroup>
+  <Item>
+    <ItemHeader />
+    <ItemMedia />
+    <ItemContent>
+      <ItemTitle />
+      <ItemDescription />
+    </ItemContent>
+    <ItemActions />
+    <ItemFooter />
+  </Item>
+  <ItemSeparator />
+</ItemGroup>
+```
+
+`ItemGroup` is optional. Inside one, each `Item` gets `role="listitem"` and `ItemSeparator` drops its separator role so the list stays valid. `ItemHeader` and `ItemFooter` each take a full row of the `Item`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Item
 
 | Prop      | Values                      | Default | Note                                                                          |
 | --------- | --------------------------- | ------- | ----------------------------------------------------------------------------- |
 | `variant` | `ghost`, `outline`, `faded` | `ghost` | `ghost` is the bare row, `outline` adds an edge, `faded` a soft neutral fill. |
 | `size`    | `xs`, `sm`, `md`            | `md`    | Padding and gap.                                                              |
-| `style`   | StyleX styles               | none    | Replaces the `className` and `style` props.                                   |
 
-## ItemMedia
+### ItemMedia
 
 | Prop      | Values                     | Default   | Note                                             |
 | --------- | -------------------------- | --------- | ------------------------------------------------ |
 | `variant` | `default`, `icon`, `image` | `default` | `icon` colors a glyph; `image` rounds a picture. |
-| `style`   | StyleX styles              | none      | Replaces the `className` and `style` props.      |

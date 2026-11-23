@@ -5,28 +5,77 @@ import * as Stories from './combobox.stories'
 
 # Combobox
 
-A searchable select. `ComboboxChips` holds several chosen values.
+A searchable select. Choose it over Select for a list the user searches, and over Autocomplete when the value must be one of the items. `ComboboxChips` takes several values.
 
-Wraps Base UI [Combobox](https://base-ui.com/react/components/combobox). Its other props pass through.
+Built on Base UI [Combobox](https://base-ui.com/react/components/combobox). Props not listed here pass through.
 
-`Combobox`, `ComboboxValue`, and `ComboboxCollection` are the Base UI parts unchanged, and `comboboxCreateItems` is Base UI's `createItems`.
+## Anatomy
 
-`ComboboxChipsInput`, `ComboboxList`, `ComboboxItem`, `ComboboxGroup`, `ComboboxLabel`, `ComboboxEmpty`, and `ComboboxSeparator` take only `style` (StyleX styles that replace `className` and `style`). `ComboboxChipsInput` is the input inside `ComboboxChips`, with no box of its own.
+```jsx
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxCollection,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxLabel,
+  ComboboxList,
+  ComboboxSeparator,
+  ComboboxValue
+} from 'uilibs/base/combobox'
 
-## ComboboxTrigger
+;<Combobox items={…}>
+  <ComboboxInput />
+  <ComboboxContent>
+    <ComboboxEmpty />
+    <ComboboxList>
+      <ComboboxItem />
+      <ComboboxSeparator />
+      <ComboboxGroup>
+        <ComboboxLabel />
+        <ComboboxCollection>
+          <ComboboxItem />
+        </ComboboxCollection>
+      </ComboboxGroup>
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>
 
-A select-like button. On its own, name it with `aria-label`.
+;<Combobox items={…} multiple>
+  <ComboboxChips>
+    <ComboboxValue>
+      <ComboboxChip />
+    </ComboboxValue>
+    <ComboboxChipsInput />
+  </ComboboxChips>
+  <ComboboxContent anchor={…} />
+</Combobox>
+```
+
+`ComboboxInput` renders the dropdown button and the optional clear button. `ComboboxContent` renders the portal and the positioner. `ComboboxItem` renders its check mark, `ComboboxChip` its remove button, and `ComboboxTrigger` its chevron. `ComboboxChipsInput` has no box of its own, and `ComboboxChips` needs a `ref` passed to `anchor` to anchor the popup.
+
+For a select-like button, use `ComboboxTrigger` with `ComboboxValue` inside it, and put `<ComboboxInput showTrigger={false} />` inside `ComboboxContent`. Name a standalone `ComboboxInput` or `ComboboxTrigger` with `aria-label`.
+
+`Combobox`, `ComboboxValue`, and `ComboboxCollection` are Base UI's parts, and `comboboxCreateItems` is Base UI's `createItems`, re-exported unchanged.
+
+## Props
+
+Every part except `Combobox`, `ComboboxValue`, and `ComboboxCollection` also takes `style`: StyleX styles that replace `className` and `style`. On `ComboboxContent` it styles the popup, and on `ComboboxInput` the wrapper around the input and buttons.
+
+### ComboboxTrigger
 
 | Prop          | Values                                  | Default   | Note                                                       |
 | ------------- | --------------------------------------- | --------- | ---------------------------------------------------------- |
 | `size`        | `sm`, `md`, `lg`                        | `md`      | Control height and type.                                   |
 | `variant`     | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                                   |
 | `showChevron` | `boolean`                               | `true`    | Renders the chevron. Set `false` for an icon-only trigger. |
-| `style`       | StyleX styles                           | none      | Replaces the `className` and `style` props.                |
 
-## ComboboxInput
-
-An input with a dropdown button and an optional clear button. On its own, name it with `aria-label`.
+### ComboboxInput
 
 | Prop          | Values                                  | Default                    | Note                                                                                           |
 | ------------- | --------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -36,28 +85,21 @@ An input with a dropdown button and an optional clear button. On its own, name i
 | `showClear`   | `boolean`                               | `false`                    | Renders a clear button before the dropdown button.                                             |
 | `labels`      | `{ clear, open }`                       | `Clear value`, `Open list` | Names of the clear and dropdown buttons.                                                       |
 | `inputStyle`  | StyleX styles                           | none                       | Styles the inner input element.                                                                |
-| `style`       | StyleX styles                           | none                       | Styles the wrapper around the input and buttons; replaces the `className` and `style` props.   |
 
-## ComboboxChips
+### ComboboxChips
 
-The box that holds the chips in a multiple-value combobox. It can anchor the popup through its `ref`.
+| Prop      | Values                                  | Default   | Note                     |
+| --------- | --------------------------------------- | --------- | ------------------------ |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Minimum height and type. |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                 |
 
-| Prop      | Values                                  | Default   | Note                                        |
-| --------- | --------------------------------------- | --------- | ------------------------------------------- |
-| `size`    | `sm`, `md`, `lg`                        | `md`      | Minimum height and type.                    |
-| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                    |
-| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props. |
-
-## ComboboxChip
+### ComboboxChip
 
 | Prop     | Values             | Default                        | Note                                                                             |
 | -------- | ------------------ | ------------------------------ | -------------------------------------------------------------------------------- |
 | `labels` | `{ remove(text) }` | `Remove <text>`, else `Remove` | Name of the remove button; `text` is the chip's children when they are a string. |
-| `style`  | StyleX styles      | none                           | Replaces the `className` and `style` props.                                      |
 
-## ComboboxContent
-
-Renders the portal and the positioner around the popup.
+### ComboboxContent
 
 | Prop                 | Values                                                         | Default           | Note                                        |
 | -------------------- | -------------------------------------------------------------- | ----------------- | ------------------------------------------- |
@@ -67,4 +109,3 @@ Renders the portal and the positioner around the popup.
 | `alignOffset`        | `number` or an offset function                                 | `0`               | Offset along the alignment axis, in px.     |
 | `anchor`             | element, ref, virtual element, or a function returning one     | none              | What the popup positions against.           |
 | `collisionAvoidance` | Base UI collision settings                                     | Base UI's default | How the popup moves to stay in view.        |
-| `style`              | StyleX styles                                                  | none              | Replaces the `className` and `style` props. |

@@ -7,11 +7,24 @@ import * as Stories from './slider.stories'
 
 Selects a value or a range from a track. One thumb unless the value is an array.
 
-Wraps Base UI [Slider](https://base-ui.com/react/components/slider). Its other props pass through.
+Built on Base UI [Slider](https://base-ui.com/react/components/slider). Props not listed here pass through.
 
-## Slider
+## Anatomy
 
-| Prop          | Values        | Default | Note                                                                                |
-| ------------- | ------------- | ------- | ----------------------------------------------------------------------------------- |
-| `thumbLabels` | `string[]`    | none    | Accessible name of each thumb, in order. A single thumb falls back to `aria-label`. |
-| `style`       | StyleX styles | none    | Replaces the `className` and `style` props.                                         |
+```jsx
+import { Slider } from 'uilibs/base/slider'
+
+;<Slider />
+```
+
+`Slider` renders the control, track, range, and one thumb per entry of `value` or `defaultValue`, so it takes no children.
+
+## Props
+
+`Slider` also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Slider
+
+| Prop          | Values     | Default | Note                                                                                |
+| ------------- | ---------- | ------- | ----------------------------------------------------------------------------------- |
+| `thumbLabels` | `string[]` | none    | Accessible name of each thumb, in order. A single thumb falls back to `aria-label`. |

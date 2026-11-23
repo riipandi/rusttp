@@ -7,11 +7,26 @@ import * as Stories from './toast.stories'
 
 Stacked notifications, raised by an imperative `toast` call from anywhere.
 
-Wraps Base UI [Toast](https://base-ui.com/react/components/toast). Its other props pass through.
+Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not listed here pass through.
 
-## Toaster
+## Anatomy
 
-Mount it once inside `ToastProvider`. It renders the toast stack.
+```jsx
+import { ToastProvider, Toaster, toast } from 'uilibs/base/toast'
+
+;<ToastProvider>
+  {children}
+  <Toaster />
+</ToastProvider>
+
+toast('Title', { description: '…' })
+```
+
+Mount `ToastProvider` and `Toaster` once, for example in the root layout. `Toaster` renders the portal, the viewport, and each toast with its title, description, action, and close button.
+
+## Props
+
+### Toaster
 
 | Prop             | Values                                             | Default                 | Note                                                      |
 | ---------------- | -------------------------------------------------- | ----------------------- | --------------------------------------------------------- |
@@ -19,7 +34,7 @@ Mount it once inside `ToastProvider`. It renders the toast stack.
 | `labels`         | `{ close, notification }`                          | `Close`, `Notification` | Names of the close button and of a toast without a title. |
 | `style`          | StyleX styles                                      | none                    | Styles for the viewport, merged last.                     |
 
-## toast
+### toast
 
 The options of `toast`, `toast.success`, and `toast.error` are the Base UI toast options without `title` and `data`, plus:
 

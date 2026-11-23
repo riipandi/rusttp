@@ -7,9 +7,19 @@ import * as Stories from './badge.stories'
 
 A compact status label. The fill is `variant` and the role is `color`.
 
-Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the `span` for another element. Props not listed here pass through.
 
-## Badge
+## Anatomy
+
+```jsx
+import { Badge } from 'uilibs/extra/badge'
+
+;<Badge>Label</Badge>
+```
+
+The glyphs and the dismiss button come from `icon`, `endIcon`, and `onDismiss`, not from child parts.
+
+## Props
 
 | Prop          | Values                                                  | Default                                    | Note                                                                    |
 | ------------- | ------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
@@ -22,4 +32,4 @@ Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use
 | `highlighted` | `boolean`                                               | `false`                                    | Fades the badge to 0.8 opacity.                                         |
 | `onDismiss`   | `() => void`                                            | none                                       | Adds a trailing dismiss button. Do not combine it with a link `render`. |
 | `labels`      | `{ dismiss }`                                           | `Dismiss`                                  | Name of the dismiss button.                                             |
-| `style`       | StyleX styles                                           | none                                       | Replaces the `className` and `style` props.                             |
+| `style`       | StyleX styles                                           | none                                       | Replaces `className` and `style`.                                       |

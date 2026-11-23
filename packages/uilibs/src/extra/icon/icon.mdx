@@ -5,11 +5,23 @@ import * as Stories from './icon.stories'
 
 # Icon
 
-A wrapper that sizes and colors an SVG asset. It inherits the parent's text color unless `color` is set.
+Sizes and colors an SVG asset. It inherits the parent's text color unless `color` is set.
 
-Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through. In the default form the root is `aria-hidden`; with `render`, the element owns its accessibility semantics.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): it renders a `span`, and `render` swaps the element. Props not listed here pass through.
 
-## Icon
+## Anatomy
+
+```jsx
+import { Icon } from 'uilibs/extra/icon'
+
+;<Icon svg={…} />
+```
+
+`svg` takes a component, such as an icon from `@keyline-icons/react`, or an SVG element. The default `span` is `aria-hidden`, so an icon that carries meaning needs a text label beside it. With `render`, the element owns its accessibility semantics.
+
+## Props
+
+### Icon
 
 | Prop        | Values                                                                               | Default             | Note                                               |
 | ----------- | ------------------------------------------------------------------------------------ | ------------------- | -------------------------------------------------- |
@@ -17,4 +29,4 @@ Renders a `span` through Base UI [useRender](https://base-ui.com/react/utils/use
 | `size`      | `number`, `string`                                                                   | `1em`               | A number is px; a string is any CSS size.          |
 | `color`     | `neutral`, `neutral-faded`, `primary`, `positive`, `warning`, `critical`, `disabled` | parent's text color | A foreground token.                                |
 | `autoWidth` | `boolean`                                                                            | `false`             | Uses the width of the SVG instead of a square box. |
-| `style`     | StyleX styles                                                                        | none                | Replaces the `className` and `style` props.        |
+| `style`     | StyleX styles                                                                        | none                | Replaces `className` and `style`.                  |

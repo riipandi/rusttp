@@ -7,13 +7,26 @@ import * as Stories from './radio.stories'
 
 A radio group for choosing one option, with its items.
 
-Wraps Base UI [Radio](https://base-ui.com/react/components/radio) and [Radio Group](https://base-ui.com/react/components/radio-group). Its other props pass through.
+Built on Base UI [Radio](https://base-ui.com/react/components/radio) and [Radio Group](https://base-ui.com/react/components/radio-group). Props not listed here pass through.
 
-`RadioGroup` takes only `style`, which replaces the `className` and `style` props.
+## Anatomy
 
-## RadioGroupItem
+```jsx
+import { RadioGroup, RadioGroupItem } from 'uilibs/base/radio'
 
-| Prop    | Values           | Default | Note                                        |
-| ------- | ---------------- | ------- | ------------------------------------------- |
-| `size`  | `sm`, `md`, `lg` | `md`    | Circle size: 12px, 16px, or 20px.           |
-| `style` | StyleX styles    | none    | Replaces the `className` and `style` props. |
+;<RadioGroup>
+  <RadioGroupItem value='…' />
+</RadioGroup>
+```
+
+`RadioGroupItem` renders its own indicator. It has no text, so put each item in a label or a horizontal `Field`, and name the group with `aria-label`.
+
+## Props
+
+Both parts also take `style`: StyleX styles that replace `className` and `style`.
+
+### RadioGroupItem
+
+| Prop   | Values           | Default | Note                              |
+| ------ | ---------------- | ------- | --------------------------------- |
+| `size` | `sm`, `md`, `lg` | `md`    | Circle size: 12px, 16px, or 20px. |

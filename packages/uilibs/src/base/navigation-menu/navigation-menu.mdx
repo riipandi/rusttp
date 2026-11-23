@@ -5,17 +5,57 @@ import * as Stories from './navigation-menu.stories'
 
 # Navigation Menu
 
-A collection of links and menus for site navigation.
+Links and menus for site navigation.
 
-Wraps Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu). Props not listed here pass through.
 
-`NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, and `NavigationMenuLink` only add styling. `NavigationMenuPositioner` renders the shared popup and viewport, and defaults `side` to `bottom`, `sideOffset` to `8`, `align` to `start`, and `alignOffset` to `0`.
+## Anatomy
 
-## NavigationMenu
+```jsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger
+} from 'uilibs/base/navigation-menu'
 
-The root renders the positioner itself, so `align` is set here.
+;<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger />
+      <NavigationMenuContent>
+        <NavigationMenuLink />
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink />
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+
+`NavigationMenu` renders the portal, the positioner, the popup, and the viewport itself, so do not add `NavigationMenuPositioner`. `NavigationMenuTrigger` renders its own chevron.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### NavigationMenu
 
 | Prop     | Values                   | Default                | Note                                                                                                           |
 | -------- | ------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `align`  | `start`, `center`, `end` | `start`                | Alignment of the popup relative to the menu.                                                                   |
 | `labels` | `{ menu, popup }`        | `Main`, `Main details` | Accessible names of the menu's `nav` landmark and of the popup's, which is a second landmark while it is open. |
+
+### NavigationMenuPositioner
+
+The positioner `NavigationMenu` renders. Set `align` on the root.
+
+| Prop          | Values                                                         | Default  | Note                                          |
+| ------------- | -------------------------------------------------------------- | -------- | --------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` | `bottom` | Which side of the trigger the popup opens on. |
+| `sideOffset`  | `number` or a function                                         | `8`      | Distance from the trigger in pixels.          |
+| `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the chosen side.              |
+| `alignOffset` | `number` or a function                                         | `0`      | Offset along the alignment axis in pixels.    |

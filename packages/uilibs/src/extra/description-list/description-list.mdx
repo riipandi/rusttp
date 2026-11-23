@@ -5,8 +5,23 @@ import * as Stories from './description-list.stories'
 
 # DescriptionList
 
-A definition list of key-value rows with hairline separators.
+Key-value rows in a definition list, separated by hairlines.
 
-Each part renders its native element through Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the element. Its other props pass through.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): the parts render `dl`, `dt`, and `dd`, and `render` swaps the element. Props not listed here pass through.
 
-`DescriptionList` (`dl`), `DescriptionTerm` (`dt`, the muted key), and `DescriptionDetails` (`dd`, the emphasized value) take only `style` (StyleX styles that replace `className` and `style`). Keep terms and details as direct children of the list so the grid and separators line up.
+## Anatomy
+
+```jsx
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
+
+;<DescriptionList>
+  <DescriptionTerm />
+  <DescriptionDetails />
+</DescriptionList>
+```
+
+Terms and details are direct children of the list, one pair per row, so the grid and separators line up. `DescriptionTerm` is the muted key and `DescriptionDetails` the emphasized value.
+
+## Props
+
+No part adds props beyond `style`: StyleX styles that replace `className` and `style`.

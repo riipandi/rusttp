@@ -7,9 +7,21 @@ import * as Stories from './toggle.stories'
 
 A button that is pressed or unpressed.
 
-Wraps Base UI [Toggle](https://base-ui.com/react/components/toggle). Its other props pass through.
+Built on Base UI [Toggle](https://base-ui.com/react/components/toggle). Props not listed here pass through.
 
-## Toggle
+## Anatomy
+
+```jsx
+import { Toggle } from 'uilibs/base/toggle'
+
+;<Toggle>Label</Toggle>
+```
+
+A toggle with only an icon needs an `aria-label`.
+
+## Props
+
+### Toggle
 
 | Prop              | Values                                                  | Default                                | Note                                                                                                               |
 | ----------------- | ------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -17,4 +29,4 @@ Wraps Base UI [Toggle](https://base-ui.com/react/components/toggle). Its other p
 | `selectedVariant` | `ghost`, `outline`, `solid`                             | `solid` for `solid`, `ghost` otherwise | The fill of the pressed state: a tint, an edge, or a fill of `selectedColor`.                                      |
 | `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` | `neutral`                              | The color of the pressed state.                                                                                    |
 | `size`            | `xs`, `sm`, `md`, `lg`                                  | `md`                                   | Height on the control scale.                                                                                       |
-| `style`           | StyleX styles                                           | none                                   | Replaces the `className` and `style` props.                                                                        |
+| `style`           | StyleX styles                                           | none                                   | Replaces `className` and `style`.                                                                                  |

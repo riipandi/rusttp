@@ -5,24 +5,56 @@ import * as Stories from './select.stories'
 
 # Select
 
-A single-choice list in a popup. Name a standalone trigger with `aria-label`.
+A single-choice list in a popup. Choose it over Combobox for a short fixed list the user does not search.
 
-Wraps Base UI [Select](https://base-ui.com/react/components/select). Its other props pass through.
+Built on Base UI [Select](https://base-ui.com/react/components/select). Props not listed here pass through.
 
-`Select`, `SelectValue`, and `SelectGroup` are the Base UI parts unchanged. `SelectItem`, `SelectLabel`, and `SelectSeparator` take only `style`, which replaces the `className` and `style` props.
+## Anatomy
 
-## SelectTrigger
+```jsx
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue
+} from 'uilibs/base/select'
+
+;<Select>
+  <SelectTrigger>
+    <SelectValue />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value='…' />
+    <SelectGroup>
+      <SelectSeparator />
+      <SelectLabel />
+      <SelectItem value='…' />
+    </SelectGroup>
+  </SelectContent>
+</Select>
+```
+
+`SelectTrigger` renders the chevron. `SelectContent` renders the portal, the positioner, the popup, the list, and the scroll arrows. `SelectItem` renders its text wrapper and check mark. `Select`, `SelectValue`, and `SelectGroup` are Base UI's parts, re-exported unchanged. Inside a `Field` the `FieldLabel` names the trigger; on its own, name it with `aria-label`.
+
+## Props
+
+Every part except `Select`, `SelectValue`, and `SelectGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `SelectContent` it styles the popup.
+
+### SelectTrigger
 
 | Prop      | Values                                  | Default   | Note                                                                                |
 | --------- | --------------------------------------- | --------- | ----------------------------------------------------------------------------------- |
 | `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type.                                                            |
 | `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                                                            |
 | `icon`    | glyph component                         | none      | A glyph before the value. It is decoration, so the name still comes from the label. |
-| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props.                                         |
 
-## SelectContent
+### SelectContent
 
-Renders the portal, the positioner, and the popup. The positioner props below go to the positioner.
+The positioner props below go to the positioner.
 
 | Prop                   | Values                                                         | Default  | Note                                                               |
 | ---------------------- | -------------------------------------------------------------- | -------- | ------------------------------------------------------------------ |
@@ -31,4 +63,3 @@ Renders the portal, the positioner, and the popup. The positioner props below go
 | `align`                | `start`, `center`, `end`                                       | `center` | Alignment along the side.                                          |
 | `alignOffset`          | `number` or a function                                         | `0`      | Shift along the alignment axis.                                    |
 | `alignItemWithTrigger` | `boolean`                                                      | `false`  | Overlaps the trigger so the selected text lines up with the value. |
-| `style`                | StyleX styles                                                  | none     | Replaces the `className` and `style` props.                        |

@@ -7,9 +7,21 @@ import * as Stories from './loader-text.stories'
 
 A line of text with a shimmer while work is in progress. When the work completes, it can cross-fade to a second line.
 
-Renders this library's `Text`, and takes only the props below.
+Renders this library's `Text`. It takes only the props below; others do not pass through.
 
-## LoaderText
+## Anatomy
+
+```jsx
+import { LoaderText } from 'uilibs/extra/loader-text'
+
+;<LoaderText>Text</LoaderText>
+```
+
+With `icon`, the glyph sits before the text. Without `completedText`, `completed` only stops the shimmer. With it, both texts stay mounted and cross-fade.
+
+## Props
+
+### LoaderText
 
 | Prop            | Values                                                                                                                                            | Default  | Note                                                              |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
@@ -20,4 +32,4 @@ Renders this library's `Text`, and takes only the props below.
 | `icon`          | glyph component                                                                                                                                   | none     | A glyph before the text, sized to the text.                       |
 | `completedText` | node                                                                                                                                              | none     | Text that cross-fades with `children` once `completed` is `true`. |
 | `completed`     | `boolean`                                                                                                                                         | `false`  | Stops the shimmer.                                                |
-| `style`         | StyleX styles                                                                                                                                     | none     | Replaces the `className` and `style` props.                       |
+| `style`         | StyleX styles                                                                                                                                     | none     | Replaces `className` and `style`.                                 |

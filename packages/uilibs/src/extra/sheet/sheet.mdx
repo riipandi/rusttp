@@ -5,31 +5,55 @@ import * as Stories from './sheet.stories'
 
 # Sheet
 
-A panel that slides in from an edge of the screen and holds focus until it closes.
+A Dialog that slides in from an edge of the screen and holds focus until it closes. Use Drawer for a swipe panel with snap points.
 
-Wraps Base UI [Dialog](https://base-ui.com/react/components/dialog). Its other props pass through.
+Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through. `Sheet`, `SheetTrigger`, `SheetClose`, and `SheetPortal` are the Dialog parts unchanged.
 
-`Sheet`, `SheetTrigger`, `SheetClose`, and `SheetPortal` are the Base UI Dialog parts unchanged.
+## Anatomy
 
-`SheetHeader` and `SheetFooter` render a `div`. `SheetHeader`, `SheetFooter`, `SheetTitle`, and `SheetDescription` take only `style` (StyleX styles that replace `className` and `style`).
+```jsx
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from 'uilibs/extra/sheet'
 
-## SheetOverlay
+;<Sheet>
+  <SheetTrigger />
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle />
+      <SheetDescription />
+    </SheetHeader>
+    <SheetFooter>
+      <SheetClose />
+    </SheetFooter>
+  </SheetContent>
+</Sheet>
+```
 
-The backdrop behind the sheet. `SheetContent` renders one for you.
+`SheetContent` renders the portal, the overlay, and a close button. `SheetPortal` and `SheetOverlay` are exported only for custom compositions.
 
-| Prop             | Values        | Default | Note                                        |
-| ---------------- | ------------- | ------- | ------------------------------------------- |
-| `blurredOverlay` | `boolean`     | `false` | Blurs the page behind the backdrop.         |
-| `style`          | StyleX styles | none    | Replaces the `className` and `style` props. |
+## Props
 
-## SheetContent
+Every part also takes `style`: StyleX styles that replace `className` and `style`. On `SheetContent` it styles the popup.
 
-Renders the portal, the backdrop, and the popup, with a close button inside.
+### SheetContent
 
-| Prop              | Values                           | Default | Note                                                     |
-| ----------------- | -------------------------------- | ------- | -------------------------------------------------------- |
-| `side`            | `top`, `right`, `bottom`, `left` | `right` | The edge the sheet slides in from.                       |
-| `blurredOverlay`  | `boolean`                        | `false` | Blurs the page behind the backdrop.                      |
-| `showCloseButton` | `boolean`                        | `true`  | Renders the built-in close button.                       |
-| `labels`          | `{ close }`                      | `Close` | Name of the built-in close button.                       |
-| `style`           | StyleX styles                    | none    | Replaces the `className` and `style` props on the popup. |
+| Prop              | Values                           | Default | Note                                |
+| ----------------- | -------------------------------- | ------- | ----------------------------------- |
+| `side`            | `top`, `right`, `bottom`, `left` | `right` | The edge the sheet slides in from.  |
+| `blurredOverlay`  | `boolean`                        | `false` | Blurs the page behind the backdrop. |
+| `showCloseButton` | `boolean`                        | `true`  | Renders the built-in close button.  |
+| `labels`          | `{ close }`                      | `Close` | Name of the built-in close button.  |
+
+### SheetOverlay
+
+| Prop             | Values    | Default | Note                                |
+| ---------------- | --------- | ------- | ----------------------------------- |
+| `blurredOverlay` | `boolean` | `false` | Blurs the page behind the backdrop. |

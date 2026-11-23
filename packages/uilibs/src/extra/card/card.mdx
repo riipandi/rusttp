@@ -7,15 +7,42 @@ import * as Stories from './card.stories'
 
 A surface that groups related content, with a header, content, and footer.
 
-Renders a `div`; its other props pass through.
+A plain `div`. Props not listed here pass through.
 
-`CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent`, and `CardFooter` take only `style` (StyleX styles that replace `className` and `style`). `CardTitle` renders an `h3`, `CardDescription` a `p`, and the others a `div`. `CardAction` is pinned to the top-right corner of the header.
+## Anatomy
 
-## Card
+```jsx
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from 'uilibs/extra/card'
 
-| Prop       | Values        | Default | Note                                                                                   |
-| ---------- | ------------- | ------- | -------------------------------------------------------------------------------------- |
-| `size`     | `sm`, `md`    | `md`    | Padding and gaps.                                                                      |
-| `selected` | `boolean`     | `false` | A primary edge and `data-selected`. Name the choice for assistive technology yourself. |
-| `raised`   | `boolean`     | `false` | Lifts the card with the raised shadow.                                                 |
-| `style`    | StyleX styles | none    | Replaces the `className` and `style` props.                                            |
+;<Card>
+  <CardHeader>
+    <CardTitle />
+    <CardDescription />
+    <CardAction />
+  </CardHeader>
+  <CardContent />
+  <CardFooter />
+</Card>
+```
+
+`CardAction` sits in `CardHeader` and is pinned to its top-right corner. `CardTitle` renders an `h3` and `CardDescription` a `p`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Card
+
+| Prop       | Values     | Default | Note                                                                                   |
+| ---------- | ---------- | ------- | -------------------------------------------------------------------------------------- |
+| `size`     | `sm`, `md` | `md`    | Padding and gaps.                                                                      |
+| `selected` | `boolean`  | `false` | A primary edge and `data-selected`. Name the choice for assistive technology yourself. |
+| `raised`   | `boolean`  | `false` | Lifts the card with the raised shadow.                                                 |

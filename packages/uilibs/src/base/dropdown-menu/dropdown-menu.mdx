@@ -5,15 +5,61 @@ import * as Stories from './dropdown-menu.stories'
 
 # Dropdown Menu
 
-A menu of actions or commands that opens from a trigger. Context Menu and Menubar items are the same components.
+A menu of actions that opens from a trigger. Context Menu and Menubar items are the same components.
 
-Wraps Base UI [Menu](https://base-ui.com/react/components/menu). Its other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Menu](https://base-ui.com/react/components/menu). Props not listed here pass through.
 
-`DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` are the Base UI parts unchanged. `DropdownMenuCheckboxItem`, `DropdownMenuRadioItem`, `DropdownMenuShortcut`, and `DropdownMenuSeparator` only add styling.
+## Anatomy
 
-## DropdownMenuContent
+```jsx
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger
+} from 'uilibs/base/dropdown-menu'
 
-The popup. It renders its own portal and positioner, and takes the positioner's placement props.
+;<DropdownMenu>
+  <DropdownMenuTrigger />
+  <DropdownMenuContent>
+    <DropdownMenuGroup>
+      <DropdownMenuLabel />
+      <DropdownMenuItem>
+        <DropdownMenuShortcut />
+      </DropdownMenuItem>
+      <DropdownMenuCheckboxItem />
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuRadioGroup>
+      <DropdownMenuRadioItem />
+    </DropdownMenuRadioGroup>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger />
+      <DropdownMenuSubContent>
+        <DropdownMenuItem />
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+`DropdownMenuContent` renders the portal and the positioner (`DropdownMenuPortal` is exported only for custom compositions). `DropdownMenuLabel` must sit inside a `DropdownMenuGroup` or `DropdownMenuRadioGroup`, and a radio item inside a `DropdownMenuRadioGroup`.
+
+## Props
+
+Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `DropdownMenuContent` and `DropdownMenuSubContent` it styles the popup.
+
+### DropdownMenuContent
 
 | Prop          | Values                                                         | Default  | Note                                          |
 | ------------- | -------------------------------------------------------------- | -------- | --------------------------------------------- |
@@ -22,7 +68,7 @@ The popup. It renders its own portal and positioner, and takes the positioner's 
 | `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the chosen side.              |
 | `alignOffset` | `number` or a function                                         | `0`      | Offset along the alignment axis in pixels.    |
 
-## DropdownMenuSubContent
+### DropdownMenuSubContent
 
 The popup of a submenu. It takes the `DropdownMenuContent` props with different defaults.
 
@@ -33,7 +79,7 @@ The popup of a submenu. It takes the `DropdownMenuContent` props with different 
 | `align`       | `start`, `center`, `end`                                       | `start` | Alignment along the chosen side.              |
 | `alignOffset` | `number` or a function                                         | `-4`    | Offset along the alignment axis in pixels.    |
 
-## DropdownMenuItem
+### DropdownMenuItem
 
 | Prop    | Values                           | Default | Note                                                                              |
 | ------- | -------------------------------- | ------- | --------------------------------------------------------------------------------- |
@@ -41,13 +87,13 @@ The popup of a submenu. It takes the `DropdownMenuContent` props with different 
 | `icon`  | glyph component                  | none    | A glyph before the label, hidden from assistive technology.                       |
 | `inset` | `boolean`                        | none    | Indents the item to align with checkbox and radio item labels.                    |
 
-## DropdownMenuSubTrigger
+### DropdownMenuSubTrigger
 
 | Prop    | Values    | Default | Note                                                              |
 | ------- | --------- | ------- | ----------------------------------------------------------------- |
 | `inset` | `boolean` | none    | Indents the trigger to align with checkbox and radio item labels. |
 
-## DropdownMenuLabel
+### DropdownMenuLabel
 
 | Prop    | Values    | Default | Note                                                            |
 | ------- | --------- | ------- | --------------------------------------------------------------- |

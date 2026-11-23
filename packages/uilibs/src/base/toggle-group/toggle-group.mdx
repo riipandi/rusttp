@@ -7,9 +7,25 @@ import * as Stories from './toggle-group.stories'
 
 A group of toggles that share one look.
 
-Wraps Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group). Its other props pass through.
+Built on Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group). Props not listed here pass through.
 
-## ToggleGroup
+## Anatomy
+
+```jsx
+import { ToggleGroup, ToggleGroupItem } from 'uilibs/base/toggle-group'
+
+;<ToggleGroup>
+  <ToggleGroupItem value='…' />
+</ToggleGroup>
+```
+
+Each item needs a `value`. Pressing an item releases the others unless the group sets `multiple`. An item with only an icon needs an `aria-label`.
+
+## Props
+
+Both parts also take `style`: StyleX styles that replace `className` and `style`.
+
+### ToggleGroup
 
 | Prop              | Values                                                  | Default           | Note                                                 |
 | ----------------- | ------------------------------------------------------- | ----------------- | ---------------------------------------------------- |
@@ -18,8 +34,7 @@ Wraps Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group).
 | `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` | `neutral`         | The color of an item's pressed state.                |
 | `size`            | `xs`, `sm`, `md`, `lg`                                  | `md`              | Height of the items.                                 |
 | `spacing`         | `gap`, `joined`                                         | `gap`             | `joined` fuses the items into one segmented control. |
-| `style`           | StyleX styles                                           | none              | Replaces the `className` and `style` props.          |
 
-## ToggleGroupItem
+### ToggleGroupItem
 
 Takes the `Toggle` props. `variant`, `selectedVariant`, `selectedColor`, and `size` default to the group's values.

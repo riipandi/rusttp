@@ -5,25 +5,58 @@ import * as Stories from './autocomplete.stories'
 
 # Autocomplete
 
-An input that suggests options as you type. Unlike Combobox, any typed value is allowed; the list only suggests.
+An input that suggests options as you type. Choose it over Combobox when any typed value is allowed and the list only suggests.
 
-Wraps Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete). Its other props pass through.
+Built on Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete). Props not listed here pass through.
 
-`Autocomplete`, `AutocompleteValue`, and `AutocompleteCollection` are the Base UI parts unchanged.
+## Anatomy
 
-`AutocompleteItem`, `AutocompleteGroup`, `AutocompleteLabel`, `AutocompleteEmpty`, and `AutocompleteSeparator` take only `style` (StyleX styles that replace `className` and `style`).
+```jsx
+import {
+  Autocomplete,
+  AutocompleteCollection,
+  AutocompleteContent,
+  AutocompleteEmpty,
+  AutocompleteGroup,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteLabel,
+  AutocompleteList,
+  AutocompleteSeparator
+} from 'uilibs/base/autocomplete'
 
-## AutocompleteInput
+;<Autocomplete items={…}>
+  <AutocompleteInput />
+  <AutocompleteContent>
+    <AutocompleteEmpty />
+    <AutocompleteList>
+      <AutocompleteItem />
+      <AutocompleteSeparator />
+      <AutocompleteGroup>
+        <AutocompleteLabel />
+        <AutocompleteCollection>
+          <AutocompleteItem />
+        </AutocompleteCollection>
+      </AutocompleteGroup>
+    </AutocompleteList>
+  </AutocompleteContent>
+</Autocomplete>
+```
 
-| Prop      | Values                                  | Default   | Note                                        |
-| --------- | --------------------------------------- | --------- | ------------------------------------------- |
-| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type.                    |
-| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                    |
-| `style`   | StyleX styles                           | none      | Replaces the `className` and `style` props. |
+`AutocompleteContent` renders the portal and the positioner. `Autocomplete`, `AutocompleteCollection`, and `AutocompleteValue` are Base UI's parts, re-exported unchanged.
 
-## AutocompleteContent
+## Props
 
-Renders the portal and the positioner around the popup.
+Every part except `Autocomplete`, `AutocompleteCollection`, and `AutocompleteValue` also takes `style`: StyleX styles that replace `className` and `style`. On `AutocompleteContent` it styles the popup.
+
+### AutocompleteInput
+
+| Prop      | Values                                  | Default   | Note                     |
+| --------- | --------------------------------------- | --------- | ------------------------ |
+| `size`    | `sm`, `md`, `lg`                        | `md`      | Control height and type. |
+| `variant` | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                 |
+
+### AutocompleteContent
 
 | Prop          | Values                                                         | Default  | Note                                        |
 | ------------- | -------------------------------------------------------------- | -------- | ------------------------------------------- |
@@ -32,11 +65,9 @@ Renders the portal and the positioner around the popup.
 | `align`       | `start`, `center`, `end`                                       | `start`  | Alignment along the anchor's edge.          |
 | `alignOffset` | `number` or an offset function                                 | `0`      | Offset along the alignment axis, in px.     |
 | `anchor`      | element, ref, virtual element, or a function returning one     | none     | What the popup positions against.           |
-| `style`       | StyleX styles                                                  | none     | Replaces the `className` and `style` props. |
 
-## AutocompleteList
+### AutocompleteList
 
 | Prop       | Values                            | Default | Note                                             |
 | ---------- | --------------------------------- | ------- | ------------------------------------------------ |
 | `children` | static items or a render function | none    | The render function receives the filtered items. |
-| `style`    | StyleX styles                     | none    | Replaces the `className` and `style` props.      |

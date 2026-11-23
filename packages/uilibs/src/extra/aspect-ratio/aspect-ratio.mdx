@@ -7,11 +7,19 @@ import * as Stories from './aspect-ratio.stories'
 
 A box that holds a fixed width-to-height ratio, for an image, a video, or a map.
 
-Renders a `div`; its other props pass through.
+A plain `div`. Props not listed here pass through.
 
-## AspectRatio
+## Anatomy
+
+```jsx
+import { AspectRatio } from 'uilibs/extra/aspect-ratio'
+
+;<AspectRatio ratio={16 / 9}>{content}</AspectRatio>
+```
+
+## Props
 
 | Prop    | Values        | Default  | Note                                              |
 | ------- | ------------- | -------- | ------------------------------------------------- |
 | `ratio` | `number`      | required | Width divided by height, such as `16 / 9` or `1`. |
-| `style` | StyleX styles | none     | Replaces the `className` and `style` props.       |
+| `style` | StyleX styles | none     | Replaces `className` and `style`.                 |

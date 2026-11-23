@@ -7,50 +7,78 @@ import * as Stories from './pagination.stories'
 
 Page navigation made of links. It holds no state: you render the links and mark the current one.
 
-Renders a `nav` around a `ul`; its other props pass through.
+Built on plain `nav`, `ul`, and `li` elements, with `LinkButton` for the links. Props not listed here pass through.
 
-`PaginationContent` (a `ul`) and `PaginationItem` (an `li`) take only `style` (StyleX styles that replace `className` and `style`).
+## Anatomy
 
-## Pagination
+```jsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from 'uilibs/extra/pagination'
 
-| Prop     | Values           | Default      | Note                                        |
-| -------- | ---------------- | ------------ | ------------------------------------------- |
-| `labels` | `{ pagination }` | `Pagination` | Name of the `nav` landmark.                 |
-| `style`  | StyleX styles    | none         | Replaces the `className` and `style` props. |
+;<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href='…' />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href='…' />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href='…' />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+```
 
-## PaginationLink
+Each link and the ellipsis sits in its own `PaginationItem`, a direct child of `PaginationContent`. `PaginationPrevious` and `PaginationNext` render their own chevron and text. Mark the current page with `isActive`.
 
-A page link. It renders an `a` through `LinkButton`, and its other props pass through to the `a`.
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Pagination
+
+| Prop     | Values           | Default      | Note                        |
+| -------- | ---------------- | ------------ | --------------------------- |
+| `labels` | `{ pagination }` | `Pagination` | Name of the `nav` landmark. |
+
+### PaginationLink
+
+Renders an `a` through `LinkButton`; its other props pass through to the `a`.
 
 | Prop       | Values                                                             | Default   | Note                                                                                            |
 | ---------- | ------------------------------------------------------------------ | --------- | ----------------------------------------------------------------------------------------------- |
 | `isActive` | `boolean`                                                          | none      | Marks the current page: an outline fill and `aria-current="page"`. Otherwise the fill is ghost. |
 | `size`     | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` | `icon-md` | The `Button` sizes. The `icon-*` sizes are square.                                              |
-| `style`    | StyleX styles                                                      | none      | Replaces the `className` and `style` props.                                                     |
 
-## PaginationPrevious
+### PaginationPrevious
 
 A `PaginationLink` with a left chevron and text, fixed at size `md`. It takes the other `PaginationLink` props except `size`.
 
 | Prop     | Values                       | Default                           | Note                                                                            |
 | -------- | ---------------------------- | --------------------------------- | ------------------------------------------------------------------------------- |
 | `labels` | `{ previous, previousPage }` | `Previous`, `Go to previous page` | Visible text and accessible name. An empty `previous` leaves the chevron alone. |
-| `style`  | StyleX styles                | none                              | Replaces the `className` and `style` props.                                     |
 
-## PaginationNext
+### PaginationNext
 
 A `PaginationLink` with text and a right chevron, fixed at size `md`. It takes the other `PaginationLink` props except `size`.
 
 | Prop     | Values               | Default                   | Note                                                                        |
 | -------- | -------------------- | ------------------------- | --------------------------------------------------------------------------- |
 | `labels` | `{ next, nextPage }` | `Next`, `Go to next page` | Visible text and accessible name. An empty `next` leaves the chevron alone. |
-| `style`  | StyleX styles        | none                      | Replaces the `className` and `style` props.                                 |
 
-## PaginationEllipsis
+### PaginationEllipsis
 
-A gap between page numbers. It renders a `span`.
-
-| Prop     | Values          | Default      | Note                                        |
-| -------- | --------------- | ------------ | ------------------------------------------- |
-| `labels` | `{ morePages }` | `More pages` | Text for assistive technology.              |
-| `style`  | StyleX styles   | none         | Replaces the `className` and `style` props. |
+| Prop     | Values          | Default      | Note                           |
+| -------- | --------------- | ------------ | ------------------------------ |
+| `labels` | `{ morePages }` | `More pages` | Text for assistive technology. |

@@ -7,24 +7,64 @@ import * as Stories from './field.stories'
 
 A label, description, and validation message around a form control. `FieldSet`, `FieldLegend`, and `FieldGroup` group several fields.
 
-Wraps Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset). Their other props pass through. Every part takes StyleX `style` in place of `className` and `style`.
+Built on Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset). Props not listed here pass through.
 
-`FieldSet`, `FieldGroup`, `FieldContent`, `FieldLabel`, `FieldTitle`, `FieldDescription`, and `FieldSeparator` only add styling.
+## Anatomy
 
-## Field
+```jsx
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet
+} from 'uilibs/base/field'
+
+;<FieldSet>
+  <FieldLegend />
+  <FieldGroup>
+    <Field>
+      <FieldLabel />
+      {/* a control, such as Input */}
+      <FieldDescription />
+      <FieldError />
+    </Field>
+    <FieldSeparator />
+    <Field orientation='horizontal'>
+      {/* a control, such as Checkbox */}
+      <FieldContent>
+        <FieldLabel />
+        <FieldDescription />
+      </FieldContent>
+    </Field>
+  </FieldGroup>
+</FieldSet>
+```
+
+A Base UI control inside a `Field` joins it, so the label, description, and error wire themselves to the control. `FieldSet`, `FieldLegend`, and `FieldGroup` are optional. `FieldSeparator` draws a line and shows its children as text on it. `FieldTitle` is a label-styled `div` for a choice card inside a `FieldLabel`.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`.
+
+### Field
 
 | Prop          | Values                   | Default    | Note                                                              |
 | ------------- | ------------------------ | ---------- | ----------------------------------------------------------------- |
 | `orientation` | `vertical`, `horizontal` | `vertical` | Stacks the label above the control, or lays the two out in a row. |
 
-## FieldLegend
+### FieldLegend
 
 | Prop      | Values            | Default  | Note                                          |
 | --------- | ----------------- | -------- | --------------------------------------------- |
 | `variant` | `legend`, `label` | `legend` | `label` styles the legend like a field label. |
 
-## FieldError
+### FieldError
 
-| Prop     | Values                                         | Default | Note                                                                                                                                               |
-| -------- | ---------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `errors` | array of `{ message?: string }` or `undefined` | none    | External errors, such as from a form library. They render unconditionally, deduplicated by message; without them the field's own validation shows. |
+| Prop     | Values                                         | Default | Note                                                                                                                                                                              |
+| -------- | ---------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `errors` | array of `{ message?: string }` or `undefined` | none    | External errors, such as from a form library, deduplicated by message. Once set, even to `[]`, the field's own validation never shows; leave it `undefined` to show that instead. |

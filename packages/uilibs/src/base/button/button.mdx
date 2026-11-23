@@ -5,29 +5,45 @@ import * as Stories from './button.stories'
 
 # Button
 
-A button that runs an action. The fill is `variant` and the role is `color`, so every fill comes in every color.
+Runs an action. `variant` sets the fill and `color` sets the role, so every fill comes in every color.
 
-Wraps Base UI [Button](https://base-ui.com/react/components/button). Its other props pass through.
+Built on Base UI [Button](https://base-ui.com/react/components/button). Props not listed here pass through.
 
-## Button
+## Anatomy
 
-| Prop          | Values                                                                      | Default                                    | Note                                                                                                                                                            |
-| ------------- | --------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `variant`     | `solid`, `faded`, `outline`, `ghost`                                        | `solid`                                    | The fill.                                                                                                                                                       |
-| `color`       | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` | `primary` for `solid`, `neutral` otherwise | The role. `critical` marks a destructive action. `media` is white on a photo or dark surface, the same in both themes. `inherit` takes the parent's text color. |
-| `size`        | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg`          | `md`                                       | The `icon-*` sizes are square and need an `aria-label`.                                                                                                         |
-| `rounded`     | `boolean`                                                                   | `false`                                    | Fully rounded ends.                                                                                                                                             |
-| `fullWidth`   | `boolean`                                                                   | `false`                                    | Fills the width of its container.                                                                                                                               |
-| `raised`      | `boolean`                                                                   | `false`                                    | Lifts the button with the raised shadow.                                                                                                                        |
-| `highlighted` | `boolean`                                                                   | `false`                                    | Holds the hover fill at rest. Ignored while disabled or loading.                                                                                                |
-| `icon`        | glyph component                                                             | none                                       | A glyph before the label.                                                                                                                                       |
-| `endIcon`     | glyph component                                                             | none                                       | A glyph after the label.                                                                                                                                        |
-| `loading`     | `boolean`                                                                   | `false`                                    | Shows a spinner, keeps the width and the name, sets `aria-busy`, and ignores presses.                                                                           |
-| `style`       | StyleX styles                                                               | none                                       | Replaces the `className` and `style` props.                                                                                                                     |
+```jsx
+import { Button, LinkButton } from 'uilibs/base/button'
 
-## LinkButton
+<Button icon={…} endIcon={…}>
+  Label
+</Button>
 
-A button that navigates. It takes the `Button` props except `loading`, `nativeButton`, and `render` as its own, and restores `role="link"`.
+<LinkButton render={<a href='…' />}>Label</LinkButton>
+```
+
+With `icon` or `endIcon` and no label, the button is icon-only and needs an `aria-label`.
+
+## Props
+
+### Button
+
+| Prop          | Values                                                                      | Default                                    | Note                                                                                                                                    |
+| ------------- | --------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`     | `solid`, `faded`, `outline`, `ghost`                                        | `solid`                                    | The fill.                                                                                                                               |
+| `color`       | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` | `primary` for `solid`, `neutral` otherwise | The role. `critical` marks a destructive action. `media` is white for a photo or dark surface. `inherit` takes the parent's text color. |
+| `size`        | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg`          | `md`                                       | The `icon-*` sizes are square and need an `aria-label`.                                                                                 |
+| `rounded`     | `boolean`                                                                   | `false`                                    | Fully rounded ends.                                                                                                                     |
+| `fullWidth`   | `boolean`                                                                   | `false`                                    | Fills the width of its container.                                                                                                       |
+| `raised`      | `boolean`                                                                   | `false`                                    | Lifts the button with the raised shadow.                                                                                                |
+| `highlighted` | `boolean`                                                                   | `false`                                    | Holds the hover fill at rest. Ignored while disabled or loading.                                                                        |
+| `icon`        | glyph component                                                             | none                                       | A glyph before the label.                                                                                                               |
+| `endIcon`     | glyph component                                                             | none                                       | A glyph after the label.                                                                                                                |
+| `loading`     | `boolean`                                                                   | `false`                                    | Shows a spinner, keeps the width and the name, sets `aria-busy`, and ignores presses.                                                   |
+| `style`       | StyleX styles                                                               | none                                       | Replaces `className` and `style`.                                                                                                       |
+
+### LinkButton
+
+A button that navigates. It takes the `Button` props except `loading`, `nativeButton`, and `render`, and gives the element `role="link"`.
 
 | Prop      | Values                        | Default  | Note                        |
 | --------- | ----------------------------- | -------- | --------------------------- |

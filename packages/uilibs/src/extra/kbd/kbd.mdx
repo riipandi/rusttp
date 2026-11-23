@@ -7,6 +7,20 @@ import * as Stories from './kbd.stories'
 
 A keyboard key cap. `KbdGroup` joins several keys into one shortcut.
 
-Renders a `kbd`; its other props pass through.
+Plain `kbd` elements, no Base UI parts. Props not listed here pass through. `Kbd` only draws the key; it registers no shortcut.
 
-`Kbd` and `KbdGroup` take only `style` (StyleX styles that replace `className` and `style`).
+## Anatomy
+
+```jsx
+import { Kbd, KbdGroup } from 'uilibs/extra/kbd'
+
+;<KbdGroup>
+  <Kbd>…</Kbd>
+</KbdGroup>
+```
+
+`KbdGroup` is optional for a single key. Both parts render a `kbd`, so a group is a `kbd` around `kbd` elements.
+
+## Props
+
+No part adds props beyond `style`: StyleX styles that replace `className` and `style`.

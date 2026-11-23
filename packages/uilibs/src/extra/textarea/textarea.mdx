@@ -7,13 +7,30 @@ import * as Stories from './textarea.stories'
 
 A multiline text control. Inside a `Field` it takes the label, description, error, and invalid state.
 
-Wraps Base UI [Field](https://base-ui.com/react/components/field) `Field.Control`, rendered as a `textarea`. Its other props pass through.
+Built on Base UI [Field](https://base-ui.com/react/components/field) `Field.Control`, rendered as a `textarea`. Props not listed here pass through.
 
-## Textarea
+## Anatomy
+
+```jsx
+import { Field, FieldError, FieldLabel } from 'uilibs/base/field'
+import { Textarea } from 'uilibs/extra/textarea'
+
+;<Field>
+  <FieldLabel />
+  <Textarea />
+  <FieldError />
+</Field>
+```
+
+Outside a `Field`, name the textarea with `aria-label`.
+
+## Props
+
+### Textarea
 
 | Prop         | Values                                  | Default   | Note                                              |
 | ------------ | --------------------------------------- | --------- | ------------------------------------------------- |
 | `size`       | `sm`, `md`, `lg`                        | `md`      | Minimum height and type.                          |
 | `variant`    | `outline`, `faded`, `ghost`, `headless` | `outline` | The box.                                          |
 | `autoResize` | `boolean`                               | `false`   | Grows with its content instead of a fixed height. |
-| `style`      | StyleX styles                           | none      | Replaces the `className` and `style` props.       |
+| `style`      | StyleX styles                           | none      | Replaces `className` and `style`.                 |

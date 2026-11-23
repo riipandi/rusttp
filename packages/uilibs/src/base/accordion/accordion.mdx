@@ -5,15 +5,31 @@ import * as Stories from './accordion.stories'
 
 # Accordion
 
-A set of collapsible panels with headings.
+A stack of headings that each open and close a panel of content.
 
-Wraps Base UI [Accordion](https://base-ui.com/react/components/accordion). Its other props pass through.
+Built on Base UI [Accordion](https://base-ui.com/react/components/accordion). Props not listed here pass through.
 
-`Accordion` and `AccordionItem` take only `style` (StyleX styles that replace `className` and `style`). `AccordionContent` takes only `style` too, applied to the inner wrapper of the panel.
+## Anatomy
 
-## AccordionTrigger
+```jsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from 'uilibs/base/accordion'
+
+;<Accordion>
+  <AccordionItem>
+    <AccordionTrigger />
+    <AccordionContent />
+  </AccordionItem>
+</Accordion>
+```
+
+`AccordionTrigger` renders the heading and the chevron itself, so there is no separate header part.
+
+## Props
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. On `AccordionContent` it styles the inner wrapper of the panel.
+
+### AccordionTrigger
 
 | Prop           | Values         | Default | Note                                                                              |
 | -------------- | -------------- | ------- | --------------------------------------------------------------------------------- |
 | `iconPosition` | `start`, `end` | `end`   | Which side of the label the chevron is on. The DOM and focus order stay the same. |
-| `style`        | StyleX styles  | none    | Replaces the `className` and `style` props on the trigger button.                 |
