@@ -78,7 +78,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `audit-00002-ui-uilibs.md` (in_review, 2026-11-22: 15 findings, 5 fixed, 9 open, 1 deferred, awaiting the owner's fix decision). `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
+Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `audit-00002-ui-uilibs.md` (in_review, 2026-11-22: 16 findings, 8 fixed, 6 open, 1 deferred, 1 won't fix; the open ones are in plan-00011). `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
 
 ## Archive (`.agents/docs/archive/`)
 

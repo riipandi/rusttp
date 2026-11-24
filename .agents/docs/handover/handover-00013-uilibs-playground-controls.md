@@ -27,7 +27,7 @@ The owner wanted every component's props easy to try in Storybook: controls only
 
 ## What stayed open / the trap
 
-- `issue-00005`: `tableLayout.rowRounded` and `rowsDraggable` are declared and documented but nothing reads them, so the Data Grid Playground has no control for them. Next action: the owner decides to wire or remove them.
-- `issue-00006`: DescriptionList's Playground shows no controls. Next action: the owner decides whether it takes a story-only control.
+- `issue-00005`: `tableLayout.rowRounded` and `rowsDraggable` are declared and documented but nothing reads them, so the Data Grid Playground has no control for them. Closed 2026-11-24: both flags were removed (`issue-00005` is resolved and archived).
+- `issue-00006`: DescriptionList's Playground shows no controls. Closed 2026-11-24 (resolved and archived).
 - Deviations from D7, for the owner to confirm: a chart with no legend and one series (boxplot, lollipop) gets a `legend` control that defaults off and adds the existing `ChartLegend`; the markup charts have no series, so their control is a part they draw (`boundaryLabels`, `weekLabels`, `period`, `fraction`, `highlightFirst`, and a checklist of cards or houses).
 - The trap: `argTypes` without `parameters.controls.include` show every inferred Base UI prop (40 on a root), and a control on a prop that a `defaultChecked`/`defaultOpen` only seeds does nothing until the render remounts the component with a `key`. Progress's old timer also overrode `value`. One full gate run failed once on `input-group` Sizes (26 against 32 px) and passed on every rerun; it did not repeat.

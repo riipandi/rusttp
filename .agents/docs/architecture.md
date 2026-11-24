@@ -312,3 +312,18 @@ Alternatives considered:
 - A usage section on each page — rejected: it repeats the stories.
 - `<name>.docs.mdx` — rejected: it needs the same glob change and gains nothing over `<name>.mdx`.
 - A new token for a media or dark surface — rejected: the constants already carry it.
+
+### The Command input draws no focus ring
+
+Context (2026-11-25): `audit-00002` F-11 found that the Command input shows no ring, only a comment in `command.stylex.ts` said why, and the audit asked for the decision to be recorded.
+
+Decision (owner, `plan-00011-uilibs-audit-remediation` Q35): the input keeps no ring. The field holds focus the whole time its palette is open, it is the only field in it, and its caret is the focus indicator; a ring on a control that can never lose focus kept drawing the eye (WCAG 2.4.7 accepts a visible caret for a text field). The options inside the list are different: a highlighted option must show a 3:1 indicator, which is plan-00011 phase 10 (X-01).
+
+Consequences:
+
+- (positive) the palette stays quiet; the decision is findable in one place, and a reader of the stylesheet is not tempted to add a ring.
+- (negative) `contracts/focus-visible.stories.tsx` cannot assert a ring on this input; the story asserts that it has focus, not how it looks.
+
+Alternatives considered:
+
+- A 2px ring like the other text controls — rejected: it is on from the moment the palette opens, so it never marks a change.

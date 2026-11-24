@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs (components, stories, Storybook gate)"
 status: in_review
 created_at: 2026-11-22T18:34:00+07:00
-updated_at: 2026-11-23T19:40:00+07:00
+updated_at: 2026-11-25T04:51:04+07:00
 completed_at: null
 scope:
     type: feature
@@ -28,10 +28,10 @@ baseline:
     secret_scan: not_run
     race_detector: not_available
 findings:
-    total: 15
-    by_severity: { critical: 0, high: 0, medium: 3, low: 10, info: 2 }
-    by_status: { open: 9, fixed: 5, deferred: 1, wont_fix: 0, false_positive: 0 }
-    verified: 12
+    total: 16
+    by_severity: { critical: 0, high: 0, medium: 3, low: 11, info: 2 }
+    by_status: { open: 6, fixed: 8, deferred: 1, wont_fix: 1, false_positive: 0 }
+    verified: 13
     unverified: 3
 cleanup_candidates: 1
 optimization_opportunities: 0
@@ -48,7 +48,7 @@ generated_by: ui-audit
 - The library is in good shape: every one of the 444 stories passes axe in light and dark, lint, typecheck and format are clean, nothing is unnamed, nothing animates forever under `prefers-reduced-motion`, Firefox passes all 444 stories, WebKit passes after one story fix.
 - The most important finding is about the safety net, not a component: **the gate that claims "axe in light and dark" never ran dark** (F-01). The decorator's theme global is `system`, headless Chromium reports `prefers-color-scheme: light`, so every story, play and axe check ran in light only. Running dark immediately found a real contrast failure (F-05). Fixed in `vite.config.ts`.
 - Real component defects, all about keyboard focus: the Tabs panel, the Sortable handle and the Kanban column handle showed no focus indicator (F-02, F-03, fixed 2026-11-23). A `ButtonGroup` with a Fragment child logs a React duplicate-key error (F-04).
-- Counts: 0 critical, 0 high, 3 medium, 11 low, 2 info (16). 8 fixed, 1 deferred, 7 open.
+- Counts: 0 critical, 0 high, 3 medium, 11 low, 2 info (16). 8 fixed, 1 deferred, 1 won't fix, 6 open.
 - Fix first: **F-04**. F-02 and F-03 are fixed; F-16 (Kanban columns overlapped at 900 and 1100 px) was found and fixed the same day.
 
 ## Scope and flow inventory
@@ -90,7 +90,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | F-08 | low | story | `src/extra/calendar/calendar.stories.tsx:366-444` | CustomDays loses the range fill | verified | open |
 | F-09 | low | test quality | about 67 story files (`minWidth` decorator) | No story can show a 390 px layout | verified | fixed |
 | F-10 | low | StyleX contract | see F-10 | Raw media queries, z-indexes, durations and one color remain | verified | open |
-| F-11 | info | design decision | `src/extra/command/command.stylex.ts:77-105` | Command input has no focus ring on purpose | n/a | open |
+| F-11 | info | design decision | `src/extra/command/command.stylex.ts:77-105` | Command input has no focus ring on purpose | n/a | wont_fix |
 | F-12 | info | a11y (WebKit) | `src/base/menubar/menubar.stories.tsx` | axe `aria-required-children` on the menubar in WebKit only | verified | deferred |
 | F-13 | low | a11y (2.5.8) | see F-13 | Several controls are under 24 px | unverified | open |
 | F-14 | low | a11y / console | `src/base/otp-field/otp-field.stories.tsx` | Eight stories log a Base UI warning about `aria-label` | unverified | open |
@@ -189,7 +189,7 @@ audit-00001 F-25 is marked fixed, but a scan finds:
 
 ### F-11 Command input draws no ring, by design
 
-`command.stylex.ts:77-79` says so: the field is always focused while the bar is open and a ring "kept drawing the eye". The caret is the focus indicator. WCAG 2.4.7 accepts a visible caret for a text field, but the decision is recorded only in a comment. Decision for the owner (see open questions).
+`command.stylex.ts:77-79` says so: the field is always focused while the bar is open and a ring "kept drawing the eye". The caret is the focus indicator. WCAG 2.4.7 accepts a visible caret for a text field, but the decision is recorded only in a comment. Decision (2026-11-25, owner, plan-00011 Q35): keep it; recorded in `architecture.md` ("The Command input draws no focus ring").
 
 ### F-12 Menubar fails axe in WebKit only
 
@@ -264,6 +264,7 @@ Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a
 
 ## Change log
 
+- 2026-11-25T04:51:04+07:00: F-11 closed as `wont_fix` (the owner kept the Command input ringless, recorded in `architecture.md`); the counts in the frontmatter, the executive summary, and `index.md` now match the findings table (16 findings, which the frontmatter had as 15). Open question 2 is answered for F-11; the token half (breakpoints, `zIndex`) is plan-00011 phases 6 to 8.
 - 2026-11-23T19:40:00+07:00: F-02 and F-03 fixed (focus ring on the Tabs panel and both drag handles, three `!test` tags removed); F-16 found and fixed (Kanban board grid). Open question 1 is answered for F-02 and F-03; F-04 stays open.
 - 2026-11-22T23:59:09+07:00: plan-00008 final validation: the 390 px sweep named two `Contracts` stories still wider than the canvas (under F-09).
 - 2026-11-22T23:31:40+07:00: F-09 fixed by plan-00008 (fluid canvas, no `minWidth`, 390 px probe clean); open question 3 (per-component state and size stories) is answered by the same plan, which gave every component `Sizes` and `States` stories.
