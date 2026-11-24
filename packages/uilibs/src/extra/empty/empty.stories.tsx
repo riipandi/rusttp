@@ -1,6 +1,7 @@
 import { FileText, Package, Search } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
@@ -34,14 +35,23 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
+// The title and media variant belong to `EmptyTitle` and `EmptyMedia`.
+type PlaygroundArgs = Pick<ComponentProps<typeof EmptyMedia>, 'variant'> & { title: string }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['title', 'variant'] } },
+  argTypes: {
+    title: { control: 'text' },
+    variant: { control: 'radio', options: ['default', 'icon'] }
+  },
+  args: { title: 'No potions brewed', variant: 'icon' },
+  render: ({ title, variant }) => (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant='icon'>
+        <EmptyMedia variant={variant}>
           <Package {...stylex.props(styles.icon)} />
         </EmptyMedia>
-        <EmptyTitle>No potions brewed</EmptyTitle>
+        <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>
           You haven't brewed anything yet. Start with a simple Cure for Boils.
         </EmptyDescription>

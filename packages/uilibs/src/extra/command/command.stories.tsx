@@ -109,10 +109,23 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <Command items={commands} itemToStringValue={itemLabel} style={styles.root}>
-      <CommandInput placeholder='Cast a spell or search…' />
+// The placeholder belongs to `CommandInput`; the rest are root props.
+type PlaygroundArgs = React.ComponentProps<typeof Command> &
+  Pick<React.ComponentProps<typeof CommandInput>, 'placeholder'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['placeholder', 'autoHighlight', 'disabled'] }
+  },
+  argTypes: {
+    placeholder: { control: 'text' },
+    autoHighlight: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: { placeholder: 'Cast a spell or search…', autoHighlight: true, disabled: false },
+  render: ({ placeholder, ...args }) => (
+    <Command items={commands} itemToStringValue={itemLabel} {...args} style={styles.root}>
+      <CommandInput placeholder={placeholder} />
       <CommandEmpty>No spells found.</CommandEmpty>
       <CommandList>
         {(item: CommandEntry) => (

@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, within } from 'storybook/test'
+import { buttonSizes } from '../../base/button/button.stylex'
 import { expectBoxSizes } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import {
@@ -30,24 +32,29 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
+// The page buttons take `size`; `page` is the story's current page, set as `isActive`.
+type PlaygroundArgs = Pick<ComponentProps<typeof PaginationLink>, 'size'> & { page: number }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['size', 'page'] } },
+  argTypes: {
+    size: { control: 'select', options: Object.keys(buttonSizes) },
+    page: { control: 'radio', options: [1, 2, 3] }
+  },
+  args: { size: 'icon-md', page: 2 },
+  render: ({ size, page }) => (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious href='#' />
         </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href='#'>1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href='#' isActive>
-            2
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href='#'>3</PaginationLink>
-        </PaginationItem>
+        {[1, 2, 3].map((number) => (
+          <PaginationItem key={number}>
+            <PaginationLink href='#' size={size} isActive={number === page}>
+              {number}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
         <PaginationItem>
           <PaginationEllipsis />
         </PaginationItem>

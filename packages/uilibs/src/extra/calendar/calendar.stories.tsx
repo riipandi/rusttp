@@ -8,6 +8,7 @@ import type { DateRange } from 'react-day-picker'
 import { arSA } from 'react-day-picker/locale'
 import { expect } from 'storybook/test'
 import { Button } from '../../base/button/button.component'
+import { buttonFills } from '../../base/button/button.stylex'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
 import { cellOf } from '../../contracts/control-sizes'
@@ -171,10 +172,52 @@ export const Layouts: Story = {
   }
 }
 
-export const Playground: Story = {
-  render: () => {
+type PlaygroundArgs = Pick<
+  React.ComponentProps<typeof Calendar>,
+  | 'captionLayout'
+  | 'showOutsideDays'
+  | 'numberOfMonths'
+  | 'showWeekNumber'
+  | 'weekStartsOn'
+  | 'buttonVariant'
+>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'captionLayout',
+        'showOutsideDays',
+        'numberOfMonths',
+        'showWeekNumber',
+        'weekStartsOn',
+        'buttonVariant'
+      ]
+    }
+  },
+  argTypes: {
+    captionLayout: {
+      control: 'radio',
+      options: ['label', 'dropdown', 'dropdown-months', 'dropdown-years']
+    },
+    showOutsideDays: { control: 'boolean' },
+    numberOfMonths: { control: 'radio', options: [1, 2] },
+    showWeekNumber: { control: 'boolean' },
+    weekStartsOn: { control: 'radio', options: [0, 1, 6] },
+    buttonVariant: { control: 'radio', options: Object.keys(buttonFills) }
+  },
+  args: {
+    captionLayout: 'label',
+    showOutsideDays: true,
+    numberOfMonths: 1,
+    showWeekNumber: false,
+    weekStartsOn: 0,
+    buttonVariant: 'ghost'
+  },
+  render: (args) => {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
-    return <Calendar mode='single' selected={date} onSelect={setDate} />
+    return <Calendar {...args} mode='single' selected={date} onSelect={setDate} />
   }
 }
 

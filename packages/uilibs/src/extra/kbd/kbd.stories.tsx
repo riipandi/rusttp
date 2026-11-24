@@ -24,11 +24,16 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['children'] } },
+  argTypes: {
+    children: { control: 'text' }
+  },
+  args: { children: 'P' },
+  render: ({ children }) => (
     <KbdGroup>
       <Kbd>⌘</Kbd>
       <Kbd>⇧</Kbd>
-      <Kbd>P</Kbd>
+      <Kbd>{children}</Kbd>
     </KbdGroup>
   )
 }

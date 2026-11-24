@@ -4,49 +4,16 @@ import { expect } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Text } from './text.component'
+import {
+  textAlignStyles,
+  textColorStyles,
+  textVariantStyles,
+  textWeightStyles
+} from './text.stylex'
 
 const meta = {
   title: 'Extra Components/Text',
   component: Text,
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: [
-        'headline-1',
-        'headline-2',
-        'headline-3',
-        'featured-1',
-        'featured-2',
-        'featured-3',
-        'featured-4',
-        'featured-5',
-        'featured-6',
-        'body-1',
-        'body-2',
-        'caption-1',
-        'caption-2'
-      ]
-    },
-    color: {
-      control: 'select',
-      options: [
-        'neutral',
-        'neutral-faded',
-        'positive',
-        'warning',
-        'critical',
-        'primary',
-        'disabled'
-      ]
-    },
-    weight: {
-      control: 'select',
-      options: ['light', 'regular', 'medium', 'semibold', 'bold', 'extrabold', 'black']
-    },
-    align: { control: 'inline-radio', options: ['start', 'center', 'end'] },
-    decoration: { control: 'select', options: ['underline', 'line-through'] },
-    wrap: { control: 'select', options: ['balance', 'nowrap'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Text>
 
@@ -66,9 +33,40 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'children',
+        'variant',
+        'color',
+        'weight',
+        'align',
+        'decoration',
+        'wrap',
+        'maxLines',
+        'monospace',
+        'numeric'
+      ]
+    }
+  },
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: 'select', options: Object.keys(textVariantStyles) },
+    color: { control: 'select', options: Object.keys(textColorStyles) },
+    weight: { control: 'select', options: Object.keys(textWeightStyles) },
+    align: { control: 'inline-radio', options: Object.keys(textAlignStyles) },
+    decoration: { control: 'select', options: ['underline', 'line-through'] },
+    wrap: { control: 'select', options: ['balance', 'nowrap'] },
+    maxLines: { control: 'number' },
+    monospace: { control: 'boolean' },
+    numeric: { control: 'boolean' }
+  },
   args: {
     variant: 'body-1',
-    children: 'Professor Langdon deciphered the cryptex beneath the Louvre'
+    children: 'Professor Langdon deciphered the cryptex beneath the Louvre',
+    monospace: false,
+    numeric: false
   },
   render: (args) => <Text {...args} />
 }

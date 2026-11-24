@@ -1,6 +1,7 @@
 import { Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
@@ -8,13 +9,11 @@ import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, radius, unit } from '../../styles/tokens.stylex'
 import { Alert, AlertAction, AlertDescription, AlertTitle } from './alert.component'
+import { alertColors } from './alert.stylex'
 
 const meta = {
   title: 'Extra Components/Alert',
   component: Alert,
-  argTypes: {
-    color: { control: 'select', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Alert>
 
@@ -44,11 +43,19 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { color: 'neutral' },
-  render: (args) => (
+// `title` is the text of `AlertTitle`; the root's own `title` attribute is not used.
+type PlaygroundArgs = ComponentProps<typeof Alert> & { title: string }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['title', 'color'] } },
+  argTypes: {
+    title: { control: 'text' },
+    color: { control: 'select', options: Object.keys(alertColors) }
+  },
+  args: { title: 'Lumos!', color: 'neutral' },
+  render: ({ title, ...args }) => (
     <Alert {...args} style={styles.alert}>
-      <AlertTitle>Lumos!</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription>
         Point your wand and speak the incantation to light the darkest corridor.
       </AlertDescription>

@@ -12,13 +12,7 @@ import { FileUpload, FileUploadTrigger } from './file-upload.component'
 
 const meta = {
   title: 'Extra Components/FileUpload',
-  component: FileUpload,
-  argTypes: {
-    variant: { control: 'select', options: ['outline', 'headless'] },
-    inline: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    name: { control: 'text' }
-  }
+  component: FileUpload
 } satisfies Meta<typeof FileUpload>
 
 export default meta
@@ -70,13 +64,19 @@ const styles = stylex.create({
 })
 
 export const Playground: Story = {
-  args: { name: 'file' },
-  render: function PlaygroundRender() {
+  parameters: { controls: { disable: false, include: ['variant', 'inline', 'disabled'] } },
+  argTypes: {
+    variant: { control: 'radio', options: ['outline', 'headless'] },
+    inline: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: { name: 'file', variant: 'outline', inline: false, disabled: false },
+  render: function PlaygroundRender(args) {
     const [files, setFiles] = React.useState<File[]>([])
 
     return (
       <div {...stylex.props(styles.stack, styles.width)}>
-        <FileUpload name='file' onChange={(args) => setFiles((prev) => [...prev, ...args.value])}>
+        <FileUpload {...args} onChange={(change) => setFiles((prev) => [...prev, ...change.value])}>
           <div {...stylex.props(styles.col)}>
             <Mic {...stylex.props(styles.icon)} strokeWidth={1.8} />
             Drop wand permits here

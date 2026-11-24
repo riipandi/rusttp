@@ -10,6 +10,7 @@ import {
   expectControlVariants
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd } from '../kbd'
 import { Spinner } from '../spinner'
@@ -46,15 +47,21 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['size', 'variant'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) }
+  },
+  args: { size: 'md', variant: 'outline' },
+  render: (args) => (
     <div {...stylex.props(styles.col)}>
-      <InputGroup>
+      <InputGroup {...args}>
         <InputGroupAddon>
           <InputGroupText>https://</InputGroupText>
         </InputGroupAddon>
         <InputGroupInput placeholder='dailyprophet.co.uk' />
       </InputGroup>
-      <InputGroup>
+      <InputGroup {...args}>
         <InputGroupInput placeholder='Search spells…' />
         <InputGroupAddon align='inline-end'>
           <InputGroupButton>Accio</InputGroupButton>

@@ -41,8 +41,13 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Breadcrumb>
+  parameters: { controls: { disable: false, include: ['color'] } },
+  argTypes: {
+    color: { control: 'radio', options: ['neutral', 'primary'] }
+  },
+  args: { color: 'neutral' },
+  render: (args) => (
+    <Breadcrumb {...args}>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href='/'>Louvre</BreadcrumbLink>

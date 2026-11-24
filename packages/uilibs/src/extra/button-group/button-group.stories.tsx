@@ -17,9 +17,6 @@ import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-gro
 const meta = {
   title: 'Extra Components/ButtonGroup',
   component: ButtonGroup,
-  argTypes: {
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof ButtonGroup>
 
@@ -36,8 +33,13 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <ButtonGroup>
+  parameters: { controls: { disable: false, include: ['orientation'] } },
+  argTypes: {
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
+  },
+  args: { orientation: 'horizontal' },
+  render: (args) => (
+    <ButtonGroup {...args}>
       <Button variant='outline'>Expelliarmus</Button>
       <Button variant='outline'>Petrificus Totalus</Button>
       <Button variant='outline'>Stupefy</Button>

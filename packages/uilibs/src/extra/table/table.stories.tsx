@@ -75,9 +75,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['border', 'columnBorder'] } },
+  argTypes: {
+    border: { control: 'boolean' },
+    columnBorder: { control: 'boolean' }
+  },
+  args: { border: false, columnBorder: false },
+  render: (args) => (
     <div {...stylex.props(styles.root)}>
-      <Table>
+      <Table {...args}>
         <TableCaption>A list of your recent Gringotts vault transactions.</TableCaption>
         <TableHeader>
           <TableRow>

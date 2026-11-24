@@ -11,6 +11,7 @@ import {
   expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { InputPhone } from './input-phone.component'
 
@@ -37,17 +38,33 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: (args) => (
-    <div {...stylex.props(styles.wrap)}>
-      <InputPhone aria-label='Phone number' {...args} />
-    </div>
-  ),
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'variant', 'disabled', 'invalid', 'readOnly', 'withCountrySelect']
+    }
+  },
   argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
     readOnly: { control: 'boolean' },
     withCountrySelect: { control: 'boolean' }
-  }
+  },
+  args: {
+    size: 'md',
+    variant: 'outline',
+    disabled: false,
+    invalid: false,
+    readOnly: false,
+    withCountrySelect: true
+  },
+  render: (args) => (
+    <div {...stylex.props(styles.wrap)}>
+      <InputPhone aria-label='Phone number' {...args} />
+    </div>
+  )
 }
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */

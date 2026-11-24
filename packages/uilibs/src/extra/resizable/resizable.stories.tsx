@@ -78,13 +78,24 @@ const styles = stylex.create({
   }
 })
 
-export const Playground: Story = {
-  render: () => (
-    <ResizablePanelGroup style={styles.frame}>
+// The bar's look is a `ResizableHandle` prop; the flow direction is the group's.
+type PlaygroundArgs = React.ComponentProps<typeof ResizablePanelGroup> &
+  Pick<React.ComponentProps<typeof ResizableHandle>, 'variant' | 'withHandle'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['orientation', 'variant', 'withHandle'] } },
+  argTypes: {
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    variant: { control: 'radio', options: ['line', 'pill', 'spring', 'capsule'] },
+    withHandle: { control: 'boolean' }
+  },
+  args: { orientation: 'horizontal', variant: 'pill', withHandle: false },
+  render: ({ variant, withHandle, ...args }) => (
+    <ResizablePanelGroup {...args} style={styles.frame}>
       <ResizablePanel id='sidebar' defaultSize='25%' minSize='15%' style={styles.content}>
         Sidebar
       </ResizablePanel>
-      <ResizableHandle aria-label='Resize sidebar' />
+      <ResizableHandle aria-label='Resize sidebar' variant={variant} withHandle={withHandle} />
       <ResizablePanel defaultSize='75%' style={styles.content}>
         Content
       </ResizablePanel>

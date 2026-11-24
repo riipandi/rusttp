@@ -43,6 +43,7 @@ function PlaygroundComponent({ size = 24, color }: PlaygroundArgs) {
 }
 
 export const Playground: Story = {
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
   argTypes: {
     size: { control: { type: 'range', min: 12, max: 64, step: 4 } },
     color: { control: 'color' }

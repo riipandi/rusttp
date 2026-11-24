@@ -6,6 +6,7 @@ import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Badge } from '../badge'
 import { Spinner } from './spinner.component'
+import { spinnerColors } from './spinner.stylex'
 
 const meta = {
   title: 'Extra Components/Spinner',
@@ -40,9 +41,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  argTypes: {
+    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
+    color: { control: 'radio', options: ['inherit', ...Object.keys(spinnerColors)] }
+  },
+  args: { size: 'md', color: 'inherit' },
+  render: (args) => (
     <Button disabled>
-      <Spinner /> Divining…
+      <Spinner {...args} /> Divining…
     </Button>
   ),
   // Inside a Button the spinner is decoration: the button keeps its own name and there is no

@@ -7,33 +7,12 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { textColorStyles, textVariantStyles, textWeightStyles } from '../text/text.stylex'
 import { LoaderText } from './loader-text.component'
 
 const meta = {
   title: 'Extra Components/LoaderText',
   component: LoaderText,
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['featured-4', 'featured-5', 'body-1', 'body-2', 'caption-1']
-    },
-    weight: {
-      control: 'select',
-      options: ['regular', 'medium', 'semibold', 'bold']
-    },
-    color: {
-      control: 'select',
-      options: [
-        'neutral',
-        'neutral-faded',
-        'positive',
-        'warning',
-        'critical',
-        'primary',
-        'disabled'
-      ]
-    }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof LoaderText>
 
@@ -50,6 +29,20 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['children', 'completed', 'completedText', 'variant', 'weight', 'color']
+    }
+  },
+  argTypes: {
+    children: { control: 'text' },
+    completed: { control: 'boolean' },
+    completedText: { control: 'text' },
+    variant: { control: 'select', options: Object.keys(textVariantStyles) },
+    weight: { control: 'select', options: Object.keys(textWeightStyles) },
+    color: { control: 'select', options: Object.keys(textColorStyles) }
+  },
   args: {
     icon: Mic,
     completed: false,

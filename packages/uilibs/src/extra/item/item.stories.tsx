@@ -19,14 +19,11 @@ import {
   ItemSeparator,
   ItemTitle
 } from './item.component'
+import { itemSizes, itemVariants } from './item.stylex'
 
 const meta = {
   title: 'Extra Components/Item',
   component: Item,
-  argTypes: {
-    variant: { control: 'radio', options: ['ghost', 'outline', 'faded'] },
-    size: { control: 'radio', options: ['xs', 'sm', 'md'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Item>
 
@@ -48,10 +45,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { variant: 'outline' },
-  render: () => (
+  parameters: { controls: { disable: false, include: ['variant', 'size'] } },
+  argTypes: {
+    variant: { control: 'radio', options: Object.keys(itemVariants) },
+    size: { control: 'radio', options: Object.keys(itemSizes) }
+  },
+  args: { variant: 'outline', size: 'md' },
+  render: (args) => (
     <ItemGroup style={styles.group}>
-      <Item variant='outline'>
+      <Item {...args}>
         <ItemContent>
           <ItemTitle>Protego Totalum</ItemTitle>
           <ItemDescription>Add an extra layer of protection to the Burrow.</ItemDescription>
@@ -60,7 +62,7 @@ export const Playground: Story = {
           <Switch defaultChecked aria-label='Protego Totalum' />
         </ItemActions>
       </Item>
-      <Item variant='faded'>
+      <Item {...args}>
         <ItemMedia variant='icon'>
           <Info {...stylex.props(styles.icon)} />
         </ItemMedia>

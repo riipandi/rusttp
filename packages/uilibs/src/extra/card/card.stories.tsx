@@ -15,13 +15,11 @@ import {
   CardHeader,
   CardTitle
 } from './card.component'
+import { cardSizes } from './card.stylex'
 
 const meta = {
   title: 'Extra Components/Card',
   component: Card,
-  argTypes: {
-    size: { control: 'radio', options: ['md', 'sm'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Card>
 
@@ -37,7 +35,13 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { size: 'md' },
+  parameters: { controls: { disable: false, include: ['size', 'selected', 'raised'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(cardSizes) },
+    selected: { control: 'boolean' },
+    raised: { control: 'boolean' }
+  },
+  args: { size: 'md', selected: false, raised: false },
   render: (args) => (
     <Card {...args} style={styles.card}>
       <CardHeader>

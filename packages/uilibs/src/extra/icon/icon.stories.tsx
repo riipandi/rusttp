@@ -7,6 +7,7 @@ import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Icon } from './icon.component'
+import { iconColors } from './icon.stylex'
 
 const meta = {
   title: 'Extra Components/Icon',
@@ -66,14 +67,17 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  argTypes: {
+    size: { control: { type: 'range', min: 12, max: 64, step: 4 } },
+    color: { control: 'select', options: Object.keys(iconColors) }
+  },
   args: { svg: Activity, size: 20 },
-  render: () => (
+  render: (args) => (
     <div {...stylex.props(styles.row)}>
-      <Icon svg={Activity} size={20} />
-      <Icon svg={Zap} size={20} />
-      <Icon svg={MicSvg} size={20} />
-      <Icon svg={Activity} color='primary' size={20} />
-      <Icon svg={Zap} color='critical' size={20} />
+      <Icon {...args} svg={Activity} />
+      <Icon {...args} svg={Zap} />
+      <Icon {...args} svg={MicSvg} />
     </div>
   )
 }

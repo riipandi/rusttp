@@ -4,6 +4,7 @@ import { expect } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
 import { container, radius } from '../../styles/tokens.stylex'
 import { Skeleton } from './skeleton.component'
+import { skeletonRadius } from './skeleton.stylex'
 
 const meta = {
   title: 'Extra Components/Skeleton',
@@ -28,10 +29,6 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 8
-  },
-  lineWide: {
-    height: 16,
-    width: container.xxsmall
   },
   line: {
     height: 16,
@@ -92,11 +89,18 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['width', 'height', 'borderRadius'] } },
+  argTypes: {
+    width: { control: 'text' },
+    height: { control: 'number' },
+    borderRadius: { control: 'select', options: Object.keys(skeletonRadius) }
+  },
+  args: { width: '10rem', height: 4, borderRadius: 'medium' },
+  render: (args) => (
     <div data-testid='skeleton-scene' {...stylex.props(styles.root)}>
       <Skeleton style={styles.avatar} />
       <div {...stylex.props(styles.lines)}>
-        <Skeleton style={styles.lineWide} />
+        <Skeleton {...args} />
         <Skeleton style={styles.line} />
       </div>
     </div>

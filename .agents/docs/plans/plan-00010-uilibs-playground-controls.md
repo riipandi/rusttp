@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T11:33:00+07:00
+updated: 2026-11-24T11:50:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
@@ -13,8 +13,8 @@ phases:
       note: All 35 base Playgrounds wired; checker 35 of 35, Controls panel lists exactly each include list, gate 952 of 952. Progress drops its timer so `value` takes effect; Separator controls color and inset only (its Playground draws three separators; `Orientations` keeps the axis); Form controls validationMode; Checkbox, Switch, and Collapsible remount on `defaultChecked`/`defaultOpen` so the control takes effect.
     - id: 3
       title: Extra component Playgrounds
-      status: pending
-      note: —
+      status: done
+      note: 26 of 27 extra files plus icons wired; checker clean for all but kanban and sortable (phase 4); gate 952 of 952 (one run flaked on input-group Sizes, 26 vs 32 px, and passed twice in isolation and on a full rerun). OWNER DECISION NEEDED: DescriptionList has no prop that fits D3 (only `render` and `style`), so its Playground is unchanged and shows no controls. Deviations: Icon Playground now draws three icons driven by size and color (the two fixed-color icons are gone); Skeleton drives the wide line only; Pagination adds a `page` story arg that sets `isActive`; Label and Empty add story-only `label` and `title` text args.
     - id: 4
       title: Kanban, Sortable, and Data Grid Playgrounds
       status: pending

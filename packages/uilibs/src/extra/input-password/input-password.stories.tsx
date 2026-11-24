@@ -13,6 +13,7 @@ import {
   expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes } from '../../styles/control.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { InputPassword } from './input-password.component'
 
@@ -36,14 +37,27 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  // `defaultVisible` only seeds the state, so the render remounts the field when it changes.
+  parameters: {
+    controls: { disable: false, include: ['placeholder', 'size', 'disabled', 'defaultVisible'] }
+  },
+  argTypes: {
+    placeholder: { control: 'text' },
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    disabled: { control: 'boolean' },
+    defaultVisible: { control: 'boolean' }
+  },
+  args: {
+    placeholder: 'Enter the password...',
+    size: 'md',
+    disabled: false,
+    defaultVisible: false
+  },
   render: (args) => (
     <div {...stylex.props(styles.field)}>
-      <InputPassword {...args} placeholder='Enter the password...' />
+      <InputPassword key={String(args.defaultVisible)} {...args} />
     </div>
-  ),
-  argTypes: {
-    disabled: { control: 'boolean' }
-  }
+  )
 }
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */

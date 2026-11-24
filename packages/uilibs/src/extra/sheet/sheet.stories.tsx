@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
@@ -39,11 +40,24 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <Sheet>
+// The look lives on `SheetContent`, so its props reach the story as args beside the root's.
+type PlaygroundArgs = ComponentProps<typeof Sheet> &
+  Pick<ComponentProps<typeof SheetContent>, 'side' | 'blurredOverlay' | 'showCloseButton'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['side', 'blurredOverlay', 'showCloseButton'] }
+  },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    blurredOverlay: { control: 'boolean' },
+    showCloseButton: { control: 'boolean' }
+  },
+  args: { side: 'right', blurredOverlay: false, showCloseButton: true },
+  render: ({ side, blurredOverlay, showCloseButton, ...root }) => (
+    <Sheet {...root}>
       <SheetTrigger render={<Button variant='outline' />}>Alohomora</SheetTrigger>
-      <SheetContent>
+      <SheetContent side={side} blurredOverlay={blurredOverlay} showCloseButton={showCloseButton}>
         <SheetHeader>
           <SheetTitle>Edit vault record</SheetTitle>
           <SheetDescription>

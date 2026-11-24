@@ -9,9 +9,6 @@ import { AspectRatio } from './aspect-ratio.component'
 const meta = {
   title: 'Extra Components/AspectRatio',
   component: AspectRatio,
-  argTypes: {
-    ratio: { control: { type: 'number', min: 0.5, step: 0.1 } }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof AspectRatio>
 
@@ -42,6 +39,10 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: { controls: { disable: false, include: ['ratio'] } },
+  argTypes: {
+    ratio: { control: { type: 'number', min: 0.5, step: 0.1 } }
+  },
   args: { ratio: 16 / 9 },
   render: (args) => (
     <div {...stylex.props(styles.frame)}>

@@ -12,6 +12,7 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { container, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
 import { Textarea } from './textarea.component'
@@ -19,9 +20,6 @@ import { Textarea } from './textarea.component'
 const meta = {
   title: 'Extra Components/Textarea',
   component: Textarea,
-  argTypes: {
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Textarea>
 
@@ -60,9 +58,29 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['placeholder', 'size', 'variant', 'disabled', 'autoResize']
+    }
+  },
+  argTypes: {
+    placeholder: { control: 'text' },
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    disabled: { control: 'boolean' },
+    autoResize: { control: 'boolean' }
+  },
+  args: {
+    placeholder: 'Draft your letter to the Daily Prophet…',
+    size: 'md',
+    variant: 'outline',
+    disabled: false,
+    autoResize: false
+  },
+  render: (args) => (
     <div {...stylex.props(styles.wrap)}>
-      <Textarea placeholder='Draft your letter to the Daily Prophet…' />
+      <Textarea {...args} />
     </div>
   ),
   play: async ({ canvas }) => {
