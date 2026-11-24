@@ -35,7 +35,14 @@ export default {
   async viteFinal(viteConfig) {
     return mergeConfig(viteConfig, {
       resolve: { tsconfigPaths: true },
-      build: { chunkSizeWarningLimit: 1024 * 4 },
+      build: {
+        chunkSizeWarningLimit: 1024 * 4,
+        rolldownOptions: {
+          checks: {
+            bundlerTimings: false
+          }
+        }
+      },
       server: undefined,
       plugins: [
         stylexPlugin({
