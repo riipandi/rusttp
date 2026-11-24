@@ -78,7 +78,7 @@ const preview: Preview = {
       // 'error' - fail on a11y violations (the default)
       // 'todo' - show a11y violations in the test UI only
       // 'off' - skip a11y checks entirely
-      // STORYBOOK_A11Y_GATE=todo|off relaxes the gate for a local run; CI keeps `error`.
+      // STORYBOOK_A11Y_GATE=todo|off relaxes the gate for a local run; the default run keeps `error`.
       test: gateMode(import.meta.env.STORYBOOK_A11Y_GATE),
       // The allowlist. Base UI puts focusable `aria-hidden` guard spans around a popup so focus
       // can leave it; they are meant to be focus targets, and axe flags them as `aria-hidden-focus`.

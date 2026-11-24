@@ -14,7 +14,7 @@ const storybookDark = await storybookTest({ configDir })
 // The decorator's theme global defaults to `system`, which follows `prefers-color-scheme`:
 // the browser context's `colorScheme` is what puts a project in light or dark, so each
 // project runs every story and its axe check in one theme.
-// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories in another engine (a local check; CI keeps Chromium).
+// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories in another engine (a local check; the default run keeps Chromium).
 const browser: 'chromium' | 'firefox' | 'webkit' =
   process.env.STORYBOOK_TEST_BROWSER === 'firefox' ||
   process.env.STORYBOOK_TEST_BROWSER === 'webkit'

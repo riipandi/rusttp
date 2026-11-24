@@ -33,6 +33,11 @@ lint *args:
 test *args:
     @if command -v cargo-nextest >/dev/null; then cargo nextest run --workspace --no-tests=pass {{ args }}; else cargo test --workspace {{ args }}; fi
 
+[doc('Run the uilibs story, a11y, and unit gates (Chromium)')]
+[group('quality')]
+test-ui *args:
+    @pnpm --silent --filter uilibs test {{ args }}
+
 [doc('Run the webapp unit tests (default to Chromium)')]
 [group('quality')]
 test-web *args:
