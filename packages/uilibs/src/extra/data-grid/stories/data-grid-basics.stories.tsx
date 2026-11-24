@@ -326,8 +326,7 @@ export const WithoutTableBorders: Story = {
         tableStyles={{ edgeCell: s.edgeCell }}
         tableLayout={{
           headerBackground: false,
-          rowBorder: false,
-          rowRounded: true
+          rowBorder: false
         }}
       >
         <div {...stylex.props(s.stack)}>
@@ -387,11 +386,7 @@ export const StripedRows: Story = {
     const table = useDemoTable(columns)
 
     return (
-      <DataGrid
-        table={table}
-        recordCount={demoData?.length || 0}
-        tableLayout={{ stripped: true, rowRounded: true }}
-      >
+      <DataGrid table={table} recordCount={demoData?.length || 0} tableLayout={{ stripped: true }}>
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>

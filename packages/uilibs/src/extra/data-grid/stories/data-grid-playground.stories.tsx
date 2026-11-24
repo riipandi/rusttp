@@ -44,8 +44,6 @@ const meta = {
 export default meta
 
 // The grid takes one `tableLayout` object; the Playground flattens it into one control per flag.
-// `rowRounded` and `rowsDraggable` are declared there but nothing reads them (issue-00005), so
-// they are not controls.
 interface PlaygroundArgs {
   dense: boolean
   cellBorder: boolean

@@ -700,7 +700,6 @@ export interface DataGridProps<TData extends object> {
     dense?: boolean
     cellBorder?: boolean
     rowBorder?: boolean
-    rowRounded?: boolean
     stripped?: boolean
     headerBackground?: boolean
     footerBackground?: boolean
@@ -713,7 +712,6 @@ export interface DataGridProps<TData extends object> {
     columnsPinnable?: boolean
     columnsMovable?: boolean
     columnsDraggable?: boolean
-    rowsDraggable?: boolean
     rowsPinnable?: boolean
     /** Spreadsheet cell range selection: mouse ranges, keyboard, clipboard chrome. */
     cellSelection?: boolean
@@ -941,7 +939,6 @@ function DataGrid<TData extends object>({ children, table, ...props }: DataGridP
       dense: false,
       cellBorder: false,
       rowBorder: true,
-      rowRounded: false,
       stripped: false,
       headerSticky: false,
       headerBackground: false,
@@ -955,7 +952,6 @@ function DataGrid<TData extends object>({ children, table, ...props }: DataGridP
       columnsPinnable: false,
       columnsMovable: false,
       columnsDraggable: false,
-      rowsDraggable: false,
       rowsPinnable: false,
       cellSelection: false,
       cellFillHandle: false
