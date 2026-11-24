@@ -32,7 +32,10 @@ const preview: Preview = {
         ]
       }
     },
+    // Controls show only on a component's `Playground`, which turns them back on with
+    // `controls: { disable: false, include: [...] }`; every other story shows none.
     controls: {
+      disable: true,
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i

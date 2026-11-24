@@ -13,20 +13,11 @@ import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
 import { Button, LinkButton } from './button.component'
-import { buttonSizes } from './button.stylex'
+import { buttonFills, buttonSizes } from './button.stylex'
 
 const meta = {
   title: 'Base Components/Button',
   component: Button,
-  argTypes: {
-    variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
-    color: {
-      control: 'radio',
-      options: ['primary', 'neutral', 'critical', 'positive', 'warning', 'media', 'inherit']
-    },
-    size: { control: 'radio', options: Object.keys(buttonSizes) },
-    disabled: { control: 'boolean' }
-  },
   tags: [], // ['autodocs']
   args: { onClick: fn() }
 } satisfies Meta<typeof Button>
@@ -54,11 +45,54 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { variant: 'outline' },
-  render: (args) => (
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'children',
+        'variant',
+        'color',
+        'size',
+        'rounded',
+        'fullWidth',
+        'raised',
+        'highlighted',
+        'loading',
+        'disabled'
+      ]
+    }
+  },
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: 'radio', options: Object.keys(buttonFills) },
+    // Every fill has every color, so the solid map lists them all.
+    color: { control: 'select', options: Object.keys(buttonFills.solid) },
+    // The icon-only sizes are square and have no room for a label; `IconSizes` shows them.
+    size: {
+      control: 'radio',
+      options: Object.keys(buttonSizes).filter((size) => !size.startsWith('icon-'))
+    },
+    rounded: { control: 'boolean' },
+    fullWidth: { control: 'boolean' },
+    raised: { control: 'boolean' },
+    highlighted: { control: 'boolean' },
+    loading: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    variant: 'outline',
+    children: 'New lecture',
+    rounded: false,
+    fullWidth: false,
+    raised: false,
+    highlighted: false,
+    loading: false,
+    disabled: false
+  },
+  render: ({ children, ...args }) => (
     <Button {...args}>
       <Plus {...stylex.props(styles.icon)} />
-      New lecture
+      {children}
     </Button>
   )
 }

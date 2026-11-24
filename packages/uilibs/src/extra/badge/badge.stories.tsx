@@ -5,18 +5,11 @@ import { expect, fn, userEvent } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
 import { Spinner } from '../spinner'
 import { Badge } from './badge.component'
+import { badgeSizes, badgeSolidColors, badgeVariants } from './badge.stylex'
 
 const meta = {
   title: 'Extra Components/Badge',
   component: Badge,
-  argTypes: {
-    variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
-    color: {
-      control: 'radio',
-      options: ['neutral', 'primary', 'positive', 'warning', 'critical']
-    },
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Badge>
 
@@ -36,8 +29,22 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { variant: 'solid' },
-  render: (args) => <Badge {...args}>Gryffindor</Badge>
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['children', 'variant', 'color', 'size', 'rounded', 'highlighted']
+    }
+  },
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: 'radio', options: Object.keys(badgeVariants) },
+    color: { control: 'radio', options: Object.keys(badgeSolidColors) },
+    size: { control: 'radio', options: Object.keys(badgeSizes) },
+    rounded: { control: 'boolean' },
+    highlighted: { control: 'boolean' }
+  },
+  args: { variant: 'solid', children: 'Gryffindor', rounded: true, highlighted: false },
+  render: (args) => <Badge {...args} />
 }
 
 const variantNames = ['solid', 'faded', 'outline', 'ghost'] as const

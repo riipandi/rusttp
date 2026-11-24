@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -20,9 +21,6 @@ import {
 const meta = {
   title: 'Base Components/Dialog',
   component: Dialog,
-  argTypes: {
-    open: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Dialog>
 
@@ -49,11 +47,29 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <Dialog>
+// The look lives on `DialogContent`, so its props reach the story as args beside the root's.
+type PlaygroundArgs = ComponentProps<typeof Dialog> &
+  Pick<ComponentProps<typeof DialogContent>, 'size' | 'blurredOverlay' | 'showCloseButton'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'blurredOverlay', 'showCloseButton', 'modal', 'disablePointerDismissal']
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: ['sm', 'md'] },
+    blurredOverlay: { control: 'boolean' },
+    showCloseButton: { control: 'boolean' },
+    modal: { control: 'radio', options: [true, false, 'trap-focus'] },
+    disablePointerDismissal: { control: 'boolean' }
+  },
+  args: { size: 'md', blurredOverlay: false, showCloseButton: true },
+  render: ({ size, blurredOverlay, showCloseButton, ...root }) => (
+    <Dialog {...root}>
       <DialogTrigger render={<Button variant='outline' />}>Open the cryptex</DialogTrigger>
-      <DialogContent>
+      <DialogContent size={size} blurredOverlay={blurredOverlay} showCloseButton={showCloseButton}>
         <DialogHeader>
           <DialogTitle>Erase the map?</DialogTitle>
           <DialogDescription>

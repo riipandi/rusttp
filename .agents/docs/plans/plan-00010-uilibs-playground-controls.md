@@ -1,12 +1,12 @@
 ---
 status: in-progress
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T11:03:41+07:00
+updated: 2026-11-24T11:16:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
-      status: pending
-      note: —
+      status: done
+      note: Controls off globally in preview.tsx; Button, Badge, Dialog Playgrounds wired. Gate 952 of 952. Dialog has no `position` prop, so its routed part args are size, blurredOverlay, showCloseButton.
     - id: 2
       title: Base component Playgrounds
       status: pending
