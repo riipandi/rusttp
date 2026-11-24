@@ -3,7 +3,7 @@ import { ChevronRight, FileText, GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/collapsible'
 import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
@@ -14,8 +14,8 @@ import { stroke, unit, duration, easing, radius, zIndex } from '../../styles/tok
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
 import { Badge } from '../badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '../card'
-import { Sortable, SortableItem, SortableItemHandle } from './'
-import type { SortableCommitMeta } from './'
+import { Sortable, SortableItem, SortableItemHandle, SortableOverlay } from './'
+import type { SortableCommitMeta, SortableRootProps } from './'
 
 const meta = {
   title: 'Extra Components/Sortable',
@@ -380,8 +380,126 @@ function ListOfItems() {
   )
 }
 
-export const Playground: Story = {
-  render: () => <ListOfItems />
+const playgroundFiles: FileEntry[] = [
+  {
+    id: '1',
+    title: 'Marauder’s Map',
+    description: 'Every corridor of Hogwarts',
+    type: 'document',
+    size: '1.2 MB'
+  },
+  {
+    id: '2',
+    title: 'Pensieve Memory',
+    description: 'Dumbledore’s memory of Tom Riddle',
+    type: 'video',
+    size: '15.7 MB'
+  },
+  {
+    id: '3',
+    title: 'Cryptex Blueprint',
+    description: 'Da Vinci’s five-dial design',
+    type: 'image',
+    size: '3.1 MB'
+  },
+  {
+    id: '4',
+    title: 'Hedwig’s Song',
+    description: 'Recorded in the Owlery',
+    type: 'audio',
+    size: '8.3 MB'
+  },
+  {
+    id: '5',
+    title: 'Mona Lisa Scan',
+    description: 'Louvre, Salle des États',
+    type: 'image',
+    size: '2.4 MB'
+  },
+  {
+    id: '6',
+    title: 'Hogwarts Letter',
+    description: 'Addressed to the cupboard under the stairs',
+    type: 'document',
+    size: '0.4 MB'
+  }
+]
+
+// `strategy` is the root's; the other three choose what the story composes around it.
+type PlaygroundArgs = Pick<SortableRootProps<FileEntry>, 'strategy' | 'onValueCommit'> & {
+  layout: 'list' | 'grid'
+  handle: boolean
+  overlay: boolean
+}
+
+const strategies: NonNullable<SortableRootProps<FileEntry>['strategy']>[] = [
+  'vertical',
+  'horizontal',
+  'grid'
+]
+
+function SortablePlayground({ strategy, onValueCommit, layout, handle, overlay }: PlaygroundArgs) {
+  const [items, setItems] = useState(playgroundFiles)
+  const grid = layout === 'grid'
+
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        onValueCommit={onValueCommit}
+        getItemValue={(item) => item.id}
+        strategy={strategy}
+        style={grid ? styles.grid : styles.list}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div {...stylex.props(styles.row, grid && styles.gridCell)}>
+              {handle && <Handle style={grid ? styles.gridHandle : undefined} />}
+              {!grid && <FileTypeIcon type={item.type} />}
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
+              </div>
+              <div {...stylex.props(grid ? styles.gridFooter : styles.metaRow)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+        {overlay && (
+          <SortableOverlay>
+            {({ value }) => (
+              <div {...stylex.props(styles.row, styles.rowMuted)}>
+                {items.find((item) => item.id === value)?.title}
+              </div>
+            )}
+          </SortableOverlay>
+        )}
+      </Sortable>
+    </div>
+  )
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['strategy', 'layout', 'handle', 'overlay'] }
+  },
+  argTypes: {
+    strategy: { control: 'radio', options: strategies },
+    layout: { control: 'radio', options: ['list', 'grid'] },
+    handle: { control: 'boolean' },
+    overlay: { control: 'boolean' }
+  },
+  args: {
+    strategy: 'vertical',
+    layout: 'list',
+    handle: true,
+    overlay: false,
+    onValueCommit: fn()
+  },
+  render: (args) => <SortablePlayground {...args} />
 }
 
 // -- c-sortable-2: grid layout ----------------------------------------------

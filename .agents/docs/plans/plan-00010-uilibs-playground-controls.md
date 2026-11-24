@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T11:50:00+07:00
+updated: 2026-11-24T12:08:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
@@ -17,8 +17,8 @@ phases:
       note: 26 of 27 extra files plus icons wired; checker clean for all but kanban and sortable (phase 4); gate 952 of 952 (one run flaked on input-group Sizes, 26 vs 32 px, and passed twice in isolation and on a full rerun). OWNER DECISION NEEDED: DescriptionList has no prop that fits D3 (only `render` and `style`), so its Playground is unchanged and shows no controls. Deviations: Icon Playground now draws three icons driven by size and color (the two fixed-color icons are gone); Skeleton drives the wide line only; Pagination adds a `page` story arg that sets `isActive`; Label and Empty add story-only `label` and `title` text args.
     - id: 4
       title: Kanban, Sortable, and Data Grid Playgrounds
-      status: pending
-      note: —
+      status: done
+      note: Kanban and Sortable Playgrounds (4 controls each, D6) and data-grid-playground.stories.tsx (19 controls grouped by category, D5) landed; gate 956 of 956 (952 plus 2 stories in light and dark). Deviation from D5/D6: `rowRounded` and `rowsDraggable` are not controls because no code reads them (issue-00005). Probe: `dense` 37 to 33 px rows, `pagination` off hides the pager, `isLoading` shows skeleton rows (spinner mode shows Loading...), `empty` shows the message, `rowSelection` adds checkboxes, `headerSticky` sets thead sticky.
     - id: 5
       title: Chart Playgrounds
       status: pending

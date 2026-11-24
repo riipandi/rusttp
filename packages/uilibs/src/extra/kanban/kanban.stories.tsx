@@ -2,7 +2,7 @@ import { GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Meter } from '../../base/meter'
@@ -14,6 +14,7 @@ import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/t
 import { Badge } from '../badge'
 import { Kanban, KanbanBoard, KanbanItem, KanbanOverlay } from './'
 import { KanbanColumn, KanbanColumnContent, KanbanColumnHandle } from './'
+import type { KanbanRootProps } from './'
 
 const meta = {
   title: 'Extra Components/Kanban',
@@ -440,6 +441,154 @@ function fakePersistToBackend(value: Record<string, BackendTask[]>) {
     console.log('Persisted to backend:', value)
     toast.success('Changes saved')
   })
+}
+
+// ---------------------------------------------------------------------------
+// Playground
+// ---------------------------------------------------------------------------
+
+const playgroundColumns: Column[] = [
+  {
+    id: 'diagon',
+    title: 'Diagon Alley',
+    color: colors.foregroundNeutralFaded,
+    tasks: [
+      { id: 'task-1', title: 'Buy a wand at Ollivanders' },
+      { id: 'task-2', title: 'Visit Gringotts vault 713' },
+      { id: 'task-3', title: 'Find the Leaky Cauldron' }
+    ]
+  },
+  {
+    id: 'hogwarts',
+    title: 'Hogwarts',
+    color: colors.foregroundPrimary,
+    tasks: [
+      { id: 'task-4', title: 'Brew Polyjuice Potion' },
+      { id: 'task-5', title: 'Cast a Patronus' }
+    ]
+  },
+  {
+    id: 'louvre',
+    title: 'Louvre',
+    color: colors.foregroundWarning,
+    tasks: [
+      { id: 'task-6', title: 'Decode the cryptex' },
+      { id: 'task-7', title: 'Follow the Rose Line' }
+    ]
+  },
+  {
+    id: 'vatican',
+    title: 'Vatican Archives',
+    color: colors.foregroundPositive,
+    tasks: [
+      { id: 'task-8', title: 'Read the Diagramma' },
+      { id: 'task-9', title: 'Catch the Golden Snitch' }
+    ]
+  }
+]
+
+// `restoreOnCancel` and the commit callback are root props; the rest choose what the story
+// composes around the board.
+type PlaygroundArgs = Pick<KanbanRootProps<Task>, 'restoreOnCancel' | 'onValueCommit'> & {
+  columns: number
+  columnHandle: boolean
+  overlay: boolean
+}
+
+function KanbanPlayground({
+  restoreOnCancel,
+  onValueCommit,
+  columns: count,
+  columnHandle,
+  overlay
+}: PlaygroundArgs) {
+  const [columns, setColumns] = useState<Column[]>(playgroundColumns)
+  const visible = columns.slice(0, count)
+
+  // The record's key order carries the order of the shown columns; the hidden ones follow them.
+  const handleValueChange = (next: Record<string, Task[]>) =>
+    setColumns((prev) => [
+      ...Object.keys(next).flatMap((id) => {
+        const column = prev.find((candidate) => candidate.id === id)
+        return column ? [{ ...column, tasks: next[id] ?? column.tasks }] : []
+      }),
+      ...prev.filter((column) => !(column.id in next))
+    ])
+
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Kanban
+        value={getColumnsValue(visible)}
+        onValueChange={handleValueChange}
+        getItemValue={(task) => task.id}
+        onValueCommit={onValueCommit}
+        restoreOnCancel={restoreOnCancel}
+        style={styles.fillWidth}
+      >
+        <KanbanBoard>
+          {visible.map((column) => (
+            <KanbanColumn key={column.id} value={column.id}>
+              <div {...stylex.props(styles.columnHeader)}>
+                <span {...stylex.props(styles.columnTitle)}>{column.title}</span>
+                <Badge variant='outline' style={styles.columnCount}>
+                  {column.tasks.length}
+                </Badge>
+                {columnHandle && (
+                  <KanbanColumnHandle style={styles.handleEnd}>
+                    <GripVertical size={16} />
+                  </KanbanColumnHandle>
+                )}
+              </div>
+              <KanbanColumnContent value={column.id}>
+                {column.tasks.map((task) => (
+                  <KanbanItem key={task.id} value={task.id}>
+                    <div {...stylex.props(styles.itemBody)}>
+                      <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
+                    </div>
+                  </KanbanItem>
+                ))}
+              </KanbanColumnContent>
+            </KanbanColumn>
+          ))}
+        </KanbanBoard>
+        {overlay && (
+          <KanbanOverlay style={styles.ghostOverlay}>
+            {({ variant }) => (
+              <div
+                {...stylex.props(
+                  styles.ghostBox,
+                  variant === 'column' ? styles.ghostColumn : styles.ghostItem
+                )}
+              />
+            )}
+          </KanbanOverlay>
+        )}
+      </Kanban>
+    </div>
+  )
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['restoreOnCancel', 'columns', 'columnHandle', 'overlay']
+    }
+  },
+  argTypes: {
+    restoreOnCancel: { control: 'boolean' },
+    columns: { control: { type: 'range', min: 2, max: playgroundColumns.length, step: 1 } },
+    columnHandle: { control: 'boolean' },
+    overlay: { control: 'boolean' }
+  },
+  args: {
+    restoreOnCancel: false,
+    columns: 3,
+    columnHandle: true,
+    overlay: true,
+    onValueCommit: fn()
+  },
+  render: (args) => <KanbanPlayground {...args} />
 }
 
 // ---------------------------------------------------------------------------

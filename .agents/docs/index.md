@@ -59,6 +59,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
+| `issue-00005-data-grid-unread-layout-flags.md` | open (2 open) | Data Grid `tableLayout.rowRounded` and `rowsDraggable` are declared and documented but nothing reads them. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
