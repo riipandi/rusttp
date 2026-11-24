@@ -95,8 +95,17 @@ function ProgressCircle({ fraction, label }: ProgressStoryProps) {
   )
 }
 
-export const Playground: Story = {
-  render: () => <ProgressCircle fraction={0.68} label='Shelves restocked' />,
+interface PlaygroundArgs {
+  fraction: number
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['fraction'] } },
+  argTypes: {
+    fraction: { control: { type: 'range', min: 0, max: 1, step: 0.01 } }
+  },
+  args: { fraction: 0.68 },
+  render: ({ fraction }) => <ProgressCircle fraction={fraction} label='Shelves restocked' />,
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Shelves restocked' })
     await expect(chart).toBeVisible()

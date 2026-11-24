@@ -46,7 +46,11 @@ const horizontalItems = [
   { channel: 'y', label: 'Book' }
 ] as const
 
-function VerticalBars() {
+interface BarOptions {
+  legend?: boolean
+}
+
+function VerticalBars({ legend = true }: BarOptions) {
   const definition = defineChart({
     marks: [
       barY(langdonNovels, {
@@ -71,13 +75,31 @@ function VerticalBars() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Chapters per Robert Langdon novel' height={260} />
-      <ChartLegend hide={['potter']} />
+      {legend && <ChartLegend hide={['potter']} />}
     </ChartContainer>
   )
 }
 
-export const Playground: Story = {
-  render: () => <VerticalBars />,
+type PlaygroundArgs = Required<BarOptions> & {
+  bars: 'vertical' | 'horizontal' | 'stacked' | 'grouped'
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['bars', 'legend'] } },
+  argTypes: {
+    bars: { control: 'radio', options: ['vertical', 'horizontal', 'stacked', 'grouped'] },
+    legend: { control: 'boolean' }
+  },
+  args: { bars: 'vertical', legend: true },
+  render: ({ bars, legend }) => {
+    const Bars = {
+      vertical: VerticalBars,
+      horizontal: HorizontalBars,
+      stacked: StackedBars,
+      grouped: GroupedBars
+    }[bars]
+    return <Bars legend={legend} />
+  },
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Chapters per Robert Langdon novel' })
     await expect(chart).toBeVisible()
@@ -86,7 +108,7 @@ export const Playground: Story = {
   }
 }
 
-function HorizontalBars() {
+function HorizontalBars({ legend = false }: BarOptions) {
   const definition = defineChart({
     marks: [
       barX(hpBooks, {
@@ -113,11 +135,12 @@ function HorizontalBars() {
   return (
     <ChartContainer config={{ pages: { label: 'Pages', color: seriesColors.brand } }}>
       <Chart definition={definition} ariaLabel='Harry Potter books by page count' height={300} />
+      {legend && <ChartLegend />}
     </ChartContainer>
   )
 }
 
-function StackedBars() {
+function StackedBars({ legend = true }: BarOptions) {
   // Rounded stack tips without junction notches: the top series paints
   // first with all-corner rounding, then the square bottom series paints
   // over it and hides the rounded lower corners. The overlap is invisible,
@@ -158,12 +181,12 @@ function StackedBars() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Monthly checkouts stacked by series' height={260} />
-      <ChartLegend />
+      {legend && <ChartLegend />}
     </ChartContainer>
   )
 }
 
-function GroupedBars() {
+function GroupedBars({ legend = true }: BarOptions) {
   // Rename folded series keys to their display labels so focus state,
   // tooltips, and the color scale all speak the same names.
   const rows = fold(checkouts, {
@@ -198,7 +221,7 @@ function GroupedBars() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Monthly checkouts grouped by series' height={260} />
-      <ChartLegend />
+      {legend && <ChartLegend />}
     </ChartContainer>
   )
 }

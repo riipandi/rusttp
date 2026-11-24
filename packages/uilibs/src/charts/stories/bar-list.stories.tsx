@@ -96,8 +96,19 @@ function BarList({ rows, highlightFirst = true }: BarListProps) {
   )
 }
 
-export const Playground: Story = {
-  render: () => <BarList rows={hpBooks.toSorted((a, b) => b.pages - a.pages)} />,
+interface PlaygroundArgs {
+  highlightFirst: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['highlightFirst'] } },
+  argTypes: {
+    highlightFirst: { control: 'boolean' }
+  },
+  args: { highlightFirst: true },
+  render: ({ highlightFirst }) => (
+    <BarList rows={hpBooks.toSorted((a, b) => b.pages - a.pages)} highlightFirst={highlightFirst} />
+  ),
   play: async ({ canvas }) => {
     const list = canvas.getByRole('list', { name: 'Most borrowed Harry Potter books' })
     await expect(list).toBeVisible()

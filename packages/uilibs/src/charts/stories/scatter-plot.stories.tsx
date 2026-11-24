@@ -14,8 +14,6 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
 // Practice hours versus spell power for 48 students, split into two cohorts.
@@ -53,48 +51,75 @@ const scatterScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Playground: Story = {
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+  trend: boolean
+  day: boolean
+  night: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend', 'trend', 'day', 'night'] } },
+  argTypes: {
+    legend: { control: 'boolean' },
+    trend: { control: 'boolean' },
+    day: { control: 'boolean' },
+    night: { control: 'boolean' }
+  },
+  args: { legend: true, trend: true, day: true, night: true },
+  render: ({ legend, trend, day, night }) => {
     const definition = defineChart({
       marks: [
-        linearRegressionY(students, {
-          id: 'trend',
-          x: 'hours',
-          y: 'power',
-          stroke: seriesColors.neutral,
-          strokeWidth: 1.5,
-          strokeDasharray: '5 4'
-        }),
-        dot(dayStudents, {
-          id: 'day',
-          x: 'hours',
-          y: 'power',
-          r: 4,
-          fill: scatterConfig.day.color,
-          fillOpacity: 0.85,
-          states: [
-            {
-              when: { focus: 'primary' },
-              style: { r: 6 },
-              transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-            }
-          ]
-        }),
-        dot(nightStudents, {
-          id: 'night',
-          x: 'hours',
-          y: 'power',
-          r: 4,
-          fill: scatterConfig.night.color,
-          fillOpacity: 0.85,
-          states: [
-            {
-              when: { focus: 'primary' },
-              style: { r: 6 },
-              transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-            }
-          ]
-        })
+        ...(trend
+          ? [
+              linearRegressionY(students, {
+                id: 'trend',
+                x: 'hours',
+                y: 'power',
+                stroke: seriesColors.neutral,
+                strokeWidth: 1.5,
+                strokeDasharray: '5 4'
+              })
+            ]
+          : []),
+        ...(day
+          ? [
+              dot(dayStudents, {
+                id: 'day',
+                x: 'hours',
+                y: 'power',
+                r: 4,
+                fill: scatterConfig.day.color,
+                fillOpacity: 0.85,
+                states: [
+                  {
+                    when: { focus: 'primary' },
+                    style: { r: 6 },
+                    transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                  }
+                ]
+              })
+            ]
+          : []),
+        ...(night
+          ? [
+              dot(nightStudents, {
+                id: 'night',
+                x: 'hours',
+                y: 'power',
+                r: 4,
+                fill: scatterConfig.night.color,
+                fillOpacity: 0.85,
+                states: [
+                  {
+                    when: { focus: 'primary' },
+                    style: { r: 6 },
+                    transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                  }
+                ]
+              })
+            ]
+          : [])
       ],
       scales: scatterScales,
       theme: chartTheme,
@@ -116,7 +141,11 @@ export const Playground: Story = {
           ariaLabel='Practice hours versus spell power with trend line'
           height={280}
         />
-        <ChartLegend />
+        {legend && (
+          <ChartLegend
+            hide={Object.entries({ day, night }).flatMap(([key, on]) => (on ? [] : [key]))}
+          />
+        )}
       </ChartContainer>
     )
   },

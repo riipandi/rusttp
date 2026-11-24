@@ -27,41 +27,55 @@ type Story = StoryObj<typeof meta>
 
 export default meta
 
-function OverlaidAreas() {
+interface AreaOptions {
+  legend?: boolean
+  langdon?: boolean
+  potter?: boolean
+}
+
+function OverlaidAreas({ legend = true, langdon = true, potter = true }: AreaOptions) {
   const definition = defineChart({
     marks: [
-      areaY(checkouts, {
-        id: 'langdon',
-        x: 'month',
-        y: 'langdon',
-        fill: seriesColors.langdon,
-        fillOpacity: 0.15,
-        stroke: seriesColors.langdon,
-        strokeWidth: 2,
-        states: [
-          {
-            when: { focus: 'unmatched' },
-            style: { fillOpacity: 0.08 },
-            transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-          }
-        ]
-      }),
-      areaY(checkouts, {
-        id: 'potter',
-        x: 'month',
-        y: 'potter',
-        fill: seriesColors.potter,
-        fillOpacity: 0.15,
-        stroke: seriesColors.potter,
-        strokeWidth: 2,
-        states: [
-          {
-            when: { focus: 'unmatched' },
-            style: { fillOpacity: 0.08 },
-            transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-          }
-        ]
-      })
+      ...(langdon
+        ? [
+            areaY(checkouts, {
+              id: 'langdon',
+              x: 'month',
+              y: 'langdon',
+              fill: seriesColors.langdon,
+              fillOpacity: 0.15,
+              stroke: seriesColors.langdon,
+              strokeWidth: 2,
+              states: [
+                {
+                  when: { focus: 'unmatched' },
+                  style: { fillOpacity: 0.08 },
+                  transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                }
+              ]
+            })
+          ]
+        : []),
+      ...(potter
+        ? [
+            areaY(checkouts, {
+              id: 'potter',
+              x: 'month',
+              y: 'potter',
+              fill: seriesColors.potter,
+              fillOpacity: 0.15,
+              stroke: seriesColors.potter,
+              strokeWidth: 2,
+              states: [
+                {
+                  when: { focus: 'unmatched' },
+                  style: { fillOpacity: 0.08 },
+                  transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                }
+              ]
+            })
+          ]
+        : [])
     ],
     scales: checkoutScales,
     theme: chartTheme,
@@ -74,13 +88,28 @@ function OverlaidAreas() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Monthly checkouts by series' height={260} />
-      <ChartLegend />
+      {legend && (
+        <ChartLegend
+          hide={Object.entries({ langdon, potter }).flatMap(([key, on]) => (on ? [] : [key]))}
+        />
+      )}
     </ChartContainer>
   )
 }
 
-export const Playground: Story = {
-  render: () => <OverlaidAreas />,
+type PlaygroundArgs = Required<AreaOptions> & { layout: 'overlaid' | 'stacked' }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['layout', 'legend', 'langdon', 'potter'] } },
+  argTypes: {
+    layout: { control: 'radio', options: ['overlaid', 'stacked'] },
+    legend: { control: 'boolean' },
+    langdon: { control: 'boolean' },
+    potter: { control: 'boolean' }
+  },
+  args: { layout: 'overlaid', legend: true, langdon: true, potter: true },
+  render: ({ layout, ...options }) =>
+    layout === 'stacked' ? <StackedAreas {...options} /> : <OverlaidAreas {...options} />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: 'Monthly checkouts by series' })).toBeVisible()
     await expect(canvas.getByText('Robert Langdon')).toBeVisible()
@@ -88,11 +117,11 @@ export const Playground: Story = {
   }
 }
 
-function StackedAreas() {
+function StackedAreas({ legend = true, langdon = true, potter = true }: AreaOptions) {
   const rows = fold(checkouts, {
     fields: ['langdon', 'potter'],
     as: { key: 'series', value: 'checkouts' }
-  })
+  }).filter((row) => (row.series === 'langdon' ? langdon : potter))
   const definition = defineChart({
     marks: [
       areaY(rows, {
@@ -123,7 +152,11 @@ function StackedAreas() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Monthly checkouts stacked by series' height={260} />
-      <ChartLegend />
+      {legend && (
+        <ChartLegend
+          hide={Object.entries({ langdon, potter }).flatMap(([key, on]) => (on ? [] : [key]))}
+        />
+      )}
     </ChartContainer>
   )
 }

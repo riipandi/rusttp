@@ -13,8 +13,6 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
 // Tremor-style tracker: one small segment per day, colored by shelf status.
@@ -81,7 +79,7 @@ const styles = stylex.create({
 
 const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
 
-function Tracker() {
+function Tracker({ weekLabels = true }: { weekLabels?: boolean }) {
   return (
     <div
       role='img'
@@ -103,17 +101,28 @@ function Tracker() {
           </Tooltip>
         ))}
       </div>
-      <div {...stylex.props(styles.weekLabels)}>
-        {weeks.map((week) => (
-          <span key={week}>{week}</span>
-        ))}
-      </div>
+      {weekLabels && (
+        <div {...stylex.props(styles.weekLabels)}>
+          {weeks.map((week) => (
+            <span key={week}>{week}</span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-export const Playground: Story = {
-  render: () => <Tracker />,
+interface PlaygroundArgs {
+  weekLabels: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['weekLabels'] } },
+  argTypes: {
+    weekLabels: { control: 'boolean' }
+  },
+  args: { weekLabels: true },
+  render: ({ weekLabels }) => <Tracker weekLabels={weekLabels} />,
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('img', { name: /Shelf status for The Da Vinci Code/ })

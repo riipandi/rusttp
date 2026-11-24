@@ -76,13 +76,36 @@ const styles = stylex.create({
   }
 })
 
-export const Playground: Story = {
-  render: () => (
-    <ChartContainer config={houseConfig}>
-      <Chart definition={donutDefinition} ariaLabel='Hogwarts house points' height={220} />
-      <ChartLegend />
-    </ChartContainer>
-  ),
+interface PlaygroundArgs {
+  legend: boolean
+  centerTotal: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend', 'centerTotal'] } },
+  argTypes: {
+    legend: { control: 'boolean' },
+    centerTotal: { control: 'boolean' }
+  },
+  args: { legend: true, centerTotal: false },
+  render: ({ legend, centerTotal }) => {
+    const total = houses.reduce((sum, row) => sum + row.points, 0)
+
+    return (
+      <ChartContainer config={houseConfig}>
+        <div {...stylex.props(styles.relative)}>
+          <Chart definition={donutDefinition} ariaLabel='Hogwarts house points' height={220} />
+          {centerTotal && (
+            <div {...stylex.props(styles.centerOverlay)}>
+              <span {...stylex.props(styles.centerTotal)}>{total}</span>
+              <span {...stylex.props(styles.centerCaption)}>points</span>
+            </div>
+          )}
+        </div>
+        {legend && <ChartLegend />}
+      </ChartContainer>
+    )
+  },
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Hogwarts house points' })
     await expect(chart).toBeVisible()

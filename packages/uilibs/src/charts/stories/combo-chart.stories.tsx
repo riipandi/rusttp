@@ -24,11 +24,15 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
-export const Playground: Story = {
+interface PlaygroundArgs {
+  legend: boolean
+  langdon: boolean
+  potter: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
     docs: {
       description: {
@@ -36,28 +40,43 @@ export const Playground: Story = {
           'Langdon checkouts as bars with the Harry Potter trend layered on top. ' +
           'Both marks share the band x scale, so the line runs through the band centers.'
       }
-    }
+    },
+    controls: { disable: false, include: ['legend', 'langdon', 'potter'] }
   },
-  render: () => {
+  argTypes: {
+    legend: { control: 'boolean' },
+    langdon: { control: 'boolean' },
+    potter: { control: 'boolean' }
+  },
+  args: { legend: true, langdon: true, potter: true },
+  render: ({ legend, langdon, potter }) => {
     const definition = defineChart({
       marks: [
-        barY(checkouts, {
-          id: 'langdon',
-          x: 'month',
-          y: 'langdon',
-          fill: seriesColors.langdon,
-          fillOpacity: 0.85,
-          radius: barRadius,
-          states: barHoverStates()
-        }),
-        lineY(checkouts, {
-          id: 'potter',
-          x: 'month',
-          y: 'potter',
-          stroke: seriesColors.potter,
-          strokeWidth: 2,
-          points: true
-        }),
+        ...(langdon
+          ? [
+              barY(checkouts, {
+                id: 'langdon',
+                x: 'month',
+                y: 'langdon',
+                fill: seriesColors.langdon,
+                fillOpacity: 0.85,
+                radius: barRadius,
+                states: barHoverStates()
+              })
+            ]
+          : []),
+        ...(potter
+          ? [
+              lineY(checkouts, {
+                id: 'potter',
+                x: 'month',
+                y: 'potter',
+                stroke: seriesColors.potter,
+                strokeWidth: 2,
+                points: true
+              })
+            ]
+          : []),
         crosshair({ x: { label: true }, y: false, marker: true }),
         // Covers the baseline rounding so only the bar tips read as rounded.
         ruleY([0], { stroke: colors.backgroundPage, strokeWidth: 6 })
@@ -83,7 +102,11 @@ export const Playground: Story = {
           ariaLabel='Langdon checkouts with Potter trend'
           height={260}
         />
-        <ChartLegend />
+        {legend && (
+          <ChartLegend
+            hide={Object.entries({ langdon, potter }).flatMap(([key, on]) => (on ? [] : [key]))}
+          />
+        )}
       </ChartContainer>
     )
   },

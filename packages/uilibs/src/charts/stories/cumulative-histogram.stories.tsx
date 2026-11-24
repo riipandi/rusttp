@@ -14,8 +14,6 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
 // Cumulative histogram of 120 OWL Potions scores. `binX` counts students per
@@ -42,8 +40,17 @@ const scoreScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Playground: Story = {
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend'] } },
+  argTypes: {
+    legend: { control: 'boolean' }
+  },
+  args: { legend: true },
+  render: ({ legend }) => {
     const definition = defineChart({
       marks: [
         rect(cumBins, {
@@ -84,7 +91,7 @@ export const Playground: Story = {
           ariaLabel='Cumulative histogram of OWL Potions scores'
           height={260}
         />
-        <ChartLegend />
+        {legend && <ChartLegend />}
       </ChartContainer>
     )
   },

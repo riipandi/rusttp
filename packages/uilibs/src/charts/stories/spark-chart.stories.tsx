@@ -18,8 +18,6 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
 // Sparklines drop every guide: no grid, no axis, no tooltip — the number in
@@ -82,8 +80,17 @@ const styles = stylex.create({
   }
 })
 
-export const Playground: Story = {
-  render: () => {
+interface PlaygroundArgs {
+  shown: string[]
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['shown'] } },
+  argTypes: {
+    shown: { control: 'check', options: cards.map((card) => card.label) }
+  },
+  args: { shown: cards.map((card) => card.label) },
+  render: ({ shown }) => {
     const isMobile = useIsMobile()
     const sparkHeight = isMobile ? 36 : 48
 
@@ -91,6 +98,7 @@ export const Playground: Story = {
       <div {...stylex.props(styles.row)}>
         {cards.map((card, index) => {
           const color = sparkColors[index]
+          if (!shown.includes(card.label)) return null
           const definition = defineChart({
             marks: [
               card.kind === 'area'

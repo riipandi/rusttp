@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T12:08:00+07:00
+updated: 2026-11-24T12:20:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
@@ -21,8 +21,8 @@ phases:
       note: Kanban and Sortable Playgrounds (4 controls each, D6) and data-grid-playground.stories.tsx (19 controls grouped by category, D5) landed; gate 956 of 956 (952 plus 2 stories in light and dark). Deviation from D5/D6: `rowRounded` and `rowsDraggable` are not controls because no code reads them (issue-00005). Probe: `dense` 37 to 33 px rows, `pagination` off hides the pager, `isLoading` shows skeleton rows (spinner mode shows Loading...), `empty` shows the message, `rowSelection` adds checkboxes, `headerSticky` sets thead sticky.
     - id: 5
       title: Chart Playgrounds
-      status: pending
-      note: —
+      status: done
+      note: All 18 chart Playgrounds wired; checker 18 of 18, Controls panel lists exactly each include list, gate 956 of 956 (unchanged). Probe on LineChart (points doubles the circles, potter off halves the lines, legend off removes it) and BarChart (bars switches vertical, horizontal, stacked, grouped). Deviations from D7: a chart with no legend and one series (boxplot, lollipop) gets only a `legend` control that defaults off and adds the existing ChartLegend; the markup charts have no series, so their control is the part they draw (category-bar boundaryLabels, tracker weekLabels, heatmap period, progress-circle fraction, bar-list highlightFirst, spark-chart and slopegraph choose which cards or houses show).
     - id: 6
       title: Docs sync, agent docs sync, ledger close, handover
       status: pending

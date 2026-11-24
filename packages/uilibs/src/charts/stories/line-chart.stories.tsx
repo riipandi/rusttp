@@ -45,23 +45,45 @@ const groupedTooltipOptions = {
   sort: 'color-domain'
 } as const
 
-function MultipleLines() {
+interface LineOptions {
+  points?: boolean
+  legend?: boolean
+  langdon?: boolean
+  potter?: boolean
+}
+
+function MultipleLines({
+  points = false,
+  legend = true,
+  langdon = true,
+  potter = true
+}: LineOptions) {
   const definition = defineChart({
     marks: [
-      lineY(checkouts, {
-        id: 'Robert Langdon',
-        x: 'month',
-        y: 'langdon',
-        stroke: seriesColors.langdon,
-        strokeWidth: 2
-      }),
-      lineY(checkouts, {
-        id: 'Harry Potter',
-        x: 'month',
-        y: 'potter',
-        stroke: seriesColors.potter,
-        strokeWidth: 2
-      }),
+      ...(langdon
+        ? [
+            lineY(checkouts, {
+              id: 'Robert Langdon',
+              x: 'month',
+              y: 'langdon',
+              stroke: seriesColors.langdon,
+              strokeWidth: 2,
+              points
+            })
+          ]
+        : []),
+      ...(potter
+        ? [
+            lineY(checkouts, {
+              id: 'Harry Potter',
+              x: 'month',
+              y: 'potter',
+              stroke: seriesColors.potter,
+              strokeWidth: 2,
+              points
+            })
+          ]
+        : []),
       ...interaction.marks
     ],
     scales: checkoutScales,
@@ -74,13 +96,27 @@ function MultipleLines() {
   return (
     <ChartContainer config={checkoutConfig}>
       <Chart definition={definition} ariaLabel='Monthly checkouts trend' height={260} />
-      <ChartLegend />
+      {legend && (
+        <ChartLegend
+          hide={Object.entries({ langdon, potter }).flatMap(([key, on]) => (on ? [] : [key]))}
+        />
+      )}
     </ChartContainer>
   )
 }
 
-export const Playground: Story = {
-  render: () => <MultipleLines />,
+type PlaygroundArgs = Required<LineOptions>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['points', 'legend', 'langdon', 'potter'] } },
+  argTypes: {
+    points: { control: 'boolean' },
+    legend: { control: 'boolean' },
+    langdon: { control: 'boolean' },
+    potter: { control: 'boolean' }
+  },
+  args: { points: false, legend: true, langdon: true, potter: true },
+  render: (args) => <MultipleLines {...args} />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: 'Monthly checkouts trend' })).toBeVisible()
     await expect(canvas.getByText('Robert Langdon')).toBeVisible()

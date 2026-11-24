@@ -13,8 +13,6 @@ const meta = {
   decorators: [canvasDecorator]
 } satisfies Meta
 
-type Story = StoryObj<typeof meta>
-
 export default meta
 
 // Tremor-style category bar: a single pill-shaped strip showing a
@@ -134,7 +132,7 @@ const styles = stylex.create({
   })
 })
 
-export function CategoryBar() {
+export function CategoryBar({ boundaryLabels = true }: { boundaryLabels?: boolean }) {
   return (
     <div
       role='img'
@@ -142,25 +140,27 @@ export function CategoryBar() {
       {...stylex.props(styles.wrapper)}
     >
       {/* Cumulative boundary labels: 0 on the left, the total on the right. */}
-      <div {...stylex.props(styles.labels)}>
-        <div {...stylex.props(styles.labelsEdge)} style={{ left: 0 }}>
-          0
-        </div>
-        {houses.map((row, index) => (
-          <div
-            key={row.house}
-            {...stylex.props(styles.labelCell)}
-            style={{ width: `${((row.points / total) * 100).toFixed(2)}%` }}
-          >
-            {labels[index] !== null ? (
-              <span {...stylex.props(styles.labelValue)}>{labels[index]}</span>
-            ) : null}
+      {boundaryLabels && (
+        <div {...stylex.props(styles.labels)}>
+          <div {...stylex.props(styles.labelsEdge)} style={{ left: 0 }}>
+            0
           </div>
-        ))}
-        <div {...stylex.props(styles.labelsEdge)} style={{ right: 0 }}>
-          {total}
+          {houses.map((row, index) => (
+            <div
+              key={row.house}
+              {...stylex.props(styles.labelCell)}
+              style={{ width: `${((row.points / total) * 100).toFixed(2)}%` }}
+            >
+              {labels[index] !== null ? (
+                <span {...stylex.props(styles.labelValue)}>{labels[index]}</span>
+              ) : null}
+            </div>
+          ))}
+          <div {...stylex.props(styles.labelsEdge)} style={{ right: 0 }}>
+            {total}
+          </div>
         </div>
-      </div>
+      )}
 
       <div {...stylex.props(styles.barRow)}>
         <div {...stylex.props(styles.segments)}>
@@ -191,8 +191,17 @@ export function CategoryBar() {
   )
 }
 
-export const Playground: Story = {
-  render: () => <CategoryBar />,
+interface PlaygroundArgs {
+  boundaryLabels: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['boundaryLabels'] } },
+  argTypes: {
+    boundaryLabels: { control: 'boolean' }
+  },
+  args: { boundaryLabels: true },
+  render: ({ boundaryLabels }) => <CategoryBar boundaryLabels={boundaryLabels} />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: /House points distribution/ })).toBeVisible()
 
