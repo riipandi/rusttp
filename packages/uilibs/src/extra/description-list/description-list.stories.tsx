@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import { Fragment } from 'react'
 import { expect } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
 import { container, duration, stroke } from '../../styles/tokens.stylex'
@@ -48,19 +49,43 @@ const order = {
   vat: 'GB 000 0000 00'
 }
 
-export const Playground: Story = {
-  render: (args) => (
-    <DescriptionList {...args} style={styles.frame}>
-      <DescriptionTerm>Order number</DescriptionTerm>
-      <DescriptionDetails>{order.number}</DescriptionDetails>
-      <DescriptionTerm>Date</DescriptionTerm>
-      <DescriptionDetails>{order.date}</DescriptionDetails>
-      <DescriptionTerm>Purchased at</DescriptionTerm>
-      <DescriptionDetails>{order.purchasedAt}</DescriptionDetails>
-      <DescriptionTerm>Email</DescriptionTerm>
-      <DescriptionDetails>{order.email}</DescriptionDetails>
-      <DescriptionTerm>VAT</DescriptionTerm>
-      <DescriptionDetails>{order.vat}</DescriptionDetails>
+const pairs = [
+  ['Order number', order.number],
+  ['Date', order.date],
+  ['Purchased at', order.purchasedAt],
+  ['Email', order.email],
+  ['VAT', order.vat],
+  ['Ship to', '4 Privet Drive, Little Whinging, Surrey'],
+  ['Courier', 'Hedwig, express owl'],
+  ['Tracking', 'HL-7734-GRG']
+] as const
+
+// The parts take only `render` and `style`, so the controls are story-only: how many pairs show,
+// and the text of the first pair, to try long terms and wrapping details.
+interface PlaygroundArgs {
+  pairs: number
+  term: string
+  details: string
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['pairs', 'term', 'details'] } },
+  argTypes: {
+    pairs: { control: { type: 'range', min: 1, max: pairs.length, step: 1 } },
+    term: { control: 'text' },
+    details: { control: 'text' }
+  },
+  args: { pairs: 5, term: pairs[0][0], details: pairs[0][1] },
+  render: ({ pairs: count, term, details }) => (
+    <DescriptionList style={styles.frame}>
+      <DescriptionTerm>{term}</DescriptionTerm>
+      <DescriptionDetails>{details}</DescriptionDetails>
+      {pairs.slice(1, count).map(([pairTerm, pairDetails]) => (
+        <Fragment key={pairTerm}>
+          <DescriptionTerm>{pairTerm}</DescriptionTerm>
+          <DescriptionDetails>{pairDetails}</DescriptionDetails>
+        </Fragment>
+      ))}
     </DescriptionList>
   ),
   play: async ({ canvas }) => {
