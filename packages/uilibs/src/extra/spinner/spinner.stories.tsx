@@ -79,8 +79,12 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvas }) => {
+    // The glyph spins, and a turned square's bounding box is wider than the square: WebKit has
+    // ticked the animation by the time this runs, so read the layout width, not the box.
     const side = (size: string) =>
-      canvas.getByRole('status', { name: `Loading ${size}` }).getBoundingClientRect().width
+      Number.parseFloat(
+        getComputedStyle(canvas.getByRole('status', { name: `Loading ${size}` })).width
+      )
     await expect([side('sm'), side('md'), side('lg')]).toEqual([12, 16, 20])
   }
 }

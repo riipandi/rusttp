@@ -29,7 +29,9 @@ type Story = StoryObj<typeof meta>
 
 export default meta
 
+// F-12: axe fails the menubar in WebKit only (Base UI's focus guards), so the nightly WebKit run skips it.
 export const Playground: Story = {
+  tags: ['skip-webkit'],
   parameters: { controls: { disable: false, include: ['size', 'disabled', 'loopFocus'] } },
   argTypes: {
     size: { control: 'radio', options: Object.keys(controlSizes) },

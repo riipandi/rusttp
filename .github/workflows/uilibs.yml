@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# The uilibs gate: typecheck, every story with its axe check in light and dark, the unit
+# project, and the Storybook build. Pushes and pull requests run it in Chromium when the
+# library changes; a nightly run repeats the stories in Firefox and WebKit.
+name: uilibs
+
+on:
+  push:
+    paths:
+      - 'packages/uilibs/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/uilibs.yml'
+  pull_request:
+    paths:
+      - 'packages/uilibs/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/uilibs.yml'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uilibs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Gate (Chromium)
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter uilibs exec playwright install --with-deps chromium
+      - run: pnpm --filter uilibs typecheck
+      - run: pnpm --filter uilibs test
+      - run: pnpm --filter uilibs storybook:build
+
+  engines:
+    name: Stories (${{ matrix.browser }})
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter uilibs exec playwright install --with-deps ${{ matrix.browser }}
+      # The story projects only: the unit project runs in Chromium. `webkit` skips the stories tagged
+      # `skip-webkit` (the Menubar `Playground`, F-12), see `vite.config.ts`.
+      - run: pnpm --filter uilibs exec vitest run --project storybook --project storybook-dark
+        env:
+          STORYBOOK_TEST_BROWSER: ${{ matrix.browser }}
