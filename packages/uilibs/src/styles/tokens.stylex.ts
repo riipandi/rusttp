@@ -161,6 +161,7 @@ export const radius = stylex.defineVars({
   medium: '8px',
   large: '10px',
   xlarge: '12px',
+  xxlarge: '16px',
   full: '999px',
   none: '0px'
 })

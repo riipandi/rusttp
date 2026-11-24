@@ -24,7 +24,7 @@ export const dialogStyles = stylex.create({
   overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',

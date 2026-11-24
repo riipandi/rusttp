@@ -7,7 +7,7 @@ import { unit, radius } from '../../styles/tokens.stylex'
 export const commandStyles = stylex.create({
   root: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',
@@ -22,7 +22,7 @@ export const commandStyles = stylex.create({
   // Higher than center, where the eye goes first, and wide enough that the longest label and its
   // shortcut share a row. The box keeps the dialog's own centring and fade; the rise is `inner`.
   dialogContent: {
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     // The edge: a 1px ring of the text color at low strength (so it is dark on light and light on dark
     // and shows against both the page and the dim overlay), a faint top highlight that only a dark
     // surface can show, and two soft shadows, tight and wide, that lift the palette off the page.
@@ -145,7 +145,8 @@ export const commandStyles = stylex.create({
       default: 'transparent',
       '[data-highlighted]': colors.backgroundNeutralFaded
     },
-    borderRadius: radius.medium,
+    // Concentric with the box: its xxlarge corner (16px) minus the list's 6px padding is 10px.
+    borderRadius: radius.large,
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,

@@ -28,6 +28,7 @@ export const skeletonRadius = stylex.create({
   medium: { borderRadius: radius.medium },
   large: { borderRadius: radius.large },
   xlarge: { borderRadius: radius.xlarge },
+  xxlarge: { borderRadius: radius.xxlarge },
   full: { borderRadius: radius.full },
   none: { borderRadius: radius.none }
 })

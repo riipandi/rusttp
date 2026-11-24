@@ -22,7 +22,7 @@ export const alertDialogStyles = stylex.create({
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',
@@ -76,8 +76,8 @@ export const alertDialogStyles = stylex.create({
   },
   footer: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`,
-    borderBottomLeftRadius: radius.xlarge,
-    borderBottomRightRadius: radius.xlarge,
+    borderBottomLeftRadius: radius.xxlarge,
+    borderBottomRightRadius: radius.xxlarge,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,

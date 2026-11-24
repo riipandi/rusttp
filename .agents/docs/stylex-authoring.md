@@ -617,6 +617,16 @@ Text pairs clear 4.5:1, control edges 3:1. Recompute with the OKLCH values in `c
 
 ---
 
+## Corner radius (`packages/uilibs`)
+
+`radius` is `xsmall` 4, `small` 6, `medium` 8, `large` 10, `xlarge` 12, `xxlarge` 16, `full`, `none`. Pick the step by the size of the surface, then check the nesting:
+
+- **Large surfaces take `xxlarge`.** A surface that fills a viewport edge or the middle of the screen (Dialog, AlertDialog, Command, Sheet, Drawer) reads out of proportion at 12px. Surfaces in the page flow stay lower: Card, Alert, and Table `large`, Empty `xlarge`. A popup anchored to a control stays `medium` or `large`.
+- **A child that follows the parent's corner uses the parent's radius minus the gap.** Command's list pads 6px inside a 16px box, so a row is `large` (10px). A child that sits at least the radius away from the corner (content inside a Dialog's 24px padding, a Card in a Dialog) needs no matching radius. A part flush with the parent's edge (the AlertDialog footer's bottom corners) takes the parent's radius exactly. Inside a border, subtract the ring (`calc(${radius.medium} - ${stroke.ring1})`, NumberField).
+- **Sheet and Drawer round only the corners that face the page**, on the edge-docked side; the corners against the screen edge stay square.
+
+---
+
 ## More resources
 
 - Official documentation: <https://stylexjs.com>
