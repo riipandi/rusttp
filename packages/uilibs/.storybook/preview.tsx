@@ -1,4 +1,6 @@
 import type { Preview } from '@storybook/tanstack-react'
+import { FORCE_REMOUNT } from 'storybook/internal/core-events'
+import { addons } from 'storybook/preview-api'
 import { GlobalDecorator, STORYBOOK_THEME_GLOBAL } from './decorator'
 import { ThemedDocsContainer } from './docs-container'
 import '../src/assets/globals.css'
@@ -10,6 +12,36 @@ const consoleErrors: string[] = []
 const nativeConsoleError = console.error
 
 const gateMode = (value: unknown) => (value === 'todo' || value === 'off' ? value : 'error')
+
+const INTERACTIONS_GLOBAL = 'interactions'
+
+// A story's `play` runs on every load in the UI, so the canvas flickers through its clicks and
+// typing. Storybook 10.6.8 has no option for this (autoplay is off only under `?embed=true`), but the
+// project `beforeEach` runs just before the render reads `renderOptions.autoplay`, and that render is
+// `currentRender`. The test run (Vitest browser mode) always plays; the UI plays only when the
+// Interactions toolbar global is `on`. Rerun in the Interactions panel (and its step buttons) emits
+// FORCE_REMOUNT, which reuses the same render, so the story it names plays once whatever the global.
+// Both globals belong to Storybook and Vitest; they are read by name, untyped, and checked.
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const rerunRequested = new Set<string>()
+let listening = false
+
+function setAutoplay(storyId: string, play: boolean) {
+  if (Reflect.get(globalThis, '__vitest_browser__')) return
+  if (!listening && addons.hasChannel()) {
+    listening = true
+    addons.getChannel().on(FORCE_REMOUNT, ({ storyId: id }: { storyId: string }) => {
+      rerunRequested.add(id)
+    })
+  }
+  if (rerunRequested.delete(storyId)) play = true
+  const preview: unknown = Reflect.get(globalThis, '__STORYBOOK_PREVIEW__')
+  const render = isObject(preview) ? preview.currentRender : undefined
+  if (!isObject(render) || render.type !== 'story' || render.id !== storyId) return
+  if (isObject(render.renderOptions)) render.renderOptions.autoplay = play
+}
 
 const preview: Preview = {
   parameters: {
@@ -67,12 +99,26 @@ const preview: Preview = {
         ],
         dynamicTitle: true
       }
+    },
+    [INTERACTIONS_GLOBAL]: {
+      description: 'Run each story play function when it loads',
+      toolbar: {
+        title: 'Interactions',
+        icon: 'play',
+        items: [
+          { value: 'off', title: 'Interactions off', icon: 'stop' },
+          { value: 'on', title: 'Interactions on', icon: 'play' }
+        ],
+        dynamicTitle: true
+      }
     }
   },
   initialGlobals: {
-    [STORYBOOK_THEME_GLOBAL]: 'system'
+    [STORYBOOK_THEME_GLOBAL]: 'system',
+    [INTERACTIONS_GLOBAL]: 'off'
   },
-  beforeEach: () => {
+  beforeEach: ({ id, globals }) => {
+    setAutoplay(id, globals[INTERACTIONS_GLOBAL] === 'on')
     consoleErrors.length = 0
     console.error = (...args: unknown[]) => {
       consoleErrors.push(args.map(String).join(' ').slice(0, 300))
