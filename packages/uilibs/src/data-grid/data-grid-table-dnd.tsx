@@ -44,7 +44,7 @@ import {
 } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Button } from '../../base/button'
+import { Button } from '../base/button'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'

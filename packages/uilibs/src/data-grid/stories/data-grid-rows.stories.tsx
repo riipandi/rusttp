@@ -30,12 +30,12 @@ import {
   type DataGridFeatures,
   type DataGridTableInstance
 } from '../'
-import { Avatar, AvatarFallback } from '../../../base/avatar'
-import { Button } from '../../../base/button'
-import { unit } from '../../../styles/tokens.stylex'
-import { visuallyHidden } from '../../../styles/utils.stylex'
-import { Badge } from '../../badge'
-import { Card, CardContent, CardFooter, CardHeader } from '../../card'
+import { Avatar, AvatarFallback } from '../../base/avatar'
+import { Button } from '../../base/button'
+import { Badge } from '../../extra/badge'
+import { Card, CardContent, CardFooter, CardHeader } from '../../extra/card'
+import { unit } from '../../styles/tokens.stylex'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import { demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

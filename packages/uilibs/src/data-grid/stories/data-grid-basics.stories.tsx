@@ -20,8 +20,8 @@ import {
   dataGridFeatures,
   type DataGridFeatures
 } from '../'
-import { Avatar, AvatarFallback } from '../../../base/avatar'
-import { Card } from '../../card'
+import { Avatar, AvatarFallback } from '../../base/avatar'
+import { Card } from '../../extra/card'
 import { CountryFlag, demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

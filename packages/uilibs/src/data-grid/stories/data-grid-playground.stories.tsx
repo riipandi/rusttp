@@ -24,7 +24,7 @@ import {
   type DataGridFeatures,
   type DataGridTableInstance
 } from '../'
-import { Skeleton } from '../../skeleton'
+import { Skeleton } from '../../extra/skeleton'
 import { demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

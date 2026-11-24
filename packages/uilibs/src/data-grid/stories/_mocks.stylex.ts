@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../../styles/colors.stylex'
-import { unit } from '../../../styles/tokens.stylex'
+import { colors } from '../../styles/colors.stylex'
+import { unit } from '../../styles/tokens.stylex'
 
 /**
  * Shared StyleX styles for the data-grid stories. StyleX requires styles that

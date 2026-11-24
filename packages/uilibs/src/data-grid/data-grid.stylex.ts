@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../../styles/colors.stylex'
+import { colors, shadow } from '../styles/colors.stylex'
 import {
 
   // Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
@@ -13,7 +13,7 @@ import {
   radius,
   stroke,
   unit
-} from '../../styles/tokens.stylex'
+} from '../styles/tokens.stylex'
 
 /**
  * The grid's own stacking ladder, local to its stacking context (the tokens' `zIndex` ladder is for

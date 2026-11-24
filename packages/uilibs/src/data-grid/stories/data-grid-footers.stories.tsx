@@ -14,9 +14,9 @@ import {
   dataGridFeatures,
   type DataGridFeatures
 } from '../'
-import { unit } from '../../../styles/tokens.stylex'
-import { Badge } from '../../badge'
-import { Card, CardContent } from '../../card'
+import { Badge } from '../../extra/badge'
+import { Card, CardContent } from '../../extra/card'
+import { unit } from '../../styles/tokens.stylex'
 import { demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

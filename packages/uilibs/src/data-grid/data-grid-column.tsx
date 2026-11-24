@@ -15,7 +15,7 @@ import { Subscribe } from '@tanstack/react-table'
 import type { Column, Table } from '@tanstack/react-table'
 import { memo, useMemo, useState } from 'react'
 import type { ComponentType, HTMLAttributes, ReactElement, ReactNode } from 'react'
-import { Button } from '../../base/button'
+import { Button } from '../base/button'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,12 +28,12 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
-} from '../../base/dropdown-menu'
-import { Input } from '../../base/input'
-import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover'
-import { Separator } from '../../base/separator'
-import { focusRing } from '../../styles/utils.stylex'
-import { Badge } from '../badge'
+} from '../base/dropdown-menu'
+import { Input } from '../base/input'
+import { Popover, PopoverContent, PopoverTrigger } from '../base/popover'
+import { Separator } from '../base/separator'
+import { Badge } from '../extra/badge'
+import { focusRing } from '../styles/utils.stylex'
 import { getColumnHeaderLabel, rekey, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import {

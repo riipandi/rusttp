@@ -16,13 +16,13 @@ import {
   type DataGridFeatures,
   type DataGridI18nOverrides
 } from '../'
-import { Avatar, AvatarFallback } from '../../../base/avatar'
-import { Button } from '../../../base/button'
-import { unit } from '../../../styles/tokens.stylex'
-import { Badge } from '../../badge'
-import { Card, CardContent, CardHeader, CardTitle } from '../../card'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '../../input-group'
-import { Skeleton } from '../../skeleton'
+import { Avatar, AvatarFallback } from '../../base/avatar'
+import { Button } from '../../base/button'
+import { Badge } from '../../extra/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '../../extra/card'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '../../extra/input-group'
+import { Skeleton } from '../../extra/skeleton'
+import { unit } from '../../styles/tokens.stylex'
 import { CountryFlag, demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

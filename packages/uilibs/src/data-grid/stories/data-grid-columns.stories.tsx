@@ -24,7 +24,7 @@ import {
   type DataGridTableInstance,
   type DataGridFeatures
 } from '../'
-import { Avatar, AvatarFallback } from '../../../base/avatar'
+import { Avatar, AvatarFallback } from '../../base/avatar'
 import { CountryFlag, demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 

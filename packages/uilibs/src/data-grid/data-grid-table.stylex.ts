@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../../styles/colors.stylex'
+import { colors, shadow } from '../styles/colors.stylex'
 import {
   duration,
   fontFamily,
@@ -9,7 +9,7 @@ import {
   radius,
   stroke,
   unit
-} from '../../styles/tokens.stylex'
+} from '../styles/tokens.stylex'
 import { gridLayer } from './data-grid.stylex'
 
 /**

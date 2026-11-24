@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { flexRender } from '@tanstack/react-table'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import type { CSSProperties, ReactNode, Ref } from 'react'
-import { Button } from '../../base/button'
+import { Button } from '../base/button'
 import { useDataGrid } from './data-grid'
 import type { DataGridTableInstance } from './data-grid'
 import {
