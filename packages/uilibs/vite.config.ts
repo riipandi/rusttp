@@ -55,6 +55,21 @@ export default defineConfig(({ mode }) => ({
         extends: false,
         plugins: [storybookDark],
         test: { name: 'storybook-dark', ...storybookInstance('dark') }
+      },
+      {
+        // Logic that no story exercises (storage adapters, announcements, token contrast), in a real
+        // browser like the webapp's tests: `document.cookie` and `localStorage` are the thing under test.
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['src/**/*.test.{ts,tsx}'],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium' }]
+          }
+        }
       }
     ]
   },
