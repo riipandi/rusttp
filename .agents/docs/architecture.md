@@ -312,4 +312,3 @@ Alternatives considered:
 - A usage section on each page — rejected: it repeats the stories.
 - `<name>.docs.mdx` — rejected: it needs the same glob change and gains nothing over `<name>.mdx`.
 - A new token for a media or dark surface — rejected: the constants already carry it.
-
