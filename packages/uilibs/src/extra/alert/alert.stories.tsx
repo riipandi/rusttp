@@ -2,7 +2,7 @@ import { Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, waitFor } from 'storybook/test'
+import { expect } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -205,10 +205,7 @@ export const Layouts: Story = {
     const bleed = alertOf('bleed')
     const panel = bleed.parentElement
     if (!panel) throw new Error('No panel')
-    // The negative margin comes from a dynamic style; one full-gate run measured before it applied.
-    await waitFor(() =>
-      expect(bleed.getBoundingClientRect().width).toBe(panel.getBoundingClientRect().width - 2)
-    )
+    await expect(bleed.getBoundingClientRect().width).toBe(panel.getBoundingClientRect().width - 2)
     await expect(getComputedStyle(bleed).borderInlineStartWidth).toBe('0px')
     await expect(getComputedStyle(bleed).borderTopLeftRadius).toBe('0px')
   }

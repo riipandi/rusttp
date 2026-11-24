@@ -43,6 +43,43 @@ function setAutoplay(storyId: string, play: boolean) {
   if (isObject(render.renderOptions)) render.renderOptions.autoplay = play
 }
 
+// A play reads computed styles and boxes the moment it starts, so under test the page must be
+// settled first. Two things arrive late in Vitest browser mode:
+// - the StyleX stylesheet: the dev runtime fetches it into `<style id=__stylex_virtual__>` after the
+//   server's CSS version changes (a 150 ms poll), so a story that rendered right after its modules
+//   compiled could be measured unstyled (an input group 26 px high instead of 32);
+// - the web fonts, whose `swap` re-measures text mid-play.
+// The story's modules are compiled by `beforeEach`, so the server's CSS is complete there.
+const STYLEX_STYLE_ID = '__stylex_virtual__'
+const STYLEX_CSS_PATH = '/virtual:stylex.css'
+const SETTLE_TIMEOUT_MS = 10_000
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
+async function stylesheetCaughtUp() {
+  if (!document.getElementById(STYLEX_STYLE_ID)) return
+  const deadline = Date.now() + SETTLE_TIMEOUT_MS
+  for (;;) {
+    const served = await (await fetch(STYLEX_CSS_PATH, { cache: 'no-store' })).text()
+    if (document.getElementById(STYLEX_STYLE_ID)?.textContent === served) return
+    if (Date.now() > deadline)
+      throw new Error('The StyleX stylesheet never caught up with the dev server.')
+    await sleep(25)
+  }
+}
+
+// A font that cannot load (offline) falls back to the system stack, which does not shift.
+async function fontsLoaded() {
+  const loading = Promise.allSettled(Array.from(document.fonts, (face) => face.load()))
+  await Promise.race([loading, sleep(3000)])
+}
+
+async function settlePage() {
+  if (!Reflect.get(globalThis, '__vitest_browser__')) return
+  await stylesheetCaughtUp()
+  await fontsLoaded()
+}
+
 const preview: Preview = {
   parameters: {
     // The fluid canvas: a story's content is padded and never given a minimum width, so a 390 px
@@ -117,13 +154,14 @@ const preview: Preview = {
     [STORYBOOK_THEME_GLOBAL]: 'system',
     [INTERACTIONS_GLOBAL]: 'off'
   },
-  beforeEach: ({ id, globals }) => {
+  beforeEach: async ({ id, globals }) => {
     setAutoplay(id, globals[INTERACTIONS_GLOBAL] === 'on')
     consoleErrors.length = 0
     console.error = (...args: unknown[]) => {
       consoleErrors.push(args.map(String).join(' ').slice(0, 300))
       nativeConsoleError(...args)
     }
+    await settlePage()
   },
   afterEach: ({ parameters }) => {
     console.error = nativeConsoleError
