@@ -1,36 +1,36 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T12:20:00+07:00
+updated: 2026-11-24T12:35:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
-      status: done
+      status: committed (46b0501)
       note: Controls off globally in preview.tsx; Button, Badge, Dialog Playgrounds wired. Gate 952 of 952. Dialog has no `position` prop, so its routed part args are size, blurredOverlay, showCloseButton.
     - id: 2
       title: Base component Playgrounds
-      status: done
+      status: committed (c8eb855)
       note: All 35 base Playgrounds wired; checker 35 of 35, Controls panel lists exactly each include list, gate 952 of 952. Progress drops its timer so `value` takes effect; Separator controls color and inset only (its Playground draws three separators; `Orientations` keeps the axis); Form controls validationMode; Checkbox, Switch, and Collapsible remount on `defaultChecked`/`defaultOpen` so the control takes effect.
     - id: 3
       title: Extra component Playgrounds
-      status: done
-      note: 26 of 27 extra files plus icons wired; checker clean for all but kanban and sortable (phase 4); gate 952 of 952 (one run flaked on input-group Sizes, 26 vs 32 px, and passed twice in isolation and on a full rerun). OWNER DECISION NEEDED: DescriptionList has no prop that fits D3 (only `render` and `style`), so its Playground is unchanged and shows no controls. Deviations: Icon Playground now draws three icons driven by size and color (the two fixed-color icons are gone); Skeleton drives the wide line only; Pagination adds a `page` story arg that sets `isActive`; Label and Empty add story-only `label` and `title` text args.
+      status: committed (ba2be53)
+      note: 26 of 27 extra files plus icons wired; checker clean for all but kanban and sortable (phase 4); gate 952 of 952 (one run flaked on input-group Sizes, 26 vs 32 px, and passed twice in isolation and on a full rerun). DescriptionList has no prop that fits D3 (only `render` and `style`), so its Playground is unchanged and shows no controls; filed as issue-00006 for the owner. Deviations: Icon Playground now draws three icons driven by size and color (the two fixed-color icons are gone); Skeleton drives the wide line only; Pagination adds a `page` story arg that sets `isActive`; Label and Empty add story-only `label` and `title` text args.
     - id: 4
       title: Kanban, Sortable, and Data Grid Playgrounds
-      status: done
+      status: committed (137e745)
       note: Kanban and Sortable Playgrounds (4 controls each, D6) and data-grid-playground.stories.tsx (19 controls grouped by category, D5) landed; gate 956 of 956 (952 plus 2 stories in light and dark). Deviation from D5/D6: `rowRounded` and `rowsDraggable` are not controls because no code reads them (issue-00005). Probe: `dense` 37 to 33 px rows, `pagination` off hides the pager, `isLoading` shows skeleton rows (spinner mode shows Loading...), `empty` shows the message, `rowSelection` adds checkboxes, `headerSticky` sets thead sticky.
     - id: 5
       title: Chart Playgrounds
-      status: done
+      status: committed (a92093a)
       note: All 18 chart Playgrounds wired; checker 18 of 18, Controls panel lists exactly each include list, gate 956 of 956 (unchanged). Probe on LineChart (points doubles the circles, potter off halves the lines, legend off removes it) and BarChart (bars switches vertical, horizontal, stacked, grouped). Deviations from D7: a chart with no legend and one series (boxplot, lollipop) gets only a `legend` control that defaults off and adds the existing ChartLegend; the markup charts have no series, so their control is the part they draw (category-bar boundaryLabels, tracker weekLabels, heatmap period, progress-circle fraction, bar-list highlightFirst, spark-chart and slopegraph choose which cards or houses show).
     - id: 6
       title: Docs sync, agent docs sync, ledger close, handover
-      status: pending
+      status: committed (the closing commit)
       note: —
     - id: 7
       title: Final validation
-      status: pending
-      note: —
+      status: done
+      note: Test matrix over the final tree. Checker 83 of 84 (the one exception is DescriptionList, issue-00006). Typecheck, lint, and format clean. Gate 956 of 956 (952 plus the Kanban and Data Grid Playgrounds in light and dark). Build green; index.json has data-grid-playground--playground and extra-components-kanban--playground. Browser probe on the built Storybook, every one of the 84 Playground stories lists exactly its include controls with no page errors; Variants stories of Button, Badge, Data Grid, Kanban, and LineChart have no Controls tab; the Button, Badge, and Data Grid docs pages show no controls. E2E n/a (stories only).
 ---
 
 # Wire Storybook controls into every Playground — and show them nowhere else
