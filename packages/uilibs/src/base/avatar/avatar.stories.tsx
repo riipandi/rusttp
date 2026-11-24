@@ -13,13 +13,11 @@ import {
   AvatarGroupCount,
   AvatarImage
 } from './avatar.component'
+import { avatarFills, avatarSizes } from './avatar.stylex'
 
 const meta = {
   title: 'Base Components/Avatar',
   component: Avatar,
-  argTypes: {
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Avatar>
 
@@ -32,8 +30,16 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Avatar>
+  parameters: { controls: { disable: false, include: ['size', 'variant', 'color', 'squared'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(avatarSizes) },
+    variant: { control: 'radio', options: Object.keys(avatarFills) },
+    color: { control: 'select', options: Object.keys(avatarFills.faded) },
+    squared: { control: 'boolean' }
+  },
+  args: { size: 'md', variant: 'faded', color: 'neutral', squared: false },
+  render: (args) => (
+    <Avatar {...args}>
       <AvatarImage src='https://github.com/madeui.png' alt='@harry.potter' />
       <AvatarFallback>HP</AvatarFallback>
     </Avatar>

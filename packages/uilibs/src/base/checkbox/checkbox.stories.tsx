@@ -7,15 +7,11 @@ import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
 import { Checkbox, CheckboxGroup } from './checkbox.component'
+import { checkboxSizes } from './checkbox.stylex'
 
 const meta = {
   title: 'Base Components/Checkbox',
   component: Checkbox,
-  argTypes: {
-    defaultChecked: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    indeterminate: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Checkbox>
 
@@ -30,11 +26,35 @@ const notifications = ['comments', 'mentions', 'follows']
 export default meta
 
 export const Playground: Story = {
-  args: { defaultChecked: true },
+  // `defaultChecked` only seeds the state, so the render remounts the box when it changes.
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'defaultChecked', 'disabled', 'indeterminate', 'readOnly']
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(checkboxSizes) },
+    defaultChecked: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    indeterminate: { control: 'boolean' },
+    readOnly: { control: 'boolean' }
+  },
+  args: {
+    size: 'md',
+    defaultChecked: true,
+    disabled: false,
+    indeterminate: false,
+    readOnly: false
+  },
   render: (args) => (
     <Label>
-      <Checkbox {...args} aria-label='Accept the Hogwarts letter' /> Accept the Hogwarts letter and
-      its terms
+      <Checkbox
+        key={String(args.defaultChecked)}
+        {...args}
+        aria-label='Accept the Hogwarts letter'
+      />{' '}
+      Accept the Hogwarts letter and its terms
     </Label>
   ),
   play: async ({ canvas }) => {

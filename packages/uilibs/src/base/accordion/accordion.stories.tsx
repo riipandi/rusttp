@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { ComponentProps } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -7,9 +8,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 const meta = {
   title: 'Base Components/Accordion',
   component: Accordion,
-  argTypes: {
-    multiple: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Accordion>
 
@@ -17,24 +15,42 @@ type Story = StoryObj<typeof meta>
 
 export default meta
 
-export const Playground: Story = {
-  args: { multiple: false, defaultValue: ['item-1'] },
-  render: (args) => (
+type PlaygroundArgs = ComponentProps<typeof Accordion> &
+  Pick<ComponentProps<typeof AccordionTrigger>, 'iconPosition'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['multiple', 'disabled', 'loopFocus', 'iconPosition'] }
+  },
+  argTypes: {
+    multiple: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    loopFocus: { control: 'boolean' },
+    iconPosition: { control: 'radio', options: ['end', 'start'] }
+  },
+  args: {
+    multiple: false,
+    disabled: false,
+    loopFocus: true,
+    iconPosition: 'end',
+    defaultValue: ['item-1']
+  },
+  render: ({ iconPosition, ...args }) => (
     <Accordion {...args}>
       <AccordionItem value='item-1'>
-        <AccordionTrigger>Is the vault accessible?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is the vault accessible?</AccordionTrigger>
         <AccordionContent>
           Yes. It follows the Gringotts access pattern and unlocks with a spoken Alohomora.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='item-2'>
-        <AccordionTrigger>Is it enchanted?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is it enchanted?</AccordionTrigger>
         <AccordionContent>
           Yes. It comes with default charms that match the other artefacts in the collection.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='item-3'>
-        <AccordionTrigger>Is it animated?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is it animated?</AccordionTrigger>
         <AccordionContent>
           Yes. It animates open with the panel height, as if lifted by Wingardium Leviosa.
         </AccordionContent>

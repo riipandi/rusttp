@@ -73,8 +73,17 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <ScrollArea style={styles.root} fade>
+  parameters: {
+    controls: { disable: false, include: ['fade', 'orientation', 'scrollbarDisplay'] }
+  },
+  argTypes: {
+    fade: { control: 'boolean' },
+    orientation: { control: 'radio', options: ['vertical', 'horizontal', 'both'] },
+    scrollbarDisplay: { control: 'radio', options: ['hover', 'scroll', 'visible', 'hidden'] }
+  },
+  args: { fade: true, orientation: 'vertical', scrollbarDisplay: 'hover' },
+  render: (args) => (
+    <ScrollArea {...args} style={styles.root}>
       <div {...stylex.props(styles.inner)}>
         <h4 {...stylex.props(styles.heading)}>Daily Prophet editions</h4>
         {tags.map((tag) => (

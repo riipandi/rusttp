@@ -6,15 +6,11 @@ import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
 import { Switch } from './switch.component'
+import { switchRootSizes } from './switch.stylex'
 
 const meta = {
   title: 'Base Components/Switch',
   component: Switch,
-  argTypes: {
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
-    defaultChecked: { control: 'boolean' },
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Switch>
 
@@ -36,10 +32,21 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { defaultChecked: true },
+  // `defaultChecked` only seeds the state, so the render remounts the switch when it changes.
+  parameters: {
+    controls: { disable: false, include: ['size', 'defaultChecked', 'disabled', 'readOnly'] }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(switchRootSizes) },
+    defaultChecked: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    readOnly: { control: 'boolean' }
+  },
+  args: { size: 'md', defaultChecked: true, disabled: false, readOnly: false },
   render: (args) => (
     <label {...stylex.props(styles.label)}>
-      <Switch {...args} aria-label='Invisibility Cloak' /> Invisibility Cloak
+      <Switch key={String(args.defaultChecked)} {...args} aria-label='Invisibility Cloak' />{' '}
+      Invisibility Cloak
     </label>
   ),
   play: async ({ canvas }) => {

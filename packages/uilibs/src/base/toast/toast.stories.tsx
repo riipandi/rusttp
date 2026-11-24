@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../button'
-import { toast, ToastProvider, Toaster, useToast } from './toast.component'
+import { toast, ToastProvider, Toaster, useToast, type ToastColor } from './toast.component'
 
 const meta = {
   title: 'Base Components/Toast',
@@ -51,17 +52,32 @@ function DurationButton() {
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <ToastProvider>
-      <Button
-        variant='outline'
-        onClick={() =>
-          toast('Scheduled: Hogsmeade trip', {
-            description: 'Departure from Platform 9¾ at 11:00 AM'
-          })
-        }
-      >
+// The text and color are options of the `toast()` call, not props of the provider.
+type PlaygroundArgs = Pick<ComponentProps<typeof ToastProvider>, 'timeout'> & {
+  title: string
+  description: string
+  color: ToastColor
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['title', 'description', 'color', 'timeout'] }
+  },
+  argTypes: {
+    title: { control: 'text' },
+    description: { control: 'text' },
+    color: { control: 'radio', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] },
+    timeout: { control: 'number' }
+  },
+  args: {
+    title: 'Scheduled: Hogsmeade trip',
+    description: 'Departure from Platform 9¾ at 11:00 AM',
+    color: 'neutral',
+    timeout: 5000
+  },
+  render: ({ title, description, color, timeout }) => (
+    <ToastProvider timeout={timeout}>
+      <Button variant='outline' onClick={() => toast(title, { description, color })}>
         Show Ministry notice
       </Button>
       <Toaster />

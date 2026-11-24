@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
@@ -8,6 +9,7 @@ import {
   expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
   Autocomplete,
@@ -50,11 +52,23 @@ const countries = [
 
 export default meta
 
-export const Playground: Story = {
-  args: { items: tags },
-  render: (args) => (
+type PlaygroundArgs = ComponentProps<typeof Autocomplete> &
+  Pick<ComponentProps<typeof AutocompleteInput>, 'size' | 'variant'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['size', 'variant', 'disabled', 'autoHighlight'] }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    disabled: { control: 'boolean' },
+    autoHighlight: { control: 'boolean' }
+  },
+  args: { items: tags, size: 'md', variant: 'outline', disabled: false, autoHighlight: false },
+  render: ({ size, variant, ...args }) => (
     <Autocomplete {...args}>
-      <AutocompleteInput placeholder='Search spells…' />
+      <AutocompleteInput size={size} variant={variant} placeholder='Search spells…' />
       <AutocompleteContent>
         <AutocompleteEmpty>No spells found.</AutocompleteEmpty>
         <AutocompleteList>

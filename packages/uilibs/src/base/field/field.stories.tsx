@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
@@ -31,18 +32,32 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
+// The legend's `variant` is a `FieldLegend` prop; the rest reach both Fields.
+type PlaygroundArgs = Pick<ComponentProps<typeof Field>, 'orientation' | 'invalid' | 'disabled'> &
+  Pick<ComponentProps<typeof FieldLegend>, 'variant'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['orientation', 'invalid', 'disabled', 'variant'] }
+  },
+  argTypes: {
+    orientation: { control: 'radio', options: ['vertical', 'horizontal'] },
+    invalid: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    variant: { control: 'radio', options: ['legend', 'label'] }
+  },
+  args: { orientation: 'vertical', invalid: false, disabled: false, variant: 'legend' },
+  render: ({ orientation, invalid, disabled, variant }) => (
     <FieldSet style={styles.root}>
-      <FieldLegend>Ministry of Magic security pass</FieldLegend>
+      <FieldLegend variant={variant}>Ministry of Magic security pass</FieldLegend>
       <FieldGroup>
-        <Field>
+        <Field orientation={orientation} invalid={invalid} disabled={disabled}>
           <FieldLabel htmlFor='field-name'>Wizard name</FieldLabel>
           <Input id='field-name' placeholder='Hermione Granger' />
           <FieldDescription>Embossed on your Daily Prophet press badge.</FieldDescription>
         </Field>
         <FieldSeparator>Owl contact</FieldSeparator>
-        <Field>
+        <Field orientation={orientation} invalid={invalid} disabled={disabled}>
           <FieldLabel htmlFor='field-email'>Owl post address</FieldLabel>
           <Input id='field-email' type='email' placeholder='hermione.granger@hogwarts.edu' />
         </Field>

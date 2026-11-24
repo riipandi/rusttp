@@ -4,15 +4,11 @@ import { expect } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Meter, MeterLabel, MeterValue } from './meter.component'
+import { meterColors, meterSizes } from './meter.stylex'
 
 const meta = {
   title: 'Base Components/Meter',
   component: Meter,
-  argTypes: {
-    value: { control: 'number' },
-    min: { control: 'number' },
-    max: { control: 'number' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Meter>
 
@@ -27,11 +23,19 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { value: 24, max: 64, locale: 'en-US' },
+  parameters: { controls: { disable: false, include: ['value', 'min', 'max', 'color', 'size'] } },
+  argTypes: {
+    value: { control: 'number' },
+    min: { control: 'number' },
+    max: { control: 'number' },
+    color: { control: 'select', options: Object.keys(meterColors) },
+    size: { control: 'radio', options: Object.keys(meterSizes) }
+  },
+  args: { value: 24, min: 0, max: 64, color: 'primary', size: 'md', locale: 'en-US' },
   render: (args) => (
     <Meter {...args} style={styles.root}>
       <MeterLabel>Polyjuice Potion brewed</MeterLabel>
-      <MeterValue>{(_, value) => `${value} ml of 64 ml`}</MeterValue>
+      <MeterValue>{(_, value) => `${value} ml of ${args.max} ml`}</MeterValue>
     </Meter>
   ),
   play: async ({ canvas }) => {

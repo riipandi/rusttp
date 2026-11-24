@@ -144,8 +144,20 @@ function File({ name, depth = 1 }: { name: string; depth?: number }) {
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Collapsible defaultOpen {...stylex.props(styles.root)}>
+  // `defaultOpen` only seeds the state, so the render remounts the panel when it changes.
+  parameters: { controls: { disable: false, include: ['defaultOpen', 'disabled'] } },
+  argTypes: {
+    defaultOpen: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: { defaultOpen: true, disabled: false },
+  render: ({ defaultOpen, ...args }) => (
+    <Collapsible
+      key={String(defaultOpen)}
+      defaultOpen={defaultOpen}
+      {...args}
+      {...stylex.props(styles.root)}
+    >
       <div {...stylex.props(styles.header)}>
         <span {...stylex.props(styles.title)}>@hermione starred 3 repositories</span>
         <CollapsibleTrigger render={<Button variant='ghost' size='sm' />}>

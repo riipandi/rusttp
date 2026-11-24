@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
 import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -7,13 +8,11 @@ import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, radius, stroke } from '../../styles/tokens.stylex'
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '../field'
 import { RadioGroup, RadioGroupItem } from './radio.component'
+import { radioSizes } from './radio.stylex'
 
 const meta = {
   title: 'Base Components/Radio',
   component: RadioGroup,
-  argTypes: {
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof RadioGroup>
 
@@ -73,13 +72,22 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { defaultValue: 'Slytherin' },
-  render: (args) => (
+type PlaygroundArgs = ComponentProps<typeof RadioGroup> &
+  Pick<ComponentProps<typeof RadioGroupItem>, 'size'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['size', 'disabled', 'readOnly'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(radioSizes) },
+    disabled: { control: 'boolean' },
+    readOnly: { control: 'boolean' }
+  },
+  args: { defaultValue: 'Slytherin', size: 'md', disabled: false, readOnly: false },
+  render: ({ size, ...args }) => (
     <RadioGroup {...args}>
       {options.map((option) => (
         <label key={option} {...stylex.props(styles.label)}>
-          <RadioGroupItem value={option} /> {option}
+          <RadioGroupItem value={option} size={size} /> {option}
         </label>
       ))}
     </RadioGroup>

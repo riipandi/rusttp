@@ -1,5 +1,6 @@
 import { Sparkles } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
@@ -9,6 +10,7 @@ import {
   expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
   Select,
@@ -24,9 +26,6 @@ import {
 const meta = {
   title: 'Base Components/Select',
   component: Select,
-  argTypes: {
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Select>
 
@@ -92,14 +91,41 @@ const invalidPlans = [
 
 export default meta
 
-export const Playground: Story = {
-  args: { items: fruits },
-  render: (args) => (
+// The look lives on the trigger and the placement on the content.
+type PlaygroundArgs = ComponentProps<typeof Select> &
+  Pick<ComponentProps<typeof SelectTrigger>, 'size' | 'variant'> &
+  Pick<ComponentProps<typeof SelectContent>, 'side' | 'align' | 'alignItemWithTrigger'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'variant', 'side', 'align', 'alignItemWithTrigger', 'disabled']
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignItemWithTrigger: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    items: fruits,
+    size: 'md',
+    variant: 'outline',
+    side: 'bottom',
+    align: 'center',
+    alignItemWithTrigger: false,
+    disabled: false
+  },
+  render: ({ size, variant, side, align, alignItemWithTrigger, ...args }) => (
     <Select {...args}>
-      <SelectTrigger aria-label='Wand core'>
+      <SelectTrigger size={size} variant={variant} aria-label='Wand core'>
         <SelectValue placeholder='Select a wand core' />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent side={side} align={align} alignItemWithTrigger={alignItemWithTrigger}>
         {fruits.map(({ label, value }) => (
           <SelectItem key={value} value={value}>
             {label}

@@ -27,13 +27,13 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Form
-      style={styles.form}
-      onFormSubmit={(values) => {
-        console.log(values)
-      }}
-    >
+  parameters: { controls: { disable: false, include: ['validationMode'] } },
+  argTypes: {
+    validationMode: { control: 'radio', options: ['onSubmit', 'onBlur', 'onChange'] }
+  },
+  args: { validationMode: 'onSubmit', onFormSubmit: fn() },
+  render: (args) => (
+    <Form {...args} style={styles.form}>
       <Field
         name='username'
         validate={(value) =>

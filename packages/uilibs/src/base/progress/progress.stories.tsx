@@ -6,12 +6,10 @@ import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Progress, ProgressLabel, ProgressValue } from './progress.component'
+import { progressColors, progressSizes } from './progress.stylex'
 const meta = {
   title: 'Base Components/Progress',
   component: Progress,
-  argTypes: {
-    value: { control: 'number' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Progress>
 
@@ -36,22 +34,21 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { value: 13 },
-  render: () => {
-    const [value, setValue] = React.useState(13)
-
-    React.useEffect(() => {
-      const timer = setTimeout(() => setValue(66), 500)
-      return () => clearTimeout(timer)
-    }, [])
-
-    return (
-      <Progress value={value} locale='en-US' style={styles.root}>
-        <ProgressLabel>Brewing Polyjuice Potion…</ProgressLabel>
-        <ProgressValue />
-      </Progress>
-    )
-  }
+  parameters: { controls: { disable: false, include: ['value', 'min', 'max', 'color', 'size'] } },
+  argTypes: {
+    value: { control: 'number' },
+    min: { control: 'number' },
+    max: { control: 'number' },
+    color: { control: 'select', options: Object.keys(progressColors) },
+    size: { control: 'radio', options: Object.keys(progressSizes) }
+  },
+  args: { value: 66, min: 0, max: 100, color: 'primary', size: 'md' },
+  render: (args) => (
+    <Progress {...args} locale='en-US' style={styles.root}>
+      <ProgressLabel>Brewing Polyjuice Potion…</ProgressLabel>
+      <ProgressValue />
+    </Progress>
+  )
 }
 
 export const Label: Story = {

@@ -12,6 +12,7 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
   Combobox,
@@ -34,11 +35,6 @@ import {
 const meta = {
   title: 'Base Components/Combobox',
   component: Combobox,
-  argTypes: {
-    multiple: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    autoHighlight: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Combobox>
 
@@ -88,11 +84,42 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { items: frameworks },
-  render: (args) => (
+type PlaygroundArgs = React.ComponentProps<typeof Combobox> &
+  Pick<React.ComponentProps<typeof ComboboxInput>, 'size' | 'variant' | 'showTrigger' | 'showClear'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'variant', 'showTrigger', 'showClear', 'disabled', 'autoHighlight']
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    showTrigger: { control: 'boolean' },
+    showClear: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    autoHighlight: { control: 'boolean' }
+  },
+  args: {
+    items: frameworks,
+    size: 'md',
+    variant: 'outline',
+    showTrigger: true,
+    showClear: false,
+    disabled: false,
+    autoHighlight: false
+  },
+  render: ({ size, variant, showTrigger, showClear, ...args }) => (
     <Combobox {...args}>
-      <ComboboxInput placeholder='Search school…' />
+      <ComboboxInput
+        size={size}
+        variant={variant}
+        showTrigger={showTrigger}
+        showClear={showClear}
+        placeholder='Search school…'
+      />
       <ComboboxContent>
         <ComboboxEmpty>No school found.</ComboboxEmpty>
         <ComboboxList>

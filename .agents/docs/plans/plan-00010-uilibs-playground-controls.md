@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-24T11:03:41+07:00
-updated: 2026-11-24T11:16:00+07:00
+updated: 2026-11-24T11:33:00+07:00
 phases:
     - id: 1
       title: Controls mechanism and the pilot (Button, Badge, Dialog)
@@ -9,8 +9,8 @@ phases:
       note: Controls off globally in preview.tsx; Button, Badge, Dialog Playgrounds wired. Gate 952 of 952. Dialog has no `position` prop, so its routed part args are size, blurredOverlay, showCloseButton.
     - id: 2
       title: Base component Playgrounds
-      status: pending
-      note: —
+      status: done
+      note: All 35 base Playgrounds wired; checker 35 of 35, Controls panel lists exactly each include list, gate 952 of 952. Progress drops its timer so `value` takes effect; Separator controls color and inset only (its Playground draws three separators; `Orientations` keeps the axis); Form controls validationMode; Checkbox, Switch, and Collapsible remount on `defaultChecked`/`defaultOpen` so the control takes effect.
     - id: 3
       title: Extra component Playgrounds
       status: pending

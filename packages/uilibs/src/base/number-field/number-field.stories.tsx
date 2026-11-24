@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { ComponentProps } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import {
   controlHeights,
@@ -11,17 +12,13 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import { NumberField, NumberFieldGroup } from './number-field.component'
 
 const meta = {
   title: 'Base Components/NumberField',
   component: NumberField,
-  argTypes: {
-    min: { control: 'number' },
-    max: { control: 'number' },
-    step: { control: 'number' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof NumberField>
 
@@ -29,13 +26,40 @@ type Story = StoryObj<typeof meta>
 
 export default meta
 
-export const Playground: Story = {
-  args: { defaultValue: 5, min: 0, max: 100 },
-  render: (args) => (
+type PlaygroundArgs = ComponentProps<typeof NumberField> &
+  Pick<ComponentProps<typeof NumberFieldGroup>, 'controls'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['size', 'variant', 'controls', 'min', 'max', 'step', 'disabled']
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    controls: { control: 'radio', options: ['stacked', 'sides'] },
+    min: { control: 'number' },
+    max: { control: 'number' },
+    step: { control: 'number' },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    defaultValue: 5,
+    min: 0,
+    max: 100,
+    step: 1,
+    size: 'md',
+    variant: 'outline',
+    controls: 'stacked',
+    disabled: false
+  },
+  render: ({ controls, ...args }) => (
     <NumberField {...args}>
       <Label>
         Galleons
-        <NumberFieldGroup />
+        <NumberFieldGroup controls={controls} />
       </Label>
     </NumberField>
   ),

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { controlSizes } from '../../styles/control.stylex'
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -29,8 +30,15 @@ type Story = StoryObj<typeof meta>
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Menubar>
+  parameters: { controls: { disable: false, include: ['size', 'disabled', 'loopFocus'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    disabled: { control: 'boolean' },
+    loopFocus: { control: 'boolean' }
+  },
+  args: { size: 'md', disabled: false, loopFocus: true },
+  render: (args) => (
+    <Menubar {...args}>
       <MenubarMenu>
         <MenubarTrigger>Grimoire</MenubarTrigger>
         <MenubarContent>

@@ -14,14 +14,11 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from './drawer.component'
+import { drawerDirections } from './drawer.stylex'
 
 const meta = {
   title: 'Base Components/Drawer',
   component: Drawer,
-  argTypes: {
-    showSwipeHandle: { control: 'boolean' },
-    swipeDirection: { control: 'radio', options: ['up', 'right', 'down', 'left'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Drawer>
 
@@ -42,7 +39,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { showSwipeHandle: true },
+  parameters: {
+    controls: { disable: false, include: ['swipeDirection', 'showSwipeHandle', 'modal'] }
+  },
+  argTypes: {
+    swipeDirection: { control: 'radio', options: Object.keys(drawerDirections) },
+    showSwipeHandle: { control: 'boolean' },
+    modal: { control: 'radio', options: [true, false, 'trap-focus'] }
+  },
+  args: { showSwipeHandle: true, swipeDirection: 'down', modal: true },
   render: (args) => (
     <Drawer {...args}>
       <DrawerTrigger render={<Button variant='outline' />}>Open the vault</DrawerTrigger>

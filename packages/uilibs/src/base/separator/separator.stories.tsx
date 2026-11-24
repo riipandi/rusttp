@@ -11,9 +11,6 @@ import { Separator } from './separator.component'
 const meta = {
   title: 'Base Components/Separator',
   component: Separator,
-  argTypes: {
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Separator>
 
@@ -68,18 +65,25 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  // Both separators of each orientation take the args; `Orientations` shows the orientation axis.
+  parameters: { controls: { disable: false, include: ['color', 'inset'] } },
+  argTypes: {
+    color: { control: 'radio', options: ['neutral-faded', 'neutral'] },
+    inset: { control: 'boolean' }
+  },
+  args: { color: 'neutral-faded', inset: false },
+  render: (args) => (
     <div {...stylex.props(styles.root)}>
       <div>
         <div {...stylex.props(styles.title)}>Professor Robert Langdon</div>
         <div {...stylex.props(styles.muted)}>Symbologist, Harvard University.</div>
       </div>
-      <Separator />
+      <Separator {...args} />
       <div {...stylex.props(styles.row)}>
         <span>Louvre</span>
-        <Separator orientation='vertical' />
+        <Separator {...args} orientation='vertical' />
         <span>Vatican</span>
-        <Separator orientation='vertical' />
+        <Separator {...args} orientation='vertical' />
         <span>CERN</span>
       </div>
     </div>

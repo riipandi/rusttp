@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -40,11 +41,20 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <PreviewCard>
+type PlaygroundArgs = ComponentProps<typeof PreviewCard> &
+  Pick<ComponentProps<typeof PreviewCardContent>, 'side' | 'align'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['side', 'align'] } },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    align: { control: 'radio', options: ['start', 'center', 'end'] }
+  },
+  args: { side: 'bottom', align: 'center' },
+  render: ({ side, align, ...args }) => (
+    <PreviewCard {...args}>
       <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
-      <PreviewCardContent>
+      <PreviewCardContent side={side} align={align}>
         <div {...stylex.props(styles.row)}>
           <Avatar>
             <AvatarImage src='https://github.com/vercel.png' alt='@dumbledore' />

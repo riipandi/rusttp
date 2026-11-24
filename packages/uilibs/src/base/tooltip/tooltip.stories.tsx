@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -10,9 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 const meta = {
   title: 'Base Components/Tooltip',
   component: TooltipProvider,
-  argTypes: {
-    delay: { control: 'number' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof TooltipProvider>
 
@@ -31,13 +29,35 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { delay: 0 },
-  render: () => (
-    <TooltipProvider>
+// The text, color, and placement belong to `TooltipContent`; the delay to the provider.
+type PlaygroundArgs = ComponentProps<typeof TooltipProvider> &
+  Pick<ComponentProps<typeof TooltipContent>, 'color' | 'side' | 'align'> & { label: string }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['label', 'delay', 'color', 'side', 'align'] }
+  },
+  argTypes: {
+    label: { control: 'text' },
+    delay: { control: 'number' },
+    color: { control: 'radio', options: ['neutral', 'inverted', 'dark'] },
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    align: { control: 'radio', options: ['start', 'center', 'end'] }
+  },
+  args: {
+    label: 'Add to the Restricted Section',
+    delay: 0,
+    color: 'neutral',
+    side: 'top',
+    align: 'center'
+  },
+  render: ({ label, color, side, align, ...args }) => (
+    <TooltipProvider {...args}>
       <Tooltip>
         <TooltipTrigger render={<Button variant='outline' />}>Lumos</TooltipTrigger>
-        <TooltipContent>Add to the Restricted Section</TooltipContent>
+        <TooltipContent color={color} side={side} align={align}>
+          {label}
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   ),

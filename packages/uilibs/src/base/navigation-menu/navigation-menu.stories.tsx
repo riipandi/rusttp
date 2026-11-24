@@ -45,8 +45,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <NavigationMenu>
+  parameters: { controls: { disable: false, include: ['align', 'delay', 'closeDelay'] } },
+  argTypes: {
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    delay: { control: 'number' },
+    closeDelay: { control: 'number' }
+  },
+  args: { align: 'start' },
+  render: (args) => (
+    <NavigationMenu {...args}>
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>First year at Hogwarts</NavigationMenuTrigger>

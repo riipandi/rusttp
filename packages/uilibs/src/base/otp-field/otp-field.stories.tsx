@@ -12,6 +12,7 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { fontSize, radius } from '../../styles/tokens.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-field.component'
@@ -19,10 +20,6 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-
 const meta = {
   title: 'Base Components/OTPField',
   component: OTPField,
-  argTypes: {
-    length: { control: 'number' },
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof OTPField>
 
@@ -51,15 +48,29 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { length: 6, 'aria-label': 'Verification code' },
+  parameters: {
+    controls: { disable: false, include: ['length', 'size', 'variant', 'mask', 'disabled'] }
+  },
+  argTypes: {
+    length: { control: { type: 'number', min: 1, max: 8 } },
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    mask: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    length: 6,
+    size: 'md',
+    variant: 'outline',
+    mask: false,
+    disabled: false,
+    'aria-label': 'Verification code'
+  },
   render: (args) => (
     <OTPField {...args}>
-      <OTPFieldSlot style={styles.standalone} />
-      <OTPFieldSlot style={styles.standalone} />
-      <OTPFieldSlot style={styles.standalone} />
-      <OTPFieldSlot style={styles.standalone} />
-      <OTPFieldSlot style={styles.standalone} />
-      <OTPFieldSlot style={styles.standalone} />
+      {Array.from({ length: args.length }, (_, index) => (
+        <OTPFieldSlot key={index} style={styles.standalone} />
+      ))}
     </OTPField>
   )
 }

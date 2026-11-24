@@ -10,6 +10,7 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { container, fontFamily, fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -18,9 +19,6 @@ import { Input } from './input.component'
 const meta = {
   title: 'Base Components/Input',
   component: Input,
-  argTypes: {
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Input>
 
@@ -54,9 +52,19 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: {
+    controls: { disable: false, include: ['placeholder', 'size', 'variant', 'disabled'] }
+  },
+  argTypes: {
+    placeholder: { control: 'text' },
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    disabled: { control: 'boolean' }
+  },
+  args: { placeholder: 'Owl post address', size: 'md', variant: 'outline', disabled: false },
+  render: (args) => (
     <div {...stylex.props(styles.wrap)}>
-      <Input placeholder='Owl post address' type='email' />
+      <Input type='email' {...args} />
     </div>
   )
 }

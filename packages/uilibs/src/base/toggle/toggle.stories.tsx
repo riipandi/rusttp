@@ -11,15 +11,11 @@ import {
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Toggle } from './toggle.component'
+import { toggleSizes, toggleVariants } from './toggle.stylex'
 
 const meta = {
   title: 'Base Components/Toggle',
   component: Toggle,
-  argTypes: {
-    variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Toggle>
 
@@ -32,8 +28,25 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Toggle aria-label='Toggle charm'>
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['variant', 'selectedVariant', 'selectedColor', 'size', 'disabled']
+    }
+  },
+  argTypes: {
+    variant: { control: 'radio', options: Object.keys(toggleVariants) },
+    selectedVariant: { control: 'radio', options: Object.keys(toggleVariants) },
+    selectedColor: {
+      control: 'radio',
+      options: ['neutral', 'primary', 'critical', 'positive', 'warning']
+    },
+    size: { control: 'radio', options: Object.keys(toggleSizes) },
+    disabled: { control: 'boolean' }
+  },
+  args: { variant: 'ghost', selectedColor: 'neutral', size: 'md', disabled: false },
+  render: (args) => (
+    <Toggle {...args} aria-label='Toggle charm'>
       <Bold {...stylex.props(styles.icon)} />
     </Toggle>
   ),

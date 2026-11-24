@@ -9,18 +9,12 @@ import {
   expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { toggleSizes } from '../toggle/toggle.stylex'
 import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
 const meta = {
   title: 'Base Components/ToggleGroup',
   component: ToggleGroup,
-  argTypes: {
-    variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
-    spacing: { control: 'radio', options: ['gap', 'joined'] },
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
-    disabled: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof ToggleGroup>
 
@@ -29,7 +23,44 @@ type Story = StoryObj<typeof meta>
 export default meta
 
 export const Playground: Story = {
-  args: { defaultValue: ['bold'] },
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'variant',
+        'selectedVariant',
+        'selectedColor',
+        'size',
+        'spacing',
+        'orientation',
+        'multiple',
+        'disabled'
+      ]
+    }
+  },
+  argTypes: {
+    variant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
+    selectedVariant: { control: 'radio', options: ['ghost', 'outline', 'solid'] },
+    selectedColor: {
+      control: 'radio',
+      options: ['neutral', 'primary', 'critical', 'positive', 'warning']
+    },
+    size: { control: 'radio', options: Object.keys(toggleSizes) },
+    spacing: { control: 'radio', options: ['gap', 'joined'] },
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    multiple: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    defaultValue: ['bold'],
+    variant: 'ghost',
+    selectedColor: 'neutral',
+    size: 'md',
+    spacing: 'gap',
+    orientation: 'horizontal',
+    multiple: false,
+    disabled: false
+  },
   render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value='bold' aria-label='Toggle charm'>

@@ -22,8 +22,14 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Toolbar>
+  parameters: { controls: { disable: false, include: ['disabled', 'loopFocus'] } },
+  argTypes: {
+    disabled: { control: 'boolean' },
+    loopFocus: { control: 'boolean' }
+  },
+  args: { disabled: false, loopFocus: true },
+  render: (args) => (
+    <Toolbar {...args}>
       <ToolbarGroup>
         <ToolbarButton render={<Toggle aria-label='Toggle charm' />}>Charm</ToolbarButton>
         <ToolbarButton render={<Toggle aria-label='Toggle hex' />}>Hex</ToolbarButton>

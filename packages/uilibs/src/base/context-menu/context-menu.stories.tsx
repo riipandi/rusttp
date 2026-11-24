@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -51,11 +52,21 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <ContextMenu>
+type PlaygroundArgs = ComponentProps<typeof ContextMenu> &
+  Pick<ComponentProps<typeof ContextMenuContent>, 'side' | 'align'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['side', 'align', 'disabled'] } },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    disabled: { control: 'boolean' }
+  },
+  args: { side: 'right', align: 'start', disabled: false },
+  render: ({ side, align, ...args }) => (
+    <ContextMenu {...args}>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
-      <ContextMenuContent>
+      <ContextMenuContent side={side} align={align}>
         <ContextMenuItem>
           Retrace steps
           <ContextMenuShortcut>⌘[</ContextMenuShortcut>

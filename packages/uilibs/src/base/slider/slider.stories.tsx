@@ -11,10 +11,6 @@ import { Slider } from './slider.component'
 const meta = {
   title: 'Base Components/Slider',
   component: Slider,
-  argTypes: {
-    disabled: { control: 'boolean' },
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Slider>
 
@@ -50,7 +46,25 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { defaultValue: 50, 'aria-label': 'Volume' },
+  parameters: {
+    controls: { disable: false, include: ['min', 'max', 'step', 'orientation', 'disabled'] }
+  },
+  argTypes: {
+    min: { control: 'number' },
+    max: { control: 'number' },
+    step: { control: 'number' },
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    defaultValue: 50,
+    min: 0,
+    max: 100,
+    step: 1,
+    orientation: 'horizontal',
+    disabled: false,
+    'aria-label': 'Volume'
+  },
   render: (args) => <Slider {...args} style={styles.root} />,
   play: async ({ canvas }) => {
     // Base UI exposes more than one slider element; pick the value thumb.

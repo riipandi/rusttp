@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -15,13 +16,11 @@ import {
   PopoverTitle,
   PopoverTrigger
 } from './popover.component'
+import { popoverPadding, popoverRadii } from './popover.stylex'
 
 const meta = {
   title: 'Base Components/Popover',
   component: Popover,
-  argTypes: {
-    open: { control: 'boolean' }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Popover>
 
@@ -50,11 +49,40 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <Popover>
+type PlaygroundArgs = ComponentProps<typeof Popover> &
+  Pick<
+    ComponentProps<typeof PopoverContent>,
+    'side' | 'align' | 'elevation' | 'padding' | 'borderRadius'
+  >
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['side', 'align', 'elevation', 'padding', 'borderRadius'] }
+  },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    elevation: { control: 'radio', options: ['overlay', 'raised'] },
+    padding: { control: 'select', options: Object.keys(popoverPadding).map(Number) },
+    borderRadius: { control: 'radio', options: Object.keys(popoverRadii) }
+  },
+  args: {
+    side: 'bottom',
+    align: 'center',
+    elevation: 'overlay',
+    padding: 4,
+    borderRadius: 'medium'
+  },
+  render: ({ side, align, elevation, padding, borderRadius, ...args }) => (
+    <Popover {...args}>
       <PopoverTrigger render={<Button variant='outline' />}>Summon popover</PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent
+        side={side}
+        align={align}
+        elevation={elevation}
+        padding={padding}
+        borderRadius={borderRadius}
+      >
         <div {...stylex.props(styles.form)}>
           <strong {...stylex.props(styles.heading)}>Cryptex settings</strong>
           <Input placeholder='First dial' defaultValue='100%' />

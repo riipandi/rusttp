@@ -1,6 +1,7 @@
 import { Bell as BellIcon, User } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import {
   cellOf,
@@ -11,13 +12,11 @@ import {
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
+import { tabsSizes } from './tabs.stylex'
 
 const meta = {
   title: 'Base Components/Tabs',
   component: Tabs,
-  argTypes: {
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
-  },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Tabs>
 
@@ -38,11 +37,21 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { defaultValue: 'account' },
-  render: (args) => (
+// The list's look is a `TabsList` prop; the orientation is the root's.
+type PlaygroundArgs = ComponentProps<typeof Tabs> &
+  Pick<ComponentProps<typeof TabsList>, 'variant' | 'size'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['orientation', 'variant', 'size'] } },
+  argTypes: {
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    variant: { control: 'radio', options: ['pills', 'pills-raised', 'bordered', 'borderless'] },
+    size: { control: 'radio', options: Object.keys(tabsSizes) }
+  },
+  args: { defaultValue: 'account', orientation: 'horizontal', variant: 'pills', size: 'md' },
+  render: ({ variant, size, ...args }) => (
     <Tabs {...args} style={styles.tabs}>
-      <TabsList>
+      <TabsList variant={variant} size={size}>
         <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
         <TabsTrigger value='password'>Vault Password</TabsTrigger>
       </TabsList>

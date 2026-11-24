@@ -6,6 +6,7 @@ import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
+import { buttonFills } from '../button/button.stylex'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from './alert-dialog.component'
+import { alertDialogSizes } from './alert-dialog.stylex'
 
 const meta = {
   title: 'Base Components/AlertDialog',
@@ -79,13 +81,24 @@ function deleteAccount() {
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <AlertDialog>
+// The size lives on `AlertDialogContent` and the color on the confirming `AlertDialogAction`.
+type PlaygroundArgs = React.ComponentProps<typeof AlertDialog> &
+  Pick<React.ComponentProps<typeof AlertDialogContent>, 'size'> &
+  Pick<React.ComponentProps<typeof AlertDialogAction>, 'color'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(alertDialogSizes) },
+    color: { control: 'select', options: Object.keys(buttonFills.solid) }
+  },
+  args: { size: 'md', color: 'critical' },
+  render: ({ size, color, ...root }) => (
+    <AlertDialog {...root}>
       <AlertDialogTrigger render={<Button variant='outline' />}>
         Seal the cryptex
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent size={size}>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure, Professor?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -95,7 +108,7 @@ export const Playground: Story = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction color='critical'>Seal</AlertDialogAction>
+          <AlertDialogAction color={color}>Seal</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
