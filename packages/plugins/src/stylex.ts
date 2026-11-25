@@ -10,12 +10,26 @@ import type { Plugin, ViteDevServer } from 'vite'
  * are pinned here so every consumer emits identically ordered styles.
  */
 export function stylexPlugin(options: StylexPluginOptions): Plugin {
+  const { lightningcssOptions, ...rest } = options
   const plugin: Plugin = stylex({
     useCSSLayers: { before: ['reset'], prefix: 'stylex' },
-    ...options
+    ...rest,
+    lightningcssOptions: {
+      ...lightningcssOptions,
+      exclude: (lightningcssOptions?.exclude ?? 0) | LIGHTNINGCSS_DIR_SELECTOR
+    }
   })
   return plugin
 }
+
+/**
+ * lightningcss `Features.DirSelector`. The unplugin lowers CSS for the default browserslist, which
+ * still lists Chrome 109, and for that target rewrites `:dir(rtl)` into a `:lang(ar), :lang(he), …`
+ * list: a rule that flips a transform then follows `lang` instead of `dir` (issue-00007). Every
+ * engine the tests cover supports `:dir()`, so it stays. `lightningcss` is not a dependency of
+ * this package, hence the literal; the RTL stories fail if the flag stops working.
+ */
+const LIGHTNINGCSS_DIR_SELECTOR = 4
 
 /**
  * StyleX starts a dev HMR interval in configureServer and only clears it on
