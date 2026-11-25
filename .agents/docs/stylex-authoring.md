@@ -193,7 +193,7 @@ Other supported @-rules include `@supports` and `@container` queries.
 
 **Responsive sets (`packages/uilibs`).** A set that changes several properties per breakpoint (`Text`, `Stack`, `Hidden`) keys the whole style on the media query, mobile-first: `{ [breakpoints.medium]: { flexDirection: 'row' } }`. Do not nest the media inside a property of a style that also sets the base value: `stylex.props` keeps only the last style per property, so the nested set erases the base. A media const used as a `create` key resolves only from the file that defines it, so each stylesheet that keys on one restates `breakpoints` (`text.stylex.ts`, `stack.stylex.ts`, `hidden.stylex.ts`) and a unit test compares the mirror with `styles/tokens.stylex.ts`; changing a breakpoint edits the tokens and the three mirrors (and the numbers in `hooks/use-media-query.ts`).
 
-**Direction (`packages/uilibs`).** `':dir(rtl)'` compiles to a `:lang()` list, so it follows `lang`, not `dir` (`issue-00007`). Position and flip with logical properties (`insetInlineEnd`, `marginInlineStart`) instead of a transform with an RTL variant.
+**Direction (`packages/uilibs`).** `':dir(rtl)'` follows the `dir` attribute: `packages/plugins/src/stylex.ts` tells lightningcss to keep `:dir()` (the default browserslist lists Chrome 109, which lacks it, and lightningcss would rewrite the rule into a `:lang()` list; issue-00007). A transform has no logical form (`rotate`, `scaleX`), so a mirrored icon uses a `:dir(rtl)` variant; position and spacing use logical properties (`insetInlineEnd`, `marginInlineStart`). A consumer that compiles `uilibs` through its own StyleX pipeline passes the same exclusion.
 
 ---
 

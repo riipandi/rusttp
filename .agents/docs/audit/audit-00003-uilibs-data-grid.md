@@ -143,7 +143,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Location**: `data-grid-table.stylex.ts:428-443` (`rowExpandChevron`: `transitionProperty: 'transform'`, `duration.medium`).
 - **Evidence**: no `data-grid*.ts` file contains `prefers-reduced-motion`; 20 other stylesheets in `src` do (`'@media (prefers-reduced-motion: reduce)': 'none'` on the transition).
 - **Impact**: a user who asked for no motion sees a 90 degree rotation. The color transitions at `data-grid.stylex.ts:70-71` and `data-grid-table.stylex.ts:394-395,421-422` are not motion in this sense.
-- **Smallest fix**: the same media query on `rowExpandChevron`. The `:dir(rtl)` rule beside it is issue-00007.
+- **Smallest fix**: the same media query on `rowExpandChevron`. The `:dir(rtl)` rule beside it was dead and is removed (issue-00007).
 - **Confidence**: high. **Status**: open.
 
 ### F-11 Literal sizes, opacities, and a blur
