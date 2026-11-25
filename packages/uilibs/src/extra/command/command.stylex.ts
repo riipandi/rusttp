@@ -16,6 +16,13 @@ export const commandStyles = stylex.create({
     overflow: 'hidden',
     width: '100%'
   },
+  // On the page the palette has the same fill as its surroundings, so it draws its own edge. In a
+  // `CommandDialog` it does not: the dialog's ring is the edge, and a second one would double it.
+  edge: {
+    borderColor: colors.borderNeutral,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1
+  },
   // Higher than center, where the eye goes first, and wide enough that the longest label and its
   // shortcut share a row. It opens by rising a few pixels and fading in, not by scaling: the box
   // is the focus, so it should not appear to swell.
@@ -23,17 +30,7 @@ export const commandStyles = stylex.create({
   // shortcut share a row. The box keeps the dialog's own centring and fade; the rise is `inner`.
   dialogContent: {
     borderRadius: radius.xxlarge,
-    // The edge: a 1px ring of the text color at low strength (so it is dark on light and light on dark
-    // and shows against both the page and the dim overlay), a faint top highlight that only a dark
-    // surface can show, and two soft shadows, tight and wide, that lift the palette off the page.
-    // Set here, after the dialog's own ring, so it wins.
-    boxShadow: [
-      `0 0 0 ${stroke.ring1} color-mix(in srgb, ${colors.foregroundNeutral} 12%, transparent)`,
-      `inset 0 1px 0 color-mix(in srgb, ${colors.white} 6%, transparent)`,
-      `0 1px 2px color-mix(in srgb, ${colors.black} 8%, transparent)`,
-      `0 12px 24px -8px color-mix(in srgb, ${colors.black} 22%, transparent)`,
-      `0 32px 64px -16px color-mix(in srgb, ${colors.black} 28%, transparent)`
-    ].join(', '),
+    // The edge and shadow are the dialog's own: its 1px ring and `shadow.overlay`.
     gap: 0,
     maxHeight: `calc(100dvh - ${unit.x16})`,
     overflow: 'hidden',

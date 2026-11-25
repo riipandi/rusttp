@@ -5,6 +5,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { expectHighlightedItem } from '../../contracts/control-sizes'
+import { shadow } from '../../styles/colors.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd, KbdGroup } from '../kbd'
 import { Command, CommandDialog, CommandEmpty } from './command.component'
@@ -142,6 +143,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     const body = within(document.body)
     const input = canvas.getByPlaceholderText('Cast a spell or search…')
 
+    // On the page the palette draws its own 1px edge, since its fill is the page's. The root is
+    // the input's field wrapper's parent.
+    const root = input.parentElement?.parentElement
+    if (!root) throw new Error('No command root')
+    await expect(getComputedStyle(root).borderTopWidth).toBe('1px')
+    await expect(getComputedStyle(root).borderTopStyle).toBe('solid')
+
     // Typing filters the command list.
     await userEvent.type(input, 'expecto')
     await waitFor(() => expect(body.getByText('Expecto Patronum')).toBeInTheDocument())
@@ -271,5 +279,18 @@ export const TranslatedDialog: Story = {
   play: async () => {
     const dialog = await within(document.body).findByRole('dialog', { name: 'Palet perintah' })
     await expect(dialog).toHaveAccessibleDescription('Cari perintah untuk dijalankan')
+
+    // The dialog's own ring is the edge: the palette inside draws none, and the dialog lifts with
+    // the overlay shadow token, the same as any other dialog.
+    const input = within(dialog).getByPlaceholderText('Cari…')
+    const root = input.parentElement?.parentElement
+    if (!root) throw new Error('No command root')
+    await expect(getComputedStyle(root).borderTopWidth).toBe('0px')
+    const probe = document.createElement('div')
+    probe.style.boxShadow = shadow.overlay
+    document.body.append(probe)
+    const overlay = getComputedStyle(probe).boxShadow
+    probe.remove()
+    await expect(getComputedStyle(dialog).boxShadow.endsWith(overlay)).toBe(true)
   }
 }

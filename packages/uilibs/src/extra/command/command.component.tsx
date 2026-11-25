@@ -11,6 +11,9 @@ import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
 
+/** True inside a `CommandDialog`, whose own ring is the palette's edge. */
+const InDialogContext = React.createContext(false)
+
 export interface CommandProps
   extends
     Omit<
@@ -27,9 +30,10 @@ export interface CommandProps
  * root; `CommandList` accepts a render function over the filtered items.
  */
 export function Command({ style, children, ...props }: CommandProps) {
+  const inDialog = React.useContext(InDialogContext)
   return (
     <BaseAutocomplete.Root inline open autoHighlight keepHighlight {...props}>
-      <div {...stylex.props(s.root, style)}>{children}</div>
+      <div {...stylex.props(s.root, !inDialog && s.edge, style)}>{children}</div>
     </BaseAutocomplete.Root>
   )
 }
@@ -80,7 +84,9 @@ export function CommandDialog({
       >
         <DialogTitle style={visuallyHidden.root}>{names.title}</DialogTitle>
         <DialogDescription style={visuallyHidden.root}>{names.description}</DialogDescription>
-        <div {...stylex.props(s.inner)}>{children}</div>
+        <div {...stylex.props(s.inner)}>
+          <InDialogContext.Provider value>{children}</InDialogContext.Provider>
+        </div>
       </DialogContent>
     </Dialog>
   )
