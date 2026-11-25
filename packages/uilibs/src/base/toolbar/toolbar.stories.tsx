@@ -35,7 +35,7 @@ export const Playground: Story = {
         <ToolbarButton render={<Toggle aria-label='Toggle hex' />}>Hex</ToolbarButton>
       </ToolbarGroup>
       <ToolbarSeparator />
-      <ToolbarButton render={<Button variant='ghost' size='sm' />}>Send by Owl</ToolbarButton>
+      <ToolbarButton render={<Button variant='ghost' size='small' />}>Send by Owl</ToolbarButton>
     </Toolbar>
   ),
   play: async ({ canvas }) => {
@@ -66,7 +66,7 @@ export const WithToggleGroup: Story = {
         </ToolbarButton>
       </ToggleGroup>
       <ToolbarSeparator />
-      <ToolbarButton render={<Button variant='ghost' size='sm' />}>Accio</ToolbarButton>
+      <ToolbarButton render={<Button variant='ghost' size='small' />}>Accio</ToolbarButton>
     </Toolbar>
   )
 }

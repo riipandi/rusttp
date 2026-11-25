@@ -54,7 +54,7 @@ function RouteComponent() {
             />
           )}
         </Field>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_forgot_submit()}
         </Button>
       </Form>

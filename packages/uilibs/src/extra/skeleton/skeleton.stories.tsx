@@ -163,7 +163,7 @@ export const Busy: Story = {
           )}
         </div>
         <div>
-          <Button variant='outline' size='sm' onClick={() => setLoading((value) => !value)}>
+          <Button variant='outline' size='small' onClick={() => setLoading((value) => !value)}>
             {loading ? 'Deliver' : 'Reload'}
           </Button>
         </div>

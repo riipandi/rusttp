@@ -45,17 +45,17 @@ export const radioStyles = stylex.create({
   }
 })
 
-// `md` is the circle as it was before sizes existed; the dot is half of it.
+// `medium` is the circle as it was before sizes existed; the dot is half of it.
 export const radioSizes = stylex.create({
-  sm: { height: unit.x3, width: unit.x3 },
-  md: { height: unit.x4, width: unit.x4 },
-  lg: { height: unit.x5, width: unit.x5 }
+  small: { height: unit.x3, width: unit.x3 },
+  medium: { height: unit.x4, width: unit.x4 },
+  large: { height: unit.x5, width: unit.x5 }
 })
 
 export const radioIndicatorSizes = stylex.create({
-  sm: { height: unit.x1_5, width: unit.x1_5 },
-  md: { height: unit.x2, width: unit.x2 },
-  lg: {
+  small: { height: unit.x1_5, width: unit.x1_5 },
+  medium: { height: unit.x2, width: unit.x2 },
+  large: {
     height: `calc(${unit.x2} + ${unit.x0_5})`,
     width: `calc(${unit.x2} + ${unit.x0_5})`
   }

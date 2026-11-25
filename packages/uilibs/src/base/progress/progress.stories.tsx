@@ -42,7 +42,7 @@ export const Playground: Story = {
     color: { control: 'select', options: Object.keys(progressColors) },
     size: { control: 'radio', options: Object.keys(progressSizes) }
   },
-  args: { value: 66, min: 0, max: 100, color: 'primary', size: 'md' },
+  args: { value: 66, min: 0, max: 100, color: 'primary', size: 'medium' },
   render: (args) => (
     <Progress {...args} locale='en-US' style={styles.root}>
       <ProgressLabel>Brewing Polyjuice Potion…</ProgressLabel>
@@ -78,7 +78,7 @@ export const Controlled: Story = {
         </Progress>
         <Button
           variant='outline'
-          size='sm'
+          size='small'
           onClick={() => setValue((current) => Math.min(current + 20, 100))}
           style={styles.button}
         >
@@ -128,14 +128,14 @@ export const Colors: Story = {
 export const Sizes: Story = {
   args: { value: 60 },
   render: () => (
-    <Axis axis='size' rows={['sm', 'md'] as const}>
+    <Axis axis='size' rows={['small', 'medium'] as const}>
       {(size) => <Progress value={60} size={size} aria-label={`Brewing ${size}`} />}
     </Axis>
   ),
   play: async ({ canvasElement }) => {
     const height = (size: string) =>
       barParts(canvasElement, `[data-size="${size}"] [role="progressbar"]`).track.height
-    await expect(height('sm')).toBe('2px')
-    await expect(height('md')).toBe('4px')
+    await expect(height('small')).toBe('2px')
+    await expect(height('medium')).toBe('4px')
   }
 }

@@ -91,7 +91,7 @@ function RouteComponent() {
             {(field) => <CaptchaField field={field} />}
           </Field>
         </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_signup_submit()}
         </Button>
         <p {...stylex.props(styles.fine)}>{m.auth_signup_terms()}</p>

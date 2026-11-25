@@ -143,12 +143,12 @@ function DataGridPagination<TData extends object>(
       buttons.push(
         <Button
           key={i}
-          size='sm'
+          size='small'
           variant='ghost'
           aria-label={i18n.labels.goToPage(i + 1)}
           aria-current={pageIndex === i ? 'page' : undefined}
           style={[
-            buttonSquare.sm,
+            buttonSquare.small,
             s.pageButton,
             s.pageButtonMuted,
             pageIndex === i && s.pageButtonActive
@@ -171,9 +171,9 @@ function DataGridPagination<TData extends object>(
     if (currentGroupStart > 0) {
       return (
         <Button
-          size='sm'
+          size='small'
           variant='ghost'
-          style={[buttonSquare.sm, s.pageButton]}
+          style={[buttonSquare.small, s.pageButton]}
           onClick={() => table.setPageIndex(currentGroupStart - 1)}
         >
           {mergedProps.ellipsisText}
@@ -188,9 +188,9 @@ function DataGridPagination<TData extends object>(
     if (currentGroupEnd < pageCount) {
       return (
         <Button
-          size='sm'
+          size='small'
           variant='ghost'
-          style={[buttonSquare.sm, s.pageButton]}
+          style={[buttonSquare.small, s.pageButton]}
           onClick={() => table.setPageIndex(currentGroupEnd)}
         >
           {mergedProps.ellipsisText}
@@ -238,9 +238,9 @@ function DataGridPagination<TData extends object>(
             {pageCount > 1 && (
               <div {...stylex.props(s.pages)}>
                 <Button
-                  size='sm'
+                  size='small'
                   variant='ghost'
-                  style={[buttonSquare.sm, s.arrowButton]}
+                  style={[buttonSquare.small, s.arrowButton]}
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
@@ -257,9 +257,9 @@ function DataGridPagination<TData extends object>(
                 {renderEllipsisNextButton()}
 
                 <Button
-                  size='sm'
+                  size='small'
                   variant='ghost'
-                  style={[buttonSquare.sm, s.arrowButton]}
+                  style={[buttonSquare.small, s.arrowButton]}
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >

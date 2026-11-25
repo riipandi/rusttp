@@ -168,7 +168,7 @@ export const Form: Story = {
             <FieldLabel htmlFor='popover-form-handle'>Handle</FieldLabel>
             <Input id='popover-form-handle' defaultValue='@brightestwitch' />
           </Field>
-          <Button type='submit' size='sm'>
+          <Button type='submit' size='small'>
             Save permit
           </Button>
         </form>

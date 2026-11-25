@@ -56,7 +56,7 @@ function DataGridTableAddRow<TData extends object>({
         <Button
           type='button'
           variant='ghost'
-          size='sm'
+          size='small'
           data-dense={props.tableLayout?.dense ? '' : undefined}
           style={[s.addRowButton, props.tableLayout?.dense && s.addRowButtonDense]}
           onClick={(event) => {

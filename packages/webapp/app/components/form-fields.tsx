@@ -102,7 +102,7 @@ export function TextField({ field, label, description, autoComplete, inputMode }
       <Input
         {...field.props}
         id={id}
-        size='lg'
+        size='large'
         inputMode={inputMode}
         autoComplete={autoComplete}
         value={field.input ?? ''}
@@ -133,7 +133,7 @@ export function PasswordField({
       <InputPassword
         {...field.props}
         id={id}
-        size='lg'
+        size='large'
         autoComplete={autoComplete}
         labels={{ toggle: m.form_password_show() }}
         value={field.input ?? ''}
@@ -247,7 +247,7 @@ export function CodeField({
     <Field name={field.props.name} invalid={field.errors !== null}>
       <FieldLabel id={labelId}>{label}</FieldLabel>
       <OTPField
-        size='lg'
+        size='large'
         style={styles.code}
         name={field.props.name}
         length={length}

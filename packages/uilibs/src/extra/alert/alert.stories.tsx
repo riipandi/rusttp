@@ -72,7 +72,7 @@ export const Action: Story = {
         Expecto Patronum cast successfully. Your patronus is on file with the Ministry.
       </AlertDescription>
       <AlertAction>
-        <Button size='xs' variant='outline'>
+        <Button size='xsmall' variant='outline'>
           Reversal
         </Button>
       </AlertAction>
@@ -159,7 +159,7 @@ export const Layouts: Story = {
               <AlertTitle>Owl delivered</AlertTitle>
               <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
               <AlertAction>
-                <Button size='xs' variant='outline'>
+                <Button size='xsmall' variant='outline'>
                   Open
                 </Button>
               </AlertAction>

@@ -99,7 +99,12 @@ export function CommandInput({
   return (
     <>
       <div {...stylex.props(s.inputWrap, style)}>
-        <Search size={glyphSize.md} strokeWidth={1.5} aria-hidden {...stylex.props(s.inputIcon)} />
+        <Search
+          size={glyphSize.medium}
+          strokeWidth={1.5}
+          aria-hidden
+          {...stylex.props(s.inputIcon)}
+        />
         <BaseAutocomplete.Input {...props} {...stylex.props(s.input)} />
       </div>
       <Separator />

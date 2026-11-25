@@ -9,7 +9,11 @@ export type SpinnerSize = ControlSize
 /** Every role but `neutral` (a spinner takes the text color around it, `inherit`, instead). */
 export type SpinnerColor = 'inherit' | Exclude<ColorRole, 'neutral'>
 
-const spinnerSize = { sm: markSize.md, md: glyphSize.md, lg: glyphSize.xl } as const
+const spinnerSize = {
+  small: markSize.medium,
+  medium: glyphSize.medium,
+  large: glyphSize.xlarge
+} as const
 
 /**
  * `true` inside a control that already has its own name (Button): a Spinner there is decoration,
@@ -28,7 +32,7 @@ export interface SpinnerProps extends Omit<
   React.ComponentProps<'svg'>,
   'className' | 'style' | 'color'
 > {
-  /** Glyph size: `sm` 12px, `md` 16px (default), `lg` 20px. */
+  /** Glyph size: `small` 12px, `medium` 16px (default), `large` 20px. */
   size?: SpinnerSize
   /** The role color; `inherit` (default) draws in the surrounding text color. */
   color?: SpinnerColor
@@ -38,7 +42,13 @@ export interface SpinnerProps extends Omit<
 }
 
 /** A busy indicator. Alone it is a `status` live region named `labels.loading`; inside a Button it is hidden from assistive technology. */
-export function Spinner({ size = 'md', color = 'inherit', labels, style, ...props }: SpinnerProps) {
+export function Spinner({
+  size = 'medium',
+  color = 'inherit',
+  labels,
+  style,
+  ...props
+}: SpinnerProps) {
   const loading = { ...defaultLabels, ...labels }.loading
   const decorative = React.useContext(LabelledControlContext)
   return (

@@ -51,7 +51,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     min: 0,
     max: 100,
     step: 1,
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     controls: 'stacked',
     disabled: false

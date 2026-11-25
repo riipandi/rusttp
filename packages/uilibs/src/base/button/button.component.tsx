@@ -55,7 +55,7 @@ export interface ButtonProps extends Omit<
    */
   color?: ButtonColor
   /**
-   * Height and type; inside a `ButtonGroup` the group's size, else `md`. It is never the shape: a
+   * Height and type; inside a `ButtonGroup` the group's size, else `medium`. It is never the shape: a
    * button with no children is a square (see `icon`), and `buttonSquare[size]` squares any other.
    */
   size?: DenseControlSize
@@ -97,7 +97,7 @@ export function Button({
 }: ButtonProps) {
   const group = useButtonGroup()
   const variant = variantProp ?? group?.variant ?? 'solid'
-  const size = sizeProp ?? group?.size ?? 'md'
+  const size = sizeProp ?? group?.size ?? 'medium'
   const iconOnly = React.Children.toArray(children).length === 0
   const glyph = glyphSize[size]
   const content = (
@@ -121,7 +121,7 @@ export function Button({
         buttonStyles.root,
         buttonFill(variant, color),
         highlighted && !disabled && !loading && buttonHighlight(variant, color),
-        size !== 'xs' && controlSizes[size],
+        size !== 'xsmall' && controlSizes[size],
         buttonSizes[size],
         iconOnly && buttonSquare[size],
         rounded && buttonModifiers.rounded,

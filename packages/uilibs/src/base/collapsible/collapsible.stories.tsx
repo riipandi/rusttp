@@ -160,7 +160,7 @@ export const Playground: Story = {
     >
       <div {...stylex.props(styles.header)}>
         <span {...stylex.props(styles.title)}>@hermione starred 3 repositories</span>
-        <CollapsibleTrigger render={<Button variant='ghost' size='sm' />}>
+        <CollapsibleTrigger render={<Button variant='ghost' size='small' />}>
           Alohomora
         </CollapsibleTrigger>
       </div>
@@ -191,7 +191,7 @@ export const States: Story = {
     <Axis axis='state' rows={['closed', 'open', 'disabled'] as const}>
       {(state) => (
         <Collapsible defaultOpen={state === 'open'} disabled={state === 'disabled'}>
-          <CollapsibleTrigger render={<Button variant='outline' size='sm' />}>
+          <CollapsibleTrigger render={<Button variant='outline' size='small' />}>
             Alohomora {state}
           </CollapsibleTrigger>
           <CollapsibleContent>

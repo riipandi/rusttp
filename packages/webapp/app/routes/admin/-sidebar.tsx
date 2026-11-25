@@ -35,14 +35,14 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       render={<Link to={to} />}
       current={current}
       variant='ghost'
-      size='sm'
+      size='small'
       aria-label={collapsed ? label : undefined}
       style={style}
     />
   ) : (
     <Button
       variant='ghost'
-      size='sm'
+      size='small'
       aria-disabled
       aria-label={collapsed ? label : undefined}
       style={style}
@@ -91,7 +91,7 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
           <Button
             variant='ghost'
             style={[
-              buttonSquare.md,
+              buttonSquare.medium,
               styles.notifyButton,
               styles.itemIdle,
               anyUnread && styles.itemUnread
@@ -168,12 +168,12 @@ export function Sidebar() {
             render={
               <Button
                 variant='ghost'
-                size='sm'
+                size='small'
                 aria-label={m.admin_sidebar_toggle()}
                 aria-expanded={!collapsed}
                 aria-controls={navId}
                 onClick={() => toggle(!collapsed)}
-                style={[buttonSquare.sm, styles.trigger, collapsed && styles.triggerRail]}
+                style={[buttonSquare.small, styles.trigger, collapsed && styles.triggerRail]}
               />
             }
           >

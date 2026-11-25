@@ -49,7 +49,7 @@ function RouteComponent() {
         <Field of={form} path={['trust']}>
           {(field) => <CheckboxField field={field} label={m.auth_two_factor_trust()} />}
         </Field>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_two_factor_submit()}
         </Button>
       </Form>

@@ -53,9 +53,9 @@ export const inputGroupStyles = stylex.create({
 
 /** An input fills the group's border box: the control height minus the two 1px borders. */
 export const inputGroupControlHeights = stylex.create({
-  sm: { height: `calc(${unit.x8} - ${stroke.ring1} * 2)` },
-  md: { height: `calc(${unit.x9} - ${stroke.ring1} * 2)` },
-  lg: { height: `calc(${unit.x10} - ${stroke.ring1} * 2)` }
+  small: { height: `calc(${unit.x8} - ${stroke.ring1} * 2)` },
+  medium: { height: `calc(${unit.x9} - ${stroke.ring1} * 2)` },
+  large: { height: `calc(${unit.x10} - ${stroke.ring1} * 2)` }
 })
 
 export const inputGroupAddonAligns = stylex.create({
@@ -87,19 +87,19 @@ export const inputGroupAddonAligns = stylex.create({
 })
 
 export const inputGroupButtonSizes = stylex.create({
-  xs: {
+  xsmall: {
     borderRadius: radius.small,
     gap: unit.x1,
     height: unit.x6,
     paddingInline: unit.x1_5
   },
-  sm: {
+  small: {
     height: unit.x8
   }
 })
 
 // The square of an addon button with no children, composed after `inputGroupButtonSizes`.
 export const inputGroupButtonSquare = stylex.create({
-  xs: { paddingInline: 0, width: unit.x6 },
-  sm: { paddingInline: 0, width: unit.x8 }
+  xsmall: { paddingInline: 0, width: unit.x6 },
+  small: { paddingInline: 0, width: unit.x8 }
 })

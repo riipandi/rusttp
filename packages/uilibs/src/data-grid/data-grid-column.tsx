@@ -82,7 +82,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant='outline' size='sm'>
+          <Button variant='outline' size='small'>
             <CirclePlus {...stylex.props(sFilter.triggerIcon)} />
             {title}
             {selectedValues?.size > 0 && (
@@ -464,9 +464,9 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
         </DropdownMenu>
         {props.tableLayout?.columnsPinnable && canPin && isPinned && (
           <Button
-            size='xs'
+            size='xsmall'
             variant='ghost'
-            style={[buttonSquare.xs, sHeader.unpinButton]}
+            style={[buttonSquare.xsmall, sHeader.unpinButton]}
             onClick={() => column.pin(false)}
             aria-label={i18n.labels.unpinColumn(resolvedTitle)}
             title={i18n.labels.unpinColumn(resolvedTitle)}

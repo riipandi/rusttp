@@ -26,25 +26,25 @@ const offWithin = (value: string) =>
   }) as const
 
 /**
- * Height, inline padding, and type of a control (`sm` 32, `md` 36, `lg` 40).
+ * Height, inline padding, and type of a control (`small` 32, `medium` 36, `large` 40).
  * Compose after `controlBase` or `controlPress` and before the component's
  * own style; a component that needs a wider padding (Button) overrides it
  * in its own size style.
  */
 export const controlSizes = stylex.create({
-  sm: {
+  small: {
     fontSize: fontSize.body2,
     height: unit.x8,
     lineHeight: fontLineHeight.body2,
     paddingInline: unit.x3
   },
-  md: {
+  medium: {
     fontSize: fontSize.body2,
     height: unit.x9,
     lineHeight: fontLineHeight.body2,
     paddingInline: unit.x3
   },
-  lg: {
+  large: {
     fontSize: fontSize.body1,
     height: unit.x10,
     lineHeight: fontLineHeight.body1,

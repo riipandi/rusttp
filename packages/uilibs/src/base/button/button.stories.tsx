@@ -165,7 +165,12 @@ export const Colors: Story = {
   }
 }
 
-const sizeLabels = { xs: 'Fairy', sm: 'House-elf', md: 'Wizard', lg: 'Giant' } as const
+const sizeLabels = {
+  xsmall: 'Fairy',
+  small: 'House-elf',
+  medium: 'Wizard',
+  large: 'Giant'
+} as const
 
 export const Sizes: Story = {
   render: () => (
@@ -202,10 +207,10 @@ export const IconSizes: Story = {
   ),
   play: async ({ canvasElement }) => {
     await expectBoxSizes(canvasElement, 'button', {
-      xs: [28, 28],
-      sm: [32, 32],
-      md: [36, 36],
-      lg: [40, 40]
+      xsmall: [28, 28],
+      small: [32, 32],
+      medium: [36, 36],
+      large: [40, 40]
     })
     for (const size of denseControlSizeNames) {
       const [iconOnly, numbered] = cellOf(canvasElement, 'size', size).querySelectorAll('button')
@@ -358,7 +363,7 @@ export const AsLink: Story = {
 export const CurrentLink: Story = {
   name: 'as current link',
   render: () => (
-    <LinkButton variant='ghost' size='sm' current render={<a href='#overview' />}>
+    <LinkButton variant='ghost' size='small' current render={<a href='#overview' />}>
       Overview
     </LinkButton>
   ),

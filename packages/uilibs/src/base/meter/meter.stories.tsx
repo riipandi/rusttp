@@ -31,7 +31,7 @@ export const Playground: Story = {
     color: { control: 'select', options: Object.keys(meterColors) },
     size: { control: 'radio', options: Object.keys(meterSizes) }
   },
-  args: { value: 24, min: 0, max: 64, color: 'primary', size: 'md', locale: 'en-US' },
+  args: { value: 24, min: 0, max: 64, color: 'primary', size: 'medium', locale: 'en-US' },
   render: (args) => (
     <Meter {...args} style={styles.root}>
       <MeterLabel>Polyjuice Potion brewed</MeterLabel>
@@ -93,14 +93,14 @@ export const Colors: Story = {
 export const Sizes: Story = {
   args: { value: 60 },
   render: () => (
-    <Axis axis='size' rows={['sm', 'md'] as const}>
+    <Axis axis='size' rows={['small', 'medium'] as const}>
       {(size) => <Meter value={60} size={size} aria-label={`Gauge ${size}`} />}
     </Axis>
   ),
   play: async ({ canvasElement }) => {
     const height = (size: string) =>
       barParts(canvasElement, `[data-size="${size}"] [role="meter"]`).track.height
-    await expect(height('sm')).toBe('2px')
-    await expect(height('md')).toBe('4px')
+    await expect(height('small')).toBe('2px')
+    await expect(height('medium')).toBe('4px')
   }
 }

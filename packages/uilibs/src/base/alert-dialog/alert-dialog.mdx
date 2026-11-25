@@ -111,7 +111,7 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 
 | Prop             | Description                                                           |
 | ---------------- | --------------------------------------------------------------------- |
-| `size`           | `sm`, `md` <br /> The width of the dialog. Default `md`.              |
+| `size`           | `small`, `medium` <br /> The width of the dialog. Default `medium`.   |
 | `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop. Default `false`. |
 
 | Data attribute            | Description                                       |
@@ -133,7 +133,7 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The fill, as on Button. Default `solid`.                                                                                     |
 | `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` <br /> The role, as on Button. Use `critical` for a destructive action. Default is Button's. |
-| `size`    | `xs`, `sm`, `md`, `lg` <br /> As on Button. Default `md`.                                                                                                                |
+| `size`    | `xsmall`, `small`, `medium`, `large` <br /> As on Button. Default `medium`.                                                                                              |
 | `loading` | `boolean` <br /> Shows a spinner over the label, as on Button.                                                                                                           |
 
 ### AlertDialogCancel
@@ -142,11 +142,11 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The fill, as on Button. Default `outline`.                                          |
 | `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` <br /> The role, as on Button. Default is Button's. |
-| `size`    | `xs`, `sm`, `md`, `lg` <br /> As on Button. Default `md`.                                                                       |
+| `size`    | `xsmall`, `small`, `medium`, `large` <br /> As on Button. Default `medium`.                                                     |
 | `loading` | `boolean` <br /> Shows a spinner over the label, as on Button.                                                                  |
 
 ## Caveats
 
 - `AlertDialogAction` and `AlertDialogCancel` both close the dialog. To keep it open while work runs, call `event.preventBaseUIHandler()` in the action's `onClick` and close through the dialog's `open` state later.
 - `AlertDialogContent` already wraps itself in a portal with an overlay. Do not add `AlertDialogPortal` around it.
-- `md` is wider than `sm` only at 660px and up. Below that both sizes have the same width.
+- `medium` is wider than `small` only at 660px and up. Below that both sizes have the same width.

@@ -82,7 +82,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     disabled: { control: 'boolean' },
     readOnly: { control: 'boolean' }
   },
-  args: { defaultValue: 'Slytherin', size: 'md', disabled: false, readOnly: false },
+  args: { defaultValue: 'Slytherin', size: 'medium', disabled: false, readOnly: false },
   render: ({ size, ...args }) => (
     <RadioGroup {...args}>
       {options.map((option) => (
@@ -206,7 +206,7 @@ export const OnValueChange: StoryObj<{ handleChange: ReturnType<typeof fn> }> = 
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
         <RadioGroup defaultValue='house' aria-label={`House ${size}`}>
           <label {...stylex.props(styles.label)}>
@@ -217,5 +217,9 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) =>
-    expectBoxSizes(canvasElement, '[role="radio"]', { sm: [12, 12], md: [16, 16], lg: [20, 20] })
+    expectBoxSizes(canvasElement, '[role="radio"]', {
+      small: [12, 12],
+      medium: [16, 16],
+      large: [20, 20]
+    })
 }

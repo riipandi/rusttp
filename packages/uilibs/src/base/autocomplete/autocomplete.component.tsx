@@ -59,13 +59,13 @@ export const AutocompleteValue = BaseAutocomplete.Value
 export const AutocompleteCollection = BaseAutocomplete.Collection
 
 export function AutocompleteInput({
-  size = 'md',
+  size = 'medium',
   variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style' | 'size'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; `medium` (36px) by default. */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant

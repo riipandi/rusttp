@@ -26,7 +26,7 @@ export type AvatarColor = ColorRole
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function Avatar({
-  size = 'md',
+  size = 'medium',
   variant = 'faded',
   color = 'neutral',
   squared = false,
@@ -104,7 +104,7 @@ export function AvatarGroup({ style, children, ...props }: DivProps) {
 
 /** Trailing "+N" indicator for an `AvatarGroup`, sized to match `Avatar`. */
 export function AvatarGroupCount({
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & { size?: AvatarSize }) {

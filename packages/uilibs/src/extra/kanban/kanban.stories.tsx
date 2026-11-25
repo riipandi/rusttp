@@ -945,7 +945,7 @@ export const StackedFrame: Story = {
                         <div {...stylex.props(styles.itemBody)}>
                           <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
                           <div {...stylex.props(styles.assigneeRow)}>
-                            <Avatar size='sm'>
+                            <Avatar size='small'>
                               <AvatarImage src={task.assigneeAvatar} alt={task.assignee} />
                               <AvatarFallback>{task.assignee?.charAt(0)}</AvatarFallback>
                             </Avatar>
@@ -1176,7 +1176,7 @@ export const PersistedToBackend: Story = {
           {isSaving && <span {...stylex.props(styles.toolbarStatus)}>Saving...</span>}
           <Button
             variant='outline'
-            size='sm'
+            size='small'
             style={styles.toolbarEnd}
             onClick={() => {
               toast.success('Changes synced')

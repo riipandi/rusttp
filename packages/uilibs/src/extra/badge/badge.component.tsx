@@ -61,7 +61,7 @@ const colorStyles = {
 export function Badge({
   variant = 'solid',
   color,
-  size = 'md',
+  size = 'medium',
   rounded = true,
   icon: Icon,
   endIcon: EndIcon,

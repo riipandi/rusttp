@@ -46,7 +46,7 @@ function NavEntry({ item }: { item: NavItem }) {
         render={<Link to={item.to} />}
         current={current}
         variant='ghost'
-        size='sm'
+        size='small'
         style={style}
       >
         {item.label}
@@ -55,7 +55,7 @@ function NavEntry({ item }: { item: NavItem }) {
   }
 
   return (
-    <Button variant='ghost' size='sm' style={style} onClick={notWired(item.label)}>
+    <Button variant='ghost' size='small' style={style} onClick={notWired(item.label)}>
       {item.label}
     </Button>
   )
@@ -90,7 +90,7 @@ export function DashboardHeader() {
         <div {...stylex.props(styles.headerEnd)}>
           <NotificationsPopover
             to='/notifications'
-            trigger={<Button variant='ghost' style={[buttonSquare.md, styles.notifyTrigger]} />}
+            trigger={<Button variant='ghost' style={[buttonSquare.medium, styles.notifyTrigger]} />}
           />
           <div {...stylex.props(styles.userMenuSlot)}>
             <UserMenu />

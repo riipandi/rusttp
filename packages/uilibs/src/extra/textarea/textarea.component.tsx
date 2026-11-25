@@ -10,7 +10,7 @@ export interface TextareaProps extends Omit<
   React.ComponentProps<'textarea'>,
   'className' | 'style'
 > {
-  /** Minimum height and type; `md` (64px) by default. */
+  /** Minimum height and type; `medium` (64px) by default. */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
@@ -21,7 +21,7 @@ export interface TextareaProps extends Omit<
 
 /** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */
 export function Textarea({
-  size = 'md',
+  size = 'medium',
   variant = 'outline',
   style,
   autoResize = false,

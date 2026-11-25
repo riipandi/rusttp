@@ -121,14 +121,14 @@ export function DropdownMenuItem({
         style
       )}
     >
-      {Icon ? <Icon size={glyphSize.md} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
+      {Icon ? <Icon size={glyphSize.medium} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
       {children}
     </BaseMenu.Item>
   )
 }
 
 function IndicatorCheck() {
-  return <Check size={glyphSize.md} strokeWidth={1.5} aria-hidden />
+  return <Check size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
 }
 
 export function DropdownMenuCheckboxItem({
@@ -185,7 +185,7 @@ export function DropdownMenuSubTrigger({
     >
       {children}
       <ChevronRight
-        size={glyphSize.md}
+        size={glyphSize.medium}
         strokeWidth={1.5}
         aria-hidden
         {...stylex.props(s.subTriggerChevron)}

@@ -334,7 +334,7 @@ export const WithPresets: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'
@@ -357,7 +357,7 @@ export const WithPresets: Story = {
               <Button
                 key={preset.value}
                 variant='outline'
-                size='sm'
+                size='small'
                 style={storyStyles.buttonGroupButton}
                 onClick={() => {
                   const newDate = addDays(new Date(), preset.value)
@@ -382,7 +382,7 @@ export const DateAndTime: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar mode='single' selected={date} onSelect={setDate} />
         </CardContent>
@@ -430,7 +430,7 @@ export const BookedDates: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'
@@ -456,7 +456,7 @@ export const CustomDays: Story = {
     })
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='range'
@@ -579,7 +579,7 @@ export const WeekNumbers: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'

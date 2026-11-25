@@ -74,7 +74,7 @@ function SheetEntry({
         render={<Link to={item.to} />}
         current={current}
         variant='ghost'
-        size='lg'
+        size='large'
         style={style}
         onClick={onNavigate}
       >
@@ -84,7 +84,7 @@ function SheetEntry({
   }
 
   return (
-    <Button variant='ghost' size='lg' style={style} onClick={notWired(item.label)}>
+    <Button variant='ghost' size='large' style={style} onClick={notWired(item.label)}>
       {content}
     </Button>
   )
@@ -177,7 +177,7 @@ export function NavSheet({
           <Button
             variant='ghost'
             aria-label={m.nav_sheet_open()}
-            style={[buttonSquare.md, styles.trigger, triggerStyle]}
+            style={[buttonSquare.medium, styles.trigger, triggerStyle]}
           />
         }
       >
@@ -193,7 +193,7 @@ export function NavSheet({
           {profile ? (
             <>
               <div {...stylex.props(styles.sheetProfileTop)}>
-                <Avatar size='md'>
+                <Avatar size='medium'>
                   <AvatarFallback>{profile.initials}</AvatarFallback>
                 </Avatar>
                 <SheetClose

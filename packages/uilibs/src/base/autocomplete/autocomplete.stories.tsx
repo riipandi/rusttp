@@ -66,7 +66,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     disabled: { control: 'boolean' },
     autoHighlight: { control: 'boolean' }
   },
-  args: { items: tags, size: 'md', variant: 'outline', disabled: false, autoHighlight: false },
+  args: { items: tags, size: 'medium', variant: 'outline', disabled: false, autoHighlight: false },
   render: ({ size, variant, ...args }) => (
     <Autocomplete {...args}>
       <AutocompleteInput size={size} variant={variant} placeholder='Search spells…' />

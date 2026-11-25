@@ -231,7 +231,7 @@ function DataGridSelectionBar<TData extends object>({
               {children}
               <Button
                 variant='ghost'
-                size='sm'
+                size='small'
                 onClick={() => {
                   tableRef.current.resetRowSelection()
                   onClear?.()

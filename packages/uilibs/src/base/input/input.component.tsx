@@ -24,7 +24,7 @@ export interface InputProps extends Omit<
   React.ComponentProps<typeof BaseInput>,
   'className' | 'style' | 'size'
 > {
-  /** Control height and type; the `ButtonGroup`'s size, else `md` (36px). */
+  /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
@@ -38,7 +38,7 @@ export function Input({ size, variant = 'outline', style, ...props }: InputProps
       {...props}
       {...stylex.props(
         controlBase.root,
-        controlSizes[size ?? group?.size ?? 'md'],
+        controlSizes[size ?? group?.size ?? 'medium'],
         controlVariants[variant],
         s.root,
         buttonGroupMember(group, false),

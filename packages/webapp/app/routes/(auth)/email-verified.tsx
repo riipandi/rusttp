@@ -22,7 +22,7 @@ function RouteComponent() {
         <p {...stylex.props(styles.subtitle)}>{m.auth_verified_subtitle()}</p>
       </div>
 
-      <LinkButton render={<Link to='/login' />} size='lg'>
+      <LinkButton render={<Link to='/login' />} size='large'>
         {m.auth_verified_action()}
       </LinkButton>
     </>

@@ -29,7 +29,7 @@ interface ToggleGroupContextValue {
 const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
   variant: 'ghost',
   selectedColor: 'neutral',
-  size: 'md',
+  size: 'medium',
   joined: false,
   orientation: 'horizontal'
 })
@@ -54,7 +54,7 @@ export function ToggleGroup({
   variant = 'ghost',
   selectedVariant,
   selectedColor = 'neutral',
-  size = 'md',
+  size = 'medium',
   spacing = 'gap',
   orientation = 'horizontal',
   style,

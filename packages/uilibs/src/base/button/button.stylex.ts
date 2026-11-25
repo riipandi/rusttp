@@ -337,18 +337,18 @@ export const buttonModifiers = stylex.create({
 })
 
 export const buttonSizes = stylex.create({
-  xs: { fontSize: fontSize.caption1, gap: unit.x1, height: unit.x7, paddingInline: unit.x2 },
-  // sm, md, and lg take height and type from `controlSizes`; only the padding is a button's own.
-  sm: { paddingInline: unit.x3 },
-  md: { paddingInline: unit.x4 },
-  lg: { paddingInline: unit.x6 }
+  xsmall: { fontSize: fontSize.caption1, gap: unit.x1, height: unit.x7, paddingInline: unit.x2 },
+  // small, medium, and large take height and type from `controlSizes`; only the padding is a button's own.
+  small: { paddingInline: unit.x3 },
+  medium: { paddingInline: unit.x4 },
+  large: { paddingInline: unit.x6 }
 })
 
-// The square of an icon-only button: as wide as its size is tall (`xs` 28, `sm` 32, `md` 36, `lg` 40).
+// The square of an icon-only button: as wide as its size is tall (`xsmall` 28, `small` 32, `medium` 36, `large` 40).
 // Composed after `buttonSizes`, which has the height.
 export const buttonSquare = stylex.create({
-  xs: { paddingInline: 0, width: unit.x7 },
-  sm: { paddingInline: 0, width: unit.x8 },
-  md: { paddingInline: 0, width: unit.x9 },
-  lg: { paddingInline: 0, width: unit.x10 }
+  xsmall: { paddingInline: 0, width: unit.x7 },
+  small: { paddingInline: 0, width: unit.x8 },
+  medium: { paddingInline: 0, width: unit.x9 },
+  large: { paddingInline: 0, width: unit.x10 }
 })

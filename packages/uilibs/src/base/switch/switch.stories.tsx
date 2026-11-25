@@ -42,7 +42,7 @@ export const Playground: Story = {
     disabled: { control: 'boolean' },
     readOnly: { control: 'boolean' }
   },
-  args: { size: 'md', defaultChecked: true, disabled: false, readOnly: false },
+  args: { size: 'medium', defaultChecked: true, disabled: false, readOnly: false },
   render: (args) => (
     <label {...stylex.props(styles.label)}>
       <Switch key={String(args.defaultChecked)} {...args} aria-label='Invisibility Cloak' />{' '}
@@ -65,7 +65,7 @@ export const Playground: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
         <Label>
           <Switch size={size} defaultChecked />
@@ -75,7 +75,11 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) =>
-    expectBoxSizes(canvasElement, '[role="switch"]', { sm: [28, 16], md: [36, 20], lg: [48, 24] })
+    expectBoxSizes(canvasElement, '[role="switch"]', {
+      small: [28, 16],
+      medium: [36, 20],
+      large: [48, 24]
+    })
 }
 
 export const Description: Story = {

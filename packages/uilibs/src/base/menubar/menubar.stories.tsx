@@ -42,7 +42,7 @@ export const Playground: Story = {
     disabled: { control: 'boolean' },
     loopFocus: { control: 'boolean' }
   },
-  args: { size: 'md', disabled: false, loopFocus: true },
+  args: { size: 'medium', disabled: false, loopFocus: true },
   render: (args) => (
     <Menubar {...args}>
       <MenubarMenu>

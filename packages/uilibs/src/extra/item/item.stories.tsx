@@ -50,7 +50,7 @@ export const Playground: Story = {
     variant: { control: 'radio', options: Object.keys(itemVariants) },
     size: { control: 'radio', options: Object.keys(itemSizes) }
   },
-  args: { variant: 'outline', size: 'md' },
+  args: { variant: 'outline', size: 'medium' },
   render: (args) => (
     <ItemGroup style={styles.group}>
       <Item {...args}>
@@ -71,7 +71,7 @@ export const Playground: Story = {
           <ItemDescription>Nimbus 2.4 is ready to order.</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Button variant='outline' size='sm'>
+          <Button variant='outline' size='small'>
             Order
           </Button>
         </ItemActions>
@@ -117,7 +117,7 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['xs', 'sm', 'md'] as const}>
+    <Axis axis='size' rows={['xsmall', 'small', 'medium'] as const}>
       {(size) => (
         <Item variant='outline' size={size} style={styles.group}>
           <ItemContent>
@@ -133,8 +133,8 @@ export const Sizes: Story = {
       (
         cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
       ).getBoundingClientRect().height
-    await expect(height('xs')).toBeLessThan(height('sm'))
-    await expect(height('sm')).toBeLessThan(height('md'))
+    await expect(height('xsmall')).toBeLessThan(height('small'))
+    await expect(height('small')).toBeLessThan(height('medium'))
   }
 }
 

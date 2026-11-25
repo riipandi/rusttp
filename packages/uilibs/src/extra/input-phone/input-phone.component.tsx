@@ -46,7 +46,7 @@ export interface InputPhoneProps extends Omit<
   /** Render the country selector. Set `false` for a digits-only field.
    * Defaults to `true`. */
   withCountrySelect?: boolean
-  /** Control height and type; `md` (36px) by default. */
+  /** Control height and type; `medium` (36px) by default. */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
@@ -215,7 +215,7 @@ function PhoneInputContainer({
         controlBase.root,
         controlBase.within,
         controlVariantsWithin[phone?.variant ?? 'outline'],
-        controlSizes[phone?.size ?? 'md'],
+        controlSizes[phone?.size ?? 'medium'],
         s.root,
         style
       )}
@@ -231,7 +231,10 @@ function PhoneInput({
 }) {
   const phone = React.useContext(PhoneContext)
   return (
-    <BaseInput {...props} {...stylex.props(controlSizes[phone?.size ?? 'md'], s.control, style)} />
+    <BaseInput
+      {...props}
+      {...stylex.props(controlSizes[phone?.size ?? 'medium'], s.control, style)}
+    />
   )
 }
 
@@ -242,7 +245,7 @@ export function InputPhone({
   onCountryChange,
   addInternationalOption = true,
   withCountrySelect = true,
-  size = 'md',
+  size = 'medium',
   variant = 'outline',
   labels,
   invalid = false,

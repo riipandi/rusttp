@@ -22,7 +22,7 @@ import { inputGroupButtonSquare as buttonSquare } from './input-group.stylex'
 import { inputGroupControlHeights as controlHeights } from './input-group.stylex'
 
 /** The group's `size`, read by its input and textarea. */
-const InputGroupSizeContext = React.createContext<ControlSize>('md')
+const InputGroupSizeContext = React.createContext<ControlSize>('medium')
 
 export function InputGroup({
   size: sizeProp,
@@ -31,13 +31,13 @@ export function InputGroup({
   ...props
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
   StyleProp & {
-    /** Height and type of the input; the `ButtonGroup`'s size, else `md` (36px). */
+    /** Height and type of the input; the `ButtonGroup`'s size, else `medium` (36px). */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
   }) {
   const group = useButtonGroup()
-  const size = sizeProp ?? group?.size ?? 'md'
+  const size = sizeProp ?? group?.size ?? 'medium'
   return (
     // The group is one member of a ButtonGroup; the Input and Buttons inside it are not.
     <ButtonGroupContext.Provider value={null}>
@@ -82,15 +82,15 @@ export function InputGroupAddon({
   )
 }
 
-export type InputGroupButtonSize = 'xs' | 'sm'
+export type InputGroupButtonSize = 'xsmall' | 'small'
 
 export function InputGroupButton({
   variant = 'ghost',
-  size = 'xs',
+  size = 'xsmall',
   style,
   ...props
 }: Omit<ButtonProps, 'size'> & {
-  /** A box smaller than a Button of the same name: `xs` 24px, `sm` 32px. No children make it a square. */
+  /** A box smaller than a Button of the same name: `xsmall` 24px, `small` 32px. No children make it a square. */
   size?: InputGroupButtonSize
 }) {
   const square = React.Children.toArray(props.children).length === 0

@@ -100,7 +100,7 @@ export const Colors: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => <Badge size={size}>{size}</Badge>}
     </Axis>
   ),
@@ -109,8 +109,8 @@ export const Sizes: Story = {
       canvasElement
         .querySelector(`[data-size="${size}"]`)
         ?.firstElementChild?.getBoundingClientRect().height ?? 0
-    await expect(height('sm')).toBeLessThan(height('md'))
-    await expect(height('md')).toBeLessThan(height('lg'))
+    await expect(height('small')).toBeLessThan(height('medium'))
+    await expect(height('medium')).toBeLessThan(height('large'))
   }
 }
 
@@ -168,7 +168,7 @@ export const Link: Story = {
 export const DismissTarget: Story = {
   args: { onDismiss: fn() },
   render: (args) => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
         <Badge variant='faded' size={size} onDismiss={args.onDismiss}>
           {size}

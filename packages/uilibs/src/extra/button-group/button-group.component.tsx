@@ -15,7 +15,7 @@ import { buttonGroupOrientations as orientations } from './button-group.stylex'
 export interface ButtonGroupProps
   extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
   orientation?: 'horizontal' | 'vertical'
-  /** The size every member takes unless it sets its own; `md` when neither is set. */
+  /** The size every member takes unless it sets its own; `medium` when neither is set. */
   size?: ControlSize
   /** The variant every Button takes unless it sets its own. */
   variant?: ButtonVariant

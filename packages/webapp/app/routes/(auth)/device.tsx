@@ -59,7 +59,7 @@ function RouteComponent() {
             />
           )}
         </Field>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_device_submit()}
         </Button>
         <p {...stylex.props(styles.fine)}>{m.auth_device_warning()}</p>

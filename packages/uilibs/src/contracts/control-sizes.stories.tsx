@@ -23,7 +23,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Every form control shares one height per size (`sm` 32, `md` 36, `lg` 40).'
+        component:
+          'Every form control shares one height per size (`small` 32, `medium` 36, `large` 40).'
       }
     }
   }

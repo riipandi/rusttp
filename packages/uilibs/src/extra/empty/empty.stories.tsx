@@ -57,7 +57,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button size='sm'>Brew a potion</Button>
+        <Button size='small'>Brew a potion</Button>
       </EmptyContent>
     </Empty>
   )
@@ -98,7 +98,7 @@ export const Outline: Story = {
         <EmptyDescription>No letters from Hogwarts. New post will show up here.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button variant='outline' size='sm'>
+        <Button variant='outline' size='small'>
           Check the owlery
         </Button>
       </EmptyContent>
@@ -112,7 +112,7 @@ export const WithAvatar: Story = {
     <Empty>
       <EmptyHeader>
         <EmptyMedia>
-          <Avatar size='lg'>
+          <Avatar size='large'>
             <AvatarImage src='https://github.com/madeui.png' alt='Luna Lovegood' />
             <AvatarFallback>LL</AvatarFallback>
           </Avatar>
@@ -121,7 +121,7 @@ export const WithAvatar: Story = {
         <EmptyDescription>Recruit members for the Order of the Phoenix.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button size='sm'>Send an owl</Button>
+        <Button size='small'>Send an owl</Button>
       </EmptyContent>
     </Empty>
   )

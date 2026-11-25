@@ -49,7 +49,7 @@ export const Playground: Story = {
   },
   args: {
     placeholder: 'Enter the password...',
-    size: 'md',
+    size: 'medium',
     disabled: false,
     defaultVisible: false
   },

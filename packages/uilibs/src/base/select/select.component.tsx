@@ -68,7 +68,7 @@ export function SelectTrigger({
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
   StyleProp & {
-    /** Control height and type; the `ButtonGroup`'s size, else `md` (36px). */
+    /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
@@ -76,7 +76,7 @@ export function SelectTrigger({
     icon?: Glyph
   }) {
   const group = useButtonGroup()
-  const size = sizeProp ?? group?.size ?? 'md'
+  const size = sizeProp ?? group?.size ?? 'medium'
   return (
     <BaseSelect.Trigger
       {...props}
@@ -111,9 +111,9 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
       {...stylex.props(s.scrollArrow, direction === 'up' ? s.scrollArrowUp : s.scrollArrowDown)}
     >
       {direction === 'up' ? (
-        <ChevronUp size={markSize.md} strokeWidth={2} aria-hidden />
+        <ChevronUp size={markSize.medium} strokeWidth={2} aria-hidden />
       ) : (
-        <ChevronDown size={markSize.md} strokeWidth={2} aria-hidden />
+        <ChevronDown size={markSize.medium} strokeWidth={2} aria-hidden />
       )}
     </Arrow>
   )
@@ -183,7 +183,7 @@ export function SelectItem({
     <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
       <BaseSelect.ItemIndicator {...stylex.props(s.itemIndicator)}>
-        <Check size={markSize.md} strokeWidth={2} aria-hidden />
+        <Check size={markSize.medium} strokeWidth={2} aria-hidden />
       </BaseSelect.ItemIndicator>
     </BaseSelect.Item>
   )

@@ -36,7 +36,7 @@ export function AnnouncementBar({
     >
       <p {...stylex.props(styles.message)}>{children}</p>
       {action && (
-        <LinkButton render={action.render} variant='ghost' size='xs' style={styles.action}>
+        <LinkButton render={action.render} variant='ghost' size='xsmall' style={styles.action}>
           {action.label}
         </LinkButton>
       )}

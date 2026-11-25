@@ -29,10 +29,10 @@ export const Playground: Story = {
   parameters: { controls: { disable: false, include: ['orientation', 'size', 'variant'] } },
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
+    size: { control: 'radio', options: ['small', 'medium', 'large'] },
     variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] }
   },
-  args: { orientation: 'horizontal', size: 'md', variant: 'outline' },
+  args: { orientation: 'horizontal', size: 'medium', variant: 'outline' },
   render: (args) => (
     <ButtonGroup {...args}>
       <Button>Expelliarmus</Button>
@@ -182,9 +182,9 @@ const height = (el: HTMLElement) => el.getBoundingClientRect().height
 export const Defaults: Story = {
   name: 'Group sets size and variant',
   render: () => (
-    <ButtonGroup aria-label='Defaults' size='sm' variant='outline'>
+    <ButtonGroup aria-label='Defaults' size='small' variant='outline'>
       <Button>Reparo</Button>
-      <Button size='lg'>Reducto</Button>
+      <Button size='large'>Reducto</Button>
       <Button variant='ghost'>Riddikulus</Button>
       <Input aria-label='Counter-curse' placeholder='Counter-curse' />
       <Select defaultValue='Nox'>

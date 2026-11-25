@@ -51,7 +51,7 @@ export const dialogStyles = stylex.create({
     width: container.xxlarge,
     zIndex: zIndex.modal
   },
-  // `size='sm'`: a narrower dialog; `md` is the base width.
+  // `size='small'`: a narrower dialog; `medium` is the base width.
   contentSmall: { width: container.large },
   // Position only: the look is `CloseButton`.
   close: {

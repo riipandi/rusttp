@@ -41,7 +41,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     size: { control: 'select', options: Object.keys(buttonSizes) },
     page: { control: 'radio', options: [1, 2, 3] }
   },
-  args: { size: 'md', page: 2 },
+  args: { size: 'medium', page: 2 },
   render: ({ size, page }) => (
     <Pagination>
       <PaginationContent>
@@ -103,10 +103,10 @@ export const Sizes: Story = {
   // The page links are squares as tall as a dense control of their size.
   play: async ({ canvasElement }) =>
     expectBoxSizes(canvasElement, 'a', {
-      xs: [28, 28],
-      sm: [32, 32],
-      md: [36, 36],
-      lg: [40, 40]
+      xsmall: [28, 28],
+      small: [32, 32],
+      medium: [36, 36],
+      large: [40, 40]
     })
 }
 

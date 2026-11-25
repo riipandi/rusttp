@@ -49,7 +49,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     variant: { control: 'radio', options: ['pills', 'pills-raised', 'bordered', 'borderless'] },
     size: { control: 'radio', options: Object.keys(tabsSizes) }
   },
-  args: { defaultValue: 'account', orientation: 'horizontal', variant: 'pills', size: 'md' },
+  args: { defaultValue: 'account', orientation: 'horizontal', variant: 'pills', size: 'medium' },
   render: ({ variant, size, ...args }) => (
     <Tabs {...args} style={styles.tabs}>
       <TabsList variant={variant} size={size}>
@@ -128,7 +128,7 @@ export const Sizes: Story = {
     for (const variant of variantNames) {
       await expectControlHeights(canvasElement, denseControlHeights, `[data-variant="${variant}"]`)
     }
-    // The `xs` pill is 20px tall; a hit area brings every tab to 24px (WCAG 2.5.8).
+    // The `xsmall` pill is 20px tall; a hit area brings every tab to 24px (WCAG 2.5.8).
     for (const tab of canvasElement.querySelectorAll('[role="tab"]')) {
       await expectHitArea(tab)
     }

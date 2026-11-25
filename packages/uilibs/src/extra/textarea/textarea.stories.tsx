@@ -73,7 +73,7 @@ export const Playground: Story = {
   },
   args: {
     placeholder: 'Draft your letter to the Daily Prophet…',
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     disabled: false,
     autoResize: false
@@ -107,7 +107,8 @@ export const Sizes: Story = {
     </Axis>
   ),
   // A textarea is not one line: its sizes are minimum heights.
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement, { sm: 56, md: 64, lg: 72 })
+  play: async ({ canvasElement }) =>
+    expectControlHeights(canvasElement, { small: 56, medium: 64, large: 72 })
 }
 
 export const States: Story = {

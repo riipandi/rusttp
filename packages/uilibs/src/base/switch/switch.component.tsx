@@ -28,7 +28,7 @@ export interface SwitchProps extends Omit<
   style?: stylex.StyleXStyles
 }
 
-export function Switch({ size = 'md', style, ...props }: SwitchProps) {
+export function Switch({ size = 'medium', style, ...props }: SwitchProps) {
   return (
     <BaseSwitch.Root
       {...props}

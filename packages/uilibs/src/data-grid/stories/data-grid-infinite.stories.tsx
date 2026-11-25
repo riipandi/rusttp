@@ -311,7 +311,7 @@ export const RemoteInfiniteScroll: Story = {
             </span>
             <Button
               variant='ghost'
-              size='sm'
+              size='small'
               icon={RefreshCw}
               aria-label='Reset'
               onClick={() => {
@@ -436,14 +436,14 @@ export const ColumnVirtualization: Story = {
             <div {...stylex.props(s.cellFlex)}>
               <Button
                 variant='outline'
-                size='sm'
+                size='small'
                 onClick={() => setTargetColumnIndex((old) => Math.max(0, old - COLUMN_JUMP_SIZE))}
               >
                 Prev
               </Button>
               <Button
                 variant='outline'
-                size='sm'
+                size='small'
                 onClick={() =>
                   setTargetColumnIndex((old) =>
                     Math.min(METRIC_COLUMN_COUNT - 1, old + COLUMN_JUMP_SIZE)

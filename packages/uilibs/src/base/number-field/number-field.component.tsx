@@ -43,17 +43,17 @@ export const NumberFieldScrubArea = BaseNumberField.ScrubArea
 export const NumberFieldScrubAreaCursor = BaseNumberField.ScrubAreaCursor
 
 /** The root's `size`, read by the group and its steppers. */
-const NumberFieldSizeContext = React.createContext<ControlSize>('md')
+const NumberFieldSizeContext = React.createContext<ControlSize>('medium')
 const NumberFieldVariantContext = React.createContext<ControlVariant>('outline')
 
 export function NumberField({
-  size = 'md',
+  size = 'medium',
   variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseNumberField.Root>, 'className' | 'style' | 'size'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; `medium` (36px) by default. */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
@@ -159,7 +159,7 @@ export function NumberFieldDecrement({
         style
       )}
     >
-      {children ?? <Icon size={glyphSize.md} strokeWidth={2} aria-hidden />}
+      {children ?? <Icon size={glyphSize.medium} strokeWidth={2} aria-hidden />}
     </BaseNumberField.Decrement>
   )
 }
@@ -190,7 +190,7 @@ export function NumberFieldIncrement({
         style
       )}
     >
-      {children ?? <Icon size={glyphSize.md} strokeWidth={2} aria-hidden />}
+      {children ?? <Icon size={glyphSize.medium} strokeWidth={2} aria-hidden />}
     </BaseNumberField.Increment>
   )
 }

@@ -53,7 +53,7 @@ export function DialogOverlay({
 }
 
 export function DialogContent({
-  size = 'md',
+  size = 'medium',
   blurredOverlay = false,
   style,
   children,
@@ -62,8 +62,8 @@ export function DialogContent({
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
   StyleProp & {
-    /** Width: `md` (default, 32rem) or the narrower `sm` (24rem). */
-    size?: 'sm' | 'md'
+    /** Width: `medium` (default, 32rem) or the narrower `small` (24rem). */
+    size?: 'small' | 'medium'
     /** Blurs the page behind the backdrop. */
     blurredOverlay?: boolean
     showCloseButton?: boolean
@@ -78,7 +78,7 @@ export function DialogContent({
         {...stylex.props(
           stylex.defaultMarker(),
           s.content,
-          size === 'sm' && s.contentSmall,
+          size === 'small' && s.contentSmall,
           ring({ shadow: shadow.overlay }),
           style
         )}

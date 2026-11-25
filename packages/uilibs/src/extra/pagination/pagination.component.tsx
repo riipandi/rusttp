@@ -67,14 +67,14 @@ export function PaginationItem({
 export interface PaginationLinkProps
   extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleProp {
   isActive?: boolean
-  /** The `Button` size; a page link is a square of it. Default `md`. */
+  /** The `Button` size; a page link is a square of it. Default `medium`. */
   size?: DenseControlSize
 }
 
 /** A link of a given shape: `square` for a page number, rectangular for the text of previous and next. */
 function PageLink({
   isActive,
-  size = 'md',
+  size = 'medium',
   square,
   style,
   children,
@@ -107,7 +107,7 @@ export function PaginationPrevious({
   return (
     <PageLink
       aria-label={names.previousPage}
-      size='md'
+      size='medium'
       {...props}
       square={false}
       style={[s.previous, style]}
@@ -127,7 +127,7 @@ export function PaginationNext({
   return (
     <PageLink
       aria-label={names.nextPage}
-      size='md'
+      size='medium'
       {...props}
       square={false}
       style={[s.next, style]}
@@ -145,7 +145,7 @@ export function PaginationEllipsis({
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <MoreHorizontal size={glyphSize.md} strokeWidth={2} aria-hidden />
+      <MoreHorizontal size={glyphSize.medium} strokeWidth={2} aria-hidden />
       <span {...stylex.props(visuallyHidden.root)}>
         {{ ...defaultLabels, ...labels }.morePages}
       </span>
@@ -155,8 +155,8 @@ export function PaginationEllipsis({
 
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
   return direction === 'left' ? (
-    <ChevronLeft size={glyphSize.md} strokeWidth={1.5} aria-hidden />
+    <ChevronLeft size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
   ) : (
-    <ChevronRight size={glyphSize.md} strokeWidth={1.5} aria-hidden />
+    <ChevronRight size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
   )
 }

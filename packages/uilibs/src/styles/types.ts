@@ -11,10 +11,10 @@ import type * as React from 'react'
 export type ColorRole = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
 
 /** The shared control size scale: a Button and a text control of one size are one height. */
-export type ControlSize = 'sm' | 'md' | 'lg'
+export type ControlSize = 'small' | 'medium' | 'large'
 
-/** The scale plus `xs` (28px), which only dense press targets have: Button, Toggle, and Tabs. */
-export type DenseControlSize = 'xs' | ControlSize
+/** The scale plus `xsmall` (28px), which only dense press targets have: Button, Toggle, and Tabs. */
+export type DenseControlSize = 'xsmall' | ControlSize
 
 /** The `style` prop every part takes: StyleX styles that replace `className` and `style`. */
 export interface StyleProp {

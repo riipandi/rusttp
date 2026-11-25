@@ -212,16 +212,16 @@ export const toggleVariants = stylex.create({
   }
 })
 
-// sm, md, and lg take height and type from `controlSizes`; the toggle keeps its own padding and
+// small, medium, and large take height and type from `controlSizes`; the toggle keeps its own padding and
 // is at least as wide as it is tall.
 export const toggleSizes = stylex.create({
-  xs: {
+  xsmall: {
     fontSize: fontSize.caption1,
     height: unit.x7,
     minWidth: unit.x7,
     paddingInline: unit.x2
   },
-  sm: { minWidth: unit.x8, paddingInline: unit.x2 },
-  md: { minWidth: unit.x9, paddingInline: unit.x2 },
-  lg: { minWidth: unit.x10, paddingInline: unit.x2 }
+  small: { minWidth: unit.x8, paddingInline: unit.x2 },
+  medium: { minWidth: unit.x9, paddingInline: unit.x2 },
+  large: { minWidth: unit.x10, paddingInline: unit.x2 }
 })

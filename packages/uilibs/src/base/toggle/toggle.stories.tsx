@@ -44,7 +44,7 @@ export const Playground: Story = {
     size: { control: 'radio', options: Object.keys(toggleSizes) },
     disabled: { control: 'boolean' }
   },
-  args: { variant: 'ghost', selectedColor: 'neutral', size: 'md', disabled: false },
+  args: { variant: 'ghost', selectedColor: 'neutral', size: 'medium', disabled: false },
   render: (args) => (
     <Toggle {...args} aria-label='Toggle charm'>
       <Bold {...stylex.props(styles.icon)} />

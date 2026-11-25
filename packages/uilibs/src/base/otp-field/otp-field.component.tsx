@@ -45,7 +45,7 @@ interface OTPFieldContextValue {
 
 /** What the root shares with its slots. */
 const OTPFieldContext = React.createContext<OTPFieldContextValue>({
-  size: 'md',
+  size: 'medium',
   variant: 'outline',
   length: 0,
   labelId: undefined,
@@ -58,7 +58,7 @@ const OTPFieldContext = React.createContext<OTPFieldContextValue>({
  * hidden element the first slot can point at. The other slots are named `Character n of N`.
  */
 export function OTPField({
-  size = 'md',
+  size = 'medium',
   variant = 'outline',
   style,
   labels,
@@ -69,7 +69,7 @@ export function OTPField({
   ...props
 }: Omit<React.ComponentProps<typeof BaseOTPField.Root>, 'className' | 'style' | 'size'> &
   StyleProp & {
-    /** Slot height and type; `md` (36px) by default. */
+    /** Slot height and type; `medium` (36px) by default. */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
@@ -166,7 +166,7 @@ export function OTPFieldSeparator({
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
-      <Minus size={glyphSize.md} strokeWidth={1.5} aria-hidden />
+      <Minus size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
     </div>
   )
 }

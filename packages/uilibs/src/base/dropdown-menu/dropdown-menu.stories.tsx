@@ -235,12 +235,12 @@ export const RadioGroup: Story = {
       <DropdownMenuContent>
         {/* Menu labels are Base UI GroupLabels — they must live inside a
             Group or RadioGroup. */}
-        <DropdownMenuRadioGroup defaultValue='md'>
+        <DropdownMenuRadioGroup defaultValue='medium'>
           <DropdownMenuLabel>Scroll size</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioItem value='sm'>Imp</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value='md'>Wizard</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value='lg'>Giant</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value='small'>Imp</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value='medium'>Wizard</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value='large'>Giant</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

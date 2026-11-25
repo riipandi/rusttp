@@ -255,7 +255,7 @@ export const CardContainer: Story = {
         <Card style={statesStyles.card}>
           <CardHeader style={statesStyles.header}>
             <CardTitle>Books</CardTitle>
-            <Button size='sm' variant='outline'>
+            <Button size='small' variant='outline'>
               <Plus style={{ height: 16, width: 16 }} />
               Add book
             </Button>
@@ -327,7 +327,7 @@ export const LoadingSkeleton: Story = {
     return (
       <DataGrid table={table} recordCount={demoData.length} isLoading={isLoading}>
         <div {...stylex.props(s.stack)}>
-          <Button size='sm' variant='outline' onClick={() => setIsLoading((old) => !old)}>
+          <Button size='small' variant='outline' onClick={() => setIsLoading((old) => !old)}>
             {isLoading ? 'Disable loading' : 'Enable loading'}
           </Button>
           <DataGridContainer>
@@ -516,7 +516,7 @@ export const LocalizedLabels: Story = {
             {(['en', 'de', 'id'] as const).map((key) => (
               <Button
                 key={key}
-                size='sm'
+                size='small'
                 variant={locale === key ? 'solid' : 'outline'}
                 onClick={() => setLocale(key)}
               >
@@ -724,7 +724,7 @@ export const ServerSidePagination: Story = {
                 {STATUS_FILTERS.map(({ label, value }) => (
                   <Button
                     key={value}
-                    size='sm'
+                    size='small'
                     variant={status === value ? 'solid' : 'outline'}
                     onClick={() => {
                       setPagination((old) => ({ ...old, pageIndex: 0 }))

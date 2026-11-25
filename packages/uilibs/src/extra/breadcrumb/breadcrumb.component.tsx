@@ -83,7 +83,7 @@ export function BreadcrumbSeparator({
 }: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
-      {children ?? <ChevronRight size={glyphSize.xs} strokeWidth={1.5} aria-hidden />}
+      {children ?? <ChevronRight size={glyphSize.xsmall} strokeWidth={1.5} aria-hidden />}
     </li>
   )
 }
@@ -95,7 +95,7 @@ export function BreadcrumbEllipsis({
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <MoreHorizontal size={glyphSize.md} strokeWidth={2} aria-hidden />
+      <MoreHorizontal size={glyphSize.medium} strokeWidth={2} aria-hidden />
       <span {...stylex.props(visuallyHidden.root)}>{{ ...defaultLabels, ...labels }.more}</span>
     </span>
   )

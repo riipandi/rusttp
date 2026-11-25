@@ -42,11 +42,11 @@ export function UserMenu() {
           <Button
             variant='ghost'
             aria-label={m.user_menu_trigger_initials({ initials: profile.initials })}
-            style={[buttonSquare.md, styles.trigger]}
+            style={[buttonSquare.medium, styles.trigger]}
           />
         }
       >
-        <Avatar size='sm'>
+        <Avatar size='small'>
           <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

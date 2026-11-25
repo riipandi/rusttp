@@ -7,9 +7,9 @@ import { duration } from '../../styles/tokens.stylex'
 
 /** Width of a side stepper: a square the height of the control, as in `controlSizes`. */
 export const numberFieldButtonSizes = stylex.create({
-  sm: { width: unit.x8 },
-  md: { width: unit.x9 },
-  lg: { width: unit.x10 }
+  small: { width: unit.x8 },
+  medium: { width: unit.x9 },
+  large: { width: unit.x10 }
 })
 
 export const numberFieldStyles = stylex.create({

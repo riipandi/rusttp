@@ -37,12 +37,12 @@ export interface MenubarProps extends Omit<
   React.ComponentProps<typeof BaseMenubar>,
   'className' | 'style'
 > {
-  /** Bar height and type, as the control scale; `md` is 36px. */
+  /** Bar height and type, as the control scale; `medium` is 36px. */
   size?: ControlSize
   style?: stylex.StyleXStyles
 }
 
-export function Menubar({ size = 'md', style, ...props }: MenubarProps) {
+export function Menubar({ size = 'medium', style, ...props }: MenubarProps) {
   return <BaseMenubar {...props} {...stylex.props(controlSizes[size], s.root, style)} />
 }
 

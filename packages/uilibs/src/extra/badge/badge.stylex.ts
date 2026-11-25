@@ -40,21 +40,21 @@ export const badgeStyles = stylex.create({
   }
 })
 
-// `md` is the badge as it was before sizes existed.
+// `medium` is the badge as it was before sizes existed.
 export const badgeSizes = stylex.create({
-  sm: {
+  small: {
     fontSize: fontSize.caption2,
     lineHeight: fontLineHeight.caption2,
     paddingBlock: unit.x0_5,
     paddingInline: unit.x2
   },
-  md: {
+  medium: {
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.caption1,
     paddingBlock: unit.x1,
     paddingInline: unit.x3
   },
-  lg: {
+  large: {
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     paddingBlock: unit.x1_5,

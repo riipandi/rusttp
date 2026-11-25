@@ -43,10 +43,10 @@ export default meta
 export const Playground: Story = {
   parameters: { controls: { disable: false, include: ['size', 'color'] } },
   argTypes: {
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
+    size: { control: 'radio', options: ['small', 'medium', 'large'] },
     color: { control: 'radio', options: ['inherit', ...Object.keys(spinnerColors)] }
   },
-  args: { size: 'md', color: 'inherit' },
+  args: { size: 'medium', color: 'inherit' },
   render: (args) => (
     <Button disabled>
       <Spinner {...args} /> Divining…
@@ -74,7 +74,7 @@ export const Alone: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => <Spinner size={size} labels={{ loading: `Loading ${size}` }} />}
     </Axis>
   ),
@@ -85,7 +85,7 @@ export const Sizes: Story = {
       Number.parseFloat(
         getComputedStyle(canvas.getByRole('status', { name: `Loading ${size}` })).width
       )
-    await expect([side('sm'), side('md'), side('lg')]).toEqual([12, 16, 20])
+    await expect([side('small'), side('medium'), side('large')]).toEqual([12, 16, 20])
   }
 }
 

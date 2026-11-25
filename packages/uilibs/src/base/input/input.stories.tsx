@@ -61,7 +61,7 @@ export const Playground: Story = {
     variant: { control: 'radio', options: Object.keys(controlVariants) },
     disabled: { control: 'boolean' }
   },
-  args: { placeholder: 'Owl post address', size: 'md', variant: 'outline', disabled: false },
+  args: { placeholder: 'Owl post address', size: 'medium', variant: 'outline', disabled: false },
   render: (args) => (
     <div {...stylex.props(styles.wrap)}>
       <Input type='email' {...args} />

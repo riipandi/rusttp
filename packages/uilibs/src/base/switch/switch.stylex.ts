@@ -48,22 +48,22 @@ export const switchStyles = stylex.create({
 })
 
 export const switchRootSizes = stylex.create({
-  md: {
+  medium: {
     height: unit.x5,
     width: unit.x9
   },
-  sm: {
+  small: {
     height: unit.x4,
     width: unit.x7
   },
-  lg: {
+  large: {
     height: unit.x6,
     width: unit.x12
   }
 })
 
 export const switchThumbSizes = stylex.create({
-  md: {
+  medium: {
     height: unit.x4,
     transform: {
       default: 'translateX(0)',
@@ -71,7 +71,7 @@ export const switchThumbSizes = stylex.create({
     },
     width: unit.x4
   },
-  sm: {
+  small: {
     height: unit.x3,
     transform: {
       default: 'translateX(0)',
@@ -79,7 +79,7 @@ export const switchThumbSizes = stylex.create({
     },
     width: unit.x3
   },
-  lg: {
+  large: {
     height: unit.x5,
     transform: {
       default: 'translateX(0)',

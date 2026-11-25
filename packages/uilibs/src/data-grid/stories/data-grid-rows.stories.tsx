@@ -225,7 +225,7 @@ function ExpandableColumns(): ColumnDef<DataGridFeatures, IDetail>[] {
         row.getCanExpand() ? (
           <Button
             variant='ghost'
-            style={[buttonSquare.md, statusStyles.expanderButton]}
+            style={[buttonSquare.medium, statusStyles.expanderButton]}
             onClick={row.getToggleExpandedHandler()}
             aria-label={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
           >
@@ -614,13 +614,13 @@ export const RowPinningSupport: Story = {
             {pinnedCount > 0 ? (
               <Button
                 variant='ghost'
-                size='sm'
+                size='small'
                 onClick={() => setRowPinning({ top: [], bottom: [] })}
               >
                 Unpin all
               </Button>
             ) : (
-              <Button variant='ghost' size='sm' icon={RefreshCw} aria-label='Reset' />
+              <Button variant='ghost' size='small' icon={RefreshCw} aria-label='Reset' />
             )}
           </CardHeader>
           <CardContent style={statusStyles.cardBody}>

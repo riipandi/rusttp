@@ -59,16 +59,19 @@ export function AdminUserMenu({
         render={
           <Button
             variant='ghost'
-            size={mobile ? 'lg' : 'md'}
+            size={mobile ? 'large' : 'medium'}
             aria-label={m.user_menu_trigger_named({
               initials: adminProfile.initials,
               name: adminProfile.name
             })}
-            style={[mobile ? styles.pill : [buttonSquare.md, styles.bare], stylex.defaultMarker()]}
+            style={[
+              mobile ? styles.pill : [buttonSquare.medium, styles.bare],
+              stylex.defaultMarker()
+            ]}
           />
         }
       >
-        <Avatar size='sm' style={styles.avatar}>
+        <Avatar size='small' style={styles.avatar}>
           <AvatarFallback style={styles.triggerInitials}>{adminProfile.initials}</AvatarFallback>
         </Avatar>
         {mobile && (

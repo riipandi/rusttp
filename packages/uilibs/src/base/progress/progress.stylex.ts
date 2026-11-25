@@ -59,8 +59,8 @@ export const progressColors = stylex.create({
   critical: fill(colors.backgroundCritical)
 })
 
-// `md` is the bar as it was before sizes existed.
+// `medium` is the bar as it was before sizes existed.
 export const progressSizes = stylex.create({
-  sm: { height: unit.x0_5 },
-  md: { height: unit.x1 }
+  small: { height: unit.x0_5 },
+  medium: { height: unit.x1 }
 })

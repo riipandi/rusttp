@@ -57,7 +57,7 @@ export interface InputPasswordProps extends Omit<
   labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
   toggleVariant?: ButtonVariant
-  /** Toggle button size. Defaults to `xs`. */
+  /** Toggle button size. Defaults to `xsmall`. */
   toggleSize?: InputGroupButtonSize
 }
 
@@ -86,7 +86,7 @@ export function InputPassword({
   hideIcon = EyeOff,
   labels,
   toggleVariant = 'ghost',
-  toggleSize = 'xs',
+  toggleSize = 'xsmall',
   ...props
 }: InputPasswordProps) {
   const [visible, setVisible] = useUncontrolledState(visibleProp, defaultVisible)

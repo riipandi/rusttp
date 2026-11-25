@@ -56,7 +56,7 @@ export function AccordionTrigger({
       >
         {children}
         <ChevronDown
-          size={glyphSize.md}
+          size={glyphSize.medium}
           strokeWidth={1.5}
           aria-hidden
           {...stylex.props(s.chevron, start && s.chevronStart)}

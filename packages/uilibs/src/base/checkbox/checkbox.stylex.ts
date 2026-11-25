@@ -46,11 +46,11 @@ export const checkboxStyles = stylex.create({
   }
 })
 
-// `md` is the box as it was before sizes existed.
+// `medium` is the box as it was before sizes existed.
 export const checkboxSizes = stylex.create({
-  sm: { height: unit.x3, width: unit.x3 },
-  md: { height: unit.x4, width: unit.x4 },
-  lg: { height: unit.x5, width: unit.x5 }
+  small: { height: unit.x3, width: unit.x3 },
+  medium: { height: unit.x4, width: unit.x4 },
+  large: { height: unit.x5, width: unit.x5 }
 })
 
 export const checkboxGroupStyles = stylex.create({

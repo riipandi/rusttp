@@ -22,7 +22,7 @@ import { toolbarStyles as s } from './toolbar.stylex'
 // Buttons, links, toggles, and inputs inside a toolbar keep their own
 // component styles — compose with Button, Toggle, ToggleGroup, Input, etc.
 // via the Base UI `render` prop:
-//   <ToolbarButton render={<Button variant="ghost" size="sm" />} />
+//   <ToolbarButton render={<Button variant="ghost" size="small" />} />
 export const ToolbarButton = BaseToolbar.Button
 export const ToolbarLink = BaseToolbar.Link
 export const ToolbarInput = BaseToolbar.Input

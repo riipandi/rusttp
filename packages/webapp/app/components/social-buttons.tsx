@@ -31,11 +31,21 @@ export function SocialButtons() {
   return (
     <>
       <div {...stylex.props(styles.group)}>
-        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with Google')}>
+        <Button
+          type='button'
+          variant='outline'
+          size='large'
+          onClick={notWired('Sign in with Google')}
+        >
           <GoogleIcon size={18} aria-hidden='true' />
           Google
         </Button>
-        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with GitHub')}>
+        <Button
+          type='button'
+          variant='outline'
+          size='large'
+          onClick={notWired('Sign in with GitHub')}
+        >
           <GitHubIcon size={18} aria-hidden='true' />
           GitHub
         </Button>

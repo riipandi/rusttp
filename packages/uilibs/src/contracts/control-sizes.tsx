@@ -8,22 +8,26 @@ import type { ControlSize, DenseControlSize } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 
 /** The height a control of each size has, in px (`controlSizes`). */
-export const controlHeights = { sm: 32, md: 36, lg: 40 } as const satisfies Record<
+export const controlHeights = { small: 32, medium: 36, large: 40 } as const satisfies Record<
   ControlSize,
   number
 >
 
-/** The same, with the `xs` (28px) that Button, Toggle, and Tabs add. */
-export const denseControlHeights = { xs: 28, ...controlHeights } as const satisfies Record<
+/** The same, with the `xsmall` (28px) that Button, Toggle, and Tabs add. */
+export const denseControlHeights = { xsmall: 28, ...controlHeights } as const satisfies Record<
   DenseControlSize,
   number
 >
 
-export const controlSizeNames = ['sm', 'md', 'lg'] as const satisfies readonly ControlSize[]
+export const controlSizeNames = [
+  'small',
+  'medium',
+  'large'
+] as const satisfies readonly ControlSize[]
 
-/** The scale with `xs` first, for Button, Toggle, and Tabs. */
+/** The scale with `xsmall` first, for Button, Toggle, and Tabs. */
 export const denseControlSizeNames = [
-  'xs',
+  'xsmall',
   ...controlSizeNames
 ] as const satisfies readonly DenseControlSize[]
 

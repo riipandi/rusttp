@@ -69,7 +69,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | Prop        | Description                                                                                                                                                                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `variant`   | `pills`, `pills-raised`, `bordered`, `borderless` <br /> `pills` is a tinted list with a raised active pill, `pills-raised` lifts it onto the raised surface, `bordered` is an underline on a border rail, and `borderless` is the underline alone. Default `pills`. |
-| `size`      | `xs`, `sm`, `md`, `lg` <br /> List height on the control scale. `md` is 36px. Default `md`.                                                                                                                                                                          |
+| `size`      | `xsmall`, `small`, `medium`, `large` <br /> List height on the control scale. `medium` is 36px. Default `medium`.                                                                                                                                                    |
 | `itemWidth` | `equal` <br /> The list spans its parent and every trigger takes an equal share. Unset sizes each trigger to its label.                                                                                                                                              |
 
 | Data attribute     | Description                 |
@@ -97,4 +97,4 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 - `TabsTrigger` reads `variant`, `size`, and `itemWidth` from the `TabsList` it sits in, so it must be inside one.
 - `TabsContent` is a tab stop and draws the focus ring.
-- A `size='xs'` pill tab is 20px tall; its hit area adds 2px above and below to reach 24px. An underline tab at `xs` is already 28px.
+- A `size='xsmall'` pill tab is 20px tall; its hit area adds 2px above and below to reach 24px. An underline tab at `xsmall` is already 28px.

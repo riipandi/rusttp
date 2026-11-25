@@ -25,7 +25,7 @@ function AsideEntry({ page }: { page: Page }) {
       render={<Link to={page.to} />}
       current={current}
       variant='ghost'
-      size='sm'
+      size='small'
       style={[sidebar.item, current ? sidebar.itemCurrent : sidebar.itemIdle]}
     >
       {page.label}

@@ -52,7 +52,7 @@ export const Playground: Story = {
     size: { control: 'radio', options: Object.keys(controlSizes) },
     variant: { control: 'radio', options: Object.keys(controlVariants) }
   },
-  args: { size: 'md', variant: 'outline' },
+  args: { size: 'medium', variant: 'outline' },
   render: (args) => (
     <div {...stylex.props(styles.col)}>
       <InputGroup {...args}>
@@ -194,7 +194,7 @@ export const Textarea: Story = {
     <InputGroup style={styles.group}>
       <InputGroupTextarea placeholder='Write to Sirius…' rows={3} />
       <InputGroupAddon align='block-end'>
-        <InputGroupButton variant='outline' size='xs'>
+        <InputGroupButton variant='outline' size='xsmall'>
           Send owl
         </InputGroupButton>
       </InputGroupAddon>

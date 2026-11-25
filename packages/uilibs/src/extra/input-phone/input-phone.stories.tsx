@@ -53,7 +53,7 @@ export const Playground: Story = {
     withCountrySelect: { control: 'boolean' }
   },
   args: {
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     disabled: false,
     invalid: false,

@@ -6,9 +6,9 @@ import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/t
 
 /** Minimum height and type of the chips field, at the same heights as `controlSizes`. */
 export const comboboxChipsSizes = stylex.create({
-  sm: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x8 },
-  md: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x9 },
-  lg: { fontSize: fontSize.body1, lineHeight: fontLineHeight.body1, minHeight: unit.x10 }
+  small: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x8 },
+  medium: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x9 },
+  large: { fontSize: fontSize.body1, lineHeight: fontLineHeight.body1, minHeight: unit.x10 }
 })
 
 export const comboboxStyles = stylex.create({

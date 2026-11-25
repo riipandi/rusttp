@@ -5,7 +5,7 @@ import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 
 // `--card-spacing` lets `size` retune the paddings owned by the sections
-// below without prop-drilling: `sizes.sm` sets it, every section's own
+// below without prop-drilling: `sizes.small` sets it, every section's own
 // padding reads it with a fallback. It's a plain per-variant value (not a
 // Base UI attribute-conditional default), so the custom-property gotcha in
 // STYLEX.md (conditional default beating a layered [data-*] rule) doesn't
@@ -72,6 +72,6 @@ export const cardStates = stylex.create({
 })
 
 export const cardSizes = stylex.create({
-  md: {},
-  sm: { '--card-spacing': unit.x4 }
+  medium: {},
+  small: { '--card-spacing': unit.x4 }
 })

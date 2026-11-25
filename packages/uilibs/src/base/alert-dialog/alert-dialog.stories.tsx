@@ -45,7 +45,7 @@ function ActionDialog({
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant='outline' />}>{label}</AlertDialogTrigger>
-      <AlertDialogContent size='sm'>
+      <AlertDialogContent size='small'>
         <AlertDialogHeader>
           <AlertDialogTitle>Confirm {label}?</AlertDialogTitle>
           <AlertDialogDescription>The action below takes the {label} look.</AlertDialogDescription>
@@ -93,7 +93,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     blurredOverlay: { control: 'boolean' },
     color: { control: 'select', options: Object.keys(buttonFills.solid) }
   },
-  args: { size: 'md', blurredOverlay: false, color: 'critical' },
+  args: { size: 'medium', blurredOverlay: false, color: 'critical' },
   render: ({ size, blurredOverlay, color, ...root }) => (
     <AlertDialog {...root}>
       <AlertDialogTrigger render={<Button variant='outline' />}>
@@ -140,7 +140,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md'] as const}>
+    <Axis axis='size' rows={['small', 'medium'] as const}>
       {(size) => (
         <AlertDialog>
           <AlertDialogTrigger render={<Button variant='outline' />}>{size}</AlertDialogTrigger>
@@ -160,8 +160,8 @@ export const Sizes: Story = {
       )}
     </Axis>
   ),
-  // `md` widens at 660 px and up, so on a narrow canvas both sizes are the `sm` width: `md` is
-  // never narrower than `sm`, and `sm` never exceeds the medium container (20rem; less on a narrower viewport).
+  // `medium` widens at 660 px and up, so on a narrow canvas both sizes are the `small` width: `medium` is
+  // never narrower than `small`, and `small` never exceeds the medium container (20rem; less on a narrower viewport).
   play: async ({ canvasElement }) => {
     const body = within(document.body)
     const width = async (size: string) => {
@@ -174,9 +174,9 @@ export const Sizes: Story = {
       await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
       return boxWidth
     }
-    const sm = await width('sm')
-    await expect(sm).toBeLessThanOrEqual(320)
-    await expect(await width('md')).toBeGreaterThanOrEqual(sm)
+    const small = await width('small')
+    await expect(small).toBeLessThanOrEqual(320)
+    await expect(await width('medium')).toBeGreaterThanOrEqual(small)
   }
 }
 
@@ -218,7 +218,7 @@ export const Media: Story = {
       <AlertDialogTrigger render={<Button variant='outline' />}>
         Empty the Room of Requirement
       </AlertDialogTrigger>
-      <AlertDialogContent size='sm'>
+      <AlertDialogContent size='small'>
         <AlertDialogHeader>
           <AlertDialogMedia color='critical'>
             <Icon svg={Bin} size={24} color='critical' />
@@ -311,7 +311,7 @@ export const Overlays: Story = {
           <AlertDialogTrigger
             render={<Button variant='outline' />}
           >{`Open ${overlay}`}</AlertDialogTrigger>
-          <AlertDialogContent size='sm' blurredOverlay={overlay === 'blurred'}>
+          <AlertDialogContent size='small' blurredOverlay={overlay === 'blurred'}>
             <AlertDialogHeader>
               <AlertDialogTitle>{`Overlay ${overlay}`}</AlertDialogTitle>
               <AlertDialogDescription>The castle fades behind the portrait.</AlertDialogDescription>

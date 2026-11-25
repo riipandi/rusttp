@@ -41,7 +41,7 @@ export const Playground: Story = {
     readOnly: { control: 'boolean' }
   },
   args: {
-    size: 'md',
+    size: 'medium',
     defaultChecked: true,
     disabled: false,
     indeterminate: false,
@@ -215,7 +215,7 @@ export const GroupParentPlay: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
         <Label>
           <Checkbox size={size} defaultChecked aria-label={`House-elf ${size}`} />
@@ -225,7 +225,11 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) =>
-    expectBoxSizes(canvasElement, '[role="checkbox"]', { sm: [12, 12], md: [16, 16], lg: [20, 20] })
+    expectBoxSizes(canvasElement, '[role="checkbox"]', {
+      small: [12, 12],
+      medium: [16, 16],
+      large: [20, 20]
+    })
 }
 
 const states = ['unchecked', 'checked', 'indeterminate', 'disabled', 'invalid'] as const

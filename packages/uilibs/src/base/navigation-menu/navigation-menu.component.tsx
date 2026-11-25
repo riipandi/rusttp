@@ -97,7 +97,7 @@ export function NavigationMenuTrigger({
     <BaseNavigationMenu.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
       {children}
       <ChevronDown
-        size={markSize.md}
+        size={markSize.medium}
         strokeWidth={2}
         aria-hidden
         {...stylex.props(s.triggerChevron)}

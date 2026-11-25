@@ -7,7 +7,7 @@ import { stroke, unit } from './tokens.stylex'
  * style. Draws the edge as a box-shadow instead of a border and composes like
  * any style:
  *
- *   {...stylex.props(styles.popup, ring({ shadow: shadow.md }), style)}
+ *   {...stylex.props(styles.popup, ring({ shadow: shadow.raised }), style)}
  *   {...stylex.props(styles.card, ring({ width: stroke.ring2, color: colors.foregroundPrimary }))}
  *
  * Use it on popups instead of a border: Base UI's align-item-with-trigger
@@ -24,7 +24,7 @@ export interface RingOptions {
   width?: string
   /** Ring color. Default: `colors.borderNeutralFaded`. */
   color?: string
-  /** Extra drop shadow layered under the ring (e.g. `shadow.md`). Default: none. */
+  /** Extra drop shadow layered under the ring (e.g. `shadow.raised`). Default: none. */
   shadow?: string | null
 }
 

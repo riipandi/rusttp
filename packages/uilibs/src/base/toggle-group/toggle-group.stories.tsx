@@ -55,7 +55,7 @@ export const Playground: Story = {
     defaultValue: ['bold'],
     variant: 'ghost',
     selectedColor: 'neutral',
-    size: 'md',
+    size: 'medium',
     spacing: 'gap',
     orientation: 'horizontal',
     multiple: false,

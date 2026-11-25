@@ -70,7 +70,7 @@ function RouteComponent() {
             )}
           </Field>
         </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_reset_submit()}
         </Button>
       </Form>
@@ -88,7 +88,7 @@ function InvalidLink() {
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 
-      <LinkButton render={<Link to='/forgot-password' />} size='lg'>
+      <LinkButton render={<Link to='/forgot-password' />} size='large'>
         {m.auth_reset_invalid_action()}
       </LinkButton>
 

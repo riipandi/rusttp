@@ -41,7 +41,7 @@ export const Playground: Story = {
     selected: { control: 'boolean' },
     raised: { control: 'boolean' }
   },
-  args: { size: 'md', selected: false, raised: false },
+  args: { size: 'medium', selected: false, raised: false },
   render: (args) => (
     <Card {...args} style={styles.card}>
       <CardHeader>
@@ -69,14 +69,14 @@ export const Playground: Story = {
 }
 
 export const Action: Story = {
-  args: { size: 'md' },
+  args: { size: 'medium' },
   render: (args) => (
     <Card {...args} style={styles.card}>
       <CardHeader>
         <CardTitle>Howlers</CardTitle>
         <CardDescription>You have 3 unread howlers.</CardDescription>
         <CardAction>
-          <Button size='sm' variant='ghost'>
+          <Button size='small' variant='ghost'>
             Burn all howlers
           </Button>
         </CardAction>
@@ -90,7 +90,7 @@ export const Action: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['md', 'sm'] as const}>
+    <Axis axis='size' rows={['medium', 'small'] as const}>
       {(size) => (
         <Card size={size} style={styles.card}>
           <CardHeader>
@@ -98,19 +98,19 @@ export const Sizes: Story = {
             <CardDescription>Padding follows the card size.</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button size='sm'>Collect</Button>
+            <Button size='small'>Collect</Button>
           </CardFooter>
         </Card>
       )}
     </Axis>
   ),
-  // `sm` tightens the padding, so the same content is shorter.
+  // `small` tightens the padding, so the same content is shorter.
   play: async ({ canvasElement }) => {
     const height = (size: string) =>
       (
         cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
       ).getBoundingClientRect().height
-    await expect(height('sm')).toBeLessThan(height('md'))
+    await expect(height('small')).toBeLessThan(height('medium'))
   }
 }
 

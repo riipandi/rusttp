@@ -31,12 +31,12 @@ export interface CheckboxProps extends Omit<
   React.ComponentProps<typeof BaseCheckbox.Root>,
   'className' | 'style'
 > {
-  /** Box size: `sm` 12px, `md` 16px (default), `lg` 20px. */
+  /** Box size: `small` 12px, `medium` 16px (default), `large` 20px. */
   size?: CheckboxSize
   style?: stylex.StyleXStyles
 }
 
-export function Checkbox({ size = 'md', style, ...props }: CheckboxProps) {
+export function Checkbox({ size = 'medium', style, ...props }: CheckboxProps) {
   return (
     <BaseCheckbox.Root
       {...props}

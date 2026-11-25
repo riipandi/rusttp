@@ -67,7 +67,7 @@ interface AxisCrossed<Row extends string, Column extends string> extends AxisBas
 /**
  * One prop axis of a component, drawn as a labelled list: one row per value of `axis`, and with
  * `columns` one cell per value of a second axis. A story shows each prop in one place and a `play`
- * finds a cell by `[data-size="md"]` or `[data-variant="outline"][data-color="critical"]`.
+ * finds a cell by `[data-size="medium"]` or `[data-variant="outline"][data-color="critical"]`.
  * The grid wraps instead of overflowing, so a 390 px canvas shows every cell.
  */
 export function Axis<Row extends string, Column extends string = never>(

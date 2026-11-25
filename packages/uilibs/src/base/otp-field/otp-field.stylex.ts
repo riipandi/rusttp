@@ -9,9 +9,9 @@ import { fontFamily } from '../../styles/tokens.stylex'
  * narrower than the slots (a 6-digit code on a 320px screen) instead of overflowing it.
  */
 export const otpFieldSlotSizes = stylex.create({
-  sm: { width: unit.x8 },
-  md: { width: unit.x9 },
-  lg: { width: unit.x10 }
+  small: { width: unit.x8 },
+  medium: { width: unit.x9 },
+  large: { width: unit.x10 }
 })
 
 export const otpFieldStyles = stylex.create({

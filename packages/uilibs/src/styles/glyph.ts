@@ -6,16 +6,16 @@
 
 /** A glyph beside a label in a control of this size (Button, Select, menu items, Pagination). */
 export const glyphSize = {
-  xs: 14,
-  sm: 16,
-  md: 16,
-  lg: 18,
-  xl: 20
+  xsmall: 14,
+  small: 16,
+  medium: 16,
+  large: 18,
+  xlarge: 20
 } as const
 
 /** A mark inside a small box or a list row: a check, a chevron, a chip's dismiss cross. */
 export const markSize = {
-  sm: 10,
-  md: 12,
-  lg: 14
+  small: 10,
+  medium: 12,
+  large: 14
 } as const

@@ -32,7 +32,7 @@ function RouteComponent() {
         <section {...stylex.props(styles.hero)}>
           <PageTitle>{m.home_title()}</PageTitle>
           <p {...stylex.props(styles.lead)}>{m.home_lead()}</p>
-          <LinkButton render={<Link to='/login' />} size='lg'>
+          <LinkButton render={<Link to='/login' />} size='large'>
             {m.home_sign_in()}
           </LinkButton>
         </section>

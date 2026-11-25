@@ -60,7 +60,7 @@ export const Playground: Story = {
   },
   args: {
     length: 6,
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     mask: false,
     disabled: false,

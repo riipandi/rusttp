@@ -59,13 +59,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     }
   },
   argTypes: {
-    size: { control: 'radio', options: ['sm', 'md'] },
+    size: { control: 'radio', options: ['small', 'medium'] },
     blurredOverlay: { control: 'boolean' },
     showCloseButton: { control: 'boolean' },
     modal: { control: 'radio', options: [true, false, 'trap-focus'] },
     disablePointerDismissal: { control: 'boolean' }
   },
-  args: { size: 'md', blurredOverlay: false, showCloseButton: true },
+  args: { size: 'medium', blurredOverlay: false, showCloseButton: true },
   render: ({ size, blurredOverlay, showCloseButton, ...root }) => (
     <Dialog {...root}>
       <DialogTrigger render={<Button variant='outline' />}>Open the cryptex</DialogTrigger>
@@ -219,9 +219,9 @@ export const NoCloseButton: Story = {
   )
 }
 
-const sizes = ['sm', 'md'] as const
+const sizes = ['small', 'medium'] as const
 
-/** `md` is the default width (32rem); `sm` is the narrower 24rem. */
+/** `medium` is the default width (32rem); `small` is the narrower 24rem. */
 export const Sizes: Story = {
   render: () => (
     <Axis axis='size' rows={sizes}>

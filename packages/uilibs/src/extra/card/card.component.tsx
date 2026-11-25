@@ -7,10 +7,10 @@ interface DivProps extends Omit<React.ComponentProps<'div'>, 'className' | 'styl
   style?: stylex.StyleXStyles
 }
 
-export type CardSize = 'sm' | 'md'
+export type CardSize = 'small' | 'medium'
 
 export function Card({
-  size = 'md',
+  size = 'medium',
   selected = false,
   raised = false,
   style,

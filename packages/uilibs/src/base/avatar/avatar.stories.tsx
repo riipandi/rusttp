@@ -37,7 +37,7 @@ export const Playground: Story = {
     color: { control: 'select', options: Object.keys(avatarFills.faded) },
     squared: { control: 'boolean' }
   },
-  args: { size: 'md', variant: 'faded', color: 'neutral', squared: false },
+  args: { size: 'medium', variant: 'faded', color: 'neutral', squared: false },
   render: (args) => (
     <Avatar {...args}>
       <AvatarImage src='https://github.com/madeui.png' alt='@harry.potter' />
@@ -48,7 +48,7 @@ export const Playground: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
         <Avatar size={size}>
           <AvatarFallback>HP</AvatarFallback>
@@ -64,7 +64,7 @@ export const Sizes: Story = {
       return width === height ? width : -1
     }
     // Square, and 32, 40, and 48 px.
-    await expect(['sm', 'md', 'lg'].map(side)).toEqual([32, 40, 48])
+    await expect(['small', 'medium', 'large'].map(side)).toEqual([32, 40, 48])
   }
 }
 

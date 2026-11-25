@@ -34,7 +34,7 @@ export function AdminTopBar() {
       </span>
       <NotificationsPopover
         to='/admin/notifications'
-        trigger={<Button variant='ghost' style={[buttonSquare.md, styles.notify]} />}
+        trigger={<Button variant='ghost' style={[buttonSquare.medium, styles.notify]} />}
       />
     </header>
   )

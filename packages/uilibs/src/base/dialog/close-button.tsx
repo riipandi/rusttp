@@ -31,7 +31,7 @@ export function CloseButton({
       {...props}
       {...stylex.props(focusRing.root, s.root, style)}
     >
-      <X size={glyphSize.md} strokeWidth={1.5} aria-hidden />
+      <X size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
     </button>
   )
 }

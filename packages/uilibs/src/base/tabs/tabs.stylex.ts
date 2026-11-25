@@ -109,7 +109,7 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     marginBottom: `calc(-1 * ${stroke.ring1})`
   },
-  // The `xs` pill is 20px tall, under the 24px target (WCAG 2.5.8): a hit area makes up the rest
+  // The `xsmall` pill is 20px tall, under the 24px target (WCAG 2.5.8): a hit area makes up the rest
   // inside the list's own padding, so it reaches neither the list's edge nor a neighbor.
   triggerHitArea: {
     position: 'relative',
@@ -129,19 +129,19 @@ export const tabsStyles = stylex.create({
   }
 })
 
-// The list is as tall as a control of its size (`xs` 28, `sm` 32, `md` 36, `lg` 40). A
+// The list is as tall as a control of its size (`xsmall` 28, `small` 32, `medium` 36, `large` 40). A
 // pill list has 4px of padding around its tabs, so its tab is 8px shorter; an underline
 // list (`bordered`, `borderless`) has none, so its tab is the full height.
 export const tabsSizes = stylex.create({
-  xs: { fontSize: fontSize.caption1, height: unit.x5 },
-  sm: { fontSize: fontSize.body2, height: unit.x6 },
-  md: { fontSize: fontSize.body2, height: unit.x7 },
-  lg: { fontSize: fontSize.body1, height: unit.x8 }
+  xsmall: { fontSize: fontSize.caption1, height: unit.x5 },
+  small: { fontSize: fontSize.body2, height: unit.x6 },
+  medium: { fontSize: fontSize.body2, height: unit.x7 },
+  large: { fontSize: fontSize.body1, height: unit.x8 }
 })
 
 export const tabsUnderlineSizes = stylex.create({
-  xs: { fontSize: fontSize.caption1, height: unit.x7 },
-  sm: { fontSize: fontSize.body2, height: unit.x8 },
-  md: { fontSize: fontSize.body2, height: unit.x9 },
-  lg: { fontSize: fontSize.body1, height: unit.x10 }
+  xsmall: { fontSize: fontSize.caption1, height: unit.x7 },
+  small: { fontSize: fontSize.body2, height: unit.x8 },
+  medium: { fontSize: fontSize.body2, height: unit.x9 },
+  large: { fontSize: fontSize.body1, height: unit.x10 }
 })

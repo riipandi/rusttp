@@ -34,11 +34,11 @@ function RouteComponent() {
 
       <div {...stylex.props(styles.actions)}>
         {/* Demo only: there is no mailer yet, so this stands in for opening the link. */}
-        <LinkButton render={<Link to='/email-verified' />} size='lg'>
+        <LinkButton render={<Link to='/email-verified' />} size='large'>
           {m.auth_verify_done()}
         </LinkButton>
         {/* Placeholder: resending needs the mailer. */}
-        <Button variant='outline' size='lg' onClick={notWired('Resend the verification email')}>
+        <Button variant='outline' size='large' onClick={notWired('Resend the verification email')}>
           {m.auth_verify_resend()}
         </Button>
       </div>

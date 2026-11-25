@@ -38,7 +38,7 @@ function Row({ item }: { item: NotificationResponse }) {
   const { setRead, dismiss } = notificationsStore.actions
 
   return (
-    <Item size='xs' style={styles.row}>
+    <Item size='xsmall' style={styles.row}>
       {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadBar)} />}
       <ItemContent style={styles.content}>
         <ItemTitle style={[styles.title, item.read && styles.titleRead]}>
@@ -56,7 +56,7 @@ function Row({ item }: { item: NotificationResponse }) {
             render={
               <Button
                 variant='ghost'
-                size='sm'
+                size='small'
                 icon={MoreHorizontal}
                 aria-label={m.notifications_row_actions({ title: item.title })}
                 style={styles.action}
@@ -167,7 +167,7 @@ export function NotificationsPopover({
               render={
                 <Button
                   variant='ghost'
-                  size='sm'
+                  size='small'
                   icon={MoreHorizontal}
                   aria-label={m.notifications_menu()}
                   style={styles.action}
@@ -220,7 +220,7 @@ export function NotificationsPopover({
           <LinkButton
             render={<Link to={to} onClick={() => setOpen(false)} />}
             variant='ghost'
-            size='sm'
+            size='small'
             style={styles.footerLink}
           >
             {m.notifications_view_all()}

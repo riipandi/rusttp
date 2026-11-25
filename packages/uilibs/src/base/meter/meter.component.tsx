@@ -20,17 +20,17 @@ import type { ColorRole, StyleProp } from '../../styles/types'
 import { meterColors, meterSizes, meterStyles as s } from './meter.stylex'
 
 export type MeterColor = ColorRole
-export type MeterSize = 'sm' | 'md'
+export type MeterSize = 'small' | 'medium'
 
 /** The root's `color` and `size`, read by its track and indicator. */
 const MeterLookContext = React.createContext<{ color: MeterColor; size: MeterSize }>({
   color: 'primary',
-  size: 'md'
+  size: 'medium'
 })
 
 export function Meter({
   color = 'primary',
-  size = 'md',
+  size = 'medium',
   style,
   children,
   ...props
@@ -38,7 +38,7 @@ export function Meter({
   StyleProp & {
     /** The role of the fill; `primary` by default. Pair a non-neutral color with a label: color alone is not meaning. */
     color?: MeterColor
-    /** Bar thickness: `sm` 2px, `md` 4px (default). */
+    /** Bar thickness: `small` 2px, `medium` 4px (default). */
     size?: MeterSize
   }) {
   const look = React.useMemo(() => ({ color, size }), [color, size])

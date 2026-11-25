@@ -198,7 +198,7 @@ export const CrudFeatures: Story = {
               />
             </InputGroup>
             <Button
-              size='sm'
+              size='small'
               variant='outline'
               onClick={() => {
                 const id = String(rowIdRef.current++)
@@ -295,7 +295,7 @@ export const CrudInFrameContainer: Story = {
         <Card style={editingStyles.frame}>
           <CardHeader style={editingStyles.frameHeader}>
             <CardTitle>Catalog</CardTitle>
-            <Button size='sm' variant='outline'>
+            <Button size='small' variant='outline'>
               <Plus style={{ height: 16, width: 16 }} />
               New novel
             </Button>

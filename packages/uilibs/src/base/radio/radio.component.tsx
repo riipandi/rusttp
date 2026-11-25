@@ -30,12 +30,12 @@ export function RadioGroup({
 export type RadioSize = ControlSize
 
 export function RadioGroupItem({
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof Radio.Root>, 'className' | 'style'> &
   StyleProp & {
-    /** Circle size: `sm` 12px, `md` 16px (default), `lg` 20px. */
+    /** Circle size: `small` 12px, `medium` 16px (default), `large` 20px. */
     size?: RadioSize
   }) {
   return (

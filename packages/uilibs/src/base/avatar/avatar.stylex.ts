@@ -99,7 +99,7 @@ export const avatarFills = {
 }
 
 export const avatarSizes = stylex.create({
-  sm: { height: unit.x8, width: unit.x8 },
-  md: { height: unit.x10, width: unit.x10 },
-  lg: { height: unit.x12, width: unit.x12 }
+  small: { height: unit.x8, width: unit.x8 },
+  medium: { height: unit.x10, width: unit.x10 },
+  large: { height: unit.x12, width: unit.x12 }
 })

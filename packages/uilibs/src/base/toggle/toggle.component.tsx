@@ -42,7 +42,7 @@ export function Toggle({
   variant = 'ghost',
   selectedVariant = variant === 'solid' ? 'solid' : 'ghost',
   selectedColor = 'neutral',
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: ToggleProps) {
@@ -55,7 +55,7 @@ export function Toggle({
         toggleVariants[variant],
         toggleRest[variant === 'solid' ? 'solid' : 'quiet'],
         toggleSelected[selectedVariant][selectedColor],
-        size !== 'xs' && controlSizes[size],
+        size !== 'xsmall' && controlSizes[size],
         toggleSizes[size],
         style
       )}

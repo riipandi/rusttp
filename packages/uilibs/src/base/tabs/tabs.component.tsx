@@ -39,7 +39,7 @@ const TabsListContext = React.createContext<{
   itemWidth?: TabsItemWidth
 }>({
   variant: 'pills',
-  size: 'md'
+  size: 'medium'
 })
 
 export function Tabs({
@@ -59,13 +59,13 @@ export function Tabs({
 export function TabsList({
   style,
   variant = 'pills',
-  size = 'md',
+  size = 'medium',
   itemWidth,
   ...props
 }: Omit<React.ComponentProps<typeof BaseTabs.List>, 'className' | 'style'> &
   StyleProp & {
     variant?: TabsVariant
-    /** List height, as the control scale: `md` is 36px. */
+    /** List height, as the control scale: `medium` is 36px. */
     size?: TabsSize
     itemWidth?: TabsItemWidth
   }) {
@@ -104,7 +104,7 @@ export function TabsTrigger({
         variant === 'pills-raised' && s.triggerRaised,
         itemWidth === 'equal' && s.triggerEqual,
         underline ? tabsUnderlineSizes[size] : tabsSizes[size],
-        !underline && size === 'xs' && s.triggerHitArea,
+        !underline && size === 'xsmall' && s.triggerHitArea,
         style
       )}
     />

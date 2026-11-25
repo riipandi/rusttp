@@ -69,7 +69,7 @@ export function Alert({
         style
       )}
     >
-      {Icon ? <Icon size={glyphSize.xl} aria-hidden {...stylex.props(s.glyph)} /> : null}
+      {Icon ? <Icon size={glyphSize.xlarge} aria-hidden {...stylex.props(s.glyph)} /> : null}
       {row ? (
         <div {...stylex.props(s.content, inline && s.contentInline)}>{content}</div>
       ) : (

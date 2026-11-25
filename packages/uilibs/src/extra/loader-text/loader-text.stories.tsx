@@ -103,7 +103,7 @@ export const Completed: Story = {
           Transcribing with the Quick-Quotes Quill
         </LoaderText>
         <div>
-          <Button variant='outline' size='sm' onClick={() => setCompleted((value) => !value)}>
+          <Button variant='outline' size='small' onClick={() => setCompleted((value) => !value)}>
             {completed ? 'Restart' : 'Complete'}
           </Button>
         </div>

@@ -115,7 +115,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   },
   args: {
     items: fruits,
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     side: 'bottom',
     align: 'center',

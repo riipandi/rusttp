@@ -51,11 +51,11 @@ export function AlertDialogOverlay({
   )
 }
 
-export type AlertDialogSize = 'sm' | 'md'
+export type AlertDialogSize = 'small' | 'medium'
 
 export function AlertDialogContent({
   style,
-  size = 'md',
+  size = 'medium',
   blurredOverlay = false,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAlertDialog.Popup>, 'className' | 'style'> &
@@ -126,7 +126,7 @@ type AlertDialogButtonProps = Omit<
 export function AlertDialogAction({
   variant = 'solid',
   color,
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: AlertDialogButtonProps) {
@@ -141,7 +141,7 @@ export function AlertDialogAction({
 export function AlertDialogCancel({
   variant = 'outline',
   color,
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: AlertDialogButtonProps) {

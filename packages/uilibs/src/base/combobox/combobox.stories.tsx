@@ -105,7 +105,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   },
   args: {
     items: frameworks,
-    size: 'md',
+    size: 'medium',
     variant: 'outline',
     showTrigger: true,
     showClear: false,

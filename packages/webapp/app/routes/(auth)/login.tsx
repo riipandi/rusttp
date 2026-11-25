@@ -70,7 +70,7 @@ function RouteComponent() {
             {(field) => <CaptchaField field={field} />}
           </Field>
         </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_login_submit()}
         </Button>
       </Form>

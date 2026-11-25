@@ -5,7 +5,7 @@
  * Colors (default: neutral): primary|neutral|positive|warning|critical
  * Variants: solid|faded|outline|ghost
  * Shape: pill|rectangle|rounded
- * Size: xs|sm|md|lg|xl
+ * Size: xsmall|small|medium|large|xlarge
  *
  * @ref: https://www.reshaped.so/docs/getting-started/overview
  * @ref: https://madeui.com/docs/customization
