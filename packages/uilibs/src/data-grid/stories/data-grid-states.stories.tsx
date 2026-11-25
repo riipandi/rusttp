@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { ColumnDef, PaginationState, SortingState } from '@tanstack/react-table'
 import { useEffect, useMemo, useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import {
   DataGrid,
   DataGridColumnHeader,
@@ -15,7 +15,8 @@ import {
   DataGridTable,
   dataGridFeatures,
   type DataGridFeatures,
-  type DataGridLabels
+  type DataGridLabels,
+  type DataGridTableInstance
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button } from '../../base/button'
@@ -340,6 +341,79 @@ export const LoadingSkeleton: Story = {
         </div>
       </DataGrid>
     )
+  }
+}
+
+/** A header button keeps keyboard focus when loading starts, and a click on it still does nothing. */
+export const HeaderFocusWhileLoading: Story = {
+  name: 'Header focus while loading',
+  render: () => {
+    const [isLoading, setIsLoading] = useState(false)
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const getTable = () => {
+      if (!tableHolder.current) throw new Error('table not ready')
+      return tableHolder.current
+    }
+    const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(
+      () => [
+        {
+          accessorKey: 'title',
+          id: 'title',
+          header: ({ column }) => (
+            <DataGridColumnHeader table={getTable()} title='Title' column={column} />
+          ),
+          size: 260,
+          meta: { skeleton: <Skeleton style={skeletonStyles.cell} /> }
+        },
+        {
+          accessorKey: 'author',
+          id: 'author',
+          header: ({ column }) => (
+            <DataGridColumnHeader table={getTable()} title='Author' column={column} />
+          ),
+          size: 200,
+          meta: { skeleton: <Skeleton style={skeletonStyles.cell} /> }
+        }
+      ],
+      []
+    )
+    const table = usePagedTable(columns)
+
+    tableHolder.current = table
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData.length}
+        isLoading={isLoading}
+        loadingMode='skeleton'
+      >
+        <div {...stylex.props(s.stack)}>
+          <Button size='small' variant='outline' onClick={() => setIsLoading((old) => !old)}>
+            {isLoading ? 'Disable loading' : 'Enable loading'}
+          </Button>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTable table={table} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const author = (await canvas.findByText('Author')).closest('button')!
+    author.focus()
+    await expect(author).toHaveFocus()
+    // `click()` on the DOM node starts loading without moving focus off the header.
+    canvas.getByRole('button', { name: 'Enable loading' }).click()
+    await waitFor(() =>
+      expect(canvas.getByRole('button', { name: 'Disable loading' })).toBeVisible()
+    )
+    await expect(author).toHaveFocus()
+    // Focusable, but still inert: a click while loading does not sort.
+    await userEvent.click(author)
+    await expect(author.closest('th')).toHaveAttribute('aria-sort', 'none')
   }
 }
 

@@ -470,7 +470,12 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant='ghost' style={[sHeader.triggerButton, style]} disabled={isLoading}>
+              <Button
+                variant='ghost'
+                style={[sHeader.triggerButton, style]}
+                disabled={isLoading}
+                focusableWhenDisabled
+              >
                 {icon}
                 {resolvedTitle}
                 {sortIcon}
@@ -504,6 +509,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           variant='ghost'
           style={[sHeader.triggerButton, style]}
           disabled={isLoading}
+          focusableWhenDisabled
           onClick={handleSort}
         >
           {icon}
