@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
@@ -90,8 +90,12 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
         trigger={
           <Button
             variant='ghost'
-            size='icon-md'
-            style={[styles.notifyButton, styles.itemIdle, anyUnread && styles.itemUnread]}
+            style={[
+              buttonSquare.md,
+              styles.notifyButton,
+              styles.itemIdle,
+              anyUnread && styles.itemUnread
+            ]}
           />
         }
       />
@@ -164,12 +168,12 @@ export function Sidebar() {
             render={
               <Button
                 variant='ghost'
-                size='icon-sm'
+                size='sm'
                 aria-label={m.admin_sidebar_toggle()}
                 aria-expanded={!collapsed}
                 aria-controls={navId}
                 onClick={() => toggle(!collapsed)}
-                style={[styles.trigger, collapsed && styles.triggerRail]}
+                style={[buttonSquare.sm, styles.trigger, collapsed && styles.triggerRail]}
               />
             }
           >

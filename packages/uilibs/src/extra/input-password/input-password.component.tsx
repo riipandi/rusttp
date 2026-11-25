@@ -18,8 +18,7 @@ import { Eye, EyeOff } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { ButtonVariant } from '../../base/button'
-import { glyphSize } from '../../styles/glyph'
-import { Icon } from '../icon'
+import type { Glyph } from '../../styles/types'
 import {
   InputGroup,
   InputGroupAddon,
@@ -50,20 +49,17 @@ export interface InputPasswordProps extends Omit<
   defaultVisible?: boolean
   /** Fired when the user toggles visibility. */
   onVisibleChange?: (visible: boolean) => void
-  /** Icon shown when the password is hidden (pressing it reveals the value). Defaults to an eye. */
-  showIcon?: React.ReactNode
-  /** Icon shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
-  hideIcon?: React.ReactNode
+  /** Glyph shown when the password is hidden (pressing it reveals the value). Defaults to an eye. */
+  showIcon?: Glyph
+  /** Glyph shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
+  hideIcon?: Glyph
   /** Accessible name of the toggle; English by default. */
   labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
   toggleVariant?: ButtonVariant
-  /** Toggle button size. Defaults to `icon-xs`. */
+  /** Toggle button size. Defaults to `xs`. */
   toggleSize?: InputGroupButtonSize
 }
-
-const defaultShowIcon = <Icon svg={Eye} size={glyphSize.md} color='neutral-faded' />
-const defaultHideIcon = <Icon svg={EyeOff} size={glyphSize.md} color='neutral-faded' />
 
 /** Resolve a controlled or uncontrolled boolean. */
 function useUncontrolledState(
@@ -86,11 +82,11 @@ export function InputPassword({
   visible: visibleProp,
   defaultVisible = false,
   onVisibleChange,
-  showIcon,
-  hideIcon,
+  showIcon = Eye,
+  hideIcon = EyeOff,
   labels,
   toggleVariant = 'ghost',
-  toggleSize = 'icon-xs',
+  toggleSize = 'xs',
   ...props
 }: InputPasswordProps) {
   const [visible, setVisible] = useUncontrolledState(visibleProp, defaultVisible)
@@ -101,9 +97,6 @@ export function InputPassword({
     setVisible(next)
     onVisibleChange?.(next)
   }, [visible, onVisibleChange, setVisible])
-
-  const showIconNode = showIcon ?? defaultShowIcon
-  const hideIconNode = hideIcon ?? defaultHideIcon
 
   return (
     <InputGroup size={size} variant={variant} style={style}>
@@ -117,12 +110,11 @@ export function InputPassword({
           type='button'
           variant={toggleVariant}
           size={toggleSize}
+          icon={visible ? hideIcon : showIcon}
           aria-pressed={visible}
           aria-label={names.toggle}
           onClick={toggle}
-        >
-          {visible ? hideIconNode : showIconNode}
-        </InputGroupButton>
+        />
       </InputGroupAddon>
     </InputGroup>
   )

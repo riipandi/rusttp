@@ -1,6 +1,5 @@
 import { ChevronDown } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
@@ -23,10 +22,6 @@ const meta = {
 } satisfies Meta<typeof ButtonGroup>
 
 type Story = StoryObj<typeof meta>
-
-const styles = stylex.create({
-  icon: { width: 16, height: 16 }
-})
 
 export default meta
 
@@ -83,10 +78,8 @@ export const Split: Story = {
       <Button>Apparate</Button>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={<Button size='icon-md' aria-label='More apparition options' />}
-        >
-          <ChevronDown {...stylex.props(styles.icon)} />
-        </DropdownMenuTrigger>
+          render={<Button icon={ChevronDown} aria-label='More apparition options' />}
+        />
         <DropdownMenuContent align='end'>
           <DropdownMenuItem>Apparate to Hogsmeade</DropdownMenuItem>
           <DropdownMenuItem>Return to Hogwarts</DropdownMenuItem>

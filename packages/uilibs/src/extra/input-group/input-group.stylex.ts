@@ -93,15 +93,13 @@ export const inputGroupButtonSizes = stylex.create({
     height: unit.x6,
     paddingInline: unit.x1_5
   },
-  'icon-xs': {
-    borderRadius: radius.small,
-    height: unit.x6,
-    paddingInline: 0,
-    width: unit.x6
-  },
-  'icon-sm': {
-    height: unit.x8,
-    paddingInline: 0,
-    width: unit.x8
+  sm: {
+    height: unit.x8
   }
+})
+
+// The square of an addon button with no children, composed after `inputGroupButtonSizes`.
+export const inputGroupButtonSquare = stylex.create({
+  xs: { paddingInline: 0, width: unit.x6 },
+  sm: { paddingInline: 0, width: unit.x8 }
 })

@@ -86,10 +86,10 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### InputGroupButton
 
-| Prop      | Description                                                                     |
-| --------- | ------------------------------------------------------------------------------- |
-| `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The `Button` fill. Default `ghost`. |
-| `size`    | `xs`, `icon-xs`, `icon-sm` <br /> The `icon-*` sizes are square. Default `xs`.  |
+| Prop      | Description                                                                           |
+| --------- | ------------------------------------------------------------------------------------- |
+| `variant` | `solid`, `faded`, `outline`, `ghost` <br /> The `Button` fill. Default `ghost`.       |
+| `size`    | `xs`, `sm` <br /> 24 px or 32 px tall. With no children it is a square. Default `xs`. |
 
 ### InputGroupInput
 
@@ -115,6 +115,6 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 - Use one `InputGroupInput` or `InputGroupTextarea` per group: clicking an addon focuses the first one.
 - Clicking a button inside an addon does not move focus to the field.
 - `align` places an addon with CSS `order`, so the DOM and focus order stay as written.
-- An `icon-xs` or `icon-sm` button has no text and needs an `aria-label`.
+- A button with no children is a square and needs an `aria-label`; give its glyph as `icon`.
 - Name the field with a `Field` label or an `aria-label`; the group itself has no name.
 - The group reflects an invalid input with `:has()`, so put the input inside a `Field` to get `data-invalid`.

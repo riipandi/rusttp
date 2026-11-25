@@ -98,7 +98,7 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
   const button = (
     <Button
       variant='outline'
-      size={collapsed ? 'icon-md' : 'md'}
+      size='md'
       // The name is what the button shows (WCAG 2.5.3: a voice user says what they see); the longer
       // purpose is its description.
       aria-label={`${m.commandbar_search()} ${shortcutText}`.trim()}
@@ -418,9 +418,13 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
   return (
     <div ref={ref} tabIndex={-1} {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.panelHeader)}>
-        <Button variant='ghost' size='icon-sm' aria-label={m.shortcuts_back()} onClick={onBack}>
-          <Icon svg={ArrowLeft} size={16} />
-        </Button>
+        <Button
+          variant='ghost'
+          size='sm'
+          icon={ArrowLeft}
+          aria-label={m.shortcuts_back()}
+          onClick={onBack}
+        />
         <h2 {...stylex.props(styles.panelTitle)}>{m.shortcuts_title()}</h2>
       </div>
       <div {...stylex.props(styles.panelList)}>
@@ -539,12 +543,11 @@ function ShortcutRow({
         {isCustom && (
           <Button
             variant='ghost'
-            size='icon-sm'
+            size='sm'
+            icon={RotateCcw}
             aria-label={m.shortcuts_reset_named({ name: hotkeyNames(m)[id] })}
             onClick={() => resetCustomHotkey(id)}
-          >
-            <Icon svg={RotateCcw} size={14} />
-          </Button>
+          />
         )}
       </div>
     </div>

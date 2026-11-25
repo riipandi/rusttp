@@ -341,9 +341,14 @@ export const buttonSizes = stylex.create({
   // sm, md, and lg take height and type from `controlSizes`; only the padding is a button's own.
   sm: { paddingInline: unit.x3 },
   md: { paddingInline: unit.x4 },
-  lg: { paddingInline: unit.x6 },
-  'icon-xs': { height: unit.x7, paddingInline: 0, width: unit.x7 },
-  'icon-sm': { height: unit.x8, paddingInline: 0, width: unit.x8 },
-  'icon-md': { height: unit.x9, paddingInline: 0, width: unit.x9 },
-  'icon-lg': { height: unit.x10, paddingInline: 0, width: unit.x10 }
+  lg: { paddingInline: unit.x6 }
+})
+
+// The square of an icon-only button: as wide as its size is tall (`xs` 28, `sm` 32, `md` 36, `lg` 40).
+// Composed after `buttonSizes`, which has the height.
+export const buttonSquare = stylex.create({
+  xs: { paddingInline: 0, width: unit.x7 },
+  sm: { paddingInline: 0, width: unit.x8 },
+  md: { paddingInline: 0, width: unit.x9 },
+  lg: { paddingInline: 0, width: unit.x10 }
 })

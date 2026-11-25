@@ -2,7 +2,7 @@ import { AppWindow, ChevronDown, LogOut, Shield, User } from '@keyline-icons/rea
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
-import { Button } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,12 +59,12 @@ export function AdminUserMenu({
         render={
           <Button
             variant='ghost'
-            size={mobile ? 'lg' : 'icon-md'}
+            size={mobile ? 'lg' : 'md'}
             aria-label={m.user_menu_trigger_named({
               initials: adminProfile.initials,
               name: adminProfile.name
             })}
-            style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
+            style={[mobile ? styles.pill : [buttonSquare.md, styles.bare], stylex.defaultMarker()]}
           />
         }
       >

@@ -4,7 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { StyleXStyles } from '@stylexjs/stylex'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { JSX, PointerEvent, ReactNode } from 'react'
-import { Button } from '../base/button'
+import { Button, buttonSquare } from '../base/button'
 import { SelectContent, SelectTrigger, SelectValue } from '../base/select'
 import { Select, SelectItem } from '../base/select'
 import { Skeleton } from '../extra/skeleton'
@@ -143,11 +143,16 @@ function DataGridPagination<TData extends object>(
       buttons.push(
         <Button
           key={i}
-          size='icon-sm'
+          size='sm'
           variant='ghost'
           aria-label={i18n.labels.goToPage(i + 1)}
           aria-current={pageIndex === i ? 'page' : undefined}
-          style={[s.pageButton, s.pageButtonMuted, pageIndex === i && s.pageButtonActive]}
+          style={[
+            buttonSquare.sm,
+            s.pageButton,
+            s.pageButtonMuted,
+            pageIndex === i && s.pageButtonActive
+          ]}
           onClick={() => {
             if (pageIndex !== i) {
               table.setPageIndex(i)
@@ -166,9 +171,9 @@ function DataGridPagination<TData extends object>(
     if (currentGroupStart > 0) {
       return (
         <Button
-          size='icon-sm'
+          size='sm'
           variant='ghost'
-          style={s.pageButton}
+          style={[buttonSquare.sm, s.pageButton]}
           onClick={() => table.setPageIndex(currentGroupStart - 1)}
         >
           {mergedProps.ellipsisText}
@@ -183,9 +188,9 @@ function DataGridPagination<TData extends object>(
     if (currentGroupEnd < pageCount) {
       return (
         <Button
-          size='icon-sm'
+          size='sm'
           variant='ghost'
-          style={s.pageButton}
+          style={[buttonSquare.sm, s.pageButton]}
           onClick={() => table.setPageIndex(currentGroupEnd)}
         >
           {mergedProps.ellipsisText}
@@ -233,9 +238,9 @@ function DataGridPagination<TData extends object>(
             {pageCount > 1 && (
               <div {...stylex.props(s.pages)}>
                 <Button
-                  size='icon-sm'
+                  size='sm'
                   variant='ghost'
-                  style={s.arrowButton}
+                  style={[buttonSquare.sm, s.arrowButton]}
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
@@ -252,9 +257,9 @@ function DataGridPagination<TData extends object>(
                 {renderEllipsisNextButton()}
 
                 <Button
-                  size='icon-sm'
+                  size='sm'
                   variant='ghost'
-                  style={s.arrowButton}
+                  style={[buttonSquare.sm, s.arrowButton]}
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >

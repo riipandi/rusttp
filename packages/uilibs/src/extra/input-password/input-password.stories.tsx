@@ -154,11 +154,7 @@ export const CustomIcons: Story = {
   name: 'Custom icons',
   render: () => (
     <div {...stylex.props(styles.field)}>
-      <InputPassword
-        placeholder='Custom toggle icons...'
-        showIcon={<Eye size={16} />}
-        hideIcon={<EyeOff size={16} />}
-      />
+      <InputPassword placeholder='Custom toggle icons...' showIcon={Eye} hideIcon={EyeOff} />
     </div>
   )
 }

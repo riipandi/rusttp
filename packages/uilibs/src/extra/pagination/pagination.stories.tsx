@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, within } from 'storybook/test'
 import { buttonSizes } from '../../base/button/button.stylex'
-import { expectBoxSizes } from '../../contracts/control-sizes'
+import { denseControlSizeNames, expectBoxSizes } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import {
   Pagination,
@@ -41,7 +41,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     size: { control: 'select', options: Object.keys(buttonSizes) },
     page: { control: 'radio', options: [1, 2, 3] }
   },
-  args: { size: 'icon-md', page: 2 },
+  args: { size: 'md', page: 2 },
   render: ({ size, page }) => (
     <Pagination>
       <PaginationContent>
@@ -76,7 +76,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 export const Sizes: Story = {
   render: () => (
-    <Axis axis='size' rows={['icon-xs', 'icon-sm', 'icon-md', 'icon-lg'] as const}>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
         <Pagination labels={{ pagination: `Pages ${size}` }}>
           <PaginationContent>
@@ -103,10 +103,10 @@ export const Sizes: Story = {
   // The page links are squares as tall as a dense control of their size.
   play: async ({ canvasElement }) =>
     expectBoxSizes(canvasElement, 'a', {
-      'icon-xs': [28, 28],
-      'icon-sm': [32, 32],
-      'icon-md': [36, 36],
-      'icon-lg': [40, 40]
+      xs: [28, 28],
+      sm: [32, 32],
+      md: [36, 36],
+      lg: [40, 40]
     })
 }
 

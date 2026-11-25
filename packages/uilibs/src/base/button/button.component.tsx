@@ -13,13 +13,14 @@ import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
-import type { ColorRole, Glyph } from '../../styles/types'
+import type { ColorRole, DenseControlSize, Glyph } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from './button-group.context'
 import {
   buttonFills,
   buttonHighlighted,
   buttonModifiers,
   buttonSizes,
+  buttonSquare,
   buttonStyles
 } from './button.stylex'
 
@@ -53,8 +54,11 @@ export interface ButtonProps extends Omit<
    * `solid` has no cut-out label in `inherit`, so it is a stronger tint.
    */
   color?: ButtonColor
-  /** Inside a `ButtonGroup` it takes the group's `size`, else `md`. */
-  size?: keyof typeof buttonSizes
+  /**
+   * Height and type; inside a `ButtonGroup` the group's size, else `md`. It is never the shape: a
+   * button with no children is a square (see `icon`), and `buttonSquare[size]` squares any other.
+   */
+  size?: DenseControlSize
   /** Fully rounded ends. */
   rounded?: boolean
   /** Fills the width of its container. */
@@ -94,7 +98,8 @@ export function Button({
   const group = useButtonGroup()
   const variant = variantProp ?? group?.variant ?? 'solid'
   const size = sizeProp ?? group?.size ?? 'md'
-  const glyph = size === 'xs' ? glyphSize.xs : size === 'lg' ? glyphSize.lg : glyphSize.md
+  const iconOnly = React.Children.toArray(children).length === 0
+  const glyph = glyphSize[size]
   const content = (
     <>
       {Icon ? <Icon size={glyph} aria-hidden /> : null}
@@ -116,8 +121,9 @@ export function Button({
         buttonStyles.root,
         buttonFill(variant, color),
         highlighted && !disabled && !loading && buttonHighlight(variant, color),
-        (size === 'sm' || size === 'md' || size === 'lg') && controlSizes[size],
+        size !== 'xs' && controlSizes[size],
         buttonSizes[size],
+        iconOnly && buttonSquare[size],
         rounded && buttonModifiers.rounded,
         fullWidth && buttonModifiers.fullWidth,
         raised && buttonModifiers.raised,

@@ -4,6 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
 import {
+  cellOf,
   denseControlHeights,
   denseControlSizeNames,
   expectBoxSizes,
@@ -15,7 +16,7 @@ import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
 import { Button, LinkButton } from './button.component'
-import { buttonFills, buttonSizes } from './button.stylex'
+import { buttonFills, buttonSizes, buttonSquare } from './button.stylex'
 
 const meta = {
   title: 'Base Components/Button',
@@ -69,11 +70,7 @@ export const Playground: Story = {
     variant: { control: 'radio', options: Object.keys(buttonFills) },
     // Every fill has every color, so the solid map lists them all.
     color: { control: 'select', options: Object.keys(buttonFills.solid) },
-    // The icon-only sizes are square and have no room for a label; `IconSizes` shows them.
-    size: {
-      control: 'radio',
-      options: Object.keys(buttonSizes).filter((size) => !size.startsWith('icon-'))
-    },
+    size: { control: 'radio', options: Object.keys(buttonSizes) },
     rounded: { control: 'boolean' },
     fullWidth: { control: 'boolean' },
     raised: { control: 'boolean' },
@@ -186,26 +183,38 @@ export const Sizes: Story = {
   }
 }
 
-const iconSizes = ['icon-xs', 'icon-sm', 'icon-md', 'icon-lg'] as const
-
-/** The square icon-only sizes; each needs an `aria-label`. */
+/**
+ * A button with no children is a square as wide as it is tall, at every size; each needs an
+ * `aria-label`. A button that holds a custom node, such as a page number, takes `buttonSquare`.
+ */
 export const IconSizes: Story = {
   render: () => (
-    <Axis axis='size' rows={iconSizes}>
+    <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
-        <Button size={size} variant='outline' aria-label={`Accio ${size}`}>
-          <Plus {...stylex.props(styles.icon)} />
-        </Button>
+        <div {...stylex.props(styles.row)}>
+          <Button size={size} variant='outline' icon={Plus} aria-label={`Accio ${size}`} />
+          <Button size={size} variant='outline' style={buttonSquare[size]}>
+            7
+          </Button>
+        </div>
       )}
     </Axis>
   ),
-  play: async ({ canvasElement }) =>
-    expectBoxSizes(canvasElement, 'button', {
-      'icon-xs': [28, 28],
-      'icon-sm': [32, 32],
-      'icon-md': [36, 36],
-      'icon-lg': [40, 40]
+  play: async ({ canvasElement }) => {
+    await expectBoxSizes(canvasElement, 'button', {
+      xs: [28, 28],
+      sm: [32, 32],
+      md: [36, 36],
+      lg: [40, 40]
     })
+    for (const size of denseControlSizeNames) {
+      const [iconOnly, numbered] = cellOf(canvasElement, 'size', size).querySelectorAll('button')
+      await expect(numbered?.getBoundingClientRect().width).toBe(
+        iconOnly?.getBoundingClientRect().width
+      )
+    }
+    await expectGlyphSizes(canvasElement, denseControlSizeNames)
+  }
 }
 
 /** Press states that are visible without interaction. */

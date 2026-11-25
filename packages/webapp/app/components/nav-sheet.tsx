@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
 import { CloseButton } from 'uilibs/base/dialog/close-button'
 import { Separator } from 'uilibs/base/separator'
 import { Icon } from 'uilibs/extra/icon'
@@ -176,9 +176,8 @@ export function NavSheet({
         render={
           <Button
             variant='ghost'
-            size='icon-md'
             aria-label={m.nav_sheet_open()}
-            style={[styles.trigger, triggerStyle]}
+            style={[buttonSquare.md, styles.trigger, triggerStyle]}
           />
         }
       >

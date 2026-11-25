@@ -36,6 +36,14 @@ Built on Base UI [Button](https://base-ui.com/react/components/button). Props no
 
 <Canvas of={Stories.Colors} />
 
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Icon only
+
+<Canvas of={Stories.IconSizes} />
+
 ### States
 
 <Canvas of={Stories.States} />
@@ -54,7 +62,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `variant`     | `solid`, `faded`, `outline`, `ghost` <br /> The fill. Default `solid`.                                                                                                                                                                                                                   |
 | `color`       | `primary`, `neutral`, `critical`, `positive`, `warning`, `media`, `inherit` <br /> The role. `critical` marks a destructive action; `media` is white for a photo or dark surface; `inherit` takes the parent's text color. Default `primary` for `solid`, `neutral` for the other fills. |
-| `size`        | `xs`, `sm`, `md`, `lg`, `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` <br /> The `icon-*` sizes are square. Default `md`.                                                                                                                                                                   |
+| `size`        | `xs`, `sm`, `md`, `lg` <br /> The height and type, never the shape. Inside a `ButtonGroup`, the group's size; otherwise `md`.                                                                                                                                                            |
 | `rounded`     | `boolean` <br /> Fully rounded ends. Default `false`.                                                                                                                                                                                                                                    |
 | `fullWidth`   | `boolean` <br /> Fills the width of its container. Default `false`.                                                                                                                                                                                                                      |
 | `raised`      | `boolean` <br /> Lifts the button with the raised shadow. Default `false`.                                                                                                                                                                                                               |
@@ -66,6 +74,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | Data attribute  | Description                                                          |
 | --------------- | -------------------------------------------------------------------- |
 | `data-disabled` | Present when the button is disabled, which includes while `loading`. |
+| `data-loading`  | Present while `loading`. Set by this library, not Base UI.           |
 | `aria-busy`     | `true` while `loading`. Set by this library, not Base UI.            |
 
 ### LinkButton
@@ -84,7 +93,8 @@ Takes the `Button` props except `loading`, `nativeButton`, and `render`. It sets
 
 ## Caveats
 
-- A button with `icon` or `endIcon` and no label is icon-only, and so is every `icon-*` size. Name it with `aria-label`.
+- A button with no children is icon-only: a square as wide as it is tall at every `size`. Give the glyph as `icon`, and name the button with `aria-label`.
+- A button that holds a custom node, such as an avatar or a page number, is not icon-only. Compose `buttonSquare[size]` through `style` to make it a square.
 - While `loading`, the button is disabled but stays focusable, and it keeps its accessible name.
 - `Button` can render another tag with `nativeButton={false}`, but it is then announced as a button. For a link, use `LinkButton`.
 - `media` is the same in both themes, so show it on a dark backdrop. Its `solid` fill is a light tint under `inherit`, not a cut-out label.

@@ -66,7 +66,6 @@ const styles = stylex.create({
   right: {
     textAlign: 'right'
   },
-  icon: { height: 16, width: 16 },
   stack: { display: 'flex', flexDirection: 'column', gap: 24 },
   tall: { height: 64 },
   fit: { width: 'auto' }
@@ -177,10 +176,10 @@ export const Actions: Story = {
               <TableCell style={styles.right}>
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    render={<Button variant='ghost' size='icon-md' aria-label='Ledger actions' />}
-                  >
-                    <MoreVertical {...stylex.props(styles.icon)} />
-                  </DropdownMenuTrigger>
+                    render={
+                      <Button variant='ghost' icon={MoreVertical} aria-label='Ledger actions' />
+                    }
+                  />
                   <DropdownMenuContent align='end'>
                     <DropdownMenuItem>Edit title</DropdownMenuItem>
                     <DropdownMenuItem>Send an owl</DropdownMenuItem>

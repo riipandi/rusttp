@@ -56,14 +56,13 @@ function Row({ item }: { item: NotificationResponse }) {
             render={
               <Button
                 variant='ghost'
-                size='icon-sm'
+                size='sm'
+                icon={MoreHorizontal}
                 aria-label={m.notifications_row_actions({ title: item.title })}
                 style={styles.action}
               />
             }
-          >
-            <Icon svg={MoreHorizontal} size={16} />
-          </DropdownMenuTrigger>
+          />
           <DropdownMenuContent side='bottom' align='end'>
             <DropdownMenuItem style={styles.menuItem} onClick={() => setRead(item.id, !item.read)}>
               <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutral-faded' />
@@ -168,14 +167,13 @@ export function NotificationsPopover({
               render={
                 <Button
                   variant='ghost'
-                  size='icon-sm'
+                  size='sm'
+                  icon={MoreHorizontal}
                   aria-label={m.notifications_menu()}
                   style={styles.action}
                 />
               }
-            >
-              <Icon svg={MoreHorizontal} size={16} />
-            </DropdownMenuTrigger>
+            />
             <DropdownMenuContent side='bottom' align='end'>
               <DropdownMenuItem
                 style={styles.menuItem}

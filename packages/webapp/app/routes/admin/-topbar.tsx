@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { Button } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { NavSheet } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -34,7 +34,7 @@ export function AdminTopBar() {
       </span>
       <NotificationsPopover
         to='/admin/notifications'
-        trigger={<Button variant='ghost' size='icon-md' style={styles.notify} />}
+        trigger={<Button variant='ghost' style={[buttonSquare.md, styles.notify]} />}
       />
     </header>
   )

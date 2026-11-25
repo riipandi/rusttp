@@ -159,9 +159,7 @@ export const Button: Story = {
         defaultValue='https://dailyprophet.co.uk/howlers'
       />
       <InputGroupAddon align='inline-end'>
-        <InputGroupButton aria-label='Copy howler address'>
-          <Copy {...stylex.props(styles.icon)} />
-        </InputGroupButton>
+        <InputGroupButton icon={Copy} aria-label='Copy howler address' />
       </InputGroupAddon>
     </InputGroup>
   )

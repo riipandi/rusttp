@@ -44,7 +44,7 @@ import {
 } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Button } from '../base/button'
+import { Button, buttonSquare } from '../base/button'
 import { zIndex } from '../styles/tokens.stylex'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
@@ -142,9 +142,12 @@ function DataGridTableDndHeader<TData extends object>({
       <div data-dragging={isDragging ? '' : undefined} {...stylex.props(s2.headerControls)}>
         {canOrder && (
           <Button
-            size='icon-sm'
+            size='sm'
             variant='ghost'
-            style={isDragging ? dndGripCursorStyles.dragging : dndGripCursorStyles.idle}
+            style={[
+              buttonSquare.sm,
+              isDragging ? dndGripCursorStyles.dragging : dndGripCursorStyles.idle
+            ]}
             {...attributes}
             {...listeners}
             aria-label={i18n.labels.dragToReorder}
@@ -406,8 +409,8 @@ function DataGridTableDndRowHandle({
     return (
       <Button
         variant='ghost'
-        size='icon-sm'
-        style={[rowStyles.gripButton, disabled && rowStyles.gripDisabled, style]}
+        size='sm'
+        style={[buttonSquare.sm, rowStyles.gripButton, disabled && rowStyles.gripDisabled, style]}
         aria-label={disabled ? resolvedDisabledLabel : i18n.labels.dragToReorderRow}
         title={disabled ? resolvedDisabledLabel : undefined}
         disabled
@@ -420,8 +423,8 @@ function DataGridTableDndRowHandle({
   return (
     <Button
       variant='ghost'
-      size='icon-sm'
-      style={[rowStyles.gripButton, style]}
+      size='sm'
+      style={[buttonSquare.sm, rowStyles.gripButton, style]}
       aria-label={i18n.labels.dragToReorderRow}
       {...context.attributes}
       {...context.listeners}

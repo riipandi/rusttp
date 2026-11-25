@@ -31,7 +31,7 @@ import {
   type DataGridTableInstance
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
-import { Button } from '../../base/button'
+import { Button, buttonSquare } from '../../base/button'
 import { Badge } from '../../extra/badge'
 import { Card, CardContent, CardFooter, CardHeader } from '../../extra/card'
 import { unit } from '../../styles/tokens.stylex'
@@ -225,8 +225,7 @@ function ExpandableColumns(): ColumnDef<DataGridFeatures, IDetail>[] {
         row.getCanExpand() ? (
           <Button
             variant='ghost'
-            size='icon-md'
-            style={statusStyles.expanderButton}
+            style={[buttonSquare.md, statusStyles.expanderButton]}
             onClick={row.getToggleExpandedHandler()}
             aria-label={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
           >
@@ -621,9 +620,7 @@ export const RowPinningSupport: Story = {
                 Unpin all
               </Button>
             ) : (
-              <Button variant='ghost' size='icon-sm' aria-label='Reset'>
-                <RefreshCw style={undefined} {...stylex.props(s.flag)} />
-              </Button>
+              <Button variant='ghost' size='sm' icon={RefreshCw} aria-label='Reset' />
             )}
           </CardHeader>
           <CardContent style={statusStyles.cardBody}>

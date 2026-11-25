@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { LinkButton, type buttonSizes } from '../../base/button'
+import { buttonSquare, LinkButton } from '../../base/button'
 import { glyphSize } from '../../styles/glyph'
-import type { StyleProp } from '../../styles/types'
+import type { DenseControlSize, StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { paginationStyles as s } from './pagination.stylex'
 
@@ -67,24 +67,35 @@ export function PaginationItem({
 export interface PaginationLinkProps
   extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleProp {
   isActive?: boolean
-  size?: keyof typeof buttonSizes
+  /** The `Button` size; a page link is a square of it. Default `md`. */
+  size?: DenseControlSize
 }
 
-export function PaginationLink({
+/** A link of a given shape: `square` for a page number, rectangular for the text of previous and next. */
+function PageLink({
   isActive,
-  size = 'icon-md',
+  size = 'md',
+  square,
   style,
+  children,
   ...props
-}: PaginationLinkProps) {
+}: PaginationLinkProps & { square: boolean }) {
+  // The text goes to the button, not the `a`: a button with no children reads as icon-only.
   return (
     <LinkButton
       variant={isActive ? 'outline' : 'ghost'}
       size={size}
       current={isActive}
       render={<a {...props} />}
-      style={style}
-    />
+      style={[square && buttonSquare[size], style]}
+    >
+      {children}
+    </LinkButton>
   )
+}
+
+export function PaginationLink(props: PaginationLinkProps) {
+  return <PageLink {...props} square />
 }
 
 export function PaginationPrevious({
@@ -94,15 +105,16 @@ export function PaginationPrevious({
 }: Omit<PaginationLinkProps, 'size'> & LabelsProps) {
   const names = { ...defaultLabels, ...labels }
   return (
-    <PaginationLink
+    <PageLink
       aria-label={names.previousPage}
       size='md'
       {...props}
+      square={false}
       style={[s.previous, style]}
     >
       <Chevron direction='left' />
       <span {...stylex.props(s.linkText)}>{names.previous}</span>
-    </PaginationLink>
+    </PageLink>
   )
 }
 
@@ -113,10 +125,16 @@ export function PaginationNext({
 }: Omit<PaginationLinkProps, 'size'> & LabelsProps) {
   const names = { ...defaultLabels, ...labels }
   return (
-    <PaginationLink aria-label={names.nextPage} size='md' {...props} style={[s.next, style]}>
+    <PageLink
+      aria-label={names.nextPage}
+      size='md'
+      {...props}
+      square={false}
+      style={[s.next, style]}
+    >
       <span {...stylex.props(s.linkText)}>{names.next}</span>
       <Chevron direction='right' />
-    </PaginationLink>
+    </PageLink>
   )
 }
 

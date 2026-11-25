@@ -15,7 +15,7 @@ import { Subscribe } from '@tanstack/react-table'
 import type { Column, Table } from '@tanstack/react-table'
 import { memo, useMemo, useState } from 'react'
 import type { ComponentType, HTMLAttributes, ReactElement, ReactNode } from 'react'
-import { Button } from '../base/button'
+import { Button, buttonSquare } from '../base/button'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -464,9 +464,9 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
         </DropdownMenu>
         {props.tableLayout?.columnsPinnable && canPin && isPinned && (
           <Button
-            size='icon-xs'
+            size='xs'
             variant='ghost'
-            style={sHeader.unpinButton}
+            style={[buttonSquare.xs, sHeader.unpinButton]}
             onClick={() => column.pin(false)}
             aria-label={i18n.labels.unpinColumn(resolvedTitle)}
             title={i18n.labels.unpinColumn(resolvedTitle)}

@@ -18,6 +18,7 @@ import { Textarea } from '../textarea'
 import { inputGroupStyles as s } from './input-group.stylex'
 import { inputGroupAddonAligns as addonAligns } from './input-group.stylex'
 import { inputGroupButtonSizes as buttonSizes } from './input-group.stylex'
+import { inputGroupButtonSquare as buttonSquare } from './input-group.stylex'
 import { inputGroupControlHeights as controlHeights } from './input-group.stylex'
 
 /** The group's `size`, read by its input and textarea. */
@@ -81,15 +82,26 @@ export function InputGroupAddon({
   )
 }
 
-export type InputGroupButtonSize = 'xs' | 'icon-xs' | 'icon-sm'
+export type InputGroupButtonSize = 'xs' | 'sm'
 
 export function InputGroupButton({
   variant = 'ghost',
   size = 'xs',
   style,
   ...props
-}: Omit<ButtonProps, 'size'> & { size?: InputGroupButtonSize }) {
-  return <Button type='button' variant={variant} {...props} style={[buttonSizes[size], style]} />
+}: Omit<ButtonProps, 'size'> & {
+  /** A box smaller than a Button of the same name: `xs` 24px, `sm` 32px. No children make it a square. */
+  size?: InputGroupButtonSize
+}) {
+  const square = React.Children.toArray(props.children).length === 0
+  return (
+    <Button
+      type='button'
+      variant={variant}
+      {...props}
+      style={[buttonSizes[size], square && buttonSquare[size], style]}
+    />
+  )
 }
 
 export function InputGroupText({

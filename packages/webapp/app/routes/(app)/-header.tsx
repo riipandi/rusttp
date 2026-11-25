@@ -9,7 +9,7 @@ import {
 } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -90,7 +90,7 @@ export function DashboardHeader() {
         <div {...stylex.props(styles.headerEnd)}>
           <NotificationsPopover
             to='/notifications'
-            trigger={<Button variant='ghost' size='icon-md' style={styles.notifyTrigger} />}
+            trigger={<Button variant='ghost' style={[buttonSquare.md, styles.notifyTrigger]} />}
           />
           <div {...stylex.props(styles.userMenuSlot)}>
             <UserMenu />

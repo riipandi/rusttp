@@ -311,14 +311,13 @@ export const RemoteInfiniteScroll: Story = {
             </span>
             <Button
               variant='ghost'
-              size='icon-sm'
+              size='sm'
+              icon={RefreshCw}
               aria-label='Reset'
               onClick={() => {
                 setData(Array.from({ length: REMOTE_PAGE }, (_, index) => simulateRow(index)))
               }}
-            >
-              <RefreshCw style={{ height: 16, width: 16 }} />
-            </Button>
+            />
           </div>
           <CardContent style={infiniteStyles.cardBody}>
             <DataGridContainer>

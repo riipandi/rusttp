@@ -1,7 +1,6 @@
 import { SlidersHorizontal } from '@keyline-icons/react'
 import { Button } from 'uilibs/base/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from 'uilibs/base/dropdown-menu'
-import { Icon } from 'uilibs/extra/icon'
 import { LanguageMenu } from '#/components/language-menu'
 import { ThemeMenu } from '#/components/theme-menu'
 import { useMessages } from '#/libraries/messages'
@@ -15,10 +14,10 @@ export function PreferencesMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button variant='ghost' size='icon-md' aria-label={m.preferences_label()} />}
-      >
-        <Icon svg={SlidersHorizontal} size={16} />
-      </DropdownMenuTrigger>
+        render={
+          <Button variant='ghost' icon={SlidersHorizontal} aria-label={m.preferences_label()} />
+        }
+      />
       <DropdownMenuContent side='bottom' align='end' sideOffset={8}>
         <ThemeMenu />
         <LanguageMenu />
