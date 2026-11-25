@@ -427,10 +427,7 @@ export const dataGridTableStyles = stylex.create({
   },
   rowExpandChevron: {
     height: unit.x4,
-    transform: {
-      default: 'rotate(0deg)',
-      ':dir(rtl)': 'rotate(0deg)'
-    },
+    transform: 'rotate(0deg)',
     transitionDuration: duration.medium,
     transitionProperty: 'transform',
     width: unit.x4

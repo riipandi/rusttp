@@ -737,3 +737,48 @@ export const Direction: Story = {
     )
   }
 }
+
+const arrowFlip = (canvas: { getByRole: (role: 'button', o: { name: RegExp }) => HTMLElement }) =>
+  [/previous month/i, /next month/i].map(
+    (name) =>
+      new DOMMatrix(
+        getComputedStyle(canvas.getByRole('button', { name }).querySelector('svg')!).transform
+      ).a
+  )
+
+/**
+ * `dir='rtl'` on a wrapper, with no `lang` anywhere, mirrors the month arrows. The flip is a
+ * `:dir(rtl)` rule, which the build must keep as `:dir()` (issue-00007): rewritten to a `:lang()`
+ * list it follows the language, and the picker's own `lang` (its locale) hides the wrapper's.
+ */
+export const RightToLeft: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div dir='rtl'>
+  <Calendar mode='single' />
+</div>`
+      }
+    }
+  },
+  render: () => (
+    <div dir='rtl'>
+      <Calendar mode='single' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(arrowFlip(canvas)).toEqual([-1, -1])
+  }
+}
+
+/** The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows. */
+export const ArabicLeftToRight: Story = {
+  render: () => (
+    <div dir='ltr'>
+      <Calendar mode='single' lang='ar' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(arrowFlip(canvas)).toEqual([1, 1])
+  }
+}

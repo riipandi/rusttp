@@ -200,7 +200,7 @@ Two things make a form read right to left, and `UIProvider` is only one of them.
 
 - Set both. `dir` alone leaves a slider's keys running left to right; `direction` alone leaves the layout and the text as they were.
 - The Storybook toolbar's direction toggle sets both for any story.
-- Calendar's month arrows and the data grid's expand chevrons do not flip yet: StyleX compiles their `:dir(rtl)` rule to a `:lang()` list, so it follows the language, not the direction, and Calendar's own `lang` (its locale, `en-US` by default) shadows a `lang` set above it. issue-00007 tracks it.
+- Calendar's month arrows, the data grid's expand chevrons, and its pager arrows mirror with `dir` alone; no `lang` is needed.
 
 ## Rebrand in one command
 

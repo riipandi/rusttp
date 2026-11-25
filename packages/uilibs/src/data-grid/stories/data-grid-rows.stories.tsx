@@ -13,6 +13,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { Fragment, useMemo, useState } from 'react'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import {
   DataGrid,
   DataGridColumnHeader,
@@ -715,116 +716,151 @@ const treeData: ITreeNode[] = [
   }
 ]
 
+/** The tree grid; `pageSize` makes a short page so the pager shows with two top-level rows. */
+function TreeGrid({ pageSize }: { pageSize?: number }) {
+  const [expanded, setExpanded] = useState<ExpandedState>({
+    eng: true,
+    'eng-platform': true
+  })
+  const tableHolder: { current?: DataGridTableInstance<ITreeNode> } = {}
+  const columns = useMemo<ColumnDef<DataGridFeatures, ITreeNode>[]>(
+    () => [
+      {
+        accessorKey: 'title',
+        id: 'title',
+        header: ({ column }) => (
+          <DataGridColumnHeaderInline table={tableHolder.current!} title='Title' column={column} />
+        ),
+        cell: ({ row }) => {
+          const item = row.original
+          return (
+            <div {...stylex.props(s.cellFlex)}>
+              <DataGridTableRowExpand row={row} />
+              {item.type === 'book' ? (
+                <Fragment>
+                  <Avatar style={s.avatar24}>
+                    <AvatarFallback>
+                      {item.name
+                        .split(' ')
+                        .filter((n) => n.length > 2 && n !== 'the' && n !== 'and')
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <a href={`#${item.id}`} {...stylex.props(s.link, s.strong)}>
+                    {item.name}
+                  </a>
+                </Fragment>
+              ) : (
+                <span {...stylex.props(s.strong)}>{item.name}</span>
+              )}
+            </div>
+          )
+        },
+        minSize: 260,
+        enableSorting: true,
+        enableHiding: false,
+        meta: { autoSize: true }
+      },
+      {
+        accessorKey: 'genre',
+        header: 'Genre',
+        cell: ({ row }) => (
+          <span {...stylex.props(s.muted)}>
+            {row.original.genre ?? (row.original.type === 'author' ? 'Author' : 'Series')}
+          </span>
+        ),
+        size: 180
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) =>
+          row.original.status === 'inPrint' ? (
+            <Badge variant='faded'>In print</Badge>
+          ) : (
+            <Badge color='critical'>Out of print</Badge>
+          ),
+        size: 130
+      }
+    ],
+    []
+  )
+  const table = useTable({
+    features: dataGridFeatures,
+    columns,
+    data: treeData,
+    initialState: pageSize ? { pagination: { pageIndex: 0, pageSize } } : undefined,
+    getRowId: (row: ITreeNode) => row.id,
+    getSubRows: (row) => row.children,
+    state: { expanded },
+    onExpandedChange: setExpanded,
+    paginateExpandedRows: false
+  })
+  tableHolder.current = table
+
+  return (
+    <DataGrid
+      table={table}
+      recordCount={treeData.length}
+      tableLayout={{
+        columnsResizable: true,
+        columnsMovable: true,
+        columnsVisibility: true
+      }}
+    >
+      <div {...stylex.props(s.stack)}>
+        <Card style={statusStyles.cardOverflow}>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTable table={table} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+        </Card>
+        <DataGridPagination table={table} sizes={[4, 8, 16]} />
+      </div>
+    </DataGrid>
+  )
+}
+
 export const TreeRows: Story = {
   name: 'Tree rows',
-  render: () => {
-    const [expanded, setExpanded] = useState<ExpandedState>({
-      eng: true,
-      'eng-platform': true
-    })
-    const tableHolder: { current?: DataGridTableInstance<ITreeNode> } = {}
-    const columns = useMemo<ColumnDef<DataGridFeatures, ITreeNode>[]>(
-      () => [
-        {
-          accessorKey: 'title',
-          id: 'title',
-          header: ({ column }) => (
-            <DataGridColumnHeaderInline
-              table={tableHolder.current!}
-              title='Title'
-              column={column}
-            />
-          ),
-          cell: ({ row }) => {
-            const item = row.original
-            return (
-              <div {...stylex.props(s.cellFlex)}>
-                <DataGridTableRowExpand row={row} />
-                {item.type === 'book' ? (
-                  <Fragment>
-                    <Avatar style={s.avatar24}>
-                      <AvatarFallback>
-                        {item.name
-                          .split(' ')
-                          .filter((n) => n.length > 2 && n !== 'the' && n !== 'and')
-                          .map((n) => n[0])
-                          .slice(0, 2)
-                          .join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <a href={`#${item.id}`} {...stylex.props(s.link, s.strong)}>
-                      {item.name}
-                    </a>
-                  </Fragment>
-                ) : (
-                  <span {...stylex.props(s.strong)}>{item.name}</span>
-                )}
-              </div>
-            )
-          },
-          minSize: 260,
-          enableSorting: true,
-          enableHiding: false,
-          meta: { autoSize: true }
-        },
-        {
-          accessorKey: 'genre',
-          header: 'Genre',
-          cell: ({ row }) => (
-            <span {...stylex.props(s.muted)}>
-              {row.original.genre ?? (row.original.type === 'author' ? 'Author' : 'Series')}
-            </span>
-          ),
-          size: 180
-        },
-        {
-          accessorKey: 'status',
-          header: 'Status',
-          cell: ({ row }) =>
-            row.original.status === 'inPrint' ? (
-              <Badge variant='faded'>In print</Badge>
-            ) : (
-              <Badge color='critical'>Out of print</Badge>
-            ),
-          size: 130
-        }
-      ],
-      []
-    )
-    const table = useTable({
-      features: dataGridFeatures,
-      columns,
-      data: treeData,
-      getRowId: (row: ITreeNode) => row.id,
-      getSubRows: (row) => row.children,
-      state: { expanded },
-      onExpandedChange: setExpanded,
-      paginateExpandedRows: false
-    })
-    tableHolder.current = table
+  render: () => <TreeGrid />
+}
 
-    return (
-      <DataGrid
-        table={table}
-        recordCount={treeData.length}
-        tableLayout={{
-          columnsResizable: true,
-          columnsMovable: true,
-          columnsVisibility: true
-        }}
-      >
-        <div {...stylex.props(s.stack)}>
-          <Card style={statusStyles.cardOverflow}>
-            <DataGridContainer>
-              <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
-              </DataGridScrollArea>
-            </DataGridContainer>
-          </Card>
-          <DataGridPagination table={table} sizes={[4, 8, 16]} />
-        </div>
-      </DataGrid>
-    )
+const turn = (el: Element) => new DOMMatrix(getComputedStyle(el).transform)
+
+/**
+ * The tree grid under `dir='rtl'` with no `lang`: the collapsed chevron points to the start (left)
+ * and the pager's arrows swap. Both flips are `:dir(rtl)` rules, which follow the `dir` attribute
+ * only when the build keeps `:dir()` (issue-00007).
+ */
+export const RightToLeft: Story = {
+  render: () => (
+    <div dir='rtl'>
+      <TreeGrid pageSize={1} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const chevron = (
+      await canvas.findAllByRole('button', { name: 'Expand row' })
+    )[0]!.querySelector('svg')!
+    // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
+    await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1))
+    // An expanded row points down in both directions.
+    await userEvent.click(chevron.closest('button')!)
+    const open = (await canvas.findAllByRole('button', { name: 'Collapse row' }))[0]!.querySelector(
+      'svg'
+    )!
+    await waitFor(() => expect(turn(open).b).toBeCloseTo(0))
+    await expect(turn(open).a).toBeCloseTo(1)
+    // `rotate(180deg)`: previous and next swap sides of the arrow glyphs.
+    for (const name of [/go to previous page/i, /go to next page/i]) {
+      const arrow = turn(canvas.getByRole('button', { name }))
+      await expect(arrow.a).toBeCloseTo(-1)
+      await expect(arrow.d).toBeCloseTo(-1)
+    }
   }
 }
 
