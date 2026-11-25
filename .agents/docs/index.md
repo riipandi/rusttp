@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `plan-00012-uilibs-data-grid-audit-remediation.md` | in-progress (wave 2: phases 8 to 16 done) | Fix the 15 `audit-00003` data grid findings in 19 phases: a parallel cleanup wave (styles, unit tests, stories), then serial accessibility work (names, announcements, keyboard row activation and column resizing), then the close. Questionnaire: Q00 to Q35. |
+| `plan-00012-uilibs-data-grid-audit-remediation.md` | in-progress (wave 2 done, wave 3 pending) | Fix the 15 `audit-00003` data grid findings in 19 phases: a parallel cleanup wave (styles, unit tests, stories), then serial accessibility work (names, announcements, keyboard row activation and column resizing), then the close. Questionnaire: Q00 to Q35. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
