@@ -22,6 +22,7 @@ import {
   cellSelectionChromeProps,
   getDataGridTreeIndentStyle,
   assignRef,
+  getDataGridPageRowCount,
   getDataGridTableResolvedRows,
   getDataGridTableOrderedVisibleColumns,
   getDataGridTableOrderedVisibleCells,
@@ -284,7 +285,8 @@ function DataGridTableBodyRow<TData extends object>({
                 props.onRowClick?.(row.original)
                 return
               }
-              const to =
+              const element = event.currentTarget
+              const move =
                 event.key === 'ArrowDown'
                   ? 'next'
                   : event.key === 'ArrowUp'
@@ -293,10 +295,17 @@ function DataGridTableBodyRow<TData extends object>({
                       ? 'first'
                       : event.key === 'End'
                         ? 'last'
-                        : null
-              if (!to) return
+                        : event.key === 'PageDown' || event.key === 'PageUp'
+                          ? (event.key === 'PageDown' ? 1 : -1) *
+                            getDataGridPageRowCount(
+                              element.closest<HTMLElement>(
+                                '[data-slot="data-grid-table-viewport"]'
+                              ) ?? element
+                            )
+                          : null
+              if (move === null) return
               event.preventDefault()
-              moveRowFocus(event.currentTarget, to)
+              moveRowFocus(element, move)
             }
           : undefined
       }

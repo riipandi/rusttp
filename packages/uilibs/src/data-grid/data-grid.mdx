@@ -96,12 +96,13 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 - The page buttons (previous, numbers, next) are one `nav` named `labels.pagination`, so a screen reader's landmark list has a pagination entry; the rows-per-page select and the range text sit outside it, as in `Pagination`.
 - With `onRowClick` set, a row is a keyboard target. The rows are one Tab stop (the row that last took focus, else the first one rendered, so a virtualized grid always has one), and a control inside a row (a checkbox, a link, the expand button) keeps its own keys. The `Row click` stories prove it.
 
-| Key                    | Action                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `ArrowDown`, `ArrowUp` | On a row: move to the next or previous row.                                                       |
-| `Home`, `End`          | On a row: jump to the first or last rendered row.                                                 |
-| `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                              |
-| `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row. |
+| Key                    | Action                                                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ArrowDown`, `ArrowUp` | On a row: move to the next or previous row.                                                                       |
+| `Home`, `End`          | On a row: jump to the first or last rendered row.                                                                 |
+| `PageDown`, `PageUp`   | On a row: move a page of rows (the rows that fit the view, less one), stopping at the last or first rendered row. |
+| `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                                              |
+| `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row.                 |
 
 - With `tableLayout.columnsResizable`, each resizable column's edge is a focusable `separator` (`aria-orientation='vertical'`, `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` in px, `aria-valuetext` from `labels.columnWidth(width)` (default "160 px"), `aria-controls` naming its header cell, and a name from `labels.resizeColumn(title)`), so a keyboard user can set a width. A column with no `maxSize` reports `Number.MAX_SAFE_INTEGER` as `aria-valuemax`, since ARIA reads a missing maximum as 100. This adds one Tab stop per resizable column. The `Column resizing, keyboard` stories prove the keys.
 

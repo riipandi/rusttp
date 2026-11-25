@@ -297,6 +297,19 @@ export const RowClick: Story = {
     await pressUntil('{Home}', () => focusedRow(0))
     await pressUntil('{ArrowUp}', () => expect(document.activeElement).toBe(bodyRows()[0]))
 
+    // PageDown and PageUp move a page of rows and stop at the ends: five rows fit one page, so the
+    // page reaches the last row and back.
+    await pressUntil('{PageDown}', () => focusedRow(4), {
+      when: () => document.activeElement === bodyRows()[0]
+    })
+    await userEvent.keyboard('{PageDown}')
+    await focusedRow(4)
+    await pressUntil('{PageUp}', () => focusedRow(0), {
+      when: () => document.activeElement === bodyRows()[4]
+    })
+    await userEvent.keyboard('{PageUp}')
+    await focusedRow(0)
+
     // Enter and Space on the row open it, with the right row.
     bodyRows()[1]!.focus()
     await userEvent.keyboard('{Enter}')

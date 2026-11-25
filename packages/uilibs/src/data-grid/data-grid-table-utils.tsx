@@ -352,6 +352,25 @@ function DataGridTableFillFootCell<TData extends object>({
   )
 }
 
+/**
+ * One viewport's worth of rows for PageUp and PageDown, measured from the live layout; 10 when
+ * nothing is measurable (jsdom). Data rows only: the virtual table's spacer rows carry the whole
+ * scroll offset as height and would collapse the page size to a single row.
+ */
+function getDataGridPageRowCount(viewport: HTMLElement): number {
+  const row = viewport.querySelector('tbody tr[data-row-id]')
+  // The nearest ancestor that actually scrolls; in the scroll-area layout the viewport's parent is
+  // a full-height content wrapper whose clientHeight would make the page span the whole table.
+  let scroller: HTMLElement | null = viewport
+  while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
+    scroller = scroller.parentElement
+  }
+  const rowHeight = row?.getBoundingClientRect().height || 0
+  const viewHeight = scroller?.clientHeight || viewport.clientHeight
+  if (!rowHeight || !viewHeight) return 10
+  return Math.max(1, Math.floor(viewHeight / rowHeight) - 1)
+}
+
 export {
   cellSelectionChromeProps,
   getDataGridTreeIndentStyle,
@@ -365,6 +384,7 @@ export {
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
   nextColumnSize,
+  getDataGridPageRowCount,
   DataGridTableFillCol,
   DataGridTableFillHeadCell,
   DataGridTableFillBodyCell,
