@@ -201,6 +201,8 @@ Two things make a form read right to left, and `UIProvider` is only one of them.
 - Set both. `dir` alone leaves a slider's keys running left to right; `direction` alone leaves the layout and the text as they were.
 - The Storybook toolbar's direction toggle sets both for any story.
 - Calendar's month arrows, the data grid's expand chevrons, and its pager arrows mirror with `dir` alone; no `lang` is needed.
+- Menus, lists, fields, joined controls, and the close buttons of dialogs and sheets place their parts at the inline edges, so `dir` alone moves a check, a shortcut, or a rounded end to the other side. A submenu opens toward `inline-end`.
+- `Sheet`, `Drawer`, and `Toast` keep the screen side they are given: `side='left'` is the left edge in both directions.
 
 ## Rebrand in one command
 
