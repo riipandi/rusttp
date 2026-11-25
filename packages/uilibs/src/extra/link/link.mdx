@@ -62,6 +62,18 @@ The story builds its element from the router's `useLinkProps`, because Storybook
 
 <Canvas of={Stories.Handlers} />
 
+## Accessibility
+
+A link is the platform's `a`, or the element you pass to `render`, so the keys are the browser's. The `Keyboard` story tabs through the links of a sentence and follows one.
+
+| Key                     | Action                                    |
+| ----------------------- | ----------------------------------------- |
+| `Tab` and `Shift + Tab` | Move between the links in document order. |
+| `Enter`                 | Follows the focused link.                 |
+
+- Glyphs from `icon` and `endIcon` are decoration; the link's name is its text.
+- Use the `underline` variant in running text: color alone does not mark a link there.
+
 ## API reference
 
 `Link` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

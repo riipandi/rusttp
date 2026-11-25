@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/
 import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
 import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors, shadow } from '../../styles/colors.stylex'
 import {
@@ -623,6 +624,24 @@ function GridOfItems() {
 
 /** The `strategy` of the list: items stacked in a column, or laid out on a grid. */
 export const Layouts: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable
+  value={items}
+  onValueChange={setItems}
+  getItemValue={(item) => item.id}
+  strategy='grid'
+>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id}>
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='layout' rows={['vertical', 'grid'] as const} wide>
       {(layout) => (layout === 'vertical' ? <ListOfItems /> : <GridOfItems />)}
@@ -1173,6 +1192,25 @@ function persistOrder(): Promise<void> {
 }
 
 export const PersistedOrder: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable
+  value={items}
+  onValueChange={setItems}
+  onValueCommit={(next, { previousValue, overIndex }) => save(next).catch(() => setItems(previousValue))}
+  getItemValue={(item) => item.id}
+>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id}>
+      <SortableItemHandle />
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
   name: 'Persisted order',
   render: () => {
     const [items, setItems] = useState(defaultTasks)
@@ -1221,6 +1259,7 @@ export const PersistedOrder: Story = {
 }
 
 const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+const lifted = () => document.querySelector('[data-dragging="true"]') !== null
 
 /** A keyboard drag is announced by the item's name, in the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1270,6 +1309,20 @@ export const KeyboardAnnouncements: Story = {
 
 /** Each handle is named after its item, so a list of controls tells the rows apart. */
 export const HandleNames: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable value={items} onValueChange={setItems} getItemValue={(item) => item.id}>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id} aria-label={item.title}>
+      <SortableItemHandle />
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
   render: () => {
     const [items, setItems] = useState(defaultFiles.slice(0, 3))
     return (
@@ -1305,5 +1358,73 @@ export const HandleNames: Story = {
       'Reorder Product Demo Video'
     ])
     await expect(new Set(names).size).toBe(names.length)
+  }
+}
+
+/** An item is one Tab stop: Space lifts it, the arrows move it, Space drops it and Escape puts it back. */
+export const Keyboard: Story = {
+  render: () => {
+    const [items, setItems] = useState(defaultFiles.slice(0, 3))
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Sortable
+          value={items}
+          onValueChange={setItems}
+          getItemValue={(item) => item.id}
+          style={styles.list}
+        >
+          {items.map((item) => (
+            <SortableItem key={item.id} value={item.id}>
+              <div {...stylex.props(styles.row)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+              </div>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const order = () =>
+      Array.from(canvasElement.querySelectorAll('[data-slot="sortable-item"]')).map(
+        (item) => item.textContent
+      )
+    const demo = () => canvas.getByText('Product Demo').closest<HTMLElement>('[role="button"]')
+    const start = ['Product Demo', 'Product Specification', 'Product Demo Video']
+    await expect(order()).toEqual(start)
+
+    // Tab reaches the first item, and only the items are stops.
+    await userEvent.tab()
+    await waitFor(() => expect(demo()).toHaveFocus())
+
+    // Lift, step down, drop: the order changes and focus stays on the moved item.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil(
+      '{ArrowDown}',
+      () => expect(live()).toBe('Product Demo moved over Product Specification.'),
+      {
+        when: () => lifted() && !live().includes('moved over')
+      }
+    )
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() =>
+      expect(order()).toEqual(['Product Specification', 'Product Demo', 'Product Demo Video'])
+    )
+    await waitFor(() => expect(demo()).toHaveFocus())
+
+    // Lift again and cancel: Escape drops nothing.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil(
+      '{ArrowDown}',
+      () => expect(live()).toBe('Product Demo moved over Product Demo Video.'),
+      {
+        when: () => lifted() && !live().includes('Product Demo Video.')
+      }
+    )
+    await pressUntil('{Escape}', () => expect(lifted()).toBe(false))
+    await waitFor(() =>
+      expect(order()).toEqual(['Product Specification', 'Product Demo', 'Product Demo Video'])
+    )
+    await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }

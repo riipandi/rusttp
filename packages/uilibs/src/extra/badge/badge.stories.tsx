@@ -1,7 +1,7 @@
 import { Check, ChevronRight } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, fn, userEvent } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { expectHitArea } from '../../contracts/hit-area'
 import { Axis } from '../../contracts/story-axes'
 import { Spinner } from '../spinner'
@@ -53,6 +53,7 @@ const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as 
 
 /** The four fills at the default color. */
 export const Variants: Story = {
+  parameters: { docs: { source: { code: `<Badge variant='faded'>Hufflepuff</Badge>` } } },
   render: () => (
     <Axis axis='variant' rows={variantNames}>
       {(variant) => <Badge variant={variant}>Hufflepuff</Badge>}
@@ -71,6 +72,9 @@ export const Variants: Story = {
 
 /** Every fill in every color; the a11y gate checks the contrast of each pair. */
 export const Colors: Story = {
+  parameters: {
+    docs: { source: { code: `<Badge variant='outline' color='critical'>outline critical</Badge>` } }
+  },
   render: () => (
     <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
       {(variant, color) => (
@@ -99,6 +103,7 @@ export const Colors: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: { docs: { source: { code: `<Badge size='large'>large</Badge>` } } },
   render: () => (
     <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => <Badge size={size}>{size}</Badge>}
@@ -116,6 +121,17 @@ export const Sizes: Story = {
 
 /** A badge that can be dismissed carries a named button; a highlighted one fades. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Badge variant='faded'>Owl Post</Badge>
+
+<Badge variant='faded' highlighted>Floo Network</Badge>
+
+<Badge variant='faded' onDismiss={() => …}>Detention</Badge>`
+      }
+    }
+  },
   args: { onDismiss: fn() },
   render: (args) => (
     <Axis axis='state' rows={['default', 'highlighted', 'dismissible'] as const}>
@@ -220,5 +236,26 @@ export const Icons: Story = {
     const tournament = canvas.getByText('Triwizard Tournament')
     const children = Array.from(tournament.children).map((child) => child.tagName.toLowerCase())
     await expect(children).toEqual(['svg', 'button'])
+  }
+}
+
+const onDismissKey = fn()
+
+/** The dismiss button is the only Tab stop of a badge; Enter and Space both dismiss. */
+export const Keyboard: Story = {
+  render: () => (
+    <Badge variant='faded' onDismiss={onDismissKey}>
+      Detention
+    </Badge>
+  ),
+  play: async ({ canvas }) => {
+    onDismissKey.mockClear()
+    const dismiss = canvas.getByRole('button', { name: 'Dismiss' })
+    await userEvent.tab()
+    await waitFor(() => expect(dismiss).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(onDismissKey).toHaveBeenCalledTimes(1)
+    await userEvent.keyboard(' ')
+    await expect(onDismissKey).toHaveBeenCalledTimes(2)
   }
 }

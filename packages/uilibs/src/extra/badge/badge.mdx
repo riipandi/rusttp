@@ -43,6 +43,17 @@ Dismissible and highlighted badges.
 
 <Canvas of={Stories.States} />
 
+## Accessibility
+
+A badge is text. It takes a Tab stop only through `onDismiss`, which adds a dismiss button named `Dismiss` (`labels.dismiss`), or through a link `render`. The `Keyboard` story presses the dismiss button.
+
+| Key                | Action                                                            |
+| ------------------ | ----------------------------------------------------------------- |
+| `Tab`              | Focuses the dismiss button, the only stop in a dismissible badge. |
+| `Enter` or `Space` | Calls `onDismiss`.                                                |
+
+- The `icon` and `endIcon` glyphs are hidden from assistive technology, so the label carries the meaning.
+
 ## API reference
 
 `Badge` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

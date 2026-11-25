@@ -57,6 +57,19 @@ A handle is named after its item (`Reorder Product Demo`), so the handles are to
 
 <Canvas of={Stories.HandleNames} />
 
+## Accessibility
+
+Without a `SortableItemHandle` the item is the drag control, a Tab stop that takes the keys below; with one, the handle is named `Reorder <name>` after its item (the Handle names example). Drags are announced by the item's name in the language `labels` give. The `Keyboard` and `KeyboardAnnouncements` stories drive a list.
+
+| Key                    | Action                                                           |
+| ---------------------- | ---------------------------------------------------------------- |
+| `Tab`                  | Reaches the first item.                                          |
+| `Space`                | Lifts the focused item, and drops it where it is.                |
+| `ArrowUp`, `ArrowDown` | While lifted: move the item through the list. Focus stays on it. |
+| `Escape`               | While lifted: cancels the drag and leaves the order unchanged.   |
+
+- dnd-kit's own keyboard model and announcements are documented in its [accessibility guide](https://docs.dndkit.com/guides/accessibility).
+
 ## API reference
 
 Every part except `SortableOverlay` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

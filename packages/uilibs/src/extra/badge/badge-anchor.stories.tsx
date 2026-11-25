@@ -86,6 +86,17 @@ export const Playground: Story = {
 
 /** The badge is centred on each corner of the element's box, and the box does not change size. */
 export const Corners: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BadgeAnchor corner='bottom-start' badge={<Badge size='small'>3</Badge>}>
+  <Avatar squared size='large'>
+    <AvatarFallback>HG</AvatarFallback>
+  </Avatar>
+</BadgeAnchor>`
+      }
+    }
+  },
   args: { badge: null },
   render: () => (
     <Axis axis='corner' rows={corners}>
@@ -120,6 +131,17 @@ export const Corners: Story = {
 
 /** On a round element the badge sits on its rim, 14.6% in from the corner of the box. */
 export const Overlaps: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BadgeAnchor overlap='circular' badge={<Badge size='small'>9</Badge>}>
+  <Avatar size='large'>
+    <AvatarFallback>RW</AvatarFallback>
+  </Avatar>
+</BadgeAnchor>`
+      }
+    }
+  },
   args: { badge: null },
   render: () => (
     <Axis axis='overlap' rows={overlaps}>
@@ -155,6 +177,19 @@ export const Overlaps: Story = {
 
 /** Start and end follow the writing direction: in a right-to-left box, the end is on the left. */
 export const Rtl: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div dir='rtl'>
+  <BadgeAnchor corner='top-end' badge={<Badge size='small'>3</Badge>}>
+    <Avatar squared size='large'>
+      <AvatarFallback>LL</AvatarFallback>
+    </Avatar>
+  </BadgeAnchor>
+</div>`
+      }
+    }
+  },
   name: 'Right to left',
   args: { badge: null },
   render: () => (
@@ -178,6 +213,28 @@ export const Rtl: Story = {
 
 /** A count on an icon button, and a dot on an avatar. */
 export const Anchors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BadgeAnchor
+  overlap='circular'
+  badge={<Badge size='small' aria-hidden>3</Badge>}
+>
+  <Button variant='outline' rounded icon={Bell} aria-label='Owl post, 3 unread' />
+</BadgeAnchor>
+
+<BadgeAnchor
+  overlap='circular'
+  corner='bottom-end'
+  badge={<Badge size='small' color='positive' aria-hidden style={…} />}
+>
+  <Avatar>
+    <AvatarFallback>DM</AvatarFallback>
+  </Avatar>
+</BadgeAnchor>`
+      }
+    }
+  },
   args: { badge: null },
   render: () => (
     <div {...stylex.props(styles.row)}>

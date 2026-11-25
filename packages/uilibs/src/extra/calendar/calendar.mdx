@@ -55,6 +55,22 @@ A `DayButton` of your own replaces the day cell. Compose the `calendarStyles` fo
 
 <Canvas of={Stories.WeekNumbers} />
 
+## Accessibility
+
+The calendar is react-day-picker's grid with this library's styles. The `Keyboard` example above walks it. The rest of the day-picker's accessibility is documented at [daypicker.dev](https://daypicker.dev).
+
+| Key                       | Action                                                               |
+| ------------------------- | -------------------------------------------------------------------- |
+| `Tab`                     | Reaches the previous-month button first.                             |
+| `ArrowLeft`, `ArrowRight` | Move focus to the previous or next day.                              |
+| `ArrowUp`, `ArrowDown`    | Move focus to the same day of the previous or next week.             |
+| `Home`, `End`             | Move focus to the first or last day of the week.                     |
+| `Enter` or `Space`        | Picks the focused day; the selection moves with it in `single` mode. |
+| `PageUp`, `PageDown`      | Show the previous or next month.                                     |
+
+- A day button's name starts with its number, so a spoken command such as "click 13" matches (WCAG 2.5.3).
+- Give each calendar on a page its own `labels.labelNav`: the navigation landmarks need different names.
+
 ## API reference
 
 `Calendar` also takes `style`: StyleX styles that replace `className` and `style`. They land on the root. See [Styling](?path=/docs/styling--docs).

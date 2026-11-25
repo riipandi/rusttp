@@ -2,7 +2,7 @@ import { EyeOff, Eye } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
 import {
   cellOf,
@@ -12,6 +12,7 @@ import {
   expectControlVariants,
   expectDisabledLook
 } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes } from '../../styles/control.stylex'
 import { container } from '../../styles/tokens.stylex'
@@ -39,17 +40,34 @@ export default meta
 export const Playground: Story = {
   // `defaultVisible` only seeds the state, so the render remounts the field when it changes.
   parameters: {
-    controls: { disable: false, include: ['placeholder', 'size', 'disabled', 'defaultVisible'] }
+    controls: {
+      disable: false,
+      include: [
+        'placeholder',
+        'size',
+        'variant',
+        'toggleVariant',
+        'toggleSize',
+        'disabled',
+        'defaultVisible'
+      ]
+    }
   },
   argTypes: {
     placeholder: { control: 'text' },
     size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: controlVariantNames },
+    toggleVariant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
+    toggleSize: { control: 'radio', options: ['xsmall', 'small'] },
     disabled: { control: 'boolean' },
     defaultVisible: { control: 'boolean' }
   },
   args: {
     placeholder: 'Enter the password...',
     size: 'medium',
+    variant: 'outline',
+    toggleVariant: 'ghost',
+    toggleSize: 'xsmall',
     disabled: false,
     defaultVisible: false
   },
@@ -62,6 +80,9 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPassword variant='faded' aria-label='Password faded' />` } }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => <InputPassword variant={variant} aria-label={`Password ${variant}`} />}
@@ -71,6 +92,9 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPassword size='large' aria-label='Password large' />` } }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => <InputPassword size={size} aria-label={`Password ${size}`} />}
@@ -80,6 +104,19 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputPassword aria-label='Passphrase disabled' placeholder='Sealed by the Ministry' disabled />
+
+<Field invalid>
+  <FieldLabel htmlFor='input-password-invalid'>Vault passphrase</FieldLabel>
+  <InputPassword id='input-password-invalid' defaultValue='123' />
+  <FieldError>The passphrase must be at least 8 characters.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
       {(state) =>
@@ -132,6 +169,20 @@ export const VisibleByDefault: Story = {
 }
 
 export const Controlled: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [visible, setVisible] = useState(false)
+
+<InputPassword
+  aria-label='Password'
+  visible={visible}
+  onVisibleChange={setVisible}
+  defaultValue='expecto-patronum'
+/>`
+      }
+    }
+  },
   render: () => {
     const [visible, setVisible] = React.useState(false)
     return (
@@ -192,5 +243,38 @@ export const Translated: Story = {
     await userEvent.click(toggle)
     await expect(toggle).toHaveAccessibleName('Tampilkan kata sandi')
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
+/** Tab moves from the input to the toggle; Space and Enter press the toggle and focus stays on it. */
+export const Keyboard: Story = {
+  render: () => (
+    <div {...stylex.props(styles.field)}>
+      <InputPassword aria-label='Vault passphrase' defaultValue='alohomora' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('Vault passphrase')
+    const toggle = canvas.getByRole('button', { name: 'Show password' })
+    input.focus()
+    await userEvent.tab()
+    await waitFor(() => expect(toggle).toHaveFocus())
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(input).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(toggle).toHaveFocus())
+
+    // Space shows the value; Enter hides it again. The toggle keeps focus and its one name.
+    await pressUntil(' ', () => expect(input).toHaveAttribute('type', 'text'), {
+      when: () => input.getAttribute('type') === 'password'
+    })
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await expect(toggle).toHaveFocus()
+    await pressUntil('{Enter}', () => expect(input).toHaveAttribute('type', 'password'), {
+      when: () => input.getAttribute('type') === 'text'
+    })
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    await expect(toggle).toHaveAccessibleName('Show password')
+    await expect(toggle).toHaveFocus()
   }
 }

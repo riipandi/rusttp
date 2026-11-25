@@ -5,6 +5,7 @@ import * as React from 'react'
 import type { GroupImperativeHandle } from 'react-resizable-panels'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, radius, stroke, unit } from '../../styles/tokens.stylex'
@@ -121,7 +122,18 @@ const handleVariants = ['line', 'pill', 'spring', 'capsule'] as const
 
 /** The handle: a bare line, or a grip drawn as a pill, a spring-loaded pill, or a capsule. */
 export const Variants: Story = {
-  parameters: { canvas: 'auto' },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ResizablePanelGroup>
+  <ResizablePanel defaultSize='35%'>Panel A</ResizablePanel>
+  <ResizableHandle withHandle variant='capsule' aria-label='Resize capsule' />
+  <ResizablePanel defaultSize='65%'>Panel B</ResizablePanel>
+</ResizablePanelGroup>`
+      }
+    },
+    canvas: 'auto'
+  },
   render: () => (
     <Axis axis='variant' rows={handleVariants}>
       {(variant) => (
@@ -154,7 +166,18 @@ export const Variants: Story = {
 
 /** Each group flows along its own axis, and the arrow keys grow the first panel along it. */
 export const Orientations: Story = {
-  parameters: { canvas: 'auto' },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ResizablePanelGroup orientation='vertical'>
+  <ResizablePanel id='first' defaultSize='30%'>First</ResizablePanel>
+  <ResizableHandle aria-label='Resize vertical' />
+  <ResizablePanel defaultSize='70%'>Second</ResizablePanel>
+</ResizablePanelGroup>`
+      }
+    },
+    canvas: 'auto'
+  },
   render: () => (
     <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
       {(orientation) => (
@@ -188,6 +211,23 @@ export const Orientations: Story = {
 }
 
 export const NestedMixed: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ResizablePanelGroup>
+  <ResizablePanel defaultSize='40%'>Side</ResizablePanel>
+  <ResizableHandle aria-label='Resize side panel' />
+  <ResizablePanel defaultSize='60%'>
+    <ResizablePanelGroup orientation='vertical'>
+      <ResizablePanel defaultSize='30%'>Top</ResizablePanel>
+      <ResizableHandle aria-label='Resize top panel' />
+      <ResizablePanel defaultSize='70%'>Bottom</ResizablePanel>
+    </ResizablePanelGroup>
+  </ResizablePanel>
+</ResizablePanelGroup>`
+      }
+    }
+  },
   render: () => (
     <ResizablePanelGroup style={styles.frame}>
       <ResizablePanel defaultSize='40%' style={styles.content}>
@@ -254,6 +294,19 @@ export const NestedPills: Story = {
 }
 
 export const ThreePanels: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ResizablePanelGroup>
+  <ResizablePanel defaultSize='25%' minSize='15%'>Files</ResizablePanel>
+  <ResizableHandle withHandle aria-label='Resize files panel' />
+  <ResizablePanel defaultSize='50%' minSize='25%'>Editor</ResizablePanel>
+  <ResizableHandle withHandle aria-label='Resize editor panel' />
+  <ResizablePanel defaultSize='25%' minSize='15%'>Preview</ResizablePanel>
+</ResizablePanelGroup>`
+      }
+    }
+  },
   render: () => (
     <ResizablePanelGroup style={styles.frame}>
       <ResizablePanel defaultSize='25%' minSize='15%' style={styles.content}>
@@ -351,5 +404,50 @@ export const Controlled: Story = {
     await userEvent.click(canvas.getByRole('button', { name: '50 / 50' }))
     await waitFor(() => expect(canvas.getAllByText('50%')).toHaveLength(2))
     await expect(panel?.getBoundingClientRect().width ?? 0).toBeGreaterThan(before)
+  }
+}
+
+/** A handle is one Tab stop; the arrows move the bar, and Home and End send it to a panel's limit. */
+export const Keyboard: Story = {
+  render: () => (
+    <ResizablePanelGroup style={styles.frame}>
+      <ResizablePanel
+        id='files'
+        defaultSize='40%'
+        minSize='20%'
+        maxSize='70%'
+        style={styles.content}
+      >
+        Files
+      </ResizablePanel>
+      <ResizableHandle aria-label='Resize files panel' />
+      <ResizablePanel defaultSize='60%' style={styles.content}>
+        Editor
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  ),
+  play: async ({ canvas }) => {
+    const panel = document.body.querySelector<HTMLElement>('[data-testid="files"]')
+    if (!panel) throw new Error('No files panel')
+    const handle = canvas.getByRole('separator', { name: 'Resize files panel' })
+    const width = () => panel.getBoundingClientRect().width
+    await userEvent.tab()
+    await waitFor(() => expect(handle).toHaveFocus())
+    await expect(handle).toHaveAttribute('aria-valuenow', '40')
+
+    // Arrow keys step the bar by the library's keyboard step, one way and back.
+    const start = width()
+    await pressUntil('{ArrowRight}', () => expect(width()).toBeGreaterThan(start), {
+      when: () => width() <= start
+    })
+    const grown = width()
+    await pressUntil('{ArrowLeft}', () => expect(width()).toBeLessThan(grown), {
+      when: () => width() >= grown
+    })
+
+    // End and Home send the bar to the largest and smallest size the panel allows.
+    await pressUntil('{End}', () => expect(handle).toHaveAttribute('aria-valuenow', '70'))
+    await pressUntil('{Home}', () => expect(handle).toHaveAttribute('aria-valuenow', '20'))
+    await expect(handle).toHaveFocus()
   }
 }

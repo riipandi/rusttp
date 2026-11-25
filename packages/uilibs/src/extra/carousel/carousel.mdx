@@ -74,6 +74,19 @@ The strip, the keys, the icons, and the button order follow the direction of the
 
 <Canvas of={Stories.RightToLeft} />
 
+## Accessibility
+
+The carousel is a named `region`. Its scrolling strip is a `group` named `Slides` that takes the Tab stop, and each slide is a `group` named by its position. A polite status line reports the visible slides. The `Keyboard` example above walks it.
+
+| Key                       | Action                                                                                                   |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Tab`                     | Reaches the strip, then Previous, then Next.                                                             |
+| `ArrowRight`, `ArrowLeft` | Move one page of `visibleItems` slides. The keys swap in a right-to-left layout.                         |
+| `Home`, `End`             | Go to the first or last page.                                                                            |
+| `Enter` or `Space`        | On Previous or Next: moves one page. At either end the button is `aria-disabled` but keeps its Tab stop. |
+
+- Name each carousel with `aria-label` or `aria-labelledby`; a control inside a slide keeps its own keys.
+
 ## API reference
 
 The carousel also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

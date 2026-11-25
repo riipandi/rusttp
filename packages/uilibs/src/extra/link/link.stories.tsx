@@ -46,6 +46,11 @@ export const Playground: Story = {
 const colorNames = ['primary', 'neutral', 'critical', 'positive', 'warning', 'inherit'] as const
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Link href='#critical' color='critical'>Visit Hogsmeade (critical)</Link>` }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={colorNames}>
       {(color) => (
@@ -69,6 +74,13 @@ export const Colors: Story = {
 }
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Link href='#plain' variant='plain'>Platform nine and three quarters (plain)</Link>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={['underline', 'plain'] as const}>
       {(variant) => (
@@ -96,6 +108,15 @@ export const Variants: Story = {
 }
 
 export const Glyphs: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Link href='#map' endIcon={ArrowRight}>Open the Marauder's Map</Link>
+
+<Link href='#owlery' icon={Book}>Visit the Owlery</Link>`
+      }
+    }
+  },
   name: 'icon and end icon',
   render: () => (
     <div {...stylex.props(styles.row)}>
@@ -117,6 +138,16 @@ export const Glyphs: Story = {
 }
 
 export const InText: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<p>
+  Owls deliver the post at breakfast; read the <Link href='#rules'>school rules</Link> before
+  you send one, and check the <Link href='#timetable'>timetable</Link> for the first lesson.
+</p>`
+      }
+    }
+  },
   name: 'in text',
   render: () => (
     <p {...stylex.props(styles.paragraph)}>
@@ -178,6 +209,15 @@ function RouterStory() {
 }
 
 export const WithRouterLink: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { Link as RouterLink } from '@tanstack/react-router'
+
+<Link render={<RouterLink to='/dungeons' />}>Dungeons</Link>`
+      }
+    }
+  },
   name: 'router link',
   render: () => <RouterStory />,
   // `render` keeps the router's own props (`href`, the click navigation) and adds the library's
@@ -201,6 +241,22 @@ const onClick = fn()
 const onRef = fn()
 
 export const Handlers: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Link
+  ref={(node) => …}
+  href='#owl-post'
+  onClick={(event) => {
+    event.preventDefault()
+    …
+  }}
+>
+  Send an owl
+</Link>`
+      }
+    }
+  },
   name: 'handlers and ref',
   render: () => (
     <Link
@@ -219,5 +275,51 @@ export const Handlers: Story = {
     await userEvent.click(canvas.getByRole('link', { name: 'Send an owl' }))
     await expect(onClick).toHaveBeenCalledTimes(1)
     await expect(onRef).toHaveBeenCalledWith('A')
+  }
+}
+
+const onKeyboardClick = fn()
+
+/** Tab visits the links of a sentence in order; Enter follows the focused one. */
+export const Keyboard: Story = {
+  render: () => (
+    <p {...stylex.props(styles.paragraph)}>
+      Read the{' '}
+      <Link
+        href='#rules'
+        onClick={(event) => {
+          event.preventDefault()
+          onKeyboardClick('rules')
+        }}
+      >
+        school rules
+      </Link>{' '}
+      and check the{' '}
+      <Link
+        href='#timetable'
+        onClick={(event) => {
+          event.preventDefault()
+          onKeyboardClick('timetable')
+        }}
+      >
+        timetable
+      </Link>
+      .
+    </p>
+  ),
+  play: async ({ canvas }) => {
+    onKeyboardClick.mockClear()
+    const rules = canvas.getByRole('link', { name: 'school rules' })
+    const timetable = canvas.getByRole('link', { name: 'timetable' })
+    rules.focus()
+    await userEvent.tab()
+    await waitFor(() => expect(timetable).toHaveFocus())
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(rules).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(onKeyboardClick).toHaveBeenLastCalledWith('rules')
+    await userEvent.tab()
+    await userEvent.keyboard('{Enter}')
+    await expect(onKeyboardClick).toHaveBeenLastCalledWith('timetable')
   }
 }

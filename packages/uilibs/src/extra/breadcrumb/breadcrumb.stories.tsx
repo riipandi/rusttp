@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import {
   Breadcrumb,
@@ -79,6 +80,27 @@ export const Playground: Story = {
 }
 
 export const Ellipsis: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href='/'>Great Hall</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Potions classroom</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`
+      }
+    }
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -99,6 +121,24 @@ export const Ellipsis: Story = {
 }
 
 export const Dropdown: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BreadcrumbItem>
+  <DropdownMenu>
+    <DropdownMenuTrigger aria-label='Collapsed breadcrumb levels'>
+      <BreadcrumbEllipsis />
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align='start'>
+      <DropdownMenuItem>Marauder's Map</DropdownMenuItem>
+      <DropdownMenuItem>Daily Prophet</DropdownMenuItem>
+      <DropdownMenuItem>Gringotts</DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</BreadcrumbItem>`
+      }
+    }
+  },
   render: () => (
     <Breadcrumb>
       <BreadcrumbList>
@@ -145,6 +185,23 @@ export const Dropdown: Story = {
 }
 
 export const CustomSeparator: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href='/'>Hogsmeade</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator>/</BreadcrumbSeparator>
+    <BreadcrumbItem>
+      <BreadcrumbPage>Honeydukes</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`
+      }
+    }
+  },
   name: 'Custom separator',
   render: () => (
     <Breadcrumb>
@@ -189,6 +246,23 @@ export const Translated: Story = {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Breadcrumb color='primary'>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href='#hogwarts'>Hogwarts primary</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Great Hall</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={['neutral', 'primary'] as const}>
       {(color) => (
@@ -215,5 +289,75 @@ export const Colors: Story = {
         getComputedStyle(canvas.getAllByText('Great Hall')[0]!).color
       )
     }
+  }
+}
+
+/** Tab visits the links and the collapsed-levels button in order; the current page is not a stop. */
+export const Keyboard: Story = {
+  render: () => (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href='#hogwarts'>Hogwarts</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              aria-label='Collapsed breadcrumb levels'
+              {...stylex.props(styles.trigger)}
+            >
+              <BreadcrumbEllipsis />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='start'>
+              <DropdownMenuItem>Marauder&apos;s Map</DropdownMenuItem>
+              <DropdownMenuItem>Daily Prophet</DropdownMenuItem>
+              <DropdownMenuItem>Gringotts</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbLink href='#diagon-alley'>Diagon Alley</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Honeydukes</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const first = canvas.getByRole('link', { name: 'Hogwarts' })
+    const trigger = canvas.getByRole('button', { name: 'Collapsed breadcrumb levels' })
+    const last = canvas.getByRole('link', { name: 'Diagon Alley' })
+    const menu = () => body.queryByRole('menu')
+    const item = (name: string) => body.getByRole('menuitem', { name })
+
+    // Tab order: link, the collapsed levels, link. The current page is text, not a stop.
+    first.focus()
+    await userEvent.tab()
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(last).toHaveFocus())
+    await expect(canvas.getByText('Honeydukes')).toHaveAttribute('aria-current', 'page')
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(trigger).toHaveFocus())
+
+    // Enter opens the levels; arrows move through them; Escape closes and returns to the button.
+    await pressUntil('{Enter}', () => expect(menu()).not.toBeNull(), { when: () => !menu() })
+    await pressUntil('{Home}', () => expect(item("Marauder's Map")).toHaveFocus())
+    await pressUntil('{ArrowDown}', () => expect(item('Daily Prophet')).toHaveFocus(), {
+      when: () => item("Marauder's Map") === document.activeElement
+    })
+    await pressUntil('{Escape}', () => expect(menu()).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+
+    // Enter on a level picks it, closes the menu, and returns focus to the button.
+    await pressUntil('{Enter}', () => expect(menu()).not.toBeNull(), { when: () => !menu() })
+    await pressUntil('{Home}', () => expect(item("Marauder's Map")).toHaveFocus())
+    await pressUntil('{Enter}', () => expect(menu()).toBeNull(), { when: () => !!menu() })
+    await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

@@ -49,6 +49,18 @@ The arrow keys grow the first panel along the group's axis.
 
 <Canvas of={Stories.ThreePanels} />
 
+## Accessibility
+
+Each `ResizableHandle` is a focusable `separator` and needs a name from `aria-label`. The `Keyboard` story drives one handle, and the Orientations example shows the arrows follow the group's axis.
+
+| Key                     | Action                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab` | Reach each handle: one stop per handle.                                                    |
+| Arrow keys              | Move the bar along the group's axis, and back with the opposite arrow.                     |
+| `Home`, `End`           | Send the bar to the smallest and the largest size its panels allow (`minSize`, `maxSize`). |
+
+- The handle reports its position in `aria-valuenow`.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ResizablePanel` it lands on an inner element, so padding never stops the panel from shrinking to zero. Add `overflow` there to scroll within the panel.

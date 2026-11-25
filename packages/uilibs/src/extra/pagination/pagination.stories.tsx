@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { buttonSizes } from '../../base/button/button.stylex'
 import { denseControlSizeNames, expectBoxSizes } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -36,7 +36,29 @@ export default meta
 type PlaygroundArgs = Pick<ComponentProps<typeof PaginationLink>, 'size'> & { page: number }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['size', 'page'] } },
+  parameters: {
+    docs: {
+      source: {
+        code: `<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href='#' />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href='#' current>2</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href='#' />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`
+      }
+    },
+    controls: { disable: false, include: ['size', 'page'] }
+  },
   argTypes: {
     size: { control: 'select', options: Object.keys(buttonSizes) },
     page: { control: 'radio', options: [1, 2, 3] }
@@ -75,6 +97,22 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Pagination labels={{ pagination: 'Pages large' }}>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationLink href='#' size='large'>1</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href='#' size='large' current>2</PaginationLink>
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
@@ -131,6 +169,22 @@ export const Simple: Story = {
 }
 
 export const IconsOnly: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href='#' labels={{ previous: '' }} />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href='#' labels={{ next: '' }} />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`
+      }
+    }
+  },
   name: 'Icons only',
   render: () => (
     <Pagination>
@@ -148,6 +202,31 @@ export const IconsOnly: Story = {
 
 /** Every built-in word comes from `labels`, so an app translates them in one place. */
 export const Translated: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const labels = {
+  pagination: 'Halaman',
+  previous: 'Sebelumnya',
+  previousPage: 'Ke halaman sebelumnya',
+  next: 'Berikutnya',
+  nextPage: 'Ke halaman berikutnya',
+  morePages: 'Halaman lainnya'
+}
+
+<Pagination labels={labels}>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href='#' labels={labels} />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href='#' labels={labels} />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`
+      }
+    }
+  },
   render: () => {
     const labels = {
       pagination: 'Halaman',
@@ -178,5 +257,72 @@ export const Translated: Story = {
     await expect(canvas.getByRole('link', { name: 'Ke halaman sebelumnya' })).toBeInTheDocument()
     await expect(canvas.getByRole('link', { name: 'Ke halaman berikutnya' })).toBeInTheDocument()
     await expect(canvas.getByText('Halaman lainnya')).toBeInTheDocument()
+  }
+}
+
+const onPage = fn()
+
+/** Tab visits every page control in order; Enter follows the focused one; the current page is marked. */
+export const Keyboard: Story = {
+  render: () => (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            href='#previous'
+            onClick={(event) => (event.preventDefault(), onPage('previous'))}
+          />
+        </PaginationItem>
+        {[1, 2, 3].map((number) => (
+          <PaginationItem key={number}>
+            <PaginationLink
+              href={`#page-${number}`}
+              current={number === 2}
+              onClick={(event) => (event.preventDefault(), onPage(number))}
+            >
+              {number}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext
+            href='#next'
+            onClick={(event) => (event.preventDefault(), onPage('next'))}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  ),
+  play: async ({ canvas }) => {
+    onPage.mockClear()
+    const previous = canvas.getByRole('link', { name: 'Go to previous page' })
+    const one = canvas.getByRole('link', { name: '1' })
+    const two = canvas.getByRole('link', { name: '2' })
+    const three = canvas.getByRole('link', { name: '3' })
+    const next = canvas.getByRole('link', { name: 'Go to next page' })
+
+    // The current page is marked for assistive technology, not only drawn differently.
+    await expect(two).toHaveAttribute('aria-current', 'page')
+    await expect(one).not.toHaveAttribute('aria-current')
+
+    // Tab goes previous, 1, 2, 3, next. The ellipsis is not a stop.
+    previous.focus()
+    for (const link of [one, two, three, next]) {
+      await userEvent.tab()
+      await waitFor(() => expect(link).toHaveFocus())
+    }
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(three).toHaveFocus())
+
+    // Enter follows the focused link.
+    await userEvent.keyboard('{Enter}')
+    await expect(onPage).toHaveBeenLastCalledWith(3)
+    await userEvent.tab()
+    await waitFor(() => expect(next).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(onPage).toHaveBeenLastCalledWith('next')
   }
 }

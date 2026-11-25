@@ -69,6 +69,20 @@ Plain `nav`, `ol`, `li`, `a`, and `span` elements, not built on Base UI. Props n
 
 <Canvas of={Stories.Colors} />
 
+## Accessibility
+
+The trail is a `navigation` landmark named by `labels.breadcrumb`, and the current page is text with `aria-current='page'`, not a link. The `Keyboard` story walks the tab order and the collapsed-levels menu, and the `Translated` story proves the landmark name.
+
+| Key                     | Action                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Visit the links and the collapsed-levels button in order. The current page and the separators are not stops.  |
+| `Enter`                 | On the collapsed-levels button: opens the menu. On a menu item: picks it, closes the menu, and returns focus. |
+| `Home` and `ArrowDown`  | In the menu: move to the first item and to the next one.                                                      |
+| `Escape`                | Closes the menu and returns focus to the collapsed-levels button.                                             |
+
+- The button that opens a menu around `BreadcrumbEllipsis` needs an `aria-label`, because the ellipsis is only a mark.
+- The menu is a [Dropdown Menu](?path=/docs/base-components-dropdownmenu--docs); its own keys are Base UI's.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Breadcrumb` it lands on the `nav`.

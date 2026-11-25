@@ -81,6 +81,15 @@ Inside an `ItemGroup`, the `listitem` role sits on a wrapper around each item, s
 
 <Canvas of={Stories.LinkGroup} />
 
+## Accessibility
+
+An `Item` is not interactive by itself. Rendered as a link, it is one Tab stop, and inside an `ItemGroup` the `listitem` role sits on a wrapper so each link keeps its `link` role. The `Keyboard` story tabs through a group of links.
+
+| Key                     | Action                                        |
+| ----------------------- | --------------------------------------------- |
+| `Tab` and `Shift + Tab` | Move between the linked items, one stop each. |
+| `Enter`                 | Follows the focused item.                     |
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

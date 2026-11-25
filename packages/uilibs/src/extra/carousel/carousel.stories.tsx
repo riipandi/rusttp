@@ -4,6 +4,7 @@ import * as React from 'react'
 import { expect, spyOn, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, radius, unit } from '../../styles/tokens.stylex'
@@ -94,6 +95,18 @@ export const Playground: Story = {
 }
 
 export const Visible: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel visibleItems={3} gap={4} aria-label='3 visible'>
+  <div>Expelliarmus</div>
+  <div>Lumos</div>
+  <div>Accio</div>
+  <div>Alohomora</div>
+</Carousel>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='items' rows={['1', '2', '3'] as const} wide>
       {(count) => (
@@ -118,6 +131,17 @@ export const Visible: Story = {
 }
 
 export const Buttons: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel aria-label='Spells with buttons'>
+  <div>Expelliarmus</div>
+  <div>Lumos</div>
+  <div>Accio</div>
+</Carousel>`
+      }
+    }
+  },
   render: () => <Carousel aria-label='Spells with buttons'>{slides}</Carousel>,
   play: async ({ canvas }) => {
     const next = canvas.getByRole('button', { name: 'Next slide' })
@@ -133,6 +157,17 @@ export const Buttons: Story = {
 }
 
 export const Keyboard: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel aria-label='Spells by keyboard'>
+  <div>Expelliarmus</div>
+  <div>Lumos</div>
+  <div>Accio</div>
+</Carousel>`
+      }
+    }
+  },
   render: () => <Carousel aria-label='Spells by keyboard'>{slides}</Carousel>,
   // Tab reaches the strip, then Previous and Next; the arrow keys, Home, and End move the strip. A press is
   // sent once the strip has focus, and the idempotent keys repeat inside `waitFor` (WebKit can
@@ -160,6 +195,21 @@ export const Keyboard: Story = {
       await userEvent.keyboard('{Home}')
       await expect(statusOf(canvas)).toBe('Slide 1 of 6')
     })
+
+    // Tab leaves the strip for Previous, then Next; Enter and Space press the focused button.
+    const previous = canvas.getByRole('button', { name: 'Previous slide' })
+    const next = canvas.getByRole('button', { name: 'Next slide' })
+    await userEvent.tab()
+    await waitFor(() => expect(previous).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(next).toHaveFocus())
+    await pressUntil('{Enter}', () => expect(statusOf(canvas)).toBe('Slide 2 of 6'), {
+      when: () => statusOf(canvas) === 'Slide 1 of 6'
+    })
+    await pressUntil(' ', () => expect(statusOf(canvas)).toBe('Slide 3 of 6'), {
+      when: () => statusOf(canvas) === 'Slide 2 of 6'
+    })
+    await expect(next).toHaveFocus()
   }
 }
 
@@ -179,6 +229,22 @@ export const EndOfStrip: Story = {
 }
 
 export const InteractiveSlides: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel aria-label='Spells to cast'>
+  <div>
+    <h3>Expelliarmus</h3>
+    <Button size='small' variant='outline'>Cast Expelliarmus</Button>
+  </div>
+  <div>
+    <h3>Lumos</h3>
+    <Button size='small' variant='outline'>Cast Lumos</Button>
+  </div>
+</Carousel>`
+      }
+    }
+  },
   render: () => (
     <Carousel aria-label='Spells to cast'>
       {spells.map(([name]) => (
@@ -206,6 +272,18 @@ export const InteractiveSlides: Story = {
 }
 
 export const OnChange: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel aria-label='Spells with a readout' visibleItems={2} onChange={setIndex}>
+  <div>Expelliarmus</div>
+  <div>Lumos</div>
+  <div>Accio</div>
+</Carousel>
+<output>{spells[index]}</output>`
+      }
+    }
+  },
   render: () => {
     const [index, setIndex] = React.useState(0)
     return (
@@ -226,6 +304,16 @@ export const OnChange: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Carousel aria-label='State no-controls' showControls={false}>
+  <div>Expelliarmus</div>
+  <div>Lumos</div>
+</Carousel>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['controls', 'no-controls'] as const} wide>
       {(state) => (
@@ -245,6 +333,18 @@ export const States: Story = {
 }
 
 export const RightToLeft: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div dir='rtl'>
+  <Carousel aria-label='Spells right to left'>
+    <div>Expelliarmus</div>
+    <div>Lumos</div>
+  </Carousel>
+</div>`
+      }
+    }
+  },
   render: () => (
     <div dir='rtl'>
       <Carousel aria-label='Spells right to left'>{slides}</Carousel>

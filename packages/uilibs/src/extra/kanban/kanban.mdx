@@ -67,6 +67,19 @@ The board is a region named by `labels.board`. Each column handle takes the colu
 
 <Canvas of={Stories.Names} />
 
+## Accessibility
+
+The board is a `region` named by `labels.board` and takes no Tab stop; the column handles and the items do. A handle is named `Reorder column <name>` from its column's `aria-label`. The `Keyboard` story drags an item and a column.
+
+| Key                     | Action                                                                      |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Visit each column handle and each item, column by column.                   |
+| `Space`                 | Lifts the focused item or column handle, and drops it where it is.          |
+| Arrow keys              | While lifted: move an item through its column, or a column along the board. |
+| `Escape`                | While lifted: cancels the drag and leaves the value unchanged.              |
+
+- dnd-kit's own keyboard model and announcements are documented in its [accessibility guide](https://docs.dndkit.com/guides/accessibility).
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. On `KanbanOverlay` it styles the ghost. See [Styling](?path=/docs/styling--docs).

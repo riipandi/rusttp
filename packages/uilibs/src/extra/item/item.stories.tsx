@@ -2,7 +2,7 @@ import { Home, Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Switch } from '../../base/switch'
@@ -89,6 +89,18 @@ export const Playground: Story = {
 }
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Item variant='faded'>
+  <ItemContent>
+    <ItemTitle>Madam Malkin's robes (faded)</ItemTitle>
+    <ItemDescription>Standard fit, no embellishments.</ItemDescription>
+  </ItemContent>
+</Item>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={['ghost', 'outline', 'faded'] as const}>
       {(variant) => (
@@ -116,6 +128,18 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Item variant='outline' size='xsmall'>
+  <ItemContent>
+    <ItemTitle>Robe fitting (xsmall)</ItemTitle>
+    <ItemDescription>Padding follows the size.</ItemDescription>
+  </ItemContent>
+</Item>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['xsmall', 'small', 'medium'] as const}>
       {(size) => (
@@ -159,6 +183,27 @@ export const WithAvatar: Story = {
 }
 
 export const Group: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ItemGroup>
+  <Item>
+    <ItemContent>
+      <ItemTitle>Patronus received</ItemTitle>
+      <ItemDescription>Headmaster's office · 2 minutes ago</ItemDescription>
+    </ItemContent>
+  </Item>
+  <ItemSeparator />
+  <Item>
+    <ItemContent>
+      <ItemTitle>Howler received</ItemTitle>
+      <ItemDescription>On essay #482 · 1 hour ago</ItemDescription>
+    </ItemContent>
+  </Item>
+</ItemGroup>`
+      }
+    }
+  },
   render: () => (
     <ItemGroup style={styles.group}>
       {activity.map((entry, index) => (
@@ -177,6 +222,21 @@ export const Group: Story = {
 }
 
 export const Link: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Item variant='outline' render={<a href='#dashboard' />}>
+  <ItemMedia kind='icon'>
+    <Home />
+  </ItemMedia>
+  <ItemContent>
+    <ItemTitle>Marauder's Map</ItemTitle>
+    <ItemDescription>Every corridor of Hogwarts, live on parchment.</ItemDescription>
+  </ItemContent>
+</Item>`
+      }
+    }
+  },
   render: () => (
     // The `render` prop swaps the underlying element — here an <a>, so hover and
     // focus states apply to the anchor.
@@ -204,6 +264,24 @@ const destinations = [
 
 /** In a group, `listitem` sits on a wrapper, so each rendered link keeps its `link` role. */
 export const LinkGroup: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ItemGroup>
+  <Item variant='outline' render={<a href='#map' />}>
+    <ItemContent>
+      <ItemTitle>Marauder's Map</ItemTitle>
+    </ItemContent>
+  </Item>
+  <Item variant='outline' render={<a href='#room' />}>
+    <ItemContent>
+      <ItemTitle>Room of Requirement</ItemTitle>
+    </ItemContent>
+  </Item>
+</ItemGroup>`
+      }
+    }
+  },
   name: 'Link group',
   render: () => (
     <ItemGroup style={styles.group}>
@@ -224,5 +302,48 @@ export const LinkGroup: Story = {
       await expect(link).toHaveAttribute('href', destinations[index]?.href)
       await expect(link).not.toHaveAttribute('role')
     }
+  }
+}
+
+const onOpen = fn()
+
+/** An item rendered as a link is one Tab stop; Enter follows it. */
+export const Keyboard: Story = {
+  render: () => (
+    <ItemGroup style={styles.group}>
+      {destinations.map((destination) => (
+        <Item
+          key={destination.href}
+          variant='outline'
+          render={
+            <a
+              href={destination.href}
+              onClick={(event) => {
+                event.preventDefault()
+                onOpen(destination.name)
+              }}
+            />
+          }
+        >
+          <ItemContent>
+            <ItemTitle>{destination.name}</ItemTitle>
+          </ItemContent>
+        </Item>
+      ))}
+    </ItemGroup>
+  ),
+  play: async ({ canvas }) => {
+    onOpen.mockClear()
+    const links = canvas.getAllByRole('link')
+    await expect(links).toHaveLength(destinations.length)
+    links[0]?.focus()
+    for (const link of links.slice(1)) {
+      await userEvent.tab()
+      await waitFor(() => expect(link).toHaveFocus())
+    }
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(links[1]).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(onOpen).toHaveBeenLastCalledWith('Room of Requirement')
   }
 }

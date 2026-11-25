@@ -72,6 +72,17 @@ Set an empty `previous` or `next` label to drop the text.
 
 <Canvas of={Stories.Translated} />
 
+## Accessibility
+
+The pager is a `navigation` landmark named by `labels.pagination`. Every page is a real link, and the current one has `aria-current='page'`. The `Keyboard` story walks the links.
+
+| Key                     | Action                                                                    |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Visit Previous, each page, and Next in order. The ellipsis is not a stop. |
+| `Enter`                 | Follows the focused link.                                                 |
+
+- With an empty `previous` or `next` label, the link keeps its name from `previousPage` or `nextPage`.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

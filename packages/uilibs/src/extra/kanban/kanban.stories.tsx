@@ -8,6 +8,7 @@ import { Button } from '../../base/button'
 import { Meter } from '../../base/meter'
 import { Progress } from '../../base/progress'
 import { toast } from '../../base/toast'
+import { pressUntil } from '../../contracts/keyboard'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { radius, stroke, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
@@ -596,6 +597,26 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 // ---------------------------------------------------------------------------
 
 export const PlaceholderOverlay: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban value={value} onValueChange={setValue} getItemValue={(task) => task.id}>
+  <KanbanBoard>
+    <KanbanColumn value='todo'>
+      <KanbanColumnHandle>
+        <GripVertical />
+      </KanbanColumnHandle>
+      <KanbanColumnContent value='todo'>
+        <KanbanItem value='task-1'>Research competitors</KanbanItem>
+        <KanbanItem value='task-2'>Design system audit</KanbanItem>
+      </KanbanColumnContent>
+    </KanbanColumn>
+  </KanbanBoard>
+  <KanbanOverlay>{({ variant }) => <div style={…} />}</KanbanOverlay>
+</Kanban>`
+      }
+    }
+  },
   render: () => {
     const [columns, setColumns] = useState<Column[]>(initialColumns)
     const value = getColumnsValue(columns)
@@ -1147,6 +1168,20 @@ export const FeatureRoadmap: Story = {
 // ---------------------------------------------------------------------------
 
 export const PersistedToBackend: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban
+  value={columns}
+  onValueChange={setColumns}
+  getItemValue={(task) => task.id}
+  onValueCommit={(value) => save(value)}
+>
+  <KanbanBoard>…</KanbanBoard>
+</Kanban>`
+      }
+    }
+  },
   render: () => {
     const initialBackendColumns: Record<string, BackendTask[]> = {
       todo: [
@@ -1246,6 +1281,7 @@ export const PersistedToBackend: Story = {
 }
 
 const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+const lifted = () => document.querySelector('[data-dragging="true"]') !== null
 
 /** A keyboard drag names the task, not its id, and speaks the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1303,6 +1339,29 @@ export const KeyboardAnnouncements: Story = {
 
 /** The board is a named region, and each column handle is named after its column. */
 export const Names: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban
+  value={value}
+  onValueChange={setValue}
+  getItemValue={(task) => task.id}
+  labels={{ board: 'Sprint board' }}
+>
+  <KanbanBoard>
+    <KanbanColumn value='todo' aria-label='To Do'>
+      <KanbanColumnHandle>
+        <GripVertical />
+      </KanbanColumnHandle>
+      <KanbanColumnContent value='todo'>
+        <KanbanItem value='task-1'>Research competitors</KanbanItem>
+      </KanbanColumnContent>
+    </KanbanColumn>
+  </KanbanBoard>
+</Kanban>`
+      }
+    }
+  },
   render: () => {
     const [columns, setColumns] = useState<Column[]>(initialColumns)
     const handleValueChange = (newValue: Record<string, Task[]>) => {
@@ -1358,5 +1417,90 @@ export const Names: Story = {
       .getAllByRole('button', { name: /^Reorder column / })
       .map((handle) => handle.getAttribute('aria-label'))
     await expect(names).toEqual(initialColumns.map((column) => `Reorder column ${column.title}`))
+  }
+}
+
+/** Items and column handles are the Tab stops: Space lifts one, the arrows move it, Space drops it, Escape puts it back. */
+export const Keyboard: Story = {
+  render: () => {
+    const [value, setValue] = useState<Record<string, Task[]>>({
+      todo: [
+        { id: 'task-1', title: 'Research competitors' },
+        { id: 'task-2', title: 'Design system audit' }
+      ],
+      done: [{ id: 'task-8', title: 'Setup project' }]
+    })
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Kanban value={value} onValueChange={setValue} getItemValue={(task) => task.id}>
+          <KanbanBoard>
+            {Object.entries(value).map(([id, tasks]) => (
+              <KanbanColumn key={id} value={id} aria-label={columnLabel(id)}>
+                <KanbanColumnHandle>
+                  <GripVertical size={16} />
+                </KanbanColumnHandle>
+                <KanbanColumnContent value={id}>
+                  {tasks.map((task) => (
+                    <KanbanItem key={task.id} value={task.id}>
+                      {task.title}
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+        </Kanban>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const itemsOf = (column: string) =>
+      Array.from(
+        canvasElement.querySelectorAll(
+          `[data-slot="kanban-column"][data-value="${column}"] [data-slot="kanban-item"]`
+        )
+      ).map((item) => item.textContent)
+    const columns = () =>
+      Array.from(canvasElement.querySelectorAll('[data-slot="kanban-column"]')).map((column) =>
+        column.getAttribute('data-value')
+      )
+    const research = () => canvas.getByText('Research competitors')
+    const handle = (name: string) => canvas.getByRole('button', { name: `Reorder column ${name}` })
+
+    // Tab goes handle, items, handle, items: the board itself is not a stop.
+    await userEvent.tab()
+    await waitFor(() => expect(handle('To Do')).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(research()).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(canvas.getByText('Design system audit')).toHaveFocus())
+
+    // Lift the first item, step it down one, and drop it: the order changes and focus stays on it.
+    research().focus()
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{ArrowDown}', () => expect(live()).toContain('Research competitors moved'), {
+      when: () => lifted() && !live().includes('Research competitors moved')
+    })
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() =>
+      expect(itemsOf('todo')).toEqual(['Design system audit', 'Research competitors'])
+    )
+    await waitFor(() => expect(research()).toHaveFocus())
+
+    // Lift it again and cancel: Escape drops nothing.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{Escape}', () => expect(lifted()).toBe(false))
+    await expect(itemsOf('todo')).toEqual(['Design system audit', 'Research competitors'])
+
+    // A column handle reorders the columns the same way.
+    handle('To Do').focus()
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{ArrowRight}', () => expect(live()).toContain('moved'), {
+      when: () => lifted() && !live().includes('moved')
+    })
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() => expect(columns()).toEqual(['done', 'todo']))
+    await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }

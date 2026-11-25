@@ -49,6 +49,17 @@ A plain `div` with `role='group'`, not built on Base UI; `ButtonGroupSeparator` 
 
 <Canvas of={Stories.WithInput} />
 
+## Accessibility
+
+The group is a `group`; name it with `aria-label` when the buttons alone do not say what they share. Every member stays its own Tab stop. The `Keyboard` story walks a group with a split button.
+
+| Key                     | Action                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab` | Move between the members in order, the menu button of a split button included. |
+| `Enter` or `Space`      | Press the focused button.                                                      |
+| `Enter`                 | On the menu button of a split button: opens its menu.                          |
+| `Escape`                | Closes that menu and returns focus to the menu button.                         |
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

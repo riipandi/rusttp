@@ -12,6 +12,7 @@ import { buttonFills } from '../../base/button/button.stylex'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
 import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
@@ -101,6 +102,17 @@ const nav = (name: string) => ({ labelNav: () => `Navigation bar ${name}` })
 
 /** Single picks one day, multiple any number, range a start and an end with the days between. */
 export const Modes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar mode='single' defaultMonth={jan} selected={jan} />
+
+<Calendar mode='multiple' defaultMonth={jan} selected={[jan, …]} />
+
+<Calendar mode='range' defaultMonth={jan} selected={{ from: jan, to: …}} />`
+      }
+    }
+  },
   render: () => (
     <Axis axis='mode' rows={['single', 'multiple', 'range'] as const}>
       {(mode) =>
@@ -137,6 +149,11 @@ export const Modes: Story = {
 
 /** The caption is a label or two dropdowns; `numberOfMonths` draws that many months side by side. */
 export const Layouts: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Calendar mode='single' captionLayout='dropdown' numberOfMonths={2} />` }
+    }
+  },
   render: () => (
     <Axis
       axis='caption'
@@ -222,6 +239,27 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 export const DatePickerSingle: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Popover open={open} onOpenChange={setOpen}>
+  <PopoverTrigger render={<Button variant='outline' />}>
+    {date ? format(date, 'PPP') : 'Pick a date'}
+  </PopoverTrigger>
+  <PopoverContent align='start'>
+    <Calendar
+      mode='single'
+      selected={date}
+      onSelect={(nextDate) => {
+        setDate(nextDate)
+        setOpen(false)
+      }}
+    />
+  </PopoverContent>
+</Popover>`
+      }
+    }
+  },
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
     const [open, setOpen] = React.useState(false)
@@ -448,6 +486,25 @@ export const BookedDates: Story = {
 }
 
 export const CustomDays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar
+  mode='range'
+  selected={range}
+  onSelect={setRange}
+  components={{
+    DayButton: ({ children, modifiers, day, ...props }) => (
+      <button {...props} {...stylex.props(calendarStyles.dayBtnBase, …)}>
+        {children}
+        <span>{price}</span>
+      </button>
+    )
+  }}
+/>`
+      }
+    }
+  },
   render: () => {
     // A fixed month: the play counts the days of the range, so it cannot depend on today's date.
     const [range, setRange] = React.useState<DateRange | undefined>({
@@ -552,6 +609,9 @@ const ring = (element: HTMLElement) => {
 
 /** Keyboard focus draws the 2 px ring on the previous and next buttons and on the day, and the arrow keys move it. */
 export const Keyboard: Story = {
+  parameters: {
+    docs: { source: { code: `<Calendar mode='single' defaultMonth={jan} selected={jan} />` } }
+  },
   render: () => (
     <Calendar mode='single' defaultMonth={jan} selected={jan} labels={nav('keyboard')} />
   ),
@@ -569,10 +629,62 @@ export const Keyboard: Story = {
     await waitFor(() => expect(ring(day(13))).toEqual(['solid', '2px']))
     // The ring moved with the focus: the day left behind draws none.
     await expect(ring(day(12))[0]).toBe('none')
+
+    // The other arrows step a day or a week; Home and End go to the week's first and last day.
+    // Idempotent keys repeat until they land; each stepping key passes a precondition.
+    await pressUntil('{ArrowLeft}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(13)
+    })
+    await pressUntil('{ArrowDown}', () => expect(day(19)).toHaveFocus(), {
+      when: () => document.activeElement === day(12)
+    })
+    await pressUntil('{ArrowUp}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(19)
+    })
+    await pressUntil('{End}', () => expect(day(17)).toHaveFocus())
+    await pressUntil('{Home}', () => expect(day(11)).toHaveFocus())
+    await pressUntil('{ArrowRight}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(11)
+    })
+
+    // Enter and Space pick the focused day; the pick moves with the focus.
+    await pressUntil('{ArrowRight}', () => expect(day(13)).toHaveFocus(), {
+      when: () => document.activeElement === day(12)
+    })
+    await pressUntil(
+      '{Enter}',
+      () => expect(day(13)).toHaveAttribute('data-selected-single', 'true'),
+      {
+        when: () => day(13).getAttribute('data-selected-single') !== 'true'
+      }
+    )
+    await pressUntil('{ArrowRight}', () => expect(day(14)).toHaveFocus(), {
+      when: () => document.activeElement === day(13)
+    })
+    await pressUntil(' ', () => expect(day(14)).toHaveAttribute('data-selected-single', 'true'), {
+      when: () => day(14).getAttribute('data-selected-single') !== 'true'
+    })
+
+    // Page Down shows the next month and Page Up comes back.
+    const month = () => canvas.getByRole('status').textContent
+    const before = month()
+    await pressUntil('{PageDown}', () => expect(month()).not.toBe(before), {
+      when: () => month() === before
+    })
+    await pressUntil('{PageUp}', () => expect(month()).toBe(before), {
+      when: () => month() !== before
+    })
   }
 }
 
 export const WeekNumbers: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar mode='single' selected={date} onSelect={setDate} showWeekNumber />`
+      }
+    }
+  },
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(
       new Date(new Date().getFullYear(), 0, 12)
