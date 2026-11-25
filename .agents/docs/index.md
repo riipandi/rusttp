@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-26T00:58:26+07:00
+updated: 2026-11-26T03:30:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| (none live) | | Every plan is archived. |
+| `plan-00013-uilibs-grid-and-gate-leftovers.md` | in-progress | Six UI leftovers in 11 phases and 2 tracks: the story test viewport as a Storybook global, the dots `ProgressIndicator` renamed `StepDots`, the body font read from a token, and four data grid fixes (focus ring with no active cell, separator `aria-valuemax` and `aria-controls`, row paging keys, resize direction from `dir`). |
 
 Archived: `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
