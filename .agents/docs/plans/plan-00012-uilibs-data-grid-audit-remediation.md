@@ -1,15 +1,15 @@
 ---
-status: awaiting-approval
+status: in-progress
 created: 2026-11-25T22:37:53+07:00
-updated: 2026-11-25T22:37:53+07:00
+updated: 2026-11-25T23:27:25+07:00
 phases:
-    - { id: 1, title: "W1-S Expand chevron respects reduced motion (F-10)", status: pending, note: "—" }
-    - { id: 2, title: "W1-S Data grid sizes, glyphs, and blur from tokens (F-11)", status: pending, note: "—" }
-    - { id: 3, title: "W1-T Unit tests for the clipboard and cell operations (F-15)", status: pending, note: "—" }
-    - { id: 4, title: "W1-T Unit tests for the table utilities (F-15)", status: pending, note: "—" }
-    - { id: 5, title: "W1-M Remove the Playground color-control warning (F-12)", status: pending, note: "—" }
-    - { id: 6, title: "W1-M Name the two story search inputs (F-13)", status: pending, note: "—" }
-    - { id: 7, title: "W1-M Give the story cell links a 24 px target (F-14)", status: pending, note: "—" }
+    - { id: 1, title: "W1-S Expand chevron respects reduced motion (F-10)", status: committed, note: "3795b01: `Motion` story in the rows stories; mutation check: without the media rule it fails; Chromium, Firefox, WebKit green" }
+    - { id: 2, title: "W1-S Data grid sizes, glyphs, and blur from tokens (F-11)", status: committed, note: "77bf391: sizes, widths, blur, and the 1 px nudge on tokens; DEVIATION: the 13 and 14 px header glyph sizes were dead rules (the Button sizes its svg to 16 px before and after; byte-identical screenshots of 7 stories, light and dark), so they were deleted, not moved to `size` props; only the menu icons take `size={glyphSize.xsmall}` and the three row icons `glyphSize.small`; the loading skeleton placeholders changed width (176 to 160 and 240 to 256 px) as planned; opacities kept (Q34 A)" }
+    - { id: 3, title: "W1-T Unit tests for the clipboard and cell operations (F-15)", status: committed, note: "43c33a6: 41 tests; the unit project imports the StyleX file without a mock; `buildDataGridPasteDetails` and `buildDataGridClearDetails` need a live table and stay with the editing stories; three scratch breaks caught; a first commit carried lint errors and was amended before any later work" }
+    - { id: 4, title: "W1-T Unit tests for the table utilities (F-15)", status: committed, note: "76498fa: 13 tests, file is `data-grid-table-utils.test.ts` (no JSX); three scratch breaks caught" }
+    - { id: 5, title: "W1-M Remove the Playground color-control warning (F-12)", status: committed, note: "d451cfb: confirmed cause: two \"Control of type color only supports string\" warnings before, none after; FINDING (not fixed, out of scope): every story logs \"The `viewport.defaultViewport` parameter was removed in Storybook 10\" (the overflow gate of plan 00011 phase 53 still sets it)" }
+    - { id: 6, title: "W1-M Name the two story search inputs (F-13)", status: committed, note: "81d8bdc: `aria-label` on both inputs; a play on `CrudFeatures` and `ServerSidePagination` asserts the name" }
+    - { id: 7, title: "W1-M Give the story cell links a 24 px target (F-14)", status: done, note: "no commit: the 2.5.8 spacing exception applies (links are 19 to 20 px high, the nearest other target is at least 25 px from each link center at 1200 and 390 px in 4 stories); F-14 closed as false_positive in the audit" }
     - { id: 8, title: "W2 A non-sortable resizable header no longer sorts (F-07)", status: pending, note: "—" }
     - { id: 9, title: "W2 Header buttons stay focusable while loading (F-06)", status: pending, note: "—" }
     - { id: 10, title: "W2 The table takes an accessible name (F-03)", status: pending, note: "—" }
