@@ -532,6 +532,18 @@ export const ResizeByKeyboard: Story = {
     await expect(separator).toHaveAttribute('aria-valuemin', '100')
     await expect(separator).toHaveAttribute('aria-valuemax', '220')
     await expect(separator).toHaveAttribute('tabindex', '0')
+    // The spoken value is the width in px, and the separator controls the header cell it sizes.
+    await expect(separator).toHaveAttribute('aria-valuetext', '160 px')
+    const header = separator.closest('th')
+    if (!header) throw new Error('No header cell')
+    await expect(header.id).not.toBe('')
+    await expect(separator).toHaveAttribute('aria-controls', header.id)
+    // A column with no `maxSize` still has a maximum: ARIA 1.2 reads a missing one as 100, below its value.
+    const country = canvas.getByRole('separator', { name: 'Resize Country column' })
+    await expect(country).toHaveAttribute('aria-valuetext', '150 px')
+    await expect(Number(country.getAttribute('aria-valuemax'))).toBeGreaterThanOrEqual(
+      Number(country.getAttribute('aria-valuenow'))
+    )
     await expect(value()).toBe(160)
     await waitFor(() => expect(width()).toBeCloseTo(160, 0))
 
@@ -544,6 +556,7 @@ export const ResizeByKeyboard: Story = {
 
     // An arrow moves 10 px and the header follows; Shift moves 50.
     await pressUntil('{ArrowRight}', () => settle(170), { when: () => value() !== 170 })
+    await expect(separator).toHaveAttribute('aria-valuetext', '170 px')
     await pressUntil('{Shift>}{ArrowRight}{/Shift}', () => settle(220), {
       when: () => value() !== 220
     })

@@ -8,7 +8,7 @@ import type {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent
 } from 'react'
-import { getColumnHeaderLabel, useDataGrid } from './data-grid'
+import { getColumnHeaderLabel, getDataGridHeaderDomId, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import {
   hasDataGridTableRightPinnedColumns,
@@ -328,7 +328,7 @@ function DataGridTableHeadRowCell<TData extends object>({
   dndStyle?: StyleXStyles
   table: DataGridTableInstance<TData>
 }) {
-  const { props } = useDataGrid()
+  const { props, gridId } = useDataGrid()
 
   const { column } = header
   const isPinned = column.getIsPinned()
@@ -344,6 +344,7 @@ function DataGridTableHeadRowCell<TData extends object>({
   return (
     <th
       ref={dndRef}
+      id={getDataGridHeaderDomId(gridId, header.id)}
       scope='col'
       colSpan={header.colSpan > 1 ? header.colSpan : undefined}
       aria-sort={
@@ -449,7 +450,7 @@ function DataGridTableHeadRowCellResize<TData extends object>({
   header: Header<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { labels, props } = useDataGrid<TData>()
+  const { labels, props, gridId } = useDataGrid<TData>()
   const { column } = header
   const isPinned = column.getIsPinned()
   const isLastVisibleColumn =
@@ -557,9 +558,13 @@ function DataGridTableHeadRowCellResize<TData extends object>({
       tabIndex={0}
       aria-orientation='vertical'
       aria-label={labels.resizeColumn(getColumnHeaderLabel(column))}
+      aria-controls={getDataGridHeaderDomId(gridId, header.id)}
       aria-valuenow={Math.round(size)}
+      aria-valuetext={labels.columnWidth(Math.round(size))}
       aria-valuemin={Math.round(minSize)}
-      aria-valuemax={Number.isFinite(maxSize) ? Math.round(maxSize) : undefined}
+      // A column with no maximum says so with TanStack's own sentinel: ARIA 1.2 reads a missing
+      // `aria-valuemax` as 100, which would sit below `aria-valuenow`.
+      aria-valuemax={Number.isFinite(maxSize) ? Math.round(maxSize) : Number.MAX_SAFE_INTEGER}
       onKeyDown={handleKeyDown}
       {...{
         onDoubleClick: () => column.resetSize(),
