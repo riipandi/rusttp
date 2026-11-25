@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-24T12:40:00+07:00
+updated: 2026-11-25T16:45:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `plan-00011-uilibs-audit-remediation.md` | in-progress (waves 1 to 6 done, phase 47 done) | All 39 uilibs audit recommendations plus Link on `useRender`: 59 phases in 8 waves of parallel tracks in one checkout; decisions in the plan-00011 questionnaire artifact. |
+| `plan-00011-uilibs-audit-remediation.md` | in-progress (waves 1 to 6 done, phases 47 to 50 done) | All 39 uilibs audit recommendations plus Link on `useRender`: 59 phases in 8 waves of parallel tracks in one checkout; decisions in the plan-00011 questionnaire artifact. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
@@ -60,6 +60,7 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
 | `issue-00007-stylex-dir-rtl-matches-lang.md` | open (1 open) | StyleX compiles `:dir(rtl)` to a `:lang()` list, so the calendar and data grid direction flips ignore `dir="rtl"` without a matching `lang`. |
+| `issue-00008-command-dialog-escape-act-webkit.md` | open (1 open) | Escape on a `CommandDialog` whose input holds text logs 8 React `act` errors in WebKit, which fails the story gate; the `Keyboard` play clears the query first. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
