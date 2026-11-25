@@ -1,0 +1,68 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './hidden.stories'
+
+<Meta of={Stories} />
+
+# Hidden
+
+Shows or hides its children per breakpoint, with CSS media queries. Use it to swap a layout between phone and desktop; use `useResponsiveValue` when the value is not markup.
+
+## Import
+
+```jsx
+import { Hidden } from 'uilibs/extra/hidden'
+import { useResponsiveValue } from 'uilibs/hooks/use-responsive-value'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Hidden` renders a `div` and `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **Hidden:** the wrapper. Shown, it is `display: contents` and adds no box; hidden, it is `display: none`.
+
+```jsx
+<Hidden hide={{ medium: true }}>{phoneOnly}</Hidden>
+```
+
+## Examples
+
+### Responsive values
+
+`hide` takes `true` or `false` for every viewport, or an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one, so `{ medium: true }` shows below 660 px and hides from there up. The queries are static CSS, so the first paint is right and nothing flashes. Each frame below is a viewport of its own width.
+
+<Canvas of={Stories.Responsive} />
+
+### Hiding
+
+<Canvas of={Stories.Hiding} />
+
+### Another element
+
+<Canvas of={Stories.Render} />
+
+### useResponsiveValue
+
+For a value only JavaScript can use, such as a chart's point count, `useResponsiveValue` takes one value or the same `{ small, medium, large, xlarge }` object and returns the one for the current viewport. It follows the viewport live.
+
+```jsx
+const points = useResponsiveValue({ small: 6, large: 24 })
+```
+
+It returns `undefined` when the object has nothing at or below the viewport (`{ large: 6 }` on a phone), and on the server it resolves for the smallest viewport. A value you set to `false` or `0` is kept, not skipped.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Hidden
+
+| Prop   | Description                                                                                                     |
+| ------ | --------------------------------------------------------------------------------------------------------------- |
+| `hide` | `boolean`, or an object keyed `small`, `medium`, `large`, `xlarge` <br /> Hides the children. Unset shows them. |
+
+## Caveats
+
+- A responsive value follows the viewport, not the container.
+- A hidden block is `display: none`, so it leaves the accessibility tree and the tab order too.
+- Hidden children still render and mount, so effects and data fetching inside them still run. Use `useResponsiveValue` to skip rendering them.
+- A shown `Hidden` is `display: contents`; a `render` element keeps its role in current browsers, but style the box through its children, not through `style`.
