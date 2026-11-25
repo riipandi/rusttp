@@ -140,7 +140,7 @@ const preview: Preview = {
     controls: {
       disable: true,
       matchers: {
-        color: /(background|color)$/i,
+        color: /color$/i,
         date: /Date$/i
       }
     },

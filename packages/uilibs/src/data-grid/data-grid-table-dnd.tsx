@@ -45,10 +45,12 @@ import {
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button, buttonSquare } from '../base/button'
+import { dragAccessibility } from '../extra/sortable/drag-announcements'
 import { zIndex } from '../styles/tokens.stylex'
-import { useDataGrid } from './data-grid'
+import { getColumnHeaderLabel, getDataGridRowLabel, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'
+import type { DataGridTableName } from './data-grid-table'
 import {
   DataGridTableBody,
   DataGridTableBodyRow,
@@ -81,10 +83,9 @@ const rowStyles = dataGridTableDndRowsStyles
 
 // Context to share sortable listeners from row to handle
 type SortableContextValue = ReturnType<typeof useSortable>
-const SortableRowContext = createContext<Pick<
-  SortableContextValue,
-  'attributes' | 'listeners'
-> | null>(null)
+const SortableRowContext = createContext<
+  (Pick<SortableContextValue, 'attributes' | 'listeners'> & { label: string }) | null
+>(null)
 
 /**
  * Tree metadata attached to every sortable row, readable from
@@ -150,7 +151,7 @@ function DataGridTableDndHeader<TData extends object>({
             ]}
             {...attributes}
             {...listeners}
-            aria-label={labels.dragToReorder}
+            aria-label={labels.dragToReorderColumn(getColumnHeaderLabel(column))}
           >
             <GripVertical aria-hidden='true' {...stylex.props(s2.grip)} />
           </Button>
@@ -248,18 +249,19 @@ function DataGridTableDndBodyRows<TData extends object>({
   )
 }
 
-interface DataGridTableDndProps<TData extends object> {
+type DataGridTableDndProps<TData extends object> = {
   handleDragEnd: (event: DragEndEvent) => void
   footerContent?: ReactNode
   table: DataGridTableInstance<TData>
-}
+} & DataGridTableName
 
 function DataGridTableDnd<TData extends object>({
   handleDragEnd,
   footerContent,
-  table
+  table,
+  ...name
 }: DataGridTableDndProps<TData>) {
-  const { props } = useDataGrid()
+  const { labels, props } = useDataGrid()
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDraggingColumn, setIsDraggingColumn] = useState(false)
 
@@ -332,6 +334,14 @@ function DataGridTableDnd<TData extends object>({
 
   return (
     <DndContext
+      accessibility={dragAccessibility(
+        labels,
+        (id) => {
+          const column = table.getColumn(String(id))
+          return column ? getColumnHeaderLabel(column) : String(id)
+        },
+        undefined
+      )}
       collisionDetection={closestCenter}
       id={useId()}
       modifiers={modifiers}
@@ -348,7 +358,7 @@ function DataGridTableDnd<TData extends object>({
         viewportRef={containerRef}
         style={isDraggingColumn ? { cursor: 'grabbing' } : undefined}
       >
-        <DataGridTableBase table={table}>
+        <DataGridTableBase table={table} {...name}>
           <DataGridTableHead>
             {table.getHeaderGroups().map((headerGroup) => {
               return (
@@ -416,7 +426,8 @@ function DataGridTableDndRowHandle({
           disabled && rowStyles.gripDisabled,
           style
         ]}
-        aria-label={disabled ? resolvedDisabledLabel : labels.dragToReorderRow}
+        // No row name here: a handle outside a sortable row has nothing to name.
+        aria-label={resolvedDisabledLabel}
         title={disabled ? resolvedDisabledLabel : undefined}
         disabled
       >
@@ -430,7 +441,7 @@ function DataGridTableDndRowHandle({
       variant='ghost'
       size='small'
       style={[buttonSquare.small, rowStyles.gripButton, style]}
-      aria-label={labels.dragToReorderRow}
+      aria-label={labels.dragToReorderRow(context.label)}
       {...context.attributes}
       {...context.listeners}
     >
@@ -469,6 +480,7 @@ function DataGridTableDndRow<TData extends object>({
   renderRowDecoration?: DataGridTableDndRowDecoration<TData>
   dropIndicator?: boolean
 }) {
+  const grid = useDataGrid<TData>()
   const rowData: DataGridTableDndRowData = {
     type: 'data-grid-row',
     depth: row.depth,
@@ -490,6 +502,7 @@ function DataGridTableDndRow<TData extends object>({
     id: row.id,
     data: rowData
   })
+  const rowLabel = getDataGridRowLabel(row, grid)
 
   // Which edge of THIS row the carried row would land on, or null when it is
   // not the drop target. Nothing slides apart any more, so the bar is the only
@@ -508,7 +521,7 @@ function DataGridTableDndRow<TData extends object>({
   const decoration = renderRowDecoration?.({ row, isDragging, isOver })
 
   return (
-    <SortableRowContext.Provider value={{ attributes, listeners }}>
+    <SortableRowContext.Provider value={{ attributes, listeners, label: rowLabel }}>
       <DataGridTableBodyRow
         row={row}
         table={table}
@@ -647,7 +660,8 @@ function DataGridTableDndRows<TData extends object>({
   onDragStart,
   onDragMove,
   onDragOver,
-  onDragCancel
+  onDragCancel,
+  ...name
 }: {
   handleDragEnd: (event: DragEndEvent) => void
   table: DataGridTableInstance<TData>
@@ -684,8 +698,9 @@ function DataGridTableDndRows<TData extends object>({
   onDragMove?: (event: DragMoveEvent) => void
   onDragOver?: (event: DragOverEvent) => void
   onDragCancel?: (event: DragCancelEvent) => void
-}) {
-  const { props } = useDataGrid<TData>()
+} & DataGridTableName) {
+  const grid = useDataGrid<TData>()
+  const { labels, props } = grid
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [isDraggingRow, setIsDraggingRow] = useState(false)
   // The overlay is portalled to the document body. dnd-kit renders DragOverlay
@@ -831,6 +846,14 @@ function DataGridTableDndRows<TData extends object>({
 
   return (
     <DndContext
+      accessibility={dragAccessibility(
+        labels,
+        (id) => {
+          const row = table.getCoreRowModel().rowsById[String(id)]
+          return row ? getDataGridRowLabel(row, grid) : String(id)
+        },
+        undefined
+      )}
       id={useId()}
       collisionDetection={collisionDetection}
       modifiers={resolvedModifiers}
@@ -858,7 +881,7 @@ function DataGridTableDndRows<TData extends object>({
         viewportRef={tableContainerRef}
         style={isDraggingRow ? { cursor: 'grabbing' } : undefined}
       >
-        <DataGridTableBase table={table}>
+        <DataGridTableBase table={table} {...name}>
           <DataGridTableHead>
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<DataGridFeatures, TData>) => {
               return (

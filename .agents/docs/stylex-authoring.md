@@ -605,7 +605,7 @@ Compose in this order, so the later style wins: the recipe, the size, the compon
 - **Portals.** A popup of a new Base UI portal component passes `container={usePortalContainer()}` so it takes the theme of the nearest `ThemeScope`.
 - **Do not set a fixed `height` on a Field-wrapped control beside others**: the size scale is what keeps a Button and an input equal, and the composition story in `src/contracts/control-sizes.stories.tsx` asserts it.
 
-### Tokens and shared recipes (`packages/uilibs`, plan-00011 wave 2)
+### Tokens and shared recipes (`packages/uilibs`, plan-00011 wave 2, plan-00012)
 
 One vocabulary, so a component names a value instead of restating it. Every literal that has a token here is a defect.
 
@@ -616,7 +616,7 @@ One vocabulary, so a component names a value instead of restating it. Every lite
 - **`scrim`** is the themed backdrop color, composed through `popupFx.scrim` and `popupFx.scrimBlurred`; **`backgroundTrack`** is the track of Progress, Meter, and Slider, dark enough in both themes that the primary fill reads against it.
 - **`highlightedItem`** (`styles/popup.stylex.ts`) is the keyboard-highlighted option or menu item of Select, Combobox, Autocomplete, the three menus, and Command: a neutral fill and a 2px primary bar on the start edge (the critical color for a critical item). The bar is what clears 3:1; the fill alone was 1.07:1.
 - **Typography roles** are `type.<role>` (`styles/type.stylex.ts`), composed before a part's own style (`stylex.props(type.body1, s.title)`); a title that sets its own font size is a defect. `fontLetterSpacing` stays and is read by the roles (headlines tighten to -0.02 to -0.03em); `fontWeight` stays `defineConsts`, with per-role `fontWeightVar` for theming.
-- **Glyph and mark sizes** come from `glyphSize[size]` and `markSize` (`styles/glyph.ts`), plain numbers because the icon takes them as `size`; the glyph type is `Glyph`.
+- **Glyph and mark sizes** come from `glyphSize[size]` and `markSize` (`styles/glyph.ts`), plain numbers because the icon takes them as `size`; the glyph type is `Glyph`. A stylesheet never sizes an icon: `glyphSize` is a number map, not a StyleX token, so a `width` or `height` on an `svg` in a `*.stylex.ts` is a dead rule when the Button or control around it already sizes the svg (the data grid's 13 and 14 px header glyphs were, plan-00012 phase 2); the size is the icon's `size` prop. A box that has no token step is a multiple of `unit` or a `container` step, and a decorative `opacity` (an idle icon, a spinner, a deleted row) is not the disabled model and has no token yet (Q34 of plan-00012; the library has about 18 uses).
 - **Shared types** (`styles/types.ts`): `ColorRole`, `ControlSize`, `DenseControlSize`, `StyleProp`, `Glyph`. A component derives its own `color` and `size` from them with `Extract` or `Exclude` and says so on its page.
 - **Chart series** take `chart1` to `chart8` (themed, 3:1 against the page in both themes, ordered so blue and orange come first), and `ChartConfigItem.color` is a palette name.
 - **Colors that are gone**: `brand`, `onBrand`, `onBackgroundNeutral`, and `backgroundPageFaded` were unused and removed; the text on a primary fill is `onBackgroundPrimary`.

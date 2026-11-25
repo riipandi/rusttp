@@ -9,6 +9,7 @@ import { Spinner } from '../extra/spinner'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableAddRow, DataGridTableBase, DataGridTableViewport } from './data-grid-table'
+import type { DataGridTableName } from './data-grid-table'
 import {
   DataGridTableBody,
   DataGridTableEmpty,
@@ -264,7 +265,7 @@ type DataGridTableVirtualizerOptions<TData extends object> = Omit<
   getScrollElement?: (elements: DataGridTableVirtualScrollElements) => HTMLElement | null
 }
 
-interface DataGridTableVirtualProps<TData extends object> {
+type DataGridTableVirtualProps<TData extends object> = {
   table: DataGridTableInstance<TData>
   height?: number | string
   estimateSize?: number
@@ -293,7 +294,7 @@ interface DataGridTableVirtualProps<TData extends object> {
   hasMore?: boolean
   fetchMoreOffset?: number
   virtualizerOptions?: DataGridTableVirtualizerOptions<TData>
-}
+} & DataGridTableName
 
 interface VirtualBodyProps<TData extends object> {
   table: DataGridTableInstance<TData>
@@ -641,7 +642,8 @@ function DataGridTableVirtual<TData extends object>({
   isFetchingMore = false,
   hasMore,
   fetchMoreOffset = 0,
-  virtualizerOptions
+  virtualizerOptions,
+  ...name
 }: DataGridTableVirtualProps<TData>) {
   const { labels, props } = useDataGrid<TData>()
   // Memoized virtual body: skips re-renders during an active column resize.
@@ -1140,7 +1142,7 @@ function DataGridTableVirtual<TData extends object>({
             }
       }
     >
-      <DataGridTableBase table={table}>
+      <DataGridTableBase table={table} {...name}>
         {headerNode}
 
         {renderHeader && (props.tableLayout?.stripped || !props.tableLayout?.rowBorder) && (

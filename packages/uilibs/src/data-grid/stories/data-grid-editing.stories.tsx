@@ -194,6 +194,7 @@ export const CrudFeatures: Story = {
                 <Search style={{ height: 16, width: 16 }} />
               </InputGroupAddon>
               <InputGroupInput
+                aria-label='Search novels'
                 placeholder='Search novels...'
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
@@ -219,7 +220,7 @@ export const CrudFeatures: Story = {
           <CardContent style={editingStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -229,6 +230,9 @@ export const CrudFeatures: Story = {
         </Card>
       </DataGrid>
     )
+  },
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByRole('textbox', { name: 'Search novels' })).toBeVisible()
   }
 }
 
@@ -305,7 +309,7 @@ export const CrudInFrameContainer: Story = {
           <CardContent style={editingStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -471,7 +475,7 @@ export const SpreadsheetEditing: Story = {
             </span>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
             <DataGridPagination table={table} style={editingStyles.bar} />
@@ -479,6 +483,62 @@ export const SpreadsheetEditing: Story = {
         </Card>
       </DataGrid>
     )
+  }
+}
+
+/**
+ * With cell selection on, the grid is the one Tab stop and rows are not: Enter on the focused cell
+ * opens its row (when no editor takes the key), the keyboard twin of clicking the row.
+ */
+export const RowClickCellSelection: Story = {
+  name: 'Row click, cell selection',
+  render: () => {
+    const [opened, setOpened] = useState('nothing')
+    const columns = useMemo<ColumnDef<DataGridFeatures, IProduct>[]>(
+      () => [
+        { accessorKey: 'id', header: 'SKU', size: 120 },
+        { accessorKey: 'name', header: 'Product', size: 200 },
+        { accessorKey: 'category', header: 'Category', size: 180 }
+      ],
+      []
+    )
+    const data = productData.slice(0, 5)
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data,
+      getRowId: (row: IProduct) => row.id
+    })
+    return (
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        tableLayout={{ cellSelection: true }}
+        onRowClick={(row) => setOpened(row.name)}
+      >
+        <DataGridCellSelection table={table} />
+        <span {...stylex.props(s.muted)}>Opened: {opened}</span>
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable aria-label='Products' table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const grid = await canvas.findByRole('grid', { name: 'Products' })
+    // The grid holds the Tab stop, so no row carries a tabindex of its own.
+    await expect(canvasElement.querySelectorAll('tbody tr[tabindex]')).toHaveLength(0)
+    const rows = Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr'))
+    const second = rows[1]?.children[1]
+    if (!(second instanceof HTMLElement)) throw new Error('No cell')
+    await userEvent.click(second)
+    await waitFor(() => expect(grid).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(canvas.getByText(/^Opened: /)).toHaveTextContent(`Opened: ${productData[1]!.name}`)
+    // The press did not also move the focus down: Enter opened the row and stayed on the cell.
+    await expect(canvasElement.querySelector('td[data-cell-focused]')).toBe(second)
   }
 }
 
@@ -529,14 +589,15 @@ export const Keyboard: Story = {
         <DataGridCellSelection table={table} />
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
     )
   },
   play: async ({ canvasElement, canvas }) => {
-    const grid = canvas.getByRole('grid')
+    // With cell selection on, the named table is a grid.
+    const grid = canvas.getByRole('grid', { name: 'Novels' })
     const cells = (row: number) =>
       Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr')[row]?.children ?? [])
     const focused = () => canvasElement.querySelector('td[data-cell-focused]')

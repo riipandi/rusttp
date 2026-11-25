@@ -38,10 +38,13 @@ import type {
   RowData,
   SortingState
 } from '@tanstack/react-table'
-import { createContext, useContext, useEffect, useId, useMemo, useRef } from 'react'
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { visuallyHidden } from '../styles/utils.stylex'
 import { mergeDataGridLabels } from './data-grid-labels'
 import type { DataGridLabels } from './data-grid-labels'
+import { createDataGridRowStops } from './data-grid-row-stops'
+import type { DataGridRowStops } from './data-grid-row-stops'
 import { dataGridStyles } from './data-grid.stylex'
 
 /**
@@ -287,6 +290,7 @@ export interface DataGridContextLayoutProps<
   onCellsChange?(details: DataGridCellsChangeDetails<TData>): void
   onCellEditRequest?(request: DataGridCellEditRequest<TData>): void
   getRowStatus?(row: TData): DataGridRowStatus | undefined
+  getRowLabel?(row: TData): string
   getCellStatus?(row: TData, columnId: string): DataGridCellStatus | undefined
 }
 
@@ -303,6 +307,8 @@ export interface DataGridContextProps<TData extends object> {
    * so every table variant and viewport instance shares one application state.
    */
   autoSize?: DataGridAutoSizeController
+  /** The single Tab stop among clickable rows; see `data-grid-row-stops.ts`. */
+  rowStops: DataGridRowStops
 }
 
 /**
@@ -679,6 +685,12 @@ export interface DataGridProps<TData extends object> {
    */
   getRowStatus?: (row: TData) => DataGridRowStatus | undefined
   /**
+   * The name a screen reader hears for a row: its select, pin, expand, and
+   * drag controls are named after it (`Select Origin`), so ten rows are not
+   * ten identical "Select row". Absent: `labels.rowNumber`, "Row 3".
+   */
+  getRowLabel?: (row: TData) => string
+  /**
    * Optional CRUD indication per cell: the classic corner mark on cells the
    * consumer tracks as edited or invalid.
    */
@@ -771,6 +783,48 @@ function useDataGrid<
   return context
 }
 
+/** The name of a row for its controls: `getRowLabel`, else `labels.rowNumber(position)`. */
+function getDataGridRowLabel<TData extends object>(
+  row: { index: number; original: TData },
+  { labels, props }: Pick<DataGridContextProps<TData>, 'labels' | 'props'>
+): string {
+  return props.getRowLabel?.(row.original) ?? labels.rowNumber(row.index + 1)
+}
+
+/**
+ * Tells a screen reader that the data is loading, and when it has loaded. `aria-busy` on the table
+ * says the state; this live region says the change, once per grid (the header and the body may be
+ * separate tables). It is silent until the grid first loads, and a later page or sort change does
+ * not repeat it.
+ */
+function DataGridLoadStatus<TData extends object>({
+  table
+}: {
+  table: DataGridTableInstance<TData>
+}) {
+  const { isLoading, labels } = useDataGrid()
+  const [message, setMessage] = useState('')
+  const wasLoading = useRef(false)
+  // Read at the moment loading flips, not on every render, so paging does not re-announce.
+  const latest = useRef({ labels, count: 0 })
+  latest.current = { labels, count: table.getRowModel().rows.length }
+
+  useEffect(() => {
+    if (isLoading) {
+      wasLoading.current = true
+      setMessage(latest.current.labels.loading)
+    } else if (wasLoading.current) {
+      setMessage(latest.current.labels.loaded(latest.current.count))
+    }
+  }, [isLoading])
+
+  return (
+    <div role='status' aria-live='polite' {...stylex.props(visuallyHidden.root)}>
+      {message}
+    </div>
+  )
+}
+
 function DataGridProvider<TData extends object>({
   children,
   table,
@@ -854,6 +908,9 @@ function DataGridProvider<TData extends object>({
     return createDataGridAutoSizeController<TData>(() => tableRef.current)
   }, [table.store])
 
+  // One per grid, stable for its life: rows subscribe to it, so it never republishes the context.
+  const [rowStops] = useState(createDataGridRowStops)
+
   const tableState = table.state
 
   // Memoize context value so consumers don't re-render during column resize.
@@ -901,10 +958,12 @@ function DataGridProvider<TData extends object>({
       recordCount: props.recordCount,
       isLoading: props.isLoading || false,
       gridId,
-      autoSize
+      autoSize,
+      rowStops
     }
   }, [
     autoSize,
+    rowStops,
     gridId,
     props.recordCount,
     props.isLoading,
@@ -928,7 +987,10 @@ function DataGridProvider<TData extends object>({
     // One React context serves every TData: the method-syntax callbacks on
     // the layout props make the concrete value assignable to the erased
     // `never` context and back to each consumer's claim.
-    <DataGridContext.Provider value={value}>{children}</DataGridContext.Provider>
+    <DataGridContext.Provider value={value}>
+      {children}
+      <DataGridLoadStatus table={table} />
+    </DataGridContext.Provider>
   )
 }
 
@@ -1004,4 +1066,4 @@ function DataGridContainer({
   )
 }
 
-export { useDataGrid, DataGridProvider, DataGrid, DataGridContainer }
+export { useDataGrid, getDataGridRowLabel, DataGridProvider, DataGrid, DataGridContainer }

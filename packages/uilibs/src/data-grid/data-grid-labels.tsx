@@ -9,7 +9,11 @@
  * `labels`, which beats the built-in default.
  */
 
-export interface DataGridLabels {
+import { defaultDragLabels } from '../extra/sortable/drag-announcements'
+import type { DragLabels } from '../extra/sortable/drag-announcements'
+
+/** `DragLabels` (`instructions`, `pickedUp`, `movedOver`, `dropped`, `cancelled`) is what a screen reader hears while a row or column is dragged with the keyboard; it names the row or column, as Kanban does. */
+export interface DataGridLabels extends DragLabels {
   /* The column header menu. */
   sortAscending: string
   sortDescending: string
@@ -20,24 +24,33 @@ export interface DataGridLabels {
   columnsMenu: string
   unpinColumn: (title: string) => string
   toggleColumns: string
+  /** The name of a column's resize separator, a function of the column title. */
+  resizeColumn: (title: string) => string
   /* Row and cell affordances. */
   rowCreate: string
-  pinRow: string
-  unpinRow: string
-  selectRow: string
+  /* A row control names its row, so ten rows give ten different names. */
+  pinRow: (name: string) => string
+  unpinRow: (name: string) => string
+  selectRow: (name: string) => string
   selectAll: string
-  expandRow: string
-  collapseRow: string
-  dragToReorder: string
-  dragToReorderRow: string
+  expandRow: (name: string) => string
+  collapseRow: (name: string) => string
+  dragToReorderRow: (name: string) => string
+  dragToReorderColumn: (title: string) => string
+  /** A row's name when `getRowLabel` is absent; `position` is 1-based in the data. */
+  rowNumber: (position: number) => string
   reorderingUnavailable: string
   /* Grid states. */
   loading: string
+  /** Announced when loading ends; `count` is the rows now on the page. */
+  loaded: (count: number) => string
   empty: string
   allRowsLoaded: string
   /* Pagination. */
   rowsPerPage: string
   paginationInfo: (info: { from: number; to: number; count: number }) => string
+  /** The name of the navigation landmark around the page buttons. */
+  pagination: string
   previousPage: string
   nextPage: string
   goToPage: (page: number) => string
@@ -49,6 +62,7 @@ export interface DataGridLabels {
 }
 
 const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
+  ...defaultDragLabels,
   sortAscending: 'Asc',
   sortDescending: 'Desc',
   pinColumnStart: 'Pin to left',
@@ -58,21 +72,25 @@ const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   columnsMenu: 'Columns',
   unpinColumn: (title) => `Unpin ${title} column`,
   toggleColumns: 'Toggle Columns',
+  resizeColumn: (title) => `Resize ${title} column`,
   rowCreate: 'Add row',
-  pinRow: 'Pin row',
-  unpinRow: 'Unpin row',
-  selectRow: 'Select row',
+  pinRow: (name) => `Pin ${name}`,
+  unpinRow: (name) => `Unpin ${name}`,
+  selectRow: (name) => `Select ${name}`,
   selectAll: 'Select all',
-  expandRow: 'Expand row',
-  collapseRow: 'Collapse row',
-  dragToReorder: 'Drag to reorder',
-  dragToReorderRow: 'Drag to reorder row',
+  expandRow: (name) => `Expand ${name}`,
+  collapseRow: (name) => `Collapse ${name}`,
+  dragToReorderRow: (name) => `Drag to reorder ${name}`,
+  dragToReorderColumn: (title) => `Drag to reorder ${title} column`,
+  rowNumber: (position) => `Row ${position}`,
   reorderingUnavailable: 'Reordering unavailable',
   loading: 'Loading...',
+  loaded: (count) => (count === 1 ? '1 row loaded' : `${count} rows loaded`),
   empty: 'No data available',
   allRowsLoaded: 'All records loaded',
   rowsPerPage: 'Rows per page',
   paginationInfo: ({ from, to, count }) => `${from} - ${to} of ${count}`,
+  pagination: 'Pagination',
   previousPage: 'Go to previous page',
   nextPage: 'Go to next page',
   goToPage: (page) => `Go to page ${page}`,

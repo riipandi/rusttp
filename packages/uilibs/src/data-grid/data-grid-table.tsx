@@ -89,14 +89,23 @@ function DataGridTableAddRow<TData extends object>({
   )
 }
 
+/**
+ * The name of a table: one of `aria-label` or `aria-labelledby` is required, so a grid is never an
+ * anonymous "table" to a screen reader. Every part that renders a `<table>` takes it.
+ */
+type DataGridTableName =
+  | { 'aria-label': string; 'aria-labelledby'?: string }
+  | { 'aria-label'?: string; 'aria-labelledby': string }
+
 function DataGridTableBase<TData extends object>({
   children,
-  table
+  table,
+  ...name
 }: {
   children: ReactNode
   table: DataGridTableInstance<TData>
-}) {
-  const { props, recordCount } = useDataGrid()
+} & DataGridTableName) {
+  const { isLoading, props, recordCount } = useDataGrid()
   const leftVisibleColumns = table.getStartVisibleLeafColumns()
   const centerVisibleColumns = table.getCenterVisibleLeafColumns()
   const rightVisibleColumns = table.getEndVisibleLeafColumns()
@@ -142,6 +151,9 @@ function DataGridTableBase<TData extends object>({
   return (
     <table
       data-slot='data-grid-table'
+      aria-label={name['aria-label']}
+      aria-labelledby={name['aria-labelledby']}
+      aria-busy={isLoading || undefined}
       role={cellSelectionOn ? 'grid' : undefined}
       aria-multiselectable={
         cellSelectionOn && props.tableLayout?.cellSelectionMode !== 'single' ? true : undefined
@@ -311,17 +323,18 @@ function DataGridTableViewport<TData extends object>({
 }
 
 function DataGridTableHeader<TData extends object>({
-  table
+  table,
+  ...name
 }: {
   table: DataGridTableInstance<TData>
-}) {
+} & DataGridTableName) {
   const { props } = useDataGrid()
   const mergedHeaderGroups = getDataGridTableMergedHeaderGroups(table)
   const hasRightPinnedColumns = hasDataGridTableRightPinnedColumns(table)
 
   return (
     <DataGridTableViewport table={table}>
-      <DataGridTableBase table={table}>
+      <DataGridTableBase table={table} {...name}>
         <DataGridTableHead>
           {mergedHeaderGroups.map((headerGroup) => {
             return (
@@ -376,12 +389,13 @@ function DataGridTableHeader<TData extends object>({
 function DataGridTable<TData extends object>({
   footerContent,
   renderHeader = true,
-  table
+  table,
+  ...name
 }: {
   footerContent?: ReactNode
   renderHeader?: boolean
   table: DataGridTableInstance<TData>
-}) {
+} & DataGridTableName) {
   const { props } = useDataGrid()
   const BodyRowsMemo = useMemoBodyRows<TData>()
   const mergedHeaderGroups = getDataGridTableMergedHeaderGroups(table)
@@ -389,7 +403,7 @@ function DataGridTable<TData extends object>({
 
   return (
     <DataGridTableViewport table={table}>
-      <DataGridTableBase table={table}>
+      <DataGridTableBase table={table} {...name}>
         {renderHeader && (
           <DataGridTableHead>
             {mergedHeaderGroups.map((headerGroup) => {
@@ -462,3 +476,4 @@ export {
   DataGridTableHeader,
   DataGridTable
 }
+export type { DataGridTableName }

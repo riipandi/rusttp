@@ -539,7 +539,7 @@ function PinnedGrid() {
     <DataGrid table={table} recordCount={spells.length} tableLayout={{ columnsPinnable: true }}>
       <DataGridContainer>
         <DataGridScrollArea table={table}>
-          <DataGridTable table={table} />
+          <DataGridTable aria-label='Spells' table={table} />
         </DataGridScrollArea>
       </DataGridContainer>
     </DataGrid>

@@ -33,6 +33,7 @@ import {
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button, buttonSquare } from '../../base/button'
+import { pressUntil } from '../../contracts/keyboard'
 import { Badge } from '../../extra/badge'
 import { Card, CardContent, CardFooter, CardHeader } from '../../extra/card'
 import { unit } from '../../styles/tokens.stylex'
@@ -142,6 +143,16 @@ function selectionColumns(
   ]
 }
 
+/** What dnd-kit's live region says: the keyboard drag announcement a screen reader hears. */
+const live = () => document.querySelector('[id^="DndLiveRegion"]')?.textContent ?? ''
+
+/** The `aria-label` of every control whose label starts with `prefix`, in document order. */
+function labelsStartingWith(root: HTMLElement, prefix: string) {
+  return Array.from(root.querySelectorAll<HTMLElement>(`[aria-label^="${prefix}"]`)).map(
+    (el) => el.getAttribute('aria-label') ?? ''
+  )
+}
+
 export const RowSelection: Story = {
   name: 'Row selection',
   render: () => {
@@ -177,20 +188,143 @@ export const RowSelection: Story = {
     tableHolder.current = table
 
     return (
-      <DataGrid table={table} recordCount={demoData.length}>
+      <DataGrid table={table} recordCount={demoData.length} getRowLabel={(row) => row.title}>
         <div {...stylex.props(s.stack)}>
           <span {...stylex.props(s.muted)}>
             {selectedCount} of {demoData.length} selected
           </span>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
         </div>
       </DataGrid>
     )
+  },
+  // Ten identical "Select row" checkboxes were the defect: each one is named after its row now.
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const names = labelsStartingWith(canvasElement, 'Select ').filter(
+      (name) => name !== 'Select all'
+    )
+    await expect(names).toHaveLength(5)
+    await expect(new Set(names).size).toBe(5)
+    const titles = new Set(demoData.map((book) => `Select ${book.title}`))
+    await expect(names.every((name) => titles.has(name))).toBe(true)
+    await expect(canvas.getByRole('checkbox', { name: names[0] })).toBeVisible()
+  }
+}
+
+/** The rows that are Tab stops: with `onRowClick` set there is exactly one at a time. */
+const rowStops = (root: HTMLElement) =>
+  Array.from(root.querySelectorAll<HTMLElement>('tbody tr[tabindex="0"]'))
+
+/**
+ * With `onRowClick`, the rows are one Tab stop: the arrows move between rows, and Enter or Space on
+ * a row opens it. A control inside the row (the checkbox) keeps its own keys.
+ */
+export const RowClick: Story = {
+  name: 'Row click',
+  render: () => {
+    const [opened, setOpened] = useState('nothing')
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 5 })
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const columns = useMemo(
+      () =>
+        selectionColumns(() => {
+          if (!tableHolder.current) throw new Error('table not ready')
+          return tableHolder.current
+        }),
+      [tableHolder]
+    )
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data: demoData,
+      pageCount: Math.ceil(demoData.length / pagination.pageSize),
+      getRowId: (row: IBook) => row.id,
+      state: { pagination, rowSelection },
+      enableRowSelection: true,
+      onRowSelectionChange: setRowSelection,
+      onPaginationChange: setPagination
+    })
+    tableHolder.current = table
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData.length}
+        getRowLabel={(row) => row.title}
+        onRowClick={(row) => setOpened(row.title)}
+      >
+        <div {...stylex.props(s.stack)}>
+          <span {...stylex.props(s.muted)}>Opened: {opened}</span>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTable aria-label='Novels' table={table} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+          <DataGridPagination table={table} />
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const bodyRows = () => Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr'))
+    const status = () => canvas.getByText(/^Opened:/)
+    const focusedRow = (index: number) => waitFor(() => expect(bodyRows()[index]).toHaveFocus())
+
+    // One Tab stop for all five rows: the first.
+    await waitFor(() => expect(rowStops(canvasElement)).toHaveLength(1))
+    await expect(rowStops(canvasElement)[0]).toBe(bodyRows()[0])
+    await expect(bodyRows().every((row) => row.tabIndex >= -1)).toBe(true)
+    await expect(bodyRows().filter((row) => row.tabIndex === -1)).toHaveLength(4)
+
+    // The arrows move between rows, Home and End jump, and the stop follows focus.
+    bodyRows()[0]!.focus()
+    await pressUntil('{ArrowDown}', () => focusedRow(1), {
+      when: () => document.activeElement === bodyRows()[0]
+    })
+    await pressUntil('{ArrowDown}', () => focusedRow(2), {
+      when: () => document.activeElement === bodyRows()[1]
+    })
+    await waitFor(() => expect(rowStops(canvasElement)).toEqual([bodyRows()[2]]))
+    await pressUntil('{End}', () => focusedRow(4))
+    await pressUntil('{Home}', () => focusedRow(0))
+    await pressUntil('{ArrowUp}', () => expect(document.activeElement).toBe(bodyRows()[0]))
+
+    // Enter and Space on the row open it, with the right row.
+    bodyRows()[1]!.focus()
+    await userEvent.keyboard('{Enter}')
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[1]!.title}`)
+    bodyRows()[3]!.focus()
+    await userEvent.keyboard(' ')
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[3]!.title}`)
+
+    // A checkbox inside the row keeps its own keys: Space toggles it and does not open the row.
+    const box = () => canvas.getByRole('checkbox', { name: `Select ${demoData[0]!.title}` })
+    box().focus()
+    await expect(box()).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await waitFor(() => expect(box()).toBeChecked())
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[3]!.title}`)
+
+    // Tab from the rows leaves them: the stop is one row, not five.
+    bodyRows()[2]!.focus()
+    await userEvent.tab()
+    await expect(bodyRows().some((row) => row === document.activeElement)).toBe(false)
+
+    // The focused row draws the library ring: 2 px, solid, inside the row.
+    bodyRows()[2]!.focus()
+    await waitFor(() => expect(bodyRows()[2]).toHaveFocus())
+    const ring = getComputedStyle(bodyRows()[2]!)
+    await expect(ring.outlineWidth).toBe('2px')
+    await expect(ring.outlineStyle).toBe('solid')
+    await expect(parseFloat(ring.outlineOffset)).toBeLessThan(0)
   }
 }
 
@@ -228,7 +362,7 @@ function ExpandableColumns(): ColumnDef<DataGridFeatures, IDetail>[] {
             variant='ghost'
             style={[buttonSquare.medium, statusStyles.expanderButton]}
             onClick={row.getToggleExpandedHandler()}
-            aria-label={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+            aria-label={`${row.getIsExpanded() ? 'Collapse' : 'Expand'} ${row.original.title}`}
           >
             {row.getIsExpanded() ? (
               <ChevronUp aria-hidden='true' {...stylex.props(statusStyles.expanderIcon)} />
@@ -297,11 +431,20 @@ export const ExpandableRows: Story = {
       >
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
     )
+  },
+  // The story's own expander names its row too, so five rows are five different buttons.
+  play: async ({ canvas }) => {
+    const first = detailData[0]!.title
+    const second = detailData[1]!.title
+    await expect(await canvas.findByRole('button', { name: `Expand ${first}` })).toBeVisible()
+    await userEvent.click(canvas.getByRole('button', { name: `Expand ${second}` }))
+    await expect(await canvas.findByRole('button', { name: `Collapse ${second}` })).toBeVisible()
+    await expect(canvas.getByRole('button', { name: `Expand ${first}` })).toBeVisible()
   }
 }
 
@@ -381,7 +524,7 @@ function SubTable({ items }: { items: IOrder['lines'] }) {
       <DataGrid table={table} recordCount={items.length}>
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Items' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -438,7 +581,7 @@ export const SubTableStory: Story = {
       <DataGrid table={table} recordCount={orderData.length}>
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Orders' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -521,16 +664,54 @@ export const DraggableRows: Story = {
     }
 
     return (
-      <DataGrid table={table} recordCount={rows.length}>
+      <DataGrid table={table} recordCount={rows.length} getRowLabel={(row) => row.title}>
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTableDndRows table={table} handleDragEnd={handleDragEnd} dataIds={dataIds} />
+              <DataGridTableDndRows
+                aria-label='Novels'
+                table={table}
+                handleDragEnd={handleDragEnd}
+                dataIds={dataIds}
+              />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
         </div>
       </DataGrid>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const names = labelsStartingWith(canvasElement, 'Drag to reorder ')
+    await expect(names.length).toBeGreaterThan(1)
+    await expect(new Set(names).size).toBe(names.length)
+    const titles = new Set(demoData.map((book) => `Drag to reorder ${book.title}`))
+    await expect(names.every((name) => titles.has(name))).toBe(true)
+
+    // A keyboard drag speaks the row's title, never its id or dnd-kit's "draggable item".
+    const handle = (name: string) => canvas.getByRole('button', { name })
+    const first = names[0]!
+    const title = first.replace('Drag to reorder ', '')
+    const next = names[1]!.replace('Drag to reorder ', '')
+    handle(first).focus()
+    await pressUntil(' ', () => expect(live()).toBe(`Picked up ${title}.`), {
+      when: () => live() !== `Picked up ${title}.`
+    })
+    await pressUntil('{ArrowDown}', () => expect(live()).toBe(`${title} moved over ${next}.`), {
+      when: () => live() !== `${title} moved over ${next}.`
+    })
+    await pressUntil(' ', () => expect(live()).toBe(`${title} dropped over ${next}.`), {
+      when: () => live() !== `${title} dropped over ${next}.`
+    })
+    // Lift it again and cancel with Escape.
+    await waitFor(() => expect(handle(first)).toBeVisible())
+    handle(first).focus()
+    await pressUntil(' ', () => expect(live()).toBe(`Picked up ${title}.`), {
+      when: () => live() !== `Picked up ${title}.`
+    })
+    await pressUntil('{Escape}', () =>
+      expect(live()).toBe(`Dragging cancelled. ${title} returned to its place.`)
     )
   }
 }
@@ -627,7 +808,7 @@ export const RowPinningSupport: Story = {
           <CardContent style={statusStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -637,6 +818,24 @@ export const RowPinningSupport: Story = {
         </Card>
       </DataGrid>
     )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    // No `getRowLabel` here, so a row is named by its position in the data (`Row 1`, `Row 2`).
+    // The row pinned at the start reads "Unpin Row 1"; the others read "Pin Row N".
+    const pins = labelsStartingWith(canvasElement, 'Pin ')
+    const unpins = labelsStartingWith(canvasElement, 'Unpin ')
+    await expect(unpins).toHaveLength(1)
+    await expect(pins.length).toBeGreaterThan(0)
+    await expect(new Set([...pins, ...unpins]).size).toBe(pins.length + unpins.length)
+    await expect(pins.every((name) => /^Pin Row \d+$/.test(name))).toBe(true)
+    await expect(unpins).toEqual(['Unpin Row 1'])
+    // Pinning a row renames its own button only.
+    const target = pins[0]!
+    await userEvent.click(canvas.getByRole('button', { name: target }))
+    await expect(
+      await canvas.findByRole('button', { name: target.replace('Pin ', 'Unpin ') })
+    ).toBeVisible()
   }
 }
 
@@ -804,6 +1003,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
     <DataGrid
       table={table}
       recordCount={treeData.length}
+      getRowLabel={(node) => node.name}
       tableLayout={{
         columnsResizable: true,
         columnsMovable: true,
@@ -814,7 +1014,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
         <Card style={statusStyles.cardOverflow}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Authors and novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
         </Card>
@@ -843,14 +1043,14 @@ export const RightToLeft: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const chevron = (
-      await canvas.findAllByRole('button', { name: 'Expand row' })
-    )[0]!.querySelector('svg')!
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
     await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1))
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
-    const open = (await canvas.findAllByRole('button', { name: 'Collapse row' }))[0]!.querySelector(
+    const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
       'svg'
     )!
     await waitFor(() => expect(turn(open).b).toBeCloseTo(0))
@@ -861,6 +1061,42 @@ export const RightToLeft: Story = {
       await expect(arrow.a).toBeCloseTo(-1)
       await expect(arrow.d).toBeCloseTo(-1)
     }
+  }
+}
+
+/** Every style rule inside a `prefers-reduced-motion` media query that applies to the element. */
+function reducedMotionRules(element: Element) {
+  const found: CSSStyleRule[] = []
+  const walk = (rules: CSSRuleList, reduced: boolean) => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) {
+        if (reduced && element.matches(rule.selectorText)) found.push(rule)
+      } else if (rule instanceof CSSMediaRule) {
+        walk(rule.cssRules, reduced || rule.conditionText.includes('prefers-reduced-motion'))
+      } else if (rule instanceof CSSGroupingRule) {
+        walk(rule.cssRules, reduced)
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules, false)
+  return found
+}
+
+/** The expand chevron turns with a transition, and a user who asks for reduced motion gets none. */
+export const Motion: Story = {
+  render: () => <TreeGrid pageSize={1} />,
+  play: async ({ canvas }) => {
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
+    const style = getComputedStyle(chevron)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')
+
+    // A play cannot emulate the media feature, so assert the shipped rule: under
+    // `prefers-reduced-motion: reduce` the chevron's transition property is `none`.
+    const rules = reducedMotionRules(chevron)
+    await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }
 

@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../styles/colors.stylex'
 import {
   breakpoints,
+  container,
   duration,
   fontFamily,
   fontSize,
@@ -505,10 +506,10 @@ export const dataGridColumnHeaderStyles = stylex.create({
     display: 'inline-flex',
     opacity: 0.6
   },
-  // Sort indicator icon: 13px, nudged down 1px while idle.
-  sortIcon: { flexShrink: 0, height: 13, width: 13 },
-  sortIconIdle: { marginBlockStart: 1 },
-  menuIcon: { flexShrink: 0, height: 14, width: 14 },
+  // Sort indicator icon, nudged down 1px while idle. The Button it sits in sizes it.
+  sortIcon: { flexShrink: 0 },
+  sortIconIdle: { marginBlockStart: stroke.ring1 },
+  menuIcon: { flexShrink: 0 },
   menuCheckIcon: {
     color: colors.foregroundPrimary,
     height: unit.x4,
@@ -516,10 +517,10 @@ export const dataGridColumnHeaderStyles = stylex.create({
     width: unit.x4
   },
   menuItemLabel: { flexGrow: 1 },
-  menuContent: { width: 160 },
+  menuContent: { width: container.xxsmall },
   capitalize: { textTransform: 'capitalize' },
   unpinButton: { marginInlineEnd: `calc(-1 * ${unit.x1})` },
-  unpinIcon: { height: 14, opacity: 0.5, width: 14 }
+  unpinIcon: { opacity: 0.5 }
 })
 
 export const dataGridColumnFilterStyles = stylex.create({
@@ -540,10 +541,10 @@ export const dataGridColumnFilterStyles = stylex.create({
     gap: unit.x1
   },
   verticalSeparator: { height: unit.x4, marginInline: unit.x2 },
-  content: { padding: 0, width: 200 },
+  content: { padding: 0, width: `calc(${unit.x10} * 5)` },
   searchArea: { padding: unit.x2 },
   searchInput: { height: unit.x8 },
-  optionsScroll: { maxHeight: 300, overflowY: 'auto' },
+  optionsScroll: { maxHeight: `calc(${unit.x10} * 7.5)`, overflowY: 'auto' },
   empty: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.body2,

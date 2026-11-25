@@ -687,6 +687,15 @@ function DataGridCellSelection<TData extends object>({
             event.preventDefault()
             return
           }
+          // No editor took the key: with `onRowClick` set, Enter activates the focused cell's row,
+          // the keyboard twin of clicking it.
+          const contextProps = wiringRef.current.context.props
+          const focused = getTable().getFocusedCell()
+          if (!event.shiftKey && contextProps.onRowClick && focused) {
+            contextProps.onRowClick(focused.row.original)
+            event.preventDefault()
+            return
+          }
           moveFocusVisual(event.shiftKey ? 'up' : 'down')
           event.preventDefault()
           scrollFocusedIntoView()

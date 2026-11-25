@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../styles/colors.stylex'
 import {
   breakpoints,
+  container,
   duration,
   fontFamily,
   fontSize,
@@ -56,7 +57,7 @@ export const dataGridTableStyles = stylex.create({
   // Source headerSticky default slot: sticky top-0 z-40 bg-background/90
   // backdrop-blur-xs. z-40 keeps it above pinned body cells (zIndex 30).
   headerSticky: {
-    backdropFilter: 'blur(2px)',
+    backdropFilter: `blur(${unit.x0_5})`,
     backgroundColor: `color-mix(in srgb, ${colors.backgroundPage} 90%, transparent)`,
     position: 'sticky',
     top: 0,
@@ -212,6 +213,18 @@ export const dataGridTableStyles = stylex.create({
   },
   rowHoverCursor: {
     cursor: 'pointer'
+  },
+  // A clickable row takes the library focus ring, drawn inside the row so a scroll area does not
+  // clip it.
+  rowFocusable: {
+    outline: {
+      default: 'none',
+      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: {
+      default: 0,
+      ':focus-visible': `calc(-1 * ${stroke.ring2})`
+    }
   },
   rowSelected: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
@@ -441,7 +454,10 @@ export const dataGridTableStyles = stylex.create({
     height: unit.x4,
     transform: 'rotate(0deg)',
     transitionDuration: duration.medium,
-    transitionProperty: 'transform',
+    transitionProperty: {
+      default: 'transform',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
     width: unit.x4
   },
   rowExpandChevronCollapsed: {
@@ -468,6 +484,17 @@ export const dataGridTableStyles = stylex.create({
     touchAction: 'none',
     userSelect: 'none',
     zIndex: gridLayer.raised
+  },
+  // The keyboard focus ring of the separator, drawn inside its box so no ancestor clips it.
+  resizeHandleFocusable: {
+    outline: {
+      default: 'none',
+      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: {
+      default: 0,
+      ':focus-visible': `calc(-1 * ${stroke.ring2})`
+    }
   },
   resizeHandleStart: {
     justifyContent: 'flex-start',
@@ -556,7 +583,7 @@ export const dataGridTableStyles = stylex.create({
     position: 'absolute',
     top: 0,
     transform: 'translateX(-50%)',
-    width: 5
+    width: `calc(${unit.x1} + ${stroke.ring1})`
   },
   // Body / foot sections.
   footRowBackground: {
@@ -870,8 +897,8 @@ export const dataGridPaginationStyles = stylex.create({
     transform: { default: null, ':dir(rtl)': 'rotate(180deg)' }
   },
   arrowIcon: { height: unit.x4, width: unit.x4 },
-  sizesSkeleton: { height: unit.x8, width: 176 },
-  infoSkeleton: { height: unit.x8, width: 240 }
+  sizesSkeleton: { height: unit.x8, width: container.xxsmall },
+  infoSkeleton: { height: unit.x8, width: container.xsmall }
 })
 
 /** Virtual table chrome: placeholder cells, spacers, status rows. */

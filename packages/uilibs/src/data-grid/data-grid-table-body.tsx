@@ -4,13 +4,20 @@ import * as stylex from '@stylexjs/stylex'
 import type { StyleXStyles } from '@stylexjs/stylex'
 import { flexRender, Subscribe } from '@tanstack/react-table'
 import type { Cell, Column, Row } from '@tanstack/react-table'
-import { Fragment, memo, useMemo, useRef } from 'react'
+import { Fragment, memo, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import type { ReactNode, Ref } from 'react'
 import { Checkbox } from '../base/checkbox'
 import { Spinner } from '../extra/spinner'
+import { glyphSize } from '../styles/glyph'
 import { focusRing } from '../styles/utils.stylex'
-import { getDataGridCellSelectionCellAttrs, toDataGridDomId, useDataGrid } from './data-grid'
+import {
+  getDataGridCellSelectionCellAttrs,
+  toDataGridDomId,
+  getDataGridRowLabel,
+  useDataGrid
+} from './data-grid'
 import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from './data-grid'
+import { moveRowFocus } from './data-grid-row-stops'
 import {
   cellSelectionChromeProps,
   getDataGridTreeIndentStyle,
@@ -219,13 +226,28 @@ function DataGridTableBodyRow<TData extends object>({
   wantsBorder?: boolean
   table: DataGridTableInstance<TData>
 }) {
-  const { props } = useDataGrid<TData>()
+  const { props, rowStops } = useDataGrid<TData>()
   const isRowPinned = row.getIsPinned()
   const rowStatus = props.getRowStatus?.(row.original)
+
+  // A clickable row is reachable and activatable from the keyboard: one Tab stop for all the rows
+  // (the last one focused, else the first rendered), the arrows move between them, and Enter or
+  // Space on the row itself calls `onRowClick`. With cell selection on, the grid is the one Tab
+  // stop and Enter on a cell calls `onRowClick` (`data-grid-cell.tsx`), so rows are not stops.
+  const cellSelectionOn = !!props.tableLayout?.cellSelection && table.atoms.cellSelection != null
+  const keyboardClickable = !!props.onRowClick && !cellSelectionOn
+  const isTabStop = useSyncExternalStore(rowStops.subscribe, () => rowStops.getStopId() === row.id)
+  const elementRef = useRef<HTMLTableRowElement | null>(null)
+  useEffect(() => {
+    const element = elementRef.current
+    if (!keyboardClickable || !element) return undefined
+    return rowStops.register(row.id, element)
+  }, [keyboardClickable, row.id, rowStops])
 
   return (
     <tr
       ref={(node) => {
+        elementRef.current = node
         assignRef(rowRef, node)
         assignRef(dndRef, node)
       }}
@@ -242,10 +264,46 @@ function DataGridTableBodyRow<TData extends object>({
       // 1-based after the header row; row.index is the position in the data,
       // so the announced index stays absolute across pagination.
       aria-rowindex={props.tableLayout?.cellSelection ? row.index + 2 : undefined}
+      data-row-clickable={keyboardClickable ? '' : undefined}
+      tabIndex={keyboardClickable ? (isTabStop ? 0 : -1) : undefined}
       onClick={() => props.onRowClick && props.onRowClick(row.original)}
+      onFocus={
+        keyboardClickable
+          ? (event) => {
+              if (event.target === event.currentTarget) rowStops.setActive(row.id)
+            }
+          : undefined
+      }
+      onKeyDown={
+        keyboardClickable
+          ? (event) => {
+              // A control inside the row (a checkbox, a link, the expand button) keeps its keys.
+              if (event.target !== event.currentTarget) return
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                props.onRowClick?.(row.original)
+                return
+              }
+              const to =
+                event.key === 'ArrowDown'
+                  ? 'next'
+                  : event.key === 'ArrowUp'
+                    ? 'previous'
+                    : event.key === 'Home'
+                      ? 'first'
+                      : event.key === 'End'
+                        ? 'last'
+                        : null
+              if (!to) return
+              event.preventDefault()
+              moveRowFocus(event.currentTarget, to)
+            }
+          : undefined
+      }
       {...stylex.props(
         s.row,
         props.onRowClick && s.rowHoverCursor,
+        keyboardClickable && s.rowFocusable,
         // Optional CRUD indications, active only when getRowStatus is
         // wired; the muted defaults yield to tableStyles overrides per
         // status. Pinned cells must stay OPAQUE (they hide scrolled
@@ -757,7 +815,8 @@ function DataGridTableLoader() {
   return (
     <div {...stylex.props(s.loaderWrap)}>
       <div {...stylex.props(s.loaderCard)}>
-        <Spinner style={s.loaderSpinner} />
+        {/* The grid's live region announces loading once; the spinner would say it twice. */}
+        <Spinner aria-hidden='true' style={s.loaderSpinner} />
         {props.loadingMessage || labels.loading}
       </div>
     </div>
@@ -780,7 +839,9 @@ function DataGridTableRowPin<TData extends object>({
   row: Row<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { labels } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
 
   // `table` arrives through the caller's threaded prop; the row itself always
   // knows its table, so a call site that has not threaded the prop yet (or a
@@ -796,7 +857,7 @@ function DataGridTableRowPin<TData extends object>({
         return (
           <button
             type='button'
-            aria-label={isPinned ? labels.unpinRow : labels.pinRow}
+            aria-label={isPinned ? labels.unpinRow(rowLabel) : labels.pinRow(rowLabel)}
             data-pinned={isPinned ? 'true' : undefined}
             onClick={(event) => {
               // Pinning must not bubble into the row's onRowClick handler.
@@ -811,9 +872,9 @@ function DataGridTableRowPin<TData extends object>({
             {...stylex.props(focusRing.root, s.rowPinButton)}
           >
             {isPinned ? (
-              <PinFilled size={16} aria-hidden />
+              <PinFilled size={glyphSize.small} aria-hidden />
             ) : (
-              <Pin size={16} strokeWidth={2} aria-hidden />
+              <Pin size={glyphSize.small} strokeWidth={2} aria-hidden />
             )}
           </button>
         )
@@ -844,7 +905,9 @@ function DataGridTableRowSelect<TData extends object>({
 }: {
   row: Row<DataGridFeatures, TData>
 }) {
-  const { labels } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
   return (
     <Subscribe source={row.table.atoms.rowSelection}>
       {() => (
@@ -857,7 +920,7 @@ function DataGridTableRowSelect<TData extends object>({
               // Selection must not bubble into the row's onRowClick handler.
               event.stopPropagation()
             }}
-            aria-label={labels.selectRow}
+            aria-label={labels.selectRow(rowLabel)}
           />
         </>
       )}
@@ -908,7 +971,9 @@ function DataGridTableRowExpand<TData extends object>({
   /** Custom toggle icon; replaces the default chevron. */
   children?: ReactNode
 }) {
-  const { labels, props } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels, props } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
   const isExpanded = row.getIsExpanded()
 
   return (
@@ -921,7 +986,7 @@ function DataGridTableRowExpand<TData extends object>({
         <button
           type='button'
           aria-expanded={isExpanded}
-          aria-label={isExpanded ? labels.collapseRow : labels.expandRow}
+          aria-label={isExpanded ? labels.collapseRow(rowLabel) : labels.expandRow(rowLabel)}
           data-dense={props.tableLayout?.dense ? '' : undefined}
           onClick={(event) => {
             // Expansion must not bubble into the row's onRowClick handler.
@@ -932,7 +997,7 @@ function DataGridTableRowExpand<TData extends object>({
         >
           {children ?? (
             <ChevronDown
-              size={16}
+              size={glyphSize.small}
               strokeWidth={2}
               aria-hidden
               {...stylex.props(s.rowExpandChevron, !isExpanded && s.rowExpandChevronCollapsed)}
@@ -1010,7 +1075,7 @@ function DataGridTableBodyRows<TData extends object>({
           {...stylex.props(s.loadingCell)}
         >
           <div {...stylex.props(s.loadingInner)}>
-            <Spinner style={s.loaderSpinner} />
+            <Spinner aria-hidden='true' style={s.loaderSpinner} />
             <span {...stylex.props(s.loadingText)}>{props.loadingMessage || labels.loading}</span>
           </div>
         </td>

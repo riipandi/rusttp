@@ -10,7 +10,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import {
   DataGrid,
   DataGridContainer,
@@ -116,7 +116,7 @@ export const Pagination: Story = {
 <DataGrid table={table} recordCount={data.length}>
   <DataGridContainer>
     <DataGridScrollArea table={table}>
-      <DataGridTable table={table} />
+      <DataGridTable aria-label='Novels' table={table} />
     </DataGridScrollArea>
   </DataGridContainer>
   <DataGridPagination table={table} />
@@ -177,13 +177,23 @@ export const Pagination: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
         </div>
       </DataGrid>
     )
+  },
+  play: async ({ canvas }) => {
+    // A plain table is named by `aria-label`, so a screen reader says which table it is on.
+    await expect(await canvas.findByRole('table', { name: 'Novels' })).toBeVisible()
+    // The page buttons are one named navigation; the page-size select and the range text are not in it.
+    const pages = within(await canvas.findByRole('navigation', { name: 'Pagination' }))
+    await expect(pages.getByRole('button', { name: 'Go to page 2' })).toBeVisible()
+    await expect(pages.getByRole('button', { name: 'Go to next page' })).toBeVisible()
+    await expect(pages.queryByRole('combobox')).toBeNull()
+    await expect(pages.queryByText(/of 10/)).toBeNull()
   }
 }
 
@@ -240,7 +250,7 @@ export const CellBorder: Story = {
           <Card style={s.cardFlush}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </Card>
@@ -259,7 +269,7 @@ export const DenseLayout: Story = {
         code: `<DataGrid table={table} recordCount={data.length} tableLayout={{ dense: true }}>
   <DataGridContainer>
     <DataGridScrollArea table={table}>
-      <DataGridTable table={table} />
+      <DataGridTable aria-label='Novels' table={table} />
     </DataGridScrollArea>
   </DataGridContainer>
   <DataGridPagination table={table} />
@@ -311,7 +321,7 @@ export const DenseLayout: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -371,7 +381,7 @@ export const WithoutTableBorders: Story = {
           <Card style={s.cardFlush}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </Card>
@@ -428,7 +438,7 @@ export const StripedRows: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -484,7 +494,7 @@ export const AutoWidthTableLayout: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -511,7 +521,7 @@ export const ContainerBorder: Story = {
             <div key={String(border)} data-border={String(border)}>
               <DataGridContainer border={border}>
                 <DataGridScrollArea table={table}>
-                  <DataGridTable table={table} />
+                  <DataGridTable aria-label='Novels' table={table} />
                 </DataGridScrollArea>
               </DataGridContainer>
             </div>
@@ -541,7 +551,7 @@ export const HeaderRowId: Story = {
       <DataGrid table={table} recordCount={demoData?.length || 0}>
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>

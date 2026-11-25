@@ -5,12 +5,14 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { Column, ColumnDef, SortingState } from '@tanstack/react-table'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { DataGrid, DataGridColumnHeader, DataGridContainer, DataGridTableVirtual } from '../'
 import { dataGridFeatures } from '../'
 import type { DataGridFeatures, DataGridTableInstance } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Card, CardContent } from '../../extra/card'
+import { colors } from '../../styles/colors.stylex'
 import { unit } from '../../styles/tokens.stylex'
 import { stackStyles as s } from './_mocks.stylex'
 
@@ -40,7 +42,7 @@ interface IRow {
 
 const infiniteStyles = stylex.create({
   mutedNumeric: {
-    color: 'oklch(0.54 0 89.88)',
+    color: colors.foregroundNeutralFaded,
     fontVariantNumeric: 'tabular-nums'
   },
   numeric: {
@@ -234,6 +236,7 @@ export const LocalInfiniteScroll: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   onFetchMore={hasMore ? fetchMore : undefined}
@@ -247,6 +250,83 @@ export const LocalInfiniteScroll: Story = {
         </Card>
       </DataGrid>
     )
+  }
+}
+
+/**
+ * Rows that scroll out of a virtualized grid leave the DOM, and the one Tab stop of clickable rows
+ * moves to a rendered row instead of vanishing: Tab always has a row to land on.
+ */
+export const RowClickVirtualized: Story = {
+  name: 'Row click, virtualized',
+  render: () => {
+    const [opened, setOpened] = useState('nothing')
+    const tableHolder: { current?: DataGridTableInstance<IRow> } = {}
+    const columns = useColumns(() => {
+      if (!tableHolder.current) throw new Error('table not ready')
+      return tableHolder.current
+    })
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data: localAllData,
+      getRowId: (row: IRow) => row.id,
+      // The default page is 10 rows; one page holding every row is what a scrolling grid needs.
+      state: { pagination: { pageIndex: 0, pageSize: localAllData.length } }
+    })
+    tableHolder.current = table
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={localAllData.length}
+        getRowLabel={(row) => row.title}
+        onRowClick={(row) => setOpened(`${row.id} ${row.title}`)}
+      >
+        <Card style={infiniteStyles.card}>
+          <div {...stylex.props(infiniteStyles.header)}>
+            <span {...stylex.props(s.muted)}>Opened: {opened}</span>
+          </div>
+          <CardContent style={infiniteStyles.cardBody}>
+            <DataGridContainer>
+              <DataGridScrollAreaProxy>
+                <DataGridTableVirtual
+                  aria-label='Novels'
+                  table={table}
+                  estimateSize={41}
+                  height={400}
+                />
+              </DataGridScrollAreaProxy>
+            </DataGridContainer>
+          </CardContent>
+        </Card>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const stops = () => canvasElement.querySelectorAll('tbody tr[tabindex="0"]')
+    const firstRow = () => canvasElement.querySelector<HTMLElement>('tbody tr[data-row-clickable]')
+    const table = await canvas.findByRole('table', { name: 'Novels' })
+    await waitFor(() => expect(stops()).toHaveLength(1))
+
+    // Scroll far enough that the first rows leave the DOM: the stop moves, and is still one.
+    let scroller: HTMLElement | null = table.parentElement
+    while (scroller && getComputedStyle(scroller).overflowY !== 'auto') {
+      scroller = scroller.parentElement
+    }
+    if (!scroller) throw new Error('No scroll container')
+    const before = firstRow()?.dataset.rowId
+    scroller.scrollTop = 41 * 120
+    await waitFor(() => expect(firstRow()?.dataset.rowId).not.toBe(before))
+    await waitFor(() => expect(stops()).toHaveLength(1))
+    await expect(stops()[0]).toBe(firstRow())
+
+    // Enter on the row that is the stop opens that row.
+    const stop = stops()[0]
+    if (!(stop instanceof HTMLElement)) throw new Error('No row stop')
+    stop.focus()
+    await userEvent.keyboard('{Enter}')
+    await expect(canvas.getByText(/^Opened: /)).toHaveTextContent(`Opened: ${stop.dataset.rowId} `)
   }
 }
 
@@ -323,6 +403,7 @@ export const RemoteInfiniteScroll: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   onFetchMore={hasMore ? fetchMore : undefined}
@@ -458,6 +539,7 @@ export const ColumnVirtualization: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   height={420}

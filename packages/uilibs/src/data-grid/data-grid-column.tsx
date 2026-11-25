@@ -33,6 +33,7 @@ import { Input } from '../base/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../base/popover'
 import { Separator } from '../base/separator'
 import { Badge } from '../extra/badge'
+import { glyphSize } from '../styles/glyph'
 import { focusRing } from '../styles/utils.stylex'
 import { getColumnHeaderLabel, rekey, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
@@ -231,13 +232,15 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
   const isPinned = column.getIsPinned()
   const canSort = column.getCanSort()
   const canPin = column.getCanPin()
-  const canResize = column.getCanResize()
 
   const columnIndex = columnOrder.indexOf(column.id)
   const canMoveLeft = columnIndex > 0
   const canMoveRight = columnIndex < columnOrder.length - 1
 
+  // TanStack's `toggleSorting` does not check `getCanSort` (only its click handler does), so a
+  // header that cannot sort must never reach it.
   const handleSort = () => {
+    if (!canSort) return
     if (isSorted === 'asc') {
       column.toggleSorting(true)
     } else if (isSorted === 'desc') {
@@ -297,7 +300,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           }}
           disabled={!canSort}
         >
-          <ArrowUp {...stylex.props(sHeader.menuIcon)} />
+          <ArrowUp size={glyphSize.xsmall} {...stylex.props(sHeader.menuIcon)} />
           <span {...stylex.props(sHeader.menuItemLabel)}>{labels.sortAscending}</span>
           {isSorted === 'asc' && <Check {...stylex.props(sHeader.menuCheckIcon)} />}
         </DropdownMenuItem>,
@@ -312,7 +315,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           }}
           disabled={!canSort}
         >
-          <ArrowDown {...stylex.props(sHeader.menuIcon)} />
+          <ArrowDown size={glyphSize.xsmall} {...stylex.props(sHeader.menuIcon)} />
           <span {...stylex.props(sHeader.menuItemLabel)}>{labels.sortDescending}</span>
           {isSorted === 'desc' && <Check {...stylex.props(sHeader.menuCheckIcon)} />}
         </DropdownMenuItem>
@@ -330,7 +333,11 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           key='pin-left'
           onClick={() => column.pin(isPinned === 'start' ? false : 'start')}
         >
-          <ArrowLeft aria-hidden='true' {...stylex.props(sHeader.menuIcon)} />
+          <ArrowLeft
+            aria-hidden='true'
+            size={glyphSize.xsmall}
+            {...stylex.props(sHeader.menuIcon)}
+          />
           <span {...stylex.props(sHeader.menuItemLabel)}>{labels.pinColumnStart}</span>
           {isPinned === 'start' && <Check {...stylex.props(sHeader.menuCheckIcon)} />}
         </DropdownMenuItem>,
@@ -338,7 +345,11 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           key='pin-right'
           onClick={() => column.pin(isPinned === 'end' ? false : 'end')}
         >
-          <ArrowRight aria-hidden='true' {...stylex.props(sHeader.menuIcon)} />
+          <ArrowRight
+            aria-hidden='true'
+            size={glyphSize.xsmall}
+            {...stylex.props(sHeader.menuIcon)}
+          />
           <span {...stylex.props(sHeader.menuItemLabel)}>{labels.pinColumnEnd}</span>
           {isPinned === 'end' && <Check {...stylex.props(sHeader.menuCheckIcon)} />}
         </DropdownMenuItem>
@@ -366,7 +377,11 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           }}
           disabled={!canMoveLeft || isPinned !== false}
         >
-          <ArrowLeft aria-hidden='true' {...stylex.props(sHeader.menuIcon)} />
+          <ArrowLeft
+            aria-hidden='true'
+            size={glyphSize.xsmall}
+            {...stylex.props(sHeader.menuIcon)}
+          />
           <span>{labels.moveColumnStart}</span>
         </DropdownMenuItem>,
         <DropdownMenuItem
@@ -383,7 +398,11 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           }}
           disabled={!canMoveRight || isPinned !== false}
         >
-          <ArrowRight aria-hidden='true' {...stylex.props(sHeader.menuIcon)} />
+          <ArrowRight
+            aria-hidden='true'
+            size={glyphSize.xsmall}
+            {...stylex.props(sHeader.menuIcon)}
+          />
           <span>{labels.moveColumnEnd}</span>
         </DropdownMenuItem>
       )
@@ -398,7 +417,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
       items.push(
         <DropdownMenuSub key='visibility'>
           <DropdownMenuSubTrigger>
-            <Settings {...stylex.props(sHeader.menuIcon)} />
+            <Settings size={glyphSize.xsmall} {...stylex.props(sHeader.menuIcon)} />
             <span>{labels.columnsMenu}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -451,7 +470,12 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant='ghost' style={[sHeader.triggerButton, style]} disabled={isLoading}>
+              <Button
+                variant='ghost'
+                style={[sHeader.triggerButton, style]}
+                disabled={isLoading}
+                focusableWhenDisabled
+              >
                 {icon}
                 {resolvedTitle}
                 {sortIcon}
@@ -478,13 +502,14 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
     )
   }
 
-  if (canSort || (props.tableLayout?.columnsResizable && canResize)) {
+  if (canSort) {
     return (
       <div {...stylex.props(sHeader.sortRow)}>
         <Button
           variant='ghost'
           style={[sHeader.triggerButton, style]}
           disabled={isLoading}
+          focusableWhenDisabled
           onClick={handleSort}
         >
           {icon}

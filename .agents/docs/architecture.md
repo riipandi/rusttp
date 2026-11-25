@@ -1,6 +1,6 @@
 # Architecture
 
-updated: 2026-11-25T12:45:00+07:00
+updated: 2026-11-26T00:44:56+07:00
 
 The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`, `backend.md`, and `frontend.md`; this file keeps the why, so a settled decision is not re-litigated.
 
@@ -375,3 +375,29 @@ Alternatives considered:
 - TanStack `createLink` for `Link` — rejected: it ties the library to one router.
 - Per-phase edits to the shared docs — rejected: concurrent edits to one file in one tree overwrite each other.
 - Porting Reshaped's HSLuv code for the rebrand script — rejected: a small OKLCH script needs no dependency and no licence notice.
+
+### The data grid is named, announced, and keyboard-operable
+
+Context (2026-11-25): `audit-00003` found 15 problems in the data grid, two of them medium (a column could be resized only with a pointer, and an `onRowClick` row could be reached only with one), plus two open questions (row labels as functions of the row, and a table name prop). Plan 00012 fixed all 15 in 19 phases on `fix/data-grid-audit`: wave 1 (styles, unit tests, stories) and wave 2 (semantics, announcements, keyboard) in order, because wave 2 shares the labels and the docs page; the owner accepted every questionnaire recommendation.
+
+Decision:
+
+- D1: all 15 findings ran; F-14 closed as a false positive (the 2.5.8 spacing exception covers the 19 to 20 px story links). D2: no backward compatibility (`selectRow` and its five siblings became functions, `labels.dragToReorder` was replaced, the table name became required). D5: an unverified finding was reproduced by a failing play before its fix (F-06 and F-07 reproduced, F-09 reproduced).
+- Q24 to Q26 (audit question 2): the table name is a prop (`aria-label` or `aria-labelledby`) on the part that renders the `<table>`, required by type, never a `labels` entry, because a name belongs to one grid and `labels` is one set of strings per language.
+- Q27 and Q28 (audit question 1): rows are named by `getRowLabel` on `DataGrid`, with `labels.rowNumber(position)` as the fallback, so the control names are always functions. Column grips follow (Q29).
+- Q22 B and Q23 A: clickable rows are one roving Tab stop (the grid pattern's row-focus form), and in a `cellSelection` grid Enter on a cell opens its row, so the same prop works from the keyboard in both modes.
+- Q20 A and Q21 A: column resizing is a focusable separator (the window splitter pattern); deviation from Q21: the widening arrow follows the drag's own `columnResizeDirection` rule, not the document `dir`, since the grid never derives that option from `dir`.
+- Q34 A: the decorative opacities stay (no new token); the sizes and blur moved to tokens. Q32 B: only the page buttons are the `nav`.
+- The WAI-ARIA grid and window splitter pages could not be re-read (web access was out of credits), so phases 15 and 16 follow the patterns from memory and are proved by plays, not checked against the pages.
+
+Consequences:
+
+- (positive) a grid is no longer an anonymous table, ten rows are ten names, drags and loading are spoken, and both medium gaps have a keyboard path proved in three engines.
+- (negative) every resizable column adds one Tab stop; a consumer must name each grid and may supply `getRowLabel`; the keyboard direction depends on the consumer setting `columnResizeDirection` in a right-to-left grid, as the drag already did.
+
+Alternatives considered:
+
+- Header-menu items for resizing (Q20 B) — rejected: the menu exists only on headers with controls, so some resizable columns would stay unreachable.
+- A Tab stop on every clickable row (Q22 A) — rejected: a 25-row page would add 25 stops.
+- A `labels.table` default (Q24 B) — rejected: it would give every grid the same name, which is the defect.
+- A library-wide `opacity` token scale (Q34 B) — rejected for this plan: a design-token change needs the owner's decision and its own plan.
