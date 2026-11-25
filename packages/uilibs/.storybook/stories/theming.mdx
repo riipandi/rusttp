@@ -202,6 +202,21 @@ Two things make a form read right to left, and `UIProvider` is only one of them.
 - The Storybook toolbar's direction toggle sets both for any story.
 - Calendar's month arrows and the data grid's expand chevrons do not flip yet: StyleX compiles their `:dir(rtl)` rule to a `:lang()` list, so it follows the language, not the direction, and Calendar's own `lang` (its locale, `en-US` by default) shadows a `lang` set above it. issue-00007 tracks it.
 
+## Rebrand in one command
+
+The primary role is 7 tokens in 3 places: the light values in `colors.stylex.ts`, and the dark values and the restated light theme in `themes.ts`, 21 lines in all. Each is an `oklch()` color, and a rebrand changes only the hue. The script does it for you.
+
+```bash
+pnpm --filter uilibs rebrand 250
+```
+
+The argument is a hue in degrees (red is about 25, orange 50, green 150, blue 255, purple 305). The script rewrites the `background`, `border`, and `foreground` tokens of the primary role and nothing else. Each token keeps its own offset from the base hue, so the dark theme's slightly warmer border and text still sit beside its fill.
+
+- **Contrast holds.** Chroma stays as it is, and lightness moves with the hue so every token keeps its luminance, which is what the 4.5:1 and 3:1 ratios measure. The same lightness is not the same luminance in every hue: a blue at 0.58 is brighter than an orange at 0.58.
+- **Check the result.** Run `pnpm --filter uilibs exec vitest run --project unit`. A hue with little room in the sRGB gamut, such as a saturated yellow, can clip a color; lower the chroma of the token that fails.
+- **It is one-way.** The values are rounded to four places, so running it back to the old hue lands near the old values, not on them. Revert with git.
+- **Not covered.** The categorical chart colors (`chart1` to `chart8`) and the `onBackgroundPrimary` text color stay as they are. Edit them by hand if the new brand needs them.
+
 ## Caveats
 
 - **Portaled popups.** A dialog, menu, popover, or tooltip renders under `body`, outside the element that carries a `stylex.createTheme` theme, so it keeps the app theme. Use `ThemeScope` when the popups should follow, or limit a local theme to inline content.
