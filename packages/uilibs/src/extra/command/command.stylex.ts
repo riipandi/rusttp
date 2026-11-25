@@ -141,10 +141,6 @@ export const commandStyles = stylex.create({
   // Rows are compact (32px) so more of the list fits, and lead with an icon slot so labels align.
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     // Concentric with the box: its xxlarge corner (16px) minus the list's 6px padding is 10px.
     borderRadius: radius.large,
     color: {

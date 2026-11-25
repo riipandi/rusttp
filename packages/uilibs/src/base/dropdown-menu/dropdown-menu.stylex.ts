@@ -35,10 +35,6 @@ export const dropdownMenuStyles = stylex.create({
   },
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     borderRadius: radius.small,
     color: {
       default: null,
@@ -60,8 +56,8 @@ export const dropdownMenuStyles = stylex.create({
   subTrigger: {
     backgroundColor: {
       default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded,
-      '[data-popup-open]': colors.backgroundNeutralFaded
+      '[data-highlighted]': colors.backgroundNeutral,
+      '[data-popup-open]': colors.backgroundNeutral
     },
     color: {
       default: null,
@@ -91,6 +87,9 @@ export const dropdownMenuStyles = stylex.create({
     width: unit.x4
   },
   itemCritical: {
+    '::before': {
+      backgroundColor: { default: 'transparent', '[data-highlighted]': colors.foregroundCritical }
+    },
     backgroundColor: {
       default: 'transparent',
       '[data-highlighted]': colors.backgroundCriticalHighlightedFaded

@@ -155,3 +155,23 @@ export async function expectDockedTo(element: Element, edge: 'top' | 'right' | '
     await expect(Math.abs(gap)).toBeLessThanOrEqual(1)
   })
 }
+
+/**
+ * Asserts the keyboard-highlighted option or menu item draws its state (`highlightedItem` in
+ * `styles/popup.stylex.ts`): a fill and a 2px bar on the start edge. When given an unhighlighted
+ * sibling, asserts it draws neither, so the state is told apart from the rest of the list.
+ */
+export async function expectHighlightedItem(item: Element, rest?: Element) {
+  await waitFor(async () => {
+    await expect(item).toHaveAttribute('data-highlighted')
+    await expect(getComputedStyle(item).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    const bar = getComputedStyle(item, '::before')
+    await expect(bar.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    await expect(bar.width).toBe('2px')
+  })
+  if (rest) {
+    await expect(rest).not.toHaveAttribute('data-highlighted')
+    await expect(getComputedStyle(rest).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await expect(getComputedStyle(rest, '::before').backgroundColor).toBe('rgba(0, 0, 0, 0)')
+  }
+}

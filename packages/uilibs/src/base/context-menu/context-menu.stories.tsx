@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontSize, fontFamily, radius, stroke } from '../../styles/tokens.stylex'
@@ -105,6 +105,11 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
     await body.findByRole('menu')
     await expect(body.getByRole('menuitem', { name: /retrace steps/i })).toBeInTheDocument()
+
+    // A highlighted item draws its state. The pointer sets it as the arrows do, and a test of the
+    // arrows is in the DropdownMenu `Keyboard` story.
+    await userEvent.hover(body.getByRole('menuitem', { name: /retrace steps/i }))
+    await expectHighlightedItem(body.getByRole('menuitem', { name: /retrace steps/i }))
 
     // Disabled items render disabled.
     await expect(body.getByRole('menuitem', { name: /follow the dot/i })).toHaveAttribute(

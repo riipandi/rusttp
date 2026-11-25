@@ -6,7 +6,8 @@ import {
   controlVariantNames,
   expectControlHeights,
   expectControlVariants,
-  expectDisabledLook
+  expectDisabledLook,
+  expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
@@ -190,4 +191,42 @@ export const AutoHighlight: Story = {
       </AutocompleteContent>
     </Autocomplete>
   )
+}
+
+/** The arrows move a visible highlight through the suggestions, and Enter picks the highlighted one. */
+export const Keyboard: Story = {
+  args: { items: tags },
+  render: (args) => (
+    <Autocomplete {...args}>
+      <AutocompleteInput aria-label='Spell' placeholder='Spell' />
+      <AutocompleteContent>
+        <AutocompleteList>
+          {(tag) => (
+            <AutocompleteItem key={tag} value={tag}>
+              {tag}
+            </AutocompleteItem>
+          )}
+        </AutocompleteList>
+      </AutocompleteContent>
+    </Autocomplete>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const input = canvas.getByRole('combobox', { name: 'Spell' })
+
+    await userEvent.tab()
+    await expect(input).toHaveFocus()
+    await userEvent.keyboard('{ArrowDown}')
+    await body.findByRole('listbox')
+    await userEvent.keyboard('{ArrowDown}')
+    const options = await body.findAllByRole('option')
+    const highlighted = options.find((option) => option.hasAttribute('data-highlighted'))
+    await expect(highlighted).toBeDefined()
+    await expectHighlightedItem(
+      highlighted!,
+      options.find((option) => option !== highlighted)
+    )
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(input).toHaveValue(highlighted?.textContent ?? ''))
+  }
 }

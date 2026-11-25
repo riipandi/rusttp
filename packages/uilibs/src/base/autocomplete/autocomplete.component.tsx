@@ -44,7 +44,7 @@ import {
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { autocompleteStyles as s } from './autocomplete.stylex'
 
@@ -146,7 +146,7 @@ export function AutocompleteItem({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
-  return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
+  return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function AutocompleteGroup({

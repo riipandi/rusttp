@@ -38,10 +38,6 @@ export const autocompleteStyles = stylex.create({
   },
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     borderRadius: radius.small,
     color: {
       default: null,

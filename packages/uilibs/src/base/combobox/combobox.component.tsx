@@ -41,7 +41,7 @@ import {
   controlVariants,
   controlVariantsWithin
 } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
@@ -310,7 +310,7 @@ export function ComboboxItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Item>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseCombobox.Item {...props} {...stylex.props(s.item, style)}>
+    <BaseCombobox.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       {children}
       <BaseCombobox.ItemIndicator render={<span {...stylex.props(s.indicator)} />}>
         <Check size={16} strokeWidth={1.5} aria-hidden />

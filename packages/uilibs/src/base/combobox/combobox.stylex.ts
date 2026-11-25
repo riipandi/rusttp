@@ -153,10 +153,6 @@ export const comboboxStyles = stylex.create({
   },
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     borderRadius: radius.small,
     color: {
       default: null,

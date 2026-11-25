@@ -44,7 +44,7 @@ import {
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { selectStyles as s } from './select.stylex'
 
@@ -181,7 +181,7 @@ export function SelectItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Item>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseSelect.Item {...props} {...stylex.props(s.item, style)}>
+    <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
       <BaseSelect.ItemIndicator {...stylex.props(s.itemIndicator)}>
         <Check size={12} strokeWidth={2} aria-hidden />

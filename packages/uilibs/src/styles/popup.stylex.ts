@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from './colors.stylex'
-import { unit, zIndex } from './tokens.stylex'
+import { radius, stroke, unit, zIndex } from './tokens.stylex'
 import { duration, easing } from './tokens.stylex'
 
 /**
@@ -71,5 +71,30 @@ export const popupFx = stylex.create({
       '[data-ending-style]':
         'translate(var(--popup-shift-x, 0px), var(--popup-shift-y, 0px)) scale(0.97)'
     }
+  }
+})
+
+/**
+ * The keyboard-highlighted option or menu item (`data-highlighted`), shared by Select, Combobox,
+ * Autocomplete, the menus, and Command. The neutral fill alone is 1.1:1 against the popup, so the
+ * mark that carries the state is a 2px `foregroundPrimary` bar on the start edge (3:1 or more in
+ * both themes; `contrast.test.ts`). Compose it before the item's own style, and keep the item's
+ * `color` for its disabled state. An item that tints its own fill (a critical menu item) sets its
+ * `backgroundColor` and the bar color itself.
+ */
+export const highlightedItem = stylex.create({
+  root: {
+    '::before': {
+      backgroundColor: { default: 'transparent', '[data-highlighted]': colors.foregroundPrimary },
+      borderRadius: radius.full,
+      content: '""',
+      insetBlock: unit.x1,
+      insetInlineStart: 0,
+      pointerEvents: 'none',
+      position: 'absolute',
+      width: stroke.ring2
+    },
+    backgroundColor: { default: 'transparent', '[data-highlighted]': colors.backgroundNeutral },
+    position: 'relative'
   }
 })

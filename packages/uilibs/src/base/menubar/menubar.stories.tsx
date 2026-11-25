@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { controlSizeNames, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlSizeNames,
+  expectControlHeights,
+  expectHighlightedItem
+} from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes } from '../../styles/control.stylex'
 import {
@@ -104,6 +108,11 @@ export const Playground: Story = {
     await userEvent.click(canvas.getByRole('menuitem', { name: 'Grimoire' }))
     await body.findByRole('menu')
     await expect(body.getByRole('menuitem', { name: /new scroll/i })).toBeInTheDocument()
+
+    // A highlighted item draws its state. The pointer sets it as the arrows do, and a test of the
+    // arrows is in the DropdownMenu `Keyboard` story.
+    await userEvent.hover(body.getByRole('menuitem', { name: /new scroll/i }))
+    await expectHighlightedItem(body.getByRole('menuitem', { name: /new scroll/i }))
 
     // Submenus open from their trigger.
     await userEvent.click(body.getByRole('menuitem', { name: /dispatch/i }))

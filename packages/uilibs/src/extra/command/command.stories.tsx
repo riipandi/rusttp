@@ -4,6 +4,7 @@ import { detectPlatform, formatForDisplay, useHotkey } from '@tanstack/react-hot
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
+import { expectHighlightedItem } from '../../contracts/control-sizes'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd, KbdGroup } from '../kbd'
 import { Command, CommandDialog, CommandEmpty } from './command.component'
@@ -144,6 +145,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     // Typing filters the command list.
     await userEvent.type(input, 'expecto')
     await waitFor(() => expect(body.getByText('Expecto Patronum')).toBeInTheDocument())
+
+    // The first match is highlighted (`autoHighlight`) and says so.
+    await expectHighlightedItem(body.getByRole('option', { name: /Expecto Patronum/ }))
 
     // No match shows the empty message.
     await userEvent.clear(input)

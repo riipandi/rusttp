@@ -7,7 +7,8 @@ import {
   controlVariantNames,
   expectControlHeights,
   expectControlVariants,
-  expectDisabledLook
+  expectDisabledLook,
+  expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
@@ -389,10 +390,9 @@ export const Keyboard: Story = {
       )
     )
     await userEvent.keyboard('{ArrowDown}')
-    await waitFor(() =>
-      expect(body.getByRole('option', { name: 'Dragon heartstring' })).toHaveAttribute(
-        'data-highlighted'
-      )
+    await expectHighlightedItem(
+      body.getByRole('option', { name: 'Dragon heartstring' }),
+      body.getByRole('option', { name: 'Phoenix feather' })
     )
     await userEvent.keyboard('{Enter}')
     await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())

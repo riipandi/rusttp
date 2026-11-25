@@ -2,7 +2,7 @@ import { Bin, Copy, Mail } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import {
@@ -301,4 +301,39 @@ export const Submenu: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   )
+}
+
+/** Arrow keys move a visible highlight; a critical item draws it in its own color. */
+export const Keyboard: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant='outline' />}>Open the menu</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Vault holder</DropdownMenuItem>
+        <DropdownMenuItem>Galleon balance</DropdownMenuItem>
+        <DropdownMenuItem color='critical'>Mischief managed</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'Open the menu' })
+
+    // Tab reaches the trigger and Enter opens the menu. Home pins the start of the highlight.
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await body.findByRole('menu')
+    await userEvent.keyboard('{Home}')
+    const first = body.getByRole('menuitem', { name: 'Vault holder' })
+    await expectHighlightedItem(first, body.getByRole('menuitem', { name: 'Galleon balance' }))
+
+    await userEvent.keyboard('{End}')
+    const critical = body.getByRole('menuitem', { name: 'Mischief managed' })
+    await expectHighlightedItem(critical, first)
+    const primary = getComputedStyle(first, '::before').backgroundColor
+    await waitFor(() =>
+      expect(getComputedStyle(critical, '::before').backgroundColor).not.toBe(primary)
+    )
+  }
 }

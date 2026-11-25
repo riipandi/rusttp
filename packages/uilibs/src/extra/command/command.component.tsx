@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../base/dialog'
 import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
+import { highlightedItem } from '../../styles/popup.stylex'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
 
@@ -151,7 +152,7 @@ export function CommandItem({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
-  return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
+  return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function CommandSeparator({

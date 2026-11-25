@@ -34,7 +34,7 @@ import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
@@ -118,6 +118,7 @@ export function DropdownMenuItem({
     <BaseMenu.Item
       {...props}
       {...stylex.props(
+        highlightedItem.root,
         s.item,
         inset && s.itemInset,
         color === 'critical' && s.itemCritical,
@@ -141,7 +142,10 @@ export function DropdownMenuCheckboxItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.CheckboxItem>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseMenu.CheckboxItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
+    <BaseMenu.CheckboxItem
+      {...props}
+      {...stylex.props(highlightedItem.root, s.item, s.indicatorItem, style)}
+    >
       <span {...stylex.props(s.indicator)}>
         <BaseMenu.CheckboxItemIndicator>
           <IndicatorCheck />
@@ -158,7 +162,10 @@ export function DropdownMenuRadioItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.RadioItem>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseMenu.RadioItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
+    <BaseMenu.RadioItem
+      {...props}
+      {...stylex.props(highlightedItem.root, s.item, s.indicatorItem, style)}
+    >
       <span {...stylex.props(s.indicator)}>
         <BaseMenu.RadioItemIndicator>
           <IndicatorCheck />
@@ -179,7 +186,7 @@ export function DropdownMenuSubTrigger({
   return (
     <BaseMenu.SubmenuTrigger
       {...props}
-      {...stylex.props(s.item, s.subTrigger, inset && s.itemInset, style)}
+      {...stylex.props(highlightedItem.root, s.item, s.subTrigger, inset && s.itemInset, style)}
     >
       {children}
       <ChevronRight

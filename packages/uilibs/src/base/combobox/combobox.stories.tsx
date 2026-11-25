@@ -8,7 +8,8 @@ import {
   controlVariantNames,
   expectControlHeights,
   expectControlVariants,
-  expectDisabledLook
+  expectDisabledLook,
+  expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -431,6 +432,12 @@ export const Keyboard: Story = {
     await userEvent.keyboard('{ArrowDown}')
     const options = await body.findAllByRole('option')
     const highlighted = options.find((option) => option.hasAttribute('data-highlighted'))
+    if (highlighted) {
+      await expectHighlightedItem(
+        highlighted,
+        options.find((option) => option !== highlighted)
+      )
+    }
     await userEvent.keyboard('{Enter}')
     await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
     // The highlighted option is the one the input now shows.

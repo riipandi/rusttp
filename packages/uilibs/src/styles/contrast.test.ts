@@ -147,25 +147,29 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
   })
 })
 
-// X-01: the keyboard-highlighted option is `backgroundNeutralFaded` on the popup, 1.07:1 and 1.12:1.
-// Phase 10 replaces it, and flips this to a plain `it`.
-describe('known contrast failures', () => {
-  for (const [name, theme] of Object.entries(themes)) {
-    it.fails(`the highlighted option against its popup, ${name} (X-01)`, () => {
-      expect(
-        contrast(
-          theme,
-          'backgroundNeutralFaded',
-          'backgroundElevationOverlay',
-          'backgroundElevationOverlay'
-        )
-      ).toBeGreaterThanOrEqual(3)
-    })
-  }
-})
+describe.each(Object.entries(themes))('%s theme, highlighted option and tracks', (_name, theme) => {
+  // X-01: the highlight fill alone was 1.07:1 against the popup. The state is the 2px `foregroundPrimary`
+  // bar on the start edge (`highlightedItem` in popup.stylex.ts), so the bar and the text on the fill
+  // are what must pass.
+  it('the highlighted option: its bar against the fill, and its text on the fill (X-01)', () => {
+    const popup = 'backgroundElevationOverlay'
+    expect(contrast(theme, 'foregroundPrimary', 'backgroundNeutral', popup)).toBeGreaterThanOrEqual(
+      3
+    )
+    expect(contrast(theme, 'foregroundNeutral', 'backgroundNeutral', popup)).toBeGreaterThanOrEqual(
+      4.5
+    )
+  })
 
-describe.each(Object.entries(themes))('%s theme tracks', (_name, theme) => {
-  // X-04: the primary indicator on the track was 4.32:1 in light and 2.46:1 in dark on `backgroundNeutral`.
+  it.each([
+    ['Critical', 'backgroundCriticalHighlightedFaded'],
+    ['Primary', 'backgroundPrimaryHighlightedFaded']
+  ])('a highlighted %s menu item: its bar and text on its tint', (role, tint) => {
+    const popup = 'backgroundElevationOverlay'
+    expect(contrast(theme, `foreground${role}`, tint, popup)).toBeGreaterThanOrEqual(4.5)
+  })
+
+  // X-04: the primary indicator on `backgroundNeutral` was 4.32:1 in light and 2.46:1 in dark.
   it('the primary indicator against the track (X-04)', () => {
     expect(contrast(theme, 'backgroundPrimary', 'backgroundTrack')).toBeGreaterThanOrEqual(3)
   })
