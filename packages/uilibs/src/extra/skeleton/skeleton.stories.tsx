@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect } from 'storybook/test'
+import * as React from 'react'
+import { expect, userEvent } from 'storybook/test'
+import { Button } from '../../base/button'
 import { Axis } from '../../contracts/story-axes'
 import { container, radius } from '../../styles/tokens.stylex'
+import { visuallyHidden } from '../../styles/utils.stylex'
 import { Skeleton } from './skeleton.component'
 import { skeletonRadius } from './skeleton.stylex'
 
@@ -137,6 +140,46 @@ export const List: Story = {
       ))}
     </div>
   )
+}
+
+/**
+ * A skeleton is a silent placeholder, so the container around it carries the loading state:
+ * `aria-busy` on a `status` region, and a visually hidden word for what is loading.
+ */
+export const Busy: Story = {
+  render: () => {
+    const [loading, setLoading] = React.useState(true)
+    return (
+      <div {...stylex.props(styles.listRoot)}>
+        <div role='status' aria-busy={loading} {...stylex.props(styles.listLines)}>
+          {loading ? (
+            <>
+              <span {...stylex.props(visuallyHidden.root)}>Loading the owl post</span>
+              <Skeleton style={styles.listLineWide} />
+              <Skeleton style={styles.listLine} />
+            </>
+          ) : (
+            <span>Hedwig has delivered 3 letters.</span>
+          )}
+        </div>
+        <div>
+          <Button variant='outline' size='sm' onClick={() => setLoading((value) => !value)}>
+            {loading ? 'Deliver' : 'Reload'}
+          </Button>
+        </div>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const status = canvas.getByRole('status')
+    await expect(status).toHaveAttribute('aria-busy', 'true')
+    await expect(status).toHaveTextContent('Loading the owl post')
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Deliver' }))
+    await expect(status).toHaveAttribute('aria-busy', 'false')
+    await expect(status).toHaveTextContent('Hedwig has delivered 3 letters.')
+    await expect(status).not.toHaveTextContent('Loading')
+  }
 }
 
 const shapes = {

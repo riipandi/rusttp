@@ -13,11 +13,11 @@ A line of text with a shimmer while work is in progress, which can cross-fade to
 import { LoaderText } from 'uilibs/extra/loader-text'
 ```
 
-Renders this library's `Text`. It takes only the props below; other props do not pass through.
+Renders this library's `Text`. The props below are its own; every other `Text` prop (`align`, `maxLines`, `render`, and so on) and any DOM prop pass through to it.
 
 ## Anatomy
 
-- **LoaderText:** the line. It renders an optional icon, the loading text, and the completed text when one is given.
+- **LoaderText:** the line. It renders an optional icon, the loading text, and the completed text when one is given; with a completed text, the two sit in one `role="status"` region.
 
 ```jsx
 <LoaderText />
@@ -58,5 +58,6 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 ## Caveats
 
 - Without `completedText`, `completed` only stops the shimmer; nothing replaces the text.
-- Both texts stay mounted for the cross-fade, and only the current one is visible.
+- Both texts stay mounted for the cross-fade. Only the current one is visible, and the other has `aria-hidden`, so assistive technology reads one text at a time.
+- With `completedText`, the texts sit in a `role="status"` live region: a screen reader announces the completed text when `completed` becomes `true`. Without it, nothing announces, because nothing changes.
 - `variant` and `weight` also accept one value per breakpoint, as on `Text`.

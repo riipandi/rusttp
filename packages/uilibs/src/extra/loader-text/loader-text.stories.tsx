@@ -52,7 +52,7 @@ export const Playground: Story = {
   render: (args) => <LoaderText {...args} />
 }
 
-/** Both texts stay mounted for the cross-fade; only the current one is visible. */
+/** Both texts stay mounted for the cross-fade; only the current one is visible and announced. */
 export const States: Story = {
   render: () => (
     <Axis axis='state' rows={['loading', 'completed'] as const}>
@@ -74,9 +74,15 @@ export const States: Story = {
     const loading = texts('loading')
     await expect(loading.loading).toBeVisible()
     await expect(loading.completed).not.toBeVisible()
+    // Assistive technology reads only the visible text, inside a status region.
+    await expect(loading.loading).not.toHaveAttribute('aria-hidden')
+    await expect(loading.completed).toHaveAttribute('aria-hidden', 'true')
+    await expect(loading.completed.closest('[role="status"]')).not.toBeNull()
     const completed = texts('completed')
     await waitFor(() => expect(completed.loading).not.toBeVisible())
     await expect(completed.completed).toBeVisible()
+    await expect(completed.loading).toHaveAttribute('aria-hidden', 'true')
+    await expect(completed.completed).toHaveAttribute('aria-hidden', 'false')
   }
 }
 
@@ -112,13 +118,23 @@ export const Completed: Story = {
     await expect(loading).toBeVisible()
     await expect(completed).not.toBeVisible()
 
+    // The status region's accessible text is the visible text only, before and after completion.
+    const status = completed.closest('[role="status"]')
+    const accessibleText = () =>
+      Array.from(status?.children ?? [])
+        .filter((child) => child.getAttribute('aria-hidden') !== 'true')
+        .map((child) => child.textContent)
+    await expect(accessibleText()).toEqual(['Transcribing with the Quick-Quotes Quill'])
+
     await userEvent.click(canvas.getByRole('button', { name: 'Complete' }))
     await waitFor(() => expect(loading).not.toBeVisible())
     await expect(completed).toBeVisible()
+    await expect(accessibleText()).toEqual(['Quill notes saved'])
 
     await userEvent.click(canvas.getByRole('button', { name: 'Restart' }))
     await waitFor(() => expect(completed).not.toBeVisible())
     await expect(loading).toBeVisible()
+    await expect(accessibleText()).toEqual(['Transcribing with the Quick-Quotes Quill'])
   }
 }
 
