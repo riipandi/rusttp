@@ -386,14 +386,25 @@ export const Keyboard: Story = {
     await body.findByRole('listbox')
     // Where the highlight starts is not fixed under simulated events: WebKit opens with nothing
     // highlighted, and one cold Chromium run picked the first item after one arrow. Home pins the
-    // start, so the arrow's step is the same on every engine and run.
-    await userEvent.keyboard('{Home}')
-    await waitFor(() =>
-      expect(body.getByRole('option', { name: 'Phoenix feather' })).toHaveAttribute(
+    // start, so the arrow's step is the same on every engine and run. Focus reaches the list a
+    // frame after it opens, and a key sent earlier is lost on a loaded runner, so Home repeats
+    // until it lands (it is idempotent).
+    await waitFor(async () => {
+      await userEvent.keyboard('{Home}')
+      await expect(body.getByRole('option', { name: 'Phoenix feather' })).toHaveAttribute(
         'data-highlighted'
       )
-    )
-    await userEvent.keyboard('{ArrowDown}')
+    })
+    // The arrow is lost the same way while the list is still settling, so it repeats only while
+    // the first item is still the highlighted one.
+    await waitFor(async () => {
+      if (body.getByRole('option', { name: 'Phoenix feather' }).hasAttribute('data-highlighted')) {
+        await userEvent.keyboard('{ArrowDown}')
+      }
+      await expect(body.getByRole('option', { name: 'Dragon heartstring' })).toHaveAttribute(
+        'data-highlighted'
+      )
+    })
     await expectHighlightedItem(
       body.getByRole('option', { name: 'Dragon heartstring' }),
       body.getByRole('option', { name: 'Phoenix feather' })
