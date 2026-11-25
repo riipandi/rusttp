@@ -32,7 +32,7 @@ const styles = stylex.create({
 
 export default meta
 
-// The page buttons take `size`; `page` is the story's current page, set as `isActive`.
+// The page buttons take `size`; `page` is the story's current page, set as `current`.
 type PlaygroundArgs = Pick<ComponentProps<typeof PaginationLink>, 'size'> & { page: number }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
@@ -50,7 +50,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         </PaginationItem>
         {[1, 2, 3].map((number) => (
           <PaginationItem key={number}>
-            <PaginationLink href='#' size={size} isActive={number === page}>
+            <PaginationLink href='#' size={size} current={number === page}>
               {number}
             </PaginationLink>
           </PaginationItem>
@@ -86,7 +86,7 @@ export const Sizes: Story = {
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href='#' size={size} isActive>
+              <PaginationLink href='#' size={size} current>
                 2
               </PaginationLink>
             </PaginationItem>
@@ -115,7 +115,7 @@ export const Simple: Story = {
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationLink href='#' isActive>
+          <PaginationLink href='#' current>
             1
           </PaginationLink>
         </PaginationItem>

@@ -583,7 +583,7 @@ function DataGridTableResizeIndicator<TData extends object>({
     props.tableLayout?.columnsResizeMode,
     table.options.columnResizeMode
   )
-  const isActive = !!(
+  const indicatorActive = !!(
     props.tableLayout?.columnsResizable &&
     resizeMode === 'onEnd' &&
     resizingColumnId
@@ -598,7 +598,7 @@ function DataGridTableResizeIndicator<TData extends object>({
     const indicatorHead = indicatorHeadRef.current
     const viewportElement = viewportNodeRef.current
 
-    if (!isActive || !indicator || !indicatorHead || !resizingColumnId) return
+    if (!indicatorActive || !indicator || !indicatorHead || !resizingColumnId) return
 
     const resizingHeader = table
       .getFlatHeaders()
@@ -657,7 +657,7 @@ function DataGridTableResizeIndicator<TData extends object>({
     indicatorHead.style.height = `${Math.max(headerHeight, 6)}px`
   })
 
-  if (!isActive) return null
+  if (!indicatorActive) return null
 
   return (
     <div

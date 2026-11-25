@@ -39,7 +39,7 @@ function DataGridTableAddRow<TData extends object>({
 }: {
   table: DataGridTableInstance<TData>
 }) {
-  const { i18n, props } = useDataGrid()
+  const { labels, props } = useDataGrid()
 
   if (!props.onRowCreate) return null
 
@@ -82,7 +82,7 @@ function DataGridTableAddRow<TData extends object>({
           }}
         >
           <Plus aria-hidden='true' {...stylex.props(s.addRowIcon)} />
-          {props.rowCreateLabel ?? i18n.labels.rowCreate}
+          {props.rowCreateLabel ?? labels.rowCreate}
         </Button>
       </td>
     </tr>

@@ -40,8 +40,8 @@ import type {
 } from '@tanstack/react-table'
 import { createContext, useContext, useEffect, useId, useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { mergeDataGridI18n } from './data-grid-i18n'
-import type { DataGridI18nConfig, DataGridI18nOverrides } from './data-grid-i18n'
+import { mergeDataGridLabels } from './data-grid-labels'
+import type { DataGridLabels } from './data-grid-labels'
 import { dataGridStyles } from './data-grid.stylex'
 
 /**
@@ -296,8 +296,8 @@ export interface DataGridContextProps<TData extends object> {
   isLoading: boolean
   /** Stable per-grid prefix for the DOM ids ARIA relations point at. */
   gridId: string
-  /** The merged label set; components read `i18n.labels.<key>`. */
-  i18n: DataGridI18nConfig
+  /** The merged label set; components read `labels.<key>`. */
+  labels: DataGridLabels
   /**
    * Internal coordinator for `meta.autoSize` columns. Lives at the core level
    * so every table variant and viewport instance shares one application state.
@@ -688,9 +688,9 @@ export interface DataGridProps<TData extends object> {
    * Overrides for every built-in string: menu items, aria labels,
    * pagination copy, state messages. Merged over the defaults; a more
    * specific component prop (`rowCreateLabel`, `loadingMessage`, the
-   * pagination label props) still wins over its `i18n` counterpart.
+   * pagination label props) still wins over its `labels` counterpart.
    */
-  i18n?: DataGridI18nOverrides
+  labels?: Partial<DataGridLabels>
   loadingMode?: 'skeleton' | 'spinner'
   loadingMessage?: ReactNode | string
   fetchingMoreMessage?: ReactNode | string
@@ -788,9 +788,9 @@ function DataGridProvider<TData extends object>({
   // mousemove rate during a resize drag, piercing the body-rows memo).
   const propsRef = useRef(props)
   propsRef.current = props
-  const i18n = mergeDataGridI18n(props.i18n)
-  const i18nRef = useRef(i18n)
-  i18nRef.current = i18n
+  const labels = mergeDataGridLabels(props.labels)
+  const labelsRef = useRef(labels)
+  labelsRef.current = labels
 
   // Same treatment for the table itself, which v9 - unlike v8 - re-creates on
   // every state change. Depending on it directly would republish the context
@@ -895,8 +895,8 @@ function DataGridProvider<TData extends object>({
       get props(): DataGridContextLayoutProps<TData> {
         return propsRef.current
       },
-      get i18n() {
-        return i18nRef.current
+      get labels() {
+        return labelsRef.current
       },
       recordCount: props.recordCount,
       isLoading: props.isLoading || false,

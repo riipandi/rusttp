@@ -14,7 +14,7 @@ import {
   DataGridTable,
   dataGridFeatures,
   type DataGridFeatures,
-  type DataGridI18nOverrides
+  type DataGridLabels
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button } from '../../base/button'
@@ -367,7 +367,7 @@ const LOCALES: Record<
     columns: Record<string, string>
     status: Record<string, string>
     currency: string
-    i18n: DataGridI18nOverrides
+    labels: Partial<DataGridLabels>
   }
 > = {
   en: {
@@ -381,7 +381,7 @@ const LOCALES: Record<
     },
     status: { shipped: 'Shipped', processing: 'Processing' },
     currency: 'USD',
-    i18n: {}
+    labels: {}
   },
   de: {
     label: 'DE',
@@ -394,18 +394,16 @@ const LOCALES: Record<
     },
     status: { shipped: 'Versandt', processing: 'In Bearbeitung' },
     currency: 'EUR',
-    i18n: {
-      labels: {
-        rowsPerPage: 'Zeilen pro Seite',
-        previousPage: 'Zur vorherigen Seite',
-        nextPage: 'Zur nächsten Seite',
-        loading: 'Wird geladen...',
-        empty: 'Keine Daten verfügbar',
-        sortAscending: 'Aufsteigend',
-        sortDescending: 'Absteigend',
-        columnsMenu: 'Spalten',
-        toggleColumns: 'Spalten ein-/ausschalten'
-      }
+    labels: {
+      rowsPerPage: 'Zeilen pro Seite',
+      previousPage: 'Zur vorherigen Seite',
+      nextPage: 'Zur nächsten Seite',
+      loading: 'Wird geladen...',
+      empty: 'Keine Daten verfügbar',
+      sortAscending: 'Aufsteigend',
+      sortDescending: 'Absteigend',
+      columnsMenu: 'Spalten',
+      toggleColumns: 'Spalten ein-/ausschalten'
     }
   },
   id: {
@@ -419,18 +417,16 @@ const LOCALES: Record<
     },
     status: { shipped: 'Terkirim', processing: 'Diproses' },
     currency: 'IDR',
-    i18n: {
-      labels: {
-        rowsPerPage: 'Baris per halaman',
-        previousPage: 'Ke halaman sebelumnya',
-        nextPage: 'Ke halaman berikutnya',
-        loading: 'Memuat...',
-        empty: 'Tidak ada data',
-        sortAscending: 'Naik',
-        sortDescending: 'Turun',
-        columnsMenu: 'Kolom',
-        toggleColumns: 'Tampilkan kolom'
-      }
+    labels: {
+      rowsPerPage: 'Baris per halaman',
+      previousPage: 'Ke halaman sebelumnya',
+      nextPage: 'Ke halaman berikutnya',
+      loading: 'Memuat...',
+      empty: 'Tidak ada data',
+      sortAscending: 'Naik',
+      sortDescending: 'Turun',
+      columnsMenu: 'Kolom',
+      toggleColumns: 'Tampilkan kolom'
     }
   }
 }
@@ -510,7 +506,7 @@ export const LocalizedLabels: Story = {
     })
 
     return (
-      <DataGrid table={table} recordCount={localizedOrders.length} i18n={config.i18n}>
+      <DataGrid table={table} recordCount={localizedOrders.length} labels={config.labels}>
         <div {...stylex.props(s.stack)}>
           <div {...stylex.props(s.cellFlex)}>
             {(['en', 'de', 'id'] as const).map((key) => (

@@ -29,7 +29,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyMedia variant='icon'>
+          <EmptyMedia kind='icon'>
             <Icon svg={BookOpen} size={16} />
           </EmptyMedia>
           <EmptyTitle>{m.loans_empty_title()}</EmptyTitle>

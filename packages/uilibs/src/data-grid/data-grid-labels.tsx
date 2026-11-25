@@ -1,16 +1,15 @@
 /**
  * Every built-in user-facing string in the data grid, overridable in one
- * place: `<DataGrid i18n={{ labels: { ... } }}>`. A nested config merged per
- * section, with functions for anything interpolated so pluralization and
- * word order live in the label, never in string concatenation at a call site.
+ * place: `<DataGrid labels={{ ... }} />`. Functions stand in for anything
+ * interpolated so pluralization and word order live in the label, never in
+ * string concatenation at a call site.
  *
- * Precedence, most specific wins: a component-level prop that already
- * existed (`rowCreateLabel`, `loadingMessage`, the pagination label props)
- * beats the matching `i18n` label, which beats the built-in default - so
- * adopting `i18n` is never a breaking change.
+ * Precedence, most specific wins: a component-level prop (`rowCreateLabel`,
+ * `loadingMessage`, the pagination label props) beats the matching entry of
+ * `labels`, which beats the built-in default.
  */
 
-export interface DataGridI18nLabels {
+export interface DataGridLabels {
   /* The column header menu. */
   sortAscending: string
   sortDescending: string
@@ -49,15 +48,7 @@ export interface DataGridI18nLabels {
   filterClear: string
 }
 
-export interface DataGridI18nConfig {
-  labels: DataGridI18nLabels
-}
-
-export interface DataGridI18nOverrides {
-  labels?: Partial<DataGridI18nLabels>
-}
-
-const DEFAULT_DATA_GRID_LABELS: DataGridI18nLabels = {
+const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   sortAscending: 'Asc',
   sortDescending: 'Desc',
   pinColumnStart: 'Pin to left',
@@ -90,20 +81,14 @@ const DEFAULT_DATA_GRID_LABELS: DataGridI18nLabels = {
   filterNoResults: 'No results found.',
   filterClear: 'Clear filters'
 }
-
-const DEFAULT_DATA_GRID_I18N: DataGridI18nConfig = Object.freeze({
-  labels: Object.freeze(DEFAULT_DATA_GRID_LABELS)
-})
+Object.freeze(DEFAULT_DATA_GRID_LABELS)
 
 /**
- * A shallow merge per section, deliberately: a deep merge would leak a
- * default back into a function-valued label the consumer replaced. With no
- * overrides the frozen default is returned as-is, so the merge is free to
- * run on every render without producing a new identity.
+ * A shallow merge, deliberately: a deep merge would leak a default back into a function-valued
+ * label the consumer replaced. With no overrides the frozen default is returned as-is, so the
+ * merge is free to run on every render without producing a new identity.
  */
-export function mergeDataGridI18n(overrides?: DataGridI18nOverrides): DataGridI18nConfig {
-  if (!overrides?.labels) return DEFAULT_DATA_GRID_I18N
-  return {
-    labels: { ...DEFAULT_DATA_GRID_LABELS, ...overrides.labels }
-  }
+export function mergeDataGridLabels(overrides?: Partial<DataGridLabels>): DataGridLabels {
+  if (!overrides) return DEFAULT_DATA_GRID_LABELS
+  return { ...DEFAULT_DATA_GRID_LABELS, ...overrides }
 }

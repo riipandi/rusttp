@@ -6,7 +6,7 @@ import { Separator } from '../../base/separator'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { itemStyles as s, itemVariants, itemSizes } from './item.stylex'
-import { itemMediaVariants as mediaVariants } from './item.stylex'
+import { itemMediaKinds as mediaKinds } from './item.stylex'
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -57,14 +57,14 @@ export function Item({ variant = 'ghost', size = 'medium', style, render, ...pro
   return inGroup ? <div role='listitem'>{item}</div> : item
 }
 
-export type ItemMediaVariant = 'default' | 'icon' | 'image'
+export type ItemMediaKind = 'default' | 'icon' | 'image'
 
 export function ItemMedia({
-  variant = 'default',
+  kind = 'default',
   style,
   ...props
-}: DivProps & { variant?: ItemMediaVariant }) {
-  return <div {...props} {...stylex.props(s.media, mediaVariants[variant], style)} />
+}: DivProps & { kind?: ItemMediaKind }) {
+  return <div {...props} {...stylex.props(s.media, mediaKinds[kind], style)} />
 }
 
 export function ItemContent({ style, ...props }: DivProps) {

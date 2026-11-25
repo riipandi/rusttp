@@ -63,7 +63,7 @@ export const Playground: Story = {
         </ItemActions>
       </Item>
       <Item {...args}>
-        <ItemMedia variant='icon'>
+        <ItemMedia kind='icon'>
           <Info {...stylex.props(styles.icon)} />
         </ItemMedia>
         <ItemContent>
@@ -181,7 +181,7 @@ export const Link: Story = {
     // The `render` prop swaps the underlying element — here an <a>, so hover and
     // focus states apply to the anchor.
     <Item variant='outline' render={<a href='#dashboard' />}>
-      <ItemMedia variant='icon'>
+      <ItemMedia kind='icon'>
         <Home {...stylex.props(styles.icon)} />
       </ItemMedia>
       <ItemContent>

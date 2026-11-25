@@ -87,14 +87,14 @@ Create `table` with `useTable` and `dataGridFeatures`, and give every part that 
 | `recordCount`           | `number` <br /> Total records, used for paging and counts. Required.                                                                                                                                                                  |
 | `isLoading`             | `boolean` <br /> Shows the loading state. Default `false`.                                                                                                                                                                            |
 | `loadingMode`           | `skeleton`, `spinner` <br /> How the loading state looks. Default `skeleton`.                                                                                                                                                         |
-| `loadingMessage`        | `ReactNode` <br /> Overrides the loading label. Default from `i18n`.                                                                                                                                                                  |
-| `fetchingMoreMessage`   | `ReactNode` <br /> Shown while more rows load in infinite mode. Default from `i18n`.                                                                                                                                                  |
-| `allRowsLoadedMessage`  | `ReactNode` <br /> Shown after the last infinite page. Default from `i18n`.                                                                                                                                                           |
-| `emptyMessage`          | `ReactNode` <br /> Shown when there are no rows. Default from `i18n`.                                                                                                                                                                 |
-| `i18n`                  | `{ labels }` <br /> Overrides built-in strings; a specific prop such as `emptyMessage` still wins. Default English.                                                                                                                   |
+| `loadingMessage`        | `ReactNode` <br /> Overrides the loading label. Default from `labels`.                                                                                                                                                                |
+| `fetchingMoreMessage`   | `ReactNode` <br /> Shown while more rows load in infinite mode. Default from `labels`.                                                                                                                                                |
+| `allRowsLoadedMessage`  | `ReactNode` <br /> Shown after the last infinite page. Default from `labels`.                                                                                                                                                         |
+| `emptyMessage`          | `ReactNode` <br /> Shown when there are no rows. Default from `labels`.                                                                                                                                                               |
+| `labels`                | `Partial<DataGridLabels>` <br /> Overrides built-in strings; a specific prop such as `emptyMessage` still wins. Default English.                                                                                                      |
 | `onRowClick`            | `(row) => void` <br /> Makes rows clickable.                                                                                                                                                                                          |
 | `onRowCreate`           | `() => void` <br /> Adds an "Add row" button as the last body row.                                                                                                                                                                    |
-| `rowCreateLabel`        | `ReactNode` <br /> Label of that button. Default from `i18n`.                                                                                                                                                                         |
+| `rowCreateLabel`        | `ReactNode` <br /> Label of that button. Default from `labels`.                                                                                                                                                                       |
 | `appendRow`             | `ReactNode` <br /> A `tr` rendered after the data rows, such as a draft row.                                                                                                                                                          |
 | `getRowStatus`          | `(row) => 'new' \| 'dirty' \| 'deleted' \| undefined` <br /> Tints or strikes a row.                                                                                                                                                  |
 | `getCellStatus`         | `(row, columnId) => 'dirty' \| 'invalid' \| undefined` <br /> Marks a cell corner.                                                                                                                                                    |
@@ -231,12 +231,12 @@ A virtualized table with controlled scrolling and infinite loading.
 | `DataGridPagination` `sizes`             | `number[]` <br /> Page-size choices. Default `5, 10, 25, 50, 100`.                                       |
 | `DataGridPagination` `sizesSkeleton`     | `ReactNode` <br /> Placeholder for the size select while loading. Default a skeleton.                    |
 | `DataGridPagination` `moreLimit`         | `number` <br /> Page buttons shown per group. Default `5`.                                               |
-| `DataGridPagination` `info`              | `string` <br /> Template with `{from}`, `{to}`, and `{count}`. Default from `i18n`.                      |
+| `DataGridPagination` `info`              | `string` <br /> Template with `{from}`, `{to}`, and `{count}`. Default from `labels`.                    |
 | `DataGridPagination` `infoSkeleton`      | `ReactNode` <br /> Placeholder for the range text while loading. Default a skeleton.                     |
-| `DataGridPagination` `rowsPerPageLabel`  | `string` <br /> Label of the size select. Default from `i18n`.                                           |
-| `DataGridPagination` `previousPageLabel` | `string` <br /> Name of the previous button. Default from `i18n`.                                        |
-| `DataGridPagination` `nextPageLabel`     | `string` <br /> Name of the next button. Default from `i18n`.                                            |
-| `DataGridPagination` `ellipsisText`      | `string` <br /> Text of the group-jump buttons. Default from `i18n`.                                     |
+| `DataGridPagination` `rowsPerPageLabel`  | `string` <br /> Label of the size select. Default from `labels`.                                         |
+| `DataGridPagination` `previousPageLabel` | `string` <br /> Name of the previous button. Default from `labels`.                                      |
+| `DataGridPagination` `nextPageLabel`     | `string` <br /> Name of the next button. Default from `labels`.                                          |
+| `DataGridPagination` `ellipsisText`      | `string` <br /> Text of the group-jump buttons. Default from `labels`.                                   |
 | `DataGridCellSelection` `apiRef`         | ref to `DataGridCellSelectionApi` <br /> Exposes `focusCell`, `clearSelection`, and `scrollToCell`.      |
 | `DataGridCellSelection` `clipboard`      | `boolean` <br /> Native copy, cut, and paste. Default `true`.                                            |
 | `DataGridCellSelection` `keyboard`       | `boolean` <br /> Arrows, Home/End, paging, Enter, F2, type-to-edit, Tab, Delete, Escape. Default `true`. |
@@ -279,8 +279,8 @@ A virtualized table with controlled scrolling and infinite loading.
 
 ### Hooks and helpers
 
-- `useDataGrid`: reads the grid context (`props`, `recordCount`, `isLoading`, `i18n`) inside a `DataGrid`.
-- `dataGridFeatures`: the TanStack feature bundle the grid renders against. `mergeDataGridI18n` merges `i18n` overrides over the English defaults, one level deep.
+- `useDataGrid`: reads the grid context (`props`, `recordCount`, `isLoading`, `labels`) inside a `DataGrid`.
+- `dataGridFeatures`: the TanStack feature bundle the grid renders against. `mergeDataGridLabels` merges `labels` overrides over the English defaults.
 - Column and cell: `getColumnHeaderLabel`, `toDataGridDomId`, `getDataGridCellSelectionCellAttrs`, `getPinningStyles`, `getDataGridTreeIndentStyle`, `getDataGridScrollAreaViewport`.
 - Rows and headers: `getDataGridTableRowSections`, `getDataGridTableResolvedRows`, `getDataGridTableMergedHeaderGroups`, `hasDataGridTableRightPinnedColumns`.
 - Clipboard and edits: `parseDataGridClipboardText`, `serializeDataGridClipboardText`, `tileDataGridClipboardBlock`, `buildDataGridPasteDetails`, `buildDataGridClearDetails`, `invertDataGridCellsChange` (swaps a batch's values for undo and redo), `getDataGridActiveRegionGrid`, `getDataGridVisibleSelectedCellCount`.

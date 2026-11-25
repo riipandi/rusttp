@@ -98,7 +98,7 @@ function DataGridPagination<TData extends object>(
   props: DataGridPaginationProps & { table: DataGridTableInstance<TData> }
 ): JSX.Element {
   const s = dataGridPaginationStyles
-  const { i18n, recordCount, isLoading } = useDataGrid()
+  const { labels, recordCount, isLoading } = useDataGrid()
   const { table } = props
 
   const defaultProps: Partial<DataGridPaginationProps> = {
@@ -106,10 +106,10 @@ function DataGridPagination<TData extends object>(
     sizesSkeleton: <Skeleton style={s.sizesSkeleton} />,
     moreLimit: 5,
     infoSkeleton: <Skeleton style={s.infoSkeleton} />,
-    rowsPerPageLabel: i18n.labels.rowsPerPage,
-    previousPageLabel: i18n.labels.previousPage,
-    nextPageLabel: i18n.labels.nextPage,
-    ellipsisText: i18n.labels.paginationEllipsis
+    rowsPerPageLabel: labels.rowsPerPage,
+    previousPageLabel: labels.previousPage,
+    nextPageLabel: labels.nextPage,
+    ellipsisText: labels.paginationEllipsis
   }
 
   const mergedProps: DataGridPaginationProps = { ...defaultProps, ...props }
@@ -121,13 +121,13 @@ function DataGridPagination<TData extends object>(
   const pageCount = table.getPageCount()
 
   // A supplied `info` keeps its placeholder-template contract; the default
-  // routes through the i18n label function, where word order is free.
+  // routes through the label function, where word order is free.
   const paginationInfo = mergedProps.info
     ? mergedProps.info
         .replaceAll('{from}', from.toString())
         .replaceAll('{to}', to.toString())
         .replaceAll('{count}', recordCount.toString())
-    : i18n.labels.paginationInfo({ from, to, count: recordCount })
+    : labels.paginationInfo({ from, to, count: recordCount })
 
   // Pagination limit logic
   const paginationMoreLimit = mergedProps.moreLimit || 5
@@ -145,7 +145,7 @@ function DataGridPagination<TData extends object>(
           key={i}
           size='small'
           variant='ghost'
-          aria-label={i18n.labels.goToPage(i + 1)}
+          aria-label={labels.goToPage(i + 1)}
           aria-current={pageIndex === i ? 'page' : undefined}
           style={[
             buttonSquare.small,

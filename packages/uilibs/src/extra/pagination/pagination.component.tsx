@@ -66,14 +66,15 @@ export function PaginationItem({
 
 export interface PaginationLinkProps
   extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleProp {
-  isActive?: boolean
+  /** Marks the current page: an outline fill and `aria-current="page"`. */
+  current?: boolean
   /** The `Button` size; a page link is a square of it. Default `medium`. */
   size?: DenseControlSize
 }
 
 /** A link of a given shape: `square` for a page number, rectangular for the text of previous and next. */
 function PageLink({
-  isActive,
+  current,
   size = 'medium',
   square,
   style,
@@ -83,9 +84,9 @@ function PageLink({
   // The text goes to the button, not the `a`: a button with no children reads as icon-only.
   return (
     <LinkButton
-      variant={isActive ? 'outline' : 'ghost'}
+      variant={current ? 'outline' : 'ghost'}
       size={size}
-      current={isActive}
+      current={current}
       render={<a {...props} />}
       style={[square && buttonSquare[size], style]}
     >

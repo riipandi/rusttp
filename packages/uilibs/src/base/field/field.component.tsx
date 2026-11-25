@@ -28,10 +28,7 @@ import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
-import {
-  fieldLabelStyles as labelStyles,
-  fieldLegendVariants as legendVariants
-} from './field.stylex'
+import { fieldLabelStyles as labelStyles, fieldLegendKinds as legendKinds } from './field.stylex'
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -42,17 +39,18 @@ export function FieldSet({
   return <BaseFieldset.Root {...props} {...stylex.props(s.set, style)} />
 }
 
-export type FieldLegendVariant = 'legend' | 'label'
+export type FieldLegendKind = 'legend' | 'label'
 
 export function FieldLegend({
-  variant = 'legend',
+  kind = 'legend',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseFieldset.Legend>, 'className' | 'style'> &
-  StyleProp & { variant?: FieldLegendVariant }) {
-  return (
-    <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendVariants[variant], style)} />
-  )
+  StyleProp & {
+    /** `legend` is a heading; `label` sizes the legend like a field label. */
+    kind?: FieldLegendKind
+  }) {
+  return <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendKinds[kind], style)} />
 }
 
 export function FieldGroup({ style, ...props }: DivProps) {

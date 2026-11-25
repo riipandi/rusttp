@@ -153,7 +153,7 @@ function CountrySelect({
         disabled={disabled || readOnly}
         aria-label={labels.selectCountry(countryName)}
         size={phone?.size}
-        showChevron={false}
+        showIcon={false}
         style={s.countryTrigger}
       >
         <FlagComponent country={selectedCountry} countryName={countryName} />

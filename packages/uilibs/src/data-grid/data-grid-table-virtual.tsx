@@ -643,7 +643,7 @@ function DataGridTableVirtual<TData extends object>({
   fetchMoreOffset = 0,
   virtualizerOptions
 }: DataGridTableVirtualProps<TData>) {
-  const { i18n, props } = useDataGrid<TData>()
+  const { labels, props } = useDataGrid<TData>()
   // Memoized virtual body: skips re-renders during an active column resize.
   // Column widths update via CSS variables on the <table> element, so the
   // browser handles width changes without React re-renders. A cell-selection
@@ -695,9 +695,8 @@ function DataGridTableVirtual<TData extends object>({
   } = virtualizerOptions ?? {}
 
   const isVirtualizationEnabled = virtualizerOptions?.enabled !== false
-  const loadingMoreMessage =
-    props.fetchingMoreMessage || props.loadingMessage || i18n.labels.loading
-  const allRowsLoadedMessage = props.allRowsLoadedMessage || i18n.labels.allRowsLoaded
+  const loadingMoreMessage = props.fetchingMoreMessage || props.loadingMessage || labels.loading
+  const allRowsLoadedMessage = props.allRowsLoadedMessage || labels.allRowsLoaded
 
   const handleViewportRef = useCallback((node: HTMLDivElement | null) => {
     setViewportElements({

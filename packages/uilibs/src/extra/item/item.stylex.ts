@@ -101,7 +101,7 @@ export const itemSizes = stylex.create({
   }
 })
 
-export const itemMediaVariants = stylex.create({
+export const itemMediaKinds = stylex.create({
   default: {},
   icon: {
     color: colors.foregroundNeutral

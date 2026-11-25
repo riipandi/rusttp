@@ -33,24 +33,24 @@ const styles = stylex.create({
 
 export default meta
 
-// The legend's `variant` is a `FieldLegend` prop; the rest reach both Fields.
+// The legend's `kind` is a `FieldLegend` prop; the rest reach both Fields.
 type PlaygroundArgs = Pick<ComponentProps<typeof Field>, 'orientation' | 'invalid' | 'disabled'> &
-  Pick<ComponentProps<typeof FieldLegend>, 'variant'>
+  Pick<ComponentProps<typeof FieldLegend>, 'kind'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['orientation', 'invalid', 'disabled', 'variant'] }
+    controls: { disable: false, include: ['orientation', 'invalid', 'disabled', 'kind'] }
   },
   argTypes: {
     orientation: { control: 'radio', options: ['vertical', 'horizontal'] },
     invalid: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    variant: { control: 'radio', options: ['legend', 'label'] }
+    kind: { control: 'radio', options: ['legend', 'label'] }
   },
-  args: { orientation: 'vertical', invalid: false, disabled: false, variant: 'legend' },
-  render: ({ orientation, invalid, disabled, variant }) => (
+  args: { orientation: 'vertical', invalid: false, disabled: false, kind: 'legend' },
+  render: ({ orientation, invalid, disabled, kind }) => (
     <FieldSet style={styles.root}>
-      <FieldLegend variant={variant}>Ministry of Magic security pass</FieldLegend>
+      <FieldLegend kind={kind}>Ministry of Magic security pass</FieldLegend>
       <FieldGroup>
         <Field orientation={orientation} invalid={invalid} disabled={disabled}>
           <FieldLabel htmlFor='field-name'>Wizard name</FieldLabel>
@@ -68,15 +68,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 /** The legend of a fieldset in its two looks: a heading (`legend`) or the size of a label. */
-export const Variants: Story = {
+export const Kinds: Story = {
   render: () => (
-    <Axis axis='variant' rows={['legend', 'label'] as const}>
-      {(variant) => (
+    <Axis axis='kind' rows={['legend', 'label'] as const}>
+      {(kind) => (
         <FieldSet>
-          <FieldLegend variant={variant}>{`Owl post ${variant}`}</FieldLegend>
+          <FieldLegend kind={kind}>{`Owl post ${kind}`}</FieldLegend>
           <FieldGroup>
             <Field>
-              <FieldLabel>{`Address ${variant}`}</FieldLabel>
+              <FieldLabel>{`Address ${kind}`}</FieldLabel>
               <Input placeholder='hermione.granger@hogwarts.edu' />
             </Field>
           </FieldGroup>
@@ -85,8 +85,8 @@ export const Variants: Story = {
     </Axis>
   ),
   play: async ({ canvas }) => {
-    const size = (variant: string) =>
-      Number.parseFloat(getComputedStyle(canvas.getByText(`Owl post ${variant}`)).fontSize)
+    const size = (kind: string) =>
+      Number.parseFloat(getComputedStyle(canvas.getByText(`Owl post ${kind}`)).fontSize)
     await expect(size('legend')).toBeGreaterThan(size('label'))
   }
 }

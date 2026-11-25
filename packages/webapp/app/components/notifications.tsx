@@ -207,7 +207,7 @@ export function NotificationsPopover({
         ) : (
           <Empty style={styles.empty}>
             <EmptyHeader>
-              <EmptyMedia variant='icon'>
+              <EmptyMedia kind='icon'>
                 <Icon svg={Inbox} size={20} color='neutral-faded' />
               </EmptyMedia>
               <EmptyTitle>{m.notifications_empty_title()}</EmptyTitle>

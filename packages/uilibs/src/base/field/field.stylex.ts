@@ -110,7 +110,7 @@ export const fieldLabelStyles = stylex.create({
   }
 })
 
-export const fieldLegendVariants = stylex.create({
+export const fieldLegendKinds = stylex.create({
   legend: {
     fontSize: fontSize.body1
   },

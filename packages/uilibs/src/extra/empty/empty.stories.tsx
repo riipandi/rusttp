@@ -35,20 +35,20 @@ const styles = stylex.create({
 
 export default meta
 
-// The title and media variant belong to `EmptyTitle` and `EmptyMedia`.
-type PlaygroundArgs = Pick<ComponentProps<typeof EmptyMedia>, 'variant'> & { title: string }
+// The title and media kind belong to `EmptyTitle` and `EmptyMedia`.
+type PlaygroundArgs = Pick<ComponentProps<typeof EmptyMedia>, 'kind'> & { title: string }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['title', 'variant'] } },
+  parameters: { controls: { disable: false, include: ['title', 'kind'] } },
   argTypes: {
     title: { control: 'text' },
-    variant: { control: 'radio', options: ['default', 'icon'] }
+    kind: { control: 'radio', options: ['default', 'icon'] }
   },
-  args: { title: 'No potions brewed', variant: 'icon' },
-  render: ({ title, variant }) => (
+  args: { title: 'No potions brewed', kind: 'icon' },
+  render: ({ title, kind }) => (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant={variant}>
+        <EmptyMedia kind={kind}>
           <Package {...stylex.props(styles.icon)} />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
@@ -64,23 +64,23 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 /** The media is a bare slot (`default`) or a tinted icon tile (`icon`). */
-export const Variants: Story = {
+export const Kinds: Story = {
   render: () => (
-    <Axis axis='variant' rows={['default', 'icon'] as const}>
-      {(variant) => (
+    <Axis axis='kind' rows={['default', 'icon'] as const}>
+      {(kind) => (
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant={variant} data-testid={`media-${variant}`}>
+            <EmptyMedia kind={kind} data-testid={`media-${kind}`}>
               <Package {...stylex.props(styles.icon)} />
             </EmptyMedia>
-            <EmptyTitle>No potions brewed ({variant})</EmptyTitle>
+            <EmptyTitle>No potions brewed ({kind})</EmptyTitle>
           </EmptyHeader>
         </Empty>
       )}
     </Axis>
   ),
   play: async ({ canvas }) => {
-    const media = (variant: string) => getComputedStyle(canvas.getByTestId(`media-${variant}`))
+    const media = (kind: string) => getComputedStyle(canvas.getByTestId(`media-${kind}`))
     // Only the icon tile has a fill of its own.
     await expect(media('icon').backgroundColor).not.toBe(media('default').backgroundColor)
     await expect(media('icon').width).not.toBe(media('default').width)
@@ -91,7 +91,7 @@ export const Outline: Story = {
   render: () => (
     <Empty style={styles.solidBorder}>
       <EmptyHeader>
-        <EmptyMedia variant='icon'>
+        <EmptyMedia kind='icon'>
           <FileText {...stylex.props(styles.icon)} />
         </EmptyMedia>
         <EmptyTitle>No owls today</EmptyTitle>
@@ -132,7 +132,7 @@ export const WithInputGroup: Story = {
   render: () => (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant='icon'>
+        <EmptyMedia kind='icon'>
           <Search {...stylex.props(styles.icon)} />
         </EmptyMedia>
         <EmptyTitle>No spells found</EmptyTitle>

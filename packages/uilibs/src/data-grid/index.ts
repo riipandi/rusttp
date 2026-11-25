@@ -32,12 +32,8 @@ export type {
   DataGridTableInstance,
   DataGridTableStyleSlots
 } from './data-grid'
-export { mergeDataGridI18n } from './data-grid-i18n'
-export type {
-  DataGridI18nConfig,
-  DataGridI18nLabels,
-  DataGridI18nOverrides
-} from './data-grid-i18n'
+export { mergeDataGridLabels } from './data-grid-labels'
+export type { DataGridLabels } from './data-grid-labels'
 export { DataGridScrollArea } from './data-grid-table-pager'
 export type {
   DataGridScrollAreaOrientation,

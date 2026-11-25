@@ -66,7 +66,7 @@ export function ComboboxTrigger({
   variant = 'outline',
   style,
   children,
-  showChevron = true,
+  showIcon = true,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
   StyleProp & {
@@ -76,7 +76,7 @@ export function ComboboxTrigger({
     variant?: ControlVariant
     /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
      * InputPhone country flag). Defaults to `true`. */
-    showChevron?: boolean
+    showIcon?: boolean
   }) {
   return (
     <BaseCombobox.Trigger
@@ -90,7 +90,7 @@ export function ComboboxTrigger({
       )}
     >
       {children}
-      {showChevron ? (
+      {showIcon ? (
         <BaseCombobox.Icon {...stylex.props(s.triggerIcon)}>
           <TriggerChevron />
         </BaseCombobox.Icon>

@@ -119,7 +119,7 @@ function DataGridTableDndHeader<TData extends object>({
   header: Header<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { i18n, props } = useDataGrid()
+  const { labels, props } = useDataGrid()
   const { column } = header
 
   // Check if column ordering is enabled for this column
@@ -150,7 +150,7 @@ function DataGridTableDndHeader<TData extends object>({
             ]}
             {...attributes}
             {...listeners}
-            aria-label={i18n.labels.dragToReorder}
+            aria-label={labels.dragToReorder}
           >
             <GripVertical aria-hidden='true' {...stylex.props(s2.grip)} />
           </Button>
@@ -401,9 +401,9 @@ function DataGridTableDndRowHandle({
   /** Announced and shown on hover in place of the drag affordance. */
   disabledLabel?: string
 }) {
-  const { i18n } = useDataGrid()
+  const { labels } = useDataGrid()
   const context = useContext(SortableRowContext)
-  const resolvedDisabledLabel = disabledLabel ?? i18n.labels.reorderingUnavailable
+  const resolvedDisabledLabel = disabledLabel ?? labels.reorderingUnavailable
 
   if (!context || disabled) {
     return (
@@ -416,7 +416,7 @@ function DataGridTableDndRowHandle({
           disabled && rowStyles.gripDisabled,
           style
         ]}
-        aria-label={disabled ? resolvedDisabledLabel : i18n.labels.dragToReorderRow}
+        aria-label={disabled ? resolvedDisabledLabel : labels.dragToReorderRow}
         title={disabled ? resolvedDisabledLabel : undefined}
         disabled
       >
@@ -430,7 +430,7 @@ function DataGridTableDndRowHandle({
       variant='ghost'
       size='small'
       style={[buttonSquare.small, rowStyles.gripButton, style]}
-      aria-label={i18n.labels.dragToReorderRow}
+      aria-label={labels.dragToReorderRow}
       {...context.attributes}
       {...context.listeners}
     >

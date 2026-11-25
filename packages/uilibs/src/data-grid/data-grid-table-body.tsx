@@ -737,7 +737,7 @@ function DataGridTableEmpty<TData extends object>({
 }: {
   table: DataGridTableInstance<TData>
 }) {
-  const { i18n, props } = useDataGrid()
+  const { labels, props } = useDataGrid()
   const visibleColumnCount =
     getDataGridTableOrderedVisibleColumns(table).length +
     (props.tableLayout?.columnsResizable ? 1 : 0)
@@ -745,20 +745,20 @@ function DataGridTableEmpty<TData extends object>({
   return (
     <tr>
       <td colSpan={Math.max(visibleColumnCount, 1)} {...stylex.props(s.emptyCell)}>
-        {props.emptyMessage || i18n.labels.empty}
+        {props.emptyMessage || labels.empty}
       </td>
     </tr>
   )
 }
 
 function DataGridTableLoader() {
-  const { i18n, props } = useDataGrid()
+  const { labels, props } = useDataGrid()
 
   return (
     <div {...stylex.props(s.loaderWrap)}>
       <div {...stylex.props(s.loaderCard)}>
         <Spinner style={s.loaderSpinner} />
-        {props.loadingMessage || i18n.labels.loading}
+        {props.loadingMessage || labels.loading}
       </div>
     </div>
   )
@@ -780,7 +780,7 @@ function DataGridTableRowPin<TData extends object>({
   row: Row<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { i18n } = useDataGrid()
+  const { labels } = useDataGrid()
 
   // `table` arrives through the caller's threaded prop; the row itself always
   // knows its table, so a call site that has not threaded the prop yet (or a
@@ -796,7 +796,7 @@ function DataGridTableRowPin<TData extends object>({
         return (
           <button
             type='button'
-            aria-label={isPinned ? i18n.labels.unpinRow : i18n.labels.pinRow}
+            aria-label={isPinned ? labels.unpinRow : labels.pinRow}
             data-pinned={isPinned ? 'true' : undefined}
             onClick={(event) => {
               // Pinning must not bubble into the row's onRowClick handler.
@@ -844,7 +844,7 @@ function DataGridTableRowSelect<TData extends object>({
 }: {
   row: Row<DataGridFeatures, TData>
 }) {
-  const { i18n } = useDataGrid()
+  const { labels } = useDataGrid()
   return (
     <Subscribe source={row.table.atoms.rowSelection}>
       {() => (
@@ -857,7 +857,7 @@ function DataGridTableRowSelect<TData extends object>({
               // Selection must not bubble into the row's onRowClick handler.
               event.stopPropagation()
             }}
-            aria-label={i18n.labels.selectRow}
+            aria-label={labels.selectRow}
           />
         </>
       )}
@@ -870,7 +870,7 @@ function DataGridTableRowSelectAll<TData extends object>({
 }: {
   table: DataGridTableInstance<TData>
 }) {
-  const { i18n, recordCount, isLoading } = useDataGrid()
+  const { labels, recordCount, isLoading } = useDataGrid()
 
   // `getIsSomePageRowsSelected()` means "at least one" in v9, where v8 meant
   // "some but not all", so the all-selected case has to be excluded explicitly
@@ -887,7 +887,7 @@ function DataGridTableRowSelectAll<TData extends object>({
             indeterminate={isSomeSelected && !isAllSelected}
             disabled={isLoading || recordCount === 0}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(value)}
-            aria-label={i18n.labels.selectAll}
+            aria-label={labels.selectAll}
           />
         )
       }}
@@ -908,7 +908,7 @@ function DataGridTableRowExpand<TData extends object>({
   /** Custom toggle icon; replaces the default chevron. */
   children?: ReactNode
 }) {
-  const { i18n, props } = useDataGrid()
+  const { labels, props } = useDataGrid()
   const isExpanded = row.getIsExpanded()
 
   return (
@@ -921,7 +921,7 @@ function DataGridTableRowExpand<TData extends object>({
         <button
           type='button'
           aria-expanded={isExpanded}
-          aria-label={isExpanded ? i18n.labels.collapseRow : i18n.labels.expandRow}
+          aria-label={isExpanded ? labels.collapseRow : labels.expandRow}
           data-dense={props.tableLayout?.dense ? '' : undefined}
           onClick={(event) => {
             // Expansion must not bubble into the row's onRowClick handler.
@@ -958,7 +958,7 @@ function DataGridTableBodyRows<TData extends object>({
   table,
   hasFollowingFooter
 }: DataGridTableBodyRowsProps<TData>) {
-  const { i18n, isLoading, props } = useDataGrid()
+  const { labels, isLoading, props } = useDataGrid()
   const pagination = table.state.pagination
 
   if (isLoading && props.loadingMode === 'skeleton' && pagination?.pageSize) {
@@ -1011,9 +1011,7 @@ function DataGridTableBodyRows<TData extends object>({
         >
           <div {...stylex.props(s.loadingInner)}>
             <Spinner style={s.loaderSpinner} />
-            <span {...stylex.props(s.loadingText)}>
-              {props.loadingMessage || i18n.labels.loading}
-            </span>
+            <span {...stylex.props(s.loadingText)}>{props.loadingMessage || labels.loading}</span>
           </div>
         </td>
       </tr>
