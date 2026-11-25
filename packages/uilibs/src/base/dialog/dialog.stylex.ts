@@ -71,9 +71,7 @@ export const dialogStyles = stylex.create({
     justifyContent: 'flex-end'
   },
   title: {
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {

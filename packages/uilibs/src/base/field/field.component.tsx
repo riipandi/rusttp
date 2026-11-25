@@ -24,6 +24,7 @@ import { Field as BaseField } from '@base-ui/react/field'
 import { Fieldset as BaseFieldset } from '@base-ui/react/fieldset'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
@@ -80,11 +81,11 @@ export function FieldLabel({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseField.Label>, 'className' | 'style'> & StyleProp) {
-  return <BaseField.Label {...props} {...stylex.props(s.labelBase, s.label, style)} />
+  return <BaseField.Label {...props} {...stylex.props(type.body2, s.labelBase, s.label, style)} />
 }
 
 export function FieldTitle({ style, ...props }: DivProps) {
-  return <div {...props} {...stylex.props(s.title, style)} />
+  return <div {...props} {...stylex.props(type.body2, s.title, style)} />
 }
 
 export function FieldDescription({

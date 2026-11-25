@@ -76,15 +76,15 @@ A ghost icon button that cycles light, dark, and system. Its accessible name say
 
 Import tokens from `uilibs/styles/`. Use a token instead of a literal value, so a theme change reaches your styles.
 
-| Token                                          | Description                                                                                                                                       |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `colors`                                       | Roles `primary`, `neutral`, `positive`, `warning`, `critical`, each as `background`, `foreground`, and `border`. See below. From `colors.stylex`. |
-| `shadow`                                       | `outline`, `raised`, `overlay`. From `colors.stylex`.                                                                                             |
-| `radius`                                       | `xsmall` to `xxlarge`, `full`, `none`. From `tokens.stylex`.                                                                                      |
-| `fontFamily`, `fontSize`, `fontLineHeight`     | The type scale from `headline1` to `caption2`, and `monospace`. From `tokens.stylex`.                                                             |
-| `duration`, `easing`                           | `rapid` to `slow`, and `standard`, `accelerate`, `decelerate`. From `tokens.stylex`.                                                              |
-| `unit`                                         | Spacing in 4px steps, `x0_5` to `x20`. From `tokens.stylex`.                                                                                      |
-| `stroke`, `container`, `zIndex`, `breakpoints` | Ring widths, popup and panel widths, layers, and media queries. From `tokens.stylex`.                                                             |
+| Token                                                           | Description                                                                                                                                       |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colors`                                                        | Roles `primary`, `neutral`, `positive`, `warning`, `critical`, each as `background`, `foreground`, and `border`. See below. From `colors.stylex`. |
+| `shadow`                                                        | `outline`, `raised`, `overlay`. From `colors.stylex`.                                                                                             |
+| `radius`                                                        | `xsmall` to `xxlarge`, `full`, `none`. From `tokens.stylex`.                                                                                      |
+| `fontFamily`, `fontSize`, `fontLineHeight`, `fontLetterSpacing` | The type scale from `headline1` to `caption2`, and `monospace`. From `tokens.stylex`. Headlines track tighter; every other role is `normal`.      |
+| `duration`, `easing`                                            | `rapid` to `slow`, and `standard`, `accelerate`, `decelerate`. From `tokens.stylex`.                                                              |
+| `unit`                                                          | Spacing in 4px steps, `x0_5` to `x20`. From `tokens.stylex`.                                                                                      |
+| `stroke`, `container`, `zIndex`, `breakpoints`                  | Ring widths, popup and panel widths, layers, and media queries. From `tokens.stylex`.                                                             |
 
 Tokens made with `defineVars` (`colors`, `shadow`, `radius`, the type scale, `duration`, `easing`) can be replaced by a theme. Tokens made with `defineConsts` (`unit`, `stroke`, `container`, `zIndex`, `breakpoints`, `fontWeight`) are fixed at build time.
 

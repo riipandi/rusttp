@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { backdropOf, cellOf, expectDockedTo } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import { Drawer, type DrawerSwipeDirection } from './drawer.component'
@@ -78,6 +78,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open the vault' }))
     const dialog = await body.findByRole('dialog')
     await expect(body.getByRole('heading', { name: 'Brew Polyjuice' })).toBeInTheDocument()
+    await expectTypeRole(body.getByRole('heading', { name: 'Brew Polyjuice' }), 'body1')
 
     // Footer close buttons dismiss the drawer.
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))

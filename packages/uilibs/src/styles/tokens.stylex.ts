@@ -99,9 +99,9 @@ export const fontLineHeight = stylex.defineVars({
 })
 
 export const fontLetterSpacing = stylex.defineVars({
-  headline1: 'normal',
-  headline2: 'normal',
-  headline3: 'normal',
+  headline1: '-0.03em',
+  headline2: '-0.025em',
+  headline3: '-0.02em',
   featured1: 'normal',
   featured2: 'normal',
   featured3: 'normal',

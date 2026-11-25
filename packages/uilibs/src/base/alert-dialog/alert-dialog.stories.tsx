@@ -2,7 +2,7 @@ import { Bin } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { backdropOf, cellOf } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
@@ -121,6 +121,10 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await expect(
       within(document.body).getByRole('heading', { name: /absolutely sure/i })
     ).toBeInTheDocument()
+    await expectTypeRole(
+      within(document.body).getByRole('heading', { name: /absolutely sure/i }),
+      'body1'
+    )
 
     // Cancel dismisses the dialog.
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))

@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { focusRing, unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { tableAlign, tableCellSize, tableStyles as s, tableVerticalAlign } from './table.stylex'
@@ -118,6 +119,7 @@ export function TableHead({
     <th
       {...props}
       {...stylex.props(
+        type.body2,
         s.head,
         cellStyles({ align, verticalAlign, width, minWidth }, columnBorder),
         style

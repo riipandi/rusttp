@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, waitFor } from 'storybook/test'
 import { colors } from '../styles/colors.stylex'
+import { type } from '../styles/type.stylex'
 import type { ControlSize, DenseControlSize } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 
@@ -193,4 +194,23 @@ export async function expectHighlightedItem(item: Element, rest?: Element) {
     await expect(getComputedStyle(rest).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await expect(getComputedStyle(rest, '::before').backgroundColor).toBe('rgba(0, 0, 0, 0)')
   }
+}
+
+const pickType = (style: CSSStyleDeclaration) =>
+  [style.fontFamily, style.fontSize, style.lineHeight, style.letterSpacing].join('|')
+
+/**
+ * Asserts a text part draws the type role it names (`type.<role>` in `styles/type.stylex.ts`):
+ * family, size, line height, and letter spacing. The weight is left out because a part may set its
+ * own (a title is semibold). The role is read from a probe styled by the recipe itself.
+ */
+export async function expectTypeRole(element: Element, role: keyof typeof type) {
+  const probe = document.createElement('span')
+  probe.className = stylex.props(type[role]).className ?? ''
+  document.body.append(probe)
+  const want = getComputedStyle(probe)
+  const have = getComputedStyle(element)
+  const expected = pickType(want)
+  probe.remove()
+  await expect(pickType(have)).toBe(expected)
 }

@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
-import { cellOf } from '../../contracts/control-sizes'
+import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import {
@@ -118,6 +118,7 @@ export const Playground: Story = {
       name: 'A list of your recent Gringotts vault transactions.'
     })
     await expect(within(table).getAllByRole('columnheader')).toHaveLength(4)
+    await expectTypeRole(within(table).getAllByRole('columnheader')[0]!, 'body2')
     // The header row, the ledger rows, and the total row.
     await expect(within(table).getAllByRole('row')).toHaveLength(invoices.length + 2)
     await expect(within(table).getByRole('cell', { name: 'Total' })).toHaveAttribute('colspan', '3')

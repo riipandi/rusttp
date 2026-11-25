@@ -64,9 +64,7 @@ export const sheetStyles = stylex.create({
   },
   title: {
     color: colors.foregroundNeutral,
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {

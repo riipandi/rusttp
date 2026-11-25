@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type } from '../../styles/type.stylex'
 import { labelStyles as s } from './label.stylex'
 
 export interface LabelProps extends Omit<React.ComponentProps<'label'>, 'className' | 'style'> {
@@ -7,5 +8,5 @@ export interface LabelProps extends Omit<React.ComponentProps<'label'>, 'classNa
 }
 
 export function Label({ style, ...props }: LabelProps) {
-  return <label {...props} {...stylex.props(s.root, style)} />
+  return <label {...props} {...stylex.props(type.body2, s.root, style)} />
 }

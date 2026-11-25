@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
-import { backdropOf, cellOf, expectDockedTo } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../label'
 import {
@@ -85,6 +85,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await userEvent.click(canvas.getByRole('button', { name: 'Alohomora' }))
     const sheet = await body.findByRole('dialog')
     await expect(body.getByRole('heading', { name: 'Edit vault record' })).toBeInTheDocument()
+    await expectTypeRole(body.getByRole('heading', { name: 'Edit vault record' }), 'body1')
     await expect(within(sheet).getByDisplayValue('Luna Lovegood')).toBeInTheDocument()
 
     // Footer close action dismisses the sheet.

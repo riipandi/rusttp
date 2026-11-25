@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect } from 'storybook/test'
-import { expectDisabledLook } from '../../contracts/control-sizes'
+import { expectDisabledLook, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Input } from '../input'
@@ -127,6 +127,7 @@ export const AutoWiring: Story = {
   // explicit ids.
   play: async ({ canvas }) => {
     const input = canvas.getByRole('textbox', { name: 'Owl post address' })
+    await expectTypeRole(canvas.getByText('Owl post address'), 'body2')
     const describedBy = input.getAttribute('aria-describedby')
     await expect(describedBy).toBeTruthy()
     await expect(document.getElementById(describedBy ?? '')).toHaveTextContent(

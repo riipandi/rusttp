@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { backdropOf, cellOf } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container, fontSize, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
@@ -90,6 +90,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open the cryptex' }))
     await body.findByRole('dialog')
     await expect(body.getByRole('heading', { name: 'Erase the map?' })).toBeInTheDocument()
+    await expectTypeRole(body.getByRole('heading', { name: 'Erase the map?' }), 'body1')
 
     // Escape dismisses the dialog.
     await userEvent.keyboard('{Escape}')

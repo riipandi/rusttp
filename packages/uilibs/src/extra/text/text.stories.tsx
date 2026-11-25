@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
-import { cellOf } from '../../contracts/control-sizes'
+import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { type } from '../../styles/type.stylex'
 import { Text } from './text.component'
 import {
   textAlignStyles,
@@ -87,6 +88,23 @@ const variantNames = [
   'caption-2'
 ] as const
 
+// The `type` recipe each variant name maps to (`headline-1` is `type.headline1`).
+const roleOf: Record<(typeof variantNames)[number], keyof typeof type> = {
+  'headline-1': 'headline1',
+  'headline-2': 'headline2',
+  'headline-3': 'headline3',
+  'featured-1': 'featured1',
+  'featured-2': 'featured2',
+  'featured-3': 'featured3',
+  'featured-4': 'featured4',
+  'featured-5': 'featured5',
+  'featured-6': 'featured6',
+  'body-1': 'body1',
+  'body-2': 'body2',
+  'caption-1': 'caption1',
+  'caption-2': 'caption2'
+}
+
 export const Variants: Story = {
   render: () => (
     <Axis axis='variant' rows={variantNames}>
@@ -103,6 +121,13 @@ export const Variants: Story = {
     // The scale runs from headlines down to captions.
     await expect(size('headline-1')).toBeGreaterThan(size('body-1'))
     await expect(size('body-1')).toBeGreaterThan(size('caption-2'))
+    // Every variant draws the type role of its name, the one the component text parts compose.
+    for (const variant of variantNames) {
+      await expectTypeRole(
+        cellOf(canvasElement, 'variant', variant).firstElementChild ?? canvasElement,
+        roleOf[variant]
+      )
+    }
   }
 }
 

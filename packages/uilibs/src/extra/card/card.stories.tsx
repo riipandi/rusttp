@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
-import { cellOf } from '../../contracts/control-sizes'
+import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import {
@@ -59,6 +59,7 @@ export const Playground: Story = {
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('heading', { name: 'Submit to the Prophet' })).toBeInTheDocument()
+    await expectTypeRole(canvas.getByRole('heading', { name: 'Submit to the Prophet' }), 'body1')
 
     // The form inside the card accepts typing.
     const input = canvas.getByPlaceholderText('Headline')

@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { popupFx } from '../../styles/popup.stylex'
+import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
 
@@ -78,7 +79,7 @@ export function SheetTitle({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
-  return <BaseDialog.Title {...props} {...stylex.props(s.title, style)} />
+  return <BaseDialog.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function SheetDescription({

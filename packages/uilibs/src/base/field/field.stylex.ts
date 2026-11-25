@@ -42,24 +42,19 @@ export const fieldStyles = stylex.create({
   labelBase: {
     alignItems: 'center',
     display: 'flex',
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
     gap: unit.x2,
     userSelect: 'none'
   },
   label: {
     color: { default: null, '[data-invalid]': colors.foregroundCritical },
-    lineHeight: fontLineHeight.body2,
     width: 'fit-content'
   },
   title: {
     alignItems: 'center',
     display: 'flex',
-    fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
     gap: unit.x2,
-    lineHeight: fontLineHeight.body2,
     width: 'fit-content'
   },
   description: {

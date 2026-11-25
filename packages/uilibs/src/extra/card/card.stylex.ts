@@ -33,10 +33,8 @@ export const cardStyles = stylex.create({
     rowGap: unit.x1_5
   },
   title: {
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
     gridColumn: 1,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {

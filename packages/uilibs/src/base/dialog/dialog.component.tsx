@@ -24,6 +24,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { type CloseLabels, CloseButton } from './close-button'
@@ -109,7 +110,7 @@ export function DialogTitle({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
-  return <BaseDialog.Title {...props} {...stylex.props(s.title, style)} />
+  return <BaseDialog.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function DialogDescription({

@@ -25,6 +25,7 @@ import { Drawer as BaseDrawer } from '@base-ui/react/drawer'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
+import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { drawerStyles as s } from './drawer.stylex'
 import { drawerDirections as directions, drawerSwipeHandles as swipeHandles } from './drawer.stylex'
@@ -141,7 +142,7 @@ export function DrawerTitle({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDrawer.Title>, 'className' | 'style'> & StyleProp) {
-  return <BaseDrawer.Title {...props} {...stylex.props(s.title, style)} />
+  return <BaseDrawer.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function DrawerDescription({
