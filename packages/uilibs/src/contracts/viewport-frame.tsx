@@ -65,10 +65,14 @@ export function ViewportFrame({
 export async function frameOf(canvasElement: HTMLElement, width: number) {
   const iframe = canvasElement.querySelector<HTMLIFrameElement>(`iframe[data-viewport="${width}"]`)
   if (!iframe) throw new Error(`No ViewportFrame of width ${width}`)
-  await waitFor(() => {
-    if (!iframe.contentDocument?.body.firstElementChild)
-      throw new Error('The frame has not rendered')
-  })
+  // Four frames load one after another, and a full WebKit run can take longer than `waitFor`'s 1 s.
+  await waitFor(
+    () => {
+      if (!iframe.contentDocument?.body.firstElementChild)
+        throw new Error('The frame has not rendered')
+    },
+    { timeout: 5000 }
+  )
   const doc = iframe.contentDocument!
   const win = iframe.contentWindow!
   return { doc, win, computed: (element: Element) => win.getComputedStyle(element) }
