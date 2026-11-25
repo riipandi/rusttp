@@ -603,6 +603,25 @@ Compose in this order, so the later style wins: the recipe, the size, the compon
 - **Portals.** A popup of a new Base UI portal component passes `container={usePortalContainer()}` so it takes the theme of the nearest `ThemeScope`.
 - **Do not set a fixed `height` on a Field-wrapped control beside others**: the size scale is what keeps a Button and an input equal, and the composition story in `src/contracts/control-sizes.stories.tsx` asserts it.
 
+### Tokens and shared recipes (`packages/uilibs`, plan-00011 wave 2)
+
+One vocabulary, so a component names a value instead of restating it. Every literal that has a token here is a defect.
+
+- **Breakpoints** are mobile-first `min-width` constants (`breakpoints.medium` 660, `.large` 900, `.xlarge` 1280); `small` is the base style and has no query. `useMediaQuery` and the `viewport` constants restate the widths in px.
+- **`zIndex`** is a named scale: `base` 0, `raised` 10, `sticky` 50, `dropdown` 100, `overlay` 200, `modal` 210, `popover` 300, `toast` 400, `dragOverlay` 500, so a popover opened from a modal sits above it and a toast above both. A literal z-index is a defect; the data grid keeps a `gridLayer` ladder that is local to its own stacking context.
+- **`motionLoop`** holds the loop durations (`spin`, `spinSlow`, `pulse`, `shimmer`, `stagger`); a looping animation also has a `prefers-reduced-motion` branch.
+- **Disabled** is drawn with `foregroundDisabled`, `borderDisabled`, and `backgroundNeutral`, never `opacity` (see "State model").
+- **`scrim`** is the themed backdrop color, composed through `popupFx.scrim` and `popupFx.scrimBlurred`; **`backgroundTrack`** is the track of Progress, Meter, and Slider, dark enough in both themes that the primary fill reads against it.
+- **`highlightedItem`** (`styles/popup.stylex.ts`) is the keyboard-highlighted option or menu item of Select, Combobox, Autocomplete, the three menus, and Command: a neutral fill and a 2px primary bar on the start edge (the critical color for a critical item). The bar is what clears 3:1; the fill alone was 1.07:1.
+- **Typography roles** are `type.<role>` (`styles/type.stylex.ts`), composed before a part's own style (`stylex.props(type.body1, s.title)`); a title that sets its own font size is a defect. `fontLetterSpacing` stays and is read by the roles (headlines tighten to -0.02 to -0.03em); `fontWeight` stays `defineConsts`, with per-role `fontWeightVar` for theming.
+- **Glyph and mark sizes** come from `glyphSize[size]` and `markSize` (`styles/glyph.ts`), plain numbers because the icon takes them as `size`; the glyph type is `Glyph`.
+- **Shared types** (`styles/types.ts`): `ColorRole`, `ControlSize`, `DenseControlSize`, `StyleProp`, `Glyph`. A component derives its own `color` and `size` from them with `Extract` or `Exclude` and says so on its page.
+- **Chart series** take `chart1` to `chart8` (themed, 3:1 against the page in both themes, ordered so blue and orange come first), and `ChartConfigItem.color` is a palette name.
+- **Colors that are gone**: `brand`, `onBrand`, `onBackgroundNeutral`, and `backgroundPageFaded` were unused and removed; the text on a primary fill is `onBackgroundPrimary`.
+- **Light theme restated.** `lightColors` and `lightShadows` repeat every light token so a subtree can turn light inside a dark page (`ThemeScope`); `contrast.test.ts` fails when they drift from `colors.stylex.ts`. The page defaults to `color-scheme: light`.
+- **Rebrand.** `pnpm --filter uilibs rebrand <hue>` rewrites the 21 primary tokens in `colors.stylex.ts` and `themes.ts`; it moves each token's lightness with its hue so the contrast ratios hold (the same OKLCH lightness is not the same luminance in every hue). Run the `unit` project after it.
+- **Hit areas and hidden text.** `visuallyHidden` uses `marginBlock: -1` and `marginInline: 0`: a negative end margin pushes its 1px box past the page edge in RTL. A hit area that overhangs the control (Switch) sets only the axis that needs it.
+
 ### Contrast (measured, sRGB blending as a browser composites)
 
 Text pairs clear 4.5:1, control edges 3:1. Recompute with the OKLCH values in `colors.stylex.ts` and `themes.ts` when a token changes.
@@ -616,8 +635,8 @@ Text pairs clear 4.5:1, control edges 3:1. Recompute with the OKLCH values in `c
 | `foregroundPrimary` on `backgroundPage` | 5.83 | 8.59 |
 | `foregroundCritical` on `backgroundPage` | 6.15 | 7.70 |
 | `foregroundWarning` on `backgroundPage` | 5.62 | 8.59 |
-| `onBrand` on `backgroundPrimary` | 5.15 | 5.15 |
-| `onBrand` on `backgroundPrimaryHighlighted` (Button hover) | 6.47 | 4.55 |
+| `onBackgroundPrimary` on `backgroundPrimary` | 5.15 | 5.15 |
+| `onBackgroundPrimary` on `backgroundPrimaryHighlighted` (Button hover) | 6.47 | 4.55 |
 | `onBackgroundCritical` on `backgroundCritical` | 4.57 | 4.57 |
 | `onBackgroundCritical` on `backgroundCriticalHighlighted` (Button hover) | 5.86 | 5.51 |
 | `foregroundNeutral` on `backgroundNeutralHighlighted` (secondary hover) | 12.66 | 9.64 |

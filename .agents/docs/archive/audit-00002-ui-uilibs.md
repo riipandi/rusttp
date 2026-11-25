@@ -1,9 +1,9 @@
 ---
 title: "Audit: packages/uilibs (components, stories, Storybook gate)"
-status: in_review
+status: completed
 created_at: 2026-11-22T18:34:00+07:00
-updated_at: 2026-11-25T04:51:04+07:00
-completed_at: null
+updated_at: 2026-11-25T19:00:00+07:00
+completed_at: 2026-11-25T19:00:00+07:00
 scope:
     type: feature
     feature: "uilibs"
@@ -30,12 +30,12 @@ baseline:
 findings:
     total: 16
     by_severity: { critical: 0, high: 0, medium: 3, low: 11, info: 2 }
-    by_status: { open: 6, fixed: 8, deferred: 1, wont_fix: 1, false_positive: 0 }
-    verified: 13
-    unverified: 3
+    by_status: { open: 0, fixed: 14, deferred: 1, wont_fix: 1, false_positive: 0 }
+    verified: 15
+    unverified: 0
 cleanup_candidates: 1
 optimization_opportunities: 0
-open_questions: 3
+open_questions: 0
 tests_added: 6 # dark project, console-error gate, 4 focus-visible stories (1 control kept in the run, 3 proofs tagged !test), 1 calendar play (tagged !test)
 standards: [WCAG 2.2 AA (1.4.3, 2.4.7, 2.5.8), WAI-ARIA 1.2]
 generated_by: ui-audit
@@ -48,8 +48,8 @@ generated_by: ui-audit
 - The library is in good shape: every one of the 444 stories passes axe in light and dark, lint, typecheck and format are clean, nothing is unnamed, nothing animates forever under `prefers-reduced-motion`, Firefox passes all 444 stories, WebKit passes after one story fix.
 - The most important finding is about the safety net, not a component: **the gate that claims "axe in light and dark" never ran dark** (F-01). The decorator's theme global is `system`, headless Chromium reports `prefers-color-scheme: light`, so every story, play and axe check ran in light only. Running dark immediately found a real contrast failure (F-05). Fixed in `vite.config.ts`.
 - Real component defects, all about keyboard focus: the Tabs panel, the Sortable handle and the Kanban column handle showed no focus indicator (F-02, F-03, fixed 2026-11-23). A `ButtonGroup` with a Fragment child logs a React duplicate-key error (F-04).
-- Counts: 0 critical, 0 high, 3 medium, 11 low, 2 info (16). 8 fixed, 1 deferred, 1 won't fix, 6 open.
-- Fix first: **F-04**. F-02 and F-03 are fixed; F-16 (Kanban columns overlapped at 900 and 1100 px) was found and fixed the same day.
+- Counts: 0 critical, 0 high, 3 medium, 11 low, 2 info (16). Closed by plan-00011 (2026-11-25): 14 fixed, 1 deferred (F-12), 1 won't fix (F-11), 0 open.
+- Fix first: nothing is open. F-02, F-03, and F-16 were fixed the day they were found; the rest closed in plan-00011.
 
 ## Scope and flow inventory
 
@@ -83,18 +83,18 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 | F-01 | medium | test quality | `packages/uilibs/vite.config.ts`, `.storybook/decorator.tsx` | The a11y gate never ran in dark | verified | fixed |
 | F-02 | medium | a11y (2.4.7) | `src/base/tabs/tabs.stylex.ts:81` | Tabs panel is a tab stop with no focus indicator | verified | fixed |
 | F-03 | medium | a11y (2.4.7) | `src/extra/sortable/sortable.stylex.ts:70`, `src/extra/kanban/kanban.stylex.ts` (column handle) | Drag handles show no focus indicator | verified | fixed |
-| F-04 | low | defect | `src/extra/button-group/button-group.component.tsx:23-29,57-77` | A Fragment child gives duplicate React keys | verified | open |
+| F-04 | low | defect | `src/extra/button-group/button-group.component.tsx:23-29,57-77` | A Fragment child gives duplicate React keys | verified | fixed |
 | F-05 | low | story / contrast | `src/extra/kbd/kbd.stories.tsx:36-40,74` | Kbd in a Tooltip is 1.12:1 in dark | verified | fixed |
 | F-06 | low | test quality | `src/base/select/select.stories.tsx:274-306` | `Keyboard` story flaky on Chromium, failing on WebKit | verified | fixed |
 | F-07 | low | story | `src/extra/sortable/sortable.stories.tsx:565` | Raw `style={styles.x}` on a div throws a React error | verified | fixed |
-| F-08 | low | story | `src/extra/calendar/calendar.stories.tsx:366-444` | CustomDays loses the range fill | verified | open |
+| F-08 | low | story | `src/extra/calendar/calendar.stories.tsx:366-444` | CustomDays loses the range fill | verified | fixed |
 | F-09 | low | test quality | about 67 story files (`minWidth` decorator) | No story can show a 390 px layout | verified | fixed |
-| F-10 | low | StyleX contract | see F-10 | Raw media queries, z-indexes, durations and one color remain | verified | open |
+| F-10 | low | StyleX contract | see F-10 | Raw media queries, z-indexes, durations and one color remain | verified | fixed |
 | F-11 | info | design decision | `src/extra/command/command.stylex.ts:77-105` | Command input has no focus ring on purpose | n/a | wont_fix |
 | F-12 | info | a11y (WebKit) | `src/base/menubar/menubar.stories.tsx` | axe `aria-required-children` on the menubar in WebKit only | verified | deferred |
-| F-13 | low | a11y (2.5.8) | see F-13 | Several controls are under 24 px | unverified | open |
-| F-14 | low | a11y / console | `src/base/otp-field/otp-field.stories.tsx` | Eight stories log a Base UI warning about `aria-label` | unverified | open |
-| F-15 | low | defect | `src/extra/item/item.stylex.ts:92-101` | Item `sm` and `md` share one padding and gap | verified | open |
+| F-13 | low | a11y (2.5.8) | see F-13 | Several controls are under 24 px | verified | fixed |
+| F-14 | low | a11y / console | `src/base/otp-field/otp-field.stories.tsx` | Eight stories log a Base UI warning about `aria-label` | verified | fixed |
+| F-15 | low | defect | `src/extra/item/item.stylex.ts:92-101` | Item `sm` and `md` share one padding and gap | verified | fixed |
 | F-16 | low | layout | `src/extra/kanban/kanban.stylex.ts` (`board`) | Kanban columns overlap between 660 and about 1150 px | verified | fixed |
 
 ### F-01 The a11y gate never ran in dark
@@ -140,7 +140,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 - **Impact**: React may duplicate or omit children on updates; today it is a dev error that every consumer would see.
 - **Evidence**: verified. With the new console gate, `button-group > Filled buttons get dividers` failed; the story now sets `parameters: { consoleErrors: 'off' }` with a comment naming F-04. Delete that line to reproduce.
 - **Fix**: prefix the nested keys while flattening (carry the Fragment's key into the children). Remove the opt-out.
-- **Confidence**: high. **Status**: open.
+- **Confidence**: high. **Status**: fixed (2026-11-25, plan-00011 phase 21, `902a554`): `ButtonGroup` composes through a context and clones nothing, so no key is ever re-prefixed; the opt-out is gone.
 
 ### F-05 Kbd in a Tooltip is 1.12:1 in dark
 
@@ -167,7 +167,7 @@ Limitation: the tests ran while the owner's Storybook dev server was up on `:600
 - **Impact**: the documented example of a custom day cell is wrong. The production calendar is not affected.
 - **Evidence**: verified. The new `play` expects a non-transparent background on every `[data-range-middle="true"]` and fails (`expected 'rgba(0, 0, 0, 0)' not to be 'rgba(0, 0, 0, 0)'`); the story carries `!test`.
 - **Fix**: swap the operands, find why `dayBtnRangeMiddle` does not paint (an own `style` after it, or the cell, not the button, carries the fill), and fix the date to a literal.
-- **Status**: open.
+- **Status**: fixed (2026-11-25, plan-00011 phase 28, `96e8778`): the example, the day focus ring, and the styling contract are fixed, and the play is a plain test again.
 
 ### F-09 No story can show a 390 px layout
 
@@ -185,7 +185,7 @@ audit-00001 F-25 is marked fixed, but a scan finds:
 - Literal durations `1s`, `2s`, `2.5s`, `3s` (spinner, skeleton, loader-text) and `0s`/`40ms`.
 - `extra/data-grid/data-grid-table.stylex.ts:242,245`: `boxShadow: '0 2px 0 rgba(0, 0, 0, 0.03)'` is a literal color (the scroll-area `rgb(0 0 0 / x%)` is a mask alpha, not a color, and is fine).
 - Clean: no `className` or raw `style` beside `stylex.props` in components (chart and calendar forward the library's own), no `forwardRef`, no `base` import of `extra` besides Button's Spinner.
-- **Status**: open; needs the token decision.
+- **Status**: fixed (2026-11-25, plan-00011 phases 6 to 10, `caf1724`, `f903b4c`, `67690c1`, and the Q09 to Q11 decisions): breakpoints are mobile-first `min-width` tokens and every raw width query uses them, the `zIndex` scale is named (`base` to `dragOverlay`), loop durations are `motionLoop` constants, the scrim is a themed token, and the data grid shadow reads `backgroundNeutralFaded`.
 
 ### F-11 Command input draws no ring, by design
 
@@ -195,17 +195,25 @@ audit-00001 F-25 is marked fixed, but a scan finds:
 
 In WebKit Base UI's focus guards are `<span role="button" tabindex=0>` without `aria-hidden` (Chromium gives them `aria-hidden="true"`), so axe reports `aria-required-children` on `role=menubar`, whose children are then not all menu items. The allowlist in `preview.tsx` excludes the guard node, not the parent rule. Upstream behavior, Chromium-only CI, no component change. Deferred; revisit if CI adds WebKit.
 
+**Status**: deferred; the nightly WebKit job skips the Menubar `Playground` and `Open` stories through the `skip-webkit` tag (`vite.config.ts`, plan-00011 phase 4 and Q63), so the run is green without hiding anything else. Trigger: Base UI hides its focus guards from assistive technology in WebKit.
+
 ### F-13 Targets under 24 px (hypothesis)
 
 Measured at 1440 px, light: Checkbox and Radio 16x16, Switch 36x20, NumberField steppers 24x16 and 24x17, a Tabs trigger 20 px high in two stories, Resizable separators 1 px wide. WCAG 2.5.8 passes any of them through the spacing exception, and some may have a larger hit area in a pseudo-element (the Combobox chip does, per `frontend.md`); I did not measure spacing or hit areas. Not counted as defects until that is checked.
+
+**Status**: fixed (2026-11-25, plan-00011 phase 30, `feeaa4f`): measured, the NumberField steppers, `xsmall` pill Tabs, and the Badge dismiss were the targets under 24 px, and each now has an `::after` hit area (`contracts/hit-area.ts` `expectHitArea` proves it); Checkbox, Radio, and Switch already carried one, and the Resizable separator sits inside the spacing exception. Phase 53 trimmed the Switch hit area to the block axis, since every track is wider than 24 px.
 
 ### F-14 OTP stories log a Base UI warning (hypothesis)
 
 Eight stories log `<OTPField.Input> ignores aria-label on the first input. Use a <label> or <Field.Label>` (warning, not error, so the console gate does not fail). `frontend.md` already says the field is named by `FieldLabel`; the stories show the other pattern, and axe still passes. Whether the root really ends up unnamed was not verified.
 
+**Status**: fixed (2026-11-25, plan-00011 phase 56): the warning came from the `Variants` and `Sizes` stories, which gave every slot an `aria-label`, the first included. The component names the first slot from the root (`otp-field.component.tsx:139-144`), and a probe resolved it to the root's name. The two stories dropped the slot labels and the ten OTP stories log nothing.
+
 ### F-15 Item `sm` and `md` are the same size
 
 `item.stylex.ts:92-101`: `itemSizes.sm` and `itemSizes.md` both set `gap: unit.x3`, `paddingBlock: unit.x3`, and `paddingInline: unit.x3`; only `xs` differs. The `Sizes` story measures both rows at 70 px. Found while regrouping the stories (plan-00008, batch D). The story asserts `sm <= md` until the sizes are told apart; decision for the owner: give `md` more padding, or drop one size.
+
+**Status**: fixed (2026-11-25, plan-00011 phase 23, `92b1e07`): `md` takes `unit.x4`, and the `Sizes` story asserts `small < medium`.
 
 ### F-16 Kanban columns overlap at desktop widths
 
