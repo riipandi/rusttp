@@ -441,7 +441,10 @@ export const dataGridTableStyles = stylex.create({
     height: unit.x4,
     transform: 'rotate(0deg)',
     transitionDuration: duration.medium,
-    transitionProperty: 'transform',
+    transitionProperty: {
+      default: 'transform',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
     width: unit.x4
   },
   rowExpandChevronCollapsed: {

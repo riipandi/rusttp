@@ -864,6 +864,42 @@ export const RightToLeft: Story = {
   }
 }
 
+/** Every style rule inside a `prefers-reduced-motion` media query that applies to the element. */
+function reducedMotionRules(element: Element) {
+  const found: CSSStyleRule[] = []
+  const walk = (rules: CSSRuleList, reduced: boolean) => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) {
+        if (reduced && element.matches(rule.selectorText)) found.push(rule)
+      } else if (rule instanceof CSSMediaRule) {
+        walk(rule.cssRules, reduced || rule.conditionText.includes('prefers-reduced-motion'))
+      } else if (rule instanceof CSSGroupingRule) {
+        walk(rule.cssRules, reduced)
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules, false)
+  return found
+}
+
+/** The expand chevron turns with a transition, and a user who asks for reduced motion gets none. */
+export const Motion: Story = {
+  render: () => <TreeGrid pageSize={1} />,
+  play: async ({ canvas }) => {
+    const chevron = (
+      await canvas.findAllByRole('button', { name: 'Expand row' })
+    )[0]!.querySelector('svg')!
+    const style = getComputedStyle(chevron)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')
+
+    // A play cannot emulate the media feature, so assert the shipped rule: under
+    // `prefers-reduced-motion: reduce` the chevron's transition property is `none`.
+    const rules = reducedMotionRules(chevron)
+    await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
+  }
+}
+
 /** Tree story header uses the real column header component. */
 function DataGridColumnHeaderInline({
   table,
