@@ -58,6 +58,11 @@ export const chartStyles = stylex.create({
   chart: {
     ...chartPaletteOverrides,
     ...chartTooltipOverrides,
+    outline: {
+      default: 'none',
+      ':has(svg:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: stroke.ring2,
     width: '100%'
   },
   legend: {

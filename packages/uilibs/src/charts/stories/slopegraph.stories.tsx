@@ -6,7 +6,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors, seriesNames } from '../chart.samples'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Slopegraph',

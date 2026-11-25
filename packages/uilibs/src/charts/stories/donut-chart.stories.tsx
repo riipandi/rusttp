@@ -9,7 +9,7 @@ import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { chartColors } from '../chart-colors'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from '../chart.samples'
+import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/DonutChart',

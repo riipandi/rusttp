@@ -12,10 +12,10 @@ import type { ChartBarStateStyle, ChartMarkState, ChartMotionDefinition } from '
 import { stagger } from '@tanstack/charts/motion'
 import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
-import { colors } from '../styles/colors.stylex'
-import { breakpoints, container, unit } from '../styles/tokens.stylex'
-import { type ChartColorName, chartColors } from './chart-colors'
-import type { ChartConfig } from './chart.component'
+import { colors } from '../../styles/colors.stylex'
+import { breakpoints, container, unit } from '../../styles/tokens.stylex'
+import { type ChartColorName, chartColors } from '../chart-colors'
+import type { ChartConfig } from '../chart.component'
 
 // ---------------------------------------------------------------------------
 // Series palettes
@@ -277,7 +277,6 @@ export const readingDays: ReadingDay[] = (() => {
   return days
 })()
 
-export const readingWeeks = Math.max(...readingDays.map((d) => d.week)) + 1
 export const readingTotal = readingDays.reduce((sum, d) => sum + d.chapters, 0)
 
 const GLYPHS: Record<string, readonly string[]> = {
@@ -326,7 +325,6 @@ export const spellingDays: ReadingDay[] = (() => {
   return days
 })()
 
-export const spellingWeeks = Math.max(...spellingDays.map((d) => d.week)) + 1
 export const spellingTotal = spellingDays.reduce((sum, d) => sum + d.chapters, 0)
 
 // ---------------------------------------------------------------------------

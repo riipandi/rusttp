@@ -3,8 +3,8 @@ import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { duration, easing, fontSize, radius, unit } from '../../styles/tokens.stylex'
-import { canvasDecorator, shelfStatuses, statusColors, statusLabels } from '../chart.samples'
-import type { AvailabilityStatus } from '../chart.samples'
+import { canvasDecorator, shelfStatuses, statusColors, statusLabels } from './chart.samples'
+import type { AvailabilityStatus } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Tracker',

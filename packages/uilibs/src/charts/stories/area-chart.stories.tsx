@@ -14,7 +14,7 @@ import {
   checkoutConfig,
   checkoutScales,
   seriesColors
-} from '../chart.samples'
+} from './chart.samples'
 
 const meta = {
   title: 'Visualizations/AreaChart',

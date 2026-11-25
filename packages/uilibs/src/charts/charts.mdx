@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './stories/accessibility.stories'
+
+<Meta title='Visualizations/Charts' />
+
+# Charts
+
+A chart on [TanStack Charts](https://tanstack.com/charts): `ChartContainer` holds the series config, `Chart` draws a `defineChart()` definition, and `ChartLegend` names the series. For a single number next to its trend, use a spark chart; for a table of values, use Table.
+
+## Import
+
+```jsx
+import { Chart, ChartContainer, ChartLegend, chartColors } from 'uilibs/charts'
+```
+
+Built on TanStack Charts' `RendererChart` with the motion renderer. Props not listed here pass through to it. One recipe per chart type is under **Visualizations** in the sidebar.
+
+## Anatomy
+
+- **ChartContainer:** the frame and the shared config. It renders a `div`.
+- **Chart:** the drawing, one `svg` with `role="img"`. It reads the container's config and description.
+- **ChartLegend:** optional. A swatch and label for each config entry that has a `color`.
+
+```jsx
+<ChartContainer config={config} description='…'>
+  <Chart definition={definition} ariaLabel='…' />
+  <ChartLegend />
+</ChartContainer>
+```
+
+## Examples
+
+A chart is read as one image, so say what it shows. The container's `description` is the accessible description of every chart inside it.
+
+<Canvas of={Stories.Description} />
+
+Only a chart with a tooltip is a Tab stop, and it draws the focus ring. A chart without a tooltip is skipped.
+
+<Canvas of={Stories.TabOrder} />
+
+A chart does not give a screen reader its values. Put a Table of the same rows next to it.
+
+<Canvas of={Stories.AsTable} />
+
+## Accessibility
+
+- **Name:** `ariaLabel` is required. Name the subject and the period: "Monthly checkouts", not "Chart".
+- **Description:** set `description` on the container, or `ariaDescription` on one chart (it wins). Give the trend, the range, and the outlier in a sentence or two. It becomes the `<desc>` of the svg.
+- **Values:** a screen reader gets no data from the drawing. Show the same rows in a [Table](?path=/docs/extra-components-table--docs) with a `TableCaption`, beside the chart or behind a toggle you own.
+- **Color:** a series takes a palette name (`chart1` to `chart8`), and each holds 3:1 against the page in both themes. A series that carries meaning also needs a second cue: a label, a pattern, or a legend entry.
+- **Keyboard:** a chart with a tooltip is one Tab stop. The arrow keys move between points and the tooltip follows. Without a tooltip, or with `focus: false` or `keyboard: false` in the definition, the chart has no Tab stop. An explicit `tabIndex` overrides this.
+
+| Key                       | Action                                                                    |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `Tab`                     | Moves focus to the chart and selects its first point, then moves past it. |
+| `ArrowRight`, `ArrowDown` | Select the next point, in the focus mode of the definition.               |
+| `ArrowLeft`, `ArrowUp`    | Select the previous point.                                                |
+| `Home`, `End`             | Select the first or last point.                                           |
+| `Enter`, `Space`          | Pin or unpin a sticky tooltip.                                            |
+| `Escape`                  | Dismiss a pinned tooltip.                                                 |
+
+## API reference
+
+### ChartContainer
+
+Props not listed here pass through to the `div`. `style` takes StyleX styles.
+
+| Prop          | Description                                                                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config`      | `Record<string, { label?, color?, icon? }>`<br />Maps series ids to their label and palette color. `color` is `chart1` to `chart8`. Required. |
+| `description` | `string`<br />The accessible description of every chart inside.                                                                               |
+| `render`      | `ReactElement`<br />Renders another element in place of the `div`.                                                                            |
+
+### Chart
+
+Takes the props of TanStack's `RendererChart`, minus `renderer`, `className`, and `style`.
+
+| Prop                | Description                                                            |
+| ------------------- | ---------------------------------------------------------------------- |
+| `definition`        | A `defineChart()` value. Required.                                     |
+| `ariaLabel`         | `string`<br />The accessible name. Required.                           |
+| `ariaDescription`   | `string`<br />Overrides the container's `description` for this chart.  |
+| `tabIndex`          | `number`<br />Overrides the default: `0` with a tooltip, `-1` without. |
+| `renderTooltipBody` | Renders a custom tooltip body in place of the native one.              |
+
+### ChartLegend
+
+| Prop     | Description                                                                                |
+| -------- | ------------------------------------------------------------------------------------------ |
+| `config` | The config to list. Defaults to the container's.                                           |
+| `hide`   | `string[]`<br />Config keys to leave out, such as series an application toggle turned off. |
+
+## Caveats
+
+- Give every chart in one document an explicit `idPrefix`, so gradient and clip ids cannot collide.
+- Keep `initialWidth` the same on the server and the client.
+- A `ChartConfigItem.color` is a palette name, never a free color string. Paint the marks with `chartColors[name]`.

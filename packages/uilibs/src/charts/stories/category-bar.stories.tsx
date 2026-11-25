@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
 import { chartColors } from '../chart-colors'
-import { canvasDecorator, houses, houseConfig } from '../chart.samples'
+import { canvasDecorator, houses, houseConfig } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/CategoryBar',

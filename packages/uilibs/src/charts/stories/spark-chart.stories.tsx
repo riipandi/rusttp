@@ -8,7 +8,7 @@ import { useIsMobile } from '../../hooks/use-media-query'
 import { colors } from '../../styles/colors.stylex'
 import { breakpoints, fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
 import { Chart } from '../chart.component'
-import { canvasDecorator, checkouts, seriesColors } from '../chart.samples'
+import { canvasDecorator, checkouts, seriesColors } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/SparkChart',

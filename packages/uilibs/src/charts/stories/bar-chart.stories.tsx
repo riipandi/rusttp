@@ -23,7 +23,7 @@ import {
   langdonNovels,
   seriesColors,
   seriesNames
-} from '../chart.samples'
+} from './chart.samples'
 
 const meta = {
   title: 'Visualizations/BarChart',

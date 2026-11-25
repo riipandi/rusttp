@@ -5,7 +5,7 @@ import { polar, radialArc } from '@tanstack/charts/polar'
 import { expect } from 'storybook/test'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Chart, ChartContainer } from '../chart.component'
-import { canvasDecorator, seriesColors, seriesNames } from '../chart.samples'
+import { canvasDecorator, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/ProgressCircle',
