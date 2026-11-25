@@ -109,6 +109,17 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     marginBottom: `calc(-1 * ${stroke.ring1})`
   },
+  // The `xs` pill is 20px tall, under the 24px target (WCAG 2.5.8): a hit area makes up the rest
+  // inside the list's own padding, so it reaches neither the list's edge nor a neighbor.
+  triggerHitArea: {
+    position: 'relative',
+    '::after': {
+      content: '""',
+      insetBlock: `calc(-1 * ${unit.x0_5})`,
+      insetInline: 0,
+      position: 'absolute'
+    }
+  },
   // With no rail to overlap, the bar takes no negative margin.
   triggerBorderless: { marginBottom: 0 },
   content: {

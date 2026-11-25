@@ -55,6 +55,7 @@ export const numberFieldStyles = stylex.create({
     justifyContent: 'center',
     outline: 'none',
     padding: 0,
+    position: 'relative',
     transitionDuration: duration.fast,
     transitionProperty: 'background-color, color'
   },
@@ -85,19 +86,35 @@ export const numberFieldStyles = stylex.create({
     borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     display: 'flex',
     flexDirection: 'column',
-    flexShrink: 0,
-    overflow: 'hidden'
+    flexShrink: 0
   },
   controlStacked: {
     width: unit.x6
   },
+  // Two half-height buttons share the column, so each is under 24px tall (WCAG 2.5.8). The hit
+  // area grows 24px away from the other button, past the field's edge, so the two never overlap.
+  // The column does not clip (no `overflow`): each button rounds its own corner instead.
   controlStackedFirst: {
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    '::after': {
+      bottom: 0,
+      content: '""',
+      height: unit.x6,
+      insetInline: 0,
+      position: 'absolute'
+    }
   },
   controlStackedLast: {
     borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
-    borderTopWidth: stroke.ring1
+    borderTopWidth: stroke.ring1,
+    '::after': {
+      content: '""',
+      height: unit.x6,
+      insetInline: 0,
+      position: 'absolute',
+      top: 0
+    }
   }
 })

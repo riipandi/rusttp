@@ -10,6 +10,7 @@ import {
   expectDisabledLook,
   HiddenLabel
 } from '../../contracts/control-sizes'
+import { expectHitArea } from '../../contracts/hit-area'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
@@ -122,6 +123,23 @@ export const Sizes: Story = {
     for (const part of ['stacked', 'sides']) {
       await expectControlHeights(canvasElement, controlHeights, `[data-part="${part}"]`)
     }
+    // Every stepper reaches 24px (WCAG 2.5.8). The stacked pair is under 24px tall, so each one's
+    // hit area grows away from the other, and a point just past the field's edge still reaches it.
+    for (const stepper of canvasElement.querySelectorAll('[role="group"] button')) {
+      await expectHitArea(stepper)
+    }
+    const groups = canvasElement.querySelectorAll('[data-part="stacked"] [role="group"]')
+    const group = groups[groups.length - 1]
+    const [increase, decrease] = group?.querySelectorAll('button') ?? []
+    if (!group || !increase || !decrease) throw new Error('No stacked steppers')
+    // `elementFromPoint` only sees the viewport.
+    group.scrollIntoView({ block: 'center' })
+    const up = increase.getBoundingClientRect()
+    const down = decrease.getBoundingClientRect()
+    await expect(document.elementFromPoint(up.left + up.width / 2, up.top - 4)).toBe(increase)
+    await expect(document.elementFromPoint(down.left + down.width / 2, down.bottom + 4)).toBe(
+      decrease
+    )
   }
 }
 

@@ -29,9 +29,14 @@ export const badgeStyles = stylex.create({
     justifyContent: 'center',
     marginInlineEnd: `calc(-1 * ${unit.x1})`,
     padding: 0,
-    // The dismiss target keeps a 24px hit area (WCAG 2.5.8) without growing the badge.
+    // The dismiss target is a 24px square (WCAG 2.5.8) around the glyph, at every badge size,
+    // without growing the badge: `50%` is half the glyph, so the box is centered on it.
     position: 'relative',
-    '::after': { content: '""', inset: `calc(-1 * ${unit.x1})`, position: 'absolute' }
+    '::after': {
+      content: '""',
+      inset: `calc(50% - ${unit.x3})`,
+      position: 'absolute'
+    }
   }
 })
 

@@ -104,6 +104,7 @@ export function TabsTrigger({
         variant === 'pills-raised' && s.triggerRaised,
         itemWidth === 'equal' && s.triggerEqual,
         underline ? tabsUnderlineSizes[size] : tabsSizes[size],
+        !underline && size === 'xs' && s.triggerHitArea,
         style
       )}
     />

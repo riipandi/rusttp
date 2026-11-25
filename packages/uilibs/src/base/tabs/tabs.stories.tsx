@@ -9,6 +9,7 @@ import {
   denseControlSizeNames,
   expectControlHeights
 } from '../../contracts/control-sizes'
+import { expectHitArea } from '../../contracts/hit-area'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
@@ -126,6 +127,10 @@ export const Sizes: Story = {
   play: async ({ canvasElement }) => {
     for (const variant of variantNames) {
       await expectControlHeights(canvasElement, denseControlHeights, `[data-variant="${variant}"]`)
+    }
+    // The `xs` pill is 20px tall; a hit area brings every tab to 24px (WCAG 2.5.8).
+    for (const tab of canvasElement.querySelectorAll('[role="tab"]')) {
+      await expectHitArea(tab)
     }
   }
 }

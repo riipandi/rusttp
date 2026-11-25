@@ -64,4 +64,5 @@ Dismissible and highlighted badges.
 ## Caveats
 
 - Do not combine `onDismiss` with a link `render`: a button cannot sit inside a link.
+- The dismiss button is a 24px touch target at every size, larger than its glyph; its hit area overlaps the badge's own padding and text.
 - `icon` and `endIcon` are sized by `size` and hidden from assistive technology, so the label must carry the meaning.

@@ -122,3 +122,4 @@ It carries the same data attributes as `NumberField`.
 
 - Name the field with a `Label` or a `FieldLabel`; the input has no text of its own.
 - `controls` and `labels` on `NumberFieldGroup` apply only to the built-in steppers. Steppers you place as children need their own `aria-label`, and `controls='stacked'` for the stacked look.
+- The stacked steppers are each under 24px tall, so each one's hit area extends 24px away from the other, past the field's edge; leave room above and below the field.

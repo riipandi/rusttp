@@ -2,6 +2,7 @@ import { Check, ChevronRight } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect, fn, userEvent } from 'storybook/test'
+import { expectHitArea } from '../../contracts/hit-area'
 import { Axis } from '../../contracts/story-axes'
 import { Spinner } from '../spinner'
 import { Badge } from './badge.component'
@@ -160,6 +161,27 @@ export const Link: Story = {
   play: async ({ canvas }) => {
     const link = canvas.getByRole('link', { name: "New at Weasleys'" })
     await expect(link).toHaveAttribute('href', '#new-release')
+  }
+}
+
+/** The dismiss button is a 24px target at every badge size, though its glyph is 10 to 14px. */
+export const DismissTarget: Story = {
+  args: { onDismiss: fn() },
+  render: (args) => (
+    <Axis axis='size' rows={['sm', 'md', 'lg'] as const}>
+      {(size) => (
+        <Badge variant='faded' size={size} onDismiss={args.onDismiss}>
+          {size}
+        </Badge>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const buttons = canvasElement.querySelectorAll('[aria-label="Dismiss"]')
+    await expect(buttons).toHaveLength(3)
+    for (const button of buttons) {
+      await expectHitArea(button)
+    }
   }
 }
 
