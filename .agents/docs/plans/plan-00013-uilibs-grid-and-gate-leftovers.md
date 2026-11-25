@@ -1,9 +1,9 @@
 ---
 status: in-progress
 created: 2026-11-26T03:15:43+07:00
-updated: 2026-11-26T03:40:00+07:00
+updated: 2026-11-26T04:00:00+07:00
 phases:
-    - { id: 1, title: "W0 The test viewport is a Storybook global, and the gate checks it (issue-00009 #2)", status: pending, note: "—" }
+    - { id: 1, title: "W0 The test viewport is a Storybook global, and the gate checks it (issue-00009 #2)", status: committed, note: "`initialGlobals.viewport` (object form) only under test, `globals` on `FitsColumn` and Kanban `Keyboard`, new `assertViewportApplied` guard in `afterEach`; Chromium `just test-ui` 224 files, 1453 of 1453; controls in Chromium, Firefox, and WebKit: a scratch 700 px story fails with `310px wider than the 390px viewport`, a scratch string global fails the guard, both deleted; Storybook UI logs 0 `defaultViewport` warnings and the canvas stays 1100 px; `rg defaultViewport` over packages and agent docs (apart from the issue text) is empty" }
     - { id: 2, title: "W1-C Rename the dots ProgressIndicator to StepDots", status: pending, note: "—" }
     - { id: 3, title: "W1-C The body font comes from a token through a defined custom property name", status: pending, note: "—" }
     - { id: 4, title: "W1-D The RightToLeft story waits for the end state (issue-00009 #1)", status: pending, note: "—" }

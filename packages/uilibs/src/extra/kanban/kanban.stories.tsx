@@ -1424,7 +1424,7 @@ export const Names: Story = {
 export const Keyboard: Story = {
   // The columns sit side by side from `medium` up, so ArrowRight reorders them; on a phone they
   // stack and the arrow is ArrowDown.
-  parameters: { viewport: { defaultViewport: 'desktop' } },
+  globals: { viewport: { value: 'desktop', isRotated: false } },
   render: () => {
     const [value, setValue] = useState<Record<string, Task[]>>({
       todo: [
