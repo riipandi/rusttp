@@ -14,6 +14,7 @@ import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
 import type { ColorRole, Glyph } from '../../styles/types'
+import { buttonGroupMember, useButtonGroup } from './button-group.context'
 import {
   buttonFills,
   buttonHighlighted,
@@ -40,7 +41,10 @@ export interface ButtonProps extends Omit<
   React.ComponentProps<typeof BaseButton>,
   'className' | 'style' | 'color'
 > {
-  /** The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). */
+  /**
+   * The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). Inside a
+   * `ButtonGroup` it takes the group's `variant`, else `solid`.
+   */
   variant?: ButtonVariant
   /**
    * The role. `primary` for `solid`, `neutral` for the other fills, by default; `critical` marks a
@@ -49,6 +53,7 @@ export interface ButtonProps extends Omit<
    * `solid` has no cut-out label in `inherit`, so it is a stronger tint.
    */
   color?: ButtonColor
+  /** Inside a `ButtonGroup` it takes the group's `size`, else `md`. */
   size?: keyof typeof buttonSizes
   /** Fully rounded ends. */
   rounded?: boolean
@@ -71,9 +76,9 @@ export interface ButtonProps extends Omit<
 }
 
 export function Button({
-  variant = 'solid',
+  variant: variantProp,
   color,
-  size = 'md',
+  size: sizeProp,
   rounded = false,
   fullWidth = false,
   raised = false,
@@ -86,6 +91,9 @@ export function Button({
   style,
   ...props
 }: ButtonProps) {
+  const group = useButtonGroup()
+  const variant = variantProp ?? group?.variant ?? 'solid'
+  const size = sizeProp ?? group?.size ?? 'md'
   const glyph = size === 'xs' ? glyphSize.xs : size === 'lg' ? glyphSize.lg : glyphSize.md
   const content = (
     <>
@@ -114,6 +122,7 @@ export function Button({
         fullWidth && buttonModifiers.fullWidth,
         raised && buttonModifiers.raised,
         loading && buttonStyles.loading,
+        buttonGroupMember(group, variant === 'solid' || variant === 'faded'),
         style
       )}
     >

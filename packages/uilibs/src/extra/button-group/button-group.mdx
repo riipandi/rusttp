@@ -18,10 +18,10 @@ A plain `div` with `role='group'`, not built on Base UI; `ButtonGroupSeparator` 
 
 ## Anatomy
 
-- **ButtonGroup:** the root. It clones each element child to pass position styles through `style`.
+- **ButtonGroup:** the root. Each element child is one member; the group gives it its position through context.
 - **ButtonGroupText:** optional static label, such as a prefix.
 - **ButtonGroupSeparator:** optional divider between children. Filled Buttons get a divider without it.
-- **Button:** any child control that accepts `style`, such as Button or Input.
+- **Button:** a member that joins the group: Button, Input, Select trigger, or InputGroup.
 
 ```jsx
 <ButtonGroup>
@@ -55,9 +55,11 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### ButtonGroup
 
-| Prop          | Description                                                                                    |
-| ------------- | ---------------------------------------------------------------------------------------------- |
-| `orientation` | `horizontal`, `vertical` <br /> The direction the children are laid out. Default `horizontal`. |
+| Prop          | Description                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orientation` | `horizontal`, `vertical` <br /> The direction the children are laid out. Default `horizontal`.                                              |
+| `size`        | `sm`, `md`, `lg` <br /> The size of every Button, Input, Select trigger, and InputGroup in the group; a member's own `size` wins.           |
+| `variant`     | `solid`, `faded`, `outline`, `ghost` <br /> The variant of every Button in the group; a Button's own `variant` wins. Inputs keep their own. |
 
 ### ButtonGroupSeparator
 
@@ -69,7 +71,8 @@ It takes the `Separator` props, `color` and `inset` among them.
 
 ## Caveats
 
-- Every child must accept `style`, because the group passes position styles through it. A wrapper that does not, such as a menu root, is styled by hand, as the Split story does for its trigger.
-- A bordered child (outline Button, Input) shares its neighbour's edge; a filled Button (`solid` or `faded`) gets a divider instead.
-- Fragments are opened up and text children are kept, but a Fragment's children currently get duplicate React keys and log a dev error (audit-00002 F-04, open).
+- Each element child is one member, and a member is joined as a whole: a wrapper such as a menu or a Tooltip is fine, because its Button reads the group from the React tree, but a wrapper with two Buttons gives both the same position. Only Button, Input, Select trigger, InputGroup, and ButtonGroupText join; any other control is styled by hand.
+- The group travels through the React tree, portals included: a Button inside a popup that a member opens takes the group's `size` and `variant` and joins at the member's position. Keep action buttons out of a member's popup, or render them outside the group.
+- A bordered member (outline Button, Input) shares its neighbour's edge; a filled Button (`solid` or `faded`) gets a divider instead.
+- Fragments are opened up and text children are kept. A Fragment's children are members like the others.
 - Give the group an `aria-label` when its purpose is not clear from the buttons.

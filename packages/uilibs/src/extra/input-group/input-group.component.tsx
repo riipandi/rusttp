@@ -1,6 +1,11 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button, type ButtonProps } from '../../base/button'
+import {
+  ButtonGroupContext,
+  buttonGroupMember,
+  useButtonGroup
+} from '../../base/button/button-group.context'
 import { Input } from '../../base/input'
 import {
   type ControlVariant,
@@ -19,31 +24,37 @@ import { inputGroupControlHeights as controlHeights } from './input-group.stylex
 const InputGroupSizeContext = React.createContext<ControlSize>('md')
 
 export function InputGroup({
-  size = 'md',
+  size: sizeProp,
   variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
   StyleProp & {
-    /** Height and type of the input; `md` (36px) by default. */
+    /** Height and type of the input; the `ButtonGroup`'s size, else `md` (36px). */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
   }) {
+  const group = useButtonGroup()
+  const size = sizeProp ?? group?.size ?? 'md'
   return (
-    <InputGroupSizeContext.Provider value={size}>
-      <div
-        role='group'
-        {...props}
-        {...stylex.props(
-          controlBase.root,
-          controlBase.within,
-          controlVariantsWithin[variant],
-          s.root,
-          style
-        )}
-      />
-    </InputGroupSizeContext.Provider>
+    // The group is one member of a ButtonGroup; the Input and Buttons inside it are not.
+    <ButtonGroupContext.Provider value={null}>
+      <InputGroupSizeContext.Provider value={size}>
+        <div
+          role='group'
+          {...props}
+          {...stylex.props(
+            controlBase.root,
+            controlBase.within,
+            controlVariantsWithin[variant],
+            s.root,
+            buttonGroupMember(group, false),
+            style
+          )}
+        />
+      </InputGroupSizeContext.Provider>
+    </ButtonGroupContext.Provider>
   )
 }
 

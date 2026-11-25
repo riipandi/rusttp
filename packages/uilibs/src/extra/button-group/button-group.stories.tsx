@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger
 } from '../../base/dropdown-menu'
 import { Input } from '../../base/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../base/select'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-group.component'
@@ -23,26 +25,24 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  icon: { width: 16, height: 16 },
-  fusedTrigger: {
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0
-  }
+  icon: { width: 16, height: 16 }
 })
 
 export default meta
 
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['orientation'] } },
+  parameters: { controls: { disable: false, include: ['orientation', 'size', 'variant'] } },
   argTypes: {
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
+    variant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] }
   },
-  args: { orientation: 'horizontal' },
+  args: { orientation: 'horizontal', size: 'md', variant: 'outline' },
   render: (args) => (
     <ButtonGroup {...args}>
-      <Button variant='outline'>Expelliarmus</Button>
-      <Button variant='outline'>Petrificus Totalus</Button>
-      <Button variant='outline'>Stupefy</Button>
+      <Button>Expelliarmus</Button>
+      <Button>Petrificus Totalus</Button>
+      <Button>Stupefy</Button>
     </ButtonGroup>
   )
 }
@@ -77,19 +77,13 @@ export const Orientations: Story = {
 export const Split: Story = {
   name: 'Split button',
   render: () => (
-    // The trigger's `render` swaps it for a Button — ButtonGroup then fuses both
-    // the primary action and the trigger into one segmented control.
+    // The trigger's `render` swaps it for a Button; the Button reads the group's context through
+    // the menu root, so it is fused to the primary action with no styling of its own.
     <ButtonGroup>
       <Button>Apparate</Button>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={
-            <Button
-              size='icon-md'
-              aria-label='More apparition options'
-              style={styles.fusedTrigger}
-            />
-          }
+          render={<Button size='icon-md' aria-label='More apparition options' />}
         >
           <ChevronDown {...stylex.props(styles.icon)} />
         </DropdownMenuTrigger>
@@ -103,7 +97,13 @@ export const Split: Story = {
   play: async ({ canvas }) => {
     const body = within(document.body)
 
-    await userEvent.click(canvas.getByRole('button', { name: 'More apparition options' }))
+    const trigger = canvas.getByRole('button', { name: 'More apparition options' })
+    const style = getComputedStyle(trigger)
+    await expect(style.borderTopLeftRadius).toBe('0px')
+    await expect(style.borderLeftWidth).toBe('1px')
+    await expect(style.borderTopRightRadius).not.toBe('0px')
+
+    await userEvent.click(trigger)
     await body.findByRole('menu')
     await userEvent.click(body.getByRole('menuitem', { name: 'Apparate to Hogsmeade' }))
     await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
@@ -135,10 +135,8 @@ export const WithInput: Story = {
 /** Filled buttons have no border to share, so the group draws a divider between them. */
 export const FilledDividers: Story = {
   name: 'Filled buttons get dividers',
-  // audit-00002 F-01: `ButtonGroup` re-keys a Fragment's children with the same `.0`, `.1` keys
-  // `toArray` gave the outer ones, so React logs a duplicate-key error. The console gate stays off
-  // for this story until the fix; delete the line to reproduce.
-  parameters: { consoleErrors: 'off' },
+  // A Fragment and a Tooltip-wrapped Button are members like the rest: no duplicate keys, and the
+  // console gate stays on.
   render: () => (
     <ButtonGroup aria-label='Wand woods'>
       <Button>Holly</Button>
@@ -147,6 +145,10 @@ export const FilledDividers: Story = {
         <Button variant='faded'>Yew</Button>
         <Button color='critical'>Vine</Button>
       </>
+      <Tooltip>
+        <TooltipTrigger render={<Button color='positive' />}>Ash</TooltipTrigger>
+        <TooltipContent>Ash, the wand that favors its own master</TooltipContent>
+      </Tooltip>
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {
@@ -154,8 +156,9 @@ export const FilledDividers: Story = {
       'button'
     )
     await expect(first && getComputedStyle(first).borderLeftWidth).toBe('0px')
-    // A Fragment's children are joined like the others: three dividers for four buttons.
-    await expect(rest).toHaveLength(3)
+    // A Fragment's children and a Tooltip's trigger are joined like the others: four dividers for
+    // five buttons.
+    await expect(rest).toHaveLength(4)
     for (const button of rest) {
       const style = getComputedStyle(button)
       await expect(style.borderLeftWidth).toBe('1px')
@@ -177,5 +180,39 @@ export const KeepsText: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('Accept')
     await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('or')
+  }
+}
+
+const height = (el: HTMLElement) => el.getBoundingClientRect().height
+
+/** A size or a variant on the group is the default of every member; a member can still set its own. */
+export const Defaults: Story = {
+  name: 'Group sets size and variant',
+  render: () => (
+    <ButtonGroup aria-label='Defaults' size='sm' variant='outline'>
+      <Button>Reparo</Button>
+      <Button size='lg'>Reducto</Button>
+      <Button variant='ghost'>Riddikulus</Button>
+      <Input aria-label='Counter-curse' placeholder='Counter-curse' />
+      <Select defaultValue='Nox'>
+        <SelectTrigger aria-label='Spell'>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='Nox'>Nox</SelectItem>
+          <SelectItem value='Lumos'>Lumos</SelectItem>
+        </SelectContent>
+      </Select>
+    </ButtonGroup>
+  ),
+  play: async ({ canvas }) => {
+    const group = canvas.getByRole('group', { name: 'Defaults' })
+    await expect(height(within(group).getByRole('button', { name: 'Reparo' }))).toBe(32)
+    await expect(height(within(group).getByRole('button', { name: 'Reducto' }))).toBe(40)
+    await expect(height(within(group).getByRole('textbox'))).toBe(32)
+    await expect(height(within(group).getByRole('combobox', { name: 'Spell' }))).toBe(32)
+    // The ghost button took its own variant, not the group's outline: no tint, no border of its own.
+    const ghost = getComputedStyle(within(group).getByRole('button', { name: 'Riddikulus' }))
+    await expect(ghost.backgroundColor).toBe('rgba(0, 0, 0, 0)')
   }
 }

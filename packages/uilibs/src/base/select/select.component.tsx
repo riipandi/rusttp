@@ -48,6 +48,7 @@ import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ControlSize, Glyph } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
 import { selectStyles as s } from './select.stylex'
 
 export const Select = BaseSelect.Root
@@ -59,7 +60,7 @@ export const SelectGroup = BaseSelect.Group
  * shows only the value or placeholder, so give it an `aria-label` (or `aria-labelledby`).
  */
 export function SelectTrigger({
-  size = 'md',
+  size: sizeProp,
   variant = 'outline',
   icon: Icon,
   style,
@@ -67,13 +68,15 @@ export function SelectTrigger({
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; the `ButtonGroup`'s size, else `md` (36px). */
     size?: ControlSize
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
     /** A glyph before the value; it is decoration, so the name still comes from the label. */
     icon?: Glyph
   }) {
+  const group = useButtonGroup()
+  const size = sizeProp ?? group?.size ?? 'md'
   return (
     <BaseSelect.Trigger
       {...props}
@@ -82,6 +85,7 @@ export function SelectTrigger({
         controlSizes[size],
         controlVariants[variant],
         s.trigger,
+        buttonGroupMember(group, false),
         style
       )}
     >
