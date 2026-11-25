@@ -112,7 +112,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `Home`, `End`             | Jump to the column's `minSize` or `maxSize` (End does nothing without a `maxSize`).                                                                                       |
 | `Enter`                   | Restore the default width, the twin of a double-click. (The window splitter pattern collapses the pane here; a collapsed column is a sliver, so reset is the useful key.) |
 
-The widening arrow follows the drag: `ArrowRight` in a left-to-right grid, `ArrowLeft` when `columnResizeDirection` is `rtl`, and mirrored again for a column pinned to the end. The width never leaves `minSize` and `maxSize`; a column with no title string is named by its id (`meta.headerTitle` sets it).
+The widening arrow follows the drag, and both follow the direction the grid is laid out in: `ArrowRight` and a drag to the right widen a column in a left-to-right grid, `ArrowLeft` and a drag to the left under `dir='rtl'`, and the opposite again for a column pinned to the end. The grid reads the computed `direction` of the handle, so the `columnResizeDirection` table option is not read and needs no matching. The width never leaves `minSize` and `maxSize`; a column with no title string is named by its id (`meta.headerTitle` sets it).
 
 - The cell editor is a text field that takes focus when it opens.
 

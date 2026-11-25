@@ -239,9 +239,19 @@ const DATA_GRID_RESIZE_STEP = 10
 const DATA_GRID_RESIZE_STEP_LARGE = 50
 
 /**
+ * Whether a column resizes mirrored: the grid is laid out right to left (the computed `direction`
+ * of the element, so `dir` on any ancestor decides and no option has to agree with it), or the
+ * column is pinned to the end, which is anchored at its end edge and grows from its start edge.
+ * One rule for the pointer drag, its indicator line, and the keys.
+ */
+function isColumnResizeMirrored(element: Element, pinned: false | 'start' | 'end'): boolean {
+  return (getComputedStyle(element).direction === 'rtl') !== (pinned === 'end')
+}
+
+/**
  * The width a column takes after a key on its resize separator: an arrow moves the edge 10 px (50
  * with Shift), Home and End jump to the minimum and the maximum, and the result stays inside both.
- * `mirrored` is the drag's own rule (a `columnResizeDirection` of `rtl`, or an end-pinned column
+ * `mirrored` is `isColumnResizeMirrored`, the drag's own rule (right to left, or an end-pinned column
  * that grows from its start edge): the arrow that points away from the anchor widens. Returns null
  * for a key the separator does not answer, and for End when the column has no maximum.
  */
@@ -384,6 +394,7 @@ export {
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
   nextColumnSize,
+  isColumnResizeMirrored,
   getDataGridPageRowCount,
   DataGridTableFillCol,
   DataGridTableFillHeadCell,

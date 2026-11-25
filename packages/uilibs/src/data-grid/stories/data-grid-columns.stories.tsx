@@ -479,13 +479,20 @@ const keyboardResizeColumns: ColumnDef<DataGridFeatures, IBook>[] = [
   { accessorKey: 'country', id: 'country', header: 'Country', size: 150 }
 ]
 
-function KeyboardResizeGrid({ direction }: { direction: 'ltr' | 'rtl' }) {
+function KeyboardResizeGrid({
+  direction,
+  fromDir = false
+}: {
+  direction: 'ltr' | 'rtl'
+  /** Leave `columnResizeDirection` unset: the grid takes the direction from `dir`. */
+  fromDir?: boolean
+}) {
   const table = useTable({
     features: dataGridFeatures,
     columns: keyboardResizeColumns,
     data: demoData.slice(0, 3),
     getRowId: (row: IBook) => row.id,
-    columnResizeDirection: direction
+    ...(fromDir ? {} : { columnResizeDirection: direction })
   })
   return (
     <div dir={direction}>
@@ -516,6 +523,18 @@ function genreHandle(canvas: {
     value: () => Number(separator.getAttribute('aria-valuenow')),
     width: () => cell.getBoundingClientRect().width
   }
+}
+
+/** Drags a separator by `dx` px with the mouse, the way a pointer user resizes a column. */
+async function dragBy(separator: HTMLElement, dx: number) {
+  const box = separator.getBoundingClientRect()
+  const clientX = box.left + box.width / 2
+  const clientY = box.top + box.height / 2
+  await userEvent.pointer([
+    { keys: '[MouseLeft>]', target: separator, coords: { clientX, clientY } },
+    { coords: { clientX: clientX + dx, clientY } },
+    { keys: '[/MouseLeft]' }
+  ])
 }
 
 /**
@@ -575,36 +594,58 @@ export const ResizeByKeyboard: Story = {
       'aria-valuenow',
       '240'
     )
+
+    // A drag to the right widens the column, the same direction as ArrowRight.
+    await dragBy(separator, 40)
+    await waitFor(() => expect(value()).toBe(200))
+    await waitFor(() => expect(width()).toBeCloseTo(200, 0))
   }
 }
 
+const resizeRtlPlay: Story['play'] = async ({ canvas }) => {
+  await canvas.findByRole('table', { name: 'Novels' })
+  const { separator, value, width } = genreHandle(canvas)
+  const cell = separator.closest('th')
+  if (!cell) throw new Error('No header cell')
+  // The separator sits on the physical left edge of its header: the end edge in right to left.
+  const handleMiddle = separator.getBoundingClientRect().left + separator.offsetWidth / 2
+  await expect(Math.abs(handleMiddle - cell.getBoundingClientRect().left)).toBeLessThan(4)
+
+  separator.focus()
+  await expect(separator).toHaveFocus()
+  await pressUntil('{ArrowLeft}', () => expect(value()).toBe(170), {
+    when: () => value() !== 170
+  })
+  await waitFor(() => expect(width()).toBeCloseTo(170, 0))
+  await pressUntil('{ArrowRight}', () => expect(value()).toBe(160), {
+    when: () => value() !== 160
+  })
+  await waitFor(() => expect(width()).toBeCloseTo(160, 0))
+
+  // The pointer agrees with the keys: dragging the edge to the left widens the column.
+  await dragBy(separator, -40)
+  await waitFor(() => expect(value()).toBe(200))
+  await waitFor(() => expect(width()).toBeCloseTo(200, 0))
+}
+
 /**
- * Right to left with `columnResizeDirection: 'rtl'`: the end edge is on the left, so the arrow that
- * points left widens, the same direction a drag takes.
+ * Right to left, with the table option also set (the grid ignores it): the end edge is on the left,
+ * so the arrow that points left widens, the same direction a drag takes.
  */
 export const ResizeByKeyboardRtl: Story = {
   name: 'Column resizing, keyboard, right to left',
   render: () => <KeyboardResizeGrid direction='rtl' />,
-  play: async ({ canvas }) => {
-    await canvas.findByRole('table', { name: 'Novels' })
-    const { separator, value, width } = genreHandle(canvas)
-    const cell = separator.closest('th')
-    if (!cell) throw new Error('No header cell')
-    // The separator sits on the physical left edge of its header: the end edge in right to left.
-    const handleMiddle = separator.getBoundingClientRect().left + separator.offsetWidth / 2
-    await expect(Math.abs(handleMiddle - cell.getBoundingClientRect().left)).toBeLessThan(4)
+  play: resizeRtlPlay
+}
 
-    separator.focus()
-    await expect(separator).toHaveFocus()
-    await pressUntil('{ArrowLeft}', () => expect(value()).toBe(170), {
-      when: () => value() !== 170
-    })
-    await waitFor(() => expect(width()).toBeCloseTo(170, 0))
-    await pressUntil('{ArrowRight}', () => expect(value()).toBe(160), {
-      when: () => value() !== 160
-    })
-    await waitFor(() => expect(width()).toBeCloseTo(160, 0))
-  }
+/**
+ * Right to left from `dir` alone: with no `columnResizeDirection`, the same keys and the same drag
+ * apply, because the grid reads the direction the handle is laid out in.
+ */
+export const ResizeByKeyboardRtlFromDir: Story = {
+  name: 'Column resizing, keyboard, right to left from dir',
+  render: () => <KeyboardResizeGrid direction='rtl' fromDir />,
+  play: resizeRtlPlay
 }
 
 /** Pinnable columns. */
