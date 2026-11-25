@@ -22,10 +22,16 @@ The catalog of `packages/uilibs/src`. Check it before you write a component, and
 
 ## Choosing between look-alikes
 
-- **Sheet or Drawer.** Sheet is a Dialog that slides in from an edge. Drawer is a swipe panel with snap points, for touch.
-- **Dialog or Alert Dialog.** Dialog is content the user may dismiss. Alert Dialog needs an answer.
+- **Popover, Dialog, Drawer, or Sheet.** Popover is interactive content anchored to its trigger. Dialog is a modal popup over the page, and the page behind it is inert. Sheet is a Dialog that slides in from an edge, for navigation or settings. Drawer is a swipe panel with snap points, for touch.
+- **Dialog or Alert Dialog.** Dialog is content the user may dismiss. Alert Dialog needs an answer, for a destructive or high-risk action.
 - **Select, Combobox, Autocomplete, or Command.** Select picks one value from a short list. Combobox searches a list, and `ComboboxChips` takes several values. Autocomplete suggests free text that may match nothing. Command is a palette of actions.
-- **Tooltip, Popover, or Preview Card.** Tooltip names a control and holds no interactive content. Popover holds interactive content. Preview Card previews a link on hover.
+- **Tooltip, Preview Card, or Popover.** Tooltip names a control on hover or focus and holds no interactive content. Preview Card previews a link on hover or focus. Popover holds interactive content and opens from a trigger.
+- **Dropdown Menu, Context Menu, or Menubar.** Dropdown Menu opens from a button. Context Menu opens at the pointer on right click or long press. Menubar is a desktop-style bar of menus. The three share their items.
+- **Toggle, Switch, or Checkbox.** Switch is an on and off setting that takes effect at once. Checkbox is a choice that is submitted with a form, alone or in a group. Toggle is a button that stays pressed, such as bold in a toolbar.
+- **Accordion or Collapsible.** Accordion is a stack of headings that each open a panel. Collapsible is one panel with its own trigger.
+- **Toggle Group, Tabs, or Radio.** Toggle Group is a row of pressed buttons that act on content, such as a text style. Tabs switch which panel of content shows. Radio is one choice from a few options, submitted with a form.
+- **Number Field, Slider, or Input.** Number Field is a typed number with steppers. Slider picks a value or a range by dragging. Input is free text.
+- **Table or Data Grid.** Table is a styled HTML table for a few static rows. Data Grid is for sorting, selection, paging, pinning, and editing.
 - **Item or Table.** Item is a one-column row. A record with several columns is a Table.
 - **Link or Button with `render`.** A link inside a sentence, a footer, or a form is a Link. A link that looks like a button is a Button with `render={<a />}`; both take a router link through `render`.
 - **Progress, Meter, or Progress Indicator.** Progress is how far one task has got. Meter is a value in a known range. Progress Indicator is the position in a sequence of steps or slides.
@@ -122,11 +128,11 @@ Compositions, and components Base UI does not provide. Import from `uilibs/extra
 | [Text](?path=/docs/extra-components-text--docs)                            | Typography: variants, colors, weights, responsive values.                                             |
 | [Textarea](?path=/docs/extra-components-textarea--docs)                    | A multiline input; `autoResize`.                                                                      |
 | [Theme Scope](?path=/docs/extra-components-themescope--docs)               | Makes a subtree dark, light, or inverted; popups opened inside follow it. Import from `uilibs/theme`. |
-| [Theme Switcher](?path=/story/extra-components-themeswitcher--default)     | A button that cycles light, dark, and system, with an animated icon. Import from `uilibs/theme`.      |
+| [Theme Switcher](?path=/docs/extra-components-themeswitcher--docs)         | A button that cycles light, dark, and system, with an animated icon. Import from `uilibs/theme`.      |
 
 ## Data Grid
 
-[Data Grid](?path=/docs/data-grid-basics--data-grid) is a virtualized TanStack Table grid: column pinning and reordering, inline editing, drag-and-drop rows, infinite loading, footers, and a pager. Import from `uilibs/data-grid`.
+[Data Grid](?path=/docs/data-grid-basics--data-grid) is for large or interactive data; a few static rows are a Table. It is a virtualized TanStack Table grid: column pinning and reordering, inline editing, drag-and-drop rows, infinite loading, footers, and a pager. Import from `uilibs/data-grid`.
 
 ## Charts
 
@@ -138,7 +144,7 @@ Primitives on TanStack Charts: `ChartContainer` (takes `config` and an optional 
 
 ## Icons, hooks, and assets
 
-- **Icons.** `uilibs/icons` has the brand icons: `FacebookIcon`, `GitHubIcon`, `GoogleIcon`, `InstagramIcon`, `LinkedInIcon`, `TelegramIcon`, `ViteIcon`, `WhatsAppIcon`, `XIcon`. General icons come from `@keyline-icons/react`; wrap them in `Icon` to size and color them.
+- **Icons.** General icons come from `@keyline-icons/react`; wrap them in `Icon` to size and color them. `uilibs/icons` has the brand marks (see the [Icon page](?path=/docs/extra-components-icon--docs)): `FacebookIcon`, `GitHubIcon`, `GoogleIcon`, `InstagramIcon`, `LinkedInIcon`, `TelegramIcon`, `WhatsAppIcon`, `XIcon`, and `ViteIcon`. They are not built on `Icon`: each takes `size` in px, and each except `ViteIcon` is a named image (`role='img'` with an `aria-label`), so pass `aria-hidden` when the mark sits beside visible text that already says the name. `ViteIcon` has no name; give it an `aria-label` or `aria-hidden`.
 - **Hooks.** `uilibs/hooks/use-media-query` exports `useMediaQuery` and `useIsMobile`. `uilibs/hooks/use-responsive-value` exports `useResponsiveValue` and the `Responsive<T>` type: one value, or `{ small, medium, large, xlarge }`.
 - **Styles.** `uilibs/styles/*`: `colors.stylex`, `tokens.stylex`, `control.stylex` (`controlSizes`, `controlBase`, `controlPress`), `popup.stylex` (`popupFx`), `utils.stylex` (`ring`, `focusRing`, `visuallyHidden`, `unitLength`), and `themes`.
 - **Assets.** `uilibs/assets/*.css`: `reset.css`, `fontface.css`, `globals.css`.

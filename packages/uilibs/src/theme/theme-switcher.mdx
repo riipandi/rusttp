@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './theme-switcher.stories'
+
+<Meta of={Stories} />
+
+# ThemeSwitcher
+
+A button that cycles the page theme through light, dark, and system. Use `useTheme` instead when the choice belongs in a menu or a settings form, and Theme Scope to theme one part of the page.
+
+## Import
+
+```jsx
+import { ThemeSwitcher } from 'uilibs/theme'
+```
+
+Built on [Button](?path=/docs/base-components-button--docs) and the `useTheme` hook, so it needs a `ThemeProvider` above it (see [Theming](?path=/docs/theming--docs)); outside one, a press does nothing.
+
+## Anatomy
+
+- **ThemeSwitcher:** a ghost icon `Button`. Its icon is the sun, the moon, or the monitor, all three kept mounted so the change cross-fades and turns.
+
+```jsx
+<ThemeSwitcher />
+```
+
+## Examples
+
+### Default
+
+A press switches to the next theme: system to light, light to dark, dark to system.
+
+<Canvas of={Stories.Default} />
+
+### Labels
+
+<Canvas of={Stories.Labels} />
+
+### Motion
+
+The icons cross-fade and turn with the `medium` duration and the `standard` easing. A user who asks for reduced motion gets the swap at once.
+
+<Canvas of={Stories.Motion} />
+
+## Accessibility
+
+The switcher is a `button` with no text, so its name is its `aria-label`, and the name says which theme a press switches to. The `Default` and `Labels` stories check the names and the axe gate checks the markup; the `Keyboard` story walks the table below.
+
+| Key                     | Action                      |
+| ----------------------- | --------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the button.  |
+| `Enter` or `Space`      | Switches to the next theme. |
+
+- The icons are `aria-hidden`. A screen reader hears the name, not the icon, so the name changes with the theme: `Switch to dark mode` while the theme is light.
+- Translate the three names with `labels`; the library ships English only.
+- Focus stays on the button after a press.
+
+## API reference
+
+### ThemeSwitcher
+
+| Prop     | Description                                                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labels` | `{ toDark, toSystem, toLight }` <br /> The button's name in each state. Default `Switch to dark mode`, `Switch to system mode`, `Switch to light mode`. |
+
+| Data attribute | Description                                                                         |
+| -------------- | ----------------------------------------------------------------------------------- |
+| `data-icon`    | On each icon wrapper: `light`, `dark`, or `system`.                                 |
+| `data-current` | On the icon wrapper of the current theme. The other two wrappers are hidden by CSS. |
+
+## Caveats
+
+- The button reads the provider's `theme`, not `resolvedTheme`: while the theme is `system` it shows the monitor even when the system resolves to dark.
+- With a `forcedTheme` on the provider the button still cycles the stored choice, but the page does not change.
+- It takes only `labels`: to change its look, build your own button on `useTheme`.

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { expect, userEvent, waitFor } from 'storybook/test'
+import { pressUntil } from '../contracts/keyboard'
 import { ThemeSwitcher } from './theme-switcher'
 
 const meta = {
@@ -38,8 +39,39 @@ function reducedMotionRules(element: Element) {
   return found
 }
 
+/** Each state's name is a `labels` entry, so the button speaks the page's language. */
+export const Labels: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ThemeSwitcher
+  labels={{
+    toDark: 'Cast Nox',
+    toSystem: 'Follow the castle',
+    toLight: 'Cast Lumos'
+  }}
+/>`
+      }
+    }
+  },
+  render: () => (
+    <ThemeSwitcher
+      labels={{ toDark: 'Cast Nox', toSystem: 'Follow the castle', toLight: 'Cast Lumos' }}
+    />
+  ),
+  play: async ({ canvas }) => {
+    // The first state is `system`: the button names the theme a press switches to.
+    const button = await canvas.findByRole('button', { name: 'Cast Lumos' })
+    await userEvent.click(button)
+    await canvas.findByRole('button', { name: 'Cast Nox' })
+    await userEvent.click(canvas.getByRole('button', { name: 'Cast Nox' }))
+    await canvas.findByRole('button', { name: 'Follow the castle' })
+  }
+}
+
 /** A press switches to the next theme and names the one after it; its icon follows. */
 export const Default: Story = {
+  parameters: { docs: { source: { code: `<ThemeSwitcher />` } } },
   render: () => <ThemeSwitcher />,
   play: async ({ canvas, canvasElement }) => {
     // The cycle is light, dark, system. The first press leaves `system`.
@@ -66,6 +98,7 @@ export const Default: Story = {
 
 /** The icons cross-fade and turn, and a user who asks for reduced motion gets the swap at once. */
 export const Motion: Story = {
+  parameters: { docs: { source: { code: `<ThemeSwitcher />` } } },
   render: () => <ThemeSwitcher />,
   play: async ({ canvasElement }) => {
     const icon = iconOf(canvasElement, 'system')
@@ -86,5 +119,31 @@ export const Motion: Story = {
     const rules = reducedMotionRules(icon)
     await expect(rules.length).toBeGreaterThan(0)
     await expect(rules.some((rule) => rule.style.transitionDuration === '0s')).toBe(true)
+  }
+}
+
+/** Tab reaches the button, and Enter and Space each switch to the next theme. */
+export const Keyboard: Story = {
+  render: () => <ThemeSwitcher />,
+  play: async ({ canvas }) => {
+    // The first state is `system`; the cycle is light, dark, system.
+    const named = (name: string) => canvas.queryByRole('button', { name })
+    const button = await canvas.findByRole('button', { name: 'Switch to light mode' })
+
+    await pressUntil('{Tab}', () => expect(button).toHaveFocus(), {
+      when: () => document.activeElement !== button
+    })
+
+    // Enter leaves `system` for light, and the button names the next step.
+    await pressUntil('{Enter}', () => expect(named('Switch to dark mode')).toBeInTheDocument(), {
+      when: () => !named('Switch to dark mode')
+    })
+    await expect(button).toHaveFocus()
+
+    // Space does the same: light to dark.
+    await pressUntil(' ', () => expect(named('Switch to system mode')).toBeInTheDocument(), {
+      when: () => !named('Switch to system mode')
+    })
+    await expect(button).toHaveFocus()
   }
 }

@@ -1,4 +1,5 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ProviderStories from '../../src/base/provider.stories'
 
 <Meta title='Theming' parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }} />
 
@@ -8,7 +9,7 @@ Every color, shadow, radius, and motion value is a StyleX variable, so a theme i
 
 ## Setup
 
-Put `UIProvider` and `ThemeProvider` once at the root of the app, and render `ThemeSwitcher` wherever the user should change theme.
+Put `UIProvider` and `ThemeProvider` once at the root of the app, and render [ThemeSwitcher](?path=/docs/extra-components-themeswitcher--docs) wherever the user should change theme.
 
 ```tsx
 import { UIProvider } from 'uilibs/base/provider'
@@ -56,13 +57,21 @@ export function Root({ children }: { children: React.ReactNode }) {
 | `forcedTheme`   | `string` <br /> The pinned theme, when the provider has one.                           |
 | `themes`        | `string[]` <br /> The theme names, plus `system` when it is enabled.                   |
 
+### UIProvider
+
+`UIProvider` (`uilibs/base/provider`) sets two things for every Base UI part below it: the CSP nonce and the reading direction. Every prop is optional.
+
+| Prop                   | Description                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nonce`                | `string` <br /> The nonce Base UI puts on the inline `<style>` and `<script>` elements it renders, for a strict Content Security Policy.             |
+| `disableStyleElements` | `boolean` <br /> Stops Base UI from rendering those inline `<style>` elements at all. Use it when the policy forbids inline styles. Default `false`. |
+| `direction`            | `ltr`, `rtl` <br /> The reading direction Base UI parts use in script, such as a slider's arrow keys. Default `ltr`.                                 |
+
+`direction` does not set the `dir` attribute. See [Right to left](#right-to-left) below.
+
 ### ThemeSwitcher
 
-A ghost icon button that cycles light, dark, and system. Its accessible name says which theme a press switches to.
-
-| Prop     | Description                                                                                                                                             |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `labels` | `{ toDark, toSystem, toLight }` <br /> The button's name in each state. Default `Switch to dark mode`, `Switch to system mode`, `Switch to light mode`. |
+A ghost icon button that cycles light, dark, and system, with an animated icon. Its accessible name says which theme a press switches to, and `labels` translates it. The [ThemeSwitcher page](?path=/docs/extra-components-themeswitcher--docs) has the props, the keys, and the motion rules.
 
 ## What the root element carries
 
@@ -138,11 +147,64 @@ export function House({ children }: { children: React.ReactNode }) {
 }
 ```
 
-To force one part of the page to stay dark, apply `darkColors` and `darkShadows` from `uilibs/styles/themes` the same way. To force one part to stay light inside a dark page, apply `lightColors` and `lightShadows`, which restate the light values for that purpose (the page itself needs no class for light). Until the provider sets a theme, the page reads as `color-scheme: light`, so native scrollbars and form widgets match the tokens, not the operating system.
+Until the provider sets a theme, the page reads as `color-scheme: light`, so native scrollbars and form widgets match the tokens, not the operating system.
+
+### One part of the page in its own mode
+
+To draw a subtree dark or light whatever the page is, wrap it in `ThemeScope` from `uilibs/theme`. `inverted` is the opposite of the surrounding theme: the page's, or the enclosing scope's.
+
+```tsx
+import { ThemeScope } from 'uilibs/theme'
+
+export function Sidebar({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeScope colorMode='dark' render={<aside />}>
+      {children}
+    </ThemeScope>
+  )
+}
+```
+
+A scope paints the theme class, the page surface, the text color, and `color-scheme` on its element, so the tokens, the native scrollbars, and the form widgets all follow it. It needs no provider of its own; without one, `inverted` treats the page as light. The [ThemeScope page](?path=/docs/extra-components-themescope--docs) has the modes, nesting, and popups.
+
+Dialogs, menus, popovers, and tooltips render under `body`, outside the scope's element, so a scope gives them their own themed element at the end of the body and every popup in this library portals into it. A popup you build on Base UI yourself does the same with `usePortalContainer()`:
+
+```tsx
+import { Popover } from '@base-ui/react/popover'
+import { usePortalContainer } from 'uilibs/theme'
+
+export function Hint({ children }: { children: React.ReactNode }) {
+  const container = usePortalContainer()
+  return (
+    <Popover.Root>
+      <Popover.Trigger>Hint</Popover.Trigger>
+      <Popover.Portal container={container}>
+        <Popover.Positioner>
+          <Popover.Popup>{children}</Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  )
+}
+```
+
+`usePortalContainer()` returns the nearest scope's portal element, `null` while it mounts (the portal waits), and `undefined` outside any scope, where Base UI portals to the body as before.
+
+To force a whole subtree to a fixed palette without a scope, apply `darkColors` and `darkShadows`, or `lightColors` and `lightShadows`, from `uilibs/styles/themes` with `stylex.props` the way the Slytherin example above does. A popup opened inside that subtree keeps the app theme (see Caveats).
+
+## Right to left
+
+Two things make a form read right to left, and `UIProvider` is only one of them. The `dir` attribute, on the document or a subtree, turns the layout, the logical StyleX properties (`marginInlineStart`, `insetInlineEnd`), and the text. `UIProvider direction='rtl'` tells the Base UI parts that read a direction in script, so a slider's `ArrowLeft` moves toward the maximum.
+
+<Canvas of={ProviderStories.RightToLeft} />
+
+- Set both. `dir` alone leaves a slider's keys running left to right; `direction` alone leaves the layout and the text as they were.
+- The Storybook toolbar's direction toggle sets both for any story.
+- Calendar's month arrows and the data grid's expand chevrons do not flip yet: StyleX compiles their `:dir(rtl)` rule to a `:lang()` list, so it follows the language, not the direction, and Calendar's own `lang` (its locale, `en-US` by default) shadows a `lang` set above it. issue-00007 tracks it.
 
 ## Caveats
 
-- **Portaled popups.** A dialog, menu, popover, or tooltip renders under `body`, outside the element that carries a local theme, so it keeps the app theme. Use a local theme for inline content, or change the tokens for the whole app.
+- **Portaled popups.** A dialog, menu, popover, or tooltip renders under `body`, outside the element that carries a `stylex.createTheme` theme, so it keeps the app theme. Use `ThemeScope` when the popups should follow, or limit a local theme to inline content.
 - **One provider.** A `ThemeProvider` inside another is ignored and passes its children through.
 - **Only `dark` gets the dark class.** A theme name other than `light` or `dark` sets the attribute and nothing else. You style it yourself.
 - **Custom storage and the first paint.** The inline script that applies the theme before first paint supports `localStorage` and `cookie`. A custom storage adapter skips it, so the page can flash the default theme until React runs.
