@@ -136,6 +136,7 @@ export const comboboxStyles = stylex.create({
     flexDirection: 'column',
     fontFamily: fontFamily.body,
     maxHeight: `min(${container.small}, var(--available-height))`,
+    maxWidth: 'var(--available-width)',
     opacity: {
       default: 1,
       '[data-starting-style]': 0,

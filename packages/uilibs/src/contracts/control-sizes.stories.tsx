@@ -21,6 +21,8 @@ const meta = {
   title: 'Contracts/Control heights per size',
   parameters: {
     layout: 'centered',
+    // A row of every control on purpose: it is wider than a phone.
+    overflow: 'allowed',
     docs: {
       description: {
         component:

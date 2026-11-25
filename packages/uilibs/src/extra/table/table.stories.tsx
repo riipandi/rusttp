@@ -268,6 +268,8 @@ export const ScrollRegion: Story = {
 /** A table that fits its column adds no Tab stop and no region landmark. */
 export const FitsColumn: Story = {
   parameters: {
+    // The timetable is 579 px wide: it fits a desktop column, not a phone's.
+    viewport: { defaultViewport: 'desktop' },
     docs: {
       source: {
         code: `<Table labels={{ region: 'Hogwarts timetable' }}>

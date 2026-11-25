@@ -80,11 +80,45 @@ async function settlePage() {
   await fontsLoaded()
 }
 
+// A story must fit a phone: the test run renders every story at 390 px (`viewport` below; the Vitest
+// addon sets the window to the story's `defaultViewport`, 1200 px when none), and a page wider than
+// that means a layout that pushes the page sideways. A story whose content scrolls inside its own
+// box on purpose (a data grid, a board, a row of every size) opts out with
+// `parameters: { overflow: 'allowed' }` and says why. Only the test run measures: in the UI the
+// viewport is whatever the window is.
+function assertNoHorizontalOverflow(parameters: Record<string, unknown>) {
+  if (!Reflect.get(globalThis, '__vitest_browser__') || parameters.overflow === 'allowed') return
+  const { scrollWidth, clientWidth } = document.documentElement
+  if (scrollWidth <= clientWidth) return
+  const wide = Array.from(document.body.querySelectorAll('*'))
+    .map((element) => ({ element, right: element.getBoundingClientRect().right }))
+    .filter(({ right }) => right > clientWidth + 1)
+    .slice(0, 3)
+    .map(({ element, right }) => {
+      const slot = element.getAttribute('data-slot') ?? element.getAttribute('role')
+      return `<${element.localName}${slot ? ` ${slot}` : ''}> ends at ${Math.round(right)}px`
+    })
+  throw new Error(
+    `The story is ${scrollWidth - clientWidth}px wider than the ${clientWidth}px viewport. Widest: ${wide.join(', ')}. ` +
+      "Fix the layout, or set `parameters: { overflow: 'allowed' }` if the content scrolls on purpose."
+  )
+}
+
 const preview: Preview = {
   parameters: {
     // The fluid canvas: a story's content is padded and never given a minimum width, so a 390 px
     // viewport shows the layout a phone gets. A file opts out only for `fullscreen`.
     layout: 'padded',
+    // The test run's window size per story (the addon reads `defaultViewport`; the UI's toolbar uses
+    // `options` and ignores it). A story that needs room opts back in with
+    // `viewport: { defaultViewport: 'desktop' }`.
+    viewport: {
+      defaultViewport: 'phone',
+      options: {
+        phone: { name: 'Phone', styles: { width: '390px', height: '844px' }, type: 'mobile' },
+        desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' }
+      }
+    },
     options: {
       // Top-level groups, in the order the sidebar shows them; inside a group stories keep file order.
       storySort: {
@@ -165,6 +199,7 @@ const preview: Preview = {
   },
   afterEach: ({ parameters }) => {
     console.error = nativeConsoleError
+    assertNoHorizontalOverflow(parameters)
     if (parameters.consoleErrors !== 'off' && consoleErrors.length > 0) {
       throw new Error(
         `The story logged ${consoleErrors.length} console error(s):\n${consoleErrors.join('\n')}`

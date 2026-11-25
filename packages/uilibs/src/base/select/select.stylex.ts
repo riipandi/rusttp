@@ -53,6 +53,8 @@ export const selectStyles = stylex.create({
     fontFamily: fontFamily.body,
     lineHeight: fontLineHeight.body2,
     maxHeight: 'var(--available-height)',
+    // A trigger as wide as the page would otherwise push its list past the collision padding.
+    maxWidth: 'var(--available-width)',
     opacity: { default: 1, '[data-ending-style]': 0 },
     width: 'var(--anchor-width)',
     overflowX: 'hidden',

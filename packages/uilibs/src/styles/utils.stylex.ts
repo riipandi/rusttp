@@ -75,7 +75,10 @@ export const visuallyHidden = stylex.create({
     borderWidth: 0,
     clipPath: 'inset(50%)',
     height: 1,
-    margin: -1,
+    // Up, so the box stays inside the container's bottom edge; inline 0, since a negative margin on
+    // the end side pushes the 1px box past the page edge in RTL.
+    marginBlock: -1,
+    marginInline: 0,
     overflow: 'hidden',
     padding: 0,
     position: 'absolute',

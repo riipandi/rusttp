@@ -34,8 +34,8 @@ const flex = (value: string) => ({ start: 'flex-start', end: 'flex-end' })[value
 
 const houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
 
-const Tiles = ({ tall = false }: { tall?: boolean }) =>
-  houses.map((house, index) => (
+const Tiles = ({ tall = false, count = houses.length }: { tall?: boolean; count?: number }) =>
+  houses.slice(0, count).map((house, index) => (
     <div key={house} {...stylex.props(styles.tile, tall && index === 1 && styles.tall)}>
       {house}
     </div>
@@ -75,7 +75,7 @@ export const Playground: Story = {
   args: { direction: 'row', gap: 3, align: 'start', justify: 'start', wrap: false },
   render: (args) => (
     <Stack {...args} data-testid='stack' style={styles.panel}>
-      <Tiles tall />
+      <Tiles tall count={3} />
     </Stack>
   ),
   play: async ({ canvas, args }) => {
@@ -182,7 +182,7 @@ export const Alignment: Story = {
           justify={align === 'start' ? 'start' : align === 'center' ? 'center' : 'space-between'}
           style={styles.panel}
         >
-          <Tiles tall />
+          <Tiles tall count={3} />
         </Stack>
       ))}
     </div>

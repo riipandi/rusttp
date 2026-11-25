@@ -23,11 +23,11 @@ export const switchStyles = stylex.create({
     flexShrink: 0,
     padding: unit.x0_5,
     position: 'relative',
-    // Invisible expanded hit area (larger touch target).
+    // Invisible expanded hit area (larger touch target). Block axis only: every track is wider than
+    // the 24px minimum, and an inline overhang widens the page when the switch sits at its edge.
     '::after': {
       content: '""',
       insetBlock: `calc(-1 * ${unit.x2})`,
-      insetInline: `calc(-1 * ${unit.x3})`,
       position: 'absolute'
     }
   },

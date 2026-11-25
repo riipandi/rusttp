@@ -22,6 +22,8 @@ const meta = {
   title: 'Contracts/Ref as a prop',
   parameters: {
     layout: 'centered',
+    // A row of every wrapper on purpose: it is wider than a phone.
+    overflow: 'allowed',
     docs: {
       description: {
         component: 'Every wrapper takes `ref` as a prop (React 19), not through `forwardRef`.'

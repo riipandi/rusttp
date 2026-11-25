@@ -1422,6 +1422,9 @@ export const Names: Story = {
 
 /** Items and column handles are the Tab stops: Space lifts one, the arrows move it, Space drops it, Escape puts it back. */
 export const Keyboard: Story = {
+  // The columns sit side by side from `medium` up, so ArrowRight reorders them; on a phone they
+  // stack and the arrow is ArrowDown.
+  parameters: { viewport: { defaultViewport: 'desktop' } },
   render: () => {
     const [value, setValue] = useState<Record<string, Task[]>>({
       todo: [
