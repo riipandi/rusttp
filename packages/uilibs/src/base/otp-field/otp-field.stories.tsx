@@ -100,7 +100,7 @@ export const Variants: Story = {
         <OTPField variant={variant} length={4} aria-label={`Code ${variant}`}>
           <OTPFieldGroup>
             {[1, 2, 3, 4].map((position) => (
-              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+              <OTPFieldSlot key={position} />
             ))}
           </OTPFieldGroup>
         </OTPField>
@@ -133,7 +133,7 @@ export const Sizes: Story = {
         <OTPField size={size} length={4} aria-label={`Code ${size}`}>
           <OTPFieldGroup>
             {[1, 2, 3, 4].map((position) => (
-              <OTPFieldSlot key={position} aria-label={`Character ${position} of 4`} />
+              <OTPFieldSlot key={position} />
             ))}
           </OTPFieldGroup>
         </OTPField>
