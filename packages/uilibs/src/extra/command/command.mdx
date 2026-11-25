@@ -86,7 +86,7 @@ The input is a `combobox` and the list a `listbox` of `option`s. `CommandDialog`
 | `ArrowUp`   | Highlights the previous command.                                                         |
 | Typing      | Filters the list. With `autoHighlight` the first match is highlighted.                   |
 | `Enter`     | Runs the highlighted command (its `onClick`). The palette stays open until you close it. |
-| `Escape`    | In a `CommandDialog`: closes it.                                                         |
+| `Escape`    | In a `CommandDialog`: closes it at once, whatever the input holds.                       |
 
 - Nothing is highlighted when the palette opens until the arrows or typing set it.
 - `Command` does not close itself when a command runs: close the dialog from the item's `onClick`, as the dialog story does.

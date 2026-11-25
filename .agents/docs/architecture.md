@@ -366,7 +366,7 @@ Decision (D1 to D9 of the plan, with the answers that changed a recommendation):
 Consequences:
 
 - (positive) a regression in the a11y, focus, contrast, overflow, or docs contract fails a run; one scale of tokens and shared types replaces per-file restatements; every component has a docs page with keyboard behavior proved by a play.
-- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors, each with a unit test) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; `:dir(rtl)` compiles to a `:lang()` list (issue-00007); WebKit closes a `CommandDialog` with typed text noisily (issue-00008); the data grid has an open audit (`audit-00003`).
+- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors, each with a unit test) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; `:dir(rtl)` compiles to a `:lang()` list (issue-00007); the data grid has an open audit (`audit-00003`).
 
 Alternatives considered:
 

@@ -453,10 +453,20 @@ export const Keyboard: Story = {
     await waitFor(() => expect(run).toHaveBeenCalledWith('Potions'))
     await expect(body.getByRole('dialog')).toBeVisible()
 
-    // Escape closes the palette. The query is cleared first: with text in the input WebKit logs a
-    // React `act` warning as the palette closes, which the story gate counts as a failure.
-    await userEvent.clear(input)
-    await waitFor(() => expect(options().length).toBeGreaterThan(1))
-    await pressUntil('{Escape}', closed)
+    // Escape closes the palette at once, and the query does not need clearing first. The key is
+    // dispatched natively, not through `userEvent`: Storybook wraps `userEvent` in a React `act`
+    // scope, and in WebKit Base UI blurs the focused input while the dialog closes (to stop Safari
+    // scrolling), which updates the highlight inside that scope and logs `act` warnings the gate
+    // counts as failures. Without the wrapper the same close runs clean (issue-00008). It repeats
+    // until the dialog is gone, because WebKit can lose a key sent while the dialog settles.
+    await expect(input).toHaveValue('potions')
+    await waitFor(() => {
+      if (body.queryByRole('dialog')) {
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true })
+        )
+      }
+      return closed()
+    })
   }
 }
