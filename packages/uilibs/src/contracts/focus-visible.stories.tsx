@@ -1,10 +1,23 @@
 import { GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import { areaY, defineChart, lineY } from '@tanstack/charts'
+import { focusGroupX } from '@tanstack/charts/focus'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 import { useState } from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../base/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../base/tabs'
+import { Chart, ChartContainer } from '../charts/chart.component'
+import {
+  canvasDecorator,
+  chartTheme,
+  checkoutConfig,
+  checkoutScales,
+  checkouts,
+  seriesColors
+} from '../charts/stories/chart.samples'
 import {
   Kanban,
   KanbanBoard,
@@ -13,6 +26,7 @@ import {
   KanbanColumnHandle,
   KanbanItem
 } from '../extra/kanban'
+import { Link } from '../extra/link'
 import { Sortable, SortableItem, SortableItemHandle } from '../extra/sortable'
 import { colors } from '../styles/colors.stylex'
 import { container, radius, stroke, unit } from '../styles/tokens.stylex'
@@ -76,19 +90,37 @@ const styles = stylex.create({
     fontWeight: fontWeight.semibold,
     lineHeight: fontLineHeight.body2
   },
+  paragraph: { margin: 0 },
+  buttons: { display: 'flex', flexWrap: 'wrap', gap: unit.x3 },
   tabsFrame: {
     maxWidth: container.large,
     width: '100%'
   }
 })
 
-/** What a keyboard user sees on the focused element: an outline or a box shadow. */
-async function expectFocusIndicator(element: HTMLElement) {
+/**
+ * What a keyboard user sees on the focused element: an outline or a box shadow. A part whose
+ * focused element is not the one that draws the ring (a chart's host, a drop zone) names it as
+ * `ringOn`.
+ */
+async function expectFocusIndicator(element: HTMLElement, ringOn: HTMLElement = element) {
   await expect(element).toHaveFocus()
-  const style = getComputedStyle(element)
+  const style = getComputedStyle(ringOn)
   const outline = style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0
   const shadow = style.boxShadow !== 'none'
   await expect(outline || shadow).toBe(true)
+}
+
+/**
+ * The library ring itself: a 2 px solid outline (`focusRing.root`), which the browser's default
+ * ring is not. A part that drops `focusRing.root` still shows the default on an anchor or a
+ * `tabindex` element, so `expectFocusIndicator` cannot tell; this can.
+ */
+async function expectLibraryRing(element: HTMLElement, ringOn: HTMLElement = element) {
+  await expect(element).toHaveFocus()
+  const style = getComputedStyle(ringOn)
+  await expect(style.outlineStyle).toBe('solid')
+  await expect(style.outlineWidth).toBe('2px')
 }
 
 /** The control: a Button composes `focusRing.root`, so this must pass. It proves the helper can tell. */
@@ -188,5 +220,164 @@ export const KanbanColumnHandleRing: Story = {
   play: async ({ canvas }) => {
     await userEvent.tab()
     await expectFocusIndicator(canvas.getByRole('button', { name: 'Reorder Todo' }))
+  }
+}
+
+// Link and a Button rendered as a link are the two ways to draw an anchor, and each composes the
+// ring by itself: a Link's `focusRing.root` sits beside its color and underline rules, and a
+// Button that renders an `a` keeps the Button's ring.
+export const TextLinks: Story = {
+  name: 'Link',
+  render: () => (
+    <p {...stylex.props(styles.paragraph)}>
+      <Link href='#marauders-map'>Marauder’s Map</Link>{' '}
+      <Link href='#invisibility-cloak' variant='plain'>
+        Invisibility Cloak
+      </Link>{' '}
+      <Link href='#elder-wand' color='inherit'>
+        Elder Wand
+      </Link>
+    </p>
+  ),
+  play: async ({ canvas }) => {
+    // The underline link, the plain link (underlined on hover only), and the one that takes the text color.
+    for (const name of ['Marauder’s Map', 'Invisibility Cloak', 'Elder Wand']) {
+      await userEvent.tab()
+      await expectLibraryRing(canvas.getByRole('link', { name }))
+    }
+  }
+}
+
+export const ButtonAsLink: Story = {
+  name: 'Button as a link',
+  render: () => (
+    <div {...stylex.props(styles.buttons)}>
+      <Button render={<a href='#floo-network' />}>Floo Network</Button>
+      <Button variant='outline' render={<a href='#portkey' />}>
+        Portkey
+      </Button>
+      <Button variant='ghost' render={<a href='#apparition' />}>
+        Apparition
+      </Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    // Solid, outline, and ghost: the last two have no 3:1 edge at rest, so the ring marks them.
+    for (const name of ['Floo Network', 'Portkey', 'Apparition']) {
+      await userEvent.tab()
+      // A rendered `a` is a link, not a button, and keeps the Button ring.
+      await expectLibraryRing(canvas.getByRole('link', { name }))
+    }
+  }
+}
+
+// A chart is a Tab stop only when a tooltip makes it interactive.
+// The focused element is the svg; the library ring is drawn on the chart host around it.
+function CheckoutsChart({ label }: { label: string }) {
+  const definition = defineChart({
+    marks: [
+      lineY(checkouts, {
+        id: 'langdon',
+        x: 'month',
+        y: 'langdon',
+        stroke: seriesColors.langdon,
+        strokeWidth: 2
+      })
+    ],
+    scales: checkoutScales,
+    theme: chartTheme,
+    focus: focusGroupX,
+    tooltip: { use: tooltip, portal, anchor: 'group-center', sort: 'color-domain' }
+  })
+  return <Chart definition={definition} ariaLabel={label} height={160} idPrefix={label} />
+}
+
+function QuietChart({ label }: { label: string }) {
+  const definition = defineChart({
+    marks: [areaY(checkouts, { x: 'month', y: 'langdon', fill: seriesColors.langdon })],
+    scales: checkoutScales,
+    theme: chartTheme
+  })
+  return <Chart definition={definition} ariaLabel={label} height={60} idPrefix={label} />
+}
+
+export const InteractiveChart: Story = {
+  name: 'Interactive chart',
+  decorators: [canvasDecorator],
+  render: () => (
+    <div {...stylex.props(styles.list)}>
+      <ChartContainer config={checkoutConfig}>
+        <QuietChart label='Langdon trend, no tooltip' />
+      </ChartContainer>
+      <ChartContainer config={checkoutConfig}>
+        <CheckoutsChart label='Langdon checkouts, with tooltip' />
+      </ChartContainer>
+      <Button>After the charts</Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const chart = canvas.getByRole('img', { name: 'Langdon checkouts, with tooltip' })
+    // The chart without a tooltip is not a stop, so the first Tab lands here.
+    await userEvent.tab()
+    await expectLibraryRing(chart, chart.closest<HTMLElement>('.ts-chart-host') ?? chart)
+    // The svg's own default ring is off: the host draws the one ring.
+    await expect(getComputedStyle(chart).outlineStyle).toBe('none')
+
+    // Focus leaves the chart and its tooltip fades out; axe runs when the play ends, so wait until
+    // the tooltip is hidden or it measures half-faded text.
+    await userEvent.tab()
+    await expect(canvas.getByRole('button', { name: 'After the charts' })).toHaveFocus()
+    await waitFor(() =>
+      expect(document.querySelector('.ts-chart-tooltip')).toHaveAttribute('hidden')
+    )
+  }
+}
+
+// plan-00011 Q33: the board is a named region and not a Tab stop. Its stops are the column handles
+// and the items, and each one draws the ring.
+export const KanbanBoardStops: Story = {
+  name: 'Kanban board',
+  render: () => {
+    const [value, setValue] = useState<Record<string, string[]>>({
+      Todo: ['Brew Polyjuice Potion', 'Decode the Voynich cryptex'],
+      Doing: ['Find the Horcrux']
+    })
+    return (
+      <Kanban value={value} onValueChange={setValue} getItemValue={(item) => item}>
+        <KanbanBoard>
+          {Object.keys(value).map((column) => (
+            <KanbanColumn key={column} value={column}>
+              <KanbanColumnHandle aria-label={`Reorder ${column}`}>
+                <GripVertical size={16} />
+              </KanbanColumnHandle>
+              <KanbanColumnContent value={column}>
+                {value[column]?.map((task) => (
+                  <KanbanItem key={task} value={task}>
+                    {task}
+                  </KanbanItem>
+                ))}
+              </KanbanColumnContent>
+            </KanbanColumn>
+          ))}
+        </KanbanBoard>
+      </Kanban>
+    )
+  },
+  play: async ({ canvas }) => {
+    const board = canvas.getByRole('region', { name: 'Kanban board' })
+    await expect(board).not.toHaveAttribute('tabindex')
+
+    // Tab walks each column's handle, then its items; the first stop is a handle, not the board.
+    const stops = [
+      canvas.getByRole('button', { name: 'Reorder Todo' }),
+      canvas.getByText('Brew Polyjuice Potion'),
+      canvas.getByText('Decode the Voynich cryptex'),
+      canvas.getByRole('button', { name: 'Reorder Doing' }),
+      canvas.getByText('Find the Horcrux')
+    ]
+    for (const stop of stops) {
+      await userEvent.tab()
+      await expectLibraryRing(stop)
+    }
   }
 }
