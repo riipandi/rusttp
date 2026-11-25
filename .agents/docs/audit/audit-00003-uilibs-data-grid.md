@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:04:20+07:00
+updated_at: 2026-11-26T00:06:54+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 5, fixed: 9, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 4, fixed: 10, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -63,7 +63,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | fixed |
 | F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | fixed |
 | F-08 | low | a11y | `data-grid-table-pager.tsx:204` | The pager is a `div`, not a named navigation | verified | open |
-| F-09 | low | a11y | `data-grid-table-dnd.tsx:334,833` | Keyboard drag announcements are dnd-kit's defaults | unverified | open |
+| F-09 | low | a11y | `data-grid-table-dnd.tsx:334,833` | Keyboard drag announcements are dnd-kit's defaults | unverified | fixed |
 | F-10 | low | a11y (2.3.3) | `data-grid-table.stylex.ts:428-443` | The expand chevron rotates under reduced motion | verified | fixed |
 | F-11 | low | StyleX contract | `data-grid.stylex.ts:508,510,521,542,545`, `data-grid-table.stylex.ts:59,911` | Literal sizes, opacities, and a blur | verified | fixed |
 | F-12 | low | story | `.storybook/preview.tsx:142-145`, `stories/data-grid-playground.stories.tsx` | The Playground logs a Storybook "color control" warning | unverified | fixed |
@@ -136,7 +136,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Location**: `data-grid-table-dnd.tsx:334` and `:833` (`DndContext`), with `KeyboardSensor` at `:271` and `:760`.
 - **Problem**: neither context passes `accessibility`, so dnd-kit speaks its English defaults, which name the draggable by its id, and they are not in `DataGridLabels`. The drag handles are named (`:153,419-437`). A keyboard drag was not run.
 - **Smallest fix**: an `accessibility.announcements` object built from `labels`, as `Kanban` does (`labels` functions of the name, phase 29).
-- **Confidence**: medium (hypothesis). **Status**: open.
+- **Confidence**: medium (hypothesis). **Status**: fixed. **Resolution**: reproduced (dnd-kit's default names the id); both drag contexts now speak the row or column name from `labels`, reusing Kanban's tested `dragAccessibility`; the `Draggable rows` and `Draggable columns` plays fail without it.
 
 ### F-10 The expand chevron rotates under reduced motion
 

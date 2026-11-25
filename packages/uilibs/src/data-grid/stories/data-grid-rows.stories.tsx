@@ -33,6 +33,7 @@ import {
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button, buttonSquare } from '../../base/button'
+import { pressUntil } from '../../contracts/keyboard'
 import { Badge } from '../../extra/badge'
 import { Card, CardContent, CardFooter, CardHeader } from '../../extra/card'
 import { unit } from '../../styles/tokens.stylex'
@@ -141,6 +142,9 @@ function selectionColumns(
     }
   ]
 }
+
+/** What dnd-kit's live region says: the keyboard drag announcement a screen reader hears. */
+const live = () => document.querySelector('[id^="DndLiveRegion"]')?.textContent ?? ''
 
 /** The `aria-label` of every control whose label starts with `prefix`, in document order. */
 function labelsStartingWith(root: HTMLElement, prefix: string) {
@@ -573,6 +577,31 @@ export const DraggableRows: Story = {
     await expect(new Set(names).size).toBe(names.length)
     const titles = new Set(demoData.map((book) => `Drag to reorder ${book.title}`))
     await expect(names.every((name) => titles.has(name))).toBe(true)
+
+    // A keyboard drag speaks the row's title, never its id or dnd-kit's "draggable item".
+    const handle = (name: string) => canvas.getByRole('button', { name })
+    const first = names[0]!
+    const title = first.replace('Drag to reorder ', '')
+    const next = names[1]!.replace('Drag to reorder ', '')
+    handle(first).focus()
+    await pressUntil(' ', () => expect(live()).toBe(`Picked up ${title}.`), {
+      when: () => live() !== `Picked up ${title}.`
+    })
+    await pressUntil('{ArrowDown}', () => expect(live()).toBe(`${title} moved over ${next}.`), {
+      when: () => live() !== `${title} moved over ${next}.`
+    })
+    await pressUntil(' ', () => expect(live()).toBe(`${title} dropped over ${next}.`), {
+      when: () => live() !== `${title} dropped over ${next}.`
+    })
+    // Lift it again and cancel with Escape.
+    await waitFor(() => expect(handle(first)).toBeVisible())
+    handle(first).focus()
+    await pressUntil(' ', () => expect(live()).toBe(`Picked up ${title}.`), {
+      when: () => live() !== `Picked up ${title}.`
+    })
+    await pressUntil('{Escape}', () =>
+      expect(live()).toBe(`Dragging cancelled. ${title} returned to its place.`)
+    )
   }
 }
 

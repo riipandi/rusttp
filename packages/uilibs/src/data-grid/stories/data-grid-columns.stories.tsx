@@ -12,7 +12,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import {
   DataGrid,
   DataGridColumnHeader,
@@ -26,6 +26,7 @@ import {
   type DataGridFeatures
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
+import { pressUntil } from '../../contracts/keyboard'
 import { CountryFlag, demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 
@@ -44,6 +45,9 @@ const meta = {
 
 type Story = StoryObj<typeof meta>
 export default meta
+
+/** What dnd-kit's live region says: the keyboard drag announcement a screen reader hears. */
+const live = () => document.querySelector('[id^="DndLiveRegion"]')?.textContent ?? ''
 
 function useDemoTable(
   columns: ColumnDef<DataGridFeatures, IBook>[],
@@ -310,6 +314,27 @@ export const DraggableColumns: Story = {
     await expect(new Set(names).size).toBe(names.length)
     await expect(names.every((name) => name.endsWith(' column'))).toBe(true)
     await expect(canvas.getByRole('button', { name: 'Drag to reorder title column' })).toBeVisible()
+
+    // A keyboard drag speaks the column's name, never dnd-kit's "draggable item".
+    const grip = () => canvas.getByRole('button', { name: 'Drag to reorder title column' })
+    grip().focus()
+    await pressUntil(' ', () => expect(live()).toBe('Picked up title.'), {
+      when: () => live() !== 'Picked up title.'
+    })
+    await pressUntil('{ArrowRight}', () => expect(live()).toBe('title moved over author.'), {
+      when: () => live() !== 'title moved over author.'
+    })
+    await pressUntil(' ', () => expect(live()).toBe('title dropped over author.'), {
+      when: () => live() !== 'title dropped over author.'
+    })
+    await waitFor(() => expect(grip()).toBeVisible())
+    grip().focus()
+    await pressUntil(' ', () => expect(live()).toBe('Picked up title.'), {
+      when: () => live() !== 'Picked up title.'
+    })
+    await pressUntil('{Escape}', () =>
+      expect(live()).toBe('Dragging cancelled. title returned to its place.')
+    )
   }
 }
 

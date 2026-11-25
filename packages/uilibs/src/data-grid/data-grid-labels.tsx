@@ -9,7 +9,11 @@
  * `labels`, which beats the built-in default.
  */
 
-export interface DataGridLabels {
+import { defaultDragLabels } from '../extra/sortable/drag-announcements'
+import type { DragLabels } from '../extra/sortable/drag-announcements'
+
+/** `DragLabels` (`instructions`, `pickedUp`, `movedOver`, `dropped`, `cancelled`) is what a screen reader hears while a row or column is dragged with the keyboard; it names the row or column, as Kanban does. */
+export interface DataGridLabels extends DragLabels {
   /* The column header menu. */
   sortAscending: string
   sortDescending: string
@@ -52,6 +56,7 @@ export interface DataGridLabels {
 }
 
 const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
+  ...defaultDragLabels,
   sortAscending: 'Asc',
   sortDescending: 'Desc',
   pinColumnStart: 'Pin to left',

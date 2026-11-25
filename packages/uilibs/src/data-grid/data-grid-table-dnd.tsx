@@ -45,6 +45,7 @@ import {
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button, buttonSquare } from '../base/button'
+import { dragAccessibility } from '../extra/sortable/drag-announcements'
 import { zIndex } from '../styles/tokens.stylex'
 import { getColumnHeaderLabel, getDataGridRowLabel, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
@@ -260,7 +261,7 @@ function DataGridTableDnd<TData extends object>({
   table,
   ...name
 }: DataGridTableDndProps<TData>) {
-  const { props } = useDataGrid()
+  const { labels, props } = useDataGrid()
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDraggingColumn, setIsDraggingColumn] = useState(false)
 
@@ -333,6 +334,14 @@ function DataGridTableDnd<TData extends object>({
 
   return (
     <DndContext
+      accessibility={dragAccessibility(
+        labels,
+        (id) => {
+          const column = table.getColumn(String(id))
+          return column ? getColumnHeaderLabel(column) : String(id)
+        },
+        undefined
+      )}
       collisionDetection={closestCenter}
       id={useId()}
       modifiers={modifiers}
@@ -690,7 +699,8 @@ function DataGridTableDndRows<TData extends object>({
   onDragOver?: (event: DragOverEvent) => void
   onDragCancel?: (event: DragCancelEvent) => void
 } & DataGridTableName) {
-  const { props } = useDataGrid<TData>()
+  const grid = useDataGrid<TData>()
+  const { labels, props } = grid
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [isDraggingRow, setIsDraggingRow] = useState(false)
   // The overlay is portalled to the document body. dnd-kit renders DragOverlay
@@ -836,6 +846,14 @@ function DataGridTableDndRows<TData extends object>({
 
   return (
     <DndContext
+      accessibility={dragAccessibility(
+        labels,
+        (id) => {
+          const row = table.getCoreRowModel().rowsById[String(id)]
+          return row ? getDataGridRowLabel(row, grid) : String(id)
+        },
+        undefined
+      )}
       id={useId()}
       collisionDetection={collisionDetection}
       modifiers={resolvedModifiers}
