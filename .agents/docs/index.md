@@ -48,7 +48,7 @@ A plan is a contract: frontmatter `status`, decisions with rejected alternatives
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `plan-00011-uilibs-audit-remediation.md` | in-progress (waves 1 to 3 and phase 33 done) | All 39 uilibs audit recommendations plus Link on `useRender`: 59 phases in 8 waves of parallel tracks in one checkout; decisions in the plan-00011 questionnaire artifact. |
+| `plan-00011-uilibs-audit-remediation.md` | in-progress (waves 1 to 4 committed, wave 4 gate running) | All 39 uilibs audit recommendations plus Link on `useRender`: 59 phases in 8 waves of parallel tracks in one checkout; decisions in the plan-00011 questionnaire artifact. |
 
 Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
