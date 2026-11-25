@@ -217,6 +217,117 @@ export const RowSelection: Story = {
   }
 }
 
+/** The rows that are Tab stops: with `onRowClick` set there is exactly one at a time. */
+const rowStops = (root: HTMLElement) =>
+  Array.from(root.querySelectorAll<HTMLElement>('tbody tr[tabindex="0"]'))
+
+/**
+ * With `onRowClick`, the rows are one Tab stop: the arrows move between rows, and Enter or Space on
+ * a row opens it. A control inside the row (the checkbox) keeps its own keys.
+ */
+export const RowClick: Story = {
+  name: 'Row click',
+  render: () => {
+    const [opened, setOpened] = useState('nothing')
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 5 })
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const columns = useMemo(
+      () =>
+        selectionColumns(() => {
+          if (!tableHolder.current) throw new Error('table not ready')
+          return tableHolder.current
+        }),
+      [tableHolder]
+    )
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data: demoData,
+      pageCount: Math.ceil(demoData.length / pagination.pageSize),
+      getRowId: (row: IBook) => row.id,
+      state: { pagination, rowSelection },
+      enableRowSelection: true,
+      onRowSelectionChange: setRowSelection,
+      onPaginationChange: setPagination
+    })
+    tableHolder.current = table
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData.length}
+        getRowLabel={(row) => row.title}
+        onRowClick={(row) => setOpened(row.title)}
+      >
+        <div {...stylex.props(s.stack)}>
+          <span {...stylex.props(s.muted)}>Opened: {opened}</span>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTable aria-label='Novels' table={table} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+          <DataGridPagination table={table} />
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const bodyRows = () => Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr'))
+    const status = () => canvas.getByText(/^Opened:/)
+    const focusedRow = (index: number) => waitFor(() => expect(bodyRows()[index]).toHaveFocus())
+
+    // One Tab stop for all five rows: the first.
+    await waitFor(() => expect(rowStops(canvasElement)).toHaveLength(1))
+    await expect(rowStops(canvasElement)[0]).toBe(bodyRows()[0])
+    await expect(bodyRows().every((row) => row.tabIndex >= -1)).toBe(true)
+    await expect(bodyRows().filter((row) => row.tabIndex === -1)).toHaveLength(4)
+
+    // The arrows move between rows, Home and End jump, and the stop follows focus.
+    bodyRows()[0]!.focus()
+    await pressUntil('{ArrowDown}', () => focusedRow(1), {
+      when: () => document.activeElement === bodyRows()[0]
+    })
+    await pressUntil('{ArrowDown}', () => focusedRow(2), {
+      when: () => document.activeElement === bodyRows()[1]
+    })
+    await waitFor(() => expect(rowStops(canvasElement)).toEqual([bodyRows()[2]]))
+    await pressUntil('{End}', () => focusedRow(4))
+    await pressUntil('{Home}', () => focusedRow(0))
+    await pressUntil('{ArrowUp}', () => expect(document.activeElement).toBe(bodyRows()[0]))
+
+    // Enter and Space on the row open it, with the right row.
+    bodyRows()[1]!.focus()
+    await userEvent.keyboard('{Enter}')
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[1]!.title}`)
+    bodyRows()[3]!.focus()
+    await userEvent.keyboard(' ')
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[3]!.title}`)
+
+    // A checkbox inside the row keeps its own keys: Space toggles it and does not open the row.
+    const box = () => canvas.getByRole('checkbox', { name: `Select ${demoData[0]!.title}` })
+    box().focus()
+    await expect(box()).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await waitFor(() => expect(box()).toBeChecked())
+    await expect(status()).toHaveTextContent(`Opened: ${demoData[3]!.title}`)
+
+    // Tab from the rows leaves them: the stop is one row, not five.
+    bodyRows()[2]!.focus()
+    await userEvent.tab()
+    await expect(bodyRows().some((row) => row === document.activeElement)).toBe(false)
+
+    // The focused row draws the library ring: 2 px, solid, inside the row.
+    bodyRows()[2]!.focus()
+    await waitFor(() => expect(bodyRows()[2]).toHaveFocus())
+    const ring = getComputedStyle(bodyRows()[2]!)
+    await expect(ring.outlineWidth).toBe('2px')
+    await expect(ring.outlineStyle).toBe('solid')
+    await expect(parseFloat(ring.outlineOffset)).toBeLessThan(0)
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Expandable rows */
 /* ------------------------------------------------------------------ */

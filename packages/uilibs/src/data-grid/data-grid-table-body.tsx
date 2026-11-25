@@ -4,7 +4,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { StyleXStyles } from '@stylexjs/stylex'
 import { flexRender, Subscribe } from '@tanstack/react-table'
 import type { Cell, Column, Row } from '@tanstack/react-table'
-import { Fragment, memo, useMemo, useRef } from 'react'
+import { Fragment, memo, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import type { ReactNode, Ref } from 'react'
 import { Checkbox } from '../base/checkbox'
 import { Spinner } from '../extra/spinner'
@@ -17,6 +17,7 @@ import {
   useDataGrid
 } from './data-grid'
 import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from './data-grid'
+import { moveRowFocus } from './data-grid-row-stops'
 import {
   cellSelectionChromeProps,
   getDataGridTreeIndentStyle,
@@ -225,13 +226,28 @@ function DataGridTableBodyRow<TData extends object>({
   wantsBorder?: boolean
   table: DataGridTableInstance<TData>
 }) {
-  const { props } = useDataGrid<TData>()
+  const { props, rowStops } = useDataGrid<TData>()
   const isRowPinned = row.getIsPinned()
   const rowStatus = props.getRowStatus?.(row.original)
+
+  // A clickable row is reachable and activatable from the keyboard: one Tab stop for all the rows
+  // (the last one focused, else the first rendered), the arrows move between them, and Enter or
+  // Space on the row itself calls `onRowClick`. With cell selection on, the grid is the one Tab
+  // stop and Enter on a cell calls `onRowClick` (`data-grid-cell.tsx`), so rows are not stops.
+  const cellSelectionOn = !!props.tableLayout?.cellSelection && table.atoms.cellSelection != null
+  const keyboardClickable = !!props.onRowClick && !cellSelectionOn
+  const isTabStop = useSyncExternalStore(rowStops.subscribe, () => rowStops.getStopId() === row.id)
+  const elementRef = useRef<HTMLTableRowElement | null>(null)
+  useEffect(() => {
+    const element = elementRef.current
+    if (!keyboardClickable || !element) return undefined
+    return rowStops.register(row.id, element)
+  }, [keyboardClickable, row.id, rowStops])
 
   return (
     <tr
       ref={(node) => {
+        elementRef.current = node
         assignRef(rowRef, node)
         assignRef(dndRef, node)
       }}
@@ -248,10 +264,46 @@ function DataGridTableBodyRow<TData extends object>({
       // 1-based after the header row; row.index is the position in the data,
       // so the announced index stays absolute across pagination.
       aria-rowindex={props.tableLayout?.cellSelection ? row.index + 2 : undefined}
+      data-row-clickable={keyboardClickable ? '' : undefined}
+      tabIndex={keyboardClickable ? (isTabStop ? 0 : -1) : undefined}
       onClick={() => props.onRowClick && props.onRowClick(row.original)}
+      onFocus={
+        keyboardClickable
+          ? (event) => {
+              if (event.target === event.currentTarget) rowStops.setActive(row.id)
+            }
+          : undefined
+      }
+      onKeyDown={
+        keyboardClickable
+          ? (event) => {
+              // A control inside the row (a checkbox, a link, the expand button) keeps its keys.
+              if (event.target !== event.currentTarget) return
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                props.onRowClick?.(row.original)
+                return
+              }
+              const to =
+                event.key === 'ArrowDown'
+                  ? 'next'
+                  : event.key === 'ArrowUp'
+                    ? 'previous'
+                    : event.key === 'Home'
+                      ? 'first'
+                      : event.key === 'End'
+                        ? 'last'
+                        : null
+              if (!to) return
+              event.preventDefault()
+              moveRowFocus(event.currentTarget, to)
+            }
+          : undefined
+      }
       {...stylex.props(
         s.row,
         props.onRowClick && s.rowHoverCursor,
+        keyboardClickable && s.rowFocusable,
         // Optional CRUD indications, active only when getRowStatus is
         // wired; the muted defaults yield to tableStyles overrides per
         // status. Pinned cells must stay OPAQUE (they hide scrolled

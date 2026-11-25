@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:11:41+07:00
+updated_at: 2026-11-26T00:27:38+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 2, fixed: 12, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 1, fixed: 13, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -56,7 +56,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | ID | Severity | Category | Location | Title | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | F-01 | medium | a11y (2.1.1) | `data-grid-table-head.tsx:505-510` | Column resizing is pointer only | verified | open |
-| F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | open |
+| F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | fixed |
 | F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | fixed |
 | F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | fixed |
 | F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | fixed |
@@ -85,7 +85,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Problem**: a clickable row is a `tr` with a mouse handler. Nothing makes it focusable (`tabIndex` is set on no row; the only `tabIndex` in the grid is the cell-selection focus target, `data-grid-cell.tsx:1042`) and no key invokes it. `data-grid.mdx:112` documents the prop as "Makes rows clickable".
 - **Impact**: whatever `onRowClick` opens, a keyboard user cannot reach. With `cellSelection` on, the focus target moves between cells, and whether Enter calls `onRowClick` was not checked.
 - **Smallest fix**: document that `onRowClick` is a pointer shortcut and that the action must exist as a control in the row; or add `tabIndex` and Enter and Space handling to a clickable row.
-- **Confidence**: high for a plain grid. **Status**: open.
+- **Confidence**: high for a plain grid. **Status**: fixed. **Resolution**: Q22 B: with `onRowClick` the rows are one Tab stop with roving row focus, ArrowDown, ArrowUp, Home, and End move between rows, Enter or Space opens the row, a control inside a row keeps its keys; in a `cellSelection` grid Enter on the focused cell opens its row (the audit's open sub-question: before this change it did not). Three stories prove it, including a virtualized grid.
 
 ### F-03 The table has no accessible name
 

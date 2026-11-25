@@ -214,6 +214,18 @@ export const dataGridTableStyles = stylex.create({
   rowHoverCursor: {
     cursor: 'pointer'
   },
+  // A clickable row takes the library focus ring, drawn inside the row so a scroll area does not
+  // clip it.
+  rowFocusable: {
+    outline: {
+      default: 'none',
+      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: {
+      default: 0,
+      ':focus-visible': `calc(-1 * ${stroke.ring2})`
+    }
+  },
   rowSelected: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
   },

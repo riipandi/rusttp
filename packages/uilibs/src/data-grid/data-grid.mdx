@@ -93,6 +93,15 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 - A keyboard drag of a row or column (`DataGridTableDnd`, `DataGridTableDndRows`) is announced by name: "Picked up Origin.", "Origin moved over Inferno.", "Origin dropped over Inferno.", "Dragging cancelled. Origin returned to its place." The five strings (`instructions`, `pickedUp`, `movedOver`, `dropped`, `cancelled`) are `labels` entries, the same as Kanban's.
 - Loading is announced: while `isLoading` the table carries `aria-busy` and one polite live region (`role='status'`, once per grid) says `labels.loading`, then `labels.loaded(count)` ("12 rows loaded") when it ends. The spinner of `loadingMode='spinner'` is hidden from assistive technology so it does not speak twice. A later page or sort change is not announced.
 - The page buttons (previous, numbers, next) are one `nav` named `labels.pagination`, so a screen reader's landmark list has a pagination entry; the rows-per-page select and the range text sit outside it, as in `Pagination`.
+- With `onRowClick` set, a row is a keyboard target. The rows are one Tab stop (the row that last took focus, else the first one rendered, so a virtualized grid always has one), and a control inside a row (a checkbox, a link, the expand button) keeps its own keys. The `Row click` stories prove it.
+
+| Key                    | Action                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------- |
+| `ArrowDown`, `ArrowUp` | On a row: move to the next or previous row.                                                       |
+| `Home`, `End`          | On a row: jump to the first or last rendered row.                                                 |
+| `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                              |
+| `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row. |
+
 - The cell editor is a text field that takes focus when it opens.
 
 ## API reference
@@ -114,7 +123,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `allRowsLoadedMessage`  | `ReactNode` <br /> Shown after the last infinite page. Default from `labels`.                                                                                                                                                         |
 | `emptyMessage`          | `ReactNode` <br /> Shown when there are no rows. Default from `labels`.                                                                                                                                                               |
 | `labels`                | `Partial<DataGridLabels>` <br /> Overrides built-in strings; a specific prop such as `emptyMessage` still wins. Default English.                                                                                                      |
-| `onRowClick`            | `(row) => void` <br /> Makes rows clickable.                                                                                                                                                                                          |
+| `onRowClick`            | `(row) => void` <br /> Makes rows clickable, and reachable from the keyboard (see Accessibility): the rows are one Tab stop, and Enter or Space on a row calls it.                                                                    |
 | `onRowCreate`           | `() => void` <br /> Adds an "Add row" button as the last body row.                                                                                                                                                                    |
 | `rowCreateLabel`        | `ReactNode` <br /> Label of that button. Default from `labels`.                                                                                                                                                                       |
 | `appendRow`             | `ReactNode` <br /> A `tr` rendered after the data rows, such as a draft row.                                                                                                                                                          |

@@ -43,6 +43,8 @@ import type { ReactNode } from 'react'
 import { visuallyHidden } from '../styles/utils.stylex'
 import { mergeDataGridLabels } from './data-grid-labels'
 import type { DataGridLabels } from './data-grid-labels'
+import { createDataGridRowStops } from './data-grid-row-stops'
+import type { DataGridRowStops } from './data-grid-row-stops'
 import { dataGridStyles } from './data-grid.stylex'
 
 /**
@@ -305,6 +307,8 @@ export interface DataGridContextProps<TData extends object> {
    * so every table variant and viewport instance shares one application state.
    */
   autoSize?: DataGridAutoSizeController
+  /** The single Tab stop among clickable rows; see `data-grid-row-stops.ts`. */
+  rowStops: DataGridRowStops
 }
 
 /**
@@ -904,6 +908,9 @@ function DataGridProvider<TData extends object>({
     return createDataGridAutoSizeController<TData>(() => tableRef.current)
   }, [table.store])
 
+  // One per grid, stable for its life: rows subscribe to it, so it never republishes the context.
+  const [rowStops] = useState(createDataGridRowStops)
+
   const tableState = table.state
 
   // Memoize context value so consumers don't re-render during column resize.
@@ -951,10 +958,12 @@ function DataGridProvider<TData extends object>({
       recordCount: props.recordCount,
       isLoading: props.isLoading || false,
       gridId,
-      autoSize
+      autoSize,
+      rowStops
     }
   }, [
     autoSize,
+    rowStops,
     gridId,
     props.recordCount,
     props.isLoading,
