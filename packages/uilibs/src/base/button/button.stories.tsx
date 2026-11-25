@@ -8,7 +8,8 @@ import {
   denseControlSizeNames,
   expectBoxSizes,
   expectControlHeights,
-  expectDisabledLook
+  expectDisabledLook,
+  expectGlyphSizes
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -173,13 +174,16 @@ export const Sizes: Story = {
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
-        <Button size={size} variant='outline'>
+        <Button size={size} variant='outline' icon={Plus}>
           {sizeLabels[size]}
         </Button>
       )}
     </Axis>
   ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement, denseControlHeights)
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement, denseControlHeights)
+    await expectGlyphSizes(canvasElement, denseControlSizeNames)
+  }
 }
 
 const iconSizes = ['icon-xs', 'icon-sm', 'icon-md', 'icon-lg'] as const

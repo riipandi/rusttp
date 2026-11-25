@@ -20,6 +20,7 @@ import {
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
+import { glyphSize } from '../../styles/glyph'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { otpFieldSlotSizes, otpFieldStyles as s } from './otp-field.stylex'
@@ -165,7 +166,7 @@ export function OTPFieldSeparator({
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
-      <Minus size={16} strokeWidth={1.5} aria-hidden />
+      <Minus size={glyphSize.md} strokeWidth={1.5} aria-hidden />
     </div>
   )
 }

@@ -12,7 +12,8 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import type { ColorRole } from '../../styles/types'
+import { glyphSize } from '../../styles/glyph'
+import type { ColorRole, Glyph } from '../../styles/types'
 import {
   buttonFills,
   buttonHighlighted,
@@ -24,9 +25,6 @@ import {
 export type ButtonVariant = keyof typeof buttonFills
 /** Every role, plus `media` (fixed white on a photo or dark surface) and `inherit` (the text color around it). */
 export type ButtonColor = ColorRole | 'media' | 'inherit'
-
-/** A glyph component, such as a Keyline icon; the button sizes it and hides it from assistive technology. */
-export type ButtonGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
 
 /** The style of a fill in a color; the color is `primary` for `solid` and `neutral` for the other fills unless given. */
 export function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
@@ -61,9 +59,9 @@ export interface ButtonProps extends Omit<
   /** Shows the hover fill without the pointer, such as for the current item of a list of buttons. Ignored while disabled or loading. */
   highlighted?: boolean
   /** A glyph before the label. With no children the button is icon-only and needs an `aria-label`. */
-  icon?: ButtonGlyph
+  icon?: Glyph
   /** A glyph after the label. */
-  endIcon?: ButtonGlyph
+  endIcon?: Glyph
   /**
    * Shows a spinner over the label and ignores presses until it clears. The button keeps its
    * width and its name, stays focusable, and reports `aria-busy` (a screen reader keeps the label).
@@ -88,7 +86,7 @@ export function Button({
   style,
   ...props
 }: ButtonProps) {
-  const glyph = size === 'xs' ? 14 : size === 'lg' ? 18 : 16
+  const glyph = size === 'xs' ? glyphSize.xs : size === 'lg' ? glyphSize.lg : glyphSize.md
   const content = (
     <>
       {Icon ? <Icon size={glyph} aria-hidden /> : null}

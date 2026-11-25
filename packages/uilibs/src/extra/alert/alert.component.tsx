@@ -1,20 +1,18 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import { glyphSize } from '../../styles/glyph'
+import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { alertStyles as s, alertColors as colors } from './alert.stylex'
 
 export type AlertColor = ColorRole
-
-/** A glyph component, such as a Keyline icon; the alert sizes it and hides it from assistive technology. */
-export type AlertGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
 
 export interface AlertProps
   extends Omit<React.ComponentProps<'div'>, 'className' | 'style' | 'color'>, StyleProp {
   /** The color role of the notice; `neutral` by default. */
   color?: AlertColor
   /** A glyph before the text, in the role's color. */
-  icon?: AlertGlyph
+  icon?: Glyph
   /**
    * Puts the `AlertAction` on the row with the text instead of pinned to the top corner; it wraps
    * under the text when the notice is too narrow for both.
@@ -65,7 +63,7 @@ export function Alert({
         style
       )}
     >
-      {Icon ? <Icon size={20} aria-hidden {...stylex.props(s.glyph)} /> : null}
+      {Icon ? <Icon size={glyphSize.xl} aria-hidden {...stylex.props(s.glyph)} /> : null}
       {row ? (
         <div {...stylex.props(s.content, inline && s.contentInline)}>{content}</div>
       ) : (

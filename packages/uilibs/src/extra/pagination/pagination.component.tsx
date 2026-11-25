@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LinkButton, type buttonSizes } from '../../base/button'
+import { glyphSize } from '../../styles/glyph'
 import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { paginationStyles as s } from './pagination.stylex'
@@ -126,7 +127,7 @@ export function PaginationEllipsis({
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
+      <MoreHorizontal size={glyphSize.md} strokeWidth={2} aria-hidden />
       <span {...stylex.props(visuallyHidden.root)}>
         {{ ...defaultLabels, ...labels }.morePages}
       </span>
@@ -136,8 +137,8 @@ export function PaginationEllipsis({
 
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
   return direction === 'left' ? (
-    <ChevronLeft size={16} strokeWidth={1.5} aria-hidden />
+    <ChevronLeft size={glyphSize.md} strokeWidth={1.5} aria-hidden />
   ) : (
-    <ChevronRight size={16} strokeWidth={1.5} aria-hidden />
+    <ChevronRight size={glyphSize.md} strokeWidth={1.5} aria-hidden />
   )
 }

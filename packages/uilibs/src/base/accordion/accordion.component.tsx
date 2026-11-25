@@ -18,6 +18,7 @@ import { Accordion as BaseAccordion } from '@base-ui/react/accordion'
 import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { glyphSize } from '../../styles/glyph'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { accordionStyles as s } from './accordion.stylex'
@@ -55,7 +56,7 @@ export function AccordionTrigger({
       >
         {children}
         <ChevronDown
-          size={16}
+          size={glyphSize.md}
           strokeWidth={1.5}
           aria-hidden
           {...stylex.props(s.chevron, start && s.chevronStart)}

@@ -43,14 +43,12 @@ import {
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
+import { glyphSize, markSize } from '../../styles/glyph'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
-import type { ControlSize } from '../../styles/types'
+import type { ControlSize, Glyph } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { selectStyles as s } from './select.stylex'
-
-/** A glyph component, such as a Keyline icon; the trigger sizes it and hides it from assistive technology. */
-export type SelectGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
 
 export const Select = BaseSelect.Root
 export const SelectValue = BaseSelect.Value
@@ -74,7 +72,7 @@ export function SelectTrigger({
     /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
     variant?: ControlVariant
     /** A glyph before the value; it is decoration, so the name still comes from the label. */
-    icon?: SelectGlyph
+    icon?: Glyph
   }) {
   return (
     <BaseSelect.Trigger
@@ -89,14 +87,14 @@ export function SelectTrigger({
     >
       {Icon ? (
         <span {...stylex.props(s.lead)}>
-          <Icon size={16} aria-hidden {...stylex.props(s.glyph)} />
+          <Icon size={glyphSize[size]} aria-hidden {...stylex.props(s.glyph)} />
           {children}
         </span>
       ) : (
         children
       )}
       <BaseSelect.Icon {...stylex.props(s.icon)}>
-        <ChevronsUpDown size={16} strokeWidth={1.5} aria-hidden />
+        <ChevronsUpDown size={glyphSize[size]} strokeWidth={1.5} aria-hidden />
       </BaseSelect.Icon>
     </BaseSelect.Trigger>
   )
@@ -109,9 +107,9 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
       {...stylex.props(s.scrollArrow, direction === 'up' ? s.scrollArrowUp : s.scrollArrowDown)}
     >
       {direction === 'up' ? (
-        <ChevronUp size={12} strokeWidth={2} aria-hidden />
+        <ChevronUp size={markSize.md} strokeWidth={2} aria-hidden />
       ) : (
-        <ChevronDown size={12} strokeWidth={2} aria-hidden />
+        <ChevronDown size={markSize.md} strokeWidth={2} aria-hidden />
       )}
     </Arrow>
   )
@@ -181,7 +179,7 @@ export function SelectItem({
     <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
       <BaseSelect.ItemIndicator {...stylex.props(s.itemIndicator)}>
-        <Check size={12} strokeWidth={2} aria-hidden />
+        <Check size={markSize.md} strokeWidth={2} aria-hidden />
       </BaseSelect.ItemIndicator>
     </BaseSelect.Item>
   )

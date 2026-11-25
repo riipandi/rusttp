@@ -34,8 +34,9 @@ import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { glyphSize } from '../../styles/glyph'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
@@ -88,9 +89,6 @@ export function DropdownMenuContent({
   )
 }
 
-/** A glyph component, such as a Keyline icon; the item sizes it and hides it from assistive technology. */
-export type MenuGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
-
 export interface DropdownMenuItemProps
   extends
     Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
@@ -98,7 +96,7 @@ export interface DropdownMenuItemProps
   /** `critical` marks a destructive or irreversible item; `primary` a recommended one. */
   color?: Extract<ColorRole, 'neutral' | 'critical' | 'primary'>
   /** A glyph before the label; it is decoration, so the item's name is still its label. */
-  icon?: MenuGlyph
+  icon?: Glyph
   /** Indents the item to align with checkbox/radio item labels. */
   inset?: boolean
 }
@@ -123,14 +121,14 @@ export function DropdownMenuItem({
         style
       )}
     >
-      {Icon ? <Icon size={16} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
+      {Icon ? <Icon size={glyphSize.md} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
       {children}
     </BaseMenu.Item>
   )
 }
 
 function IndicatorCheck() {
-  return <Check size={16} strokeWidth={1.5} aria-hidden />
+  return <Check size={glyphSize.md} strokeWidth={1.5} aria-hidden />
 }
 
 export function DropdownMenuCheckboxItem({
@@ -187,7 +185,7 @@ export function DropdownMenuSubTrigger({
     >
       {children}
       <ChevronRight
-        size={16}
+        size={glyphSize.md}
         strokeWidth={1.5}
         aria-hidden
         {...stylex.props(s.subTriggerChevron)}

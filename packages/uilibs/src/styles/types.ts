@@ -1,4 +1,5 @@
 import type * as stylex from '@stylexjs/stylex'
+import type * as React from 'react'
 
 /**
  * The shared prop vocabulary. A component derives its own `color` and `size` types from these with
@@ -19,3 +20,14 @@ export type DenseControlSize = 'xs' | ControlSize
 export interface StyleProp {
   style?: stylex.StyleXStyles
 }
+
+/**
+ * An icon component, such as a Keyline icon, that a component sizes and hides from assistive
+ * technology: `Button` `icon`, `Badge` `icon`, `Alert` `icon`, a menu item `icon`, and the rest take
+ * this one type. The component picks the size from `styles/glyph.ts`.
+ */
+export type Glyph = React.ComponentType<{
+  size?: number | string
+  strokeWidth?: number | string
+  'aria-hidden'?: boolean
+}>

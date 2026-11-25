@@ -31,6 +31,7 @@ import {
   controlSizes,
   controlVariantsWithin
 } from '../../styles/control.stylex'
+import { glyphSize } from '../../styles/glyph'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { numberFieldButtonSizes, numberFieldStyles as s } from './number-field.stylex'
@@ -158,7 +159,7 @@ export function NumberFieldDecrement({
         style
       )}
     >
-      {children ?? <Icon size={16} strokeWidth={2} aria-hidden />}
+      {children ?? <Icon size={glyphSize.md} strokeWidth={2} aria-hidden />}
     </BaseNumberField.Decrement>
   )
 }
@@ -189,7 +190,7 @@ export function NumberFieldIncrement({
         style
       )}
     >
-      {children ?? <Icon size={16} strokeWidth={2} aria-hidden />}
+      {children ?? <Icon size={glyphSize.md} strokeWidth={2} aria-hidden />}
     </BaseNumberField.Increment>
   )
 }

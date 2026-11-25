@@ -1,5 +1,6 @@
 import { Monitor, Moon, Sun } from '@keyline-icons/react'
 import { Button } from '../base/button'
+import { glyphSize } from '../styles/glyph'
 import { useTheme } from './theme'
 
 const cycle: Record<string, string> = { light: 'dark', dark: 'system', system: 'light' }
@@ -38,7 +39,7 @@ export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels
       onClick={() => setTheme(cycle[current] ?? 'light')}
       aria-label={byTheme[current]}
     >
-      <Icon size={16} aria-hidden />
+      <Icon size={glyphSize.md} aria-hidden />
     </Button>
   )
 }

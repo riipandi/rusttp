@@ -1,6 +1,7 @@
 import { LoaderCircle } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { glyphSize, markSize } from '../../styles/glyph'
 import type { ColorRole, ControlSize } from '../../styles/types'
 import { spinnerColors, spinnerStyles as s } from './spinner.stylex'
 
@@ -8,7 +9,7 @@ export type SpinnerSize = ControlSize
 /** Every role but `neutral` (a spinner takes the text color around it, `inherit`, instead). */
 export type SpinnerColor = 'inherit' | Exclude<ColorRole, 'neutral'>
 
-const glyphSize = { sm: 12, md: 16, lg: 20 } as const
+const spinnerSize = { sm: markSize.md, md: glyphSize.md, lg: glyphSize.xl } as const
 
 /**
  * `true` inside a control that already has its own name (Button): a Spinner there is decoration,
@@ -45,7 +46,7 @@ export function Spinner({ size = 'md', color = 'inherit', labels, style, ...prop
       {...(decorative
         ? { 'aria-hidden': true }
         : { role: 'status', 'aria-label': loading, 'aria-hidden': false })}
-      size={glyphSize[size]}
+      size={spinnerSize[size]}
       strokeWidth={1.5}
       {...props}
       {...stylex.props(s.root, color !== 'inherit' && spinnerColors[color], style)}

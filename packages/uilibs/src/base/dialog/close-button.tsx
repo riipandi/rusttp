@@ -1,6 +1,7 @@
 import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { glyphSize } from '../../styles/glyph'
 import { focusRing } from '../../styles/utils.stylex'
 import { closeButtonStyles as s } from './close-button.stylex'
 
@@ -30,7 +31,7 @@ export function CloseButton({
       {...props}
       {...stylex.props(focusRing.root, s.root, style)}
     >
-      <X size={16} strokeWidth={1.5} aria-hidden />
+      <X size={glyphSize.md} strokeWidth={1.5} aria-hidden />
     </button>
   )
 }

@@ -40,6 +40,7 @@ import {
   controlVariants,
   controlVariantsWithin
 } from '../../styles/control.stylex'
+import { glyphSize, markSize } from '../../styles/glyph'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
@@ -53,7 +54,7 @@ export const ComboboxCollection = BaseCombobox.Collection
 export const comboboxCreateItems = BaseComboboxNamespace.createItems
 
 function TriggerChevron() {
-  return <ChevronDown size={16} strokeWidth={1.5} aria-hidden />
+  return <ChevronDown size={glyphSize.md} strokeWidth={1.5} aria-hidden />
 }
 
 // Select-like trigger button — anchors the popup when the input lives inside
@@ -160,7 +161,7 @@ export function ComboboxInput({
             showTrigger ? s.inputClearWithTrigger : s.inputClearAlone
           )}
         >
-          <X size={16} strokeWidth={1.5} aria-hidden />
+          <X size={glyphSize.md} strokeWidth={1.5} aria-hidden />
         </BaseCombobox.Clear>
       )}
       {showTrigger && (
@@ -233,7 +234,7 @@ export function ComboboxChip({
         )}
         {...stylex.props(focusRing.root, s.chipRemove)}
       >
-        <X size={10} strokeWidth={1.5} aria-hidden />
+        <X size={markSize.sm} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ChipRemove>
     </BaseCombobox.Chip>
   )
@@ -310,7 +311,7 @@ export function ComboboxItem({
     <BaseCombobox.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       {children}
       <BaseCombobox.ItemIndicator render={<span {...stylex.props(s.indicator)} />}>
-        <Check size={16} strokeWidth={1.5} aria-hidden />
+        <Check size={glyphSize.md} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ItemIndicator>
     </BaseCombobox.Item>
   )

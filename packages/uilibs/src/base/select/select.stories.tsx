@@ -8,6 +8,7 @@ import {
   expectControlHeights,
   expectControlVariants,
   expectDisabledLook,
+  expectGlyphSizes,
   expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
@@ -239,7 +240,10 @@ export const Sizes: Story = {
       )}
     </Axis>
   ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+  play: async ({ canvasElement }) => {
+    await expectControlHeights(canvasElement)
+    await expectGlyphSizes(canvasElement, controlSizeNames)
+  }
 }
 
 export const States: Story = {

@@ -1,6 +1,6 @@
-import type { IconProps } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { Glyph } from '../../styles/types'
 import { Text, type TextProps } from '../text'
 import { loaderTextStyles as styles } from './loader-text.stylex'
 
@@ -9,7 +9,7 @@ export interface LoaderTextProps extends Pick<
   'children' | 'variant' | 'weight' | 'color'
 > {
   /** Leading icon, sized relative to the text. */
-  icon?: React.ComponentType<IconProps>
+  icon?: Glyph
   /** Text that cross-fades with the children once `completed` becomes true. */
   completedText?: React.ReactNode
   /** Mark the loader as completed, stopping the shimmer. */

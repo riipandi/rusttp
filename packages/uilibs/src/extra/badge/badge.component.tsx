@@ -2,8 +2,8 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type * as React from 'react'
-import type { ColorRole, ControlSize } from '../../styles/types'
+import { markSize } from '../../styles/glyph'
+import type { ColorRole, ControlSize, Glyph } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   badgeFadedColors,
@@ -18,9 +18,6 @@ import {
 export type BadgeVariant = 'solid' | 'faded' | 'outline' | 'ghost'
 export type BadgeColor = ColorRole
 export type BadgeSize = ControlSize
-
-/** A glyph component, such as a Keyline icon; the badge sizes it and hides it from assistive technology. */
-export type BadgeGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>
 
 export interface BadgeLabels {
   /** Name of the dismiss button. Defaults to `Dismiss`. */
@@ -39,9 +36,9 @@ export interface BadgeProps extends Omit<
   /** A pill by default; `false` gives the squarer corners. */
   rounded?: boolean
   /** A glyph before the label. */
-  icon?: BadgeGlyph
+  icon?: Glyph
   /** A glyph after the label, before the dismiss button. */
-  endIcon?: BadgeGlyph
+  endIcon?: Glyph
   /** Fades the badge to show it is the current one, such as the hovered item of a list; Reshaped does the same. */
   highlighted?: boolean
   /**
@@ -61,8 +58,6 @@ const colorStyles = {
   ghost: badgeGhostColors
 }
 
-const glyphSize = { sm: 10, md: 12, lg: 14 } as const
-
 export function Badge({
   variant = 'solid',
   color,
@@ -78,7 +73,7 @@ export function Badge({
   render,
   ...props
 }: BadgeProps) {
-  const glyph = glyphSize[size]
+  const glyph = markSize[size]
   return useRender({
     defaultTagName: 'span',
     props: mergeProps<'span'>(

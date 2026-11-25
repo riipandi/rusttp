@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../base/dialog'
 import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
+import { glyphSize } from '../../styles/glyph'
 import { highlightedItem } from '../../styles/popup.stylex'
 import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
@@ -92,7 +93,7 @@ export function CommandInput({
   return (
     <>
       <div {...stylex.props(s.inputWrap, style)}>
-        <Search size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.inputIcon)} />
+        <Search size={glyphSize.md} strokeWidth={1.5} aria-hidden {...stylex.props(s.inputIcon)} />
         <BaseAutocomplete.Input {...props} {...stylex.props(s.input)} />
       </div>
       <Separator />

@@ -18,6 +18,7 @@ import { Eye, EyeOff } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { ButtonVariant } from '../../base/button'
+import { glyphSize } from '../../styles/glyph'
 import { Icon } from '../icon'
 import {
   InputGroup,
@@ -59,8 +60,8 @@ export interface InputPasswordProps extends Omit<
   toggleSize?: InputGroupButtonSize
 }
 
-const defaultShowIcon = <Icon svg={Eye} size={16} color='neutral-faded' />
-const defaultHideIcon = <Icon svg={EyeOff} size={16} color='neutral-faded' />
+const defaultShowIcon = <Icon svg={Eye} size={glyphSize.md} color='neutral-faded' />
+const defaultHideIcon = <Icon svg={EyeOff} size={glyphSize.md} color='neutral-faded' />
 
 /** Resolve a controlled or uncontrolled boolean. */
 function useUncontrolledState(

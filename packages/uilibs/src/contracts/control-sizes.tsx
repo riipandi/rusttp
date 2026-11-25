@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, waitFor } from 'storybook/test'
 import { colors } from '../styles/colors.stylex'
+import { glyphSize } from '../styles/glyph'
 import { type } from '../styles/type.stylex'
 import type { ControlSize, DenseControlSize } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
@@ -213,4 +214,17 @@ export async function expectTypeRole(element: Element, role: keyof typeof type) 
   const expected = pickType(want)
   probe.remove()
   await expect(pickType(have)).toBe(expected)
+}
+
+/**
+ * Asserts the first glyph (an svg) of each `size` cell of a `Sizes` story is `glyphSize[size]`
+ * wide, so a glyph grows with its control. Sizes the map has no entry for are skipped.
+ */
+export async function expectGlyphSizes(root: HTMLElement, sizes: readonly string[]) {
+  for (const size of sizes) {
+    const glyph = cellOf(root, 'size', size).querySelector('svg')
+    const expected = Object.entries(glyphSize).find(([name]) => name === size)?.[1]
+    if (!glyph || expected === undefined) throw new Error(`No glyph or no glyphSize for ${size}`)
+    await expect(glyph.getBoundingClientRect().width).toBe(expected)
+  }
 }
