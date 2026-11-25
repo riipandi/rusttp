@@ -183,10 +183,12 @@ export const Colors: Story = {
 export const Responsive: Story = {
   render: () => (
     <div {...stylex.props(styles.col)}>
-      <Text variant={{ s: 'body-2', m: 'featured-4' }}>Responsive variant</Text>
-      <Text weight={{ s: 'regular', m: 'bold' }}>Responsive weight</Text>
-      <Text align={{ s: 'center', m: 'start' }}>Responsive alignment</Text>
-      <Text variant={{ s: 'caption-1', m: 'body-1', l: 'featured-5', xl: 'body-1' }}>
+      <Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
+      <Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
+      <Text align={{ small: 'center', medium: 'start' }}>Responsive alignment</Text>
+      <Text
+        variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}
+      >
         Steps up at each breakpoint, then back down
       </Text>
     </div>
@@ -254,7 +256,7 @@ export const Render: Story = {
     <div {...stylex.props(styles.col)}>
       <Text render={<h1 />}>The Da Vinci Code</Text>
       <Text variant='featured-2'>Chapter 1: The Louvre</Text>
-      <Text variant={{ s: 'featured-2', m: 'featured-3' }}>Chapter 2: The Vatican</Text>
+      <Text variant={{ small: 'featured-2', medium: 'featured-3' }}>Chapter 2: The Vatican</Text>
     </div>
   ),
   play: async ({ canvas }) => {

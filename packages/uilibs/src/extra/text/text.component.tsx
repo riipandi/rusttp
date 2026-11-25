@@ -54,38 +54,38 @@ export type TextWeight =
 export type TextAlign = 'start' | 'center' | 'end'
 
 /** Mobile-first responsive value: string applies to all viewports, object per breakpoint. */
-export type Responsive<T> = T | { s?: T; m?: T; l?: T; xl?: T }
+export type Responsive<T> = T | { small?: T; medium?: T; large?: T; xlarge?: T }
 
 // `CompiledStyles` accepts every `stylex.create()` output, including the
 // media-query variants that plain `StyleXStyles` rejects.
 type BreakpointStyles<T extends string> = Record<T, stylex.CompiledStyles>
 
 export interface ResponsiveSpec<T extends string> {
-  base: BreakpointStyles<T>
-  m: BreakpointStyles<T>
-  l: BreakpointStyles<T>
-  xl: BreakpointStyles<T>
+  small: BreakpointStyles<T>
+  medium: BreakpointStyles<T>
+  large: BreakpointStyles<T>
+  xlarge: BreakpointStyles<T>
 }
 
 const VARIANT_SPEC: ResponsiveSpec<TextVariant> = {
-  base: textVariantStyles,
-  m: textVariantStylesMedium,
-  l: textVariantStylesLarge,
-  xl: textVariantStylesXLarge
+  small: textVariantStyles,
+  medium: textVariantStylesMedium,
+  large: textVariantStylesLarge,
+  xlarge: textVariantStylesXLarge
 }
 
 const WEIGHT_SPEC: ResponsiveSpec<TextWeight> = {
-  base: textWeightStyles,
-  m: textWeightStylesMedium,
-  l: textWeightStylesLarge,
-  xl: textWeightStylesXLarge
+  small: textWeightStyles,
+  medium: textWeightStylesMedium,
+  large: textWeightStylesLarge,
+  xlarge: textWeightStylesXLarge
 }
 
 const ALIGN_SPEC: ResponsiveSpec<TextAlign> = {
-  base: textAlignStyles,
-  m: textAlignStylesMedium,
-  l: textAlignStylesLarge,
-  xl: textAlignStylesXLarge
+  small: textAlignStyles,
+  medium: textAlignStylesMedium,
+  large: textAlignStylesLarge,
+  xlarge: textAlignStylesXLarge
 }
 
 // Featured variants render as headings by default, like Reshaped.
@@ -99,23 +99,23 @@ const TAG_MAP: Partial<Record<TextVariant, 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h
 }
 
 /**
- * Resolves a mobile-first responsive value into a cascade of styles. `s` is the base style (all
- * viewports); `m`, `l`, and `xl` each apply from their width up, so a breakpoint emits a style only
+ * Resolves a mobile-first responsive value into a cascade of styles. `small` is the base style (all
+ * viewports); `medium`, `large`, and `xlarge` each apply from their width up, so a breakpoint emits a style only
  * when its value differs from the one below it (an omitted key inherits the nearest smaller one).
- * Going back to an earlier value counts as a change: `{ s: 'a', m: 'b', l: 'a' }` emits at `l` too.
+ * Going back to an earlier value counts as a change: `{ small: 'a', medium: 'b', large: 'a' }` emits at `large` too.
  */
 export function resolveResponsive<T extends string>(
   value: Responsive<T> | undefined,
   spec: ResponsiveSpec<T>
 ): stylex.CompiledStyles[] {
   if (value === undefined) return []
-  if (typeof value === 'string') return [spec.base[value]]
+  if (typeof value === 'string') return [spec.small[value]]
 
   const out: stylex.CompiledStyles[] = []
-  let current = value.s
-  if (current !== undefined) out.push(spec.base[current])
+  let current = value.small
+  if (current !== undefined) out.push(spec.small[current])
 
-  for (const key of ['m', 'l', 'xl'] as const) {
+  for (const key of ['medium', 'large', 'xlarge'] as const) {
     const next = value[key]
     if (next === undefined || next === current) continue
     out.push(spec[key][next])
@@ -152,7 +152,9 @@ export function Text({
   ...props
 }: TextProps) {
   const largestVariant =
-    typeof variant === 'string' ? variant : (variant.xl ?? variant.l ?? variant.m ?? variant.s)
+    typeof variant === 'string'
+      ? variant
+      : (variant.xlarge ?? variant.large ?? variant.medium ?? variant.small)
   const defaultTagName = (largestVariant && TAG_MAP[largestVariant]) || 'div'
 
   return useRender({
