@@ -1,12 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../../styles/colors.stylex'
-import { easing, stroke, unit, zIndex } from '../../styles/tokens.stylex'
+import { breakpoints, easing, stroke, unit, zIndex } from '../../styles/tokens.stylex'
 import { container, duration, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
-
-// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
-// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
-// same file, so an open-ended query is written out.
 
 /**
  * Styles for the Kanban primitive set (dnd-kit based).
@@ -33,11 +29,11 @@ export const kanbanStyles = stylex.create({
     // scrolls sideways instead of letting a column spill over the next. The padding keeps the
     // columns' focus ring and outline inside the scroll box, which would clip them.
     gridAutoColumns: {
-      default: `minmax(${container.small}, 1fr)`,
-      '@media (max-width: 659px)': 'minmax(0, 1fr)'
+      default: 'minmax(0, 1fr)',
+      [breakpoints.medium]: `minmax(${container.small}, 1fr)`
     },
-    gridAutoFlow: { default: 'column', '@media (max-width: 659px)': 'row' },
-    gridTemplateColumns: { default: null, '@media (max-width: 659px)': '1fr' },
+    gridAutoFlow: { default: 'row', [breakpoints.medium]: 'column' },
+    gridTemplateColumns: { default: '1fr', [breakpoints.medium]: 'none' },
     overflowX: 'auto',
     padding: unit.x1
   },
@@ -55,11 +51,11 @@ export const kanbanStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x2,
     lineHeight: fontLineHeight.body2,
-    maxWidth: { default: container.xxlarge, '@media (max-width: 659px)': '100%' },
-    minWidth: { default: container.small, '@media (max-width: 659px)': 0 },
+    maxWidth: { default: '100%', [breakpoints.medium]: container.xxlarge },
+    minWidth: { default: 0, [breakpoints.medium]: container.small },
     outlineOffset: stroke.ring2,
-    paddingBlock: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
-    paddingInline: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
+    paddingBlock: { default: unit.x2, [breakpoints.medium]: unit.x3 },
+    paddingInline: { default: unit.x2, [breakpoints.medium]: unit.x3 },
     touchAction: 'manipulation',
     transitionDuration: {
       default: duration.medium,
@@ -93,7 +89,7 @@ export const kanbanStyles = stylex.create({
     },
     display: 'flex',
     flexShrink: 0,
-    height: { default: unit.x6, '@media (max-width: 659px)': unit.x7 },
+    height: { default: unit.x7, [breakpoints.medium]: unit.x6 },
     justifyContent: 'center',
     padding: unit.x1,
     touchAction: 'none',
@@ -103,7 +99,7 @@ export const kanbanStyles = stylex.create({
     },
     transitionProperty: 'color, opacity',
     transitionTimingFunction: easing.decelerate,
-    width: { default: unit.x6, '@media (max-width: 659px)': unit.x7 }
+    width: { default: unit.x7, [breakpoints.medium]: unit.x6 }
   },
   columnHandleVisible: {
     opacity: {
@@ -135,7 +131,7 @@ export const kanbanStyles = stylex.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    gap: { default: unit.x2, '@media (max-width: 659px)': unit.x1 },
+    gap: { default: unit.x1, [breakpoints.medium]: unit.x2 },
     minHeight: unit.x12,
     overflowY: 'auto'
   },
@@ -158,8 +154,8 @@ export const kanbanStyles = stylex.create({
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     outlineOffset: stroke.ring2,
-    paddingBlock: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
-    paddingInline: { default: unit.x3, '@media (max-width: 659px)': unit.x2 },
+    paddingBlock: { default: unit.x2, [breakpoints.medium]: unit.x3 },
+    paddingInline: { default: unit.x2, [breakpoints.medium]: unit.x3 },
     touchAction: 'manipulation',
     transitionDuration: {
       default: duration.medium,

@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { container, stroke } from '../../styles/tokens.stylex'
+import { breakpoints, container, stroke } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -54,14 +54,14 @@ export const alertDialogStyles = stylex.create({
   header: {
     alignItems: {
       default: 'center',
-      '@media (min-width: 660px)': 'flex-start'
+      [breakpoints.medium]: 'flex-start'
     },
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x1_5,
     textAlign: {
       default: 'center',
-      '@media (min-width: 660px)': 'left'
+      [breakpoints.medium]: 'left'
     }
   },
   media: {
@@ -84,12 +84,12 @@ export const alertDialogStyles = stylex.create({
     display: 'flex',
     flexDirection: {
       default: 'column-reverse',
-      '@media (min-width: 660px)': 'row'
+      [breakpoints.medium]: 'row'
     },
     gap: unit.x2,
     justifyContent: {
       default: 'stretch',
-      '@media (min-width: 660px)': 'flex-end'
+      [breakpoints.medium]: 'flex-end'
     },
     marginBottom: `calc(-1 * ${unit.x4})`,
     marginInline: `calc(-1 * ${unit.x4})`,
@@ -114,7 +114,7 @@ export const alertDialogSizes = stylex.create({
   md: {
     width: {
       default: container.medium,
-      '@media (min-width: 660px)': container.large
+      [breakpoints.medium]: container.large
     }
   },
   sm: {

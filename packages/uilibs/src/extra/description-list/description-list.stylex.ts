@@ -1,12 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { container } from '../../styles/tokens.stylex'
+import { breakpoints, container } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
-
-// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
-// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
-// same file, so an open-ended query is written out.
 
 /**
  * Key-value rows with hairline separators.
@@ -27,19 +23,19 @@ export const descriptionListStyles = stylex.create({
   root: {
     display: 'grid',
     fontFamily: fontFamily.body,
-    fontSize: { default: fontSize.body1, '@media (min-width: 660px)': fontSize.body2 },
+    fontSize: { default: fontSize.body1, [breakpoints.medium]: fontSize.body2 },
     gridTemplateColumns: {
       default: '1fr',
-      '@media (min-width: 660px)': `min(50%, ${container.medium}) auto`
+      [breakpoints.medium]: `min(50%, ${container.medium}) auto`
     },
-    lineHeight: { default: fontLineHeight.body1, '@media (min-width: 660px)': fontLineHeight.body2 }
+    lineHeight: { default: fontLineHeight.body1, [breakpoints.medium]: fontLineHeight.body2 }
   },
   term: {
     borderBottomColor: {
       default: 'transparent',
       ':last-of-type': {
         default: 'transparent',
-        '@media (min-width: 660px)': colors.borderNeutralFaded
+        [breakpoints.medium]: colors.borderNeutralFaded
       }
     },
     borderBottomStyle: 'solid',
@@ -54,7 +50,7 @@ export const descriptionListStyles = stylex.create({
     gridColumnStart: 1,
     paddingBlockEnd: {
       default: 0,
-      '@media (min-width: 660px)': unit.x3
+      [breakpoints.medium]: unit.x3
     },
     paddingBlockStart: unit.x3
   },
@@ -67,7 +63,7 @@ export const descriptionListStyles = stylex.create({
     borderBottomWidth: stroke.ring1,
     borderTopColor: {
       default: 'transparent',
-      '@media (min-width: 660px)': {
+      [breakpoints.medium]: {
         default: colors.borderNeutralFaded,
         ':nth-child(2)': 'transparent'
       }
@@ -78,7 +74,7 @@ export const descriptionListStyles = stylex.create({
     paddingBlockEnd: unit.x3,
     paddingBlockStart: {
       default: unit.x1,
-      '@media (min-width: 660px)': unit.x3
+      [breakpoints.medium]: unit.x3
     }
   }
 })

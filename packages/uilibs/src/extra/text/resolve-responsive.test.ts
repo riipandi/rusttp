@@ -1,6 +1,8 @@
 import type * as stylex from '@stylexjs/stylex'
 import { describe, expect, it } from 'vitest'
+import { breakpoints as tokenBreakpoints } from '../../styles/tokens.stylex'
 import { resolveResponsive, type ResponsiveSpec } from './text.component'
+import { breakpoints as textBreakpoints } from './text.stylex'
 
 // Each style is a sentinel named after the breakpoint it comes from and the value it sets, so the
 // assertions read as "which style applies from which width up".
@@ -48,5 +50,11 @@ describe('resolveResponsive', () => {
   it('skips a breakpoint that repeats the value below it, and starts at the first one given', () => {
     expect(names(resolveResponsive({ s: 'body-1', m: 'body-1' }, spec))).toEqual(['s:body-1'])
     expect(names(resolveResponsive({ m: 'body-2', l: 'body-2' }, spec))).toEqual(['m:body-2'])
+  })
+})
+
+describe('text breakpoints', () => {
+  it('match the breakpoint tokens, which StyleX cannot import for a top-level key', () => {
+    expect(textBreakpoints).toEqual(tokenBreakpoints)
   })
 })

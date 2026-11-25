@@ -10,7 +10,15 @@ import { toast } from '../../base/toast'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors, shadow } from '../../styles/colors.stylex'
-import { stroke, unit, duration, easing, radius, zIndex } from '../../styles/tokens.stylex'
+import {
+  breakpoints,
+  stroke,
+  unit,
+  duration,
+  easing,
+  radius,
+  zIndex
+} from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
 import { Badge } from '../badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '../card'
@@ -134,7 +142,7 @@ const styles = stylex.create({
   featuredCell: {
     gridColumn: {
       default: 'span 2',
-      '@media (min-width: 660px)': 'span 2'
+      [breakpoints.medium]: 'span 2'
     },
     gridRow: 'span 2'
   },

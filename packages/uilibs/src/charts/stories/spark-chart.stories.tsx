@@ -6,7 +6,7 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { expect } from 'storybook/test'
 import { useIsMobile } from '../../hooks/use-media-query'
 import { colors } from '../../styles/colors.stylex'
-import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
+import { breakpoints, fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
 import { Chart } from '../chart.component'
 import { canvasDecorator, checkouts, seriesColors } from '../chart.samples'
 
@@ -49,13 +49,11 @@ const styles = stylex.create({
   row: {
     display: 'grid',
     gap: unit.x3,
-    // One column on mobile, three across from the medium breakpoint up.
-    // Media keys use raw strings (StyleX authoring) anchored to the project
-    // breakpoint token (small = 660px); the layout lives in the grid, not in
-    // the runtime hook.
+    // One column on mobile, three across from the medium breakpoint up; the layout lives in the
+    // grid, not in the runtime hook.
     gridTemplateColumns: {
       default: 'repeat(1, minmax(0, 1fr))',
-      '@media (min-width: 660px)': 'repeat(3, minmax(0, 1fr))'
+      [breakpoints.medium]: 'repeat(3, minmax(0, 1fr))'
     },
     width: '100%'
   },

@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../styles/colors.stylex'
 import {
+  breakpoints,
   duration,
   fontFamily,
   fontSize,
@@ -793,20 +794,20 @@ export const dataGridPaginationStyles = stylex.create({
   root: {
     alignItems: 'center',
     display: 'flex',
-    flexDirection: { default: 'column', '@media (min-width: 660px)': 'row' },
+    flexDirection: { default: 'column', [breakpoints.medium]: 'row' },
     flexGrow: 1,
     flexWrap: 'wrap',
     gap: unit.x2,
     justifyContent: 'space-between',
-    paddingBlock: { default: unit.x2, '@media (min-width: 660px)': 0 }
+    paddingBlock: { default: unit.x2, [breakpoints.medium]: 0 }
   },
   sizes: {
     alignItems: 'center',
     display: 'flex',
     flexWrap: 'wrap',
     gap: unit.x2,
-    order: { default: 2, '@media (min-width: 660px)': 1 },
-    paddingBlockEnd: { default: unit.x2, '@media (min-width: 660px)': 0 }
+    order: { default: 2, [breakpoints.medium]: 1 },
+    paddingBlockEnd: { default: unit.x2, [breakpoints.medium]: 0 }
   },
   mutedText: {
     color: colors.foregroundNeutralFaded,
@@ -826,17 +827,17 @@ export const dataGridPaginationStyles = stylex.create({
   info: {
     alignItems: 'center',
     display: 'flex',
-    flexDirection: { default: 'column', '@media (min-width: 660px)': 'row' },
+    flexDirection: { default: 'column', [breakpoints.medium]: 'row' },
     gap: unit.x2,
-    justifyContent: { default: 'center', '@media (min-width: 660px)': 'flex-end' },
-    order: { default: 1, '@media (min-width: 660px)': 2 },
-    paddingBlockStart: { default: unit.x2, '@media (min-width: 660px)': 0 }
+    justifyContent: { default: 'center', [breakpoints.medium]: 'flex-end' },
+    order: { default: 1, [breakpoints.medium]: 2 },
+    paddingBlockStart: { default: unit.x2, [breakpoints.medium]: 0 }
   },
   infoText: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    order: { default: 2, '@media (min-width: 660px)': 1 },
+    order: { default: 2, [breakpoints.medium]: 1 },
     whiteSpace: 'nowrap'
   },
   pages: {
