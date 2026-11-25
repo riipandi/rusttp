@@ -102,6 +102,16 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                              |
 | `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row. |
 
+- With `tableLayout.columnsResizable`, each resizable column's edge is a focusable `separator` (`aria-orientation='vertical'`, `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` in px, named by `labels.resizeColumn(title)`), so a keyboard user can set a width. This adds one Tab stop per resizable column. The `Column resizing, keyboard` stories prove the keys.
+
+| Key                       | Action on a column's separator                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `ArrowRight`, `ArrowLeft` | Move the edge 10 px (widen with the arrow that points away from the column's anchor edge). `Shift` makes the step 50 px. |
+| `Home`, `End`             | Jump to the column's `minSize` or `maxSize` (End does nothing without a `maxSize`).                                      |
+| `Enter`                   | Restore the default width, the twin of a double-click.                                                                   |
+
+The widening arrow follows the drag: `ArrowRight` in a left-to-right grid, `ArrowLeft` when `columnResizeDirection` is `rtl`, and mirrored again for a column pinned to the end. The width never leaves `minSize` and `maxSize`; a column with no title string is named by its id (`meta.headerTitle` sets it).
+
 - The cell editor is a text field that takes focus when it opens.
 
 ## API reference

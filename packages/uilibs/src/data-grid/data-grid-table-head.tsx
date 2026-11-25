@@ -3,10 +3,18 @@ import type { StyleXStyles } from '@stylexjs/stylex'
 import type { Header } from '@tanstack/react-table'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { ReactNode, Ref, RefObject } from 'react'
-import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from 'react'
-import { useDataGrid } from './data-grid'
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  TouchEvent as ReactTouchEvent
+} from 'react'
+import { getColumnHeaderLabel, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
-import { hasDataGridTableRightPinnedColumns, getPinningStyles } from './data-grid-table-utils'
+import {
+  hasDataGridTableRightPinnedColumns,
+  getPinningStyles,
+  nextColumnSize
+} from './data-grid-table-utils'
 import { dataGridTableStyles as s } from './data-grid-table.stylex'
 
 type DataGridResizeStartEvent = ReactMouseEvent<HTMLElement> | ReactTouchEvent<HTMLElement>
@@ -441,7 +449,7 @@ function DataGridTableHeadRowCellResize<TData extends object>({
   header: Header<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { props } = useDataGrid<TData>()
+  const { labels, props } = useDataGrid<TData>()
   const { column } = header
   const isPinned = column.getIsPinned()
   const isLastVisibleColumn =
@@ -494,6 +502,48 @@ function DataGridTableHeadRowCellResize<TData extends object>({
 
   const isResizing = column.getIsResizing()
 
+  // The separator's value is the header's width in px, over its leaf columns' limits (a group
+  // header resizes all its leaves in proportion, as the drag does).
+  const leaves = header.getLeafHeaders()
+  const size = header.getSize()
+  const minSize = leaves.reduce((sum, leaf) => sum + (leaf.column.columnDef.minSize ?? 0), 0)
+  const maxSize = leaves.reduce((sum, leaf) => {
+    const max = leaf.column.columnDef.maxSize
+    return sum + (typeof max === 'number' && max < Number.MAX_SAFE_INTEGER ? max : Infinity)
+  }, 0)
+  // The drag's own rule: an end-pinned column grows from its start edge, so its keys mirror.
+  const mirrored = (table.options.columnResizeDirection === 'rtl') !== (isPinned === 'end')
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter') {
+      // The keyboard twin of the double-click: back to the default width.
+      event.preventDefault()
+      event.stopPropagation()
+      column.resetSize()
+      return
+    }
+    const next = nextColumnSize({
+      key: event.key,
+      shiftKey: event.shiftKey,
+      mirrored,
+      size,
+      min: minSize,
+      max: maxSize
+    })
+    if (next === null) return
+    // The grid's own key handling must not also read an arrow as a cell move.
+    event.preventDefault()
+    event.stopPropagation()
+    if (next === size || size <= 0) return
+    const ratio = next / size
+    table.setColumnSizing((old) => ({
+      ...old,
+      ...Object.fromEntries(
+        leaves.map((leaf) => [leaf.column.id, Math.round(leaf.getSize() * ratio * 100) / 100])
+      )
+    }))
+  }
+
   return (
     // A span, deliberately: consumers stretch end-aligned header CONTENT
     // with `[&>div]:w-full` on headerClassName, and that compiled child
@@ -503,6 +553,14 @@ function DataGridTableHeadRowCellResize<TData extends object>({
     // of escalating it.
     <span
       data-slot='data-grid-table-resize-handle'
+      role='separator'
+      tabIndex={0}
+      aria-orientation='vertical'
+      aria-label={labels.resizeColumn(getColumnHeaderLabel(column))}
+      aria-valuenow={Math.round(size)}
+      aria-valuemin={Math.round(minSize)}
+      aria-valuemax={Number.isFinite(maxSize) ? Math.round(maxSize) : undefined}
+      onKeyDown={handleKeyDown}
       {...{
         onDoubleClick: () => column.resetSize(),
         onMouseDown: handleMouseDown,
@@ -510,6 +568,7 @@ function DataGridTableHeadRowCellResize<TData extends object>({
       }}
       {...stylex.props(
         s.resizeHandle,
+        s.resizeHandleFocusable,
         isPinned === 'end'
           ? [
               // An end-pinned column grows from its START edge (its end is

@@ -24,6 +24,8 @@ export interface DataGridLabels extends DragLabels {
   columnsMenu: string
   unpinColumn: (title: string) => string
   toggleColumns: string
+  /** The name of a column's resize separator, a function of the column title. */
+  resizeColumn: (title: string) => string
   /* Row and cell affordances. */
   rowCreate: string
   /* A row control names its row, so ten rows give ten different names. */
@@ -70,6 +72,7 @@ const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   columnsMenu: 'Columns',
   unpinColumn: (title) => `Unpin ${title} column`,
   toggleColumns: 'Toggle Columns',
+  resizeColumn: (title) => `Resize ${title} column`,
   rowCreate: 'Add row',
   pinRow: (name) => `Pin ${name}`,
   unpinRow: (name) => `Unpin ${name}`,

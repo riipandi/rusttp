@@ -485,6 +485,17 @@ export const dataGridTableStyles = stylex.create({
     userSelect: 'none',
     zIndex: gridLayer.raised
   },
+  // The keyboard focus ring of the separator, drawn inside its box so no ancestor clips it.
+  resizeHandleFocusable: {
+    outline: {
+      default: 'none',
+      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: {
+      default: 0,
+      ':focus-visible': `calc(-1 * ${stroke.ring2})`
+    }
+  },
   resizeHandleStart: {
     justifyContent: 'flex-start',
     insetInlineStart: 0,

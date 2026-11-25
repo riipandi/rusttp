@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:27:38+07:00
+updated_at: 2026-11-26T00:35:32+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 1, fixed: 13, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 0, fixed: 14, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -55,7 +55,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 
 | ID | Severity | Category | Location | Title | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| F-01 | medium | a11y (2.1.1) | `data-grid-table-head.tsx:505-510` | Column resizing is pointer only | verified | open |
+| F-01 | medium | a11y (2.1.1) | `data-grid-table-head.tsx:505-510` | Column resizing is pointer only | verified | fixed |
 | F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | fixed |
 | F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | fixed |
 | F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | fixed |
@@ -77,7 +77,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Problem**: the handle takes `onMouseDown`, `onTouchStart`, and `onDoubleClick` and nothing else: no `tabIndex`, no `role`, no key handler. `onKeyDown`, `ArrowLeft`, and `ArrowRight` appear in `data-grid-table-head.tsx` and `data-grid-column.tsx` only as icon names.
 - **Impact**: with `columnsResizable`, a keyboard user cannot change a column's width (WCAG 2.1.1). The header menu offers move, pin, and sort, but no size.
 - **Smallest fix**: a header-menu item pair ("Make wider" and "Make narrower", `labels` entries) calling `column.getSize` and the table's `setColumnSizing`, or a focusable separator with `role='separator'` and `aria-valuenow` that answers the arrows.
-- **Confidence**: high. **Status**: open.
+- **Confidence**: high. **Status**: fixed. **Resolution**: Q20 A: each resizable column's edge is a focusable `separator` with value attributes and `labels.resizeColumn(title)`; arrows 10 px, Shift 50 px, Home, End, Enter (reset); the pure step function is unit tested and two stories (left to right and right to left) prove the keys and the clamps; mutation checked.
 
 ### F-02 `onRowClick` rows have no keyboard path
 

@@ -232,6 +232,45 @@ function getPinningStyles<TData extends object>(
 
 // A meta.fillWidth column absorbs the free space itself, so the fill cells
 // must collapse or the strip would be counted twice.
+/** The keys a column's resize separator answers with a new width (Enter, the reset, is the caller's). */
+type DataGridResizeKey = 'ArrowLeft' | 'ArrowRight' | 'Home' | 'End'
+
+const DATA_GRID_RESIZE_STEP = 10
+const DATA_GRID_RESIZE_STEP_LARGE = 50
+
+/**
+ * The width a column takes after a key on its resize separator: an arrow moves the edge 10 px (50
+ * with Shift), Home and End jump to the minimum and the maximum, and the result stays inside both.
+ * `mirrored` is the drag's own rule (a `columnResizeDirection` of `rtl`, or an end-pinned column
+ * that grows from its start edge): the arrow that points away from the anchor widens. Returns null
+ * for a key the separator does not answer, and for End when the column has no maximum.
+ */
+function nextColumnSize({
+  key,
+  shiftKey,
+  mirrored,
+  size,
+  min,
+  max
+}: {
+  key: string
+  shiftKey: boolean
+  mirrored: boolean
+  size: number
+  min: number
+  max: number
+}): number | null {
+  const clamp = (value: number) => Math.min(Math.max(value, min), max)
+  const step = shiftKey ? DATA_GRID_RESIZE_STEP_LARGE : DATA_GRID_RESIZE_STEP
+  const widen = mirrored ? 'ArrowLeft' : 'ArrowRight'
+  const narrow = mirrored ? 'ArrowRight' : 'ArrowLeft'
+  if (key === widen) return clamp(size + step)
+  if (key === narrow) return clamp(size - step)
+  if (key === 'Home') return min
+  if (key === 'End') return Number.isFinite(max) ? max : null
+  return null
+}
+
 function hasDataGridFillColumn<TData extends object>(table: DataGridTableInstance<TData>) {
   return table.getVisibleLeafColumns().some((column) => column.columnDef.meta?.fillWidth)
 }
@@ -325,9 +364,10 @@ export {
   getDataGridTableMergedHeaderGroups,
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
+  nextColumnSize,
   DataGridTableFillCol,
   DataGridTableFillHeadCell,
   DataGridTableFillBodyCell,
   DataGridTableFillFootCell
 }
-export type { DataGridCellSelectionAttrs, DataGridTablePinnedBoundary }
+export type { DataGridCellSelectionAttrs, DataGridResizeKey, DataGridTablePinnedBoundary }

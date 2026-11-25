@@ -473,6 +473,127 @@ export const ResizableNotSortable: Story = {
   }
 }
 
+const keyboardResizeColumns: ColumnDef<DataGridFeatures, IBook>[] = [
+  { accessorKey: 'title', id: 'title', header: 'Title', size: 240, minSize: 120, maxSize: 400 },
+  { accessorKey: 'role', id: 'role', header: 'Genre', size: 160, minSize: 100, maxSize: 220 },
+  { accessorKey: 'country', id: 'country', header: 'Country', size: 150 }
+]
+
+function KeyboardResizeGrid({ direction }: { direction: 'ltr' | 'rtl' }) {
+  const table = useTable({
+    features: dataGridFeatures,
+    columns: keyboardResizeColumns,
+    data: demoData.slice(0, 3),
+    getRowId: (row: IBook) => row.id,
+    columnResizeDirection: direction
+  })
+  return (
+    <div dir={direction}>
+      <DataGrid
+        table={table}
+        recordCount={3}
+        tableLayout={{ columnsResizable: true, width: 'fixed' }}
+      >
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable aria-label='Novels' table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    </div>
+  )
+}
+
+/** The Genre separator and the width of its header, read live: the keys change both. */
+function genreHandle(canvas: {
+  getByRole: (role: string, options: { name: string }) => HTMLElement
+}) {
+  const separator = canvas.getByRole('separator', { name: 'Resize Genre column' })
+  const cell = separator.closest('th')
+  if (!cell) throw new Error('No header cell')
+  return {
+    separator,
+    value: () => Number(separator.getAttribute('aria-valuenow')),
+    width: () => cell.getBoundingClientRect().width
+  }
+}
+
+/**
+ * A column resizes from the keyboard through its separator: an arrow moves the edge 10 px (50 with
+ * Shift), Home and End jump to the limits, Enter restores the default width.
+ */
+export const ResizeByKeyboard: Story = {
+  name: 'Column resizing, keyboard',
+  render: () => <KeyboardResizeGrid direction='ltr' />,
+  play: async ({ canvas }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const { separator, value, width } = genreHandle(canvas)
+    await expect(separator).toHaveAttribute('aria-orientation', 'vertical')
+    await expect(separator).toHaveAttribute('aria-valuemin', '100')
+    await expect(separator).toHaveAttribute('aria-valuemax', '220')
+    await expect(separator).toHaveAttribute('tabindex', '0')
+    await expect(value()).toBe(160)
+    await waitFor(() => expect(width()).toBeCloseTo(160, 0))
+
+    const settle = async (to: number) => {
+      await expect(value()).toBe(to)
+      await expect(width()).toBeCloseTo(to, 0)
+    }
+    separator.focus()
+    await expect(separator).toHaveFocus()
+
+    // An arrow moves 10 px and the header follows; Shift moves 50.
+    await pressUntil('{ArrowRight}', () => settle(170), { when: () => value() !== 170 })
+    await pressUntil('{Shift>}{ArrowRight}{/Shift}', () => settle(220), {
+      when: () => value() !== 220
+    })
+    // The maximum holds: another arrow does not pass it.
+    await userEvent.keyboard('{ArrowRight}')
+    await expect(value()).toBe(220)
+    // Home and End jump to the limits, and the minimum holds too.
+    await pressUntil('{Home}', () => settle(100), { when: () => value() !== 100 })
+    await userEvent.keyboard('{ArrowLeft}')
+    await expect(value()).toBe(100)
+    await pressUntil('{End}', () => settle(220), { when: () => value() !== 220 })
+    // Enter restores the default width, the twin of the double-click.
+    await pressUntil('{Enter}', () => settle(160), { when: () => value() !== 160 })
+    // The neighbour is untouched.
+    await expect(canvas.getByRole('separator', { name: 'Resize Title column' })).toHaveAttribute(
+      'aria-valuenow',
+      '240'
+    )
+  }
+}
+
+/**
+ * Right to left with `columnResizeDirection: 'rtl'`: the end edge is on the left, so the arrow that
+ * points left widens, the same direction a drag takes.
+ */
+export const ResizeByKeyboardRtl: Story = {
+  name: 'Column resizing, keyboard, right to left',
+  render: () => <KeyboardResizeGrid direction='rtl' />,
+  play: async ({ canvas }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const { separator, value, width } = genreHandle(canvas)
+    const cell = separator.closest('th')
+    if (!cell) throw new Error('No header cell')
+    // The separator sits on the physical left edge of its header: the end edge in right to left.
+    const handleMiddle = separator.getBoundingClientRect().left + separator.offsetWidth / 2
+    await expect(Math.abs(handleMiddle - cell.getBoundingClientRect().left)).toBeLessThan(4)
+
+    separator.focus()
+    await expect(separator).toHaveFocus()
+    await pressUntil('{ArrowLeft}', () => expect(value()).toBe(170), {
+      when: () => value() !== 170
+    })
+    await waitFor(() => expect(width()).toBeCloseTo(170, 0))
+    await pressUntil('{ArrowRight}', () => expect(value()).toBe(160), {
+      when: () => value() !== 160
+    })
+    await waitFor(() => expect(width()).toBeCloseTo(160, 0))
+  }
+}
+
 /** Pinnable columns. */
 export const PinnableColumns: Story = {
   name: 'Pinnable columns',
