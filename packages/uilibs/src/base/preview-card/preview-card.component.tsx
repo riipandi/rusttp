@@ -22,6 +22,7 @@ import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { previewCardStyles as s } from './preview-card.stylex'
 
 export const PreviewCard = BasePreviewCard.Root
@@ -46,7 +47,7 @@ export function PreviewCardContent({
   ...props
 }: PreviewCardContentProps) {
   return (
-    <BasePreviewCard.Portal>
+    <BasePreviewCard.Portal container={usePortalContainer()}>
       <BasePreviewCard.Positioner
         align={align}
         alignOffset={alignOffset}

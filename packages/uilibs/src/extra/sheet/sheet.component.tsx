@@ -5,6 +5,7 @@ import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
 
 export type SheetSide = 'top' | 'right' | 'bottom' | 'left'
@@ -49,7 +50,7 @@ export function SheetContent({
     labels?: Partial<CloseLabels>
   }) {
   return (
-    <BaseDialog.Portal>
+    <BaseDialog.Portal container={usePortalContainer()}>
       <SheetOverlay blurredOverlay={blurredOverlay} />
       <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
         {children}

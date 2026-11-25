@@ -24,6 +24,7 @@ import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { tooltipStyles as s } from './tooltip.stylex'
 
 // Instant tooltips by default (Base UI's own default is 600ms).
@@ -63,7 +64,7 @@ export function TooltipContent({
   ...props
 }: TooltipContentProps) {
   return (
-    <BaseTooltip.Portal>
+    <BaseTooltip.Portal container={usePortalContainer()}>
       <BaseTooltip.Positioner
         align={align}
         alignOffset={alignOffset}

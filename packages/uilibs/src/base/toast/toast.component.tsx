@@ -39,6 +39,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { ColorRole } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
 import { toastStyles as s, toastColors as colors } from './toast.stylex'
 
@@ -149,7 +150,7 @@ export interface ToasterProps {
  */
 export function Toaster({ swipeDirection = ['down', 'right'], labels, style }: ToasterProps) {
   return (
-    <BaseToast.Portal>
+    <BaseToast.Portal container={usePortalContainer()}>
       <BaseToast.Viewport {...stylex.props(s.viewport, style)}>
         <ToastList swipeDirection={swipeDirection} labels={labels} />
       </BaseToast.Viewport>

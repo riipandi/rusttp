@@ -46,6 +46,7 @@ import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
 
 export const Combobox = BaseCombobox.Root
@@ -269,7 +270,7 @@ export function ComboboxContent({
   ...props
 }: ComboboxContentProps) {
   return (
-    <BaseCombobox.Portal>
+    <BaseCombobox.Portal container={usePortalContainer()}>
       <BaseCombobox.Positioner
         align={align}
         alignOffset={alignOffset}

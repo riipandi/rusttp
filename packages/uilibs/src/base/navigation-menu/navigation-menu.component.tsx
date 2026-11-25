@@ -36,6 +36,7 @@ import { markSize } from '../../styles/glyph'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { navigationMenuStyles as s } from './navigation-menu.stylex'
 
 export interface NavigationMenuLabels {
@@ -132,7 +133,7 @@ export function NavigationMenuPositioner({
   StyleProp) {
   const labels = React.useContext(NavigationMenuLabelsContext)
   return (
-    <BaseNavigationMenu.Portal>
+    <BaseNavigationMenu.Portal container={usePortalContainer()}>
       <BaseNavigationMenu.Positioner
         side={side}
         sideOffset={sideOffset}

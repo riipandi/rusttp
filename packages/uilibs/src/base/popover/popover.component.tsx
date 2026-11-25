@@ -29,6 +29,7 @@ import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring, type UnitStep } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
 
 export const Popover = BasePopover.Root
@@ -65,7 +66,7 @@ export function PopoverContent({
   ...props
 }: PopoverContentProps) {
   return (
-    <BasePopover.Portal>
+    <BasePopover.Portal container={usePortalContainer()}>
       <BasePopover.Positioner
         align={align}
         alignOffset={alignOffset}

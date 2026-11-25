@@ -27,6 +27,7 @@ import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from './close-button'
 import { dialogStyles as s } from './dialog.stylex'
 
@@ -71,7 +72,7 @@ export function DialogContent({
     labels?: Partial<CloseLabels>
   }) {
   return (
-    <BaseDialog.Portal>
+    <BaseDialog.Portal container={usePortalContainer()}>
       <DialogOverlay blurredOverlay={blurredOverlay} />
       <BaseDialog.Popup
         {...props}

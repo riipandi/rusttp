@@ -27,6 +27,7 @@ import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { drawerStyles as s } from './drawer.stylex'
 import { drawerDirections as directions, drawerSwipeHandles as swipeHandles } from './drawer.stylex'
 
@@ -96,7 +97,7 @@ export function DrawerContent({
   }) {
   const { modal, showSwipeHandle, swipeDirection } = React.useContext(DrawerContext)
   return (
-    <BaseDrawer.Portal>
+    <BaseDrawer.Portal container={usePortalContainer()}>
       {modal && <DrawerOverlay blurredOverlay={blurredOverlay} />}
       <BaseDrawer.Viewport {...stylex.props(s.viewport, modal && s.viewportModal)}>
         <BaseDrawer.Popup {...props} {...stylex.props(s.popup, directions[swipeDirection], style)}>

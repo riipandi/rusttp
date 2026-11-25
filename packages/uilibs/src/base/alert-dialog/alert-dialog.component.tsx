@@ -27,6 +27,7 @@ import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { Button, type ButtonProps } from '../button'
 import { alertDialogStyles as s, alertDialogSizes as sizes } from './alert-dialog.stylex'
 
@@ -65,7 +66,7 @@ export function AlertDialogContent({
     blurredOverlay?: boolean
   }) {
   return (
-    <BaseAlertDialog.Portal>
+    <BaseAlertDialog.Portal container={usePortalContainer()}>
       <AlertDialogOverlay blurredOverlay={blurredOverlay} />
       <BaseAlertDialog.Popup
         {...props}

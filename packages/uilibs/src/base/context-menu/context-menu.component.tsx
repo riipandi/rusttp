@@ -36,6 +36,7 @@ import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import {
   type DropdownMenuItemProps,
   DropdownMenuCheckboxItem,
@@ -79,7 +80,7 @@ export function ContextMenuContent({
   ...props
 }: ContextMenuContentProps) {
   return (
-    <BaseContextMenu.Portal>
+    <BaseContextMenu.Portal container={usePortalContainer()}>
       <BaseContextMenu.Positioner
         align={align}
         alignOffset={alignOffset}

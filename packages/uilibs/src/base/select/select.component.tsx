@@ -48,6 +48,7 @@ import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ControlSize, Glyph } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
 import { selectStyles as s } from './select.stylex'
 
@@ -139,7 +140,7 @@ export function SelectContent({
   ...props
 }: SelectContentProps) {
   return (
-    <BaseSelect.Portal>
+    <BaseSelect.Portal container={usePortalContainer()}>
       <BaseSelect.Positioner
         align={align}
         alignOffset={alignOffset}

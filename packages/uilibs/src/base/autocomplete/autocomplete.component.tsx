@@ -47,6 +47,7 @@ import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { autocompleteStyles as s } from './autocomplete.stylex'
 
 /**
@@ -103,7 +104,7 @@ export function AutocompleteContent({
   ...props
 }: AutocompleteContentProps) {
   return (
-    <BaseAutocomplete.Portal>
+    <BaseAutocomplete.Portal container={usePortalContainer()}>
       <BaseAutocomplete.Positioner
         align={align}
         alignOffset={alignOffset}

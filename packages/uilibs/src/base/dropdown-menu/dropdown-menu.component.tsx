@@ -38,6 +38,7 @@ import { glyphSize } from '../../styles/glyph'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
 export const DropdownMenu = BaseMenu.Root
@@ -65,7 +66,7 @@ export function DropdownMenuContent({
   ...props
 }: DropdownMenuContentProps) {
   return (
-    <BaseMenu.Portal>
+    <BaseMenu.Portal container={usePortalContainer()}>
       <BaseMenu.Positioner
         align={align}
         alignOffset={alignOffset}
