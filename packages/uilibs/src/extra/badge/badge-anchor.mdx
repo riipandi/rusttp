@@ -1,0 +1,75 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './badge-anchor.stories'
+
+<Meta of={Stories} />
+
+# BadgeAnchor
+
+Pins a badge to a corner of another element: a count on an icon button, a status dot on an avatar.
+
+## Import
+
+```jsx
+import { Badge, BadgeAnchor } from 'uilibs/extra/badge'
+```
+
+A plain `span`, not built on Base UI. Props not listed here pass through.
+
+## Anatomy
+
+- **BadgeAnchor:** the wrapper. It is as large as the element inside it and no larger, so the badge never changes the layout.
+- **The element:** the `Avatar`, icon `Button`, or any box you wrap.
+- **The badge:** the `badge` prop, centered on the corner point. It is usually a `Badge`; any node works.
+
+```jsx
+<BadgeAnchor badge={<Badge size='small'>3</Badge>}>
+  <Avatar />
+</BadgeAnchor>
+```
+
+## Examples
+
+### Corners
+
+The badge is centered on the corner of the element's box.
+
+<Canvas of={Stories.Corners} />
+
+### Overlap
+
+`rectangular` puts the badge on the corner of the box. On a round element `circular` pulls it in onto the rim.
+
+<Canvas of={Stories.Overlaps} />
+
+### Count and dot
+
+<Canvas of={Stories.Anchors} />
+
+### Right to left
+
+`start` and `end` follow the writing direction.
+
+<Canvas of={Stories.Rtl} />
+
+## API reference
+
+`BadgeAnchor` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### BadgeAnchor
+
+| Prop      | Description                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `badge`   | `ReactNode` <br /> The badge to show, usually a `Badge`. Required.                                                                         |
+| `corner`  | `top-end`, `top-start`, `bottom-end`, `bottom-start` <br /> The corner of the element. Default `top-end`.                                  |
+| `overlap` | `rectangular`, `circular` <br /> `circular` sits the badge on the rim of a round element, 14.6% in from the corner. Default `rectangular`. |
+
+| Data attribute | Description                                                       |
+| -------------- | ----------------------------------------------------------------- |
+| `data-slot`    | `badge-anchor-badge` on the badge's wrapper, set by this library. |
+
+## Caveats
+
+- Say what the badge counts. Either name the control so the name includes it (`aria-label='Owl post, 3 unread'`) and pass `aria-hidden` to the `Badge`, or put the meaning in text only a screen reader sees inside the badge. A bare `3` beside an avatar says nothing.
+- A status dot is a `Badge` with no children, sized with `style`. Give it a name the same way, or hide it if the color is not the only carrier of the status.
+- The badge does not take presses of its own, and sits above the element only by paint order. A badge that must be pressed belongs in the layout, not in a `BadgeAnchor`.
+- The wrapper is `inline-flex` and `fit-content`: wrapping a block that should fill its row needs a `style` that sets its width.

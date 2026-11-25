@@ -65,6 +65,34 @@ import {
 
 <Canvas of={Stories.AsElement} />
 
+### Stretched link
+
+A card that is one link: put a `Link` in the title and stretch its `::after` over the card, so a press anywhere follows it. The card is `position: relative` and shows the focus ring itself, because the link's own ring would hug only the text. Any other control in the card sits above the cover (`position: relative` and a `zIndex`) so it keeps its own press.
+
+<Canvas of={Stories.StretchedLink} />
+
+```jsx
+const styles = stylex.create({
+  card: {
+    position: 'relative',
+    outline: { default: 'none', ':has(a:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}` }
+  },
+  stretch: { outline: 'none', '::after': { content: '""', inset: 0, position: 'absolute' } },
+  above: { position: 'relative', zIndex: zIndex.raised }
+})
+
+<Card style={styles.card}>
+  <CardHeader>
+    <CardTitle>
+      <Link href='/diagon-alley' color='inherit' variant='plain' style={styles.stretch}>Diagon Alley</Link>
+    </CardTitle>
+  </CardHeader>
+  <CardFooter>
+    <Button style={styles.above}>Save for later</Button>
+  </CardFooter>
+</Card>
+```
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
@@ -87,3 +115,4 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 - `selected` is visual only. Name the choice for assistive technology yourself, with a `role` and `aria-selected` or a control inside the card.
 - `CardTitle` always renders an `h3`; the level cannot be changed through a prop.
 - `CardAction` belongs inside `CardHeader`, which gives it the right-hand grid column.
+- A stretched link makes the whole card one target. Do not nest a second link in it, and keep one link per card: two covers would fight over the same area.

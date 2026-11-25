@@ -3,9 +3,18 @@ import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '../../base/dialog'
 import { Input } from '../../base/input'
 import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { useIsMobile } from '../../hooks/use-media-query'
 import { Label } from '../label'
 import {
   Sheet,
@@ -201,5 +210,59 @@ export const Overlays: Story = {
       await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
+  }
+}
+
+/** One modal for both screens: a Sheet from the bottom edge on a phone, a centered Dialog on a desktop. */
+function ResponsiveModal() {
+  const isMobile = useIsMobile()
+  const title = 'The Pensieve'
+  const description = 'Lift a memory from your mind and examine it.'
+  return isMobile ? (
+    <Sheet>
+      <SheetTrigger render={<Button variant='outline' />}>Open the Pensieve</SheetTrigger>
+      <SheetContent side='bottom'>
+        <SheetHeader>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>{description}</SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Open the Pensieve</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/**
+ * `useIsMobile()` picks the modal, so the page ships one trigger. The test browser is a phone-sized
+ * window, so this play asserts the Sheet there; the Dialog branch is the same code on a wider window.
+ */
+export const ResponsiveModalRecipe: Story = {
+  name: 'Sheet on phones, Dialog on desktop',
+  render: () => <ResponsiveModal />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const phone = window.matchMedia('(max-width: 659px)').matches
+    await userEvent.click(canvas.getByRole('button', { name: 'Open the Pensieve' }))
+    const dialog = await body.findByRole('dialog', { name: 'The Pensieve' })
+    if (phone) {
+      await expectDockedTo(dialog, 'bottom')
+    } else {
+      // A Dialog floats in the middle of the window, flush with no edge.
+      const { top, bottom, left, right } = dialog.getBoundingClientRect()
+      await expect(top).toBeGreaterThan(0)
+      await expect(bottom).toBeLessThan(window.innerHeight)
+      await expect(Math.abs((left + right) / 2 - window.innerWidth / 2)).toBeLessThan(2)
+    }
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
   }
 }

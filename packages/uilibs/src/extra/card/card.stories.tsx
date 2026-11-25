@@ -1,11 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Input } from '../../base/input'
 import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { container } from '../../styles/tokens.stylex'
+import { colors } from '../../styles/colors.stylex'
+import { container, stroke, zIndex } from '../../styles/tokens.stylex'
+import { Link } from '../link'
 import {
   Card,
   CardAction,
@@ -29,7 +31,21 @@ const styles = stylex.create({
   card: {
     maxWidth: '100%',
     width: container.xlarge
-  }
+  },
+  // The link's box is the whole card, so the card, not the link, shows the focus ring.
+  linked: {
+    outline: {
+      default: 'none',
+      ':has(a:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    position: 'relative'
+  },
+  stretch: {
+    outline: 'none',
+    '::after': { content: '""', inset: 0, position: 'absolute' }
+  },
+  // A control inside a stretched card sits above the link's cover, so it still takes its own press.
+  above: { position: 'relative', zIndex: zIndex.raised }
 })
 
 export default meta
@@ -155,5 +171,57 @@ export const AsElement: Story = {
     await expect(article.tagName).toBe('ARTICLE')
     await expect(article).toHaveAttribute('data-selected')
     await expect(getComputedStyle(article).outlineWidth).toBe('1px')
+  }
+}
+
+/** What the browser finds at the centre of an element: the real hit target, cover included. */
+function hit(element: HTMLElement) {
+  const { left, top, width, height } = element.getBoundingClientRect()
+  return document.elementFromPoint(left + width / 2, top + height / 2)
+}
+
+const onSave = fn()
+
+/** The title's link covers the whole card; a control inside keeps its own press by sitting above it. */
+export const StretchedLink: Story = {
+  name: 'Stretched link',
+  render: () => (
+    <Card style={[styles.card, styles.linked]}>
+      <CardHeader>
+        <CardTitle>
+          <Link href='#diagon-alley' color='inherit' variant='plain' style={styles.stretch}>
+            Diagon Alley
+          </Link>
+        </CardTitle>
+        <CardDescription>Wands, cauldrons, and a bank run by goblins.</CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <Button variant='outline' size='small' style={styles.above} onClick={onSave}>
+          Save for later
+        </Button>
+      </CardFooter>
+    </Card>
+  ),
+  play: async ({ canvas }) => {
+    onSave.mockClear()
+    const link = canvas.getByRole('link', { name: 'Diagon Alley' })
+    const button = canvas.getByRole('button', { name: 'Save for later' })
+    const description = canvas.getByText('Wands, cauldrons, and a bank run by goblins.')
+    // `userEvent.click` dispatches on the element it is given and skips hit-testing, so the cover is
+    // proved by what the browser finds at a point: the link under the description, and the button
+    // above the cover.
+    await expect(hit(description)).toBe(link)
+    await expect(hit(button)).toBe(button)
+    await userEvent.click(button)
+    await expect(onSave).toHaveBeenCalledOnce()
+
+    // The link's keyboard focus shows as the card's ring.
+    const card = link.closest('h3')?.parentElement?.parentElement
+    if (!card) throw new Error('No card')
+    link.focus()
+    await userEvent.tab({ shift: true })
+    await userEvent.tab()
+    await waitFor(() => expect(link).toHaveFocus())
+    await waitFor(() => expect(getComputedStyle(card).outlineStyle).toBe('solid'))
   }
 }
