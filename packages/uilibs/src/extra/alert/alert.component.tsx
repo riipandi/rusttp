@@ -23,6 +23,11 @@ export interface AlertProps
    * side edges and square corners: a notice that spans a card or a panel. `0` only drops the edges.
    */
   bleed?: UnitStep
+  /**
+   * Makes the notice a polite live region (`role='status'`): a screen reader announces it when it
+   * appears or changes. Off by default, so a static notice on load stays silent.
+   */
+  announce?: boolean
 }
 
 const InlineContext = React.createContext(false)
@@ -32,15 +37,16 @@ function isAction(child: React.ReactNode) {
 }
 
 /**
- * A notice. It is a polite live region (`role='status'`): a screen reader announces it when it
- * changes, without interrupting. Pass `role='alert'` for an error the user must act on at once, or
- * `role={undefined}` for a notice that is static on load and should not be announced.
+ * A notice. It has no role, so one that is on the page at load is not announced. Set `announce` for
+ * a notice that appears or changes later: it becomes a polite live region (`role='status'`). Pass
+ * `role='alert'` instead for an error the user must act on at once.
  */
 export function Alert({
   color = 'neutral',
   icon: Icon,
   inline = false,
   bleed,
+  announce = false,
   style,
   children,
   ...props
@@ -52,7 +58,7 @@ export function Alert({
   const content = inline ? parts.filter((child) => !isAction(child)) : children
   return (
     <div
-      role='status'
+      role={announce ? 'status' : undefined}
       {...props}
       {...stylex.props(
         s.root,

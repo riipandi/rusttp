@@ -116,19 +116,22 @@ export const Colors: Story = {
 export const Roles: Story = {
   render: () => (
     <div {...stylex.props(styles.stack)}>
-      <Alert style={styles.alert}>
-        <AlertTitle>Polite by default</AlertTitle>
+      <Alert announce style={styles.alert}>
+        <AlertTitle>Polite on request</AlertTitle>
       </Alert>
       <Alert role='alert' color='critical' style={styles.alert}>
         <AlertTitle>Assertive on request</AlertTitle>
       </Alert>
-      <Alert role={undefined} style={styles.alert}>
+      <Alert style={styles.alert}>
         <AlertTitle level={2}>Not announced</AlertTitle>
       </Alert>
     </div>
   ),
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Polite by default')
+    // Only the two opt-ins are live regions: the plain notice has no role.
+    await expect(canvas.getAllByRole('status')).toHaveLength(1)
+    await expect(canvas.getByRole('status')).toHaveTextContent('Polite on request')
+    await expect(canvas.getAllByRole('alert')).toHaveLength(1)
     await expect(canvas.getByRole('alert')).toHaveTextContent('Assertive on request')
     // The title level is configurable.
     await expect(
@@ -144,7 +147,7 @@ export const Layouts: Story = {
       {(layout) => {
         if (layout === 'icon') {
           return (
-            <Alert icon={Info} color='primary' style={styles.alert}>
+            <Alert data-alert icon={Info} color='primary' style={styles.alert}>
               <AlertTitle>Floo powder</AlertTitle>
               <AlertDescription>Say your destination clearly before you step in.</AlertDescription>
             </Alert>
@@ -152,7 +155,7 @@ export const Layouts: Story = {
         }
         if (layout === 'inline') {
           return (
-            <Alert inline style={styles.alert}>
+            <Alert data-alert inline style={styles.alert}>
               <AlertTitle>Owl delivered</AlertTitle>
               <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
               <AlertAction>
@@ -165,7 +168,7 @@ export const Layouts: Story = {
         }
         return (
           <div {...stylex.props(styles.panel)}>
-            <Alert bleed={4} color='warning'>
+            <Alert data-alert bleed={4} color='warning'>
               <AlertTitle>Restricted Section</AlertTitle>
               <AlertDescription>Readers need a signed note from a professor.</AlertDescription>
             </Alert>
@@ -176,7 +179,7 @@ export const Layouts: Story = {
   ),
   play: async ({ canvasElement, canvas }) => {
     const alertOf = (layout: string) => {
-      const el = cellOf(canvasElement, 'layout', layout).querySelector('[role="status"]')
+      const el = cellOf(canvasElement, 'layout', layout).querySelector('[data-alert]')
       if (!(el instanceof HTMLElement)) throw new Error(`No alert for ${layout}`)
       return el
     }

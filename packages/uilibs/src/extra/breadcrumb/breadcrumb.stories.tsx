@@ -67,12 +67,14 @@ export const Playground: Story = {
       </BreadcrumbList>
     </Breadcrumb>
   ),
-  // The current page carries aria-current; ancestors are plain links.
+  // The current page is plain text with aria-current; only the ancestors are links.
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('link', { name: 'Louvre' })).toBeInTheDocument()
-    const current = canvas.getByRole('link', { name: 'Vatican Archives' })
+    await expect(canvas.queryByRole('link', { name: 'Vatican Archives' })).toBeNull()
+    const current = canvas.getByText('Vatican Archives')
     await expect(current).toHaveAttribute('aria-current', 'page')
-    await expect(current).toHaveAttribute('aria-disabled', 'true')
+    await expect(current).not.toHaveAttribute('role')
+    await expect(current).not.toHaveAttribute('aria-disabled')
   }
 }
 

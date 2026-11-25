@@ -17,7 +17,7 @@ Plain `div` and heading elements, not built on Base UI. Props not listed here pa
 
 ## Anatomy
 
-- **Alert:** the root. It is a polite live region (`role='status'`) and draws the optional glyph.
+- **Alert:** the root. It has no role unless `announce` makes it a polite live region (`role='status'`). It draws the optional glyph.
 - **AlertTitle:** the heading, an `h5` unless `level` says otherwise.
 - **AlertDescription:** the body text.
 - **AlertAction:** optional slot for a dismiss or undo control, pinned to the top-right corner. It must be a direct child of `Alert`.
@@ -56,12 +56,13 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### Alert
 
-| Prop     | Description                                                                                                                                                                                           |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `color`  | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role of the notice. Default `neutral`.                                                                                             |
-| `icon`   | glyph component <br /> A glyph before the text, in the role's color. The alert sizes it to 20 and hides it from assistive technology.                                                                 |
-| `inline` | `boolean` <br /> Puts `AlertAction` on the row with the text; it wraps under the text when space is short. Default `false`.                                                                           |
-| `bleed`  | `0`, `0.5`, `1`, `1.5`, `2` to `10`, `12`, `14`, `16`, `18`, `20` <br /> Runs the notice out past its parent's padding by this many `unit` steps, with square corners. `0` only drops the side edges. |
+| Prop       | Description                                                                                                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color`    | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role of the notice. Default `neutral`.                                                                                             |
+| `icon`     | glyph component <br /> A glyph before the text, in the role's color. The alert sizes it to 20 and hides it from assistive technology.                                                                 |
+| `inline`   | `boolean` <br /> Puts `AlertAction` on the row with the text; it wraps under the text when space is short. Default `false`.                                                                           |
+| `announce` | `boolean` <br /> Makes the notice a polite live region (`role='status'`), announced when it appears or changes. Default `false`: a notice that is on the page at load stays silent.                   |
+| `bleed`    | `0`, `0.5`, `1`, `1.5`, `2` to `10`, `12`, `14`, `16`, `18`, `20` <br /> Runs the notice out past its parent's padding by this many `unit` steps, with square corners. `0` only drops the side edges. |
 
 ### AlertTitle
 
@@ -71,6 +72,6 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
-- The default `role='status'` is announced politely when the alert changes. Pass `role='alert'` for an error the user must act on at once, or `role={undefined}` for a notice that is static on load.
+- An alert has no role by default, so a page of static notices adds no live regions. Pass `announce` for a notice that shows up after load, such as a saved or failed message, and `role='alert'` for an error the user must act on at once.
 - `AlertAction` must be a direct child of `Alert`: `inline` moves only the actions it finds among the direct children.
 - `AlertTitle` is a real heading, so set `level` to fit the page's outline.

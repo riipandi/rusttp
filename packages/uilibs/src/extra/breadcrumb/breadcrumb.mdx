@@ -29,7 +29,7 @@ Plain `nav`, `ol`, `li`, `a`, and `span` elements, not built on Base UI. Props n
 - **BreadcrumbList:** the `ol` that holds the items and separators.
 - **BreadcrumbItem:** one `li` in the trail.
 - **BreadcrumbLink:** an ancestor link, an `a`.
-- **BreadcrumbPage:** the current location. It carries `aria-current='page'` and `aria-disabled='true'`.
+- **BreadcrumbPage:** the current location. Plain text with `aria-current='page'`: it is not a link.
 - **BreadcrumbSeparator:** an `li` between two items, not inside one. It shows a chevron unless it has children.
 - **BreadcrumbEllipsis:** optional marker for collapsed levels, with hidden text for assistive technology.
 
@@ -88,6 +88,6 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
-- `BreadcrumbPage` is a `span` with `role='link'` and `aria-disabled='true'`, so it is announced as a disabled link, not as plain text.
+- `BreadcrumbPage` is a plain `span` with `aria-current='page'` and no role, so a screen reader announces the current page as text, not as a disabled link.
 - A `BreadcrumbEllipsis` inside a menu trigger needs its own `aria-label` on the trigger; the Dropdown story sets one.
 - `BreadcrumbSeparator` is an `li` marked `aria-hidden`, so keep it a sibling of the items, not a child of one.

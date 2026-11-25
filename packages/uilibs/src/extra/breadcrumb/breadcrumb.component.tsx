@@ -73,15 +73,7 @@ export function BreadcrumbPage({
   style,
   ...props
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
-  return (
-    <span
-      role='link'
-      aria-disabled='true'
-      aria-current='page'
-      {...props}
-      {...stylex.props(s.page, style)}
-    />
-  )
+  return <span aria-current='page' {...props} {...stylex.props(s.page, style)} />
 }
 
 export function BreadcrumbSeparator({
