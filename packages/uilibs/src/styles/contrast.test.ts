@@ -66,6 +66,7 @@ const dark = {
   ...light,
   ...readTokens(darkSource, 'const darkColors = stylex.createTheme(colors, {')
 }
+const lightRestated = readTokens(darkSource, 'const lightColors = stylex.createTheme(colors, {')
 const themes = { light, dark } as const
 
 function paint(theme: Tokens, name: string, over: Rgb): Rgb {
@@ -185,5 +186,19 @@ describe.each(Object.entries(themes))('%s theme, chart palette', (_name, theme) 
 
   it('has eight distinct colors', () => {
     expect(new Set(names.map((name) => theme[name])).size).toBe(8)
+  })
+})
+
+describe('the restated light theme', () => {
+  // `lightColors` repeats every default of `colors.stylex.ts` for a light subtree inside a dark page.
+  it('repeats every light token with its light value', () => {
+    expect(lightRestated).toEqual(light)
+  })
+
+  it('leaves no token that the dark theme sets and the light theme does not', () => {
+    const darkOnly = Object.keys(
+      readTokens(darkSource, 'const darkColors = stylex.createTheme(colors, {')
+    )
+    expect(darkOnly.filter((name) => !(name in lightRestated))).toEqual([])
   })
 })

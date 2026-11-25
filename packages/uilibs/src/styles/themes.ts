@@ -64,6 +64,81 @@ const darkColors = stylex.createTheme(colors, {
   chart8: 'oklch(0.72 0 89.88)'
 })
 
+/**
+ * The light theme, restated. Light values are the `defineVars` defaults, so a page needs no class for
+ * light; this theme exists for a subtree that must turn light inside a dark page (`ThemeScope`). It
+ * repeats every token of `colors.stylex.ts` because `createTheme` is static; `contrast.test.ts`
+ * fails if the two drift.
+ */
+const lightColors = stylex.createTheme(colors, {
+  black: 'oklch(0 0 0)',
+  white: 'oklch(1 0 0)',
+  onBackgroundCritical: 'oklch(1 0 0)',
+  onBackgroundPositive: 'oklch(1 0 0)',
+  onBackgroundPrimary: 'oklch(1 0 0)',
+  onBackgroundWarning: 'oklch(0 0 0)',
+  backgroundCriticalFaded: 'oklch(0.98 0.02 20.28)',
+  backgroundCriticalHighlightedFaded: 'oklch(0.59 0.205 20.28 / 0.06)',
+  backgroundCriticalHighlighted: 'oklch(0.531 0.205 20.28)',
+  backgroundCritical: 'oklch(0.59 0.205 20.28)',
+  backgroundElevationBase: 'oklch(1 0 89.88)',
+  backgroundElevationOverlay: 'oklch(1 0 89.88)',
+  backgroundNeutralFaded: 'oklch(0 0 89.88 / 0.03)',
+  backgroundNeutralHighlightedFaded: 'oklch(0 0 0 / 0.03)',
+  backgroundNeutralHighlighted: 'oklch(0.9118 0 89.88)',
+  backgroundNeutral: 'oklch(0.94 0 89.88)',
+  backgroundPageFaded: 'oklch(0.98 0 89.88)',
+  backgroundPage: 'oklch(1 0 89.88)',
+  backgroundPositiveFaded: 'oklch(0.98 0.02 151.8)',
+  backgroundPositiveHighlightedFaded: 'oklch(0.55 0.13 151.8 / 0.06)',
+  backgroundPositiveHighlighted: 'oklch(0.495 0.13 151.8)',
+  backgroundPositive: 'oklch(0.55 0.13 151.8)',
+  backgroundPrimaryFaded: 'oklch(0.98 0.01 39.4)',
+  backgroundPrimaryHighlightedFaded: 'oklch(0.55 0.135 39.4 / 0.06)',
+  backgroundPrimaryHighlighted: 'oklch(0.495 0.12 39.4)',
+  backgroundPrimary: 'oklch(0.55 0.135 39.4)',
+  backgroundTrack: 'oklch(0.94 0 89.88)',
+  backgroundWarningFaded: 'oklch(0.98 0.04 80)',
+  backgroundWarningHighlightedFaded: 'oklch(0.82 0.22 80 / 0.06)',
+  backgroundWarningHighlighted: 'oklch(0.738 0.22 80)',
+  backgroundWarning: 'oklch(0.82 0.22 80)',
+  borderCriticalFaded: 'oklch(0.94 0.02 20.28)',
+  borderControl: 'oklch(0.58 0 89.88)',
+  borderCritical: 'oklch(0.55 0.205 20.28)',
+  borderDisabled: 'oklch(0 0 89.88 / 0.06)',
+  borderNeutralFaded: 'oklch(0 0 89.88 / 0.08)',
+  borderNeutral: 'oklch(0 0 89.88 / 0.12)',
+  borderPositiveFaded: 'oklch(0.94 0.02 151.8)',
+  borderPositive: 'oklch(0.51 0.13 151.8)',
+  borderPrimaryFaded: 'oklch(0.94 0.025 39.4)',
+  borderPrimary: 'oklch(0.51 0.125 39.4)',
+  borderWarningFaded: 'oklch(0.94 0.04 80)',
+  borderWarning: 'oklch(0.78 0.22 80)',
+  foregroundCritical: 'oklch(0.52 0.205 20.28)',
+  foregroundDisabled: 'oklch(0.65 0 89.88)',
+  foregroundNeutralFaded: 'oklch(0.51 0 89.88)',
+  foregroundNeutral: 'oklch(0.24 0 89.88)',
+  foregroundPositive: 'oklch(0.5 0.13 151.8)',
+  foregroundPrimary: 'oklch(0.52 0.128 39.4)',
+  foregroundWarning: 'oklch(0.52 0.22 80)',
+  scrim: 'oklch(0 0 0 / 0.5)',
+  chart1: 'oklch(0.52 0.15 255)',
+  chart2: 'oklch(0.58 0.16 45)',
+  chart3: 'oklch(0.55 0.08 195)',
+  chart4: 'oklch(0.52 0.18 350)',
+  chart5: 'oklch(0.62 0.11 92)',
+  chart6: 'oklch(0.50 0.16 305)',
+  chart7: 'oklch(0.55 0.13 150)',
+  chart8: 'oklch(0.50 0 89.88)'
+})
+
+const lightShadows = stylex.createTheme(shadow, {
+  outline: '0px 1px 2px -0.5px rgba(0, 0, 0, 0.06), 0px 2px 3px -1px rgba(0, 0, 0, 0.06)',
+  raised: '0px 8px 12px -4px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.1)',
+  overlay:
+    '0px 16px 24px -4px rgba(0, 0, 0, 0.06), 0px 8px 12px -4px rgba(0, 0, 0, 0.06), 0px 4px 6px -2px rgba(0, 0, 0, 0.06)'
+})
+
 const darkShadows = stylex.createTheme(shadow, {
   outline:
     '0px -1px 2px -0.5px rgba(255, 255, 255, 0.06), 0px -1px 3px -1px rgba(255, 255, 255, 0.05)',
@@ -79,4 +154,9 @@ const darkShadows = stylex.createTheme(shadow, {
  */
 export const darkThemeClass = stylex.props(darkColors, darkShadows).className ?? ''
 
-export { darkColors, darkShadows }
+/**
+ * Compiled class names for the light theme, for a light subtree inside a dark page.
+ */
+export const lightThemeClass = stylex.props(lightColors, lightShadows).className ?? ''
+
+export { darkColors, darkShadows, lightColors, lightShadows }

@@ -138,7 +138,7 @@ export function House({ children }: { children: React.ReactNode }) {
 }
 ```
 
-To force one part of the page to stay dark, apply `darkColors` and `darkShadows` from `uilibs/styles/themes` the same way.
+To force one part of the page to stay dark, apply `darkColors` and `darkShadows` from `uilibs/styles/themes` the same way. To force one part to stay light inside a dark page, apply `lightColors` and `lightShadows`, which restate the light values for that purpose (the page itself needs no class for light). Until the provider sets a theme, the page reads as `color-scheme: light`, so native scrollbars and form widgets match the tokens, not the operating system.
 
 ## Caveats
 

@@ -12,7 +12,7 @@
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
     tab-size: 4;
-    color-scheme: light dark;
+    color-scheme: light;
   }
   :where(body) {
     margin: 0;
@@ -133,8 +133,5 @@
   }
   :where(html[data-theme='dark']) {
     color-scheme: dark;
-  }
-  :where(html:not([data-theme])) {
-    color-scheme: light dark;
   }
 }
