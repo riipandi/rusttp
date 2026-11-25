@@ -114,6 +114,26 @@ export const States: Story = {
   }
 }
 
+/** External errors (from a form library) render through the Field, so the input describes itself with them. */
+export const ExternalErrors: Story = {
+  render: () => (
+    <Field invalid>
+      <FieldLabel>Owl post address</FieldLabel>
+      <Input placeholder='hermione.granger@hogwarts.edu' />
+      <FieldDescription>Owls reply within two days.</FieldDescription>
+      <FieldError errors={[{ message: 'The owl cannot find that address.' }]} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('textbox', { name: 'Owl post address' })
+    const error = canvas.getByRole('alert')
+    await expect(error).toHaveTextContent('The owl cannot find that address.')
+    await expect(error.id).toBeTruthy()
+    await expect(input.getAttribute('aria-describedby')?.split(' ')).toContain(error.id)
+    await expect(input).toHaveAccessibleDescription(/The owl cannot find that address\./)
+  }
+}
+
 export const AutoWiring: Story = {
   name: 'auto wiring',
   render: () => (

@@ -133,10 +133,12 @@ export function FieldError({ children, errors, style, ...props }: FieldErrorProp
 
   if (errors) {
     if (!external) return null
+    // `match` forces the Base UI error to render, so it registers its id with the surrounding
+    // Field and the control's `aria-describedby` points at the message.
     return (
-      <div role='alert' {...props} {...stylex.props(s.error, style)}>
+      <BaseField.Error match role='alert' {...props} {...stylex.props(s.error, style)}>
         {external}
-      </div>
+      </BaseField.Error>
     )
   }
 

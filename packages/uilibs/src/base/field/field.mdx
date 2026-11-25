@@ -129,5 +129,5 @@ It carries the same data attributes as `Field`, and adds these.
 ## Caveats
 
 - Once `errors` is set on `FieldError`, even to `[]`, the field's own validation message never shows.
-- With `errors`, the message renders as a `div` with `role='alert'` and none of the Base UI data attributes, and it is shown whenever the array has a message.
+- With `errors`, the message renders through Base UI's error with `match` forced on and `role='alert'`, so it is shown whenever the array has a message and the control's `aria-describedby` includes its id.
 - `FieldTitle` is a `div`, not a label. The wrapping `FieldLabel` is what names the control.
