@@ -341,6 +341,61 @@ export const LoadingSkeleton: Story = {
         </div>
       </DataGrid>
     )
+  },
+  // The table is busy and a live region says so, then says how many rows arrived.
+  play: async ({ canvas }) => {
+    const table = await canvas.findByRole('table', { name: 'Novels' })
+    await expect(table).toHaveAttribute('aria-busy', 'true')
+    await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Loading...'))
+    await userEvent.click(canvas.getByRole('button', { name: 'Disable loading' }))
+    await waitFor(() => expect(table).not.toHaveAttribute('aria-busy'))
+    await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('5 rows loaded'))
+  }
+}
+
+/** Spinner mode says "Loading..." once, not twice: the spinner is hidden and the grid's live region speaks. */
+export const LoadingSpinner: Story = {
+  name: 'Loading spinner',
+  render: () => {
+    const [isLoading, setIsLoading] = useState(true)
+    const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(
+      () => [
+        { accessorKey: 'title', id: 'title', header: 'Title', size: 260 },
+        { accessorKey: 'author', id: 'author', header: 'Author', size: 200 }
+      ],
+      []
+    )
+    const table = usePagedTable(columns)
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData.length}
+        isLoading={isLoading}
+        loadingMode='spinner'
+      >
+        <div {...stylex.props(s.stack)}>
+          <Button size='small' variant='outline' onClick={() => setIsLoading((old) => !old)}>
+            {isLoading ? 'Disable loading' : 'Enable loading'}
+          </Button>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTable aria-label='Novels' table={table} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const table = await canvas.findByRole('table', { name: 'Novels' })
+    await expect(table).toHaveAttribute('aria-busy', 'true')
+    // One status, the grid's: the spinner inside the loading row is hidden from assistive technology.
+    await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Loading...'))
+    await expect(canvas.getAllByRole('status')).toHaveLength(1)
+    await userEvent.click(canvas.getByRole('button', { name: 'Disable loading' }))
+    await waitFor(() => expect(table).not.toHaveAttribute('aria-busy'))
+    await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('5 rows loaded'))
   }
 }
 

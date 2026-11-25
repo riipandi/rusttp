@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:06:54+07:00
+updated_at: 2026-11-26T00:09:48+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 4, fixed: 10, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 3, fixed: 11, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -59,7 +59,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | open |
 | F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | fixed |
 | F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | fixed |
-| F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | open |
+| F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | fixed |
 | F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | fixed |
 | F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | fixed |
 | F-08 | low | a11y | `data-grid-table-pager.tsx:204` | The pager is a `div`, not a named navigation | verified | open |
@@ -109,7 +109,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Evidence**: in `data-grid-states--loading-skeleton` the probe found no `role='status'`, no `aria-live`, and no `aria-busy` on the table or its container. The spinner mode was not probed; `Spinner` draws `role='status'` unless it is decorative (`spinner.component.tsx:57-58`), so it may announce there.
 - **Impact**: a screen reader user is not told the data is loading, or that it has loaded (WCAG 4.1.3).
 - **Smallest fix**: `aria-busy` on the table while `isLoading`, and a visually hidden live region with `labels.loading`.
-- **Confidence**: high for skeleton. **Status**: open.
+- **Confidence**: high for skeleton. **Status**: fixed. **Resolution**: `aria-busy` on the table while loading plus a polite live region saying `labels.loading` and then `labels.loaded(count)`; in spinner mode the audit's open question is answered: the spinner was a second `role='status'` (it would have spoken twice), so it is hidden; plays cover both modes.
 
 ### F-06 A header button is disabled, not focusable, while loading
 

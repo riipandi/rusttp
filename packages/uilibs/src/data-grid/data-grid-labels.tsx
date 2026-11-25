@@ -40,6 +40,8 @@ export interface DataGridLabels extends DragLabels {
   reorderingUnavailable: string
   /* Grid states. */
   loading: string
+  /** Announced when loading ends; `count` is the rows now on the page. */
+  loaded: (count: number) => string
   empty: string
   allRowsLoaded: string
   /* Pagination. */
@@ -78,6 +80,7 @@ const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   rowNumber: (position) => `Row ${position}`,
   reorderingUnavailable: 'Reordering unavailable',
   loading: 'Loading...',
+  loaded: (count) => (count === 1 ? '1 row loaded' : `${count} rows loaded`),
   empty: 'No data available',
   allRowsLoaded: 'All records loaded',
   rowsPerPage: 'Rows per page',

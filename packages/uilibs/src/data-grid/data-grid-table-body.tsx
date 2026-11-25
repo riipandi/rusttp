@@ -763,7 +763,8 @@ function DataGridTableLoader() {
   return (
     <div {...stylex.props(s.loaderWrap)}>
       <div {...stylex.props(s.loaderCard)}>
-        <Spinner style={s.loaderSpinner} />
+        {/* The grid's live region announces loading once; the spinner would say it twice. */}
+        <Spinner aria-hidden='true' style={s.loaderSpinner} />
         {props.loadingMessage || labels.loading}
       </div>
     </div>
@@ -1022,7 +1023,7 @@ function DataGridTableBodyRows<TData extends object>({
           {...stylex.props(s.loadingCell)}
         >
           <div {...stylex.props(s.loadingInner)}>
-            <Spinner style={s.loaderSpinner} />
+            <Spinner aria-hidden='true' style={s.loaderSpinner} />
             <span {...stylex.props(s.loadingText)}>{props.loadingMessage || labels.loading}</span>
           </div>
         </td>

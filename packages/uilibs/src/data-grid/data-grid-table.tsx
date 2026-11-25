@@ -105,7 +105,7 @@ function DataGridTableBase<TData extends object>({
   children: ReactNode
   table: DataGridTableInstance<TData>
 } & DataGridTableName) {
-  const { props, recordCount } = useDataGrid()
+  const { isLoading, props, recordCount } = useDataGrid()
   const leftVisibleColumns = table.getStartVisibleLeafColumns()
   const centerVisibleColumns = table.getCenterVisibleLeafColumns()
   const rightVisibleColumns = table.getEndVisibleLeafColumns()
@@ -153,6 +153,7 @@ function DataGridTableBase<TData extends object>({
       data-slot='data-grid-table'
       aria-label={name['aria-label']}
       aria-labelledby={name['aria-labelledby']}
+      aria-busy={isLoading || undefined}
       role={cellSelectionOn ? 'grid' : undefined}
       aria-multiselectable={
         cellSelectionOn && props.tableLayout?.cellSelectionMode !== 'single' ? true : undefined
