@@ -54,6 +54,8 @@ Built on Base UI [Popover](https://base-ui.com/react/components/popover). Props 
 
 ### Elevations
 
+`elevation` names the `shadow` token the popup draws: `outline`, `raised` (the default), or `overlay`.
+
 <Canvas of={Stories.Elevations} />
 
 ### Padding
@@ -82,7 +84,7 @@ The positioner props go to the positioner.
 
 | Prop                 | Description                                                                                                                                                                  |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `elevation`          | `overlay`, `raised` <br /> Depth of the shadow. `raised` is the lighter one. Default `overlay`.                                                                              |
+| `elevation`          | `outline`, `raised`, `overlay` <br /> The `shadow` token the popup draws, from the lightest to the deepest. Default `raised`.                                                |
 | `padding`            | `0`, `0.5`, `1`, `1.5`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `12`, `14`, `16`, `18`, `20` <br /> Space inside the popup, in `unit` steps. `4` is 16px. Default `4`. |
 | `borderRadius`       | `medium`, `large` <br /> Corner radius. Default `medium`.                                                                                                                    |
 | `side`               | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` <br /> Which side of the trigger the popup opens on. Default `bottom`.                                        |

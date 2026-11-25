@@ -42,8 +42,8 @@ export interface PopoverContentProps
       React.ComponentProps<typeof BasePopover.Positioner>,
       'align' | 'alignOffset' | 'collisionAvoidance' | 'collisionPadding' | 'side' | 'sideOffset'
     > {
-  /** Depth of the shadow: `overlay` (default) or the lighter `raised`. */
-  elevation?: 'overlay' | 'raised'
+  /** The `shadow` token the popup draws: `outline`, `raised` (default), or the deepest `overlay`. */
+  elevation?: 'outline' | 'raised' | 'overlay'
   /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
   padding?: UnitStep
   /** Corner radius: `medium` (default) or `large`. */
@@ -52,7 +52,7 @@ export interface PopoverContentProps
 }
 
 export function PopoverContent({
-  elevation = 'overlay',
+  elevation = 'raised',
   padding = 4,
   borderRadius = 'medium',
   style,
@@ -84,7 +84,7 @@ export function PopoverContent({
             s.popup,
             popoverPadding[padding],
             popoverRadii[borderRadius],
-            ring({ shadow: elevation === 'raised' ? shadow.outline : shadow.raised }),
+            ring({ shadow: shadow[elevation] }),
             style
           )}
         />

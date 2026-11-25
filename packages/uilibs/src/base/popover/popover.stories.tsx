@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { shadow } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Field, FieldLabel } from '../field'
@@ -27,7 +28,6 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  pair: { display: 'flex', gap: 160, paddingTop: 64 },
   // A row tall enough for the open popup to the right of its trigger, so open popups do not overlap.
   slot: { minHeight: 96 },
   form: {
@@ -62,14 +62,14 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   argTypes: {
     side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
     align: { control: 'radio', options: ['start', 'center', 'end'] },
-    elevation: { control: 'radio', options: ['overlay', 'raised'] },
+    elevation: { control: 'radio', options: ['outline', 'raised', 'overlay'] },
     padding: { control: 'select', options: Object.keys(popoverPadding).map(Number) },
     borderRadius: { control: 'radio', options: Object.keys(popoverRadii) }
   },
   args: {
     side: 'bottom',
     align: 'center',
-    elevation: 'overlay',
+    elevation: 'raised',
     padding: 4,
     borderRadius: 'medium'
   },
@@ -177,25 +177,53 @@ export const Form: Story = {
   )
 }
 
-/** The two shadow depths, side by side; both stay open so the a11y gate sees them. */
+const elevations = ['outline', 'raised', 'overlay'] as const
+
+// Each probe is a plain box carrying one `shadow` token, so the play compares the popup with the token itself.
+const probes = stylex.create({
+  outline: { boxShadow: shadow.outline },
+  raised: { boxShadow: shadow.raised },
+  overlay: { boxShadow: shadow.overlay }
+})
+
+/** `elevation` names the `shadow` token the popup draws. All three stay open so the a11y gate sees them. */
 export const Elevations: Story = {
   render: () => (
-    <div {...stylex.props(styles.pair)}>
-      {(['overlay', 'raised'] as const).map((elevation) => (
-        <Popover key={elevation} defaultOpen>
-          <PopoverTrigger render={<Button variant='outline' />}>{elevation}</PopoverTrigger>
-          <PopoverContent elevation={elevation} side='bottom' aria-label={`${elevation} notice`}>
-            {`Elevation ${elevation}`}
-          </PopoverContent>
-        </Popover>
+    <div>
+      {elevations.map((elevation) => (
+        <div key={elevation} {...stylex.props(styles.slot)}>
+          <div
+            data-testid={`probe-${elevation}`}
+            aria-hidden
+            {...stylex.props(probes[elevation])}
+          />
+          <Popover defaultOpen>
+            <PopoverTrigger render={<Button variant='outline' />}>{elevation}</PopoverTrigger>
+            <PopoverContent
+              elevation={elevation}
+              side='right'
+              align='start'
+              aria-label={`${elevation} notice`}
+            >
+              {`Elevation ${elevation}`}
+            </PopoverContent>
+          </Popover>
+        </div>
       ))}
     </div>
   ),
-  play: async () => {
+  play: async ({ canvasElement }) => {
     const body = within(document.body)
-    const shadow = async (elevation: string) =>
-      getComputedStyle(await body.findByText(`Elevation ${elevation}`)).boxShadow
-    await expect(await shadow('raised')).not.toBe(await shadow('overlay'))
+    const canvas = within(canvasElement)
+    const seen = new Set<string>()
+    for (const elevation of elevations) {
+      const token = getComputedStyle(await canvas.findByTestId(`probe-${elevation}`)).boxShadow
+      const drawn = getComputedStyle(await body.findByText(`Elevation ${elevation}`)).boxShadow
+      // The popup layers its edge ring first and the token after it.
+      await expect(drawn.endsWith(token)).toBe(true)
+      seen.add(token)
+    }
+    await expect(seen.size).toBe(3)
   }
 }
 
