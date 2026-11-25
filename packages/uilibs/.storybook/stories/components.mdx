@@ -27,6 +27,14 @@ The catalog of `packages/uilibs/src`. Check it before you write a component, and
 - **Select, Combobox, Autocomplete, or Command.** Select picks one value from a short list. Combobox searches a list, and `ComboboxChips` takes several values. Autocomplete suggests free text that may match nothing. Command is a palette of actions.
 - **Tooltip, Popover, or Preview Card.** Tooltip names a control and holds no interactive content. Popover holds interactive content. Preview Card previews a link on hover.
 - **Item or Table.** Item is a one-column row. A record with several columns is a Table.
+- **Link or Button with `render`.** A link inside a sentence, a footer, or a form is a Link. A link that looks like a button is a Button with `render={<a />}`; both take a router link through `render`.
+- **Progress, Meter, or Progress Indicator.** Progress is how far one task has got. Meter is a value in a known range. Progress Indicator is the position in a sequence of steps or slides.
+- **Image or Avatar.** Image is a content picture with a ratio and a fallback box. Avatar is a person, with initials as its fallback.
+- **Badge `dismiss` or Badge Anchor.** The dismiss button of a Badge removes the badge. Badge Anchor pins a badge to the corner of another element, such as an avatar or an icon button.
+- **Theme Scope or the page theme.** The page theme comes from `ThemeProvider` and `ThemeSwitcher`. Theme Scope makes one subtree dark, light, or the opposite of the page, and its popups follow it.
+- **Stack or raw flex.** Layout between elements (a row of actions, a form column, a page section) is a Stack. A flex rule that styles one control's own parts stays in that component's stylesheet.
+- **Container, Stack, or Hidden.** Container is a centered column with a maximum width. Stack spaces its children. Hidden shows or hides markup per breakpoint, and `useResponsiveValue` picks a value that is not markup.
+- **Hidden or `useResponsiveValue`.** Hidden uses CSS media queries and its children still mount. `useResponsiveValue` returns the value for the current viewport so a component can skip rendering.
 
 ## Base
 
@@ -38,7 +46,7 @@ Styled wrappers over Base UI parts. Import from `uilibs/base/<folder>`. `UIProvi
 | [Alert Dialog](?path=/docs/base-components-alertdialog--docs)       | A dialog the user must answer, for destructive or high-risk actions.                               |
 | [Autocomplete](?path=/docs/base-components-autocomplete--docs)      | An input that suggests options as you type; free text is allowed.                                  |
 | [Avatar](?path=/docs/base-components-avatar--docs)                  | An image with a fallback; `squared`, `variant`, `color`.                                           |
-| [Button](?path=/docs/base-components-button--docs)                  | `variant` is the fill, `color` is the role. Also `LinkButton` for navigation.                      |
+| [Button](?path=/docs/base-components-button--docs)                  | `variant` is the fill, `color` is the role. `render={<a />}` makes it a link.                      |
 | [Checkbox](?path=/docs/base-components-checkbox--docs)              | A checkbox and a checkbox group.                                                                   |
 | [Collapsible](?path=/docs/base-components-collapsible--docs)        | One expandable panel.                                                                              |
 | [Combobox](?path=/docs/base-components-combobox--docs)              | A searchable select; `ComboboxChips` takes several values.                                         |
@@ -74,37 +82,47 @@ Styled wrappers over Base UI parts. Import from `uilibs/base/<folder>`. `UIProvi
 
 Compositions, and components Base UI does not provide. Import from `uilibs/extra/<folder>`.
 
-| Component                                                              | What it is                                                   |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [Alert](?path=/docs/extra-components-alert--docs)                      | A notice with a title, a description, and an action.         |
-| [Aspect Ratio](?path=/docs/extra-components-aspectratio--docs)         | A container with a fixed ratio.                              |
-| [Badge](?path=/docs/extra-components-badge--docs)                      | A compact status label; can show icons and a dismiss button. |
-| [Breadcrumb](?path=/docs/extra-components-breadcrumb--docs)            | The path to the current page.                                |
-| [Button Group](?path=/docs/extra-components-buttongroup--docs)         | Fuses buttons into one segmented control.                    |
-| [Calendar](?path=/docs/extra-components-calendar--docs)                | A date picker on `react-day-picker`.                         |
-| [Card](?path=/docs/extra-components-card--docs)                        | A surface with header, content, and footer.                  |
-| [Command](?path=/docs/extra-components-command--docs)                  | A command palette, rendered inline or in a dialog.           |
-| [Description List](?path=/docs/extra-components-descriptionlist--docs) | Key-value rows.                                              |
-| [Empty](?path=/docs/extra-components-empty--docs)                      | The state of a view with nothing to show.                    |
-| [File Upload](?path=/docs/extra-components-fileupload--docs)           | A drag-and-drop area that works as a Field control.          |
-| [Icon](?path=/docs/extra-components-icon--docs)                        | Sizes and colors any SVG icon.                               |
-| [Input Group](?path=/docs/extra-components-inputgroup--docs)           | An input with addons, buttons, and text.                     |
-| [Input Password](?path=/docs/extra-components-inputpassword--docs)     | A password input with a show/hide button.                    |
-| [Input Phone](?path=/docs/extra-components-inputphone--docs)           | An international phone input with a country selector.        |
-| [Item](?path=/docs/extra-components-item--docs)                        | A one-column row with media, text, and actions.              |
-| [Kanban](?path=/docs/extra-components-kanban--docs)                    | A board with draggable columns and items, on dnd-kit.        |
-| [Kbd](?path=/docs/extra-components-kbd--docs)                          | A keyboard shortcut label. It registers no shortcut.         |
-| [Label](?path=/docs/extra-components-label--docs)                      | A label for use outside a `Field`.                           |
-| [Loader Text](?path=/docs/extra-components-loadertext--docs)           | Animated text that shows work in progress.                   |
-| [Pagination](?path=/docs/extra-components-pagination--docs)            | Page links.                                                  |
-| [Resizable](?path=/docs/extra-components-resizable--docs)              | Panel groups the user can resize.                            |
-| [Sheet](?path=/docs/extra-components-sheet--docs)                      | A dialog that slides in from an edge.                        |
-| [Skeleton](?path=/docs/extra-components-skeleton--docs)                | A pulsing placeholder block.                                 |
-| [Sortable](?path=/docs/extra-components-sortable--docs)                | A reorderable list or grid, on dnd-kit.                      |
-| [Spinner](?path=/docs/extra-components-spinner--docs)                  | A busy indicator.                                            |
-| [Table](?path=/docs/extra-components-table--docs)                      | A styled HTML table.                                         |
-| [Text](?path=/docs/extra-components-text--docs)                        | Typography: variants, colors, weights, responsive values.    |
-| [Textarea](?path=/docs/extra-components-textarea--docs)                | A multiline input; `autoResize`.                             |
+| Component                                                                  | What it is                                                                                            |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [Alert](?path=/docs/extra-components-alert--docs)                          | A notice with a title, a description, and an action.                                                  |
+| [Aspect Ratio](?path=/docs/extra-components-aspectratio--docs)             | A container with a fixed ratio.                                                                       |
+| [Badge](?path=/docs/extra-components-badge--docs)                          | A compact status label; can show icons and a dismiss button.                                          |
+| [Badge Anchor](?path=/docs/extra-components-badgeanchor--docs)             | Pins a badge to a corner of an avatar or an icon button.                                              |
+| [Breadcrumb](?path=/docs/extra-components-breadcrumb--docs)                | The path to the current page.                                                                         |
+| [Button Group](?path=/docs/extra-components-buttongroup--docs)             | Fuses buttons into one segmented control.                                                             |
+| [Calendar](?path=/docs/extra-components-calendar--docs)                    | A date picker on `react-day-picker`.                                                                  |
+| [Card](?path=/docs/extra-components-card--docs)                            | A surface with header, content, and footer.                                                           |
+| [Carousel](?path=/docs/extra-components-carousel--docs)                    | A strip of slides that scrolls and snaps, with Previous and Next buttons.                             |
+| [Command](?path=/docs/extra-components-command--docs)                      | A command palette, rendered inline or in a dialog.                                                    |
+| [Container](?path=/docs/extra-components-container--docs)                  | A centered block with a maximum width, for a page, a form, or text.                                   |
+| [Description List](?path=/docs/extra-components-descriptionlist--docs)     | Key-value rows.                                                                                       |
+| [Empty](?path=/docs/extra-components-empty--docs)                          | The state of a view with nothing to show.                                                             |
+| [File Upload](?path=/docs/extra-components-fileupload--docs)               | A drag-and-drop area that works as a Field control.                                                   |
+| [Hidden](?path=/docs/extra-components-hidden--docs)                        | Shows or hides its children per breakpoint.                                                           |
+| [Icon](?path=/docs/extra-components-icon--docs)                            | Sizes and colors any SVG icon.                                                                        |
+| [Image](?path=/docs/extra-components-image--docs)                          | A picture with an aspect ratio and a fallback when it fails to load.                                  |
+| [Input Group](?path=/docs/extra-components-inputgroup--docs)               | An input with addons, buttons, and text.                                                              |
+| [Input Password](?path=/docs/extra-components-inputpassword--docs)         | A password input with a show/hide button.                                                             |
+| [Input Phone](?path=/docs/extra-components-inputphone--docs)               | An international phone input with a country selector.                                                 |
+| [Item](?path=/docs/extra-components-item--docs)                            | A one-column row with media, text, and actions.                                                       |
+| [Kanban](?path=/docs/extra-components-kanban--docs)                        | A board with draggable columns and items, on dnd-kit.                                                 |
+| [Kbd](?path=/docs/extra-components-kbd--docs)                              | A keyboard shortcut label. It registers no shortcut.                                                  |
+| [Label](?path=/docs/extra-components-label--docs)                          | A label for use outside a `Field`.                                                                    |
+| [Link](?path=/docs/extra-components-link--docs)                            | A text link built on `useRender`; `render` takes a router link.                                       |
+| [Loader Text](?path=/docs/extra-components-loadertext--docs)               | Animated text that shows work in progress.                                                            |
+| [Pagination](?path=/docs/extra-components-pagination--docs)                | Page links.                                                                                           |
+| [Progress Indicator](?path=/docs/extra-components-progressindicator--docs) | A row of dots that shows the position in a sequence.                                                  |
+| [Resizable](?path=/docs/extra-components-resizable--docs)                  | Panel groups the user can resize.                                                                     |
+| [Sheet](?path=/docs/extra-components-sheet--docs)                          | A dialog that slides in from an edge.                                                                 |
+| [Skeleton](?path=/docs/extra-components-skeleton--docs)                    | A pulsing placeholder block.                                                                          |
+| [Sortable](?path=/docs/extra-components-sortable--docs)                    | A reorderable list or grid, on dnd-kit.                                                               |
+| [Spinner](?path=/docs/extra-components-spinner--docs)                      | A busy indicator.                                                                                     |
+| [Stack](?path=/docs/extra-components-stack--docs)                          | A flex row or column with a gap; responsive direction, gap, and alignment.                            |
+| [Table](?path=/docs/extra-components-table--docs)                          | A styled HTML table.                                                                                  |
+| [Text](?path=/docs/extra-components-text--docs)                            | Typography: variants, colors, weights, responsive values.                                             |
+| [Textarea](?path=/docs/extra-components-textarea--docs)                    | A multiline input; `autoResize`.                                                                      |
+| [Theme Scope](?path=/docs/extra-components-themescope--docs)               | Makes a subtree dark, light, or inverted; popups opened inside follow it. Import from `uilibs/theme`. |
+| [Theme Switcher](?path=/story/extra-components-themeswitcher--default)     | A button that cycles light, dark, and system, with an animated icon. Import from `uilibs/theme`.      |
 
 ## Data Grid
 
@@ -121,6 +139,6 @@ Primitives on TanStack Charts: `ChartContainer` (takes `config` and an optional 
 ## Icons, hooks, and assets
 
 - **Icons.** `uilibs/icons` has the brand icons: `FacebookIcon`, `GitHubIcon`, `GoogleIcon`, `InstagramIcon`, `LinkedInIcon`, `TelegramIcon`, `ViteIcon`, `WhatsAppIcon`, `XIcon`. General icons come from `@keyline-icons/react`; wrap them in `Icon` to size and color them.
-- **Hooks.** `uilibs/hooks/use-media-query` exports `useMediaQuery` and `useIsMobile`.
+- **Hooks.** `uilibs/hooks/use-media-query` exports `useMediaQuery` and `useIsMobile`. `uilibs/hooks/use-responsive-value` exports `useResponsiveValue` and the `Responsive<T>` type: one value, or `{ small, medium, large, xlarge }`.
 - **Styles.** `uilibs/styles/*`: `colors.stylex`, `tokens.stylex`, `control.stylex` (`controlSizes`, `controlBase`, `controlPress`), `popup.stylex` (`popupFx`), `utils.stylex` (`ring`, `focusRing`, `visuallyHidden`, `unitLength`), and `themes`.
 - **Assets.** `uilibs/assets/*.css`: `reset.css`, `fontface.css`, `globals.css`.
