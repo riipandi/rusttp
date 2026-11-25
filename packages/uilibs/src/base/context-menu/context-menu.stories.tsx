@@ -106,10 +106,10 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await body.findByRole('menu')
     await expect(body.getByRole('menuitem', { name: /retrace steps/i })).toBeInTheDocument()
 
-    // A highlighted item draws its state. The pointer sets it as the arrows do, and a test of the
-    // arrows is in the DropdownMenu `Keyboard` story.
-    await userEvent.hover(body.getByRole('menuitem', { name: /retrace steps/i }))
-    await expectHighlightedItem(body.getByRole('menuitem', { name: /retrace steps/i }))
+    // A highlighted item draws its state. Hover and the arrows both set it, but WebKit does not
+    // highlight on a simulated hover over a context menu, so the arrow is the portable way in.
+    await userEvent.keyboard('{ArrowDown}')
+    await expectHighlightedItem(await body.findByRole('menuitem', { name: /retrace steps/i }))
 
     // Disabled items render disabled.
     await expect(body.getByRole('menuitem', { name: /follow the dot/i })).toHaveAttribute(
