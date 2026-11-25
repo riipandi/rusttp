@@ -327,3 +327,25 @@ Consequences:
 Alternatives considered:
 
 - A 2px ring like the other text controls — rejected: it is on from the moment the palette opens, so it never marks a change.
+
+### Names, roles, and targets: interactive means one Tab stop, one name, one 24 px target
+
+Context (2026-11-25): `audit-00002` found a chart that took a Tab stop and showed no ring, a scroll wrapper that was always a region, drag handles every item shared one name for, and controls under 24 px.
+
+Decision (owner, `plan-00011-uilibs-audit-remediation` Q31 to Q34, wave 3):
+
+- Q31: a chart is a Tab stop only when it is interactive (it has a `tooltip`) and then draws the focus ring on its host; a static chart takes none.
+- Q32: `ChartContainer` takes `description` (the svg `<desc>`), and the docs page recommends the same rows in a `Table` with a `TableCaption` as the data alternative.
+- Q33: the Kanban board is a `role='region'` named by `labels.board` with no tab stop of its own; Sortable and Kanban handle names are functions of the item or column name (`labels.handle`, `labels.columnHandle`).
+- Q34: the board's padding is kept.
+- A control under 24 px reaches it through an `::after` hit area (`contracts/hit-area.ts`), not a larger box; a scroll wrapper is a focusable region only while it overflows.
+
+Consequences:
+
+- (positive) a keyboard user meets no stop without a ring or a name; the rules are asserted by plays, not only documented.
+- (negative) `labels` shapes changed (no backward compatibility), and a caller that nests a chart in its own focus order must add the `tooltip` or a wrapper.
+
+Alternatives considered:
+
+- Always a Tab stop for charts, with the ring — rejected: a static chart has nothing to operate.
+- Growing the stepper, tab, and dismiss boxes to 24 px — rejected: it changes the look of every dense row.

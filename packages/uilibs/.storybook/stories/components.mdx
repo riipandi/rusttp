@@ -112,7 +112,7 @@ Compositions, and components Base UI does not provide. Import from `uilibs/extra
 
 ## Charts
 
-Primitives on TanStack Charts: `ChartContainer` (takes `config`), `Chart` (takes a `defineChart()` definition, `ariaLabel`, and `height`), `ChartLegend`, and `useChartConfig`. Import from `uilibs/charts`. `charts/stories/` holds one recipe per chart type.
+Primitives on TanStack Charts: `ChartContainer` (takes `config` and an optional `description`), `Chart` (takes a `defineChart()` definition, `ariaLabel`, and `height`), and `ChartLegend`. Import from `uilibs/charts`. [Charts](?path=/docs/visualizations-charts--docs) covers the accessibility rules and the show-as-table recipe; `charts/stories/` holds one recipe per chart type.
 
 - A series key in `config` matches a mark `id`. A mark color is any CSS color, including a theme token.
 - A series that carries meaning needs 3:1 against the page, or a second cue such as a label or legend entry. The `foreground*` tokens pass in both themes. A `background*` fill as a series color does not, so label it.
