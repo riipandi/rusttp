@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect } from 'storybook/test'
+import { expectDisabledLook } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Input } from '../input'
@@ -131,5 +132,33 @@ export const AutoWiring: Story = {
     await expect(document.getElementById(describedBy ?? '')).toHaveTextContent(
       'Owls reply within two days.'
     )
+  }
+}
+
+const looks = (el: HTMLElement) => {
+  const style = getComputedStyle(el)
+  return [style.opacity, style.color, style.borderTopColor, style.backgroundColor]
+}
+
+/**
+ * A disabled control is drawn with the disabled tokens, not with opacity, so a disabled input inside
+ * a disabled Field looks the same as a disabled input alone: opacity stacks, a color does not.
+ */
+export const Disabled: Story = {
+  render: () => (
+    <div {...stylex.props(styles.root)}>
+      <Input aria-label='Alone' disabled placeholder='Alone' />
+      <Field disabled>
+        <FieldLabel>Within a field</FieldLabel>
+        <Input placeholder='Within a field' />
+      </Field>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const alone = canvas.getByRole('textbox', { name: 'Alone' })
+    const within = canvas.getByRole('textbox', { name: 'Within a field' })
+    await expectDisabledLook(alone)
+    await expectDisabledLook(within)
+    await expect(looks(within)).toEqual(looks(alone))
   }
 }

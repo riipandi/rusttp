@@ -75,8 +75,8 @@ export const fileUploadStyles = stylex.create({
   disabled: {
     backgroundColor: 'transparent',
     borderColor: colors.borderDisabled,
-    cursor: 'not-allowed',
-    opacity: 0.5
+    color: colors.foregroundDisabled,
+    cursor: 'not-allowed'
   },
   trigger: {
     display: 'contents'

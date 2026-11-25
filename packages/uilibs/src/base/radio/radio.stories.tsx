@@ -43,7 +43,7 @@ const styles = stylex.create({
     gap: 8
   },
   disabled: {
-    opacity: 0.5
+    color: colors.foregroundDisabled
   },
   groupGap4: {
     gap: 16

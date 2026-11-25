@@ -96,7 +96,7 @@ export const selectStyles = stylex.create({
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'grid',
@@ -104,7 +104,6 @@ export const selectStyles = stylex.create({
     gap: unit.x2,
     gridTemplateColumns: `1fr ${unit.x4}`,
     marginInline: unit.x1,
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     outline: 'none',
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,

@@ -32,8 +32,6 @@ export const inputPhoneStyles = stylex.create({
     lineHeight: 'inherit',
     margin: 0,
     minWidth: 0,
-    // The container dims as a whole when the field is disabled.
-    opacity: 1,
     outline: 'none',
     outlineOffset: 0,
     paddingBlock: 0,
@@ -64,7 +62,6 @@ export const inputPhoneStyles = stylex.create({
     lineHeight: 'inherit',
     margin: 0,
     minWidth: 0,
-    opacity: 1,
     outline: 'none',
     outlineOffset: 0,
     paddingBlock: 0,
@@ -140,7 +137,6 @@ export const inputPhoneStyles = stylex.create({
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
     height: unit.x8,
-    opacity: 1,
     outline: {
       default: 'none',
       ':focus': 'none',

@@ -10,10 +10,6 @@ export const calendarConsts = stylex.defineConsts({
 export const calendarStyles = stylex.create({
   buttonNav: {
     height: calendarConsts.cellSize,
-    opacity: {
-      ':disabled': 0.5,
-      default: 1
-    },
     padding: 0,
     userSelect: 'none',
     width: calendarConsts.cellSize
@@ -135,8 +131,7 @@ export const calendarStyles = stylex.create({
     }
   },
   disabled: {
-    color: colors.foregroundNeutralFaded,
-    opacity: 0.5
+    color: colors.foregroundDisabled
   },
   dropdownContent: {
     width: 'max-content'

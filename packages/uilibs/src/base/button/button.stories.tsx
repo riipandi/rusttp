@@ -7,7 +7,8 @@ import {
   denseControlHeights,
   denseControlSizeNames,
   expectBoxSizes,
-  expectControlHeights
+  expectControlHeights,
+  expectDisabledLook
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -237,9 +238,11 @@ export const States: Story = {
 
     const petrified = canvas.getByRole('button', { name: 'Petrified' })
     await expect(petrified).toBeDisabled()
-    // A disabled look is half opacity and a not-allowed cursor.
-    await expect(getComputedStyle(petrified).opacity).toBe('0.5')
-    await expect(getComputedStyle(petrified).cursor).toBe('not-allowed')
+    // A disabled look is the disabled tokens (not opacity, which stacks) and a not-allowed cursor.
+    await expectDisabledLook(petrified)
+    await expect(getComputedStyle(petrified).color).not.toBe(
+      getComputedStyle(canvas.getByRole('button', { name: 'Open the cryptex' })).color
+    )
 
     // Loading is busy, not disabled: it keeps its name, stays focusable, and ignores presses.
     const apparating = canvas.getByRole('button', { name: 'Apparating…' })

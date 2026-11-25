@@ -109,6 +109,7 @@ export function Button({
       disabled={disabled || loading}
       focusableWhenDisabled={loading || props.focusableWhenDisabled}
       aria-busy={loading || undefined}
+      data-loading={loading ? '' : undefined}
       {...stylex.props(
         controlPress.root,
         buttonStyles.root,

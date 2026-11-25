@@ -146,7 +146,7 @@ export const commandStyles = stylex.create({
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -155,7 +155,6 @@ export const commandStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     minHeight: unit.x8,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1,
     paddingInline: unit.x3,
     position: 'relative',

@@ -86,7 +86,6 @@ export const comboboxStyles = stylex.create({
     fontSize: fontSize.caption1,
     gap: unit.x1,
     lineHeight: fontLineHeight.caption1,
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1,
     paddingLeft: unit.x2,
     paddingRight: unit.x1
@@ -157,7 +156,7 @@ export const comboboxStyles = stylex.create({
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -166,7 +165,6 @@ export const comboboxStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     marginInline: unit.x1,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1_5,
     paddingLeft: unit.x2,
     paddingRight: unit.x8,

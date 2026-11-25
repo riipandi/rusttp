@@ -24,8 +24,7 @@ export const buttonStyles = stylex.create({
   // Loading: the label stays (it names the button and holds the width) but is
   // hidden under a centered spinner, and the button reads as busy, not disabled.
   loading: {
-    cursor: 'progress',
-    opacity: 1
+    cursor: 'progress'
   },
   content: {
     alignItems: 'center',
@@ -52,6 +51,14 @@ export const buttonStyles = stylex.create({
 // has every color, so `buttonFills[fill][color]` is one style. Reshaped names the same two axes
 // `variant` and `color`.
 const hover = ':hover:not(:disabled)'
+
+// A disabled button reads from the disabled tokens, never from `opacity` (which stacks). A loading
+// button is also `data-disabled` (it blocks presses) but reads as busy, so it carries `data-loading`
+// and is left out. Each fill names its own disabled values: a later style replaces a property
+// wholesale, so a shared "disabled" recipe composed after the fill could not keep the fill's rest
+// and hover values.
+const off = (value: string) =>
+  ({ ':disabled': value, '[data-disabled]:not([data-loading])': value }) as const
 
 // `media` is for a photo or a dark surface, so it reads the constant white and black rather than a
 // themed color: it looks the same in both themes. `inherit` takes whatever text color the parent
@@ -96,146 +103,186 @@ const tintHover = {
 
 export const buttonSolid = stylex.create({
   primary: {
-    backgroundColor: { default: colors.backgroundPrimary, [hover]: solidHover.primary },
-    color: colors.onBackgroundPrimary
+    backgroundColor: {
+      default: colors.backgroundPrimary,
+      [hover]: solidHover.primary,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.onBackgroundPrimary, ...off(colors.foregroundDisabled) }
   },
   neutral: {
-    backgroundColor: { default: colors.foregroundNeutral, [hover]: solidHover.neutral },
-    color: colors.backgroundPage
+    backgroundColor: {
+      default: colors.foregroundNeutral,
+      [hover]: solidHover.neutral,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.backgroundPage, ...off(colors.foregroundDisabled) }
   },
   critical: {
-    backgroundColor: { default: colors.backgroundCritical, [hover]: solidHover.critical },
-    color: colors.onBackgroundCritical
+    backgroundColor: {
+      default: colors.backgroundCritical,
+      [hover]: solidHover.critical,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.onBackgroundCritical, ...off(colors.foregroundDisabled) }
   },
   positive: {
-    backgroundColor: { default: colors.backgroundPositive, [hover]: solidHover.positive },
-    color: colors.onBackgroundPositive
+    backgroundColor: {
+      default: colors.backgroundPositive,
+      [hover]: solidHover.positive,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.onBackgroundPositive, ...off(colors.foregroundDisabled) }
   },
   warning: {
-    backgroundColor: { default: colors.backgroundWarning, [hover]: solidHover.warning },
-    color: colors.onBackgroundWarning
+    backgroundColor: {
+      default: colors.backgroundWarning,
+      [hover]: solidHover.warning,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.onBackgroundWarning, ...off(colors.foregroundDisabled) }
   },
   media: {
-    backgroundColor: { default: colors.white, [hover]: solidHover.media },
-    color: colors.black
+    backgroundColor: { default: colors.white, [hover]: solidHover.media, ...off(white(10)) },
+    color: { default: colors.black, ...off(white(40)) }
   },
   inherit: {
-    backgroundColor: { default: current(16), [hover]: solidHover.inherit },
-    color: 'inherit'
+    backgroundColor: { default: current(16), [hover]: solidHover.inherit, ...off(current(8)) },
+    color: { default: 'inherit', ...off(current(40)) }
   }
 })
 
 export const buttonFaded = stylex.create({
   primary: {
-    backgroundColor: { default: colors.backgroundPrimaryFaded, [hover]: fadedHover.primary },
-    color: colors.foregroundPrimary
+    backgroundColor: {
+      default: colors.backgroundPrimaryFaded,
+      [hover]: fadedHover.primary,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.foregroundPrimary, ...off(colors.foregroundDisabled) }
   },
   neutral: {
-    backgroundColor: { default: colors.backgroundNeutral, [hover]: fadedHover.neutral },
-    color: colors.foregroundNeutral
+    backgroundColor: {
+      default: colors.backgroundNeutral,
+      [hover]: fadedHover.neutral,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.foregroundNeutral, ...off(colors.foregroundDisabled) }
   },
   critical: {
-    backgroundColor: { default: colors.backgroundCriticalFaded, [hover]: fadedHover.critical },
-    color: colors.foregroundCritical
+    backgroundColor: {
+      default: colors.backgroundCriticalFaded,
+      [hover]: fadedHover.critical,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.foregroundCritical, ...off(colors.foregroundDisabled) }
   },
   positive: {
-    backgroundColor: { default: colors.backgroundPositiveFaded, [hover]: fadedHover.positive },
-    color: colors.foregroundPositive
+    backgroundColor: {
+      default: colors.backgroundPositiveFaded,
+      [hover]: fadedHover.positive,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.foregroundPositive, ...off(colors.foregroundDisabled) }
   },
   warning: {
-    backgroundColor: { default: colors.backgroundWarningFaded, [hover]: fadedHover.warning },
-    color: colors.foregroundWarning
+    backgroundColor: {
+      default: colors.backgroundWarningFaded,
+      [hover]: fadedHover.warning,
+      ...off(colors.backgroundNeutral)
+    },
+    color: { default: colors.foregroundWarning, ...off(colors.foregroundDisabled) }
   },
   media: {
-    backgroundColor: { default: white(20), [hover]: fadedHover.media },
-    color: colors.white
+    backgroundColor: { default: white(20), [hover]: fadedHover.media, ...off(white(10)) },
+    color: { default: colors.white, ...off(white(40)) }
   },
   inherit: {
-    backgroundColor: { default: current(10), [hover]: fadedHover.inherit },
-    color: 'inherit'
+    backgroundColor: { default: current(10), [hover]: fadedHover.inherit, ...off(current(8)) },
+    color: { default: 'inherit', ...off(current(40)) }
   }
 })
 
 export const buttonOutline = stylex.create({
   primary: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.primary },
-    borderColor: colors.borderPrimary,
+    borderColor: { default: colors.borderPrimary, ...off(colors.borderDisabled) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundPrimary
+    color: { default: colors.foregroundPrimary, ...off(colors.foregroundDisabled) }
   },
   neutral: {
     backgroundColor: { default: colors.backgroundPage, [hover]: tintHover.neutral },
-    borderColor: colors.borderNeutralFaded,
+    borderColor: { default: colors.borderNeutralFaded, ...off(colors.borderDisabled) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral
+    color: { default: colors.foregroundNeutral, ...off(colors.foregroundDisabled) }
   },
   critical: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.critical },
-    borderColor: colors.borderCritical,
+    borderColor: { default: colors.borderCritical, ...off(colors.borderDisabled) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundCritical
+    color: { default: colors.foregroundCritical, ...off(colors.foregroundDisabled) }
   },
   positive: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.positive },
-    borderColor: colors.borderPositive,
+    borderColor: { default: colors.borderPositive, ...off(colors.borderDisabled) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundPositive
+    color: { default: colors.foregroundPositive, ...off(colors.foregroundDisabled) }
   },
   warning: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.warning },
-    borderColor: colors.borderWarning,
+    borderColor: { default: colors.borderWarning, ...off(colors.borderDisabled) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundWarning
+    color: { default: colors.foregroundWarning, ...off(colors.foregroundDisabled) }
   },
   media: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.media },
-    borderColor: colors.white,
+    borderColor: { default: colors.white, ...off(white(20)) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.white
+    color: { default: colors.white, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.inherit },
-    borderColor: 'currentColor',
+    borderColor: { default: 'currentColor', ...off(current(20)) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: 'inherit'
+    color: { default: 'inherit', ...off(current(40)) }
   }
 })
 
 export const buttonGhost = stylex.create({
   primary: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.primary },
-    color: colors.foregroundPrimary
+    color: { default: colors.foregroundPrimary, ...off(colors.foregroundDisabled) }
   },
   neutral: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.neutral },
-    color: colors.foregroundNeutral
+    color: { default: colors.foregroundNeutral, ...off(colors.foregroundDisabled) }
   },
   critical: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.critical },
-    color: colors.foregroundCritical
+    color: { default: colors.foregroundCritical, ...off(colors.foregroundDisabled) }
   },
   positive: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.positive },
-    color: colors.foregroundPositive
+    color: { default: colors.foregroundPositive, ...off(colors.foregroundDisabled) }
   },
   warning: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.warning },
-    color: colors.foregroundWarning
+    color: { default: colors.foregroundWarning, ...off(colors.foregroundDisabled) }
   },
   media: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.media },
-    color: colors.white
+    color: { default: colors.white, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.inherit },
-    color: 'inherit'
+    color: { default: 'inherit', ...off(current(40)) }
   }
 })
 

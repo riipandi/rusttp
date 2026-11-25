@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, waitFor } from 'storybook/test'
+import { colors } from '../styles/colors.stylex'
 import type { ControlSize, DenseControlSize } from '../styles/control.stylex'
 import { visuallyHidden } from '../styles/utils.stylex'
 
@@ -52,14 +53,32 @@ export async function expectControlHeights(
   }
 }
 
+/** The computed value of a color token, which compiles to a `var(--x…)`: read through a probe element. */
+function resolvedColor(token: string, property: 'color' | 'borderTopColor' = 'color'): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty(property === 'color' ? 'color' : 'border-top-color', token)
+  probe.style.borderTopStyle = 'solid'
+  document.body.append(probe)
+  const value = getComputedStyle(probe)[property]
+  probe.remove()
+  return value
+}
+
 /**
- * Asserts the disabled look of a control's box: half opacity and, for an element that takes the
- * cursor itself (an input or a trigger), `not-allowed`. A wrapper that only dims (a group around an
- * input) passes `cursor: false`.
+ * Asserts the disabled look of a control: it is drawn with the disabled tokens (`foregroundDisabled`
+ * for its text, `borderDisabled` for its edge, or `backgroundNeutral` for its fill), never with
+ * `opacity`, which stacks. For an element that takes the cursor itself (an input or a trigger), also
+ * asserts `not-allowed`; a wrapper around an input passes `cursor: false`.
  */
 export async function expectDisabledLook(element: Element, { cursor = true } = {}) {
   const style = getComputedStyle(element)
-  await expect(style.opacity).toBe('0.5')
+  await expect(style.opacity).toBe('1')
+  const marks = [
+    style.color === resolvedColor(colors.foregroundDisabled),
+    style.borderTopColor === resolvedColor(colors.borderDisabled, 'borderTopColor'),
+    style.backgroundColor === resolvedColor(colors.backgroundNeutral)
+  ]
+  await expect(marks.some(Boolean)).toBe(true)
   if (cursor) await expect(style.cursor).toBe('not-allowed')
 }
 

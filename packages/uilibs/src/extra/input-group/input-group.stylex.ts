@@ -43,8 +43,6 @@ export const inputGroupStyles = stylex.create({
     backgroundColor: 'transparent',
     borderStyle: 'none',
     flex: 1,
-    // The group dims as a whole when its input is disabled.
-    opacity: 1,
     outline: 'none'
   },
   textarea: {

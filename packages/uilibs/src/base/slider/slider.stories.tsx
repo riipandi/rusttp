@@ -124,11 +124,12 @@ export const States: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const dimmed = (state: string) =>
-      Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[data-disabled]')).filter(
-        (el) => getComputedStyle(el).opacity === '0.5'
-      )
-    await expect(dimmed('disabled').length).toBeGreaterThan(0)
+    // A disabled slider is drawn with the disabled tokens, so nothing in it is dimmed by opacity.
+    const disabledParts = Array.from(
+      cellOf(canvasElement, 'state', 'disabled').querySelectorAll('[data-disabled]')
+    )
+    await expect(disabledParts.length).toBeGreaterThan(0)
+    for (const part of disabledParts) await expect(getComputedStyle(part).opacity).toBe('1')
     await expect(
       cellOf(canvasElement, 'state', 'default').querySelector('[data-disabled]')
     ).toBeNull()

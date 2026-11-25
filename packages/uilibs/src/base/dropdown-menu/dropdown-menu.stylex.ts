@@ -39,14 +39,13 @@ export const dropdownMenuStyles = stylex.create({
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
     fontSize: fontSize.body2,
     gap: unit.x2,
     marginInline: unit.x1,
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     outline: 'none',
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,
@@ -63,7 +62,7 @@ export const dropdownMenuStyles = stylex.create({
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
       '[data-popup-open]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     }
   },
   itemInset: {
@@ -96,7 +95,7 @@ export const dropdownMenuStyles = stylex.create({
     },
     color: {
       default: colors.foregroundCritical,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     }
   },
   itemPrimary: {
@@ -106,7 +105,7 @@ export const dropdownMenuStyles = stylex.create({
     },
     color: {
       default: colors.foregroundPrimary,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     }
   },
   subTriggerChevron: {

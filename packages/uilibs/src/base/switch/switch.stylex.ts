@@ -8,8 +8,10 @@ export const switchStyles = stylex.create({
   root: {
     backgroundColor: {
       default: colors.borderControl,
-      '[data-checked]': colors.backgroundPrimary,
+      '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
       '[data-invalid]': colors.backgroundCritical,
+      ':disabled': colors.backgroundNeutral,
+      '[data-disabled]': colors.backgroundNeutral,
       // Forced colors: the track is an outlined box that fills with Highlight when on.
       '@media (forced-colors: active)': { default: 'Canvas', '[data-checked]': 'Highlight' }
     },
@@ -32,6 +34,7 @@ export const switchStyles = stylex.create({
   thumb: {
     backgroundColor: {
       default: colors.backgroundPage,
+      '[data-disabled]': colors.foregroundDisabled,
       '@media (forced-colors: active)': 'CanvasText'
     },
     borderRadius: radius.full,

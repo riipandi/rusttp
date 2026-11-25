@@ -10,6 +10,21 @@ import {
   unit
 } from './tokens.stylex'
 
+// A disabled control is drawn with the disabled color tokens, never with `opacity`: opacity stacks
+// (a disabled control inside a disabled field dropped to a quarter), and a color token does not.
+// `:disabled` is a native control, `[data-disabled]` a Base UI part (Field passes it down too).
+// List `off(...)` after the other conditions so a disabled invalid control still reads as disabled.
+const off = (value: string) => ({ ':disabled': value, '[data-disabled]': value }) as const
+
+// The same for a wrapper that holds the real input: it is disabled by its own `data-disabled` or by
+// the input inside it (a disabled stepper or addon button alone does not disable the field).
+const offWithin = (value: string) =>
+  ({
+    '[data-disabled]': value,
+    ':has(input:disabled)': value,
+    ':has(textarea:disabled)': value
+  }) as const
+
 /** The shared control size scale: a Button and a text control of one size are one height. */
 export type ControlSize = 'sm' | 'md' | 'lg'
 
@@ -47,7 +62,7 @@ export const controlSizes = stylex.create({
  * Text-entry controls (Input, Select, Combobox, Autocomplete, NumberField, Textarea, …):
  * surface, `borderControl` edge (3:1 for WCAG 1.4.11), radius, type, and the
  * state model — focus is the primary border plus a 2px inset outline, invalid
- * is the critical border, disabled is half opacity. Compose first, then
+ * is the critical border, disabled is the disabled tokens. Compose first, then
  * `controlSizes[size]`, then the component's own style.
  */
 export const controlBase = stylex.create({
@@ -56,22 +71,22 @@ export const controlBase = stylex.create({
     borderColor: {
       default: colors.borderControl,
       ':focus-visible': colors.foregroundPrimary,
-      '[data-invalid]': colors.borderCritical
+      '[data-invalid]': colors.borderCritical,
+      ...off(colors.borderDisabled)
     },
     borderRadius: radius.medium,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: colors.foregroundNeutral,
+    color: { default: colors.foregroundNeutral, ...off(colors.foregroundDisabled) },
     cursor: { default: null, ':disabled': 'not-allowed', '[data-disabled]': 'not-allowed' },
     fontFamily: fontFamily.body,
-    opacity: { default: 1, ':disabled': 0.5, '[data-disabled]': 0.5 },
     outline: {
       default: 'none',
       ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
     },
     outlineOffset: `calc(-1 * ${stroke.ring1})`,
     transitionDuration: duration.fast,
-    transitionProperty: 'background-color, border-color, color, opacity, outline-color'
+    transitionProperty: 'background-color, border-color, color, outline-color'
   },
   /**
    * The same state model for a wrapper that holds the real input (InputGroup,
@@ -85,14 +100,10 @@ export const controlBase = stylex.create({
       default: colors.borderControl,
       ':has(:focus-visible)': colors.foregroundPrimary,
       '[data-invalid]': colors.borderCritical,
-      ':has([data-invalid])': colors.borderCritical
+      ':has([data-invalid])': colors.borderCritical,
+      ...offWithin(colors.borderDisabled)
     },
-    opacity: {
-      default: 1,
-      '[data-disabled]': 0.5,
-      ':has(input:disabled)': 0.5,
-      ':has(textarea:disabled)': 0.5
-    },
+    color: { default: colors.foregroundNeutral, ...offWithin(colors.foregroundDisabled) },
     outline: {
       default: 'none',
       ':has(:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
@@ -148,20 +159,19 @@ export const controlVariantsWithin = stylex.create({
 
 /**
  * Press targets (Button, Toggle, Tab, Checkbox, Radio, Switch, menu triggers):
- * the pointer cursor, half-opacity disabled state, and a 2px ring drawn
+ * the pointer cursor and a 2px ring drawn
  * outside the box so it never clips a short label. Compose before the
  * component's own style.
  */
 export const controlPress = stylex.create({
   root: {
     cursor: { default: 'pointer', ':disabled': 'not-allowed', '[data-disabled]': 'not-allowed' },
-    opacity: { default: 1, ':disabled': 0.5, '[data-disabled]': 0.5 },
     outline: {
       default: 'none',
       ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
     },
     outlineOffset: stroke.ring2,
     transitionDuration: duration.fast,
-    transitionProperty: 'background-color, border-color, color, opacity'
+    transitionProperty: 'background-color, border-color, color'
   }
 })

@@ -45,7 +45,12 @@ export const toggleRest = stylex.create({
       '[data-pressed]': togglePressed.background
     },
     boxShadow: { default: 'none', '[data-pressed]': togglePressed.ring },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': togglePressed.color }
+    color: {
+      default: colors.foregroundNeutral,
+      '[data-pressed]:not([data-disabled])': togglePressed.color,
+      ':disabled': colors.foregroundDisabled,
+      '[data-disabled]': colors.foregroundDisabled
+    }
   },
   solid: {
     backgroundColor: {
@@ -54,7 +59,12 @@ export const toggleRest = stylex.create({
       '[data-pressed]': togglePressed.background
     },
     boxShadow: { default: 'none', '[data-pressed]': togglePressed.ring },
-    color: { default: colors.foregroundNeutral, '[data-pressed]': togglePressed.color }
+    color: {
+      default: colors.foregroundNeutral,
+      '[data-pressed]:not([data-disabled])': togglePressed.color,
+      ':disabled': colors.foregroundDisabled,
+      '[data-disabled]': colors.foregroundDisabled
+    }
   }
 })
 
@@ -191,7 +201,12 @@ export const toggleVariants = stylex.create({
   ghost: {},
   solid: {},
   outline: {
-    borderColor: { default: colors.borderNeutralFaded, '[data-pressed]': togglePressed.edge },
+    borderColor: {
+      default: colors.borderNeutralFaded,
+      '[data-pressed]:not([data-disabled])': togglePressed.edge,
+      ':disabled': colors.borderDisabled,
+      '[data-disabled]': colors.borderDisabled
+    },
     borderStyle: 'solid',
     borderWidth: stroke.ring1
   }

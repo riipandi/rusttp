@@ -9,14 +9,18 @@ export const checkboxStyles = stylex.create({
     alignItems: 'center',
     backgroundColor: {
       default: colors.backgroundPage,
-      '[data-checked]': colors.backgroundPrimary,
-      '[data-indeterminate]': colors.backgroundPrimary
+      '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
+      '[data-indeterminate]:not([data-disabled])': colors.backgroundPrimary,
+      ':disabled': colors.backgroundNeutral,
+      '[data-disabled]': colors.backgroundNeutral
     },
     borderColor: {
       default: colors.borderControl,
-      '[data-checked]': colors.backgroundPrimary,
-      '[data-indeterminate]': colors.backgroundPrimary,
-      '[data-invalid]': colors.borderCritical
+      '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
+      '[data-indeterminate]:not([data-disabled])': colors.backgroundPrimary,
+      '[data-invalid]': colors.borderCritical,
+      ':disabled': colors.borderDisabled,
+      '[data-disabled]': colors.borderDisabled
     },
     borderRadius: radius.small,
     borderStyle: 'solid',
@@ -36,7 +40,7 @@ export const checkboxStyles = stylex.create({
   },
   indicator: {
     alignItems: 'center',
-    color: colors.onBackgroundPrimary,
+    color: { default: colors.onBackgroundPrimary, '[data-disabled]': colors.foregroundDisabled },
     display: 'flex',
     justifyContent: 'center'
   }

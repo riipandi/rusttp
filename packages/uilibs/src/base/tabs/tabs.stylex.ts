@@ -78,7 +78,12 @@ export const tabsStyles = stylex.create({
       default: 0,
       '@media (forced-colors: active)': { default: 0, '[data-active]': stroke.ring1 }
     },
-    color: { default: colors.foregroundNeutralFaded, '[data-active]': colors.foregroundNeutral },
+    color: {
+      default: colors.foregroundNeutralFaded,
+      '[data-active]:not([data-disabled])': colors.foregroundNeutral,
+      ':disabled': colors.foregroundDisabled,
+      '[data-disabled]': colors.foregroundDisabled
+    },
     display: 'inline-flex',
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,

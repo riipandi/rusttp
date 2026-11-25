@@ -47,7 +47,8 @@ export const numberFieldStyles = stylex.create({
     borderStyle: 'none',
     color: {
       default: colors.foregroundNeutralFaded,
-      ':hover:not(:disabled)': colors.foregroundNeutral
+      ':hover:not(:disabled)': colors.foregroundNeutral,
+      ':disabled': colors.foregroundDisabled
     },
     cursor: { default: 'pointer', ':disabled': 'not-allowed' },
     display: 'flex',

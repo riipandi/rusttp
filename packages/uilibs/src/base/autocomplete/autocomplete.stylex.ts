@@ -42,7 +42,7 @@ export const autocompleteStyles = stylex.create({
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -51,7 +51,6 @@ export const autocompleteStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     marginInline: unit.x1,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,
     userSelect: 'none'
