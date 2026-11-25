@@ -26,9 +26,9 @@ Built on [dnd-kit](https://docs.dndkit.com). Every part except `KanbanOverlay` r
 ## Anatomy
 
 - **Kanban:** the root. It holds the value and the drag state; you own the data and the board reports each change through `onValueChange`.
-- **KanbanBoard:** the row of columns.
+- **KanbanBoard:** the row of columns. It is a `region` named by `labels.board`, and takes no Tab stop: its handles and items already are.
 - **KanbanColumn:** one column. It can only be dragged by its handle.
-- **KanbanColumnHandle:** the grab handle of a column. Optional, but without it the column cannot be dragged. It names itself from `labels.columnHandle`.
+- **KanbanColumnHandle:** the grab handle of a column. Optional, but without it the column cannot be dragged. It names itself from `labels.columnHandle`, with the column's name.
 - **KanbanColumnContent:** the list of items in a column.
 - **KanbanItem:** one item. The whole element is the drag surface.
 - **KanbanOverlay:** optional ghost that follows the pointer. It portals into `document.body`.
@@ -61,26 +61,32 @@ Drag an item between columns while the overlay shows the ghost.
 
 <Canvas of={Stories.PersistedToBackend} />
 
+### Names
+
+The board is a region named by `labels.board`. Each column handle takes the column's `aria-label`, so the handles are told apart in a list of controls.
+
+<Canvas of={Stories.Names} />
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. On `KanbanOverlay` it styles the ghost. See [Styling](?path=/docs/styling--docs).
 
 ### Kanban
 
-| Prop              | Description                                                                                                                                                                                     |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`           | `Record<string, T[]>` <br /> The items of each column, keyed by column id. The key order is the column order. Required.                                                                         |
-| `onValueChange`   | `(value) => void` <br /> Called with the new value as items and columns move. Required.                                                                                                         |
-| `getItemValue`    | `(item) => string` <br /> The id of an item. Ids must be unique across every column. Required.                                                                                                  |
-| `onMove`          | `(event: KanbanMoveEvent) => void` <br /> Takes over item moves: the board stops reordering items itself and reports the drop here.                                                             |
-| `onValueCommit`   | `(value, meta: KanbanCommitMeta) => void` <br /> Called once after a drag that moved something, with the previous value. Not called for item moves while `onMove` is set.                       |
-| `restoreOnCancel` | `boolean` <br /> Restores the value from the start of the drag when it is cancelled. Default `false`.                                                                                           |
-| `onDragStart`     | `(event: DragStartEvent) => void` <br /> A dnd-kit event.                                                                                                                                       |
-| `onDragEnd`       | `(event: DragEndEvent) => void` <br /> A dnd-kit event.                                                                                                                                         |
-| `onDragCancel`    | `(event: DragCancelEvent) => void` <br /> A dnd-kit event.                                                                                                                                      |
-| `accessibility`   | dnd-kit `accessibility` prop <br /> Overrides the announcements and instructions built from `labels`.                                                                                           |
-| `modifiers`       | dnd-kit `Modifiers` <br /> Restricts or transforms the drag movement.                                                                                                                           |
-| `labels`          | `Partial<{ columnHandle, instructions, pickedUp, movedOver, dropped, cancelled }>` <br /> The handle name and the screen reader texts. Defaults to English; `columnHandle` is `Reorder column`. |
+| Prop              | Description                                                                                                                                                                                                                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`           | `Record<string, T[]>` <br /> The items of each column, keyed by column id. The key order is the column order. Required.                                                                                                                                                                                               |
+| `onValueChange`   | `(value) => void` <br /> Called with the new value as items and columns move. Required.                                                                                                                                                                                                                               |
+| `getItemValue`    | `(item) => string` <br /> The id of an item. Ids must be unique across every column. Required.                                                                                                                                                                                                                        |
+| `onMove`          | `(event: KanbanMoveEvent) => void` <br /> Takes over item moves: the board stops reordering items itself and reports the drop here.                                                                                                                                                                                   |
+| `onValueCommit`   | `(value, meta: KanbanCommitMeta) => void` <br /> Called once after a drag that moved something, with the previous value. Not called for item moves while `onMove` is set.                                                                                                                                             |
+| `restoreOnCancel` | `boolean` <br /> Restores the value from the start of the drag when it is cancelled. Default `false`.                                                                                                                                                                                                                 |
+| `onDragStart`     | `(event: DragStartEvent) => void` <br /> A dnd-kit event.                                                                                                                                                                                                                                                             |
+| `onDragEnd`       | `(event: DragEndEvent) => void` <br /> A dnd-kit event.                                                                                                                                                                                                                                                               |
+| `onDragCancel`    | `(event: DragCancelEvent) => void` <br /> A dnd-kit event.                                                                                                                                                                                                                                                            |
+| `accessibility`   | dnd-kit `accessibility` prop <br /> Overrides the announcements and instructions built from `labels`.                                                                                                                                                                                                                 |
+| `modifiers`       | dnd-kit `Modifiers` <br /> Restricts or transforms the drag movement.                                                                                                                                                                                                                                                 |
+| `labels`          | `Partial<{ board, columnHandle(name), instructions, pickedUp, movedOver, dropped, cancelled }>` <br /> The board and handle names and the screen reader texts. Defaults to English; `board` is `Kanban board` and `columnHandle` is `Reorder column <name>`. The name is the column's `aria-label`, else its `value`. |
 
 | Data attribute  | Description                                                                        |
 | --------------- | ---------------------------------------------------------------------------------- |

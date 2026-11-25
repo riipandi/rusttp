@@ -51,26 +51,32 @@ Built on [dnd-kit](https://docs.dndkit.com). `Sortable`, `SortableItem`, and `So
 
 <Canvas of={Stories.PersistedOrder} />
 
+### Handle names
+
+A handle is named after its item (`Reorder Product Demo`), so the handles are told apart in a list of controls.
+
+<Canvas of={Stories.HandleNames} />
+
 ## API reference
 
 Every part except `SortableOverlay` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
 
 ### Sortable
 
-| Prop            | Description                                                                                                                                                                                                            |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`         | `T[]` <br /> The items in their current order. Required.                                                                                                                                                               |
-| `onValueChange` | `(value: T[]) => void` <br /> Called with the reordered items after a drop. Required.                                                                                                                                  |
-| `getItemValue`  | `(item: T) => string` <br /> The id of an item. Ids must be unique. Required.                                                                                                                                          |
-| `strategy`      | `vertical`, `horizontal`, `grid` <br /> How items move aside while one is dragged. Default `vertical`.                                                                                                                 |
-| `onMove`        | `(event: { event, activeIndex, overIndex }) => void` <br /> Takes over the reorder: when set, `onValueChange` and `onValueCommit` are not called.                                                                      |
-| `onValueCommit` | `(value: T[], meta: { event, activeIndex, overIndex, previousValue }) => void` <br /> Called after `onValueChange` with the move's details.                                                                            |
-| `onDragStart`   | dnd-kit `DragStartEvent` handler <br /> Called when a drag starts.                                                                                                                                                     |
-| `onDragEnd`     | dnd-kit `DragEndEvent` handler <br /> Called when a drag ends, before the reorder.                                                                                                                                     |
-| `onDragCancel`  | dnd-kit `DragCancelEvent` handler <br /> Called when a drag is cancelled.                                                                                                                                              |
-| `accessibility` | dnd-kit `DndContext` `accessibility` prop <br /> Overrides the screen reader texts that `labels` sets.                                                                                                                 |
-| `modifiers`     | dnd-kit `Modifiers` <br /> Restricts or transforms the drag movement.                                                                                                                                                  |
-| `labels`        | `Partial<{ instructions, pickedUp(name), movedOver(name, over), dropped(name, over), cancelled(name), handle }>` <br /> Screen reader texts and the handle's name. Defaults to English; `handle` is `Drag to reorder`. |
+| Prop            | Description                                                                                                                                                                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`         | `T[]` <br /> The items in their current order. Required.                                                                                                                                                                                                          |
+| `onValueChange` | `(value: T[]) => void` <br /> Called with the reordered items after a drop. Required.                                                                                                                                                                             |
+| `getItemValue`  | `(item: T) => string` <br /> The id of an item. Ids must be unique. Required.                                                                                                                                                                                     |
+| `strategy`      | `vertical`, `horizontal`, `grid` <br /> How items move aside while one is dragged. Default `vertical`.                                                                                                                                                            |
+| `onMove`        | `(event: { event, activeIndex, overIndex }) => void` <br /> Takes over the reorder: when set, `onValueChange` and `onValueCommit` are not called.                                                                                                                 |
+| `onValueCommit` | `(value: T[], meta: { event, activeIndex, overIndex, previousValue }) => void` <br /> Called after `onValueChange` with the move's details.                                                                                                                       |
+| `onDragStart`   | dnd-kit `DragStartEvent` handler <br /> Called when a drag starts.                                                                                                                                                                                                |
+| `onDragEnd`     | dnd-kit `DragEndEvent` handler <br /> Called when a drag ends, before the reorder.                                                                                                                                                                                |
+| `onDragCancel`  | dnd-kit `DragCancelEvent` handler <br /> Called when a drag is cancelled.                                                                                                                                                                                         |
+| `accessibility` | dnd-kit `DndContext` `accessibility` prop <br /> Overrides the screen reader texts that `labels` sets.                                                                                                                                                            |
+| `modifiers`     | dnd-kit `Modifiers` <br /> Restricts or transforms the drag movement.                                                                                                                                                                                             |
+| `labels`        | `Partial<{ instructions, pickedUp(name), movedOver(name, over), dropped(name, over), cancelled(name), handle(name) }>` <br /> Screen reader texts and the handle's name. Defaults to English; `handle` is `Reorder <name>`, with the item's `aria-label` or text. |
 
 | Data attribute  | Description                                                             |
 | --------------- | ----------------------------------------------------------------------- |

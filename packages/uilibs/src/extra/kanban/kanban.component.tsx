@@ -64,6 +64,7 @@ import {
   dragAccessibility,
   defaultDragLabels,
   nameOfElement,
+  useDraggableName,
   type DragLabels
 } from '../sortable/drag-announcements'
 import { kanbanStyles } from './kanban.stylex'
@@ -73,11 +74,17 @@ import { kanbanStyles } from './kanban.stylex'
 // ---------------------------------------------------------------------------
 
 export interface KanbanLabels extends DragLabels {
-  /** Name of a column's drag handle. Defaults to `Reorder column`. */
-  columnHandle: string
+  /** Name of a column's drag handle, from the column's name (its `aria-label`, else its value). Defaults to `Reorder column <name>`. */
+  columnHandle: (name: string) => string
+  /** Name of the board region. Defaults to `Kanban board`. */
+  board: string
 }
 
-const defaultLabels: KanbanLabels = { ...defaultDragLabels, columnHandle: 'Reorder column' }
+const defaultLabels: KanbanLabels = {
+  ...defaultDragLabels,
+  columnHandle: (name) => `Reorder column ${name}`,
+  board: 'Kanban board'
+}
 
 interface KanbanContextProps<T> {
   columns: Record<string, T[]>
@@ -597,7 +604,7 @@ function Kanban<T>({
 export type KanbanBoardProps = DivRenderProps
 
 function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
-  const { columnIds } = useContext(KanbanContext)
+  const { columnIds, labels } = useContext(KanbanContext)
 
   return (
     <SortableContext items={columnIds} strategy={rectSortingStrategy}>
@@ -606,6 +613,10 @@ function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
         render,
         props: mergeProps<'div'>(
           {
+            // A landmark for the scrolling board. Its handles and items are already Tab stops, so
+            // the region itself takes none.
+            role: 'region',
+            'aria-label': labels.board,
             ...stylex.props(kanbanStyles.board, style),
             'data-slot': 'kanban-board',
             children: props.children
@@ -703,14 +714,16 @@ export interface KanbanColumnHandleProps extends DivRenderProps {
 function KanbanColumnHandle({ style, render, cursor = true, ...props }: KanbanColumnHandleProps) {
   const { attributes, listeners, isDragging, disabled } = useContext(ColumnContext)
   const { activeId, labels } = useContext(KanbanContext)
+  const { ref, name } = useDraggableName('kanban-column', false)
 
   return useRender({
     defaultTagName: 'div',
     render,
+    ref,
     props: mergeProps<'div'>(
       {
         // The drag attributes make the handle a button; without a name it is an unlabelled one.
-        'aria-label': labels.columnHandle,
+        'aria-label': name === undefined ? undefined : labels.columnHandle(name),
         ...stylex.props(
           stylex.defaultMarker(),
           focusRing.root,

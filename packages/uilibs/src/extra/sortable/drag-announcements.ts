@@ -1,4 +1,5 @@
 import type { Announcements, DndContextProps, UniqueIdentifier } from '@dnd-kit/core'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 /**
  * What a screen reader hears while a Sortable or Kanban item is dragged with the keyboard. dnd-kit's
@@ -55,9 +56,29 @@ export function dragAccessibility(
   }
 }
 
+/** The name of an element: its `aria-label`, else its text, else `fallback`. */
+function nameOfNode(element: HTMLElement | null | undefined, fallback: string, useText: boolean) {
+  const text = useText ? element?.textContent?.replace(/\s+/g, ' ').trim() : undefined
+  return element?.getAttribute('aria-label') || text || fallback
+}
+
 /** The name of the element a drag id points at: its `aria-label`, else its text, else the id. */
 export function nameOfElement(selector: string, id: UniqueIdentifier, useText = true): string {
-  const element = document.querySelector<HTMLElement>(selector)
-  const text = useText ? element?.textContent?.replace(/\s+/g, ' ').trim() : undefined
-  return element?.getAttribute('aria-label') || text || String(id)
+  return nameOfNode(document.querySelector<HTMLElement>(selector), String(id), useText)
+}
+
+/**
+ * The name of the draggable a handle sits in, read from the nearest ancestor with `data-slot=slot`
+ * the way the announcements read it (`nameOfElement`), so the handle and the live region agree.
+ * Attach `ref` to the handle; `name` is `undefined` until the handle has mounted.
+ */
+export function useDraggableName(slot: string, useText: boolean) {
+  const ref = useRef<HTMLElement | null>(null)
+  const [name, setName] = useState<string>()
+  // No deps: the name follows the item's text, and the same string bails out of the update.
+  useLayoutEffect(() => {
+    const host = ref.current?.closest<HTMLElement>(`[data-slot="${slot}"]`)
+    if (host) setName(nameOfNode(host, host.dataset.value ?? '', useText))
+  })
+  return { ref, name }
 }

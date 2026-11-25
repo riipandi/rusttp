@@ -292,7 +292,7 @@ const styles = stylex.create({
 
 function Handle({ style }: { style?: stylex.StyleXStyles }) {
   return (
-    <SortableItemHandle aria-label='Drag to reorder' style={style}>
+    <SortableItemHandle style={style}>
       <GripVertical size={16} />
     </SortableItemHandle>
   )
@@ -1265,5 +1265,45 @@ export const KeyboardAnnouncements: Story = {
     await waitFor(() => expect(document.querySelector('[data-dragging="true"]')).toBeNull())
     await new Promise((resolve) => setTimeout(resolve, 400))
     await expect(live()).not.toMatch(/\b[0-9]+\b/)
+  }
+}
+
+/** Each handle is named after its item, so a list of controls tells the rows apart. */
+export const HandleNames: Story = {
+  render: () => {
+    const [items, setItems] = useState(defaultFiles.slice(0, 3))
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Sortable
+          value={items}
+          onValueChange={setItems}
+          getItemValue={(item) => item.id}
+          style={styles.list}
+        >
+          {items.map((item) => (
+            // The row also holds a description and a size; the item's own name is its title.
+            <SortableItem key={item.id} value={item.id} aria-label={item.title}>
+              <div {...stylex.props(styles.row)}>
+                <Handle />
+                <div {...stylex.props(styles.rowBody)}>
+                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
+                </div>
+              </div>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const handles = canvas.getAllByRole('button', { name: /^Reorder / })
+    const names = handles.map((handle) => handle.getAttribute('aria-label'))
+    await expect(names).toEqual([
+      'Reorder Product Demo',
+      'Reorder Product Specification',
+      'Reorder Product Demo Video'
+    ])
+    await expect(new Set(names).size).toBe(names.length)
   }
 }

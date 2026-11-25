@@ -1300,3 +1300,63 @@ export const KeyboardAnnouncements: Story = {
     await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }
+
+/** The board is a named region, and each column handle is named after its column. */
+export const Names: Story = {
+  render: () => {
+    const [columns, setColumns] = useState<Column[]>(initialColumns)
+    const handleValueChange = (newValue: Record<string, Task[]>) => {
+      setColumns((prev) =>
+        Object.keys(newValue).map((id) => {
+          const existing = prev.find((col) => col.id === id)
+          return existing
+            ? { ...existing, tasks: newValue[id] ?? existing.tasks }
+            : { id, title: id, tasks: newValue[id] ?? [] }
+        })
+      )
+    }
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Kanban
+          value={getColumnsValue(columns)}
+          onValueChange={handleValueChange}
+          getItemValue={(task) => task.id}
+          labels={{ board: 'Sprint board' }}
+          style={styles.fillWidth}
+        >
+          <KanbanBoard>
+            {columns.map((column) => (
+              <KanbanColumn key={column.id} value={column.id} aria-label={column.title}>
+                <div {...stylex.props(styles.columnHeader)}>
+                  <span {...stylex.props(styles.columnTitle)}>{column.title}</span>
+                  <KanbanColumnHandle style={styles.handleEnd}>
+                    <GripVertical size={16} />
+                  </KanbanColumnHandle>
+                </div>
+                <KanbanColumnContent value={column.id}>
+                  {column.tasks.map((task) => (
+                    <KanbanItem key={task.id} value={task.id}>
+                      <div {...stylex.props(styles.itemBody)}>
+                        <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
+                      </div>
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+        </Kanban>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const board = canvas.getByRole('region', { name: 'Sprint board' })
+    // A landmark, not a Tab stop: the handles and items inside already are.
+    await expect(board).not.toHaveAttribute('tabindex')
+    const names = canvas
+      .getAllByRole('button', { name: /^Reorder column / })
+      .map((handle) => handle.getAttribute('aria-label'))
+    await expect(names).toEqual(initialColumns.map((column) => `Reorder column ${column.title}`))
+  }
+}

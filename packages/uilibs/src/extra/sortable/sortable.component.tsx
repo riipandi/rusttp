@@ -71,6 +71,7 @@ import {
   dragAccessibility,
   defaultDragLabels,
   nameOfElement,
+  useDraggableName,
   type DragLabels
 } from './drag-announcements'
 import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
@@ -106,11 +107,11 @@ export const SortableItemContext = createContext<{
 const IsOverlayContext = createContext(false)
 
 export interface SortableLabels extends DragLabels {
-  /** Name of an item's drag handle. Defaults to `Drag to reorder`. */
-  handle: string
+  /** Name of an item's drag handle, from the item's own name. Defaults to `Reorder <name>`. */
+  handle: (name: string) => string
 }
 
-const defaultLabels: SortableLabels = { ...defaultDragLabels, handle: 'Drag to reorder' }
+const defaultLabels: SortableLabels = { ...defaultDragLabels, handle: (name) => `Reorder ${name}` }
 
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null
@@ -483,16 +484,17 @@ function SortableItemHandle({ style, render, cursor = true, ...props }: Sortable
     useContext(SortableItemContext)
   const { activeId, labels } = useContext(SortableInternalContext)
   const isOverlay = useContext(IsOverlayContext)
+  const { ref: nameRef, name } = useDraggableName('sortable-item', true)
 
   useLayoutEffect(() => (isOverlay ? undefined : registerHandle?.()), [isOverlay, registerHandle])
 
   return useRender({
     defaultTagName: 'div',
     render,
-    ref: isOverlay ? undefined : setActivatorNodeRef,
+    ref: isOverlay || !setActivatorNodeRef ? nameRef : [setActivatorNodeRef, nameRef],
     props: mergeProps<'div'>(
       {
-        'aria-label': labels.handle,
+        'aria-label': name === undefined ? undefined : labels.handle(name),
         ...(isOverlay ? {} : { ...attributes, ...listeners }),
         ...stylex.props(
           focusRing.root,
