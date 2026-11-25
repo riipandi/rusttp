@@ -162,13 +162,20 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(logo).toHaveCSS('opacity', '0')
   })
 
-  test('Mod+B expands and collapses the sidebar', async ({ admin }) => {
+  test('Mod+/ expands and collapses the sidebar', async ({ admin }) => {
     await admin.openReady()
     await expect(admin.collapseButton()).toBeVisible()
 
-    await admin.mod('b')
+    await admin.mod('/')
     await expect(admin.expandButton()).toBeVisible()
-    await admin.mod('b')
+    await admin.mod('/')
+    await expect(admin.collapseButton()).toBeVisible()
+
+    // Mod+Shift+/ is the shortcuts panel, not this toggle.
+    await admin.page.keyboard.press('ControlOrMeta+Shift+/')
+    await expect(admin.page.getByRole('button', { name: 'Back to commands' })).toBeVisible()
+    await admin.page.keyboard.press('Escape')
+    await expect(admin.commandBar()).toHaveCount(0)
     await expect(admin.collapseButton()).toBeVisible()
   })
 
@@ -194,7 +201,7 @@ test.describe('admin command bar and hotkeys', () => {
 
     // Neither the sidebar shortcut nor a sequence reaches the page behind the bar. The page is
     // hidden from the accessibility tree while the dialog is open, so check it once it closes.
-    await admin.mod('b')
+    await admin.mod('/')
     await admin.page.keyboard.press('g')
     await admin.page.keyboard.press('u')
     await admin.page.keyboard.press('Escape')
@@ -203,7 +210,7 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.page).toHaveURL(/\/admin$/)
 
     // And they are back once it has closed.
-    await admin.mod('b')
+    await admin.mod('/')
     await expect(admin.expandButton()).toBeVisible()
   })
 

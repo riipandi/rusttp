@@ -52,7 +52,7 @@ import { groups as settingsGroups } from './settings/-nav'
 // The command bar: one dialog that runs a command by name (Cmd+K on macOS, Ctrl+K elsewhere), with a
 // keyboard-shortcuts panel inside it that lists every declared shortcut and records a new one.
 //
-// While it is open its scope is exclusive, so the page's own hotkeys (`G O`, Cmd+B, …) are suspended
+// While it is open its scope is exclusive, so the page's own hotkeys (`G O`, Cmd+/, …) are suspended
 // and typing a command never navigates; they come back when it closes.
 
 interface CommandEntry {

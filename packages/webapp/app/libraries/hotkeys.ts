@@ -12,12 +12,13 @@ import type { Messages } from '#/libraries/messages'
 export const appHotkeys = defineAppHotkeys({
   'palette.toggle': { hotkey: 'Mod+K', meta: { name: 'Open the command bar', group: 'General' } },
   // Shift turns `/` into `?` on a US layout; like `settings.open`, it matches the physical Slash key.
+  // `sidebar.toggle` below is the same key without Shift; the two stay distinct chords.
   'help.shortcuts': {
     hotkey: 'Mod+Shift+/',
     meta: { name: 'Keyboard shortcuts', group: 'General' }
   },
   'sidebar.toggle': {
-    hotkey: 'Mod+B',
+    hotkey: 'Mod+/',
     meta: { name: 'Expand or collapse the sidebar', group: 'General' }
   },
   // Shift turns `,` into `<` on a US layout; the library falls back to the physical Comma key, so
