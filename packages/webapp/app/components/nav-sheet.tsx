@@ -17,6 +17,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from 'uilibs/extra/sheet'
+import { Stack } from 'uilibs/extra/stack'
 import { useMessages } from '#/libraries/messages'
 import { notWired } from '#/libraries/not-wired'
 import { styles } from '#/styles/element/nav-sheet.stylex'
@@ -104,13 +105,12 @@ function SheetList({
   onNavigate: () => void
 }) {
   return (
-    <nav aria-label={label} {...stylex.props(styles.sheetNav)}>
+    <Stack render={<nav aria-label={label} />} gap={3} style={styles.sheetNav}>
       {groups.map((group) => (
-        <div
+        <Stack
           key={group.label ?? 'main'}
-          role={group.label ? 'group' : undefined}
-          aria-label={group.label}
-          {...stylex.props(styles.sheetGroup, dense && styles.sheetGroupDense)}
+          render={<div role={group.label ? 'group' : undefined} aria-label={group.label} />}
+          gap={dense ? 1 : 1.5}
         >
           {group.label && (
             <span aria-hidden='true' {...stylex.props(styles.sheetGroupLabel)}>
@@ -126,9 +126,9 @@ function SheetList({
               onNavigate={onNavigate}
             />
           ))}
-        </div>
+        </Stack>
       ))}
-    </nav>
+    </Stack>
   )
 }
 
@@ -192,7 +192,7 @@ export function NavSheet({
         <SheetHeader style={[styles.sheetProfile, !profile && styles.sheetHeaderBrand]}>
           {profile ? (
             <>
-              <div {...stylex.props(styles.sheetProfileTop)}>
+              <Stack direction='row' align='center' justify='space-between'>
                 <Avatar size='medium'>
                   <AvatarFallback>{profile.initials}</AvatarFallback>
                 </Avatar>
@@ -204,19 +204,19 @@ export function NavSheet({
                     />
                   }
                 />
-              </div>
+              </Stack>
               <SheetTitle style={styles.sheetName}>{profile.name}</SheetTitle>
               <SheetDescription style={styles.sheetEmail}>{profile.email}</SheetDescription>
             </>
           ) : (
-            <div {...stylex.props(styles.sheetProfileTop)}>
+            <Stack direction='row' align='center' justify='space-between'>
               <SheetTitle style={styles.sheetBrand}>{brand}</SheetTitle>
               <SheetClose
                 render={
                   <CloseButton labels={{ close: m.nav_sheet_close() }} style={styles.sheetClose} />
                 }
               />
-            </div>
+            </Stack>
           )}
         </SheetHeader>
         <SheetList label={label} groups={groups} dense={dense} onNavigate={close} />

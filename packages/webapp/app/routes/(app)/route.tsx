@@ -1,6 +1,6 @@
-import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { TooltipProvider } from 'uilibs/base/tooltip'
+import { Stack } from 'uilibs/extra/stack'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { SkipLink } from '#/components/skip-link'
 import { adminProfile } from '#/fixtures/profile'
@@ -23,7 +23,7 @@ function RouteComponent() {
     // The notification bell in the header has a tooltip; see `routes/admin/route.tsx` for why the
     // provider is not at the root.
     <TooltipProvider>
-      <div {...stylex.props(layout.root)}>
+      <Stack style={layout.root}>
         <SkipLink />
         {isAdministrator && (
           <AnnouncementBar
@@ -35,7 +35,7 @@ function RouteComponent() {
         )}
         <DashboardHeader />
         <Outlet />
-      </div>
+      </Stack>
     </TooltipProvider>
   )
 }

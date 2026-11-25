@@ -24,6 +24,7 @@ import {
   ItemGroup,
   ItemTitle
 } from 'uilibs/extra/item'
+import { Stack } from 'uilibs/extra/stack'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
 import { useFormat } from '#/libraries/format'
 import { useMessages } from '#/libraries/messages'
@@ -153,15 +154,15 @@ export function NotificationsPopover({
         collisionPadding={collisionPadding}
         style={styles.panel}
       >
-        <div {...stylex.props(styles.header)}>
-          <div {...stylex.props(styles.heading)}>
+        <Stack direction='row' align='center' justify='space-between' gap={2} style={styles.header}>
+          <Stack direction='row' align='center' gap={2} style={styles.heading}>
             <PopoverTitle>{m.notifications_title()}</PopoverTitle>
             {unread > 0 && (
               <Badge variant='faded' color='primary'>
                 {m.notifications_new_count({ count: unread })}
               </Badge>
             )}
-          </div>
+          </Stack>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -194,7 +195,7 @@ export function NotificationsPopover({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </Stack>
 
         {items.length > 0 ? (
           <ScrollArea fade style={styles.scroll}>

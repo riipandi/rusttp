@@ -10,12 +10,15 @@ import {
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { Button, buttonSquare } from 'uilibs/base/button'
+import { Container } from 'uilibs/extra/container'
+import { Stack } from 'uilibs/extra/stack'
 import { Logo } from '#/components/logo'
 import { type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
 import { profile } from '#/fixtures/profile'
 import { type Messages, useMessages } from '#/libraries/messages'
 import { notWired } from '#/libraries/not-wired'
+import { layoutSize } from '#/styles/constants.stylex'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 import { UserMenu } from './-user-menu'
@@ -70,7 +73,7 @@ export function DashboardHeader() {
   const items = navItems(m)
   return (
     <header {...stylex.props(layout.header)}>
-      <div {...stylex.props(layout.container, layout.headerRow, styles.headerRow)}>
+      <Container size={layoutSize.page} style={[layout.gutter, layout.headerRow, styles.headerRow]}>
         <NavSheet
           label={m.app_nav_landmark()}
           profile={profile}
@@ -87,7 +90,7 @@ export function DashboardHeader() {
             <NavEntry key={item.label} item={item} />
           ))}
         </nav>
-        <div {...stylex.props(styles.headerEnd)}>
+        <Stack direction='row' align='center' justify='end' gap={2} style={styles.headerEnd}>
           <NotificationsPopover
             to='/notifications'
             trigger={<Button variant='ghost' style={[buttonSquare.medium, styles.notifyTrigger]} />}
@@ -95,8 +98,8 @@ export function DashboardHeader() {
           <div {...stylex.props(styles.userMenuSlot)}>
             <UserMenu />
           </div>
-        </div>
-      </div>
+        </Stack>
+      </Container>
     </header>
   )
 }

@@ -3,7 +3,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints, layoutSize } from '#/styles/constants.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   split: {
@@ -48,13 +48,7 @@ export const styles = stylex.create({
     lineHeight: 1.6
   },
   formSide: {
-    display: 'flex',
-    flexDirection: 'column',
     padding: unit.x6
-  },
-  topRow: {
-    display: 'flex',
-    alignItems: 'center'
   },
   theme: {
     marginInlineStart: 'auto'
@@ -67,30 +61,13 @@ export const styles = stylex.create({
   },
   formWrap: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: unit.x8,
-    width: '100%',
-    maxWidth: layoutSize.form,
-    marginInline: 'auto',
     paddingBlock: unit.x10
-  },
-  heading: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x2
   },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x5
-  },
-  fields: {
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x5
@@ -106,17 +83,7 @@ export const styles = stylex.create({
     color: colors.foregroundNeutralFaded,
     lineHeight: 1.6
   },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x3
-  },
   links: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
     fontSize: fontSize.body2
   },
   // First and last name side by side, stacked on a narrow screen so a message has room.

@@ -10,8 +10,6 @@ import { motion } from '#/styles/constants.stylex'
 export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
     flexShrink: 0,
     // 16rem plus a half step (264px): the next container token (18rem) is a 32px jump.
     width: `calc(${container.xsmall} + ${unit.x2})`,
@@ -151,9 +149,6 @@ export const styles = stylex.create({
   },
   nav: {
     boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x5,
     flex: 1,
     // The only part that scrolls: between the two dividers.
     minHeight: 0,
@@ -275,9 +270,7 @@ export const styles = stylex.create({
   },
   // No gap: the label's own bottom padding is the step to the list, so it folds away with the row.
   group: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column'
+    position: 'relative'
   },
   groupLabel: {
     minHeight: 0,
@@ -296,9 +289,6 @@ export const styles = stylex.create({
     fontWeight: fontWeight.medium
   },
   list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1,
     margin: 0,
     padding: 0,
     listStyle: 'none'
@@ -323,10 +313,6 @@ export const styles = stylex.create({
   // tall enough for a 48px row with 8px above and below.
   account: {
     boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
     flexShrink: 0,
     height: unit.x14,
     minWidth: 0,

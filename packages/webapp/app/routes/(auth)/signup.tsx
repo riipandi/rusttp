@@ -4,6 +4,7 @@ import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/reac
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { PageTitle } from '#/components/page-title'
@@ -31,14 +32,14 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.auth_signup_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_signup_subtitle()}</p>
-      </div>
+      </Stack>
 
-      <div {...stylex.props(styles.form)}>
+      <Stack gap={5}>
         <SocialButtons />
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -48,7 +49,7 @@ function RouteComponent() {
           void submit()
         }}
       >
-        <div {...stylex.props(styles.fields)}>
+        <Stack gap={5}>
           <div {...stylex.props(styles.nameRow)}>
             <Field of={form} path={['firstName']}>
               {(field) => (
@@ -91,7 +92,7 @@ function RouteComponent() {
           <Field of={form} path={['captcha']}>
             {(field) => <CaptchaField field={field} />}
           </Field>
-        </div>
+        </Stack>
         <Button type='submit' size='large' style={styles.submit}>
           {m.auth_signup_submit()}
         </Button>

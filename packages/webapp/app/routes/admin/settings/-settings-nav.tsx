@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue
 } from 'uilibs/base/select'
+import { Stack } from 'uilibs/extra/stack'
 import { useIsCurrent } from '#/components/nav-sheet'
 import { useMessages } from '#/libraries/messages'
 import { styles as sidebar } from '#/styles/element/sidebar.stylex'
@@ -51,20 +52,20 @@ export function SettingsNav() {
           const { label } = group
           const labelId = label && `${id}-${label}`
           return (
-            <div key={label ?? 'main'} {...stylex.props(sidebar.group)}>
+            <Stack key={label ?? 'main'} style={sidebar.group}>
               {label && (
                 <span id={labelId} {...stylex.props(sidebar.groupLabel)}>
                   {label}
                 </span>
               )}
-              <ul aria-labelledby={labelId} {...stylex.props(sidebar.list)}>
+              <Stack render={<ul aria-labelledby={labelId} />} gap={1} style={sidebar.list}>
                 {group.items.map((page) => (
                   <li key={page.to}>
                     <AsideEntry page={page} />
                   </li>
                 ))}
-              </ul>
-            </div>
+              </Stack>
+            </Stack>
           )
         })}
       </nav>

@@ -3,11 +3,13 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, type ErrorComponentProps, useRouter } from '@tanstack/react-router'
 import type * as React from 'react'
 import { Button } from 'uilibs/base/button'
+import { Container } from 'uilibs/extra/container'
 import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
 import { ThemeProvider } from 'uilibs/theme'
 import { useMessages } from '#/libraries/messages'
-import { styles as layout } from '#/styles/element/layout.stylex'
+import { layoutSize } from '#/styles/constants.stylex'
+import { styles } from '#/styles/element/boundaries.stylex'
 
 function Boundary({
   icon,
@@ -28,8 +30,8 @@ function Boundary({
   return (
     <ThemeProvider attribute='data-theme' defaultTheme='system'>
       <title>{`${title} - Rusttp`}</title>
-      <div {...stylex.props(layout.root)}>
-        <main {...stylex.props(layout.center)}>
+      <div {...stylex.props(styles.root)}>
+        <Container render={<main />} size={layoutSize.reading} style={styles.center}>
           <Icon svg={icon} size={32} color='neutral-faded' />
           <Text variant='featured-3' weight='bold' render={<h1>{title}</h1>} />
           <Text color='neutral-faded'>{description}</Text>
@@ -38,8 +40,8 @@ function Boundary({
               {detail}
             </Text>
           )}
-          <div {...stylex.props(layout.actions)}>{children}</div>
-        </main>
+          <div {...stylex.props(styles.actions)}>{children}</div>
+        </Container>
       </div>
     </ThemeProvider>
   )

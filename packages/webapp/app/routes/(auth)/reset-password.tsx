@@ -6,6 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { PasswordField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
@@ -38,10 +39,10 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.auth_reset_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_subtitle()}</p>
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -51,7 +52,7 @@ function RouteComponent() {
           void submit()
         }}
       >
-        <div {...stylex.props(styles.fields)}>
+        <Stack gap={5}>
           <Field of={form} path={['password']}>
             {(field) => (
               <PasswordField
@@ -70,7 +71,7 @@ function RouteComponent() {
               />
             )}
           </Field>
-        </div>
+        </Stack>
         <Button type='submit' size='large' style={styles.submit}>
           {m.auth_reset_submit()}
         </Button>
@@ -83,11 +84,11 @@ function InvalidLink() {
   const m = useMessages()
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <StatusIcon svg={CircleAlert} color='critical' />
         <PageTitle>{m.auth_reset_invalid_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
-      </div>
+      </Stack>
 
       <Button render={<RouterLink to='/forgot-password' />} size='large'>
         {m.auth_reset_invalid_action()}

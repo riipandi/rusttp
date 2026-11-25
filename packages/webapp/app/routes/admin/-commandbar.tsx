@@ -36,6 +36,7 @@ import {
   CommandSeparator
 } from 'uilibs/extra/command'
 import { Icon } from 'uilibs/extra/icon'
+import { Stack } from 'uilibs/extra/stack'
 import { useTheme } from 'uilibs/theme'
 import { AppShortcut, Shortcut, ariaKeyShortcuts, useShortcutText } from '#/components/shortcut'
 import { themes } from '#/components/theme-menu'
@@ -352,12 +353,18 @@ function CommandBarDialog({ open }: { open: boolean }) {
                       <span {...stylex.props(styles.itemIcon)}>
                         <Icon svg={item.icon} size={16} color='neutral-faded' />
                       </span>
-                      <span {...stylex.props(styles.itemLabel)}>
+                      <Stack
+                        render={<span />}
+                        direction='row'
+                        align='baseline'
+                        gap={2}
+                        style={styles.itemLabel}
+                      >
                         {item.label}
                         {item.value === '/admin/notifications' && unread > 0 && (
                           <span {...stylex.props(styles.itemMeta)}>{unreadLabel}</span>
                         )}
-                      </span>
+                      </Stack>
                       {item.hotkey && (
                         <AppShortcut id={item.hotkey} hidden style={styles.itemKeys} />
                       )}
@@ -368,7 +375,7 @@ function CommandBarDialog({ open }: { open: boolean }) {
             )}
           </CommandList>
           <Separator />
-          <div aria-hidden='true' {...stylex.props(styles.footer)}>
+          <Stack aria-hidden='true' direction='row' align='center' gap={4} style={styles.footer}>
             <span {...stylex.props(styles.footerHint)}>
               <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' />{' '}
               {m.commandbar_hint_move()}
@@ -383,7 +390,7 @@ function CommandBarDialog({ open }: { open: boolean }) {
                 <Shortcut hotkey='Escape' /> {m.commandbar_hint_close()}
               </span>
             </span>
-          </div>
+          </Stack>
         </Command>
       )}
     </CommandDialog>
@@ -416,8 +423,8 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
   const [editing, setEditing] = React.useState<AppHotkeyId | null>(null)
 
   return (
-    <div ref={ref} tabIndex={-1} {...stylex.props(styles.panel)}>
-      <div {...stylex.props(styles.panelHeader)}>
+    <Stack ref={ref} tabIndex={-1} style={styles.panel}>
+      <Stack direction='row' align='center' gap={2} style={styles.panelHeader}>
         <Button
           variant='ghost'
           size='small'
@@ -426,13 +433,13 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
           onClick={onBack}
         />
         <h2 {...stylex.props(styles.panelTitle)}>{m.shortcuts_title()}</h2>
-      </div>
+      </Stack>
       <div {...stylex.props(styles.panelList)}>
         {groups.map((group) => (
-          <section
+          <Stack
             key={group}
-            aria-labelledby={`${groupId}-${group}`}
-            {...stylex.props(styles.panelGroup)}
+            render={<section aria-labelledby={`${groupId}-${group}`} />}
+            style={styles.panelGroup}
           >
             <h3 id={`${groupId}-${group}`} {...stylex.props(styles.panelGroupLabel)}>
               {names[group] ?? group}
@@ -448,10 +455,10 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
                   onEdit={(on) => setEditing(on ? appHotkey.id : null)}
                 />
               ))}
-          </section>
+          </Stack>
         ))}
       </div>
-    </div>
+    </Stack>
   )
 }
 
@@ -511,8 +518,8 @@ function ShortcutRow({
   }, [editing, recorder])
 
   return (
-    <div {...stylex.props(styles.row)}>
-      <div {...stylex.props(styles.rowText)}>
+    <Stack direction='row' align='center' justify='space-between' gap={3} style={styles.row}>
+      <Stack style={styles.rowText}>
         <span {...stylex.props(styles.rowName)}>{hotkeyNames(m)[id]}</span>
         {editing && recorder.isRecording && (
           <output {...stylex.props(styles.rowHint)}>
@@ -522,8 +529,8 @@ function ShortcutRow({
                 : m.shortcuts_recording_hint())}
           </output>
         )}
-      </div>
-      <div {...stylex.props(styles.rowKeys)}>
+      </Stack>
+      <Stack direction='row' align='center' gap={1} style={styles.rowKeys}>
         {appHotkey.hotkey ? (
           <Shortcut hotkey={appHotkey.hotkey} />
         ) : (
@@ -549,7 +556,7 @@ function ShortcutRow({
             onClick={() => resetCustomHotkey(id)}
           />
         )}
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

@@ -6,6 +6,7 @@ import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { CheckboxField, CodeField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { getMessages, useMessages } from '#/libraries/messages'
@@ -29,10 +30,10 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.page_auth_two_factor()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_two_factor_subtitle()}</p>
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -55,7 +56,14 @@ function RouteComponent() {
         </Button>
       </Form>
 
-      <div {...stylex.props(styles.links)}>
+      <Stack
+        direction='row'
+        wrap
+        align='center'
+        justify='space-between'
+        gap={2}
+        style={styles.links}
+      >
         {/* Placeholder: recovery codes need the backend. */}
         <button
           type='button'
@@ -74,7 +82,7 @@ function RouteComponent() {
           </span>
           {m.auth_back_to_sign_in()}
         </Link>
-      </div>
+      </Stack>
     </>
   )
 }

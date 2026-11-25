@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link as RouterLink } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
@@ -20,7 +21,7 @@ function RouteComponent() {
   const m = useMessages()
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <StatusIcon svg={Mail} />
         <PageTitle>{m.auth_verify_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>
@@ -31,9 +32,9 @@ function RouteComponent() {
             <span {...stylex.props(styles.strong)}>{signupEmail}</span>
           </MessageSlot>
         </p>
-      </div>
+      </Stack>
 
-      <div {...stylex.props(styles.actions)}>
+      <Stack gap={3}>
         {/* Demo only: there is no mailer yet, so this stands in for opening the link. */}
         <Button render={<RouterLink to='/email-verified' />} size='large'>
           {m.auth_verify_done()}
@@ -42,7 +43,7 @@ function RouteComponent() {
         <Button variant='outline' size='large' onClick={notWired('Resend the verification email')}>
           {m.auth_verify_resend()}
         </Button>
-      </div>
+      </Stack>
 
       <p {...stylex.props(styles.fine)}>
         <MessageSlot message={m.auth_verify_no_mail({ link: slotMarker('link') })} name='link'>

@@ -4,6 +4,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { batch } from '@tanstack/store'
 import * as React from 'react'
 import { TooltipProvider } from 'uilibs/base/tooltip'
+import { Stack } from 'uilibs/extra/stack'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { SkipLink } from '#/components/skip-link'
 import { commandBarStore } from '#/libraries/commandbar.store'
@@ -83,7 +84,7 @@ function AdminLayout() {
     // It lives here, not at the root: the landing and auth pages show no tooltip and would load
     // Base UI's for nothing (89 KB of the entry; `pnpm --filter webapp size`).
     <TooltipProvider>
-      <div {...stylex.props(styles.root)}>
+      <Stack direction={compact ? 'column' : 'row'} style={styles.root}>
         <SkipLink />
         {/* One chrome, not both hidden by CSS: a hidden one still ran its subscriptions. */}
         {compact ? <AdminTopBar /> : <Sidebar />}
@@ -98,7 +99,7 @@ function AdminLayout() {
           <Outlet />
         </div>
         <CommandBar />
-      </div>
+      </Stack>
     </TooltipProvider>
   )
 }

@@ -84,6 +84,7 @@ The axe sweep (`packages/e2e/screens/a11y/a11y.spec.ts`) visits every route in `
 - Each layout starts with `SkipLink`; a page has one `h1` (`PageTitle`, and on the 404 and error pages); every region is a named landmark.
 - A control without a backend calls `notWired('what')` (`libraries/not-wired.ts`, one `console.info`); the change that wires it replaces the call.
 - Inline links keep an underline; motion has a `motion.reduce` branch; widths and gutters are `layoutSize`, breakpoints `breakpoints`.
+- Page layout is `Stack` (a row or a column with a `gap` step, `render` for the element) and `Container` (`size={layoutSize.page}`, `.reading`, `.form`: the `container` tokens stop at 32rem, so a page width is a CSS length; `layout.gutter` is the inset). A style sheet keeps flex only for one control's own box (the sidebar header, the captcha, a menu label) or where the webapp's own `compact` and `narrow` breakpoints decide the direction (the aside, the shell, the top bar; the direction there follows `useCompact()`, since `Stack` responds at `small`..`xlarge`). Code in the entry chunk must not import `Stack`: it is 6 KB raw and 2 KB gzip and comes along with every chunk that imports it, so `routes/-boundaries.tsx` and the dashboard's `pendingComponent` (the route's page and skeleton) lay out with plain flex and `Container` (`styles/element/boundaries.stylex.ts`). Check `just size` after a layout change.
 
 ## Keyboard shortcuts
 

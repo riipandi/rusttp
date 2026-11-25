@@ -16,8 +16,6 @@ const banner = unit.x10
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
-    display: 'flex',
-    flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
   },
@@ -59,26 +57,11 @@ export const styles = stylex.create({
     marginInlineEnd: `calc(-1 * ${unit.x2})`
   },
   main: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x10,
     padding: inset
-  },
-  heading: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1
   },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
-  },
-  // The settings pages: a secondary aside beside the page. Below the compact breakpoint the aside
-  // is gone and a select above the page stands in (`routes/admin/settings/-settings-nav.tsx`).
-  settings: {
-    display: 'flex',
-    flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
-    alignItems: { default: 'flex-start', [breakpoints.compact]: 'stretch' }
   },
   // Like the sidebar: a column the height of the viewport below the pinned banner, with its own divider, items inset by
   // the same step as the sidebar's nav, and the first item level with the page title.

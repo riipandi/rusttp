@@ -6,6 +6,7 @@ import * as React from 'react'
 import { Button, buttonSquare } from 'uilibs/base/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Icon } from 'uilibs/extra/icon'
+import { Stack } from 'uilibs/extra/stack'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -144,7 +145,7 @@ export function Sidebar() {
   const settled = useRailSettled(collapsed)
 
   return (
-    <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
+    <Stack render={<aside />} style={[styles.root, collapsed && styles.rootCollapsed]}>
       {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
       {/* One header for both states, so a toggle only moves and fades what is already there: the
             logo stays where it is, the wordmark fades, and the toggle rides the sidebar's edge
@@ -196,13 +197,13 @@ export function Sidebar() {
         <CommandBarTrigger collapsed={collapsed} />
       </div>
 
-      <nav
-        id={navId}
-        aria-label={m.admin_nav_landmark()}
-        {...stylex.props(styles.nav, styles.navUnderSearch)}
+      <Stack
+        render={<nav id={navId} aria-label={m.admin_nav_landmark()} />}
+        gap={5}
+        style={[styles.nav, styles.navUnderSearch]}
       >
         {navGroups.map(({ label, items }) => (
-          <div key={label ?? 'main'} {...stylex.props(styles.group)}>
+          <Stack key={label ?? 'main'} style={styles.group}>
             {label && (
               <>
                 {/* Collapsed, the label's row folds to nothing and a muted rule marks the break. */}
@@ -222,19 +223,20 @@ export function Sidebar() {
                 </div>
               </>
             )}
-            <ul
-              aria-labelledby={label ? `${id}-${label}` : undefined}
-              {...stylex.props(styles.list)}
+            <Stack
+              render={<ul aria-labelledby={label ? `${id}-${label}` : undefined} />}
+              gap={1}
+              style={styles.list}
             >
               {items.map((item) => (
                 <li key={item.label}>
                   <NavEntry item={item} collapsed={collapsed} />
                 </li>
               ))}
-            </ul>
-          </div>
+            </Stack>
+          </Stack>
         ))}
-      </nav>
+      </Stack>
 
       {/* Room for the bell above the account strip; it opens and closes with the width. */}
       <div
@@ -242,11 +244,11 @@ export function Sidebar() {
         {...stylex.props(styles.notifyRoom, collapsed && styles.notifyRoomOpen)}
       />
 
-      <div {...stylex.props(styles.account)}>
+      <Stack direction='row' align='center' justify='space-between' gap={2} style={styles.account}>
         <AdminUserMenu collapsed={collapsed} />
-      </div>
+      </Stack>
 
       <NotifyEntry collapsed={collapsed} />
-    </aside>
+    </Stack>
   )
 }

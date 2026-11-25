@@ -1,8 +1,11 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { Container } from 'uilibs/extra/container'
+import { Stack } from 'uilibs/extra/stack'
 import { Logo } from '#/components/logo'
 import { PreferencesMenu } from '#/components/preferences-menu'
 import { useMessages } from '#/libraries/messages'
+import { layoutSize } from '#/styles/constants.stylex'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/auth.stylex'
 
@@ -26,8 +29,8 @@ function RouteComponent() {
         </div>
       </aside>
 
-      <main {...stylex.props(styles.formSide)}>
-        <div {...stylex.props(styles.topRow)}>
+      <Stack render={<main />} style={styles.formSide}>
+        <Stack direction='row' align='center'>
           <Link to='/' {...stylex.props(layout.brand, styles.mobileBrand)}>
             <Logo />
             Rusttp
@@ -35,12 +38,17 @@ function RouteComponent() {
           <div {...stylex.props(styles.theme)}>
             <PreferencesMenu />
           </div>
-        </div>
+        </Stack>
 
-        <div {...stylex.props(styles.formWrap)}>
+        <Stack
+          render={<Container size={layoutSize.form} />}
+          justify='center'
+          gap={8}
+          style={styles.formWrap}
+        >
           <Outlet />
-        </div>
-      </main>
+        </Stack>
+      </Stack>
     </div>
   )
 }
