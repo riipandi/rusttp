@@ -1047,13 +1047,14 @@ export const RightToLeft: Story = {
       'svg'
     )!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
-    await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1))
+    // The end state of a 200 ms transition; the wait is sized for a loaded runner (issue-00009).
+    await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1), { timeout: 10_000 })
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
     const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
       'svg'
     )!
-    await waitFor(() => expect(turn(open).b).toBeCloseTo(0))
+    await waitFor(() => expect(turn(open).b).toBeCloseTo(0), { timeout: 10_000 })
     await expect(turn(open).a).toBeCloseTo(1)
     // `rotate(180deg)`: previous and next swap sides of the arrow glyphs.
     for (const name of [/go to previous page/i, /go to next page/i]) {
