@@ -31,9 +31,19 @@ A click on the text reaches the control inside the label.
 
 <Canvas of={Stories.Playground} />
 
+### Invalid
+
+It looks like `FieldLabel`, and turns the critical color while it has `data-invalid`.
+
+<Canvas of={Stories.Invalid} />
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+| Data attribute | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `data-invalid` | Set it yourself on a label outside a `Field`: the text turns the critical color. Inside a `Field`, use `FieldLabel`. |
 
 ## Caveats
 

@@ -1,13 +1,9 @@
 import * as stylex from '@stylexjs/stylex'
-import { fontWeight } from '../../styles/tokens.stylex'
-import { unit } from '../../styles/tokens.stylex'
 
 export const labelStyles = stylex.create({
+  // The label is a flex box: without this it spans the row, and the empty space beside the text
+  // would toggle the control.
   root: {
-    alignItems: 'center',
-    display: 'flex',
-    fontWeight: fontWeight.medium,
-    gap: unit.x2,
-    userSelect: 'none'
+    width: 'fit-content'
   }
 })

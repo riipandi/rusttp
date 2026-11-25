@@ -39,15 +39,7 @@ export const fieldStyles = stylex.create({
     gap: unit.x0_5,
     lineHeight: fontLineHeight.body2
   },
-  labelBase: {
-    alignItems: 'center',
-    display: 'flex',
-    fontWeight: fontWeight.medium,
-    gap: unit.x2,
-    userSelect: 'none'
-  },
   label: {
-    color: { default: null, '[data-invalid]': colors.foregroundCritical },
     width: 'fit-content'
   },
   title: {
@@ -98,6 +90,23 @@ export const fieldStyles = stylex.create({
     listStyle: 'disc',
     margin: 0,
     paddingLeft: unit.x4
+  }
+})
+
+/**
+ * The look of a form label, shared by `FieldLabel` and `Label`: compose `base`, then `invalid`
+ * (critical while the label has `data-invalid`), after `type.body2`.
+ */
+export const fieldLabelStyles = stylex.create({
+  base: {
+    alignItems: 'center',
+    display: 'flex',
+    fontWeight: fontWeight.medium,
+    gap: unit.x2,
+    userSelect: 'none'
+  },
+  invalid: {
+    color: { default: null, '[data-invalid]': colors.foregroundCritical }
   }
 })
 

@@ -28,7 +28,10 @@ import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
-import { fieldLegendVariants as legendVariants } from './field.stylex'
+import {
+  fieldLabelStyles as labelStyles,
+  fieldLegendVariants as legendVariants
+} from './field.stylex'
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -81,7 +84,12 @@ export function FieldLabel({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseField.Label>, 'className' | 'style'> & StyleProp) {
-  return <BaseField.Label {...props} {...stylex.props(type.body2, s.labelBase, s.label, style)} />
+  return (
+    <BaseField.Label
+      {...props}
+      {...stylex.props(type.body2, labelStyles.base, labelStyles.invalid, s.label, style)}
+    />
+  )
 }
 
 export function FieldTitle({ style, ...props }: DivProps) {
