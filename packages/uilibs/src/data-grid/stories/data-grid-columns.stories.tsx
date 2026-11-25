@@ -12,6 +12,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
+import { expect, userEvent } from 'storybook/test'
 import {
   DataGrid,
   DataGridColumnHeader,
@@ -366,6 +367,72 @@ export const ColumnResizing: Story = {
         </div>
       </DataGrid>
     )
+  }
+}
+
+/** A resizable column that cannot sort draws a plain label, and a click on it sorts nothing. */
+export const ResizableNotSortable: Story = {
+  name: 'Resizable, not sortable',
+  render: () => {
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const getTable = () => {
+      if (!tableHolder.current) throw new Error('table not ready')
+      return tableHolder.current
+    }
+    const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(
+      () => [
+        {
+          accessorKey: 'title',
+          id: 'title',
+          header: ({ column }) => (
+            <DataGridColumnHeader table={getTable()} title='Title' column={column} />
+          ),
+          size: 300,
+          enableSorting: true,
+          enableResizing: true
+        },
+        {
+          accessorKey: 'role',
+          id: 'role',
+          header: ({ column }) => (
+            <DataGridColumnHeader table={getTable()} title='Genre' column={column} />
+          ),
+          size: 200,
+          enableSorting: false,
+          enableResizing: true
+        }
+      ],
+      []
+    )
+    const table = useDemoTable(columns)
+
+    tableHolder.current = table
+
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData?.length || 0}
+        tableLayout={{ columnsResizable: true }}
+      >
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const genre = (await canvas.findByText('Genre')).closest('th')!
+    const title = (await canvas.findByText('Title')).closest('th')!
+    await expect(title).toHaveAttribute('aria-sort', 'descending')
+    // A click on the non-sortable header sorts nothing: no column takes its place.
+    await userEvent.click(canvas.getByText('Genre'))
+    await expect(genre).not.toHaveAttribute('aria-sort')
+    await expect(title).toHaveAttribute('aria-sort', 'descending')
+    // The sortable header is a button; the other is a plain label.
+    await expect(title.querySelector('button')).not.toBeNull()
+    await expect(genre.querySelector('button')).toBeNull()
   }
 }
 

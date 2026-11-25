@@ -232,13 +232,15 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
   const isPinned = column.getIsPinned()
   const canSort = column.getCanSort()
   const canPin = column.getCanPin()
-  const canResize = column.getCanResize()
 
   const columnIndex = columnOrder.indexOf(column.id)
   const canMoveLeft = columnIndex > 0
   const canMoveRight = columnIndex < columnOrder.length - 1
 
+  // TanStack's `toggleSorting` does not check `getCanSort` (only its click handler does), so a
+  // header that cannot sort must never reach it.
   const handleSort = () => {
+    if (!canSort) return
     if (isSorted === 'asc') {
       column.toggleSorting(true)
     } else if (isSorted === 'desc') {
@@ -495,7 +497,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
     )
   }
 
-  if (canSort || (props.tableLayout?.columnsResizable && canResize)) {
+  if (canSort) {
     return (
       <div {...stylex.props(sHeader.sortRow)}>
         <Button
