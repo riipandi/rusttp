@@ -65,6 +65,10 @@ Built on Base UI [Alert Dialog](https://base-ui.com/react/components/alert-dialo
 
 <Canvas of={Stories.Sizes} />
 
+### Overlays
+
+<Canvas of={Stories.Overlays} />
+
 ### Action looks
 
 The action and the cancel button take the Button `variant`.
@@ -92,6 +96,10 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 
 ### AlertDialogOverlay
 
+| Prop             | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop. Default `false`. |
+
 | Data attribute        | Description                           |
 | --------------------- | ------------------------------------- |
 | `data-open`           | Present while the dialog is open.     |
@@ -101,9 +109,10 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 
 ### AlertDialogContent
 
-| Prop   | Description                                              |
-| ------ | -------------------------------------------------------- |
-| `size` | `sm`, `md` <br /> The width of the dialog. Default `md`. |
+| Prop             | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `size`           | `sm`, `md` <br /> The width of the dialog. Default `md`.              |
+| `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop. Default `false`. |
 
 | Data attribute            | Description                                       |
 | ------------------------- | ------------------------------------------------- |

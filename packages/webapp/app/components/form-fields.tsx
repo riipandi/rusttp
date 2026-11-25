@@ -58,7 +58,7 @@ const styles = stylex.create({
     minHeight: unit.x12,
     paddingBlock: unit.x2,
     paddingInline: unit.x4,
-    backgroundColor: colors.backgroundPageFaded,
+    backgroundColor: colors.backgroundNeutralFaded,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: colors.borderControl,

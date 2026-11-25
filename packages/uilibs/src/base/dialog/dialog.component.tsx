@@ -23,6 +23,7 @@ import { Dialog as BaseDialog } from '@base-ui/react/dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { type CloseLabels, CloseButton } from './close-button'
 import { dialogStyles as s } from './dialog.stylex'
@@ -48,7 +49,7 @@ export function DialogOverlay({
   return (
     <BaseDialog.Backdrop
       {...props}
-      {...stylex.props(s.overlay, blurredOverlay && s.overlayBlurred, style)}
+      {...stylex.props(popupFx.scrim, s.overlay, blurredOverlay && popupFx.scrimBlurred, style)}
     />
   )
 }

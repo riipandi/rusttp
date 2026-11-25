@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
+import { colors } from './colors.stylex'
 import { unit, zIndex } from './tokens.stylex'
 import { duration, easing } from './tokens.stylex'
 
@@ -25,6 +26,14 @@ export const popupFx = stylex.create({
   positioner: {
     outline: 'none',
     zIndex: zIndex.popover
+  },
+  /** The backdrop of a modal (dialog, alert dialog, sheet, drawer): the themed `scrim` color. */
+  scrim: {
+    backgroundColor: colors.scrim
+  },
+  /** `blurredOverlay`: the page behind the backdrop is blurred by one unit step. */
+  scrimBlurred: {
+    backdropFilter: `blur(${unit.x1})`
   },
   /** Closed-pose nudge direction from Base UI's `data-side` attribute. */
   shift: {

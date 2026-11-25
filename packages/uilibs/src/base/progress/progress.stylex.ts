@@ -17,7 +17,7 @@ export const progressStyles = stylex.create({
   },
   track: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundNeutral,
+    backgroundColor: colors.backgroundTrack,
     borderRadius: radius.full,
     display: 'flex',
     // Forced colors drop backgrounds: the track gets an edge and the fill a system color.

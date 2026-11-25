@@ -20,7 +20,7 @@ export const sliderStyles = stylex.create({
     pointerEvents: 'none'
   },
   track: {
-    backgroundColor: colors.backgroundNeutral,
+    backgroundColor: colors.backgroundTrack,
     borderRadius: radius.full,
     flexGrow: 1,
     // Forced colors drop backgrounds: the track gets an edge and the range a system color.

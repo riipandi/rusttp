@@ -30,6 +30,7 @@ const darkColors = stylex.createTheme(colors, {
   backgroundPrimaryHighlightedFaded: 'oklch(0.55 0.135 39.4 / 0.08)',
   backgroundPrimaryHighlighted: 'oklch(0.58 0.14 39.4)',
   backgroundPrimary: 'oklch(0.55 0.135 39.4)',
+  backgroundTrack: 'oklch(0.25 0 89.88)',
   backgroundWarningFaded: 'oklch(0.24 0.018 80)',
   backgroundWarningHighlightedFaded: 'oklch(0.8108 0.176 80 / 0.08)',
   backgroundWarningHighlighted: 'oklch(0.7297 0.176 80)',
@@ -52,8 +53,7 @@ const darkColors = stylex.createTheme(colors, {
   foregroundNeutral: 'oklch(0.96 0 89.88)',
   foregroundPositive: 'oklch(0.75 0.1105 151.8)',
   foregroundPrimary: 'oklch(0.756 0.115 45.84)',
-  foregroundWarning: 'oklch(0.75 0.187 80)',
-  onBackgroundNeutral: 'oklch(1 0 0)'
+  foregroundWarning: 'oklch(0.75 0.187 80)'
 })
 
 const darkShadows = stylex.createTheme(shadow, {

@@ -97,7 +97,7 @@ const tintHover = {
 export const buttonSolid = stylex.create({
   primary: {
     backgroundColor: { default: colors.backgroundPrimary, [hover]: solidHover.primary },
-    color: colors.onBrand
+    color: colors.onBackgroundPrimary
   },
   neutral: {
     backgroundColor: { default: colors.foregroundNeutral, [hover]: solidHover.neutral },

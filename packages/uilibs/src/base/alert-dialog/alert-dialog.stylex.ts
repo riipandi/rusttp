@@ -7,7 +7,6 @@ import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/t
 
 export const alertDialogStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     opacity: {
       default: 1,

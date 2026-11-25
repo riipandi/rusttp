@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { cellOf, expectDockedTo } from '../../contracts/control-sizes'
+import { backdropOf, cellOf, expectDockedTo } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import { Drawer, type DrawerSwipeDirection } from './drawer.component'
@@ -38,20 +39,28 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
+// The overlay lives on `DrawerContent`, so its prop reaches the story as an arg beside the root's.
+type PlaygroundArgs = ComponentProps<typeof Drawer> &
+  Pick<ComponentProps<typeof DrawerContent>, 'blurredOverlay'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['swipeDirection', 'showSwipeHandle', 'modal'] }
+    controls: {
+      disable: false,
+      include: ['swipeDirection', 'showSwipeHandle', 'modal', 'blurredOverlay']
+    }
   },
   argTypes: {
     swipeDirection: { control: 'radio', options: Object.keys(drawerDirections) },
     showSwipeHandle: { control: 'boolean' },
-    modal: { control: 'radio', options: [true, false, 'trap-focus'] }
+    modal: { control: 'radio', options: [true, false, 'trap-focus'] },
+    blurredOverlay: { control: 'boolean' }
   },
-  args: { showSwipeHandle: true, swipeDirection: 'down', modal: true },
-  render: (args) => (
+  args: { showSwipeHandle: true, swipeDirection: 'down', modal: true, blurredOverlay: false },
+  render: ({ blurredOverlay, ...args }) => (
     <Drawer {...args}>
       <DrawerTrigger render={<Button variant='outline' />}>Open the vault</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent blurredOverlay={blurredOverlay}>
         <DrawerHeader>
           <DrawerTitle>Brew Polyjuice</DrawerTitle>
           <DrawerDescription>Set your daily dosage for the potion.</DrawerDescription>
@@ -116,5 +125,43 @@ export const Directions: Story = {
       await userEvent.keyboard('{Escape}')
       await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
     }
+  }
+}
+
+const overlays = ['plain', 'blurred'] as const
+
+/** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
+export const Overlays: Story = {
+  render: () => (
+    <Axis axis='overlay' rows={overlays}>
+      {(overlay) => (
+        <Drawer>
+          <DrawerTrigger render={<Button variant='outline' />}>{`Open ${overlay}`}</DrawerTrigger>
+          <DrawerContent blurredOverlay={overlay === 'blurred'}>
+            <DrawerHeader>
+              <DrawerTitle>{`Overlay ${overlay}`}</DrawerTitle>
+              <DrawerDescription>The castle fades behind the portrait.</DrawerDescription>
+            </DrawerHeader>
+          </DrawerContent>
+        </Drawer>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const filters: string[] = []
+    for (const overlay of overlays) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'overlay', overlay)).getByRole('button', {
+          name: `Open ${overlay}`
+        })
+      )
+      const dialog = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      // The popup sits in the viewport, which is the backdrop's sibling.
+      filters.push(getComputedStyle(backdropOf(dialog.parentElement!)).backdropFilter)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+    await expect(filters).toEqual(['none', 'blur(4px)'])
   }
 }

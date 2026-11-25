@@ -36,7 +36,7 @@ export const checkboxStyles = stylex.create({
   },
   indicator: {
     alignItems: 'center',
-    color: colors.onBrand,
+    color: colors.onBackgroundPrimary,
     display: 'flex',
     justifyContent: 'center'
   }

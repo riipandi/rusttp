@@ -71,7 +71,7 @@ const roles = {
     text: colors.foregroundPrimary,
     edge: colors.borderPrimary,
     fill: colors.backgroundPrimary,
-    onFill: colors.onBrand
+    onFill: colors.onBackgroundPrimary
   },
   critical: {
     tint: colors.backgroundCriticalFaded,

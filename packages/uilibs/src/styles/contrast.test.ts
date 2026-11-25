@@ -147,10 +147,9 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
   })
 })
 
-// Known failures: each flips to a plain `it` in the phase that fixes it, and until then the
-// expectation below fails by design, so the day a fix lands the flip is forced.
+// X-01: the keyboard-highlighted option is `backgroundNeutralFaded` on the popup, 1.07:1 and 1.12:1.
+// Phase 10 replaces it, and flips this to a plain `it`.
 describe('known contrast failures', () => {
-  // X-01: the keyboard-highlighted option is `backgroundNeutralFaded` on the popup, 1.07:1 and 1.12:1.
   for (const [name, theme] of Object.entries(themes)) {
     it.fails(`the highlighted option against its popup, ${name} (X-01)`, () => {
       expect(
@@ -163,13 +162,11 @@ describe('known contrast failures', () => {
       ).toBeGreaterThanOrEqual(3)
     })
   }
+})
 
-  // X-04: the primary indicator on the neutral track is 4.32:1 in light and 2.46:1 in dark.
-  it('the primary indicator against the track, light (X-04)', () => {
-    expect(contrast(light, 'backgroundPrimary', 'backgroundNeutral')).toBeGreaterThanOrEqual(3)
-  })
-
-  it.fails('the primary indicator against the track, dark (X-04)', () => {
-    expect(contrast(dark, 'backgroundPrimary', 'backgroundNeutral')).toBeGreaterThanOrEqual(3)
+describe.each(Object.entries(themes))('%s theme tracks', (_name, theme) => {
+  // X-04: the primary indicator on the track was 4.32:1 in light and 2.46:1 in dark on `backgroundNeutral`.
+  it('the primary indicator against the track (X-04)', () => {
+    expect(contrast(theme, 'backgroundPrimary', 'backgroundTrack')).toBeGreaterThanOrEqual(3)
   })
 })

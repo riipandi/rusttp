@@ -23,6 +23,7 @@ import { AlertDialog as BaseAlertDialog } from '@base-ui/react/alert-dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { Button, type ButtonProps } from '../button'
 import { alertDialogStyles as s, alertDialogSizes as sizes } from './alert-dialog.stylex'
@@ -36,11 +37,20 @@ export const AlertDialogTrigger = BaseAlertDialog.Trigger
 export const AlertDialogPortal = BaseAlertDialog.Portal
 
 export function AlertDialogOverlay({
+  blurredOverlay = false,
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAlertDialog.Backdrop>, 'className' | 'style'> &
-  StyleXStyleProps) {
-  return <BaseAlertDialog.Backdrop {...props} {...stylex.props(s.overlay, style)} />
+  StyleXStyleProps & {
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
+  }) {
+  return (
+    <BaseAlertDialog.Backdrop
+      {...props}
+      {...stylex.props(popupFx.scrim, s.overlay, blurredOverlay && popupFx.scrimBlurred, style)}
+    />
+  )
 }
 
 export type AlertDialogSize = 'sm' | 'md'
@@ -48,12 +58,17 @@ export type AlertDialogSize = 'sm' | 'md'
 export function AlertDialogContent({
   style,
   size = 'md',
+  blurredOverlay = false,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAlertDialog.Popup>, 'className' | 'style'> &
-  StyleXStyleProps & { size?: AlertDialogSize }) {
+  StyleXStyleProps & {
+    size?: AlertDialogSize
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
+  }) {
   return (
     <BaseAlertDialog.Portal>
-      <AlertDialogOverlay />
+      <AlertDialogOverlay blurredOverlay={blurredOverlay} />
       <BaseAlertDialog.Popup
         {...props}
         {...stylex.props(s.content, sizes[size], ring({ shadow: shadow.overlay }), style)}

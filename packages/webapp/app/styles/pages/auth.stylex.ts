@@ -26,7 +26,7 @@ export const styles = stylex.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     padding: unit.x12,
-    backgroundColor: colors.backgroundPageFaded,
+    backgroundColor: colors.backgroundNeutralFaded,
     borderRightWidth: 1,
     borderRightStyle: 'solid',
     borderRightColor: colors.borderNeutralFaded

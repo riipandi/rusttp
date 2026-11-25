@@ -240,10 +240,10 @@ export const dataGridTableStyles = stylex.create({
   // Pinned-row boundary shadows: the separator shadow casts away from the
   // scrolled content.
   rowBoundaryTop: {
-    boxShadow: '0 2px 0 rgba(0, 0, 0, 0.03)'
+    boxShadow: `0 2px 0 ${colors.backgroundNeutralFaded}`
   },
   rowBoundaryBottom: {
-    boxShadow: '0 -2px 0 rgba(0, 0, 0, 0.03)'
+    boxShadow: `0 -2px 0 ${colors.backgroundNeutralFaded}`
   },
   // CRUD row-status tints (defaults; yield to tableStyles overrides).
   rowStatusDeleted: {

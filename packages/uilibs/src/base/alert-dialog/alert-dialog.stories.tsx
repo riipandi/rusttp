@@ -2,7 +2,7 @@ import { Bin } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { cellOf } from '../../contracts/control-sizes'
+import { backdropOf, cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
@@ -83,22 +83,23 @@ export default meta
 
 // The size lives on `AlertDialogContent` and the color on the confirming `AlertDialogAction`.
 type PlaygroundArgs = React.ComponentProps<typeof AlertDialog> &
-  Pick<React.ComponentProps<typeof AlertDialogContent>, 'size'> &
+  Pick<React.ComponentProps<typeof AlertDialogContent>, 'size' | 'blurredOverlay'> &
   Pick<React.ComponentProps<typeof AlertDialogAction>, 'color'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  parameters: { controls: { disable: false, include: ['size', 'blurredOverlay', 'color'] } },
   argTypes: {
     size: { control: 'radio', options: Object.keys(alertDialogSizes) },
+    blurredOverlay: { control: 'boolean' },
     color: { control: 'select', options: Object.keys(buttonFills.solid) }
   },
-  args: { size: 'md', color: 'critical' },
-  render: ({ size, color, ...root }) => (
+  args: { size: 'md', blurredOverlay: false, color: 'critical' },
+  render: ({ size, blurredOverlay, color, ...root }) => (
     <AlertDialog {...root}>
       <AlertDialogTrigger render={<Button variant='outline' />}>
         Seal the cryptex
       </AlertDialogTrigger>
-      <AlertDialogContent size={size}>
+      <AlertDialogContent size={size} blurredOverlay={blurredOverlay}>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure, Professor?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -292,5 +293,47 @@ export const Destructive: Story = {
     await waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull(), {
       timeout: 4000
     })
+  }
+}
+
+const overlays = ['plain', 'blurred'] as const
+
+/** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
+export const Overlays: Story = {
+  render: () => (
+    <Axis axis='overlay' rows={overlays}>
+      {(overlay) => (
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={<Button variant='outline' />}
+          >{`Open ${overlay}`}</AlertDialogTrigger>
+          <AlertDialogContent size='sm' blurredOverlay={overlay === 'blurred'}>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{`Overlay ${overlay}`}</AlertDialogTitle>
+              <AlertDialogDescription>The castle fades behind the portrait.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const filters: string[] = []
+    for (const overlay of overlays) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'overlay', overlay)).getByRole('button', {
+          name: `Open ${overlay}`
+        })
+      )
+      const dialog = await body.findByRole('alertdialog', { name: `Overlay ${overlay}` })
+      filters.push(getComputedStyle(backdropOf(dialog)).backdropFilter)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+    }
+    await expect(filters).toEqual(['none', 'blur(4px)'])
   }
 }

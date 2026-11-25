@@ -44,7 +44,7 @@ export const avatarStyles = stylex.create({
     borderRadius: radius.full,
     borderStyle: 'solid',
     borderWidth: stroke.ring2,
-    color: colors.onBrand,
+    color: colors.onBackgroundPrimary,
     display: 'flex',
     insetInlineEnd: 0,
     insetBlockEnd: 0,
@@ -91,7 +91,7 @@ export const avatarFills = {
   }),
   solid: stylex.create({
     neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-    primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBrand },
+    primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
     positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },
     warning: { backgroundColor: colors.backgroundWarning, color: colors.onBackgroundWarning },
     critical: { backgroundColor: colors.backgroundCritical, color: colors.onBackgroundCritical }

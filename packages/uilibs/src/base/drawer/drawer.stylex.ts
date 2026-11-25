@@ -7,7 +7,6 @@ import { duration, easing } from '../../styles/tokens.stylex'
 
 export const drawerStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     minHeight: '100dvh',
     // Fades with the swipe: Base UI drives --drawer-swipe-progress inline.

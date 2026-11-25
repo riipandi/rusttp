@@ -73,7 +73,7 @@ export const badgeVariants = stylex.create({
 // `solid` is a solid fill, `faded` a soft tint, `outline` an edge, `ghost` text only.
 export const badgeSolidColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBrand },
+  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
   positive: {
     backgroundColor: colors.backgroundPositive,
     color: colors.onBackgroundPositive

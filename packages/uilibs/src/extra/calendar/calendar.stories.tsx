@@ -79,7 +79,7 @@ const storyStyles = stylex.create({
     color: colors.foregroundNeutralFaded
   },
   dayPriceSelected: {
-    color: colors.onBrand,
+    color: colors.onBackgroundPrimary,
     opacity: 0.8
   }
 })

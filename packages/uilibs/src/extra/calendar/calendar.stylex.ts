@@ -94,8 +94,8 @@ export const calendarStyles = stylex.create({
     borderBottomRightRadius: radius.medium,
     borderTopRightRadius: radius.medium,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   dayBtnRangeMiddle: {
@@ -119,8 +119,8 @@ export const calendarStyles = stylex.create({
     borderTopLeftRadius: radius.medium,
     borderTopRightRadius: 0,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   dayBtnSelected: {
@@ -130,8 +130,8 @@ export const calendarStyles = stylex.create({
     },
     borderRadius: radius.medium,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   disabled: {

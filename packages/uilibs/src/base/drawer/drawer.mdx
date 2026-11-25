@@ -66,6 +66,10 @@ The drawer docks to the edge it is swiped toward.
 
 <Canvas of={Stories.Directions} />
 
+### Overlays
+
+<Canvas of={Stories.Overlays} />
+
 ## API reference
 
 Every part except `Drawer`, `DrawerTrigger`, `DrawerClose`, and `DrawerPortal` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DrawerContent` it styles the popup.
@@ -89,6 +93,10 @@ Every part except `Drawer`, `DrawerTrigger`, `DrawerClose`, and `DrawerPortal` a
 
 ### DrawerOverlay
 
+| Prop             | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop. Default `false`. |
+
 | Data attribute        | Description                           |
 | --------------------- | ------------------------------------- |
 | `data-open`           | Present while the drawer is open.     |
@@ -101,6 +109,10 @@ Every part except `Drawer`, `DrawerTrigger`, `DrawerClose`, and `DrawerPortal` a
 | `--drawer-swipe-progress` | How far the swipe has gone. The overlay fades with it. |
 
 ### DrawerContent
+
+| Prop             | Description                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| `blurredOverlay` | `boolean` <br /> Blurs the page behind the backdrop, while `modal`. Default `false`. |
 
 | Data attribute            | Description                                                                 |
 | ------------------------- | --------------------------------------------------------------------------- |

@@ -7,7 +7,6 @@ import { duration, easing } from '../../styles/tokens.stylex'
 
 export const sheetStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     opacity: {
       default: 1,
@@ -20,8 +19,6 @@ export const sheetStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.overlay
   },
-  // `blurredOverlay`: the page behind the backdrop is blurred by one unit step.
-  overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
     boxShadow: shadow.overlay,

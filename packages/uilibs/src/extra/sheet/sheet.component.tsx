@@ -2,6 +2,7 @@ import { Dialog as BaseDialog } from '@base-ui/react/dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
+import { popupFx } from '../../styles/popup.stylex'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
 
 interface StyleXStyleProps {
@@ -27,7 +28,7 @@ export function SheetOverlay({
   return (
     <BaseDialog.Backdrop
       {...props}
-      {...stylex.props(s.overlay, blurredOverlay && s.overlayBlurred, style)}
+      {...stylex.props(popupFx.scrim, s.overlay, blurredOverlay && popupFx.scrimBlurred, style)}
     />
   )
 }

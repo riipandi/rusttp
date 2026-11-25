@@ -598,7 +598,7 @@ export const dataGridColumnFilterStyles = stylex.create({
   optionBoxSelected: {
     backgroundColor: colors.backgroundPrimary,
     borderColor: colors.backgroundPrimary,
-    color: colors.onBrand
+    color: colors.onBackgroundPrimary
   },
   optionBoxUnchecked: { opacity: 0.5 },
   optionCheckIcon: { height: unit.x4, width: unit.x4 },
