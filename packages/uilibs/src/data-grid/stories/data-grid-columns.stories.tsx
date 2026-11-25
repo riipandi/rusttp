@@ -192,7 +192,7 @@ export const ColumnIcons: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -216,7 +216,7 @@ export const SortableColumns: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -244,7 +244,7 @@ export const MovableColumns: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -291,7 +291,7 @@ export const DraggableColumns: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTableDnd table={table} handleDragEnd={handleDragEnd} />
+              <DataGridTableDnd aria-label='Novels' table={table} handleDragEnd={handleDragEnd} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -360,7 +360,7 @@ export const ColumnResizing: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -416,7 +416,7 @@ export const ResizableNotSortable: Story = {
       >
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -454,7 +454,7 @@ export const PinnableColumns: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -483,7 +483,7 @@ export const StickyHeader: Story = {
           {/* Fixed viewport height: sticky needs vertical overflow to scroll. */}
           <DataGridContainer>
             <DataGridScrollArea table={table} style={atoms.height['384px']}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -516,7 +516,7 @@ export const ColumnControls: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -596,7 +596,7 @@ export const ColumnVisibilityControls: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />

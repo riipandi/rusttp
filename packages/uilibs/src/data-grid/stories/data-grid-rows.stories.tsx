@@ -184,7 +184,7 @@ export const RowSelection: Story = {
           </span>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -297,7 +297,7 @@ export const ExpandableRows: Story = {
       >
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -381,7 +381,7 @@ function SubTable({ items }: { items: IOrder['lines'] }) {
       <DataGrid table={table} recordCount={items.length}>
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Items' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -438,7 +438,7 @@ export const SubTableStory: Story = {
       <DataGrid table={table} recordCount={orderData.length}>
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Orders' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
@@ -525,7 +525,12 @@ export const DraggableRows: Story = {
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTableDndRows table={table} handleDragEnd={handleDragEnd} dataIds={dataIds} />
+              <DataGridTableDndRows
+                aria-label='Novels'
+                table={table}
+                handleDragEnd={handleDragEnd}
+                dataIds={dataIds}
+              />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -627,7 +632,7 @@ export const RowPinningSupport: Story = {
           <CardContent style={statusStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -814,7 +819,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
         <Card style={statusStyles.cardOverflow}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Authors and novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
         </Card>

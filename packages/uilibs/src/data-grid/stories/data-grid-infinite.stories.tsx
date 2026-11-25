@@ -234,6 +234,7 @@ export const LocalInfiniteScroll: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   onFetchMore={hasMore ? fetchMore : undefined}
@@ -323,6 +324,7 @@ export const RemoteInfiniteScroll: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   onFetchMore={hasMore ? fetchMore : undefined}
@@ -458,6 +460,7 @@ export const ColumnVirtualization: Story = {
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
+                  aria-label='Novels'
                   table={table}
                   estimateSize={41}
                   height={420}

@@ -49,6 +49,7 @@ import { zIndex } from '../styles/tokens.stylex'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'
+import type { DataGridTableName } from './data-grid-table'
 import {
   DataGridTableBody,
   DataGridTableBodyRow,
@@ -248,16 +249,17 @@ function DataGridTableDndBodyRows<TData extends object>({
   )
 }
 
-interface DataGridTableDndProps<TData extends object> {
+type DataGridTableDndProps<TData extends object> = {
   handleDragEnd: (event: DragEndEvent) => void
   footerContent?: ReactNode
   table: DataGridTableInstance<TData>
-}
+} & DataGridTableName
 
 function DataGridTableDnd<TData extends object>({
   handleDragEnd,
   footerContent,
-  table
+  table,
+  ...name
 }: DataGridTableDndProps<TData>) {
   const { props } = useDataGrid()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -348,7 +350,7 @@ function DataGridTableDnd<TData extends object>({
         viewportRef={containerRef}
         style={isDraggingColumn ? { cursor: 'grabbing' } : undefined}
       >
-        <DataGridTableBase table={table}>
+        <DataGridTableBase table={table} {...name}>
           <DataGridTableHead>
             {table.getHeaderGroups().map((headerGroup) => {
               return (
@@ -647,7 +649,8 @@ function DataGridTableDndRows<TData extends object>({
   onDragStart,
   onDragMove,
   onDragOver,
-  onDragCancel
+  onDragCancel,
+  ...name
 }: {
   handleDragEnd: (event: DragEndEvent) => void
   table: DataGridTableInstance<TData>
@@ -684,7 +687,7 @@ function DataGridTableDndRows<TData extends object>({
   onDragMove?: (event: DragMoveEvent) => void
   onDragOver?: (event: DragOverEvent) => void
   onDragCancel?: (event: DragCancelEvent) => void
-}) {
+} & DataGridTableName) {
   const { props } = useDataGrid<TData>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [isDraggingRow, setIsDraggingRow] = useState(false)
@@ -858,7 +861,7 @@ function DataGridTableDndRows<TData extends object>({
         viewportRef={tableContainerRef}
         style={isDraggingRow ? { cursor: 'grabbing' } : undefined}
       >
-        <DataGridTableBase table={table}>
+        <DataGridTableBase table={table} {...name}>
           <DataGridTableHead>
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<DataGridFeatures, TData>) => {
               return (

@@ -259,6 +259,7 @@ function PlaygroundGrid({
             style={headerSticky ? atoms.height['384px'] : undefined}
           >
             <DataGridTable
+              aria-label='Novels'
               table={table}
               footerContent={footerBackground ? <PlaygroundFooter table={table} /> : undefined}
             />

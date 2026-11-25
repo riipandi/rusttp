@@ -220,7 +220,7 @@ export const CrudFeatures: Story = {
           <CardContent style={editingStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -309,7 +309,7 @@ export const CrudInFrameContainer: Story = {
           <CardContent style={editingStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -475,7 +475,7 @@ export const SpreadsheetEditing: Story = {
             </span>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
             <DataGridPagination table={table} style={editingStyles.bar} />
@@ -533,14 +533,15 @@ export const Keyboard: Story = {
         <DataGridCellSelection table={table} />
         <DataGridContainer>
           <DataGridScrollArea table={table}>
-            <DataGridTable table={table} />
+            <DataGridTable aria-label='Novels' table={table} />
           </DataGridScrollArea>
         </DataGridContainer>
       </DataGrid>
     )
   },
   play: async ({ canvasElement, canvas }) => {
-    const grid = canvas.getByRole('grid')
+    // With cell selection on, the named table is a grid.
+    const grid = canvas.getByRole('grid', { name: 'Novels' })
     const cells = (row: number) =>
       Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr')[row]?.children ?? [])
     const focused = () => canvasElement.querySelector('td[data-cell-focused]')

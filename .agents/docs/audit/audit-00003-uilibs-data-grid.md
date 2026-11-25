@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-25T23:27:10+07:00
+updated_at: 2026-11-25T23:58:12+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 9, fixed: 5, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 6, fixed: 8, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -57,11 +57,11 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | --- | --- | --- | --- | --- | --- | --- |
 | F-01 | medium | a11y (2.1.1) | `data-grid-table-head.tsx:505-510` | Column resizing is pointer only | verified | open |
 | F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | open |
-| F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | open |
+| F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | fixed |
 | F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | open |
 | F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | open |
-| F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | open |
-| F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | open |
+| F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | fixed |
+| F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | fixed |
 | F-08 | low | a11y | `data-grid-table-pager.tsx:204` | The pager is a `div`, not a named navigation | verified | open |
 | F-09 | low | a11y | `data-grid-table-dnd.tsx:334,833` | Keyboard drag announcements are dnd-kit's defaults | unverified | open |
 | F-10 | low | a11y (2.3.3) | `data-grid-table.stylex.ts:428-443` | The expand chevron rotates under reduced motion | verified | fixed |
@@ -93,7 +93,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Evidence**: the probe found a `table` with no `aria-label`, `aria-labelledby`, or `caption` in all 38 stories (light, 1440 px).
 - **Impact**: a screen reader announces "table" for each grid, so two grids on a page are not told apart. `Table` (the extra component) solved this with `labels.region` and the caption (plan-00011 phase 26).
 - **Smallest fix**: `DataGrid` takes `aria-label` (or `labels.table`) and the table carries it.
-- **Confidence**: high. **Status**: open.
+- **Confidence**: high. **Status**: fixed. **Resolution**: `DataGridTableName` (required `aria-label` or `aria-labelledby`) on `DataGridTable`, `Dnd`, `DndRows`, `Virtual`, `Header`, and `Base`; typecheck failed at all 42 unnamed sites before they were named; plays assert `table` and `grid` by name.
 
 ### F-04 Every row control has the same name
 
@@ -115,14 +115,14 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 
 - **Location**: `data-grid-column.tsx:487` (the sort button) and `:454`.
 - **Problem**: `disabled={isLoading}` takes the button out of the Tab order, so a focused header loses focus when loading starts. `Button` has `focusableWhenDisabled` for this. Not reproduced.
-- **Confidence**: medium (hypothesis). **Status**: open.
+- **Confidence**: medium (hypothesis). **Status**: fixed. **Resolution**: 5f546d4: reproduced first (focus left a header button when loading began), then `focusableWhenDisabled` on the sort button and the menu trigger; the play asserts focus stays and a click while loading does not sort.
 
 ### F-07 A non-sortable resizable column header may sort
 
 - **Location**: `data-grid-column.tsx:481-492` renders a `Button` with `onClick={handleSort}` when `canSort || (columnsResizable && canResize)`; `handleSort` (`:240-248`) calls `column.toggleSorting` with no `getCanSort` check.
 - **Problem**: a resizable column with `enableSorting: false` gets a header button that calls `toggleSorting`. TanStack's `toggleSorting` is not guarded by `getCanSort` (the guard sits in `getToggleSortingHandler`), so the click may sort a column that must not. No story has a resizable, non-sortable column, so it was not reproduced.
 - **Smallest fix**: guard `handleSort` with `column.getCanSort()`, and add the story.
-- **Confidence**: medium (hypothesis). **Status**: open.
+- **Confidence**: medium (hypothesis). **Status**: fixed. **Resolution**: 0f2a26a: reproduced first (the `Resizable, not sortable` play failed: clicking Genre sorted it), then `handleSort` guards `getCanSort()` and a non-sortable header is a plain label; the TanStack 9.3.1 source confirms `column_toggleSorting` has no guard.
 
 ### F-08 The pager is a `div`, not a named navigation
 

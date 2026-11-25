@@ -46,6 +46,7 @@ export {
   DataGridTableHeader,
   DataGridTableViewport
 } from './data-grid-table'
+export type { DataGridTableName } from './data-grid-table'
 export {
   DataGridTableHead,
   DataGridTableHeadRow,

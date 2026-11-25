@@ -88,6 +88,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `Enter`                                    | Opens the editor on the focused cell, when the column has `meta.cellEdit`. |
 | `Delete`                                   | Clears the focused cell through `onCellsChange`.                           |
 
+- Every table is named: `DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, `DataGridTableDndRows`, `DataGridTableHeader`, and `DataGridTableBase` require `aria-label` or `aria-labelledby`, so two grids on a page are told apart (the `Basics` stories prove it by role and name). A name belongs to one grid, so it is a prop and not a `labels` entry.
 - The cell editor is a text field that takes focus when it opens.
 
 ## API reference
@@ -180,10 +181,12 @@ Set on `columnDef.meta` (`DataGridColumnMeta`).
 
 ### Tables
 
-`DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, and `DataGridTableDndRows` each take `table` (required, the grid's table instance) and `footerContent` (`ReactNode`, rows or cells for the footer). `DataGridTableHeader` renders only the header, for a body that scrolls in a separate viewport, and takes `table`.
+`DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, and `DataGridTableDndRows` each take `table` (required, the grid's table instance), `footerContent` (`ReactNode`, rows or cells for the footer), and a name (below). `DataGridTableHeader` renders only the header, for a body that scrolls in a separate viewport, and takes `table` and a name. `DataGridTableBase`, the part that renders the `<table>`, takes the name too.
 
 | Prop                  | Description                                                                                                                                        |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `aria-label`          | `string` <br /> The table's accessible name. Every table part needs one of `aria-label` or `aria-labelledby`, enforced by the type.                |
+| `aria-labelledby`     | `string` <br /> The id of a visible heading that names the table. Use it instead of `aria-label` when the page already shows the name.             |
 | `renderHeader`        | `boolean` <br /> On `DataGridTable` and `DataGridTableVirtual`: set `false` to render the body alone. Default `true`.                              |
 | `handleDragEnd`       | `(event: DragEndEvent) => void` <br /> On `DataGridTableDnd` and `DataGridTableDndRows`: reorder `columnOrder` or your data here. Required.        |
 | `dataIds`             | `UniqueIdentifier[]` <br /> On `DataGridTableDndRows`: row ids in display order. Required.                                                         |

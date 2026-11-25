@@ -169,7 +169,7 @@ export const ColumnTotalsFooter: Story = {
           <CardContent style={footerStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} footerContent={footer} />
+                <DataGridTable aria-label='Novels' table={table} footerContent={footer} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -244,7 +244,7 @@ export const SummaryStatsFooter: Story = {
           <CardContent style={footerStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} footerContent={footer} />
+                <DataGridTable aria-label='Novels' table={table} footerContent={footer} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -305,7 +305,7 @@ export const PerColumnAggregateFooter: Story = {
           <CardContent style={footerStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} footerContent={footer} />
+                <DataGridTable aria-label='Novels' table={table} footerContent={footer} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>

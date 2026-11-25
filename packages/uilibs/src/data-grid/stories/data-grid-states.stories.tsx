@@ -265,7 +265,7 @@ export const CardContainer: Story = {
           <CardContent style={statesStyles.cardBody}>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
-                <DataGridTable table={table} />
+                <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
@@ -334,7 +334,7 @@ export const LoadingSkeleton: Story = {
           </Button>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -394,7 +394,7 @@ export const HeaderFocusWhileLoading: Story = {
           </Button>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Novels' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
         </div>
@@ -597,7 +597,7 @@ export const LocalizedLabels: Story = {
           </div>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
-              <DataGridTable table={table} />
+              <DataGridTable aria-label='Orders' table={table} />
             </DataGridScrollArea>
           </DataGridContainer>
           <DataGridPagination table={table} />
@@ -811,7 +811,7 @@ export const ServerSidePagination: Story = {
             <CardContent style={statesStyles.cardBody}>
               <DataGridContainer>
                 <DataGridScrollArea table={table}>
-                  <DataGridTable table={table} />
+                  <DataGridTable aria-label='Novels' table={table} />
                 </DataGridScrollArea>
               </DataGridContainer>
             </CardContent>
