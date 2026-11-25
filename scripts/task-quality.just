@@ -38,6 +38,11 @@ test *args:
 test-ui *args:
     @pnpm --silent --filter uilibs test {{ args }}
 
+[doc('Check the uilibs docs pages and Playground controls against the code')]
+[group('quality')]
+check-ui-docs:
+    @pnpm --silent --filter uilibs check:docs
+
 [doc('Run the webapp unit tests (default to Chromium)')]
 [group('quality')]
 test-web *args:

@@ -18,9 +18,12 @@ import {
   DataGridPagination,
   DataGridScrollArea,
   DataGridTable,
+  DataGridTableFootRow,
+  DataGridTableFootRowCell,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
   dataGridFeatures,
+  type DataGridCellsChangeDetails,
   type DataGridFeatures,
   type DataGridTableInstance
 } from '../'
@@ -59,12 +62,31 @@ interface PlaygroundArgs {
   columnsVisibility: boolean
   cellSelection: boolean
   cellSelectionMode: 'single' | 'range'
+  cellFillHandle: boolean
+  cellFillHandleVariant: 'dot' | 'ring' | 'square'
+  cellEditMode: 'dblclick' | 'click'
+  cellEditEnterAdvance: boolean
+  columnsResizeMode: 'onChange' | 'onEnd'
+  footerBackground: boolean
+  cellEditable: boolean
   isLoading: boolean
   loadingMode: 'skeleton' | 'spinner'
   empty: boolean
   pagination: boolean
   pageSize: number
   rowSelection: boolean
+}
+
+// A footer row, so `footerBackground` has something to fill.
+function PlaygroundFooter({ table }: { table: DataGridTableInstance<IBook> }) {
+  const visible = table.getVisibleLeafColumns().length
+  return (
+    <DataGridTableFootRow table={table}>
+      <DataGridTableFootRowCell colSpan={visible}>
+        {demoData.length} books in the Restricted Section
+      </DataGridTableFootRowCell>
+    </DataGridTableFootRow>
+  )
 }
 
 function PlaygroundGrid({
@@ -82,6 +104,13 @@ function PlaygroundGrid({
   columnsVisibility,
   cellSelection,
   cellSelectionMode,
+  cellFillHandle,
+  cellFillHandleVariant,
+  cellEditMode,
+  cellEditEnterAdvance,
+  columnsResizeMode,
+  footerBackground,
+  cellEditable,
   isLoading,
   loadingMode,
   empty,
@@ -89,7 +118,21 @@ function PlaygroundGrid({
   pageSize,
   rowSelection: selectable
 }: PlaygroundArgs) {
-  const data = useMemo(() => (empty ? [] : demoData), [empty])
+  // The grid never writes data itself: edits, pastes, and fills come back through `onCellsChange`.
+  // The render remounts the grid when `empty` changes, so this state starts from the right set.
+  const [data, setData] = useState<IBook[]>(() => (empty ? [] : demoData))
+  const handleCellsChange = (details: DataGridCellsChangeDetails<IBook>) =>
+    setData((old) =>
+      old.map((row) => {
+        const changes = details.changes.filter((change) => change.rowId === row.id)
+        return changes.length === 0
+          ? row
+          : Object.assign(
+              { ...row },
+              ...changes.map((change) => ({ [change.columnId]: change.value }))
+            )
+      })
+    )
   // Without the pager, one page holds every row.
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -106,6 +149,8 @@ function PlaygroundGrid({
       return tableRef.current
     }
     const skeleton = <Skeleton width='70%' height={4} />
+    // `cellEdit` marks a text column writable: the built-in editor, paste, fill, and clear use it.
+    const editable = cellEditable ? { cellEdit: { control: 'text' as const } } : {}
     return [
       ...(selectable
         ? [
@@ -127,7 +172,7 @@ function PlaygroundGrid({
         cell: (info) => <span {...stylex.props(s.strong)}>{String(info.getValue())}</span>,
         size: 220,
         enableHiding: false,
-        meta: { skeleton }
+        meta: { skeleton, ...editable }
       },
       {
         accessorKey: 'author',
@@ -136,7 +181,7 @@ function PlaygroundGrid({
           <DataGridColumnHeader table={getTable()} title='Author' column={column} />
         ),
         size: 160,
-        meta: { skeleton }
+        meta: { skeleton, ...editable }
       },
       {
         accessorKey: 'country',
@@ -145,7 +190,7 @@ function PlaygroundGrid({
           <DataGridColumnHeader table={getTable()} title='Country' column={column} />
         ),
         size: 150,
-        meta: { skeleton }
+        meta: { skeleton, ...editable }
       },
       {
         accessorKey: 'price',
@@ -158,7 +203,7 @@ function PlaygroundGrid({
         meta: { skeleton }
       }
     ]
-  }, [selectable])
+  }, [selectable, cellEditable])
 
   const table = useTable({
     features: dataGridFeatures,
@@ -178,6 +223,7 @@ function PlaygroundGrid({
     <DataGrid
       table={table}
       recordCount={data.length}
+      onCellsChange={handleCellsChange}
       isLoading={isLoading}
       loadingMode={loadingMode}
       emptyMessage='No books in the Restricted Section'
@@ -195,7 +241,13 @@ function PlaygroundGrid({
         columnsMovable,
         columnsVisibility,
         cellSelection,
-        cellSelectionMode
+        cellSelectionMode,
+        cellFillHandle,
+        cellFillHandleVariant,
+        cellEditMode,
+        cellEditEnterAdvance,
+        columnsResizeMode,
+        footerBackground
       }}
     >
       {cellSelection && <DataGridCellSelection table={table} />}
@@ -206,7 +258,10 @@ function PlaygroundGrid({
             table={table}
             style={headerSticky ? atoms.height['384px'] : undefined}
           >
-            <DataGridTable table={table} />
+            <DataGridTable
+              table={table}
+              footerContent={footerBackground ? <PlaygroundFooter table={table} /> : undefined}
+            />
           </DataGridScrollArea>
         </DataGridContainer>
         {paged && <DataGridPagination table={table} />}
@@ -236,6 +291,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         'columnsVisibility',
         'cellSelection',
         'cellSelectionMode',
+        'cellEditable',
+        'cellEditMode',
+        'cellEditEnterAdvance',
+        'cellFillHandle',
+        'cellFillHandleVariant',
+        'columnsResizeMode',
+        'footerBackground',
         'isLoading',
         'loadingMode',
         'empty',
@@ -267,6 +329,25 @@ export const Playground: StoryObj<PlaygroundArgs> = {
       options: ['single', 'range'],
       table: { category: 'Cells' }
     },
+    cellEditable: boolean('Cells'),
+    cellEditMode: {
+      control: 'radio',
+      options: ['dblclick', 'click'],
+      table: { category: 'Cells' }
+    },
+    cellEditEnterAdvance: boolean('Cells'),
+    cellFillHandle: boolean('Cells'),
+    cellFillHandleVariant: {
+      control: 'radio',
+      options: ['dot', 'ring', 'square'],
+      table: { category: 'Cells' }
+    },
+    columnsResizeMode: {
+      control: 'radio',
+      options: ['onEnd', 'onChange'],
+      table: { category: 'Columns' }
+    },
+    footerBackground: boolean('Layout'),
     isLoading: boolean('State'),
     loadingMode: {
       control: 'radio',
@@ -290,6 +371,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     columnsVisibility: false,
     cellSelection: false,
     cellSelectionMode: 'range',
+    cellEditable: false,
+    cellEditMode: 'dblclick',
+    cellEditEnterAdvance: false,
+    cellFillHandle: false,
+    cellFillHandleVariant: 'dot',
+    columnsResizeMode: 'onEnd',
+    footerBackground: false,
     isLoading: false,
     loadingMode: 'skeleton',
     empty: false,
@@ -300,7 +388,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   // The grid reads its page size and data once, so the render remounts it when they change.
   render: (args) => (
     <PlaygroundGrid
-      key={`${args.pagination}-${args.pageSize}-${args.empty}-${args.rowSelection}`}
+      key={`${args.pagination}-${args.pageSize}-${args.empty}-${args.rowSelection}-${args.cellEditable}`}
       {...args}
     />
   ),

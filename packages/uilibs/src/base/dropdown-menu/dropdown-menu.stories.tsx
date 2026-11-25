@@ -34,13 +34,17 @@ type Story = StoryObj<typeof meta>
 export default meta
 
 type PlaygroundArgs = ComponentProps<typeof DropdownMenu> &
-  Pick<ComponentProps<typeof DropdownMenuContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
+  Pick<
+    ComponentProps<typeof DropdownMenuContent>,
+    'side' | 'sideOffset' | 'align' | 'alignOffset'
+  > &
+  Pick<ComponentProps<typeof DropdownMenuItem>, 'color' | 'inset'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
     controls: {
       disable: false,
-      include: ['side', 'sideOffset', 'align', 'alignOffset', 'disabled']
+      include: ['side', 'sideOffset', 'align', 'alignOffset', 'disabled', 'color', 'inset']
     }
   },
   argTypes: {
@@ -48,10 +52,21 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     sideOffset: { control: 'number' },
     align: { control: 'radio', options: ['start', 'center', 'end'] },
     alignOffset: { control: 'number' },
-    disabled: { control: 'boolean' }
+    disabled: { control: 'boolean' },
+    // Set on the group's items and its label, so the indent lines up.
+    color: { control: 'radio', options: ['neutral', 'primary', 'critical'] },
+    inset: { control: 'boolean' }
   },
-  args: { side: 'bottom', sideOffset: 4, align: 'start', alignOffset: 0, disabled: false },
-  render: ({ side, sideOffset, align, alignOffset, ...args }) => (
+  args: {
+    side: 'bottom',
+    sideOffset: 4,
+    align: 'start',
+    alignOffset: 0,
+    disabled: false,
+    color: 'neutral',
+    inset: false
+  },
+  render: ({ side, sideOffset, align, alignOffset, color, inset, ...args }) => (
     <DropdownMenu {...args}>
       <DropdownMenuTrigger render={<Button variant='outline' />}>Open the menu</DropdownMenuTrigger>
       <DropdownMenuContent
@@ -61,10 +76,16 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         alignOffset={alignOffset}
       >
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Gringotts</DropdownMenuLabel>
-          <DropdownMenuItem>Vault holder</DropdownMenuItem>
-          <DropdownMenuItem>Galleon balance</DropdownMenuItem>
-          <DropdownMenuItem>Vault settings</DropdownMenuItem>
+          <DropdownMenuLabel inset={inset}>Gringotts</DropdownMenuLabel>
+          <DropdownMenuItem color={color} inset={inset}>
+            Vault holder
+          </DropdownMenuItem>
+          <DropdownMenuItem color={color} inset={inset}>
+            Galleon balance
+          </DropdownMenuItem>
+          <DropdownMenuItem color={color} inset={inset}>
+            Vault settings
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Disapparate</DropdownMenuItem>

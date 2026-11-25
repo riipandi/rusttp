@@ -49,6 +49,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter uilibs exec playwright install --with-deps chromium
       - run: pnpm --filter uilibs typecheck
+      # Props tables and Playground controls against the code; reads source only, so no browser.
+      - run: pnpm --filter uilibs check:docs
       - run: pnpm --filter uilibs test
       - run: pnpm --filter uilibs storybook:build
 

@@ -28,15 +28,19 @@ const styles = stylex.create({
 
 export default meta
 
+const glyphs = { none: undefined, mic: Mic, search: Search, sparkles: Sparkles }
+
 export const Playground: Story = {
   parameters: {
     controls: {
       disable: false,
-      include: ['children', 'completed', 'completedText', 'variant', 'weight', 'color']
+      include: ['children', 'icon', 'completed', 'completedText', 'variant', 'weight', 'color']
     }
   },
   argTypes: {
     children: { control: 'text' },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    icon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
     completed: { control: 'boolean' },
     completedText: { control: 'text' },
     variant: { control: 'select', options: Object.keys(textVariantStyles) },

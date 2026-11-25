@@ -19,6 +19,7 @@
         "storybook:build": "NODE_OPTIONS=--disable-warning=DEP0205 storybook build -o .output/storybook",
         "storybook:start": "vite preview --outDir .output/storybook --port 6006 --host 0.0.0.0 --strictPort",
         "test": "vitest run",
+        "check:docs": "node scripts/check-docs.ts",
         "typecheck": "tsrs --noEmit --fast"
     },
     "dependencies": {

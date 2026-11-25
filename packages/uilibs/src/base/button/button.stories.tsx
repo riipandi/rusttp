@@ -50,6 +50,8 @@ const styles = stylex.create({
 
 export default meta
 
+const glyphs = { none: undefined, plus: Plus, arrow: ArrowRight }
+
 export const Playground: Story = {
   parameters: {
     controls: {
@@ -64,7 +66,10 @@ export const Playground: Story = {
         'raised',
         'highlighted',
         'loading',
-        'disabled'
+        'disabled',
+        'focusableWhenDisabled',
+        'icon',
+        'endIcon'
       ]
     }
   },
@@ -79,7 +84,11 @@ export const Playground: Story = {
     raised: { control: 'boolean' },
     highlighted: { control: 'boolean' },
     loading: { control: 'boolean' },
-    disabled: { control: 'boolean' }
+    disabled: { control: 'boolean' },
+    focusableWhenDisabled: { control: 'boolean' },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    icon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
+    endIcon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs }
   },
   args: {
     variant: 'outline',
@@ -89,14 +98,12 @@ export const Playground: Story = {
     raised: false,
     highlighted: false,
     loading: false,
-    disabled: false
+    disabled: false,
+    focusableWhenDisabled: false,
+    icon: Plus,
+    endIcon: undefined
   },
-  render: ({ children, ...args }) => (
-    <Button {...args}>
-      <Plus {...stylex.props(styles.icon)} />
-      {children}
-    </Button>
-  )
+  render: ({ children, ...args }) => <Button {...args}>{children}</Button>
 }
 
 const fillNames = ['solid', 'faded', 'outline', 'ghost'] as const

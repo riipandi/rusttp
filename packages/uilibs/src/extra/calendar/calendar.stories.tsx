@@ -197,6 +197,8 @@ type PlaygroundArgs = Pick<
   | 'showWeekNumber'
   | 'weekStartsOn'
   | 'buttonVariant'
+  | 'startMonth'
+  | 'endMonth'
 >
 
 export const Playground: StoryObj<PlaygroundArgs> = {
@@ -209,7 +211,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         'numberOfMonths',
         'showWeekNumber',
         'weekStartsOn',
-        'buttonVariant'
+        'buttonVariant',
+        'startMonth',
+        'endMonth'
       ]
     }
   },
@@ -222,7 +226,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     numberOfMonths: { control: 'radio', options: [1, 2] },
     showWeekNumber: { control: 'boolean' },
     weekStartsOn: { control: 'radio', options: [0, 1, 6] },
-    buttonVariant: { control: 'radio', options: Object.keys(buttonFills) }
+    buttonVariant: { control: 'radio', options: Object.keys(buttonFills) },
+    startMonth: { control: 'date' },
+    endMonth: { control: 'date' }
   },
   args: {
     captionLayout: 'label',
@@ -230,11 +236,23 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     numberOfMonths: 1,
     showWeekNumber: false,
     weekStartsOn: 0,
-    buttonVariant: 'ghost'
+    buttonVariant: 'ghost',
+    startMonth: new Date(1900, 0, 1),
+    endMonth: new Date(2100, 11, 31)
   },
-  render: (args) => {
+  render: ({ startMonth, endMonth, ...args }) => {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
-    return <Calendar {...args} mode='single' selected={date} onSelect={setDate} />
+    // The date control hands back a timestamp once it is edited.
+    return (
+      <Calendar
+        {...args}
+        startMonth={startMonth && new Date(startMonth)}
+        endMonth={endMonth && new Date(endMonth)}
+        mode='single'
+        selected={date}
+        onSelect={setDate}
+      />
+    )
   }
 }
 

@@ -44,20 +44,35 @@ const styles = stylex.create({
 export default meta
 
 // `title` is the text of `AlertTitle`; the root's own `title` attribute is not used.
-type PlaygroundArgs = ComponentProps<typeof Alert> & { title: string }
+const glyphs = { none: undefined, info: Info }
+
+type PlaygroundArgs = ComponentProps<typeof Alert> &
+  Pick<ComponentProps<typeof AlertTitle>, 'level'> & { title: string }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['title', 'color', 'announce', 'inline'] } },
+  parameters: {
+    controls: { disable: false, include: ['title', 'level', 'color', 'icon', 'announce', 'inline'] }
+  },
   argTypes: {
     title: { control: 'text' },
+    level: { control: 'radio', options: [1, 2, 3, 4, 5, 6] },
     color: { control: 'select', options: Object.keys(alertColors) },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    icon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
     announce: { control: 'boolean' },
     inline: { control: 'boolean' }
   },
-  args: { title: 'Lumos!', color: 'neutral', announce: false, inline: false },
-  render: ({ title, ...args }) => (
+  args: {
+    title: 'Lumos!',
+    level: 5,
+    color: 'neutral',
+    icon: undefined,
+    announce: false,
+    inline: false
+  },
+  render: ({ title, level, ...args }) => (
     <Alert {...args} style={styles.alert}>
-      <AlertTitle>{title}</AlertTitle>
+      <AlertTitle level={level}>{title}</AlertTitle>
       <AlertDescription>
         Point your wand and speak the incantation to light the darkest corridor.
       </AlertDescription>

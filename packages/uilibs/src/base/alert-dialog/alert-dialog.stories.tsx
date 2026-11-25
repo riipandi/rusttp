@@ -85,20 +85,30 @@ export default meta
 // The size lives on `AlertDialogContent` and the color on the confirming `AlertDialogAction`.
 type PlaygroundArgs = React.ComponentProps<typeof AlertDialog> &
   Pick<React.ComponentProps<typeof AlertDialogContent>, 'size' | 'blurredOverlay'> &
-  Pick<React.ComponentProps<typeof AlertDialogAction>, 'color' | 'variant'>
+  Pick<React.ComponentProps<typeof AlertDialogAction>, 'color' | 'variant' | 'loading'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['size', 'blurredOverlay', 'color', 'variant'] }
+    controls: {
+      disable: false,
+      include: ['size', 'blurredOverlay', 'color', 'variant', 'loading']
+    }
   },
   argTypes: {
     size: { control: 'radio', options: Object.keys(alertDialogSizes) },
     blurredOverlay: { control: 'boolean' },
     color: { control: 'select', options: Object.keys(buttonFills.solid) },
-    variant: { control: 'radio', options: variantNames }
+    variant: { control: 'radio', options: variantNames },
+    loading: { control: 'boolean' }
   },
-  args: { size: 'medium', blurredOverlay: false, color: 'critical', variant: 'solid' },
-  render: ({ size, blurredOverlay, color, variant, ...root }) => (
+  args: {
+    size: 'medium',
+    blurredOverlay: false,
+    color: 'critical',
+    variant: 'solid',
+    loading: false
+  },
+  render: ({ size, blurredOverlay, color, variant, loading, ...root }) => (
     <AlertDialog {...root}>
       <AlertDialogTrigger render={<Button variant='outline' />}>
         Seal the cryptex
@@ -113,7 +123,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction color={color} variant={variant}>
+          <AlertDialogAction color={color} variant={variant} loading={loading}>
             Seal
           </AlertDialogAction>
         </AlertDialogFooter>

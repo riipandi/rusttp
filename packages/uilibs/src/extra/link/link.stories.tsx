@@ -32,14 +32,27 @@ const styles = stylex.create({
 
 export default meta
 
+const glyphs = { none: undefined, book: Book, arrow: ArrowRight }
+
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['children', 'color', 'variant'] } },
+  parameters: {
+    controls: { disable: false, include: ['children', 'color', 'variant', 'icon', 'endIcon'] }
+  },
   argTypes: {
     children: { control: 'text' },
     color: { control: 'radio', options: Object.keys(linkColors) },
-    variant: { control: 'radio', options: Object.keys(linkVariants) }
+    variant: { control: 'radio', options: Object.keys(linkVariants) },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    icon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
+    endIcon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs }
   },
-  args: { children: 'Read the Daily Prophet', color: 'primary', variant: 'underline' },
+  args: {
+    children: 'Read the Daily Prophet',
+    color: 'primary',
+    variant: 'underline',
+    icon: undefined,
+    endIcon: undefined
+  },
   render: (args) => <Link href='#daily-prophet' {...args} />
 }
 

@@ -59,9 +59,14 @@ function imgOf(root: HTMLElement) {
 
 export const Playground: Story = {
   parameters: {
-    controls: { disable: false, include: ['aspectRatio', 'borderRadius', 'displayMode'] }
+    controls: {
+      disable: false,
+      include: ['src', 'alt', 'aspectRatio', 'borderRadius', 'displayMode']
+    }
   },
   argTypes: {
+    src: { control: 'text' },
+    alt: { control: 'text' },
     aspectRatio: { control: { type: 'number', min: 0.5, step: 0.1 } },
     borderRadius: { control: 'radio', options: radiusNames },
     displayMode: { control: 'radio', options: displayModeNames }

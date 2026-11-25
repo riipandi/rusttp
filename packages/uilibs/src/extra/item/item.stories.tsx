@@ -16,10 +16,11 @@ import {
   ItemDescription,
   ItemGroup,
   ItemMedia,
+  type ItemMediaKind,
   ItemSeparator,
   ItemTitle
 } from './item.component'
-import { itemSizes, itemVariants } from './item.stylex'
+import { itemMediaKinds, itemSizes, itemVariants } from './item.stylex'
 
 const meta = {
   title: 'Extra Components/Item',
@@ -44,14 +45,18 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['variant', 'size'] } },
+// `kind` is set on the second item's media.
+type PlaygroundArgs = React.ComponentProps<typeof Item> & { kind: ItemMediaKind }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['variant', 'size', 'kind'] } },
   argTypes: {
     variant: { control: 'radio', options: Object.keys(itemVariants) },
-    size: { control: 'radio', options: Object.keys(itemSizes) }
+    size: { control: 'radio', options: Object.keys(itemSizes) },
+    kind: { control: 'radio', options: Object.keys(itemMediaKinds) }
   },
-  args: { variant: 'outline', size: 'medium' },
-  render: (args) => (
+  args: { variant: 'outline', size: 'medium', kind: 'icon' },
+  render: ({ kind, ...args }) => (
     <ItemGroup style={styles.group}>
       <Item {...args}>
         <ItemContent>
@@ -63,7 +68,7 @@ export const Playground: Story = {
         </ItemActions>
       </Item>
       <Item {...args}>
-        <ItemMedia kind='icon'>
+        <ItemMedia kind={kind}>
           <Info {...stylex.props(styles.icon)} />
         </ItemMedia>
         <ItemContent>

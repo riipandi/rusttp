@@ -1,6 +1,7 @@
 import { Copy, Search } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Field } from '../../base/field'
 import {
@@ -20,7 +21,8 @@ import {
   InputGroupButton,
   InputGroupInput,
   InputGroupText,
-  InputGroupTextarea
+  InputGroupTextarea,
+  type InputGroupAddonAlign
 } from './input-group.component'
 
 const meta = {
@@ -46,17 +48,21 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['size', 'variant'] } },
+// `align` is set on the first group's addon; the second keeps its button at the end.
+type PlaygroundArgs = ComponentProps<typeof InputGroup> & { align: InputGroupAddonAlign }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['size', 'variant', 'align'] } },
   argTypes: {
     size: { control: 'radio', options: Object.keys(controlSizes) },
-    variant: { control: 'radio', options: Object.keys(controlVariants) }
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    align: { control: 'radio', options: ['inline-start', 'inline-end', 'block-start', 'block-end'] }
   },
-  args: { size: 'medium', variant: 'outline' },
-  render: (args) => (
+  args: { size: 'medium', variant: 'outline', align: 'inline-start' },
+  render: ({ align, ...args }) => (
     <div {...stylex.props(styles.col)}>
       <InputGroup {...args}>
-        <InputGroupAddon>
+        <InputGroupAddon align={align}>
           <InputGroupText>https://</InputGroupText>
         </InputGroupAddon>
         <InputGroupInput placeholder='dailyprophet.co.uk' />

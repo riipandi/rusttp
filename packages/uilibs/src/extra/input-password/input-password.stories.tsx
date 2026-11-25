@@ -37,6 +37,8 @@ const styles = stylex.create({
 
 export default meta
 
+const glyphs = { eye: Eye, eyeOff: EyeOff }
+
 export const Playground: Story = {
   // `defaultVisible` only seeds the state, so the render remounts the field when it changes.
   parameters: {
@@ -49,7 +51,9 @@ export const Playground: Story = {
         'toggleVariant',
         'toggleSize',
         'disabled',
-        'defaultVisible'
+        'defaultVisible',
+        'showIcon',
+        'hideIcon'
       ]
     }
   },
@@ -60,7 +64,10 @@ export const Playground: Story = {
     toggleVariant: { control: 'radio', options: ['solid', 'faded', 'outline', 'ghost'] },
     toggleSize: { control: 'radio', options: ['xsmall', 'small'] },
     disabled: { control: 'boolean' },
-    defaultVisible: { control: 'boolean' }
+    defaultVisible: { control: 'boolean' },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    showIcon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
+    hideIcon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs }
   },
   args: {
     placeholder: 'Enter the password...',
@@ -69,7 +76,9 @@ export const Playground: Story = {
     toggleVariant: 'ghost',
     toggleSize: 'xsmall',
     disabled: false,
-    defaultVisible: false
+    defaultVisible: false,
+    showIcon: Eye,
+    hideIcon: EyeOff
   },
   render: (args) => (
     <div {...stylex.props(styles.field)}>

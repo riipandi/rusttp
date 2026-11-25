@@ -29,11 +29,13 @@ const styles = stylex.create({
 
 export default meta
 
+const glyphs = { none: undefined, check: Check, chevron: ChevronRight }
+
 export const Playground: Story = {
   parameters: {
     controls: {
       disable: false,
-      include: ['children', 'variant', 'color', 'size', 'rounded', 'highlighted']
+      include: ['children', 'variant', 'color', 'size', 'rounded', 'highlighted', 'icon', 'endIcon']
     }
   },
   argTypes: {
@@ -42,9 +44,19 @@ export const Playground: Story = {
     color: { control: 'radio', options: Object.keys(badgeSolidColors) },
     size: { control: 'radio', options: Object.keys(badgeSizes) },
     rounded: { control: 'boolean' },
-    highlighted: { control: 'boolean' }
+    highlighted: { control: 'boolean' },
+    // A glyph is a component: the control lists names and `mapping` maps each to its glyph.
+    icon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs },
+    endIcon: { control: 'select', options: Object.keys(glyphs), mapping: glyphs }
   },
-  args: { variant: 'solid', children: 'Gryffindor', rounded: true, highlighted: false },
+  args: {
+    variant: 'solid',
+    children: 'Gryffindor',
+    rounded: true,
+    highlighted: false,
+    icon: undefined,
+    endIcon: undefined
+  },
   render: (args) => <Badge {...args} />
 }
 

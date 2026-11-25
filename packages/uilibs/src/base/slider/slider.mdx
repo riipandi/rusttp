@@ -65,9 +65,14 @@ Each thumb is a `slider` with `aria-valuenow`, `aria-valuemin` and `aria-valuema
 
 ### Slider
 
-| Prop          | Description                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `thumbLabels` | `string[]` <br /> The accessible name of each thumb, in order. A slider with one thumb uses its `aria-label` when this is not set. |
+| Prop           | Description                                                                                                                        |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `thumbLabels`  | `string[]` <br /> The accessible name of each thumb, in order. A slider with one thumb uses its `aria-label` when this is not set. |
+| `value`        | `number` or `number[]` <br /> The controlled value; one number per thumb. An array makes a range slider.                           |
+| `defaultValue` | `number` or `number[]` <br /> The initial value when uncontrolled; an array makes a range slider.                                  |
+| `min`          | `number` <br /> The lowest value. Default `0`.                                                                                     |
+| `max`          | `number` <br /> The highest value. Default `100`.                                                                                  |
+| `orientation`  | `horizontal`, `vertical` <br /> The direction of the track. Default `horizontal`.                                                  |
 
 | Data attribute     | Description                                               |
 | ------------------ | --------------------------------------------------------- |

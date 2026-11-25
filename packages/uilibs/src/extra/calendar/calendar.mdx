@@ -77,15 +77,18 @@ The calendar is react-day-picker's grid with this library's styles. The `Keyboar
 
 ### Calendar
 
-| Prop              | Description                                                                                                                                         |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost` <br /> The fill of the previous and next buttons. Default `ghost`.                                             |
-| `showOutsideDays` | `boolean` <br /> Shows the days of the neighbouring months. Default `true`.                                                                         |
-| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` <br /> `label` shows the month as text. Default `label`.                                  |
-| `startMonth`      | `Date` <br /> The first month the calendar can show. Default January 1900.                                                                          |
-| `endMonth`        | `Date` <br /> The last month the calendar can show. Default December 2100.                                                                          |
-| `labels`          | react-day-picker's `labels` functions <br /> Your functions replace the defaults one by one. Default: `labelDayButton` starts with the day number.  |
-| `formatters`      | react-day-picker's `formatters` functions <br /> Your functions replace the defaults one by one. Default: `formatMonthDropdown` is the short month. |
+| Prop              | Description                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost` <br /> The fill of the previous and next buttons. Default `ghost`.                                                                                  |
+| `showOutsideDays` | `boolean` <br /> Shows the days of the neighbouring months. Default `true`.                                                                                                              |
+| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` <br /> `label` shows the month as text. Default `label`.                                                                       |
+| `startMonth`      | `Date` <br /> The first month the calendar can show. Default January 1900.                                                                                                               |
+| `endMonth`        | `Date` <br /> The last month the calendar can show. Default December 2100.                                                                                                               |
+| `labels`          | react-day-picker's `labels` functions <br /> Your functions replace the defaults one by one. Default: `labelDayButton` starts with the day number.                                       |
+| `formatters`      | react-day-picker's `formatters` functions <br /> Your functions replace the defaults one by one. Default: `formatMonthDropdown` is the short month.                                      |
+| `locale`          | react-day-picker's `Locale` <br /> The language of the month, weekday, and day names, and of `data-day`. Default the browser's.                                                          |
+| `classNames`      | react-day-picker's `classNames` <br /> Class names merged over the calendar's own on each part. Prefer `style` and the `calendarStyles` recipe; this is react-day-picker's escape hatch. |
+| `components`      | react-day-picker's `components` <br /> Replaces a part, such as `DayButton`; the `CustomDays` story shows one.                                                                           |
 
 Set by this library on each day button:
 

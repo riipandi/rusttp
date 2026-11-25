@@ -1,6 +1,7 @@
 import { MoreVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
@@ -73,14 +74,33 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['border', 'columnBorder'] } },
+// `align` sets the Amount column, `verticalAlign` every body cell, and `highlighted` the first row.
+type PlaygroundArgs = Omit<ComponentProps<typeof Table>, 'align' | 'width'> &
+  Pick<ComponentProps<typeof TableCell>, 'align' | 'verticalAlign'> &
+  Pick<ComponentProps<typeof TableRow>, 'highlighted'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['border', 'columnBorder', 'align', 'verticalAlign', 'highlighted']
+    }
+  },
   argTypes: {
     border: { control: 'boolean' },
-    columnBorder: { control: 'boolean' }
+    columnBorder: { control: 'boolean' },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    verticalAlign: { control: 'radio', options: ['start', 'center', 'end'] },
+    highlighted: { control: 'boolean' }
   },
-  args: { border: false, columnBorder: false },
-  render: (args) => (
+  args: {
+    border: false,
+    columnBorder: false,
+    align: 'end',
+    verticalAlign: 'center',
+    highlighted: false
+  },
+  render: ({ align, verticalAlign, highlighted, ...args }) => (
     <div {...stylex.props(styles.root)}>
       <Table {...args}>
         <TableCaption>A list of your recent Gringotts vault transactions.</TableCaption>
@@ -89,23 +109,25 @@ export const Playground: Story = {
             <TableHead>Ledger no.</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Method</TableHead>
-            <TableHead style={styles.right}>Amount</TableHead>
+            <TableHead align={align}>Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {invoices.map((row) => (
-            <TableRow key={row.invoice}>
-              <TableCell>{row.invoice}</TableCell>
-              <TableCell>{row.status}</TableCell>
-              <TableCell>{row.method}</TableCell>
-              <TableCell style={styles.right}>{row.amount}</TableCell>
+            <TableRow key={row.invoice} highlighted={highlighted && row === invoices[0]}>
+              <TableCell verticalAlign={verticalAlign}>{row.invoice}</TableCell>
+              <TableCell verticalAlign={verticalAlign}>{row.status}</TableCell>
+              <TableCell verticalAlign={verticalAlign}>{row.method}</TableCell>
+              <TableCell align={align} verticalAlign={verticalAlign}>
+                {row.amount}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
-            <TableCell style={styles.right}>$1,200.00</TableCell>
+            <TableCell align={align}>$1,200.00</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
