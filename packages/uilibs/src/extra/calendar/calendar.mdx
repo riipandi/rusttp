@@ -39,6 +39,18 @@ A calendar in a Popover.
 
 <Canvas of={Stories.DatePickerSingle} />
 
+### Keyboard
+
+The previous and next buttons and the focused day draw a 2 px ring; the arrow keys move between days.
+
+<Canvas of={Stories.Keyboard} />
+
+### Custom days
+
+A `DayButton` of your own replaces the day cell. Compose the `calendarStyles` for the day, and spread react-day-picker's props before your own `stylex.props`, or its `className` replaces the StyleX class.
+
+<Canvas of={Stories.CustomDays} />
+
 ### Week numbers
 
 <Canvas of={Stories.WeekNumbers} />

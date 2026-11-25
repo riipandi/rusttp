@@ -7,6 +7,7 @@ import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-pi
 import { buttonFill, buttonStyles, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
+import { controlPress } from '../../styles/control.stylex'
 import { calendarStyles } from './calendar.stylex'
 
 type CalendarDayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'> & {
@@ -198,14 +199,19 @@ const labelDayWithNumber: NonNullable<
 >['labelDayButton'] = (date, modifiers, options, dateLib) =>
   `${(dateLib ?? new DateLib(options)).format(date, 'd')}, ${labelDayButton(date, modifiers, options, dateLib)}`
 
-type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+// DayPicker's props are a union by `mode`, so `Omit` is applied to each member.
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never
+
+type CalendarProps = DistributiveOmit<
+  React.ComponentProps<typeof DayPicker>,
+  'className' | 'style'
+> & {
+  /** The fill of the previous and next buttons. */
   buttonVariant?: ButtonVariant
-  className?: string
   style?: StyleXStyles
 }
 
 export function Calendar({
-  className,
   style,
   classNames,
   showOutsideDays = true,
@@ -221,15 +227,11 @@ export function Calendar({
 }: CalendarProps) {
   const defaultClassNames = getDefaultClassNames()
 
-  const rootStyleProps = stylex.props(calendarStyles.root, style as StyleXStyles)
+  const rootStyleProps = stylex.props(calendarStyles.root, style)
 
-  const prevBtnProps = stylex.props(
-    buttonStyles.root,
-    buttonFill(buttonVariant),
-    calendarStyles.buttonNav
-  )
-
-  const nextBtnProps = stylex.props(
+  // The previous and next buttons are Buttons by style: the press and focus model once, then the fill.
+  const navBtnProps = stylex.props(
+    controlPress.root,
     buttonStyles.root,
     buttonFill(buttonVariant),
     calendarStyles.buttonNav
@@ -238,7 +240,7 @@ export function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={[rootStyleProps.className, className].filter(Boolean).join(' ')}
+      className={rootStyleProps.className}
       style={rootStyleProps.style}
       captionLayout={captionLayout}
       locale={locale}
@@ -250,10 +252,10 @@ export function Calendar({
         ...formatters
       }}
       classNames={{
-        button_next: [nextBtnProps.className, defaultClassNames.button_next]
+        button_next: [navBtnProps.className, defaultClassNames.button_next]
           .filter(Boolean)
           .join(' '),
-        button_previous: [prevBtnProps.className, defaultClassNames.button_previous]
+        button_previous: [navBtnProps.className, defaultClassNames.button_previous]
           .filter(Boolean)
           .join(' '),
         caption_label: [

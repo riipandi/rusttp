@@ -6,7 +6,7 @@ import * as React from 'react'
 import type { DayButton } from 'react-day-picker'
 import type { DateRange } from 'react-day-picker'
 import { arSA } from 'react-day-picker/locale'
-import { expect } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button/button.component'
 import { buttonFills } from '../../base/button/button.stylex'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
@@ -69,7 +69,7 @@ const storyStyles = stylex.create({
     gap: unit.x0_5
   },
   dayCustomOutside: {
-    opacity: 0.4
+    color: colors.foregroundNeutralFaded
   },
   dayPrice: {
     fontSize: '0.625rem',
@@ -449,9 +449,10 @@ export const BookedDates: Story = {
 
 export const CustomDays: Story = {
   render: () => {
+    // A fixed month: the play counts the days of the range, so it cannot depend on today's date.
     const [range, setRange] = React.useState<DateRange | undefined>({
-      from: new Date(new Date().getFullYear(), 11, 8),
-      to: addDays(new Date(new Date().getFullYear(), 11, 8), 10)
+      from: new Date(2026, 11, 8),
+      to: new Date(2026, 11, 18)
     })
 
     return (
@@ -481,6 +482,9 @@ export const CustomDays: Story = {
 
                 return (
                   <button
+                    // react-day-picker's own `className` goes first so the StyleX class below is
+                    // not replaced by it.
+                    {...dayBtnProps}
                     type='button'
                     data-day={day.date.toLocaleDateString()}
                     data-selected-single={isSelectedSingle}
@@ -489,7 +493,7 @@ export const CustomDays: Story = {
                     data-range-middle={modifiers.range_middle}
                     {...stylex.props(
                       calendarStyles.dayBtnBase,
-                      calendarStyles.dayBtnSelected && isSelectedSingle,
+                      isSelectedSingle && calendarStyles.dayBtnSelected,
                       modifiers.focused && calendarStyles.dayBtnFocused,
                       modifiers.range_start && calendarStyles.dayBtnRangeStart,
                       modifiers.range_end && calendarStyles.dayBtnRangeEnd,
@@ -497,7 +501,6 @@ export const CustomDays: Story = {
                       storyStyles.dayCustom,
                       modifiers.outside && storyStyles.dayCustomOutside
                     )}
-                    {...dayBtnProps}
                     // The name starts with everything the button shows: the number, then the price.
                     aria-label={[
                       [day.date.getDate(), !modifiers.outside && price].filter(Boolean).join(' '),
@@ -509,7 +512,9 @@ export const CustomDays: Story = {
                       <span
                         {...stylex.props(
                           storyStyles.dayPrice,
-                          modifiers.selected
+                          // Only the filled days (the ends and a single pick) are on the primary
+                          // color; the days between sit on the neutral tint.
+                          isSelectedSingle || modifiers.range_start || modifiers.range_end
                             ? storyStyles.dayPriceSelected
                             : storyStyles.dayPriceMuted
                         )}
@@ -526,16 +531,44 @@ export const CustomDays: Story = {
       </Card>
     )
   },
-  // audit-00002 F-05: the custom day button loses the range fill between the two ends (and applies
-  // `dayBtnSelected` as `style && flag`, so a single selection gets none). Excluded from the run
-  // (`!test`) until fixed; remove the tag to reproduce.
-  tags: ['!test'],
   play: async ({ canvasElement }) => {
-    const middle = canvasElement.querySelectorAll<HTMLElement>('[data-range-middle="true"]')
-    await expect(middle.length).toBeGreaterThan(0)
-    for (const day of middle) {
+    // The range is 8 to 18 December: nine days between the two ends, and every one of the eleven is
+    // filled (the ends on the primary color, the days between on the neutral tint).
+    const filled = (part: string) =>
+      canvasElement.querySelectorAll<HTMLElement>(`[data-range-${part}="true"]`)
+    await expect(filled('middle')).toHaveLength(9)
+    await expect(filled('start')).toHaveLength(1)
+    await expect(filled('end')).toHaveLength(1)
+    for (const day of [...filled('start'), ...filled('middle'), ...filled('end')]) {
       await expect(getComputedStyle(day).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     }
+  }
+}
+
+const ring = (element: HTMLElement) => {
+  const style = getComputedStyle(element)
+  return [style.outlineStyle, style.outlineWidth]
+}
+
+/** Keyboard focus draws the 2 px ring on the previous and next buttons and on the day, and the arrow keys move it. */
+export const Keyboard: Story = {
+  render: () => (
+    <Calendar mode='single' defaultMonth={jan} selected={jan} labels={nav('keyboard')} />
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.tab()
+    const previous = canvas.getByRole('button', { name: /previous month/i })
+    await expect(previous).toHaveFocus()
+    await expect(ring(previous)).toEqual(['solid', '2px'])
+
+    const day = (date: number) => canvas.getByRole('button', { name: new RegExp(`^${date}, `) })
+    day(12).focus()
+    await waitFor(() => expect(ring(day(12))).toEqual(['solid', '2px']))
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(day(13)).toHaveFocus())
+    await waitFor(() => expect(ring(day(13))).toEqual(['solid', '2px']))
+    // The ring moved with the focus: the day left behind draws none.
+    await expect(ring(day(12))[0]).toBe('none')
   }
 }
 
