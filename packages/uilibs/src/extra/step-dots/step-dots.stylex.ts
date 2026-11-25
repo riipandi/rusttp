@@ -7,7 +7,7 @@ import { duration, easing, radius, unit } from '../../styles/tokens.stylex'
 // a track is the empty part of a bar, but a dot says there is another step, so it must show
 // against the page (3:1, WCAG 1.4.11).
 
-export const progressIndicatorStyles = stylex.create({
+export const stepDotsStyles = stylex.create({
   // The window clips the dots and the padding is where a cut-off dot fades out, so the first and
   // last dot sit clear of the fade and nothing hides behind it. The negative margin cancels the
   // padding in the layout.
@@ -54,7 +54,7 @@ export const progressIndicatorStyles = stylex.create({
 
 // A dot and the gap after it are the same step. The window is seven dots, six gaps, and the
 // active dot's extra width, so it never grows past what a long row shows.
-export const progressIndicatorSizes = stylex.create({
+export const stepDotsSizes = stylex.create({
   smallRoot: { maxWidth: `calc(13 * ${unit.x1_5} + (${unit.x4} - ${unit.x1_5}))` },
   mediumRoot: { maxWidth: `calc(13 * ${unit.x2} + (${unit.x6} - ${unit.x2}))` },
   smallTrack: { gap: unit.x1_5 },
@@ -66,7 +66,7 @@ export const progressIndicatorSizes = stylex.create({
 })
 
 // White on a photo or a dark surface, the same in both themes, like Button `media`.
-export const progressIndicatorMedia = stylex.create({
+export const stepDotsMedia = stylex.create({
   idle: {
     backgroundColor: {
       default: `color-mix(in srgb, ${colors.white} 50%, transparent)`,

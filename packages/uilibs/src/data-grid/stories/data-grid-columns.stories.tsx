@@ -479,13 +479,20 @@ const keyboardResizeColumns: ColumnDef<DataGridFeatures, IBook>[] = [
   { accessorKey: 'country', id: 'country', header: 'Country', size: 150 }
 ]
 
-function KeyboardResizeGrid({ direction }: { direction: 'ltr' | 'rtl' }) {
+function KeyboardResizeGrid({
+  direction,
+  fromDir = false
+}: {
+  direction: 'ltr' | 'rtl'
+  /** Leave `columnResizeDirection` unset: the grid takes the direction from `dir`. */
+  fromDir?: boolean
+}) {
   const table = useTable({
     features: dataGridFeatures,
     columns: keyboardResizeColumns,
     data: demoData.slice(0, 3),
     getRowId: (row: IBook) => row.id,
-    columnResizeDirection: direction
+    ...(fromDir ? {} : { columnResizeDirection: direction })
   })
   return (
     <div dir={direction}>
@@ -518,6 +525,18 @@ function genreHandle(canvas: {
   }
 }
 
+/** Drags a separator by `dx` px with the mouse, the way a pointer user resizes a column. */
+async function dragBy(separator: HTMLElement, dx: number) {
+  const box = separator.getBoundingClientRect()
+  const clientX = box.left + box.width / 2
+  const clientY = box.top + box.height / 2
+  await userEvent.pointer([
+    { keys: '[MouseLeft>]', target: separator, coords: { clientX, clientY } },
+    { coords: { clientX: clientX + dx, clientY } },
+    { keys: '[/MouseLeft]' }
+  ])
+}
+
 /**
  * A column resizes from the keyboard through its separator: an arrow moves the edge 10 px (50 with
  * Shift), Home and End jump to the limits, Enter restores the default width.
@@ -532,6 +551,18 @@ export const ResizeByKeyboard: Story = {
     await expect(separator).toHaveAttribute('aria-valuemin', '100')
     await expect(separator).toHaveAttribute('aria-valuemax', '220')
     await expect(separator).toHaveAttribute('tabindex', '0')
+    // The spoken value is the width in px, and the separator controls the header cell it sizes.
+    await expect(separator).toHaveAttribute('aria-valuetext', '160 px')
+    const header = separator.closest('th')
+    if (!header) throw new Error('No header cell')
+    await expect(header.id).not.toBe('')
+    await expect(separator).toHaveAttribute('aria-controls', header.id)
+    // A column with no `maxSize` still has a maximum: ARIA 1.2 reads a missing one as 100, below its value.
+    const country = canvas.getByRole('separator', { name: 'Resize Country column' })
+    await expect(country).toHaveAttribute('aria-valuetext', '150 px')
+    await expect(Number(country.getAttribute('aria-valuemax'))).toBeGreaterThanOrEqual(
+      Number(country.getAttribute('aria-valuenow'))
+    )
     await expect(value()).toBe(160)
     await waitFor(() => expect(width()).toBeCloseTo(160, 0))
 
@@ -544,6 +575,7 @@ export const ResizeByKeyboard: Story = {
 
     // An arrow moves 10 px and the header follows; Shift moves 50.
     await pressUntil('{ArrowRight}', () => settle(170), { when: () => value() !== 170 })
+    await expect(separator).toHaveAttribute('aria-valuetext', '170 px')
     await pressUntil('{Shift>}{ArrowRight}{/Shift}', () => settle(220), {
       when: () => value() !== 220
     })
@@ -562,36 +594,58 @@ export const ResizeByKeyboard: Story = {
       'aria-valuenow',
       '240'
     )
+
+    // A drag to the right widens the column, the same direction as ArrowRight.
+    await dragBy(separator, 40)
+    await waitFor(() => expect(value()).toBe(200))
+    await waitFor(() => expect(width()).toBeCloseTo(200, 0))
   }
 }
 
+const resizeRtlPlay: Story['play'] = async ({ canvas }) => {
+  await canvas.findByRole('table', { name: 'Novels' })
+  const { separator, value, width } = genreHandle(canvas)
+  const cell = separator.closest('th')
+  if (!cell) throw new Error('No header cell')
+  // The separator sits on the physical left edge of its header: the end edge in right to left.
+  const handleMiddle = separator.getBoundingClientRect().left + separator.offsetWidth / 2
+  await expect(Math.abs(handleMiddle - cell.getBoundingClientRect().left)).toBeLessThan(4)
+
+  separator.focus()
+  await expect(separator).toHaveFocus()
+  await pressUntil('{ArrowLeft}', () => expect(value()).toBe(170), {
+    when: () => value() !== 170
+  })
+  await waitFor(() => expect(width()).toBeCloseTo(170, 0))
+  await pressUntil('{ArrowRight}', () => expect(value()).toBe(160), {
+    when: () => value() !== 160
+  })
+  await waitFor(() => expect(width()).toBeCloseTo(160, 0))
+
+  // The pointer agrees with the keys: dragging the edge to the left widens the column.
+  await dragBy(separator, -40)
+  await waitFor(() => expect(value()).toBe(200))
+  await waitFor(() => expect(width()).toBeCloseTo(200, 0))
+}
+
 /**
- * Right to left with `columnResizeDirection: 'rtl'`: the end edge is on the left, so the arrow that
- * points left widens, the same direction a drag takes.
+ * Right to left, with the table option also set (the grid ignores it): the end edge is on the left,
+ * so the arrow that points left widens, the same direction a drag takes.
  */
 export const ResizeByKeyboardRtl: Story = {
   name: 'Column resizing, keyboard, right to left',
   render: () => <KeyboardResizeGrid direction='rtl' />,
-  play: async ({ canvas }) => {
-    await canvas.findByRole('table', { name: 'Novels' })
-    const { separator, value, width } = genreHandle(canvas)
-    const cell = separator.closest('th')
-    if (!cell) throw new Error('No header cell')
-    // The separator sits on the physical left edge of its header: the end edge in right to left.
-    const handleMiddle = separator.getBoundingClientRect().left + separator.offsetWidth / 2
-    await expect(Math.abs(handleMiddle - cell.getBoundingClientRect().left)).toBeLessThan(4)
+  play: resizeRtlPlay
+}
 
-    separator.focus()
-    await expect(separator).toHaveFocus()
-    await pressUntil('{ArrowLeft}', () => expect(value()).toBe(170), {
-      when: () => value() !== 170
-    })
-    await waitFor(() => expect(width()).toBeCloseTo(170, 0))
-    await pressUntil('{ArrowRight}', () => expect(value()).toBe(160), {
-      when: () => value() !== 160
-    })
-    await waitFor(() => expect(width()).toBeCloseTo(160, 0))
-  }
+/**
+ * Right to left from `dir` alone: with no `columnResizeDirection`, the same keys and the same drag
+ * apply, because the grid reads the direction the handle is laid out in.
+ */
+export const ResizeByKeyboardRtlFromDir: Story = {
+  name: 'Column resizing, keyboard, right to left from dir',
+  render: () => <KeyboardResizeGrid direction='rtl' fromDir />,
+  play: resizeRtlPlay
 }
 
 /** Pinnable columns. */

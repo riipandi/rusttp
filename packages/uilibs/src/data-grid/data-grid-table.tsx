@@ -180,6 +180,7 @@ function DataGridTableBase<TData extends object>({
         props.tableLayout?.columnsResizable ? s.tableSized : s.tableFull,
         props.tableLayout?.width === 'auto' ? s.tableAuto : s.tableFixed,
         !props.tableLayout?.columnsDraggable && s.tableSeparate,
+        cellSelectionOn && s.gridFocusable,
         props.tableStyles?.base
       )}
     >

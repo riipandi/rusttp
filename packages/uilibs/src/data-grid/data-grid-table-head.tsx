@@ -8,11 +8,12 @@ import type {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent
 } from 'react'
-import { getColumnHeaderLabel, useDataGrid } from './data-grid'
+import { getColumnHeaderLabel, getDataGridHeaderDomId, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import {
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
+  isColumnResizeMirrored,
   nextColumnSize
 } from './data-grid-table-utils'
 import { dataGridTableStyles as s } from './data-grid-table.stylex'
@@ -94,8 +95,7 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
   // An end-pinned column is anchored at its end edge and grows from its
   // START edge, so its whole resize geometry runs mirrored, exactly like
   // RTL: the anchor is the opposite edge and the drag direction inverts.
-  const resizeRtl =
-    (table.options.columnResizeDirection === 'rtl') !== (column.getIsPinned() === 'end')
+  const resizeRtl = isColumnResizeMirrored(event.currentTarget, column.getIsPinned())
   const startOffset =
     headerRect && Number.isFinite(resizeRtl ? headerRect.left : headerRect.right)
       ? resizeRtl
@@ -328,7 +328,7 @@ function DataGridTableHeadRowCell<TData extends object>({
   dndStyle?: StyleXStyles
   table: DataGridTableInstance<TData>
 }) {
-  const { props } = useDataGrid()
+  const { props, gridId } = useDataGrid()
 
   const { column } = header
   const isPinned = column.getIsPinned()
@@ -344,6 +344,7 @@ function DataGridTableHeadRowCell<TData extends object>({
   return (
     <th
       ref={dndRef}
+      id={getDataGridHeaderDomId(gridId, header.id)}
       scope='col'
       colSpan={header.colSpan > 1 ? header.colSpan : undefined}
       aria-sort={
@@ -449,7 +450,7 @@ function DataGridTableHeadRowCellResize<TData extends object>({
   header: Header<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { labels, props } = useDataGrid<TData>()
+  const { labels, props, gridId } = useDataGrid<TData>()
   const { column } = header
   const isPinned = column.getIsPinned()
   const isLastVisibleColumn =
@@ -511,9 +512,6 @@ function DataGridTableHeadRowCellResize<TData extends object>({
     const max = leaf.column.columnDef.maxSize
     return sum + (typeof max === 'number' && max < Number.MAX_SAFE_INTEGER ? max : Infinity)
   }, 0)
-  // The drag's own rule: an end-pinned column grows from its start edge, so its keys mirror.
-  const mirrored = (table.options.columnResizeDirection === 'rtl') !== (isPinned === 'end')
-
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter') {
       // The keyboard twin of the double-click: back to the default width.
@@ -525,7 +523,8 @@ function DataGridTableHeadRowCellResize<TData extends object>({
     const next = nextColumnSize({
       key: event.key,
       shiftKey: event.shiftKey,
-      mirrored,
+      // The drag's own rule, read where the handle is laid out.
+      mirrored: isColumnResizeMirrored(event.currentTarget, isPinned),
       size,
       min: minSize,
       max: maxSize
@@ -557,9 +556,13 @@ function DataGridTableHeadRowCellResize<TData extends object>({
       tabIndex={0}
       aria-orientation='vertical'
       aria-label={labels.resizeColumn(getColumnHeaderLabel(column))}
+      aria-controls={getDataGridHeaderDomId(gridId, header.id)}
       aria-valuenow={Math.round(size)}
+      aria-valuetext={labels.columnWidth(Math.round(size))}
       aria-valuemin={Math.round(minSize)}
-      aria-valuemax={Number.isFinite(maxSize) ? Math.round(maxSize) : undefined}
+      // A column with no maximum says so with TanStack's own sentinel: ARIA 1.2 reads a missing
+      // `aria-valuemax` as 100, which would sit below `aria-valuenow`.
+      aria-valuemax={Number.isFinite(maxSize) ? Math.round(maxSize) : Number.MAX_SAFE_INTEGER}
       onKeyDown={handleKeyDown}
       {...{
         onDoubleClick: () => column.resetSize(),
@@ -669,11 +672,12 @@ function DataGridTableResizeIndicator<TData extends object>({
     // by the physical pointer movement so the indicator follows the cursor
     // instead of mirroring it. End-pinned columns resize mirrored (see the
     // session), so the multiplier matches theirs.
-    const directionMultiplier =
-      (table.options.columnResizeDirection === 'rtl') !==
-      (resizingHeader.column.getIsPinned() === 'end')
-        ? -1
-        : 1
+    const directionMultiplier = isColumnResizeMirrored(
+      indicator,
+      resizingHeader.column.getIsPinned()
+    )
+      ? -1
+      : 1
     const deltaOffset = (columnResizing.deltaOffset ?? 0) * directionMultiplier
 
     if (headerHeightCacheRef.current.key !== resizingColumnId) {
@@ -699,11 +703,9 @@ function DataGridTableResizeIndicator<TData extends object>({
     let indicatorLeft: number
     if (headerCellElement && viewportRoot) {
       const anchorRect = headerCellElement.getBoundingClientRect()
-      const edgeClientX =
-        (table.options.columnResizeDirection === 'rtl') !==
-        (resizingHeader.column.getIsPinned() === 'end')
-          ? anchorRect.left
-          : anchorRect.right
+      const edgeClientX = isColumnResizeMirrored(indicator, resizingHeader.column.getIsPinned())
+        ? anchorRect.left
+        : anchorRect.right
       indicatorLeft = edgeClientX - viewportRoot.getBoundingClientRect().left
     } else if (typeof columnResizing.startOffset === 'number' && viewportElement) {
       indicatorLeft = columnResizing.startOffset - viewportElement.getBoundingClientRect().left

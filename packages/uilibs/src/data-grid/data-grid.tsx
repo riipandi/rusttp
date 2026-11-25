@@ -320,6 +320,11 @@ export function toDataGridDomId(value: string): string {
   return value.replace(/[^\w-]/g, '_')
 }
 
+/** The id of a column header cell, which its resize separator names in `aria-controls`. */
+export function getDataGridHeaderDomId(gridId: string, headerId: string): string {
+  return `${gridId}h-${toDataGridDomId(headerId)}`
+}
+
 export interface DataGridAutoSizeController {
   /**
    * Feeds the controller one viewport measurement: the SIGNED free space

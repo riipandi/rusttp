@@ -542,59 +542,61 @@ export const RowClickCellSelection: Story = {
   }
 }
 
+function KeyboardGrid() {
+  const [data, setData] = useState(productData.slice(0, 5))
+  const columns = useMemo<ColumnDef<DataGridFeatures, IProduct>[]>(
+    () => [
+      { accessorKey: 'id', header: 'SKU', size: 120, meta: { cellEdit: { control: 'text' } } },
+      {
+        accessorKey: 'name',
+        header: 'Product',
+        size: 200,
+        meta: { cellEdit: { control: 'text' } }
+      },
+      {
+        accessorKey: 'category',
+        header: 'Category',
+        size: 180,
+        meta: { cellEdit: { control: 'text' } }
+      }
+    ],
+    []
+  )
+  const table = useTable({
+    features: dataGridFeatures,
+    columns,
+    data,
+    getRowId: (row: IProduct) => row.id
+  })
+  const handleCellsChange = (details: DataGridCellsChangeDetails<IProduct>) =>
+    setData((old) =>
+      old.map((row) => {
+        const changes = details.changes.filter((change) => change.rowId === row.id)
+        return changes.length
+          ? { ...row, ...Object.fromEntries(changes.map((c) => [c.columnId, c.value])) }
+          : row
+      })
+    )
+  return (
+    <DataGrid
+      table={table}
+      recordCount={data.length}
+      onCellsChange={handleCellsChange}
+      tableLayout={{ cellSelection: true }}
+    >
+      <DataGridCellSelection table={table} />
+      <DataGridContainer>
+        <DataGridScrollArea table={table}>
+          <DataGridTable aria-label='Novels' table={table} />
+        </DataGridScrollArea>
+      </DataGridContainer>
+    </DataGrid>
+  )
+}
+
 /** Arrow keys move the focused cell; Home, End, and the Ctrl or Cmd arrows jump; Enter edits; Delete clears. */
 export const Keyboard: Story = {
-  render: () => {
-    const [data, setData] = useState(productData.slice(0, 5))
-    const columns = useMemo<ColumnDef<DataGridFeatures, IProduct>[]>(
-      () => [
-        { accessorKey: 'id', header: 'SKU', size: 120, meta: { cellEdit: { control: 'text' } } },
-        {
-          accessorKey: 'name',
-          header: 'Product',
-          size: 200,
-          meta: { cellEdit: { control: 'text' } }
-        },
-        {
-          accessorKey: 'category',
-          header: 'Category',
-          size: 180,
-          meta: { cellEdit: { control: 'text' } }
-        }
-      ],
-      []
-    )
-    const table = useTable({
-      features: dataGridFeatures,
-      columns,
-      data,
-      getRowId: (row: IProduct) => row.id
-    })
-    const handleCellsChange = (details: DataGridCellsChangeDetails<IProduct>) =>
-      setData((old) =>
-        old.map((row) => {
-          const changes = details.changes.filter((change) => change.rowId === row.id)
-          return changes.length
-            ? { ...row, ...Object.fromEntries(changes.map((c) => [c.columnId, c.value])) }
-            : row
-        })
-      )
-    return (
-      <DataGrid
-        table={table}
-        recordCount={data.length}
-        onCellsChange={handleCellsChange}
-        tableLayout={{ cellSelection: true }}
-      >
-        <DataGridCellSelection table={table} />
-        <DataGridContainer>
-          <DataGridScrollArea table={table}>
-            <DataGridTable aria-label='Novels' table={table} />
-          </DataGridScrollArea>
-        </DataGridContainer>
-      </DataGrid>
-    )
-  },
+  render: () => <KeyboardGrid />,
   play: async ({ canvasElement, canvas }) => {
     // With cell selection on, the named table is a grid.
     const grid = canvas.getByRole('grid', { name: 'Novels' })
@@ -658,5 +660,58 @@ export const Keyboard: Story = {
     await expectFocus(3, 2)
     await userEvent.keyboard('{Delete}')
     await waitFor(() => expect(at(3, 2).textContent).toBe(''))
+  }
+}
+
+/**
+ * Where focus shows. A grid that holds focus with no active cell (the first Tab, or after Escape
+ * clears the selection) draws the library ring on the table; once a cell is active, the cell's own
+ * edge is the indicator and the table draws nothing, so the two never double.
+ */
+export const Focus: Story = {
+  render: () => <KeyboardGrid />,
+  play: async ({ canvasElement, canvas }) => {
+    const grid = canvas.getByRole('grid', { name: 'Novels' })
+    const focused = () => canvasElement.querySelector<HTMLElement>('td[data-cell-focused]')
+    const ring = () => {
+      const { outlineStyle, outlineWidth, outlineColor } = getComputedStyle(grid)
+      return { style: outlineStyle, width: outlineWidth, color: outlineColor }
+    }
+
+    // Tab lands on the grid with no active cell: a 2 px solid ring.
+    await pressUntil('{Tab}', () => expect(grid).toHaveFocus(), {
+      when: () => document.activeElement !== grid
+    })
+    await expect(grid).not.toHaveAttribute('aria-activedescendant')
+    await expect(focused()).toBeNull()
+    const entry = ring()
+    await expect(entry.style).toBe('solid')
+    await expect(entry.width).toBe('2px')
+
+    // One arrow makes a cell active: the table's ring goes, the cell's 1 px edge (the same color)
+    // takes over, and `aria-activedescendant` names the cell.
+    await pressUntil('{ArrowDown}', () => expect(focused()).not.toBeNull(), {
+      when: () => focused() === null
+    })
+    const cell = focused()!
+    await expect(canvasElement.querySelectorAll('td[data-cell-focused]')).toHaveLength(1)
+    await waitFor(() => expect(grid).toHaveAttribute('aria-activedescendant', cell.id))
+    await expect(ring().style).toBe('none')
+    const edge = getComputedStyle(cell, '::before')
+    for (const width of [
+      edge.borderTopWidth,
+      edge.borderInlineEndWidth,
+      edge.borderBottomWidth,
+      edge.borderInlineStartWidth
+    ]) {
+      await expect(width).toBe('1px')
+    }
+    await expect(edge.borderTopStyle).toBe('solid')
+    await expect(edge.borderTopColor).toBe(entry.color)
+
+    // Escape clears the selection and the active cell; the grid still holds focus, so the ring is back.
+    await pressUntil('{Escape}', () => expect(focused()).toBeNull())
+    await expect(grid).toHaveFocus()
+    await waitFor(() => expect(ring()).toEqual(entry))
   }
 }

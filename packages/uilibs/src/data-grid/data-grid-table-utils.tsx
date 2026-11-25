@@ -239,9 +239,19 @@ const DATA_GRID_RESIZE_STEP = 10
 const DATA_GRID_RESIZE_STEP_LARGE = 50
 
 /**
+ * Whether a column resizes mirrored: the grid is laid out right to left (the computed `direction`
+ * of the element, so `dir` on any ancestor decides and no option has to agree with it), or the
+ * column is pinned to the end, which is anchored at its end edge and grows from its start edge.
+ * One rule for the pointer drag, its indicator line, and the keys.
+ */
+function isColumnResizeMirrored(element: Element, pinned: false | 'start' | 'end'): boolean {
+  return (getComputedStyle(element).direction === 'rtl') !== (pinned === 'end')
+}
+
+/**
  * The width a column takes after a key on its resize separator: an arrow moves the edge 10 px (50
  * with Shift), Home and End jump to the minimum and the maximum, and the result stays inside both.
- * `mirrored` is the drag's own rule (a `columnResizeDirection` of `rtl`, or an end-pinned column
+ * `mirrored` is `isColumnResizeMirrored`, the drag's own rule (right to left, or an end-pinned column
  * that grows from its start edge): the arrow that points away from the anchor widens. Returns null
  * for a key the separator does not answer, and for End when the column has no maximum.
  */
@@ -352,6 +362,25 @@ function DataGridTableFillFootCell<TData extends object>({
   )
 }
 
+/**
+ * One viewport's worth of rows for PageUp and PageDown, measured from the live layout; 10 when
+ * nothing is measurable (jsdom). Data rows only: the virtual table's spacer rows carry the whole
+ * scroll offset as height and would collapse the page size to a single row.
+ */
+function getDataGridPageRowCount(viewport: HTMLElement): number {
+  const row = viewport.querySelector('tbody tr[data-row-id]')
+  // The nearest ancestor that actually scrolls; in the scroll-area layout the viewport's parent is
+  // a full-height content wrapper whose clientHeight would make the page span the whole table.
+  let scroller: HTMLElement | null = viewport
+  while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
+    scroller = scroller.parentElement
+  }
+  const rowHeight = row?.getBoundingClientRect().height || 0
+  const viewHeight = scroller?.clientHeight || viewport.clientHeight
+  if (!rowHeight || !viewHeight) return 10
+  return Math.max(1, Math.floor(viewHeight / rowHeight) - 1)
+}
+
 export {
   cellSelectionChromeProps,
   getDataGridTreeIndentStyle,
@@ -365,6 +394,8 @@ export {
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
   nextColumnSize,
+  isColumnResizeMirrored,
+  getDataGridPageRowCount,
   DataGridTableFillCol,
   DataGridTableFillHeadCell,
   DataGridTableFillBodyCell,

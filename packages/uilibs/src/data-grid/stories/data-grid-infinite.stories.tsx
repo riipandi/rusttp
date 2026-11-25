@@ -11,6 +11,7 @@ import { dataGridFeatures } from '../'
 import type { DataGridFeatures, DataGridTableInstance } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button } from '../../base/button'
+import { pressUntil } from '../../contracts/keyboard'
 import { Card, CardContent } from '../../extra/card'
 import { colors } from '../../styles/colors.stylex'
 import { unit } from '../../styles/tokens.stylex'
@@ -307,6 +308,27 @@ export const RowClickVirtualized: Story = {
     const stops = () => canvasElement.querySelectorAll('tbody tr[tabindex="0"]')
     const firstRow = () => canvasElement.querySelector<HTMLElement>('tbody tr[data-row-clickable]')
     const table = await canvas.findByRole('table', { name: 'Novels' })
+    await waitFor(() => expect(stops()).toHaveLength(1))
+
+    // PageDown jumps a page, further than one row and no further than the rows that fit the 400 px
+    // view (about 9 of 41 px); PageUp comes back, and stays on the first row.
+    const rows = () =>
+      Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr[data-row-clickable]'))
+    const activeIndex = () => rows().findIndex((row) => row === document.activeElement)
+    const first = rows()[0]
+    if (!first) throw new Error('No rows')
+    first.focus()
+    await pressUntil('{PageDown}', () => expect(activeIndex()).toBeGreaterThan(1), {
+      when: () => document.activeElement === first
+    })
+    const landed = activeIndex()
+    await expect(landed).toBeGreaterThanOrEqual(5)
+    await expect(landed).toBeLessThanOrEqual(9)
+    await pressUntil('{PageUp}', () => expect(document.activeElement).toBe(first), {
+      when: () => document.activeElement !== first
+    })
+    await userEvent.keyboard('{PageUp}')
+    await expect(first).toHaveFocus()
     await waitFor(() => expect(stops()).toHaveLength(1))
 
     // Scroll far enough that the first rows leave the DOM: the stop moves, and is still one.

@@ -37,6 +37,20 @@ export const dataGridTableStyles = stylex.create({
   },
   // Draggable columns need collapse for the dnd transform model; the
   // default is border-separate with zero spacing (row borders paint on tds).
+  // A cell-selection grid holds DOM focus itself. While no cell is active (the first Tab, or after
+  // Escape clears the selection) it draws the library ring, inside the table so a scroll area does
+  // not clip it; once a cell is active (`aria-activedescendant`, set by `data-grid-cell.tsx`) the
+  // cell's own edge is the indicator and the table draws nothing, so the two never double.
+  gridFocusable: {
+    outline: {
+      default: 'none',
+      ':focus-visible:not([aria-activedescendant])': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: {
+      default: 0,
+      ':focus-visible:not([aria-activedescendant])': `calc(-1 * ${stroke.ring2})`
+    }
+  },
   tableSeparate: {
     borderCollapse: 'separate',
     borderSpacing: 0

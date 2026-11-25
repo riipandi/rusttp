@@ -8,13 +8,13 @@ import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
 import { Carousel } from '../carousel'
-import { ProgressIndicator } from './progress-indicator.component'
+import { StepDots } from './step-dots.component'
 
 const meta = {
-  title: 'Extra Components/ProgressIndicator',
-  component: ProgressIndicator,
+  title: 'Extra Components/StepDots',
+  component: StepDots,
   tags: [] // ['autodocs']
-} satisfies Meta<typeof ProgressIndicator>
+} satisfies Meta<typeof StepDots>
 
 type Story = StoryObj<typeof meta>
 
@@ -51,7 +51,7 @@ export const Playground: Story = {
     color: { control: 'select', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] }
   },
   args: { total: 5, activeIndex: 2, size: 'medium', color: 'primary' },
-  render: (args) => <ProgressIndicator {...args} />,
+  render: (args) => <StepDots {...args} />,
   // A progressbar whose value is the one-based position, named and spoken for assistive technology.
   play: async ({ canvas }) => {
     const bar = canvas.getByRole('progressbar', { name: 'Progress' })
@@ -67,14 +67,14 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<ProgressIndicator total={5} activeIndex={1} size='small' aria-label='small' />`
+        code: `<StepDots total={5} activeIndex={1} size='small' aria-label='small' />`
       }
     }
   },
   args: { total: 5 },
   render: () => (
     <Axis axis='size' rows={['small', 'medium'] as const}>
-      {(size) => <ProgressIndicator total={5} activeIndex={1} size={size} aria-label={size} />}
+      {(size) => <StepDots total={5} activeIndex={1} size={size} aria-label={size} />}
     </Axis>
   ),
   // A dot is 6px or 8px and the active one is stretched to a pill of 16px or 24px.
@@ -95,14 +95,14 @@ export const Colors: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<ProgressIndicator total={4} activeIndex={1} color='positive' aria-label='positive' />`
+        code: `<StepDots total={4} activeIndex={1} color='positive' aria-label='positive' />`
       }
     }
   },
   args: { total: 5 },
   render: () => (
     <Axis axis='color' rows={['neutral', 'primary', 'positive', 'warning', 'critical'] as const}>
-      {(color) => <ProgressIndicator total={4} activeIndex={1} color={color} aria-label={color} />}
+      {(color) => <StepDots total={4} activeIndex={1} color={color} aria-label={color} />}
     </Axis>
   ),
   // The active dot takes the fill `Progress` draws for the role; the others stay the track color.
@@ -123,14 +123,14 @@ export const Media: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<ProgressIndicator total={4} activeIndex={1} color='media' aria-label='On a dark surface' />`
+        code: `<StepDots total={4} activeIndex={1} color='media' aria-label='On a dark surface' />`
       }
     }
   },
   args: { total: 5 },
   render: () => (
     <div {...stylex.props(styles.backdrop)}>
-      <ProgressIndicator total={4} activeIndex={1} color='media' aria-label='On a dark surface' />
+      <StepDots total={4} activeIndex={1} color='media' aria-label='On a dark surface' />
     </div>
   ),
   // White on a dark surface: the active dot is opaque and the rest are half as strong.
@@ -147,7 +147,7 @@ export const Windowed: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<ProgressIndicator total={20} activeIndex={index} aria-label='Horcruxes found' />`
+        code: `<StepDots total={20} activeIndex={index} aria-label='Horcruxes found' />`
       }
     }
   },
@@ -156,7 +156,7 @@ export const Windowed: Story = {
     const [index, setIndex] = React.useState(0)
     return (
       <div {...stylex.props(styles.stack)}>
-        <ProgressIndicator total={20} activeIndex={index} aria-label='Horcruxes found' />
+        <StepDots total={20} activeIndex={index} aria-label='Horcruxes found' />
         <div {...stylex.props(styles.row)}>
           <Button
             size='small'
@@ -213,7 +213,7 @@ export const WithCarousel: Story = {
     <div key={name}>{name}</div>
   ))}
 </Carousel>
-<ProgressIndicator total={spells.length} activeIndex={index} aria-label='Spell position' />`
+<StepDots total={spells.length} activeIndex={index} aria-label='Spell position' />`
       }
     }
   },
@@ -230,7 +230,7 @@ export const WithCarousel: Story = {
             </div>
           ))}
         </Carousel>
-        <ProgressIndicator total={spells.length} activeIndex={index} aria-label='Spell position' />
+        <StepDots total={spells.length} activeIndex={index} aria-label='Spell position' />
       </div>
     )
   },
@@ -249,7 +249,7 @@ export const WithCarousel: Story = {
 export const Labels: Story = {
   args: { total: 5 },
   render: () => (
-    <ProgressIndicator
+    <StepDots
       total={3}
       activeIndex={0}
       labels={{ name: 'Étapes', value: (current, total) => `Étape ${current} sur ${total}` }}
@@ -265,9 +265,7 @@ export const Labels: Story = {
 
 export const AsElement: Story = {
   args: { total: 5 },
-  render: () => (
-    <ProgressIndicator total={3} activeIndex={2} render={<span />} aria-label='Steps' />
-  ),
+  render: () => <StepDots total={3} activeIndex={2} render={<span />} aria-label='Steps' />,
   // `render` swaps the `div` for a `span`, for a bar inside running text.
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('progressbar', { name: 'Steps' }).tagName).toBe('SPAN')

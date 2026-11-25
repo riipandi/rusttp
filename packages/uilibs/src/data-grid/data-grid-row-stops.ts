@@ -85,16 +85,20 @@ function getClickableRows(from: HTMLElement): HTMLElement[] {
   )
 }
 
-/** Moves focus from a row to its neighbour, or to the first or last rendered row. */
-function moveRowFocus(from: HTMLElement, to: 'next' | 'previous' | 'first' | 'last') {
+/**
+ * Moves focus from a row to its neighbour, to the first or last rendered row, or by a signed
+ * number of rows (a page), which stops at the first and last rendered row.
+ */
+function moveRowFocus(from: HTMLElement, to: 'next' | 'previous' | 'first' | 'last' | number) {
   const rows = getClickableRows(from)
   const index = rows.indexOf(from)
+  const delta = to === 'next' ? 1 : to === 'previous' ? -1 : typeof to === 'number' ? to : 0
   const target =
     to === 'first'
       ? rows[0]
       : to === 'last'
         ? rows[rows.length - 1]
-        : rows[index + (to === 'next' ? 1 : -1)]
+        : rows[Math.min(Math.max(index + delta, 0), rows.length - 1)]
   target?.focus()
 }
 

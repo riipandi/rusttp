@@ -24,6 +24,7 @@ import type {
   DataGridEditorAdvance,
   DataGridEditorSession
 } from './data-grid-cell-ops'
+import { getDataGridPageRowCount } from './data-grid-table-utils'
 
 /* ------------------------------------------------------------------------- *
  * Controller.
@@ -438,24 +439,7 @@ function DataGridCellSelection<TData extends object>({
       table.moveCellSelection(direction)
     }
 
-    // One viewport's worth of rows for PageUp/PageDown, measured from the
-    // live layout; 10 when nothing is measurable (jsdom). Data rows only:
-    // the virtual table's spacer rows carry the whole scroll offset as
-    // height and would collapse the page size to a single row.
-    const getPageJumpSize = (): number => {
-      const row = viewport.querySelector('tbody tr[data-row-id]')
-      // The nearest ancestor that actually scrolls; in the scroll-area
-      // layout the viewport's parent is a full-height content wrapper
-      // whose clientHeight would make the page span the whole table.
-      let scroller: HTMLElement | null = viewport
-      while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
-        scroller = scroller.parentElement
-      }
-      const rowHeight = row?.getBoundingClientRect().height || 0
-      const viewHeight = scroller?.clientHeight || viewport.clientHeight
-      if (!rowHeight || !viewHeight) return 10
-      return Math.max(1, Math.floor(viewHeight / rowHeight) - 1)
-    }
+    const getPageJumpSize = (): number => getDataGridPageRowCount(viewport)
 
     // The rows appended after the data rows: the add-row affordance and a
     // consumer appendRow draft. Positional, because an id-less tr is not
@@ -1046,12 +1030,8 @@ function DataGridCellSelection<TData extends object>({
     }
 
     const previousTabIndex = focusTarget.getAttribute('tabindex')
-    const previousOutline = focusTarget.style.outline
     if (keyboard) {
       focusTarget.tabIndex = 0
-      // The focused CELL ring is the indicator; the browser's outline around
-      // the whole grid on focus() would double it.
-      focusTarget.style.outline = 'none'
       viewport.addEventListener('keydown', handleKeyDown)
     }
     if (clipboard) {
@@ -1101,7 +1081,6 @@ function DataGridCellSelection<TData extends object>({
       if (keyboard) {
         if (previousTabIndex === null) focusTarget.removeAttribute('tabindex')
         else focusTarget.setAttribute('tabindex', previousTabIndex)
-        focusTarget.style.outline = previousOutline
         focusTarget.removeAttribute('aria-activedescendant')
         viewport.removeEventListener('keydown', handleKeyDown)
       }

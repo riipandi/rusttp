@@ -1,8 +1,8 @@
 ---
 status: living
 created: 2026-11-22T15:05:00+07:00
-updated: 2026-11-22T15:05:00+07:00
-references: handover-00008-ui-leftovers-remediation, plan-00004-ui-audit-remediation, architecture.md (the former "Parked" section)
+updated: 2026-11-26T04:30:00+07:00
+references: handover-00008-ui-leftovers-remediation, plan-00004-ui-audit-remediation, plan-00013-uilibs-grid-and-gate-leftovers, architecture.md (the former "Parked" section)
 ---
 
 # Roadmap: parked verifications and product ideas
@@ -42,6 +42,16 @@ _(from handover-00008, plan-00004)_
 The Mobile Safari project uses Playwright's iPhone 16 emulation; touch targets, safe areas, the virtual keyboard over forms, and momentum scrolling in the data grid are not exercised.
 
 **Unlock:** the first release candidate, or the owner asks for it. **First move:** one iPhone (Safari) and one Android phone (Chrome) over sign-in, the dashboard, the admin top bar (compact layout), and the data grid.
+
+### RI-5: data grid keyboard differences from the APG
+
+_(from plan-00013)_
+
+- status: parked (unlock: the screen reader pass RI-1, or the owner decides) · updated 2026-11-26
+
+Plan 00013 compared the data grid with the APG grid, treegrid, and window splitter pages and kept or parked these: `Tab` moves between cells of a cell-selection grid instead of leaving it (the APG grid is one tab stop); the first cell is not focused when the grid is entered (the grid draws a ring and waits for an arrow); `Shift + Space` and `Control + Space` (select the row or the column) are not bound; `Enter` on a column separator resets the width instead of collapsing the pane; `Space` activates a clickable row; clickable rows are `row`s in a plain `table`, with no grid role. Each is a choice or an optional key, not a defect found by a gate.
+
+**Unlock:** VoiceOver or NVDA on the data grid shows one of them hurts, or the owner asks for APG parity. **First move:** the screen reader pass over the editing and `Row click` stories, then one issue item per difference that hurts.
 
 ## Product
 

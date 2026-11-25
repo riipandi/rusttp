@@ -297,6 +297,19 @@ export const RowClick: Story = {
     await pressUntil('{Home}', () => focusedRow(0))
     await pressUntil('{ArrowUp}', () => expect(document.activeElement).toBe(bodyRows()[0]))
 
+    // PageDown and PageUp move a page of rows and stop at the ends: five rows fit one page, so the
+    // page reaches the last row and back.
+    await pressUntil('{PageDown}', () => focusedRow(4), {
+      when: () => document.activeElement === bodyRows()[0]
+    })
+    await userEvent.keyboard('{PageDown}')
+    await focusedRow(4)
+    await pressUntil('{PageUp}', () => focusedRow(0), {
+      when: () => document.activeElement === bodyRows()[4]
+    })
+    await userEvent.keyboard('{PageUp}')
+    await focusedRow(0)
+
     // Enter and Space on the row open it, with the right row.
     bodyRows()[1]!.focus()
     await userEvent.keyboard('{Enter}')
@@ -1043,18 +1056,34 @@ export const RightToLeft: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
-      'svg'
-    )!
+    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
+    const chevron = (
+      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
-    await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1))
+    // The end state of a 200 ms transition; the wait is sized for a loaded runner (issue-00009).
+    await waitFor(
+      async () => {
+        await expect(chevron.getAnimations()).toHaveLength(0)
+        await expect(turn(chevron).b).toBeCloseTo(1)
+      },
+      { timeout: 10_000 }
+    )
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
-    const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
-      'svg'
-    )!
-    await waitFor(() => expect(turn(open).b).toBeCloseTo(0))
-    await expect(turn(open).a).toBeCloseTo(1)
+    const open = (
+      await canvas.findAllByRole('button', { name: /^Collapse / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
+    // `rotate(0deg)` once the transition has ended; both matrix terms are read in one wait so a
+    // reading taken mid-transition cannot pass on one and fail on the other (WebKit, under load).
+    await waitFor(
+      async () => {
+        await expect(open.getAnimations()).toHaveLength(0)
+        await expect(turn(open).b).toBeCloseTo(0)
+        await expect(turn(open).a).toBeCloseTo(1)
+      },
+      { timeout: 10_000 }
+    )
     // `rotate(180deg)`: previous and next swap sides of the arrow glyphs.
     for (const name of [/go to previous page/i, /go to next page/i]) {
       const arrow = turn(canvas.getByRole('button', { name }))
@@ -1086,9 +1115,10 @@ function reducedMotionRules(element: Element) {
 export const Motion: Story = {
   render: () => <TreeGrid pageSize={1} />,
   play: async ({ canvas }) => {
-    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
-      'svg'
-    )!
+    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
+    const chevron = (
+      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
     const style = getComputedStyle(chevron)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')

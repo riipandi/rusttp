@@ -80,14 +80,45 @@ async function settlePage() {
   await fontsLoaded()
 }
 
-// A story must fit a phone: the test run renders every story at 390 px (`viewport` below; the Vitest
-// addon sets the window to the story's `defaultViewport`, 1200 px when none), and a page wider than
-// that means a layout that pushes the page sideways. A story whose content scrolls inside its own
-// box on purpose (a data grid, a board, a row of every size) opts out with
+// A story must fit a phone: the test run renders every story at 390 px (the `viewport` global
+// below; the Vitest addon sets the window from `globals.viewport.value`, 1200 px when none), and a
+// page wider than that means a layout that pushes the page sideways. A story whose content scrolls
+// inside its own box on purpose (a data grid, a board, a row of every size) opts out with
 // `parameters: { overflow: 'allowed' }` and says why. Only the test run measures: in the UI the
 // viewport is whatever the window is.
-function assertNoHorizontalOverflow(parameters: Record<string, unknown>) {
-  if (!Reflect.get(globalThis, '__vitest_browser__') || parameters.overflow === 'allowed') return
+//
+// The global must be the object `{ value, isRotated }`: the addon reads `.value`, so a bare string
+// leaves the window at 1200 px and the gate would pass without checking anything. The guard below
+// fails the story when the window is not the width its viewport names.
+function assertViewportApplied(
+  parameters: Record<string, unknown>,
+  globals: Record<string, unknown>
+) {
+  const viewport = isObject(parameters.viewport) ? parameters.viewport : {}
+  const options = isObject(viewport.options) ? viewport.options : {}
+  const key = isObject(globals.viewport) ? globals.viewport.value : undefined
+  const entry = typeof key === 'string' ? options[key] : undefined
+  const styles = isObject(entry) && isObject(entry.styles) ? entry.styles : {}
+  const expected = typeof styles.width === 'string' ? Number.parseInt(styles.width, 10) : undefined
+  if (expected === undefined) {
+    throw new Error(
+      "The story has no viewport global the gate can read. Set `globals: { viewport: { value: 'phone' | 'desktop', isRotated: false } }` (an object, never a string)."
+    )
+  }
+  if (window.innerWidth !== expected) {
+    throw new Error(
+      `The viewport global names ${expected}px but the window is ${window.innerWidth}px, so the overflow gate would not measure what it claims.`
+    )
+  }
+}
+
+function assertNoHorizontalOverflow(
+  parameters: Record<string, unknown>,
+  globals: Record<string, unknown>
+) {
+  if (!Reflect.get(globalThis, '__vitest_browser__')) return
+  assertViewportApplied(parameters, globals)
+  if (parameters.overflow === 'allowed') return
   const { scrollWidth, clientWidth } = document.documentElement
   if (scrollWidth <= clientWidth) return
   const wide = Array.from(document.body.querySelectorAll('*'))
@@ -109,11 +140,10 @@ const preview: Preview = {
     // The fluid canvas: a story's content is padded and never given a minimum width, so a 390 px
     // viewport shows the layout a phone gets. A file opts out only for `fullscreen`.
     layout: 'padded',
-    // The test run's window size per story (the addon reads `defaultViewport`; the UI's toolbar uses
-    // `options` and ignores it). A story that needs room opts back in with
-    // `viewport: { defaultViewport: 'desktop' }`.
+    // The viewport sizes: the toolbar lists them and the test run resolves the `viewport` global
+    // against them (`initialGlobals` below). A story that needs room sets
+    // `globals: { viewport: { value: 'desktop', isRotated: false } }`.
     viewport: {
-      defaultViewport: 'phone',
       options: {
         phone: { name: 'Phone', styles: { width: '390px', height: '844px' }, type: 'mobile' },
         desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' }
@@ -186,7 +216,11 @@ const preview: Preview = {
   },
   initialGlobals: {
     [STORYBOOK_THEME_GLOBAL]: 'system',
-    [INTERACTIONS_GLOBAL]: 'off'
+    [INTERACTIONS_GLOBAL]: 'off',
+    // Only the test run sizes the window to a phone; the Storybook UI keeps its fluid canvas.
+    viewport: Reflect.get(globalThis, '__vitest_browser__')
+      ? { value: 'phone', isRotated: false }
+      : undefined
   },
   beforeEach: async ({ id, globals }) => {
     setAutoplay(id, globals[INTERACTIONS_GLOBAL] === 'on')
@@ -197,9 +231,9 @@ const preview: Preview = {
     }
     await settlePage()
   },
-  afterEach: ({ parameters }) => {
+  afterEach: ({ parameters, globals }) => {
     console.error = nativeConsoleError
-    assertNoHorizontalOverflow(parameters)
+    assertNoHorizontalOverflow(parameters, globals)
     if (parameters.consoleErrors !== 'off' && consoleErrors.length > 0) {
       throw new Error(
         `The story logged ${consoleErrors.length} console error(s):\n${consoleErrors.join('\n')}`

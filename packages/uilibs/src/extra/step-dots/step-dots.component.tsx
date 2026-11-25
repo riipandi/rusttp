@@ -3,24 +3,20 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { progressColors } from '../../base/progress/progress.stylex'
 import type { ColorRole } from '../../styles/types'
-import {
-  progressIndicatorMedia,
-  progressIndicatorSizes as sizes,
-  progressIndicatorStyles as s
-} from './progress-indicator.stylex'
+import { stepDotsMedia, stepDotsSizes as sizes, stepDotsStyles as s } from './step-dots.stylex'
 
-export type ProgressIndicatorColor = ColorRole | 'media'
-export type ProgressIndicatorSize = 'small' | 'medium'
+export type StepDotsColor = ColorRole | 'media'
+export type StepDotsSize = 'small' | 'medium'
 
 /** Every string the indicator names. */
-export interface ProgressIndicatorLabels {
+export interface StepDotsLabels {
   /** The name of the bar when the caller gives no `aria-label` or `aria-labelledby`. */
   name: string
   /** The spoken value, from one-based positions. */
   value: (current: number, total: number) => string
 }
 
-const defaultLabels: ProgressIndicatorLabels = {
+const defaultLabels: StepDotsLabels = {
   name: 'Progress',
   value: (current, total) => `${current} of ${total}`
 }
@@ -30,7 +26,7 @@ const WINDOW = 7
 /** How many `unit` steps one dot and its gap take: 6 + 6px is 3 steps, 8 + 8px is 4. */
 const stepUnits = { small: 3, medium: 4 } as const
 
-export interface ProgressIndicatorProps extends Omit<
+export interface StepDotsProps extends Omit<
   useRender.ComponentProps<'div'>,
   'className' | 'style' | 'color'
 > {
@@ -39,10 +35,10 @@ export interface ProgressIndicatorProps extends Omit<
   /** The index, from `0`, of the active dot. Default `0`. */
   activeIndex?: number
   /** The role of the active dot, as on `Progress`; `media` is white on a photo or a dark surface. Default `primary`. */
-  color?: ProgressIndicatorColor
+  color?: StepDotsColor
   /** Dot size: `small` 6px, `medium` 8px (default). */
-  size?: ProgressIndicatorSize
-  labels?: Partial<ProgressIndicatorLabels>
+  size?: StepDotsSize
+  labels?: Partial<StepDotsLabels>
   style?: stylex.StyleXStyles
 }
 
@@ -51,7 +47,7 @@ export interface ProgressIndicatorProps extends Omit<
  * whose value is the one-based position. It is output only; pair it with the control that moves.
  * Renders a `div`; `render` swaps it for another element.
  */
-export function ProgressIndicator({
+export function StepDots({
   total,
   activeIndex = 0,
   color = 'primary',
@@ -60,7 +56,7 @@ export function ProgressIndicator({
   style,
   render,
   ...props
-}: ProgressIndicatorProps) {
+}: StepDotsProps) {
   const labels = { ...defaultLabels, ...labelsProp }
   const count = Math.max(0, Math.floor(total))
   const active = Math.min(Math.max(Math.floor(activeIndex), 0), Math.max(count - 1, 0))
@@ -98,7 +94,7 @@ export function ProgressIndicator({
                     sizes[`${size}Dot`],
                     index === active && sizes[`${size}Active`],
                     color === 'media'
-                      ? progressIndicatorMedia[index === active ? 'active' : 'idle']
+                      ? stepDotsMedia[index === active ? 'active' : 'idle']
                       : index === active && progressColors[color]
                   )}
                 />

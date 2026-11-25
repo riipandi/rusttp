@@ -88,6 +88,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `Enter`                                    | Opens the editor on the focused cell, when the column has `meta.cellEdit`. |
 | `Delete`                                   | Clears the focused cell through `onCellsChange`.                           |
 
+- Focus is always drawn. A grid that holds focus with no active cell (the first `Tab`, or after `Escape` clears the selection) shows the library ring, 2 px in `foregroundPrimary`, inside the table; once a cell is active the cell's own 1 px edge is the indicator and the table draws nothing, so the two never double. The `Focus` story proves the three states.
 - Every table is named: `DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, `DataGridTableDndRows`, `DataGridTableHeader`, and `DataGridTableBase` require `aria-label` or `aria-labelledby`, so two grids on a page are told apart (the `Basics` stories prove it by role and name). A name belongs to one grid, so it is a prop and not a `labels` entry.
 - Row and column controls name what they act on, so a screen reader's control list tells them apart: the select, pin, expand, and drag buttons of a row use `getRowLabel` (or `Row 3` when it is absent) and the drag grip of a column uses its title (`meta.headerTitle`, a string `header`, else the column id). The `Row selection`, `Row pinning`, `Draggable rows`, and `Draggable columns` stories prove it.
 - A keyboard drag of a row or column (`DataGridTableDnd`, `DataGridTableDndRows`) is announced by name: "Picked up Origin.", "Origin moved over Inferno.", "Origin dropped over Inferno.", "Dragging cancelled. Origin returned to its place." The five strings (`instructions`, `pickedUp`, `movedOver`, `dropped`, `cancelled`) are `labels` entries, the same as Kanban's.
@@ -95,22 +96,23 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 - The page buttons (previous, numbers, next) are one `nav` named `labels.pagination`, so a screen reader's landmark list has a pagination entry; the rows-per-page select and the range text sit outside it, as in `Pagination`.
 - With `onRowClick` set, a row is a keyboard target. The rows are one Tab stop (the row that last took focus, else the first one rendered, so a virtualized grid always has one), and a control inside a row (a checkbox, a link, the expand button) keeps its own keys. The `Row click` stories prove it.
 
-| Key                    | Action                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `ArrowDown`, `ArrowUp` | On a row: move to the next or previous row.                                                       |
-| `Home`, `End`          | On a row: jump to the first or last rendered row.                                                 |
-| `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                              |
-| `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row. |
+| Key                    | Action                                                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ArrowDown`, `ArrowUp` | On a row: move to the next or previous row.                                                                       |
+| `Home`, `End`          | On a row: jump to the first or last rendered row.                                                                 |
+| `PageDown`, `PageUp`   | On a row: move a page of rows (the rows that fit the view, less one), stopping at the last or first rendered row. |
+| `Enter`, `Space`       | On a row: call `onRowClick` with it.                                                                              |
+| `Enter`                | On a cell of a `cellSelection` grid, when no editor takes the key: call `onRowClick` for its row.                 |
 
-- With `tableLayout.columnsResizable`, each resizable column's edge is a focusable `separator` (`aria-orientation='vertical'`, `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` in px, named by `labels.resizeColumn(title)`), so a keyboard user can set a width. This adds one Tab stop per resizable column. The `Column resizing, keyboard` stories prove the keys.
+- With `tableLayout.columnsResizable`, each resizable column's edge is a focusable `separator` (`aria-orientation='vertical'`, `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` in px, `aria-valuetext` from `labels.columnWidth(width)` (default "160 px"), `aria-controls` naming its header cell, and a name from `labels.resizeColumn(title)`), so a keyboard user can set a width. A column with no `maxSize` reports `Number.MAX_SAFE_INTEGER` as `aria-valuemax`, since ARIA reads a missing maximum as 100. This adds one Tab stop per resizable column. The `Column resizing, keyboard` stories prove the keys.
 
-| Key                       | Action on a column's separator                                                                                           |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `ArrowRight`, `ArrowLeft` | Move the edge 10 px (widen with the arrow that points away from the column's anchor edge). `Shift` makes the step 50 px. |
-| `Home`, `End`             | Jump to the column's `minSize` or `maxSize` (End does nothing without a `maxSize`).                                      |
-| `Enter`                   | Restore the default width, the twin of a double-click.                                                                   |
+| Key                       | Action on a column's separator                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ArrowRight`, `ArrowLeft` | Move the edge 10 px (widen with the arrow that points away from the column's anchor edge). `Shift` makes the step 50 px.                                                  |
+| `Home`, `End`             | Jump to the column's `minSize` or `maxSize` (End does nothing without a `maxSize`).                                                                                       |
+| `Enter`                   | Restore the default width, the twin of a double-click. (The window splitter pattern collapses the pane here; a collapsed column is a sliver, so reset is the useful key.) |
 
-The widening arrow follows the drag: `ArrowRight` in a left-to-right grid, `ArrowLeft` when `columnResizeDirection` is `rtl`, and mirrored again for a column pinned to the end. The width never leaves `minSize` and `maxSize`; a column with no title string is named by its id (`meta.headerTitle` sets it).
+The widening arrow follows the drag, and both follow the direction the grid is laid out in: `ArrowRight` and a drag to the right widen a column in a left-to-right grid, `ArrowLeft` and a drag to the left under `dir='rtl'`, and the opposite again for a column pinned to the end. The grid reads the computed `direction` of the handle, so the `columnResizeDirection` table option is not read and needs no matching. The width never leaves `minSize` and `maxSize`; a column with no title string is named by its id (`meta.headerTitle` sets it).
 
 - The cell editor is a text field that takes focus when it opens.
 

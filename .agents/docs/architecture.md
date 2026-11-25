@@ -357,7 +357,7 @@ Context (2026-11-24): the uilibs audit report (R-01 to R-39) found a gate that n
 Decision (D1 to D9 of the plan, with the answers that changed a recommendation):
 
 - D1: every recommendation runs; a "No" answer drops the work it names. D2: no backward compatibility, so a replaced name (`breakpoints.small`, Button `icon-*` sizes, Popover `elevation` values, Pagination `isActive`, DataGrid `i18n`, `LinkButton`, unused color tokens) disappeared in the phase that replaced it, with its webapp callers.
-- D3: `Link` is a `useRender` component, not a router wrapper, and Button takes `render` for a link that looks like a button (Q38 done differently: `LinkButton` removed). `Stack`, `Container`, `Hidden`, `Image`, `BadgeAnchor`, `ThemeScope`, and an animated `ThemeSwitcher` were added; `Carousel` and `ProgressIndicator` were the two optional "Yes" answers (Q51, Q52).
+- D3: `Link` is a `useRender` component, not a router wrapper, and Button takes `render` for a link that looks like a button (Q38 done differently: `LinkButton` removed). `Stack`, `Container`, `Hidden`, `Image`, `BadgeAnchor`, `ThemeScope`, and an animated `ThemeSwitcher` were added; `Carousel` and `StepDots` were the two optional "Yes" answers (Q51, Q52).
 - D4 to D7: waves and tracks ran in one checkout on disjoint file sets, with the tokens and shared styles changing serially first; the catalog and agent docs synced at wave close; validation was scoped per phase and full per wave.
 - D9 (owner): every size name is spelled out (`xsmall` to `xxlarge`), also the breakpoints and `Text`'s responsive keys.
 - Owner answers that differ from the recommendation: breakpoint names stay `small`-family (Q08); `fontLetterSpacing` stays and the typography roles read it (Q16); the unused color tokens were removed after a Reshaped check (Q14); the branch stayed `ui-polish` (Q05); Q61, Q49 to Q50, and Q53 to Q59 stayed "No" (no large Dialog, no Breadcrumb collapse, no controlled Pagination, no headless layer or responsive control props, which would reverse plan-00009 D1).
@@ -386,14 +386,14 @@ Decision:
 - Q24 to Q26 (audit question 2): the table name is a prop (`aria-label` or `aria-labelledby`) on the part that renders the `<table>`, required by type, never a `labels` entry, because a name belongs to one grid and `labels` is one set of strings per language.
 - Q27 and Q28 (audit question 1): rows are named by `getRowLabel` on `DataGrid`, with `labels.rowNumber(position)` as the fallback, so the control names are always functions. Column grips follow (Q29).
 - Q22 B and Q23 A: clickable rows are one roving Tab stop (the grid pattern's row-focus form), and in a `cellSelection` grid Enter on a cell opens its row, so the same prop works from the keyboard in both modes.
-- Q20 A and Q21 A: column resizing is a focusable separator (the window splitter pattern); deviation from Q21: the widening arrow follows the drag's own `columnResizeDirection` rule, not the document `dir`, since the grid never derives that option from `dir`.
+- Q20 A and Q21 A: column resizing is a focusable separator (the window splitter pattern); deviation from Q21: the widening arrow follows the drag's own `columnResizeDirection` rule, not the document `dir`, since the grid never derives that option from `dir`. (Superseded by plan 00013, D7: the grid now reads the computed `direction` of the handle, and the option is not read.)
 - Q34 A: the decorative opacities stay (no new token); the sizes and blur moved to tokens. Q32 B: only the page buttons are the `nav`.
-- The WAI-ARIA grid and window splitter pages could not be re-read (web access was out of credits), so phases 15 and 16 follow the patterns from memory and are proved by plays, not checked against the pages.
+- The WAI-ARIA grid and window splitter pages could not be re-read (web access was out of credits), so phases 15 and 16 follow the patterns from memory and are proved by plays, not checked against the pages. (Compared against the pages in plan 00013, below.)
 
 Consequences:
 
 - (positive) a grid is no longer an anonymous table, ten rows are ten names, drags and loading are spoken, and both medium gaps have a keyboard path proved in three engines.
-- (negative) every resizable column adds one Tab stop; a consumer must name each grid and may supply `getRowLabel`; the keyboard direction depends on the consumer setting `columnResizeDirection` in a right-to-left grid, as the drag already did.
+- (negative) every resizable column adds one Tab stop; a consumer must name each grid and may supply `getRowLabel`; the keyboard direction depended on the consumer setting `columnResizeDirection` in a right-to-left grid, as the drag did (fixed by plan 00013, D7).
 
 Alternatives considered:
 
@@ -401,3 +401,32 @@ Alternatives considered:
 - A Tab stop on every clickable row (Q22 A) — rejected: a 25-row page would add 25 stops.
 - A `labels.table` default (Q24 B) — rejected: it would give every grid the same name, which is the defect.
 - A library-wide `opacity` token scale (Q34 B) — rejected for this plan: a design-token change needs the owner's decision and its own plan.
+
+### Six leftovers closed: a verified test viewport, one name per component, a font token, and an APG-checked data grid
+
+Context (2026-11-26): after plan 00012 the owner listed six leftovers: the `RightToLeft` story flake and the removed `viewport.defaultViewport` parameter (`issue-00009`), the data grid's row and resize keys that were never compared with the WAI-ARIA Authoring Practices, two components named `ProgressIndicator`, a body font hard-coded in `globals.css`, and an unverified grid focus ring. Plan 00013 closed them on `fix/uilibs-leftovers` in 11 phases.
+
+Decision (D1 to D10 of the plan):
+
+- D1: the test window is `initialGlobals.viewport = { value: 'phone', isRotated: false }`, set only under test so the Storybook UI stays fluid; a story that needs room sets a `desktop` object global. The addon reads `globals.viewport.value`, so the string form the removal warning suggests leaves the window at 1200 px and the overflow gate passes without measuring; the preview's `afterEach` fails a story whose `window.innerWidth` is not the width its global names. Rejected: keeping `defaultViewport`, an unconditional global (it would shrink the UI canvas), the string form.
+- D2: the `RightToLeft` story keeps asserting the end state with a 10 s wait, and its two `findAllByRole` calls do too; one full WebKit run failed it at 2 s once and the cause is a hypothesis.
+- D3: the dots component is `StepDots`; `ProgressIndicator` is the Base UI part only. Rejected: renaming the Base UI part (it breaks the part naming), `DotIndicator`, `ProgressDots`.
+- D4: the page font is read through a defined custom property name: a `defineVars` key that starts with `--` sets its own name, so `fontFamilyName` (`--font-body`) lets `globals.css` read the token with one CSS rule and no JavaScript. Rejected: `ThemeProvider` or `ThemeScript` (entry JavaScript, after first paint), a `--` key inside `fontFamily` itself.
+- D5: three differences from the APG are kept: Enter on a separator resets the width instead of collapsing the pane, Space activates a clickable row, and clickable rows are `row`s in a plain `table` without a grid role.
+- D6: a grid focused with no active cell draws the library ring through CSS; the cell's 1 px edge stays the indicator once a cell is active. Rejected: focusing the first cell on entry (it fires `onCellSelectionChange` on a bare Tab), a thicker cell ring.
+- D7: the resize direction is the computed `direction` of the handle; the table option is not read. D9: no backward compatibility. D10: a finding is reproduced by a failing play before its fix.
+
+The APG comparison (2026-11-26; `read_web_page` was out of credits, so the pages came from `w3.org` and the `w3c/aria-practices` sources by `curl`):
+
+- Window splitter: arrows, Home, End, and the role and `aria-valuenow`, `aria-valuemin` match; `aria-valuemax` was omitted for an unbounded column (ARIA 1.2 reads that as 100, below the value), `aria-controls` was absent, and a px width needs `aria-valuetext`: all three fixed. Enter differs (D5). The page itself is a draft (issues 129 and 130).
+- Row focus (the treegrid page, the closest published authority): one Tab stop, Up, Down, Home, End, and Enter match; PageUp and PageDown were missing (fixed); Space and the missing grid role are D5.
+- Observed and parked (`roadmap-00001`, RI-5): Tab moves between cells of a cell-selection grid instead of leaving it, `Shift + Space` and `Control + Space` are not bound, the first cell is not focused on entry.
+
+Consequences:
+
+- (positive) the 390 px gate cannot go vacuous silently, the grid has a visible focus indicator in every state, the separator is valid ARIA 1.2, and the resize direction needs no matching option.
+- (negative) a `StepDots` consumer imports a new path; `columnResizeDirection` on a grid's table does nothing; a story that opts into desktop carries a global object.
+
+Alternatives considered:
+
+- A grid role for clickable rows — rejected: it makes every cell a focus target and changes the whole keyboard model (parked, RI-5).
