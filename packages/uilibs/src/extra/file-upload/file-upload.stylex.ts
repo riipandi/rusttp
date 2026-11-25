@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../../styles/colors.stylex'
+import { colors } from '../../styles/colors.stylex'
 import {
   unit,
   radius,
@@ -15,6 +15,8 @@ import {
  * attachments, including drag-and-drop interaction.
  *
  * Layout notes:
+ * - The focus ring is the layer's 2px outline on `:has(:focus-visible)`: the hidden input is the
+ *   tab stop, so the ring is read from it and keyboard focus draws it, a click does not.
  * - The root element only exists to receive drag events, so the actual
  *   clickable surface is a native `<label>` wrapping the (visually hidden)
  *   file input. Clicking anywhere on the layer opens the file picker and the
@@ -26,14 +28,12 @@ export const fileUploadStyles = stylex.create({
   height: (value: string | number) => ({ height: value }),
   root: {
     display: 'block',
-    borderRadius: radius.large,
-    boxShadow: { default: 'none', ':focus-within': shadow.outline }
+    borderRadius: radius.large
   },
   inline: {
     display: 'inline-block',
     verticalAlign: 'top',
-    borderRadius: radius.medium,
-    boxShadow: 'none'
+    borderRadius: radius.medium
   },
   layer: {
     alignItems: 'center',
@@ -44,6 +44,11 @@ export const fileUploadStyles = stylex.create({
     gap: unit.x2,
     height: '100%',
     justifyContent: 'center',
+    outline: {
+      default: 'none',
+      ':has(:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: `calc(-1 * ${stroke.ring1})`,
     padding: unit.x6,
     textAlign: 'center',
     transitionDuration: duration.fast,
@@ -52,13 +57,12 @@ export const fileUploadStyles = stylex.create({
     width: '100%'
   },
   layerCompact: {
-    borderRadius: radius.medium,
-    boxShadow: { default: 'none', ':focus-within': shadow.outline }
+    borderRadius: radius.medium
   },
   outline: {
     backgroundColor: { default: 'transparent', ':hover': colors.backgroundNeutralHighlightedFaded },
     borderColor: {
-      default: colors.borderNeutral,
+      default: colors.borderControl,
       ':has([data-invalid])': colors.borderCritical
     },
     borderStyle: 'dashed',

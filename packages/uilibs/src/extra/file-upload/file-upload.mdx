@@ -78,5 +78,5 @@ These attributes are set on the inner file input by `Field`, not on the root. Th
 ## Caveats
 
 - A drop skips the browser's own checks, so the component applies `accept` from `inputAttributes` itself, and without `multiple` it keeps only the first file.
-- The file input is visually hidden but still focusable. Its focus ring appears on the root.
+- The file input is visually hidden but still focusable. Keyboard focus draws a 2 px ring on the drop zone; a click does not.
 - A disabled upload ignores drops and does not highlight.

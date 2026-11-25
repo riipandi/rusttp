@@ -60,6 +60,9 @@ const styles = stylex.create({
   },
   padded: {
     padding: 12
+  },
+  edgeProbe: {
+    color: colors.borderControl
   }
 })
 
@@ -167,6 +170,35 @@ export const States: Story = {
     await expect(invalid).toHaveAttribute('aria-invalid', 'true')
     await expect(invalid).toHaveAttribute('data-invalid')
     await expect(canvas.getByLabelText('Owl license')).toBe(invalid)
+  }
+}
+
+/** The keyboard stop is the hidden input: its drop zone draws a 2px ring, and an edge that clears 3:1. */
+export const Focus: Story = {
+  args: { name: 'file' },
+  render: () => (
+    <div {...stylex.props(styles.width)}>
+      <span data-testid='edge' {...stylex.props(styles.edgeProbe)} />
+      <FileUpload name='owl-license' inputAttributes={{ 'aria-label': 'Owl license' }}>
+        Drop the license here
+      </FileUpload>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('Owl license')
+    const zone = input.closest('label')
+    if (!zone) throw new Error('Drop zone not found')
+
+    await expect(getComputedStyle(zone).outlineStyle).toBe('none')
+    await expect(getComputedStyle(zone).borderTopColor).toBe(
+      getComputedStyle(canvas.getByTestId('edge')).color
+    )
+
+    await userEvent.tab()
+    await expect(input).toHaveFocus()
+    const ring = getComputedStyle(zone)
+    await expect(ring.outlineStyle).toBe('solid')
+    await expect(ring.outlineWidth).toBe('2px')
   }
 }
 
