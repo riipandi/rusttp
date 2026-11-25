@@ -16,12 +16,13 @@ import {
   barRadius,
   canvasDecorator,
   chartTheme,
-  checkouts,
   checkoutConfig,
   checkoutScales,
+  checkouts,
   hpBooks,
   langdonNovels,
-  seriesColors
+  seriesColors,
+  seriesNames
 } from '../chart.samples'
 
 const meta = {
@@ -133,7 +134,7 @@ function HorizontalBars({ legend = false }: BarOptions) {
   })
 
   return (
-    <ChartContainer config={{ pages: { label: 'Pages', color: seriesColors.brand } }}>
+    <ChartContainer config={{ pages: { label: 'Pages', color: seriesNames.brand } }}>
       <Chart definition={definition} ariaLabel='Harry Potter books by page count' height={300} />
       {legend && <ChartLegend />}
     </ChartContainer>

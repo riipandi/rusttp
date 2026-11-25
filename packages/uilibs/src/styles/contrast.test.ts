@@ -174,3 +174,16 @@ describe.each(Object.entries(themes))('%s theme, highlighted option and tracks',
     expect(contrast(theme, 'backgroundPrimary', 'backgroundTrack')).toBeGreaterThanOrEqual(3)
   })
 })
+
+describe.each(Object.entries(themes))('%s theme, chart palette', (_name, theme) => {
+  const names = Array.from({ length: 8 }, (_, index) => `chart${index + 1}`)
+
+  // A series is a mark that carries meaning, so it needs 3:1 against the page (WCAG 1.4.11).
+  it.each(names)('%s against the page', (name) => {
+    expect(contrast(theme, name, 'backgroundPage')).toBeGreaterThanOrEqual(3)
+  })
+
+  it('has eight distinct colors', () => {
+    expect(new Set(names.map((name) => theme[name])).size).toBe(8)
+  })
+})

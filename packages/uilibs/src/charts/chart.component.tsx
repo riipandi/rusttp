@@ -33,11 +33,13 @@ import { RendererChart as TanStackChart } from '@tanstack/charts/react/tooltip'
 import type { ChartTooltipBodyRenderContext } from '@tanstack/charts/react/tooltip'
 import type { RendererChartProps as TanStackRendererChartProps } from '@tanstack/charts/react/tooltip'
 import * as React from 'react'
+import { type ChartColorName, chartColors } from './chart-colors'
 import { chartStyles as s } from './chart.stylex'
 
 export interface ChartConfigItem {
   label?: React.ReactNode
-  color?: string
+  /** The series color, one of the palette (`chart1` to `chart8`); a theme-aware token, never a free color string. */
+  color?: ChartColorName
   icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }
 
@@ -154,6 +156,7 @@ export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps)
   const entries = Object.entries(activeConfig).filter(
     ([key, item]) => Boolean(item.color) && !hide?.includes(key)
   )
+
   if (entries.length === 0) {
     return null
   }
@@ -165,9 +168,13 @@ export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps)
         return (
           <div key={key} {...stylex.props(s.legendItem)}>
             {Icon ? (
-              <Icon height={12} width={12} color={item.color} />
+              <Icon height={12} width={12} color={item.color && chartColors[item.color]} />
             ) : (
-              <span {...stylex.props(s.legendSwatch(item.color ?? 'currentColor'))} />
+              <span
+                {...stylex.props(
+                  s.legendSwatch(item.color ? chartColors[item.color] : 'currentColor')
+                )}
+              />
             )}
             {item.label ?? key}
           </div>

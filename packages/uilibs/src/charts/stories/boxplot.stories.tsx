@@ -6,7 +6,13 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import {
+  canvasDecorator,
+  chartTheme,
+  mulberry32,
+  seriesColors,
+  seriesNames
+} from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/Boxplot',
@@ -83,7 +89,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     })
 
     return (
-      <ChartContainer config={{ scores: { label: 'Charms score', color: seriesColors.brand } }}>
+      <ChartContainer config={{ scores: { label: 'Charms score', color: seriesNames.brand } }}>
         <Chart
           definition={definition}
           ariaLabel='Charms exam score distribution per house'

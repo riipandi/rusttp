@@ -5,7 +5,7 @@ import { polar, radialArc } from '@tanstack/charts/polar'
 import { expect } from 'storybook/test'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Chart, ChartContainer } from '../chart.component'
-import { canvasDecorator, seriesColors } from '../chart.samples'
+import { canvasDecorator, seriesColors, seriesNames } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/ProgressCircle',
@@ -84,7 +84,7 @@ function ProgressCircle({ fraction, label }: ProgressStoryProps) {
   const percent = Math.round(fraction * 100)
 
   return (
-    <ChartContainer config={{ value: { label: 'Progress', color: seriesColors.brand } }}>
+    <ChartContainer config={{ value: { label: 'Progress', color: seriesNames.brand } }}>
       <div {...stylex.props(styles.relative)}>
         <Chart definition={definition} ariaLabel={label} height={120} width={120} />
         <div {...stylex.props(styles.overlay)}>

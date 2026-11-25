@@ -4,6 +4,7 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
+import { chartColors } from '../chart-colors'
 import { canvasDecorator, houses, houseConfig } from '../chart.samples'
 
 const meta = {
@@ -24,7 +25,10 @@ export default meta
 //   segment it lands in.
 
 const total = houses.reduce((sum, row) => sum + row.points, 0)
-const houseColor = (house: string) => houseConfig[house.toLowerCase()]?.color ?? 'currentColor'
+const houseColor = (house: string) => {
+  const name = houseConfig[house.toLowerCase()]?.color
+  return name ? chartColors[name] : 'currentColor'
+}
 
 // Color of the segment that contains the marker value (prefix-sum lookup).
 function markerColorAt(value: number): string {

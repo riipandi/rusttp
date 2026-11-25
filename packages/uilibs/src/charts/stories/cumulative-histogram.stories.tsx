@@ -5,7 +5,13 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import {
+  canvasDecorator,
+  chartTheme,
+  mulberry32,
+  seriesColors,
+  seriesNames
+} from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/CumulativeHistogram',
@@ -84,7 +90,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
     return (
       <ChartContainer
-        config={{ cumulative: { label: 'Cumulative students', color: seriesColors.green } }}
+        config={{ cumulative: { label: 'Cumulative students', color: seriesNames.green } }}
       >
         <Chart
           definition={definition}

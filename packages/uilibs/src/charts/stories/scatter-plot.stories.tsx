@@ -5,7 +5,13 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import {
+  canvasDecorator,
+  chartTheme,
+  mulberry32,
+  seriesColors,
+  seriesNames
+} from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/ScatterPlot',
@@ -42,8 +48,8 @@ const dayStudents = students.filter((s) => s.cohort === 'Day class')
 const nightStudents = students.filter((s) => s.cohort === 'Night study')
 
 const scatterConfig = {
-  day: { label: 'Day class', color: seriesColors.langdon },
-  night: { label: 'Night study', color: seriesColors.potter }
+  day: { label: 'Day class', color: seriesNames.langdon },
+  night: { label: 'Night study', color: seriesNames.potter }
 } as const
 
 const scatterScales = {

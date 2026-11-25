@@ -53,7 +53,15 @@ const darkColors = stylex.createTheme(colors, {
   foregroundNeutral: 'oklch(0.96 0 89.88)',
   foregroundPositive: 'oklch(0.75 0.1105 151.8)',
   foregroundPrimary: 'oklch(0.756 0.115 45.84)',
-  foregroundWarning: 'oklch(0.75 0.187 80)'
+  foregroundWarning: 'oklch(0.75 0.187 80)',
+  chart1: 'oklch(0.72 0.13 250)',
+  chart2: 'oklch(0.74 0.14 50)',
+  chart3: 'oklch(0.76 0.10 195)',
+  chart4: 'oklch(0.74 0.15 350)',
+  chart5: 'oklch(0.82 0.14 95)',
+  chart6: 'oklch(0.72 0.14 305)',
+  chart7: 'oklch(0.76 0.14 150)',
+  chart8: 'oklch(0.72 0 89.88)'
 })
 
 const darkShadows = stylex.createTheme(shadow, {

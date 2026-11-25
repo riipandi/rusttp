@@ -14,26 +14,35 @@ import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { colors } from '../styles/colors.stylex'
 import { breakpoints, container, unit } from '../styles/tokens.stylex'
+import { type ChartColorName, chartColors } from './chart-colors'
 import type { ChartConfig } from './chart.component'
 
 // ---------------------------------------------------------------------------
 // Series palettes
 // ---------------------------------------------------------------------------
 
-// Series colors reference core theme tokens directly (defineVars values are
-// runtime var() strings), so every paint — SVG attributes and HTML styles —
-// follows light/dark themes through `themes.ts`. They are the `foreground*`
-// tokens: those keep text-grade contrast against the page in both themes,
-// where the `background*` fills fall under the 3:1 a mark needs (warning and
-// neutral in light, neutral and primary in dark).
+// A series takes a palette name (`chart1` to `chart8`, in `chart-colors.ts`), which the legend resolves.
+// The marks themselves are painted with the same token as a string. Both come from the one table
+// below, so a mark and its legend entry cannot disagree. Every palette color holds 3:1 against the
+// page in both themes, which a mark needs (WCAG 1.4.11).
+export const seriesNames = {
+  langdon: 'chart2', // brand orange
+  potter: 'chart1', // blue
+  brand: 'chart2',
+  green: 'chart7',
+  amber: 'chart5',
+  red: 'chart4',
+  neutral: 'chart8'
+} as const satisfies Record<string, ChartColorName>
+
 export const seriesColors = {
-  langdon: colors.foregroundPrimary, // brand orange
-  potter: colors.foregroundPositive, // positive green
-  brand: colors.foregroundPrimary,
-  green: colors.foregroundPositive,
-  amber: colors.foregroundWarning,
-  red: colors.foregroundCritical,
-  neutral: colors.foregroundNeutralFaded
+  langdon: chartColors[seriesNames.langdon],
+  potter: chartColors[seriesNames.potter],
+  brand: chartColors[seriesNames.brand],
+  green: chartColors[seriesNames.green],
+  amber: chartColors[seriesNames.amber],
+  red: chartColors[seriesNames.red],
+  neutral: chartColors[seriesNames.neutral]
 } as const
 
 /**
@@ -106,8 +115,8 @@ export const checkouts: readonly CheckoutRow[] = [
 ]
 
 export const checkoutConfig = {
-  langdon: { label: 'Robert Langdon', color: seriesColors.langdon },
-  potter: { label: 'Harry Potter', color: seriesColors.potter }
+  langdon: { label: 'Robert Langdon', color: seriesNames.langdon },
+  potter: { label: 'Harry Potter', color: seriesNames.potter }
 } satisfies ChartConfig
 
 export const checkoutScales = {
@@ -151,10 +160,10 @@ export const houses = [
 ]
 
 export const houseConfig: ChartConfig = {
-  gryffindor: { label: 'Gryffindor', color: colors.backgroundCritical },
-  slytherin: { label: 'Slytherin', color: colors.backgroundPositive },
-  ravenclaw: { label: 'Ravenclaw', color: colors.backgroundPrimary },
-  hufflepuff: { label: 'Hufflepuff', color: colors.backgroundWarning }
+  gryffindor: { label: 'Gryffindor', color: 'chart4' },
+  slytherin: { label: 'Slytherin', color: 'chart7' },
+  ravenclaw: { label: 'Ravenclaw', color: 'chart1' },
+  hufflepuff: { label: 'Hufflepuff', color: 'chart5' }
 }
 
 /** Weekly Quidditch pitch availability for the tracker stories. */

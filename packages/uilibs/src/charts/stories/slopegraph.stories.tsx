@@ -6,7 +6,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/Slopegraph',
@@ -117,10 +117,10 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     return (
       <ChartContainer
         config={{
-          Gryffindor: { label: 'Gryffindor', color: seriesColors.langdon },
-          Slytherin: { label: 'Slytherin', color: seriesColors.green },
-          Ravenclaw: { label: 'Ravenclaw', color: seriesColors.amber },
-          Hufflepuff: { label: 'Hufflepuff', color: seriesColors.red }
+          Gryffindor: { label: 'Gryffindor', color: seriesNames.langdon },
+          Slytherin: { label: 'Slytherin', color: seriesNames.green },
+          Ravenclaw: { label: 'Ravenclaw', color: seriesNames.amber },
+          Hufflepuff: { label: 'Hufflepuff', color: seriesNames.red }
         }}
       >
         <Chart

@@ -62,7 +62,19 @@ export const colors = stylex.defineVars({
   foregroundPositive: 'oklch(0.5 0.13 151.8)',
   foregroundPrimary: 'oklch(0.52 0.128 39.4)',
   foregroundWarning: 'oklch(0.52 0.22 80)',
-  scrim: 'oklch(0 0 0 / 0.5)'
+  scrim: 'oklch(0 0 0 / 0.5)',
+
+  // Categorical series colors for charts, in the order a chart assigns them: blue and orange first (the
+  // pair that survives the common color-vision deficiencies), then hues spread around the wheel. Each
+  // holds 3:1 against the page in both themes (`contrast.test.ts`).
+  chart1: 'oklch(0.52 0.15 255)',
+  chart2: 'oklch(0.58 0.16 45)',
+  chart3: 'oklch(0.55 0.08 195)',
+  chart4: 'oklch(0.52 0.18 350)',
+  chart5: 'oklch(0.62 0.11 92)',
+  chart6: 'oklch(0.50 0.16 305)',
+  chart7: 'oklch(0.55 0.13 150)',
+  chart8: 'oklch(0.50 0 89.88)'
 })
 
 // -----------------------------------------------------------------------------

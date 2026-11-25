@@ -7,6 +7,7 @@ import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
+import { chartColors } from '../chart-colors'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
 import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from '../chart.samples'
 
@@ -31,7 +32,10 @@ const donutDefinition = defineChart({
           z: 'house',
           innerRadius: 56,
           outerRadius: 96,
-          fill: (datum) => houseConfig[datum.house.toLowerCase()]?.color ?? 'transparent'
+          fill: (datum) => {
+            const name = houseConfig[datum.house.toLowerCase()]?.color
+            return name ? chartColors[name] : 'transparent'
+          }
         })
       ]
     })

@@ -6,7 +6,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/Dumbbell',
@@ -36,8 +36,8 @@ const subjects: readonly SubjectRow[] = [
 ]
 
 const dumbbellConfig = {
-  owl: { label: 'OWL average', color: seriesColors.amber },
-  newt: { label: 'NEWT average', color: seriesColors.langdon }
+  owl: { label: 'OWL average', color: seriesNames.amber },
+  newt: { label: 'NEWT average', color: seriesNames.langdon }
 } as const
 
 const dumbbellScales = {

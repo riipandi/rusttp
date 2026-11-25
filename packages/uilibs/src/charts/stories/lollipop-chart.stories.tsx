@@ -6,7 +6,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/LollipopChart',
@@ -90,7 +90,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     })
 
     return (
-      <ChartContainer config={{ mastery: { label: 'Mastery', color: seriesColors.langdon } }}>
+      <ChartContainer config={{ mastery: { label: 'Mastery', color: seriesNames.langdon } }}>
         <Chart
           definition={definition}
           ariaLabel='Spell mastery ranked from strongest to weakest'

@@ -6,7 +6,13 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import {
+  canvasDecorator,
+  chartTheme,
+  mulberry32,
+  seriesColors,
+  seriesNames
+} from '../chart.samples'
 
 const meta = {
   title: 'Visualizations/BollingerBand',
@@ -51,9 +57,9 @@ const priceRows: readonly PriceDay[] = (() => {
 })()
 
 const priceConfig = {
-  price: { label: 'Price', color: seriesColors.langdon },
-  sma: { label: 'SMA-10', color: seriesColors.neutral },
-  band: { label: '±2σ band', color: seriesColors.brand }
+  price: { label: 'Price', color: seriesNames.langdon },
+  sma: { label: 'SMA-10', color: seriesNames.neutral },
+  band: { label: '±2σ band', color: seriesNames.brand }
 } as const
 
 const priceScales = {
