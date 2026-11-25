@@ -15,16 +15,13 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
+import type { ColorRole, ControlSize, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { avatarFills, avatarStyles as s, avatarSizes as sizes } from './avatar.stylex'
 
-export type AvatarSize = 'sm' | 'md' | 'lg'
+export type AvatarSize = ControlSize
 export type AvatarVariant = 'solid' | 'faded'
-export type AvatarColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+export type AvatarColor = ColorRole
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 

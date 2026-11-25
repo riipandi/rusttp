@@ -16,13 +16,11 @@
 import { Tabs as BaseTabs } from '@base-ui/react/tabs'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { type DenseControlSize, controlPress } from '../../styles/control.stylex'
+import { controlPress } from '../../styles/control.stylex'
+import type { DenseControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { tabsSizes, tabsStyles as s, tabsUnderlineSizes } from './tabs.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /**
  * `pills` a tinted list with a raised active pill; `pills-raised` the same list lifted off the page

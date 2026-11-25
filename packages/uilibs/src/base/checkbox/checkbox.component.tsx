@@ -21,9 +21,10 @@ import { Check, Minus } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { checkboxSizes, checkboxStyles, checkboxGroupStyles } from './checkbox.stylex'
 
-export type CheckboxSize = 'sm' | 'md' | 'lg'
+export type CheckboxSize = ControlSize
 
 const glyphSize = { sm: 10, md: 12, lg: 14 } as const
 

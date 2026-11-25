@@ -3,20 +3,17 @@ import * as React from 'react'
 import { Button, type ButtonProps } from '../../base/button'
 import { Input } from '../../base/input'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlVariantsWithin
 } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { Textarea } from '../textarea'
 import { inputGroupStyles as s } from './input-group.stylex'
 import { inputGroupAddonAligns as addonAligns } from './input-group.stylex'
 import { inputGroupButtonSizes as buttonSizes } from './input-group.stylex'
 import { inputGroupControlHeights as controlHeights } from './input-group.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /** The group's `size`, read by its input and textarea. */
 const InputGroupSizeContext = React.createContext<ControlSize>('md')

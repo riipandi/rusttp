@@ -2,12 +2,9 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LinkButton, type buttonSizes } from '../../base/button'
+import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { paginationStyles as s } from './pagination.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 /** Built-in words of the pagination parts; each part reads the keys it shows. */
 export interface PaginationLabels {
@@ -42,7 +39,7 @@ export function Pagination({
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <nav
       aria-label={{ ...defaultLabels, ...labels }.pagination}
@@ -55,19 +52,19 @@ export function Pagination({
 export function PaginationContent({
   style,
   ...props
-}: Omit<React.ComponentProps<'ul'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'ul'>, 'className' | 'style'> & StyleProp) {
   return <ul {...props} {...stylex.props(s.content, style)} />
 }
 
 export function PaginationItem({
   style,
   ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
   return <li {...props} {...stylex.props(style)} />
 }
 
 export interface PaginationLinkProps
-  extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleXStyleProps {
+  extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleProp {
   isActive?: boolean
   size?: keyof typeof buttonSizes
 }
@@ -126,7 +123,7 @@ export function PaginationEllipsis({
   labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={16} strokeWidth={2} aria-hidden />

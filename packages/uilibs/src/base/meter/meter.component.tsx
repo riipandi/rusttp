@@ -16,9 +16,10 @@
 import { Meter as BaseMeter } from '@base-ui/react/meter'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { ColorRole, StyleProp } from '../../styles/types'
 import { meterColors, meterSizes, meterStyles as s } from './meter.stylex'
 
-export type MeterColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
+export type MeterColor = ColorRole
 export type MeterSize = 'sm' | 'md'
 
 /** The root's `color` and `size`, read by its track and indicator. */
@@ -26,10 +27,6 @@ const MeterLookContext = React.createContext<{ color: MeterColor; size: MeterSiz
   color: 'primary',
   size: 'md'
 })
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export function Meter({
   color = 'primary',

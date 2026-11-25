@@ -3,11 +3,8 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { popupFx } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 export type SheetSide = 'top' | 'right' | 'bottom' | 'left'
 
@@ -21,7 +18,7 @@ export function SheetOverlay({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Blurs the page behind the backdrop. */
     blurredOverlay?: boolean
   }) {
@@ -42,7 +39,7 @@ export function SheetContent({
   labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     side?: SheetSide
     /** Blurs the page behind the backdrop. */
     blurredOverlay?: boolean
@@ -66,28 +63,27 @@ export function SheetContent({
 export function SheetHeader({
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function SheetFooter({
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function SheetTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
   return <BaseDialog.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function SheetDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
   return <BaseDialog.Description {...props} {...stylex.props(s.description, style)} />
 }

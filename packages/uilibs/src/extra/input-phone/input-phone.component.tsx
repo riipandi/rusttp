@@ -16,12 +16,12 @@ import { comboboxCreateItems } from '../../base/combobox'
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput } from '../../base/combobox'
 import { ComboboxItem, ComboboxList, ComboboxTrigger } from '../../base/combobox'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariantsWithin
 } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>

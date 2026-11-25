@@ -25,12 +25,6 @@ const offWithin = (value: string) =>
     ':has(textarea:disabled)': value
   }) as const
 
-/** The shared control size scale: a Button and a text control of one size are one height. */
-export type ControlSize = 'sm' | 'md' | 'lg'
-
-/** The scale plus `xs` (28px), which only dense press targets have: Button, Toggle, and Tabs. */
-export type DenseControlSize = 'xs' | ControlSize
-
 /**
  * Height, inline padding, and type of a control (`sm` 32, `md` 36, `lg` 40).
  * Compose after `controlBase` or `controlPress` and before the component's

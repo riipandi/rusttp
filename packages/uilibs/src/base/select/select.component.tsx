@@ -38,19 +38,16 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { selectStyles as s } from './select.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /** A glyph component, such as a Keyline icon; the trigger sizes it and hides it from assistive technology. */
 export type SelectGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>

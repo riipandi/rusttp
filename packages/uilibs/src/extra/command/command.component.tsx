@@ -6,12 +6,9 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../bas
 import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
 import { highlightedItem } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export interface CommandProps
   extends

@@ -1,10 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { emptyStyles as s, emptyMediaVariants as mediaVariants } from './empty.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 

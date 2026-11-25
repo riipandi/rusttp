@@ -16,11 +16,8 @@
 import { Toolbar as BaseToolbar } from '@base-ui/react/toolbar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { toolbarStyles as s } from './toolbar.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 // Buttons, links, toggles, and inputs inside a toolbar keep their own
 // component styles — compose with Button, Toggle, ToggleGroup, Input, etc.

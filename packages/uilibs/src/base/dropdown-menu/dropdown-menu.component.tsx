@@ -35,12 +35,9 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ColorRole, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const DropdownMenu = BaseMenu.Root
 export const DropdownMenuTrigger = BaseMenu.Trigger
@@ -99,7 +96,7 @@ export interface DropdownMenuItemProps
     Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
     StyleProp {
   /** `critical` marks a destructive or irreversible item; `primary` a recommended one. */
-  color?: 'neutral' | 'critical' | 'primary'
+  color?: Extract<ColorRole, 'neutral' | 'critical' | 'primary'>
   /** A glyph before the label; it is decoration, so the item's name is still its label. */
   icon?: MenuGlyph
   /** Indents the item to align with checkbox/radio item labels. */

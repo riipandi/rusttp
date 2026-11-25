@@ -10,7 +10,8 @@
 import { Menubar as BaseMenubar } from '@base-ui/react/menubar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { type ControlSize, controlSizes } from '../../styles/control.stylex'
+import { controlSizes } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   DropdownMenu,

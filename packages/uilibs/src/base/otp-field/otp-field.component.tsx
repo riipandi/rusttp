@@ -15,17 +15,14 @@ import { Minus } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { otpFieldSlotSizes, otpFieldStyles as s } from './otp-field.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export interface OTPFieldLabels {
   /** Name of a slot after the first, which takes the field's own label. Defaults to `Character n of N`. */

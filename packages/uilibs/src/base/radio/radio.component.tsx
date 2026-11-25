@@ -17,11 +17,8 @@ import { RadioGroup as BaseRadioGroup } from '@base-ui/react/radio-group'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
+import type { ControlSize, StyleProp } from '../../styles/types'
 import { radioIndicatorSizes, radioSizes, radioStyles as s } from './radio.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export function RadioGroup({
   style,
@@ -30,7 +27,7 @@ export function RadioGroup({
   return <BaseRadioGroup {...props} {...stylex.props(s.group, style)} />
 }
 
-export type RadioSize = 'sm' | 'md' | 'lg'
+export type RadioSize = ControlSize
 
 export function RadioGroupItem({
   size = 'md',

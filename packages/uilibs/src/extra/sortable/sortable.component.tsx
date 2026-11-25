@@ -65,6 +65,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { zIndex } from '../../styles/tokens.stylex'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -73,10 +74,6 @@ import {
   type DragLabels
 } from './drag-announcements'
 import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 

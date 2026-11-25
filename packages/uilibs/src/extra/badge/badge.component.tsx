@@ -3,6 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import type * as React from 'react'
+import type { ColorRole, ControlSize } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   badgeFadedColors,
@@ -15,8 +16,8 @@ import {
 } from './badge.stylex'
 
 export type BadgeVariant = 'solid' | 'faded' | 'outline' | 'ghost'
-export type BadgeColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
-export type BadgeSize = 'sm' | 'md' | 'lg'
+export type BadgeColor = ColorRole
+export type BadgeSize = ControlSize
 
 /** A glyph component, such as a Keyline icon; the badge sizes it and hides it from assistive technology. */
 export type BadgeGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>

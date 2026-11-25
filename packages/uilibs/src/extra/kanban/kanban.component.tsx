@@ -58,6 +58,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { zIndex } from '../../styles/tokens.stylex'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -160,10 +161,6 @@ const MEASURING_CONFIG = { droppable: { strategy: MeasuringStrategy.Always } }
 const collisionDetectionStrategy: CollisionDetection = (args) => {
   const pointerCollisions = pointerWithin(args)
   return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args)
-}
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
 }
 
 type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp

@@ -32,13 +32,10 @@ import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { navigationMenuStyles as s } from './navigation-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export interface NavigationMenuLabels {
   /** Name of the menu's `nav` landmark. Defaults to `Main`. */

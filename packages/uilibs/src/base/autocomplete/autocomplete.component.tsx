@@ -38,19 +38,16 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { autocompleteStyles as s } from './autocomplete.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /**
  * Free-text input with a filtered suggestion popup — unlike Combobox, any

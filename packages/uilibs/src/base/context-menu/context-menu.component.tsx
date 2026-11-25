@@ -34,6 +34,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import {
   type DropdownMenuItemProps,
@@ -46,10 +47,6 @@ import {
   DropdownMenuSubTrigger
 } from '../dropdown-menu'
 import { contextMenuStyles as s } from './context-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const ContextMenu = BaseContextMenu.Root
 export const ContextMenuGroup = BaseContextMenu.Group

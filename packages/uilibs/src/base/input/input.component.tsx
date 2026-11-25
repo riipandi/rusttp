@@ -14,9 +14,9 @@ import {
   controlBase,
   controlSizes,
   controlVariants,
-  type ControlSize,
   type ControlVariant
 } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { inputStyles as s } from './input.stylex'
 
 export interface InputProps extends Omit<

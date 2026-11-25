@@ -1,10 +1,12 @@
 import { LoaderCircle } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { ColorRole, ControlSize } from '../../styles/types'
 import { spinnerColors, spinnerStyles as s } from './spinner.stylex'
 
-export type SpinnerSize = 'sm' | 'md' | 'lg'
-export type SpinnerColor = 'inherit' | 'primary' | 'positive' | 'warning' | 'critical'
+export type SpinnerSize = ControlSize
+/** Every role but `neutral` (a spinner takes the text color around it, `inherit`, instead). */
+export type SpinnerColor = 'inherit' | Exclude<ColorRole, 'neutral'>
 
 const glyphSize = { sm: 12, md: 16, lg: 20 } as const
 

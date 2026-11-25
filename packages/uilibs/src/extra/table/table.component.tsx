@@ -1,11 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { focusRing, unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { tableAlign, tableCellSize, tableStyles as s, tableVerticalAlign } from './table.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 export interface TableLabels {
   /** Name of the scrollable region around a wide table. Defaults to `Table`. */
@@ -48,7 +45,7 @@ export function Table({
   labels,
   ...props
 }: Omit<React.ComponentProps<'table'>, 'className' | 'style' | 'border'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Draws an edge around the table, with rounded corners. */
     border?: boolean
     /** Draws an edge between the columns. */
@@ -76,21 +73,21 @@ export function Table({
 export function TableHeader({
   style,
   ...props
-}: Omit<React.ComponentProps<'thead'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'thead'>, 'className' | 'style'> & StyleProp) {
   return <thead {...props} {...stylex.props(style)} />
 }
 
 export function TableBody({
   style,
   ...props
-}: Omit<React.ComponentProps<'tbody'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'tbody'>, 'className' | 'style'> & StyleProp) {
   return <tbody {...props} {...stylex.props(style)} />
 }
 
 export function TableFooter({
   style,
   ...props
-}: Omit<React.ComponentProps<'tfoot'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'tfoot'>, 'className' | 'style'> & StyleProp) {
   return <tfoot {...props} {...stylex.props(s.footer, style)} />
 }
 
@@ -99,7 +96,7 @@ export function TableRow({
   style,
   ...props
 }: Omit<React.ComponentProps<'tr'>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Tints the row, such as for the selected one. Visual only: pair it with `aria-selected` where the table is selectable. */
     highlighted?: boolean
   }) {
@@ -114,7 +111,7 @@ export function TableHead({
   style,
   ...props
 }: Omit<React.ComponentProps<'th'>, 'className' | 'style' | 'align' | 'width'> &
-  StyleXStyleProps &
+  StyleProp &
   CellProps) {
   const columnBorder = React.useContext(ColumnBorderContext)
   return (
@@ -137,7 +134,7 @@ export function TableCell({
   style,
   ...props
 }: Omit<React.ComponentProps<'td'>, 'className' | 'style' | 'align' | 'width'> &
-  StyleXStyleProps &
+  StyleProp &
   CellProps) {
   const columnBorder = React.useContext(ColumnBorderContext)
   return (
@@ -155,6 +152,6 @@ export function TableCell({
 export function TableCaption({
   style,
   ...props
-}: Omit<React.ComponentProps<'caption'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'caption'>, 'className' | 'style'> & StyleProp) {
   return <caption {...props} {...stylex.props(s.caption, style)} />
 }

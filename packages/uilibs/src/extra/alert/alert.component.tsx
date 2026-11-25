@@ -1,13 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { ColorRole, StyleProp } from '../../styles/types'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { alertStyles as s, alertColors as colors } from './alert.stylex'
 
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
-
-export type AlertColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
+export type AlertColor = ColorRole
 
 /** A glyph component, such as a Keyline icon; the alert sizes it and hides it from assistive technology. */
 export type AlertGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>

@@ -25,12 +25,9 @@ import { Drawer as BaseDrawer } from '@base-ui/react/drawer'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { drawerStyles as s } from './drawer.stylex'
 import { drawerDirections as directions, drawerSwipeHandles as swipeHandles } from './drawer.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export type DrawerSwipeDirection = 'up' | 'right' | 'down' | 'left'
 

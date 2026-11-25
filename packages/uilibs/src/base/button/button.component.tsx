@@ -12,6 +12,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
+import type { ColorRole } from '../../styles/types'
 import {
   buttonFills,
   buttonHighlighted,
@@ -21,14 +22,8 @@ import {
 } from './button.stylex'
 
 export type ButtonVariant = keyof typeof buttonFills
-export type ButtonColor =
-  | 'primary'
-  | 'neutral'
-  | 'critical'
-  | 'positive'
-  | 'warning'
-  | 'media'
-  | 'inherit'
+/** Every role, plus `media` (fixed white on a photo or dark surface) and `inherit` (the text color around it). */
+export type ButtonColor = ColorRole | 'media' | 'inherit'
 
 /** A glyph component, such as a Keyline icon; the button sizes it and hides it from assistive technology. */
 export type ButtonGlyph = React.ComponentType<{ size?: number | string; 'aria-hidden'?: boolean }>

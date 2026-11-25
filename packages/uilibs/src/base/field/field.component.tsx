@@ -24,13 +24,10 @@ import { Field as BaseField } from '@base-ui/react/field'
 import { Fieldset as BaseFieldset } from '@base-ui/react/fieldset'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
 import { fieldLegendVariants as legendVariants } from './field.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 

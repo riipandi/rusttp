@@ -2,14 +2,11 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button } from '../../base/button'
 import { Separator } from '../../base/separator'
+import type { StyleProp } from '../../styles/types'
 import { buttonGroupStyles as s } from './button-group.stylex'
 import { buttonGroupOrientations as orientations } from './button-group.stylex'
 import { buttonGroupJoined as joined } from './button-group.stylex'
 import { buttonGroupDividerEdges, buttonGroupSharedEdges } from './button-group.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 function hasStyleProp(props: unknown): props is StyleProp {
   return typeof props === 'object' && props !== null && 'style' in props

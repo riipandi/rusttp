@@ -37,6 +37,7 @@
 import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { ColorRole } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
 import { toastStyles as s, toastColors as colors } from './toast.stylex'
@@ -44,7 +45,7 @@ import { toastStyles as s, toastColors as colors } from './toast.stylex'
 /** The manager behind the imperative `toast` API — pass to `useToast` consumers if needed. */
 export const toastManager = BaseToast.createToastManager()
 
-export type ToastColor = 'neutral' | 'primary' | 'positive' | 'warning' | 'critical'
+export type ToastColor = ColorRole
 
 type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
   /** The color role of the toast's accent; `neutral` unless the type implies one. */

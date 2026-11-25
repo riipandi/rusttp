@@ -24,13 +24,10 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { type CloseLabels, CloseButton } from './close-button'
 import { dialogStyles as s } from './dialog.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 export const Dialog = BaseDialog.Root
 export const DialogTrigger = BaseDialog.Trigger
@@ -42,7 +39,7 @@ export function DialogOverlay({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Blurs the page behind the backdrop. */
     blurredOverlay?: boolean
   }) {
@@ -63,7 +60,7 @@ export function DialogContent({
   labels,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Width: `md` (default, 32rem) or the narrower `sm` (24rem). */
     size?: 'sm' | 'md'
     /** Blurs the page behind the backdrop. */
@@ -97,28 +94,27 @@ export function DialogContent({
 export function DialogHeader({
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function DialogFooter({
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function DialogTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
   return <BaseDialog.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function DialogDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
   return <BaseDialog.Description {...props} {...stylex.props(s.description, style)} />
 }

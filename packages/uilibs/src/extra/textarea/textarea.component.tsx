@@ -2,12 +2,8 @@ import { Field as BaseField } from '@base-ui/react/field'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
-import {
-  type ControlSize,
-  type ControlVariant,
-  controlBase,
-  controlVariants
-} from '../../styles/control.stylex'
+import { type ControlVariant, controlBase, controlVariants } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { textareaSizes, textareaStyles as s } from './textarea.stylex'
 
 export interface TextareaProps extends Omit<

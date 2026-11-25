@@ -3,13 +3,10 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Separator } from '../../base/separator'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { itemStyles as s, itemVariants, itemSizes } from './item.stylex'
 import { itemMediaVariants as mediaVariants } from './item.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 

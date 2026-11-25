@@ -34,7 +34,6 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
@@ -42,13 +41,11 @@ import {
   controlVariantsWithin
 } from '../../styles/control.stylex'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const Combobox = BaseCombobox.Root
 export const ComboboxValue = BaseCombobox.Value

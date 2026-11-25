@@ -26,17 +26,14 @@ import {
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import {
-  type ControlSize,
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariantsWithin
 } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { numberFieldButtonSizes, numberFieldStyles as s } from './number-field.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /** Button placement style of the default group. */
 export type NumberFieldControls = 'stacked' | 'sides'

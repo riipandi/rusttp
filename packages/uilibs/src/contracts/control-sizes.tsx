@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, waitFor } from 'storybook/test'
 import { colors } from '../styles/colors.stylex'
-import type { ControlSize, DenseControlSize } from '../styles/control.stylex'
+import type { ControlSize, DenseControlSize } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 
 /** The height a control of each size has, in px (`controlSizes`). */

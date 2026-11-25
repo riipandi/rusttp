@@ -18,26 +18,21 @@ import { Accordion as BaseAccordion } from '@base-ui/react/accordion'
 import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { accordionStyles as s } from './accordion.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 export function Accordion({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAccordion.Root>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseAccordion.Root>, 'className' | 'style'> & StyleProp) {
   return <BaseAccordion.Root {...props} {...stylex.props(s.root, style)} />
 }
 
 export function AccordionItem({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAccordion.Item>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseAccordion.Item>, 'className' | 'style'> & StyleProp) {
   return <BaseAccordion.Item {...props} {...stylex.props(s.item, style)} />
 }
 
@@ -47,7 +42,7 @@ export function AccordionTrigger({
   children,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAccordion.Trigger>, 'className' | 'style'> &
-  StyleXStyleProps & {
+  StyleProp & {
     /** Which side of the label the chevron is on: `end` (default) or `start`. */
     iconPosition?: 'start' | 'end'
   }) {
@@ -74,8 +69,7 @@ export function AccordionContent({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAccordion.Panel>, 'className' | 'style'> &
-  StyleXStyleProps) {
+}: Omit<React.ComponentProps<typeof BaseAccordion.Panel>, 'className' | 'style'> & StyleProp) {
   return (
     <BaseAccordion.Panel {...props} {...stylex.props(s.panel)}>
       <div {...stylex.props(s.inner, style)}>{children}</div>
