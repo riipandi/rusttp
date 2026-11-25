@@ -107,9 +107,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await expect(body.getByRole('menuitem', { name: /retrace steps/i })).toBeInTheDocument()
 
     // A highlighted item draws its state. Hover and the arrows both set it, but WebKit does not
-    // highlight on a simulated hover over a context menu, so the arrow is the portable way in.
-    await userEvent.keyboard('{ArrowDown}')
-    await expectHighlightedItem(await body.findByRole('menuitem', { name: /retrace steps/i }))
+    // highlight on a simulated hover over a context menu, so the key is the portable way in. Focus
+    // reaches the menu a frame after it opens, and a key sent earlier is lost on a loaded runner,
+    // so Home repeats until it lands (it is idempotent).
+    const retrace = await body.findByRole('menuitem', { name: /retrace steps/i })
+    await waitFor(async () => {
+      await userEvent.keyboard('{Home}')
+      await expect(retrace).toHaveAttribute('data-highlighted')
+    })
+    await expectHighlightedItem(retrace)
 
     // Disabled items render disabled.
     await expect(body.getByRole('menuitem', { name: /follow the dot/i })).toHaveAttribute(
