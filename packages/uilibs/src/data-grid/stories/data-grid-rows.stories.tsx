@@ -1043,17 +1043,18 @@ export const RightToLeft: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
-      'svg'
-    )!
+    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
+    const chevron = (
+      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
     // The end state of a 200 ms transition; the wait is sized for a loaded runner (issue-00009).
     await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1), { timeout: 10_000 })
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
-    const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
-      'svg'
-    )!
+    const open = (
+      await canvas.findAllByRole('button', { name: /^Collapse / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
     await waitFor(() => expect(turn(open).b).toBeCloseTo(0), { timeout: 10_000 })
     await expect(turn(open).a).toBeCloseTo(1)
     // `rotate(180deg)`: previous and next swap sides of the arrow glyphs.
@@ -1087,9 +1088,10 @@ function reducedMotionRules(element: Element) {
 export const Motion: Story = {
   render: () => <TreeGrid pageSize={1} />,
   play: async ({ canvas }) => {
-    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
-      'svg'
-    )!
+    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
+    const chevron = (
+      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
+    )[0]!.querySelector('svg')!
     const style = getComputedStyle(chevron)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')
