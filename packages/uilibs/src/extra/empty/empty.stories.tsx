@@ -154,3 +154,21 @@ export const WithInputGroup: Story = {
     await expect(input).toHaveValue('riddikulus')
   }
 }
+
+/** `render` swaps the `div` for a `section`, named by its title. */
+export const AsElement: Story = {
+  name: 'As another element',
+  render: () => (
+    <Empty render={<section aria-labelledby='empty-title' />}>
+      <EmptyHeader>
+        <EmptyTitle id='empty-title'>No owls today</EmptyTitle>
+        <EmptyDescription>The Owlery is quiet.</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  ),
+  play: async ({ canvas }) => {
+    const region = canvas.getByRole('region', { name: 'No owls today' })
+    await expect(region.tagName).toBe('SECTION')
+    await expect(getComputedStyle(region).borderTopStyle).toBe('dashed')
+  }
+}

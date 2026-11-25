@@ -213,3 +213,20 @@ export const Layouts: Story = {
     await expect(getComputedStyle(bleed).borderTopLeftRadius).toBe('0px')
   }
 }
+
+/** `render` swaps the `div`; the icon, the text, and `announce` still apply. */
+export const AsElement: Story = {
+  name: 'As another element',
+  render: () => (
+    <Alert render={<section aria-label='Owl post' />} icon={Info} announce style={styles.alert}>
+      <AlertTitle>Owl post</AlertTitle>
+      <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
+    </Alert>
+  ),
+  play: async ({ canvas }) => {
+    // `announce` sets `role='status'` on the rendered section, replacing its `region` role.
+    const notice = canvas.getByRole('status', { name: 'Owl post' })
+    await expect(notice.tagName).toBe('SECTION')
+    await expect(canvas.getByRole('heading', { name: 'Owl post' })).toBeInTheDocument()
+  }
+}

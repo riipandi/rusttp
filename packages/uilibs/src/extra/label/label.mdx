@@ -13,7 +13,7 @@ The caption of a form control used outside a `Field`; inside a `Field`, use `Fie
 import { Label } from 'uilibs/extra/label'
 ```
 
-A plain `label` element. Props not listed here pass through.
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): it renders a `label`, and `render` swaps the element. Props not listed here pass through.
 
 ## Anatomy
 
@@ -37,9 +37,19 @@ It looks like `FieldLabel`, and turns the critical color while it has `data-inva
 
 <Canvas of={Stories.Invalid} />
 
+### As another element
+
+`render` swaps the `label` for a `span` that names a group through `aria-labelledby`.
+
+<Canvas of={Stories.AsElement} />
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+| Prop     | Description                                                                              |
+| -------- | ---------------------------------------------------------------------------------------- |
+| `render` | `ReactElement`, function <br /> Swaps the `label` for another element, such as a `span`. |
 
 | Data attribute | Description                                                                                                          |
 | -------------- | -------------------------------------------------------------------------------------------------------------------- |

@@ -76,3 +76,28 @@ export const Invalid: StoryObj = {
     )
   }
 }
+
+/** `render` swaps the `label` for a `span` that names a group through `aria-labelledby`. */
+export const AsElement: StoryObj = {
+  name: 'As another element',
+  render: () => (
+    <div>
+      <Label render={<span id='house-label' />}>Houses</Label>
+      <Label>Plain</Label>
+      <div role='group' aria-labelledby='house-label'>
+        <Checkbox aria-label='Gryffindor' />
+        <Checkbox aria-label='Ravenclaw' />
+      </div>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const group = canvas.getByRole('group', { name: 'Houses' })
+    const label = canvas.getByText('Houses')
+    await expect(label.tagName).toBe('SPAN')
+    await expect(group).toBeInTheDocument()
+    // The span wears the label's look: the same type as a plain `Label`.
+    const plain = getComputedStyle(canvas.getByText('Plain'))
+    await expect(getComputedStyle(label).fontSize).toBe(plain.fontSize)
+    await expect(getComputedStyle(label).fontWeight).toBe(plain.fontWeight)
+  }
+}

@@ -222,3 +222,14 @@ export const Shapes: Story = {
     ])
   }
 }
+
+/** `render` swaps the `div` for another element, such as a `span` inside running text. */
+export const AsElement: Story = {
+  name: 'As another element',
+  render: () => <Skeleton render={<span data-testid='ghost' />} width={20} height={4} />,
+  play: async ({ canvas }) => {
+    const ghost = canvas.getByTestId('ghost')
+    await expect(ghost.tagName).toBe('SPAN')
+    await expect(getComputedStyle(ghost).width).toBe('80px')
+  }
+}

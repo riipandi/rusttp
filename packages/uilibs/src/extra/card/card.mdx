@@ -21,7 +21,7 @@ import {
 } from 'uilibs/extra/card'
 ```
 
-Plain `div`, `h3`, and `p` elements, not built on Base UI. Props not listed here pass through.
+`Card` is built on Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps its `div` for another element. The other parts are plain `div`, `h3`, and `p` elements. Props not listed here pass through.
 
 ## Anatomy
 
@@ -59,6 +59,12 @@ Plain `div`, `h3`, and `p` elements, not built on Base UI. Props not listed here
 
 <Canvas of={Stories.Action} />
 
+### As another element
+
+`render` swaps the `div` for an `article`, a `section`, or a link; the card keeps its look.
+
+<Canvas of={Stories.AsElement} />
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
@@ -70,6 +76,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | `size`     | `small`, `medium` <br /> Padding and gaps. Default `medium`.                                            |
 | `selected` | `boolean` <br /> Marks the card as chosen: a doubled primary edge and `data-selected`. Default `false`. |
 | `raised`   | `boolean` <br /> Lifts the card with the raised shadow. Default `false`.                                |
+| `render`   | `ReactElement`, function <br /> Swaps the `div` for another element, such as an `article`.              |
 
 | Data attribute  | Description                                     |
 | --------------- | ----------------------------------------------- |

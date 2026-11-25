@@ -78,3 +78,21 @@ export const InButton: Story = {
     </Button>
   )
 }
+
+/** `render` swaps the `kbd` for a link, so a shortcut hint can point at its help page. */
+export const AsElement: Story = {
+  name: 'As another element',
+  render: () => (
+    <>
+      <Kbd render={<a href='#shortcuts' />}>⌘K</Kbd> <Kbd>⌘J</Kbd>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link', { name: '⌘K' })
+    await expect(link).toHaveAttribute('href', '#shortcuts')
+    // The link wears the key's look: the same fill and corners as a plain `Kbd`.
+    const key = getComputedStyle(canvas.getByText('⌘J'))
+    await expect(getComputedStyle(link).backgroundColor).toBe(key.backgroundColor)
+    await expect(getComputedStyle(link).borderTopLeftRadius).toBe(key.borderTopLeftRadius)
+  }
+}

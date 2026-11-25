@@ -1,9 +1,13 @@
+import { mergeProps } from '@base-ui/react/merge-props'
+import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
-import * as React from 'react'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { skeletonRadius, skeletonStyles as s } from './skeleton.stylex'
 
-export interface SkeletonProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
+export interface SkeletonProps extends Omit<
+  useRender.ComponentProps<'div'>,
+  'className' | 'style'
+> {
   /** A count of `unit` steps (`12` is 48px) or a CSS length (`'60%'`); unset leaves the width to the layout. */
   width?: UnitStep | (string & {})
   /** A count of `unit` steps or a CSS length; unset leaves the height to the layout. */
@@ -13,17 +17,20 @@ export interface SkeletonProps extends Omit<React.ComponentProps<'div'>, 'classN
   style?: stylex.StyleXStyles
 }
 
-export function Skeleton({ width, height, borderRadius, style, ...props }: SkeletonProps) {
-  return (
-    <div
-      {...props}
-      {...stylex.props(
+/** Renders a `div`; `render` swaps it for another element. */
+export function Skeleton({ width, height, borderRadius, style, render, ...props }: SkeletonProps) {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      stylex.props(
         s.root,
         borderRadius && skeletonRadius[borderRadius],
         width !== undefined && s.width(unitLength(width)),
         height !== undefined && s.height(unitLength(height)),
         style
-      )}
-    />
-  )
+      ),
+      props
+    ),
+    render
+  })
 }

@@ -13,7 +13,7 @@ A keyboard key cap. `KbdGroup` joins several keys into one shortcut.
 import { Kbd, KbdGroup } from 'uilibs/extra/kbd'
 ```
 
-Plain `kbd` elements, no Base UI parts. Props not listed here pass through.
+`Kbd` is built on Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps its `kbd` for another element. `KbdGroup` is a plain `kbd`. Props not listed here pass through.
 
 ## Anatomy
 
@@ -40,9 +40,21 @@ Plain `kbd` elements, no Base UI parts. Props not listed here pass through.
 
 <Canvas of={Stories.InTooltip} />
 
+### As another element
+
+`render` swaps the `kbd` for a link, so a shortcut hint can point at its help page.
+
+<Canvas of={Stories.AsElement} />
+
 ## API reference
 
-Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). No part adds props or data attributes.
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). No part adds data attributes.
+
+### Kbd
+
+| Prop     | Description                                                                          |
+| -------- | ------------------------------------------------------------------------------------ |
+| `render` | `ReactElement`, function <br /> Swaps the `kbd` for another element, such as a link. |
 
 ## Caveats
 

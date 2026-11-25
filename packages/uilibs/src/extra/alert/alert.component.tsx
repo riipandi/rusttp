@@ -1,3 +1,5 @@
+import { mergeProps } from '@base-ui/react/merge-props'
+import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
@@ -8,7 +10,7 @@ import { alertStyles as s, alertColors as colors } from './alert.stylex'
 export type AlertColor = ColorRole
 
 export interface AlertProps
-  extends Omit<React.ComponentProps<'div'>, 'className' | 'style' | 'color'>, StyleProp {
+  extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style' | 'color'>, StyleProp {
   /** The color role of the notice; `neutral` by default. */
   color?: AlertColor
   /** A glyph before the text, in the role's color. */
@@ -39,7 +41,8 @@ function isAction(child: React.ReactNode) {
 /**
  * A notice. It has no role, so one that is on the page at load is not announced. Set `announce` for
  * a notice that appears or changes later: it becomes a polite live region (`role='status'`). Pass
- * `role='alert'` instead for an error the user must act on at once.
+ * `role='alert'` instead for an error the user must act on at once. `render` swaps the `div` for
+ * another element, such as a `section`.
  */
 export function Alert({
   color = 'neutral',
@@ -49,6 +52,7 @@ export function Alert({
   announce = false,
   style,
   children,
+  render,
   ...props
 }: AlertProps) {
   const row = Icon || inline
@@ -56,28 +60,35 @@ export function Alert({
   const parts = React.Children.toArray(children)
   const actions = inline ? parts.filter(isAction) : []
   const content = inline ? parts.filter((child) => !isAction(child)) : children
-  return (
-    <div
-      role={announce ? 'status' : undefined}
-      {...props}
-      {...stylex.props(
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      stylex.props(
         s.root,
         colors[color],
         row && s.row,
         inline && s.inline,
         bleed !== undefined && [s.bleed, s.bleedBy(`calc(-1 * ${unitLength(bleed)})`)],
         style
-      )}
-    >
-      {Icon ? <Icon size={glyphSize.xlarge} aria-hidden {...stylex.props(s.glyph)} /> : null}
-      {row ? (
-        <div {...stylex.props(s.content, inline && s.contentInline)}>{content}</div>
-      ) : (
-        children
-      )}
-      <InlineContext.Provider value={inline}>{actions}</InlineContext.Provider>
-    </div>
-  )
+      ),
+      {
+        role: announce ? 'status' : undefined,
+        ...props,
+        children: (
+          <>
+            {Icon ? <Icon size={glyphSize.xlarge} aria-hidden {...stylex.props(s.glyph)} /> : null}
+            {row ? (
+              <div {...stylex.props(s.content, inline && s.contentInline)}>{content}</div>
+            ) : (
+              children
+            )}
+            <InlineContext.Provider value={inline}>{actions}</InlineContext.Provider>
+          </>
+        )
+      }
+    ),
+    render
+  })
 }
 
 export type AlertTitleLevel = 1 | 2 | 3 | 4 | 5 | 6

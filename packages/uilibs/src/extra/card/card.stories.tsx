@@ -138,3 +138,22 @@ export const States: Story = {
     await expect(canvas.getByTestId('selected')).toHaveAttribute('data-selected')
   }
 }
+
+/** `render` swaps the `div` for another element; the card keeps its look and its `data-selected`. */
+export const AsElement: Story = {
+  name: 'As another element',
+  render: () => (
+    <Card render={<article />} selected style={styles.card}>
+      <CardHeader>
+        <CardTitle>Marauder's Map</CardTitle>
+      </CardHeader>
+      <CardContent>Every corridor of Hogwarts, live on parchment.</CardContent>
+    </Card>
+  ),
+  play: async ({ canvas }) => {
+    const article = canvas.getByRole('article')
+    await expect(article.tagName).toBe('ARTICLE')
+    await expect(article).toHaveAttribute('data-selected')
+    await expect(getComputedStyle(article).outlineWidth).toBe('1px')
+  }
+}
