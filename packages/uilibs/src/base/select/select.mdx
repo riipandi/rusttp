@@ -69,6 +69,23 @@ Built on Base UI [Select](https://base-ui.com/react/components/select). `Select`
 
 <Canvas of={Stories.Groups} />
 
+## Accessibility
+
+`SelectTrigger` is a `combobox` and its popup a `listbox` of `option`s. Name a standalone trigger with `aria-label` or `aria-labelledby`: it shows only the value or the placeholder. Inside a `Field`, the `FieldLabel` names it. The `Keyboard` story walks the keys below, and the `Open` story keeps the list open so the accessibility check reads it.
+
+| Key                              | Action                                                             |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `Enter`, `Space`, or `ArrowDown` | On the trigger: opens the list.                                    |
+| `ArrowDown`, `ArrowUp`           | In the list: highlights the next or the previous option.           |
+| `Home`, `End`                    | Highlights the first or the last option.                           |
+| A letter                         | Highlights the next option whose label starts with it (typeahead). |
+| `Enter`                          | Picks the highlighted option and closes the list.                  |
+| `Escape`                         | Closes the list without changing the value and returns focus.      |
+
+- Focus moves into the list when it opens, and the highlighted option has a visible highlight (`data-highlighted`). After a pick or Escape, focus is back on the trigger.
+- A disabled trigger is out of the tab order.
+- Keyboard behavior is Base UI's; see the Base UI [Select](https://base-ui.com/react/components/select) page for the rest.
+
 ## API reference
 
 Every part except `Select`, `SelectValue` and `SelectGroup` also takes `style`: StyleX styles that replace `className` and `style`. On `SelectContent` it lands on the popup. See [Styling](?path=/docs/styling--docs).

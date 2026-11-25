@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { detectPlatform, formatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 import * as React from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { expectHighlightedItem } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { shadow } from '../../styles/colors.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd, KbdGroup } from '../kbd'
@@ -117,7 +118,23 @@ type PlaygroundArgs = React.ComponentProps<typeof Command> &
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['placeholder', 'autoHighlight', 'disabled'] }
+    controls: { disable: false, include: ['placeholder', 'autoHighlight', 'disabled'] },
+    docs: {
+      source: {
+        code: `<Command items={commands} itemToStringValue={(item) => item.label}>
+  <CommandInput placeholder='Cast a spell or search…' />
+  <CommandEmpty>No spells found.</CommandEmpty>
+  <CommandList>
+    {(item) => (
+      <CommandItem key={item.value} value={item}>
+        {item.label}
+        {item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}
+      </CommandItem>
+    )}
+  </CommandList>
+</Command>`
+      }
+    }
   },
   argTypes: {
     placeholder: { control: 'text' },
@@ -165,6 +182,31 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 export const Groups: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Command items={groups}>
+  <CommandInput placeholder='Cast a spell or search…' />
+  <CommandEmpty>No spells found.</CommandEmpty>
+  <CommandList>
+    {(group) => (
+      <Fragment key={group.value}>
+        <CommandGroup heading={group.label}>
+          {group.items.map((item) => (
+            <CommandItem key={item.value} value={item}>
+              {item.label}
+              {item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandSeparator />
+      </Fragment>
+    )}
+  </CommandList>
+</Command>`
+      }
+    }
+  },
   render: () => (
     <Command items={commandGroups} style={styles.root}>
       <CommandInput placeholder='Cast a spell or search…' />
@@ -207,6 +249,36 @@ export const Scrollable: Story = {
 }
 
 export const DialogHotkey: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [open, setOpen] = useState(false)
+
+// Toggle the dialog with Mod+J: Cmd on macOS, Ctrl on Windows and Linux.
+useHotkey('Mod+J', () => setOpen((prev) => !prev))
+
+<Button variant='outline' onClick={() => setOpen(true)}>
+  Open the Marauder's Map
+  <KbdGroup>
+    <Kbd>{formatForDisplay('Mod+J')}</Kbd>
+  </KbdGroup>
+</Button>
+<CommandDialog open={open} onOpenChange={setOpen}>
+  <Command items={commands} itemToStringValue={(item) => item.label}>
+    <CommandInput placeholder='Cast a spell or search…' />
+    <CommandEmpty>No spells found.</CommandEmpty>
+    <CommandList>
+      {(item) => (
+        <CommandItem key={item.value} value={item} onClick={() => setOpen(false)}>
+          {item.label}
+        </CommandItem>
+      )}
+    </CommandList>
+  </Command>
+</CommandDialog>`
+      }
+    }
+  },
   name: 'Keyboard shortcut',
   render: () => {
     const [open, setOpen] = React.useState(false)
@@ -292,5 +364,99 @@ export const TranslatedDialog: Story = {
     const overlay = getComputedStyle(probe).boxShadow
     probe.remove()
     await expect(getComputedStyle(dialog).boxShadow.endsWith(overlay)).toBe(true)
+  }
+}
+
+function Palette({
+  open,
+  onOpenChange,
+  onRun
+}: {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  onRun?: (label: string) => void
+}) {
+  return (
+    <CommandDialog
+      open={open}
+      defaultOpen={open === undefined ? true : undefined}
+      onOpenChange={onOpenChange}
+    >
+      <Command items={commands} itemToStringValue={itemLabel}>
+        <CommandInput placeholder='Cast a spell or search…' />
+        <CommandEmpty>No spells found.</CommandEmpty>
+        <CommandList>
+          {(item: CommandEntry) => (
+            <CommandItem key={item.value} value={item} onClick={() => onRun?.(item.label)}>
+              {item.label}
+            </CommandItem>
+          )}
+        </CommandList>
+      </Command>
+    </CommandDialog>
+  )
+}
+
+// The a11y gate runs after `play`, when a dialog a play opened has closed again: this story keeps
+// the palette open so the gate checks it.
+export const Open: Story = {
+  render: () => <Palette />,
+  play: async () => {
+    const dialog = await within(document.body).findByRole('dialog', { name: 'Command Palette' })
+    await waitFor(() => expect(dialog).toBeVisible())
+    await expect(within(dialog).getAllByRole('option')).toHaveLength(commands.length)
+  }
+}
+
+// Records the commands the palette runs; the play resets it, so the light and dark runs do not share.
+const run = fn()
+
+/** The arrows move a visible highlight through the list, typing filters it, Enter runs the highlighted command, and Escape closes the palette. */
+export const Keyboard: Story = {
+  render: () => <Palette onRun={run} />,
+  play: async () => {
+    run.mockClear()
+    const body = within(document.body)
+    const options = () => body.queryAllByRole('option')
+    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
+    const closed = () => expect(body.queryByRole('dialog')).toBeNull()
+
+    // The palette opens with focus in the input. Nothing is highlighted until the arrows or typing set it.
+    await body.findByRole('dialog')
+    const input = await body.findByRole('combobox')
+    await waitFor(() => expect(input).toHaveFocus())
+
+    // ArrowDown highlights a command and then the next; ArrowUp goes back. The input keeps focus.
+    await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
+      when: () => index() < 0,
+      timeout: 10000
+    })
+    const first = index()
+    await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
+      when: () => index() === first
+    })
+    // The highlight fades in, so its colors are read once settled.
+    await waitFor(() => expectHighlightedItem(options()[first + 1]!, options()[first]))
+    await pressUntil('{ArrowUp}', () => expect(index()).toBe(first), {
+      when: () => index() === first + 1
+    })
+    await expect(input).toHaveFocus()
+
+    // Typing filters the list, and `autoHighlight` highlights the first match.
+    await userEvent.type(input, 'potions')
+    await waitFor(() => expect(options()).toHaveLength(1))
+    await waitFor(() => expect(index()).toBe(0))
+
+    // One press: the highlighted command is the only match (asserted above). Enter runs it and
+    // the palette stays open, because closing is the page's choice: `Command` does not close itself.
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(run).toHaveBeenCalledWith('Potions'))
+    await expect(body.getByRole('dialog')).toBeVisible()
+
+    // Escape closes the palette. The query is cleared first: with text in the input WebKit logs a
+    // React `act` warning as the palette closes, which the story gate counts as a failure.
+    await userEvent.clear(input)
+    await waitFor(() => expect(options().length).toBeGreaterThan(1))
+    await pressUntil('{Escape}', closed)
   }
 }

@@ -45,6 +45,17 @@ Built on Base UI [Tooltip](https://base-ui.com/react/components/tooltip). Props 
 
 <Canvas of={Stories.States} />
 
+## Accessibility
+
+A tooltip is a hint for sighted users: it is not announced as the description of its trigger, so the trigger needs its own accessible name (visible text or `aria-label`) and the tooltip may only repeat it. The `Keyboard` story walks the keys below, and the `Open` story keeps a tooltip open so the accessibility check reads it.
+
+| Key      | Action                                                                    |
+| -------- | ------------------------------------------------------------------------- |
+| `Tab`    | Focusing `TooltipTrigger` opens the tooltip; moving focus away closes it. |
+| `Escape` | Closes the tooltip. Focus stays on the trigger.                           |
+
+- Keyboard behavior is Base UI's; see the Base UI [Tooltip](https://base-ui.com/react/components/tooltip) page for the rest.
+
 ## API reference
 
 `TooltipContent` also takes `style`: StyleX styles that replace `className` and `style`. They land on the popup. See [Styling](?path=/docs/styling--docs).

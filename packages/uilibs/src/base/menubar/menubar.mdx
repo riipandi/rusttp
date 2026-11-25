@@ -85,6 +85,23 @@ Built on Base UI [Menubar](https://base-ui.com/react/components/menubar). Props 
 
 <Canvas of={Stories.Checkbox} />
 
+## Accessibility
+
+The bar is a `menubar` whose triggers are `menuitem`s, and each popup is a `menu`. Every trigger and item needs text or an `aria-label`. The `Keyboard` story walks the keys below, and the `Open` story keeps a menu open so the accessibility check reads it.
+
+| Key                              | Action                                                    |
+| -------------------------------- | --------------------------------------------------------- |
+| `Tab`                            | Enters the bar on its first trigger.                      |
+| `ArrowRight`, `ArrowLeft`        | Move focus between the triggers.                          |
+| `Enter`, `Space`, or `ArrowDown` | On a trigger: opens its menu.                             |
+| `ArrowDown`, `ArrowUp`           | In an open menu: highlight the next or the previous item. |
+| `Home`                           | In an open menu: highlights the first item.               |
+| `Escape`                         | Closes the menu and returns focus to its trigger.         |
+
+- Focus moves into the menu when it opens, and the highlighted item has a visible highlight (`data-highlighted`).
+- Submenus, typeahead, and the item keys are the Dropdown Menu's: see its page and its `Keyboard` story.
+- Keyboard behavior is Base UI's; see the Base UI [Menubar](https://base-ui.com/react/components/menubar) page for the rest.
+
 ## API reference
 
 Every part except `MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `MenubarContent` and `MenubarSubContent` it styles the popup.
@@ -125,4 +142,4 @@ The popup. It takes the `DropdownMenuContent` props and data attributes, with ot
 ## Caveats
 
 - `MenubarTrigger` renders a `menuitem` inside the `menubar` role, not a `button`. Query it by that role.
-- In WebKit, axe reports `aria-required-children` on the menubar because Base UI's focus guards lack `aria-hidden`. It is an upstream issue with no component change and the gate runs in Chromium only (audit finding F-12).
+- The `Playground` and `Open` stories are skipped in WebKit. There axe reports `aria-required-children` on the menubar because Base UI's focus guards lack `aria-hidden`. It is an upstream issue with no component change and the gate runs in Chromium only (audit finding F-12).

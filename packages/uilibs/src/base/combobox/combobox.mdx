@@ -113,6 +113,21 @@ Set `multiple` on `Combobox` and pass a ref of `ComboboxChips` as `anchor` of `C
 
 <Canvas of={Stories.Popup} />
 
+## Accessibility
+
+`ComboboxInput` is a `combobox` and its popup a `listbox` of `option`s. Name a standalone input, trigger, or chips input with `aria-label`; inside a `Field` the `FieldLabel` names it. A placeholder is not a name. The `Keyboard` story walks the keys below, and the `Open` story keeps the list open so the accessibility check reads it.
+
+| Key         | Action                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `ArrowDown` | Opens the list; once open, highlights the next option.                                     |
+| `ArrowUp`   | Highlights the previous option.                                                            |
+| `Enter`     | Fills the input with the highlighted option and closes the list. Focus stays in the input. |
+| `Escape`    | Closes the list and keeps the value. On an already closed combobox it clears the input.    |
+| Typing      | Filters the list to the options that match.                                                |
+
+- Focus stays in the input while the arrows move through the options; the highlighted option has `data-highlighted` and a visible highlight.
+- Keyboard behavior is Base UI's; see the Base UI [Combobox](https://base-ui.com/react/components/combobox) page for the rest.
+
 ## API reference
 
 Every part except `Combobox`, `ComboboxValue` and `ComboboxCollection` also takes `style`: StyleX styles that replace `className` and `style`. On `ComboboxContent` it lands on the popup, and on `ComboboxInput` on the wrapper around the input and its buttons. See [Styling](?path=/docs/styling--docs).

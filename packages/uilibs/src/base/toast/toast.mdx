@@ -50,6 +50,19 @@ Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not 
 
 <Canvas of={Stories.Position} />
 
+## Accessibility
+
+Each toast is a `dialog` named by its title; a toast without a title is named by `labels.notification`, and the stack sits in a `region` named Notifications. The `Keyboard` story walks the keys below, and the `Open` story leaves a toast on screen so the accessibility check reads it.
+
+| Key      | Action                                                                      |
+| -------- | --------------------------------------------------------------------------- |
+| `F6`     | Moves focus from anywhere on the page to the toast region.                  |
+| `Tab`    | From the region: to the newest toast, then to its action and close buttons. |
+| `Escape` | Closes the toast that holds focus and returns focus to where it was.        |
+
+- A toast with an action (`actionProps`) or a long message needs `timeout: 0` or a long `timeout`: a short toast can vanish before a keyboard user reaches it.
+- Keyboard behavior is Base UI's; see the Base UI [Toast](https://base-ui.com/react/components/toast) page for the rest.
+
 ## API reference
 
 `Toaster` takes `style`: StyleX styles for the viewport, merged last. See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.

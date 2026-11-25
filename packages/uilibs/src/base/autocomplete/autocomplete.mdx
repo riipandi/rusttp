@@ -80,6 +80,21 @@ Set `autoHighlight` on `Autocomplete` to highlight the first match while typing.
 
 <Canvas of={Stories.AutoHighlight} />
 
+## Accessibility
+
+The input is a `combobox` and its popup a `listbox` of `option`s. Name the input with `aria-label` or a `FieldLabel`: a placeholder is not a name. The `Keyboard` story walks the path below, and the `Open` story keeps the list open so the accessibility check reads it.
+
+| Key         | Action                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `ArrowDown` | Opens the list; once open, highlights the next option.                                     |
+| `ArrowUp`   | Highlights the previous option.                                                            |
+| `Enter`     | Fills the input with the highlighted option and closes the list. Focus stays in the input. |
+| `Escape`    | Closes the list. Focus stays in the input.                                                 |
+| Typing      | Filters the list to the options that match.                                                |
+
+- Focus stays in the input while the arrows move through the options; the highlighted option has `data-highlighted` and a visible highlight.
+- Keyboard behavior is Base UI's; see the Base UI [Autocomplete](https://base-ui.com/react/components/autocomplete) page for the rest.
+
 ## API reference
 
 Every part except `Autocomplete`, `AutocompleteCollection` and `AutocompleteValue` also takes `style`: StyleX styles that replace `className` and `style`. On `AutocompleteContent` it lands on the popup. See [Styling](?path=/docs/styling--docs).

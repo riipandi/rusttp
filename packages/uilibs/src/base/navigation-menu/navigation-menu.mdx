@@ -61,6 +61,18 @@ Set `active` on the link for the current page.
 
 <Canvas of={Stories.Link} />
 
+## Accessibility
+
+The root is a `nav` landmark named by `labels.menu`, and an open panel is a second landmark named by `labels.popup`. Each trigger is a `button` that reports `aria-expanded`, and a plain item is a `link`; mark the current page with `active` on its `NavigationMenuLink`. The `Keyboard` story walks the keys below, and the `Open` story keeps a panel open so the accessibility check reads it.
+
+| Key                | Action                                                              |
+| ------------------ | ------------------------------------------------------------------- |
+| `Tab`              | Moves focus to the next trigger or link.                            |
+| `Enter` or `Space` | On `NavigationMenuTrigger`: opens its panel. On a link: follows it. |
+| `Escape`           | Closes the panel. Focus stays on the trigger.                       |
+
+- Keyboard behavior is Base UI's; see the Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu) page for moving into a panel with the arrows.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `NavigationMenu` it styles the root, and on `NavigationMenuPositioner` the positioner.

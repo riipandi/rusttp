@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { pressUntil } from '../../contracts/keyboard'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import {
@@ -45,7 +46,34 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['align', 'delay', 'closeDelay'] } },
+  parameters: {
+    controls: { disable: false, include: ['align', 'delay', 'closeDelay'] },
+    docs: {
+      source: {
+        code: `<NavigationMenu align='start'>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>First year at Hogwarts</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <NavigationMenuLink href='#'>Platform Nine and Three-Quarters</NavigationMenuLink>
+        <NavigationMenuLink href='#'>Diagon Alley</NavigationMenuLink>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Codebreaking</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <NavigationMenuLink href='#'>Cryptex</NavigationMenuLink>
+        <NavigationMenuLink href='#'>Keystone</NavigationMenuLink>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink href='#'>Library</NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>`
+      }
+    }
+  },
   argTypes: {
     align: { control: 'radio', options: ['start', 'center', 'end'] },
     delay: { control: 'number' },
@@ -135,6 +163,22 @@ export const Playground: Story = {
 }
 
 export const Link: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuLink href='#' active>Headmaster's tower</NavigationMenuLink>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink href='#'>Illuminati archives</NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>`
+      }
+    }
+  },
   render: () => (
     <NavigationMenu>
       <NavigationMenuList>
@@ -152,4 +196,72 @@ export const Link: Story = {
       </NavigationMenuList>
     </NavigationMenu>
   )
+}
+
+function Gates({ defaultValue }: { defaultValue?: string }) {
+  return (
+    <NavigationMenu defaultValue={defaultValue}>
+      <NavigationMenuList>
+        <NavigationMenuItem value='school'>
+          <NavigationMenuTrigger>First year at Hogwarts</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <NavigationMenuLink href='#platform'>
+              Platform Nine and Three-Quarters
+            </NavigationMenuLink>
+            <NavigationMenuLink href='#alley'>Diagon Alley</NavigationMenuLink>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem value='codes'>
+          <NavigationMenuTrigger>Codebreaking</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <NavigationMenuLink href='#cryptex'>Cryptex</NavigationMenuLink>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink href='#library'>Library</NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  )
+}
+
+// The a11y gate runs after `play`, when a panel a play opened has closed again: this story keeps
+// the first panel open so the gate checks it.
+export const Open: Story = {
+  render: () => <Gates defaultValue='school' />,
+  play: async () => {
+    const link = await within(document.body).findByRole('link', {
+      name: 'Platform Nine and Three-Quarters'
+    })
+    await waitFor(() => expect(link).toBeVisible())
+  }
+}
+
+/** Enter or Space opens a panel from its trigger, Tab moves into its links, and Escape closes it and returns focus. */
+export const Keyboard: Story = {
+  render: () => <Gates />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'First year at Hogwarts' })
+    const platform = () => body.queryByRole('link', { name: 'Platform Nine and Three-Quarters' })
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+
+    // Enter opens the panel only while it is closed.
+    await pressUntil('{Enter}', () => expect(platform()).toBeVisible(), {
+      when: () => !platform()
+    })
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    // Escape closes it and focus stays on the trigger.
+    await pressUntil('{Escape}', () => expect(platform()).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    // Space opens it too.
+    await pressUntil(' ', () => expect(platform()).toBeVisible(), { when: () => !platform() })
+    await pressUntil('{Escape}', () => expect(platform()).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+  }
 }

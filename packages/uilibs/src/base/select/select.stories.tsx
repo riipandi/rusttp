@@ -11,6 +11,7 @@ import {
   expectGlyphSizes,
   expectHighlightedItem
 } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -96,20 +97,34 @@ export default meta
 // The look lives on the trigger and the placement on the content.
 type PlaygroundArgs = ComponentProps<typeof Select> &
   Pick<ComponentProps<typeof SelectTrigger>, 'size' | 'variant'> &
-  Pick<ComponentProps<typeof SelectContent>, 'side' | 'align' | 'alignItemWithTrigger'>
+  Pick<
+    ComponentProps<typeof SelectContent>,
+    'side' | 'sideOffset' | 'align' | 'alignOffset' | 'alignItemWithTrigger'
+  >
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
     controls: {
       disable: false,
-      include: ['size', 'variant', 'side', 'align', 'alignItemWithTrigger', 'disabled']
+      include: [
+        'size',
+        'variant',
+        'side',
+        'sideOffset',
+        'align',
+        'alignOffset',
+        'alignItemWithTrigger',
+        'disabled'
+      ]
     }
   },
   argTypes: {
     size: { control: 'radio', options: Object.keys(controlSizes) },
     variant: { control: 'radio', options: Object.keys(controlVariants) },
     side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
     align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' },
     alignItemWithTrigger: { control: 'boolean' },
     disabled: { control: 'boolean' }
   },
@@ -118,16 +133,33 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     size: 'medium',
     variant: 'outline',
     side: 'bottom',
+    sideOffset: 4,
     align: 'center',
+    alignOffset: 0,
     alignItemWithTrigger: false,
     disabled: false
   },
-  render: ({ size, variant, side, align, alignItemWithTrigger, ...args }) => (
+  render: ({
+    size,
+    variant,
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    alignItemWithTrigger,
+    ...args
+  }) => (
     <Select {...args}>
       <SelectTrigger size={size} variant={variant} aria-label='Wand core'>
         <SelectValue placeholder='Select a wand core' />
       </SelectTrigger>
-      <SelectContent side={side} align={align} alignItemWithTrigger={alignItemWithTrigger}>
+      <SelectContent
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+        alignItemWithTrigger={alignItemWithTrigger}
+      >
         {fruits.map(({ label, value }) => (
           <SelectItem key={value} value={value}>
             {label}
@@ -161,6 +193,22 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Select items={wandCores}>
+  <SelectTrigger variant='faded' aria-label='Wand core'>
+    <SelectValue placeholder='Wand core' />
+  </SelectTrigger>
+  <SelectContent>
+    {wandCores.map(({ label, value }) => (
+      <SelectItem key={value} value={value}>{label}</SelectItem>
+    ))}
+  </SelectContent>
+</Select>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => (
@@ -177,6 +225,22 @@ export const Variants: Story = {
 
 /** A glyph before the value: decoration only, so the trigger keeps its name and the chevron stays at the edge. */
 export const Icons: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Select items={wandCores} defaultValue='phoenix'>
+  <SelectTrigger icon={Sparkles} aria-label='Wand core'>
+    <SelectValue />
+  </SelectTrigger>
+  <SelectContent>
+    {wandCores.map(({ label, value }) => (
+      <SelectItem key={value} value={value}>{label}</SelectItem>
+    ))}
+  </SelectContent>
+</Select>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='icon' rows={['none', 'leading'] as const}>
       {(icon) => (
@@ -229,6 +293,22 @@ export const Icons: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Select items={wandCores}>
+  <SelectTrigger size='large' aria-label='Wand core'>
+    <SelectValue placeholder='Wand core' />
+  </SelectTrigger>
+  <SelectContent>
+    {wandCores.map(({ label, value }) => (
+      <SelectItem key={value} value={value}>{label}</SelectItem>
+    ))}
+  </SelectContent>
+</Select>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
@@ -299,6 +379,29 @@ export const States: Story = {
 }
 
 export const Groups: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Select items={ingredients}>
+  <SelectTrigger aria-label='Ingredient'>
+    <SelectValue placeholder='Select an ingredient' />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectGroup>
+      <SelectLabel>Wand cores</SelectLabel>
+      <SelectItem value='phoenix'>Phoenix feather</SelectItem>
+      <SelectItem value='dragon'>Dragon heartstring</SelectItem>
+    </SelectGroup>
+    <SelectGroup>
+      <SelectSeparator />
+      <SelectLabel>Potion ingredients</SelectLabel>
+      <SelectItem value='bezoar'>Bezoar</SelectItem>
+    </SelectGroup>
+  </SelectContent>
+</Select>`
+      }
+    }
+  },
   args: { items },
   render: (args) => (
     <Select {...args}>
@@ -359,10 +462,9 @@ export const DisabledOptions: Story = {
   )
 }
 
-export const Keyboard: Story = {
-  args: { items: fruits },
-  render: (args) => (
-    <Select {...args}>
+function WandCores({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <Select items={fruits} defaultOpen={defaultOpen}>
       <SelectTrigger aria-label='Wand core'>
         <SelectValue placeholder='Select a wand core' />
       </SelectTrigger>
@@ -374,43 +476,67 @@ export const Keyboard: Story = {
         ))}
       </SelectContent>
     </Select>
-  ),
+  )
+}
+
+// The a11y gate runs after `play`, when a list a play opened has closed again: this story keeps
+// the list open so the gate checks it.
+export const Open: Story = {
+  render: () => <WandCores defaultOpen />,
+  play: async () => {
+    const list = await within(document.body).findByRole('listbox')
+    await waitFor(() => expect(list).toBeVisible())
+    await expect(within(list).getAllByRole('option')).toHaveLength(fruits.length)
+  }
+}
+
+/** Enter, Space, or ArrowDown opens the list; the arrows, Home, End, and typeahead move the highlight; Enter picks and Escape closes. */
+export const Keyboard: Story = {
+  render: () => <WandCores />,
   play: async ({ canvas }) => {
     const body = within(document.body)
     const trigger = canvas.getByRole('combobox', { name: 'Wand core' })
+    const highlightedName = () =>
+      body.queryAllByRole('option').find((option) => option.hasAttribute('data-highlighted'))
+        ?.textContent ?? null
+    const visible = () => expect(body.getByRole('listbox')).toBeVisible()
+    const closed = () => expect(body.queryByRole('listbox')).toBeNull()
 
-    // Tab reaches the trigger; Enter opens the list, the arrows move through it, Enter picks.
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await body.findByRole('listbox')
-    // Where the highlight starts is not fixed under simulated events: WebKit opens with nothing
-    // highlighted, and one cold Chromium run picked the first item after one arrow. Home pins the
-    // start, so the arrow's step is the same on every engine and run. Focus reaches the list a
-    // frame after it opens, and a key sent earlier is lost on a loaded runner, so Home repeats
-    // until it lands (it is idempotent).
-    await waitFor(async () => {
-      await userEvent.keyboard('{Home}')
-      await expect(body.getByRole('option', { name: 'Phoenix feather' })).toHaveAttribute(
-        'data-highlighted'
-      )
-    })
-    // The arrow is lost the same way while the list is still settling, so it repeats only while
-    // the first item is still the highlighted one.
-    await waitFor(async () => {
-      if (body.getByRole('option', { name: 'Phoenix feather' }).hasAttribute('data-highlighted')) {
-        await userEvent.keyboard('{ArrowDown}')
-      }
-      await expect(body.getByRole('option', { name: 'Dragon heartstring' })).toHaveAttribute(
-        'data-highlighted'
-      )
+
+    // Each key opens the list only while it is closed, and Escape closes it and returns focus.
+    for (const key of ['{Enter}', ' ', '{ArrowDown}']) {
+      await pressUntil(key, visible, { when: () => !body.queryByRole('listbox') })
+      await pressUntil('{Escape}', closed)
+      await waitFor(() => expect(trigger).toHaveFocus())
+    }
+
+    // Open it again. Where the highlight starts is not fixed under simulated events (WebKit
+    // opens with nothing highlighted), so Home pins it and each arrow's step is the same everywhere.
+    await pressUntil('{Enter}', visible, { when: () => !body.queryByRole('listbox') })
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Phoenix feather'))
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Dragon heartstring'), {
+      when: () => highlightedName() === 'Phoenix feather'
     })
     await expectHighlightedItem(
       body.getByRole('option', { name: 'Dragon heartstring' }),
       body.getByRole('option', { name: 'Phoenix feather' })
     )
+    await pressUntil('{ArrowUp}', () => expect(highlightedName()).toBe('Phoenix feather'), {
+      when: () => highlightedName() === 'Dragon heartstring'
+    })
+    await pressUntil('{End}', () => expect(highlightedName()).toBe('Unicorn hair'))
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Phoenix feather'))
+
+    // Typing a letter highlights the option that starts with it.
+    await pressUntil('d', () => expect(highlightedName()).toBe('Dragon heartstring'))
+
+    // One press: the control that takes it already holds focus (asserted above), and a second press
+    // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
+    // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await waitFor(closed, { timeout: 10000 })
     await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }

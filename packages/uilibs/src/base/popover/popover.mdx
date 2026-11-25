@@ -66,6 +66,19 @@ Built on Base UI [Popover](https://base-ui.com/react/components/popover). Props 
 
 <Canvas of={Stories.Form} />
 
+## Accessibility
+
+The popup is a `dialog`, named by `PopoverTitle` and described by `PopoverDescription`. Give it a `PopoverTitle`, or an `aria-label` on `PopoverContent` when there is no visible heading. The `Keyboard` story walks the keys below, and the `Open` story keeps the popup open so the accessibility check reads it.
+
+| Key                | Action                                               |
+| ------------------ | ---------------------------------------------------- |
+| `Enter` or `Space` | On `PopoverTrigger`: opens the popover.              |
+| `Tab`              | Moves focus to the next control inside the popup.    |
+| `Escape`           | Closes the popover and returns focus to the trigger. |
+
+- Focus moves to the first focusable control in the popup when it opens (the first input in the examples).
+- Keyboard behavior is Base UI's; see the Base UI [Popover](https://base-ui.com/react/components/popover) page for focus options such as `initialFocus`, `finalFocus`, and `modal`.
+
 ## API reference
 
 `PopoverContent`, `PopoverHeader`, `PopoverTitle`, and `PopoverDescription` also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `PopoverContent` it styles the popup. `Popover`, `PopoverTrigger`, and `PopoverClose` are the Base UI parts unchanged.

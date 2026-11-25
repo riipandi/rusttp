@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Button } from '../button'
@@ -31,31 +32,59 @@ export default meta
 
 // The text, color, and placement belong to `TooltipContent`; the delay to the provider.
 type PlaygroundArgs = ComponentProps<typeof TooltipProvider> &
-  Pick<ComponentProps<typeof TooltipContent>, 'color' | 'side' | 'align'> & { label: string }
+  Pick<
+    ComponentProps<typeof TooltipContent>,
+    'color' | 'side' | 'sideOffset' | 'align' | 'alignOffset'
+  > & { label: string }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['label', 'delay', 'color', 'side', 'align'] }
+    controls: {
+      disable: false,
+      include: ['label', 'delay', 'color', 'side', 'sideOffset', 'align', 'alignOffset']
+    },
+    docs: {
+      source: {
+        code: `<TooltipProvider delay={0}>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant='outline' />}>Lumos</TooltipTrigger>
+    <TooltipContent color='neutral' side='top' align='center'>
+      Add to the Restricted Section
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>`
+      }
+    }
   },
   argTypes: {
     label: { control: 'text' },
     delay: { control: 'number' },
     color: { control: 'radio', options: ['neutral', 'inverted', 'dark'] },
     side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
-    align: { control: 'radio', options: ['start', 'center', 'end'] }
+    sideOffset: { control: 'number' },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' }
   },
   args: {
     label: 'Add to the Restricted Section',
     delay: 0,
     color: 'neutral',
     side: 'top',
-    align: 'center'
+    sideOffset: 4,
+    align: 'center',
+    alignOffset: 0
   },
-  render: ({ label, color, side, align, ...args }) => (
+  render: ({ label, color, side, sideOffset, align, alignOffset, ...args }) => (
     <TooltipProvider {...args}>
       <Tooltip>
         <TooltipTrigger render={<Button variant='outline' />}>Lumos</TooltipTrigger>
-        <TooltipContent color={color} side={side} align={align}>
+        <TooltipContent
+          color={color}
+          side={side}
+          sideOffset={sideOffset}
+          align={align}
+          alignOffset={alignOffset}
+        >
           {label}
         </TooltipContent>
       </Tooltip>
@@ -96,6 +125,18 @@ export const Open: Story = {
 
 /** Each side opens its own tooltip; the popup flips when the canvas leaves it no room, so the side is not asserted. */
 export const Sides: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant='outline' />}>left</TooltipTrigger>
+    <TooltipContent side='left'>Reveals the left of the map</TooltipContent>
+  </Tooltip>
+</TooltipProvider>`
+      }
+    }
+  },
   render: () => (
     <TooltipProvider>
       <Axis axis='side' rows={sides}>
@@ -124,6 +165,20 @@ export const Sides: Story = {
 
 // Disabled native buttons don't fire pointer events, so the trigger is the wrapping span.
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger render={<span />}>
+      <Button variant='outline' disabled>Alohomora</Button>
+    </TooltipTrigger>
+    <TooltipContent>Speak the riddle to unlock the disabled door</TooltipContent>
+  </Tooltip>
+</TooltipProvider>`
+      }
+    }
+  },
   render: () => (
     <TooltipProvider>
       <Axis axis='state' rows={['default', 'disabled'] as const}>
@@ -164,6 +219,18 @@ const colorNames = ['neutral', 'inverted', 'dark'] as const
  * three. The probe is the constant black: `dark` is the same black in both themes.
  */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<TooltipProvider>
+  <Tooltip defaultOpen>
+    <TooltipTrigger render={<Button variant='outline' />}>dark</TooltipTrigger>
+    <TooltipContent color='dark' side='right'>Tooltip dark</TooltipContent>
+  </Tooltip>
+</TooltipProvider>`
+      }
+    }
+  },
   render: () => (
     <div>
       <Axis axis='color' rows={colorNames}>
@@ -194,5 +261,40 @@ export const Colors: Story = {
     // Three colors, three looks; `dark` is black with white text, whatever the theme.
     await expect(new Set(colorNames.map(look)).size).toBe(colorNames.length)
     await expect(look('dark')).toBe(`${black.backgroundColor}|${black.color}`)
+  }
+}
+
+/** Focusing the trigger opens the tooltip, Escape closes it, and blurring the trigger closes it too. */
+export const Keyboard: Story = {
+  render: () => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger render={<Button variant='outline' />}>Lumos</TooltipTrigger>
+        <TooltipContent>Light the wand tip</TooltipContent>
+      </Tooltip>
+      <Button variant='outline'>Nox</Button>
+    </TooltipProvider>
+  ),
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'Lumos' })
+    const tip = () => body.queryByText('Light the wand tip')
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await waitFor(() => expect(tip()).toBeVisible())
+
+    // Escape closes it while focus stays on the trigger.
+    await pressUntil('{Escape}', () => expect(tip()).toBeNull())
+    await expect(trigger).toHaveFocus()
+
+    // Leaving the trigger and returning opens it again; moving on closes it.
+    await userEvent.tab()
+    await expect(canvas.getByRole('button', { name: 'Nox' })).toHaveFocus()
+    await userEvent.tab({ shift: true })
+    await expect(trigger).toHaveFocus()
+    await waitFor(() => expect(tip()).toBeVisible())
+    await userEvent.tab()
+    await waitFor(() => expect(tip()).toBeNull())
   }
 }

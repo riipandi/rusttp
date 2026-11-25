@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
@@ -84,17 +85,20 @@ export default meta
 // The size lives on `AlertDialogContent` and the color on the confirming `AlertDialogAction`.
 type PlaygroundArgs = React.ComponentProps<typeof AlertDialog> &
   Pick<React.ComponentProps<typeof AlertDialogContent>, 'size' | 'blurredOverlay'> &
-  Pick<React.ComponentProps<typeof AlertDialogAction>, 'color'>
+  Pick<React.ComponentProps<typeof AlertDialogAction>, 'color' | 'variant'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['size', 'blurredOverlay', 'color'] } },
+  parameters: {
+    controls: { disable: false, include: ['size', 'blurredOverlay', 'color', 'variant'] }
+  },
   argTypes: {
     size: { control: 'radio', options: Object.keys(alertDialogSizes) },
     blurredOverlay: { control: 'boolean' },
-    color: { control: 'select', options: Object.keys(buttonFills.solid) }
+    color: { control: 'select', options: Object.keys(buttonFills.solid) },
+    variant: { control: 'radio', options: variantNames }
   },
-  args: { size: 'medium', blurredOverlay: false, color: 'critical' },
-  render: ({ size, blurredOverlay, color, ...root }) => (
+  args: { size: 'medium', blurredOverlay: false, color: 'critical', variant: 'solid' },
+  render: ({ size, blurredOverlay, color, variant, ...root }) => (
     <AlertDialog {...root}>
       <AlertDialogTrigger render={<Button variant='outline' />}>
         Seal the cryptex
@@ -109,7 +113,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction color={color}>Seal</AlertDialogAction>
+          <AlertDialogAction color={color} variant={variant}>
+            Seal
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -139,6 +145,25 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AlertDialog>
+  <AlertDialogTrigger render={<Button variant='outline' />}>small</AlertDialogTrigger>
+  <AlertDialogContent size='small'>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Leave without casting Lumos?</AlertDialogTitle>
+      <AlertDialogDescription>Your unfinished incantations will be lost.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Stay</AlertDialogCancel>
+      <AlertDialogAction color='critical'>Disapparate</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['small', 'medium'] as const}>
       {(size) => (
@@ -182,6 +207,25 @@ export const Sizes: Story = {
 
 /** The action takes the Button `variant`; each look differs from the others. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AlertDialog>
+  <AlertDialogTrigger render={<Button variant='outline' />}>faded</AlertDialogTrigger>
+  <AlertDialogContent size='small'>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Confirm faded?</AlertDialogTitle>
+      <AlertDialogDescription>The action below takes the faded look.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction variant='faded'>Proceed faded</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={variantNames}>
       {(variant) => <ActionDialog label={variant} variant={variant} />}
@@ -198,6 +242,25 @@ export const Variants: Story = {
 
 /** The action takes the Button `color`; each color differs from the others. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AlertDialog>
+  <AlertDialogTrigger render={<Button variant='outline' />}>critical</AlertDialogTrigger>
+  <AlertDialogContent size='small'>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Confirm critical?</AlertDialogTitle>
+      <AlertDialogDescription>The action below takes the critical look.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction color='critical'>Proceed critical</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={colorNames}>
       {(color) => <ActionDialog label={color} color={color} />}
@@ -238,6 +301,38 @@ export const Media: Story = {
 }
 
 export const Destructive: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [open, setOpen] = useState(false)
+const [deleting, setDeleting] = useState(false)
+
+<AlertDialog open={open} onOpenChange={setOpen}>
+  <AlertDialogTrigger render={<Button color='critical' />}>Close the Gringotts vault</AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Close your vault?</AlertDialogTitle>
+      <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+      <AlertDialogAction
+        color='critical'
+        loading={deleting}
+        onClick={(event) => {
+          // Keep the dialog open until the work is done.
+          event.preventBaseUIHandler()
+          closeVault().then(() => setOpen(false))
+        }}
+      >
+        Close the vault
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
   render: () => {
     const [open, setOpen] = React.useState(false)
     const [deleting, setDeleting] = React.useState(false)
@@ -304,6 +399,24 @@ const overlays = ['plain', 'blurred'] as const
 
 /** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
 export const Overlays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AlertDialog>
+  <AlertDialogTrigger render={<Button variant='outline' />}>Open blurred</AlertDialogTrigger>
+  <AlertDialogContent size='small' blurredOverlay>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Overlay blurred</AlertDialogTitle>
+      <AlertDialogDescription>The castle fades behind the portrait.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='overlay' rows={overlays}>
       {(overlay) => (
@@ -339,5 +452,76 @@ export const Overlays: Story = {
       await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
+  }
+}
+
+function Seal({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <AlertDialog defaultOpen={defaultOpen}>
+      <AlertDialogTrigger render={<Button variant='outline' />}>
+        Seal the cryptex
+      </AlertDialogTrigger>
+      <AlertDialogContent size='small'>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Seal the cryptex?</AlertDialogTitle>
+          <AlertDialogDescription>
+            The Priory&apos;s secret will be lost forever.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Walk away</AlertDialogCancel>
+          <AlertDialogAction color='critical'>Seal it</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
+// The a11y gate runs after `play`, when a dialog a play opened has closed again: this story keeps
+// the popup and its backdrop open so the gate checks them.
+export const Open: Story = {
+  render: () => <Seal defaultOpen />,
+  play: async () => {
+    const dialog = await within(document.body).findByRole('alertdialog', {
+      name: 'Seal the cryptex?'
+    })
+    await waitFor(() => expect(dialog).toBeVisible())
+    await expect(dialog).toHaveAccessibleDescription("The Priory's secret will be lost forever.")
+  }
+}
+
+/** Enter or Space opens the dialog, Tab stays inside it, Escape closes it, and Enter on a button answers it. */
+export const Keyboard: Story = {
+  render: () => <Seal />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'Seal the cryptex' })
+    const opened = () => body.getByRole('alertdialog', { name: 'Seal the cryptex?' })
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await pressUntil('{Enter}', opened, { when: () => !body.queryByRole('alertdialog') })
+    const dialog = opened()
+
+    // Focus lands on the first button, and Tab keeps it inside (five presses outrun the two buttons).
+    await waitFor(() => expect(body.getByRole('button', { name: 'Walk away' })).toHaveFocus())
+    for (let step = 0; step < 5; step += 1) {
+      await userEvent.tab()
+      await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true))
+    }
+    await expect(body.queryByRole('button', { name: 'Seal the cryptex' })).toBeNull()
+
+    await pressUntil('{Escape}', () => expect(body.queryByRole('alertdialog')).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+
+    // Space opens it too; Enter on a button closes it and returns focus to the trigger.
+    await pressUntil(' ', opened, { when: () => !body.queryByRole('alertdialog') })
+    await waitFor(() => expect(body.getByRole('button', { name: 'Walk away' })).toHaveFocus())
+    // One press: the control that takes it already holds focus (asserted above), and a second press
+    // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
+    // page for its exit animation, so the wait is longer on a loaded runner.
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull(), { timeout: 10000 })
+    await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

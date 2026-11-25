@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontSize, fontFamily, radius, stroke } from '../../styles/tokens.stylex'
@@ -53,20 +54,32 @@ const styles = stylex.create({
 export default meta
 
 type PlaygroundArgs = ComponentProps<typeof ContextMenu> &
-  Pick<ComponentProps<typeof ContextMenuContent>, 'side' | 'align'>
+  Pick<ComponentProps<typeof ContextMenuContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['side', 'align', 'disabled'] } },
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['side', 'sideOffset', 'align', 'alignOffset', 'disabled']
+    }
+  },
   argTypes: {
     side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
     align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' },
     disabled: { control: 'boolean' }
   },
-  args: { side: 'right', align: 'start', disabled: false },
-  render: ({ side, align, ...args }) => (
+  args: { side: 'right', sideOffset: 0, align: 'start', alignOffset: 4, disabled: false },
+  render: ({ side, sideOffset, align, alignOffset, ...args }) => (
     <ContextMenu {...args}>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
-      <ContextMenuContent side={side} align={align}>
+      <ContextMenuContent
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+      >
         <ContextMenuItem>
           Retrace steps
           <ContextMenuShortcut>⌘[</ContextMenuShortcut>
@@ -136,6 +149,21 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** A disabled item takes no action; a disabled menu never opens. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ContextMenu>
+  <ContextMenuTrigger style={…}>Right-click the item</ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem>Re-ink the map</ContextMenuItem>
+    <ContextMenuItem disabled>Follow the dot</ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>
+
+// A disabled menu never opens: <ContextMenu disabled>…</ContextMenu>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='disabled' rows={['item', 'menu'] as const}>
       {(part) => (
@@ -172,6 +200,21 @@ export const States: Story = {
 
 /** The item `color`: `primary` marks the recommended item, `critical` the one that destroys something. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ContextMenu>
+  <ContextMenuTrigger style={…}>Right-click the map</ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem>Re-ink the map</ContextMenuItem>
+    <ContextMenuItem color='primary'>Duplicate parchment</ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuItem color='critical'>Mischief managed</ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>`
+      }
+    }
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
@@ -199,6 +242,27 @@ export const Colors: Story = {
 }
 
 export const Submenu: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ContextMenu>
+  <ContextMenuTrigger style={…}>Right-click the map</ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem>I solemnly swear…</ContextMenuItem>
+    <ContextMenuSub>
+      <ContextMenuSubTrigger>More enchantments</ContextMenuSubTrigger>
+      <ContextMenuSubContent>
+        <ContextMenuItem>Chart a new passage…</ContextMenuItem>
+        <ContextMenuItem>Add a secret passage…</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>Marauder settings</ContextMenuItem>
+      </ContextMenuSubContent>
+    </ContextMenuSub>
+  </ContextMenuContent>
+</ContextMenu>`
+      }
+    }
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
@@ -219,6 +283,22 @@ export const Submenu: Story = {
 }
 
 export const Checkboxes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ContextMenu>
+  <ContextMenuTrigger style={…}>Right-click the map</ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuGroup>
+      <ContextMenuLabel>Map layers</ContextMenuLabel>
+      <ContextMenuCheckboxItem defaultChecked>Show secret passages</ContextMenuCheckboxItem>
+      <ContextMenuCheckboxItem>Show real names</ContextMenuCheckboxItem>
+    </ContextMenuGroup>
+  </ContextMenuContent>
+</ContextMenu>`
+      }
+    }
+  },
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger style={styles.trigger}>Right-click the map</ContextMenuTrigger>
@@ -250,4 +330,109 @@ export const Radio: Story = {
       </ContextMenuContent>
     </ContextMenu>
   )
+}
+
+function Parchment({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <ContextMenu defaultOpen={defaultOpen}>
+      <ContextMenuTrigger style={styles.trigger}>Right-click the parchment</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Re-ink the map</ContextMenuItem>
+        <ContextMenuItem disabled>Follow the dot</ContextMenuItem>
+        <ContextMenuItem>Chart a passage</ContextMenuItem>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>More enchantments</ContextMenuSubTrigger>
+          <ContextMenuSubContent>
+            <ContextMenuItem>Wipe the map</ContextMenuItem>
+            <ContextMenuItem>Add a secret passage</ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+        <ContextMenuSeparator />
+        <ContextMenuItem color='critical'>Mischief managed</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  )
+}
+
+// The a11y gate runs after `play`, when a menu a play opened has closed again: this story keeps
+// the menu open so the gate checks it.
+export const Open: Story = {
+  render: () => <Parchment defaultOpen />,
+  play: async () => {
+    const menu = await within(document.body).findByRole('menu')
+    await waitFor(() => expect(menu).toBeVisible())
+    await expect(within(menu).getByRole('menuitem', { name: 'Re-ink the map' })).toBeVisible()
+  }
+}
+
+// The text of the focused element: focus moves at once, while the menu count lags a submenu's
+// animation, so the submenu keys are guarded on it.
+const focused = () => document.activeElement?.textContent ?? ''
+
+/** Arrows, Home, and End move the highlight; Enter picks an item; ArrowRight opens a submenu; Escape closes. */
+export const Keyboard: Story = {
+  render: () => <Parchment />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByText('Right-click the parchment')
+    const highlighted = () =>
+      body.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
+    const highlightedName = () => highlighted()?.textContent ?? null
+
+    // The pointer opens the menu: a context menu has no key that opens it.
+    await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
+    await body.findByRole('menu')
+
+    // Home pins the start, so each arrow's step is the same in every engine. A disabled item stays
+    // in the arrow order, and Enter on it does nothing. Focus reaches a menu opened by the pointer
+    // late on a loaded runner, so this first key waits longer than the rest.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'), {
+      timeout: 10000
+    })
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Follow the dot'), {
+      when: () => highlightedName() === 'Re-ink the map'
+    })
+    await userEvent.keyboard('{Enter}')
+    await expect(body.getByRole('menu')).toBeInTheDocument()
+    await expect(highlightedName()).toBe('Follow the dot')
+    await pressUntil('{ArrowUp}', () => expect(highlightedName()).toBe('Re-ink the map'), {
+      when: () => highlightedName() === 'Follow the dot'
+    })
+    await pressUntil('{End}', () => expect(highlightedName()).toBe('Mischief managed'))
+
+    // ArrowRight on the submenu trigger opens its submenu, and ArrowLeft closes it again.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'))
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Follow the dot'), {
+      when: () => highlightedName() === 'Re-ink the map'
+    })
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Chart a passage'), {
+      when: () => highlightedName() === 'Follow the dot'
+    })
+    await pressUntil(
+      '{ArrowDown}',
+      () =>
+        expect(body.getByRole('menuitem', { name: 'More enchantments' })).toHaveAttribute(
+          'data-highlighted'
+        ),
+      { when: () => highlightedName() === 'Chart a passage' }
+    )
+    // A second ArrowLeft on the root menu would close it, so each key is guarded on where focus is.
+    await pressUntil('{ArrowRight}', () => expect(body.getAllByRole('menu')).toHaveLength(2), {
+      when: () => focused() === 'More enchantments'
+    })
+    await pressUntil('{ArrowLeft}', () => expect(body.getAllByRole('menu')).toHaveLength(1), {
+      when: () => ['Wipe the map', 'Add a secret passage'].includes(focused())
+    })
+
+    // Enter picks the highlighted item and closes the menu.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'))
+    await pressUntil('{Enter}', () => expect(body.queryByRole('menu')).toBeNull(), {
+      when: () => !!body.queryByRole('menu')
+    })
+
+    // Escape closes a reopened menu.
+    await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
+    await body.findByRole('menu')
+    await pressUntil('{Escape}', () => expect(body.queryByRole('menu')).toBeNull())
+  }
 }

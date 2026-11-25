@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import {
@@ -33,20 +34,32 @@ type Story = StoryObj<typeof meta>
 export default meta
 
 type PlaygroundArgs = ComponentProps<typeof DropdownMenu> &
-  Pick<ComponentProps<typeof DropdownMenuContent>, 'side' | 'align'>
+  Pick<ComponentProps<typeof DropdownMenuContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['side', 'align', 'disabled'] } },
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['side', 'sideOffset', 'align', 'alignOffset', 'disabled']
+    }
+  },
   argTypes: {
     side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
     align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' },
     disabled: { control: 'boolean' }
   },
-  args: { side: 'bottom', align: 'start', disabled: false },
-  render: ({ side, align, ...args }) => (
+  args: { side: 'bottom', sideOffset: 4, align: 'start', alignOffset: 0, disabled: false },
+  render: ({ side, sideOffset, align, alignOffset, ...args }) => (
     <DropdownMenu {...args}>
       <DropdownMenuTrigger render={<Button variant='outline' />}>Open the menu</DropdownMenuTrigger>
-      <DropdownMenuContent side={side} align={align}>
+      <DropdownMenuContent
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel>Gringotts</DropdownMenuLabel>
           <DropdownMenuItem>Vault holder</DropdownMenuItem>
@@ -73,6 +86,24 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** The disabled item stays in the list but takes no action; a disabled trigger never opens the menu. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DropdownMenu>
+  <DropdownMenuTrigger render={<Button variant='outline' />}>Spells item</DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuGroup>
+      <DropdownMenuItem>Gemino</DropdownMenuItem>
+      <DropdownMenuItem disabled>Archive (Ministry pending)</DropdownMenuItem>
+      <DropdownMenuItem>Evanesco</DropdownMenuItem>
+    </DropdownMenuGroup>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+// A disabled trigger never opens: <DropdownMenuTrigger disabled>…</DropdownMenuTrigger>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='disabled' rows={['item', 'trigger'] as const}>
       {(part) => (
@@ -121,6 +152,21 @@ export const States: Story = {
 
 /** The item `color`: `primary` marks the recommended item, `critical` the one that destroys something. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DropdownMenu>
+  <DropdownMenuTrigger render={<Button variant='outline' />}>Prophet article options</DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>Revise</DropdownMenuItem>
+    <DropdownMenuItem color='primary'>Gemino</DropdownMenuItem>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem color='critical'>Evanesco</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>`
+      }
+    }
+  },
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant='outline' />}>
@@ -179,6 +225,28 @@ export const Icons: Story = {
 }
 
 export const Checkboxes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DropdownMenu>
+  <DropdownMenuTrigger render={<Button variant='outline' />}>Map options</DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuGroup>
+      <DropdownMenuLabel>Enchantments</DropdownMenuLabel>
+      <DropdownMenuCheckboxItem defaultChecked>Show whispers</DropdownMenuCheckboxItem>
+      <DropdownMenuCheckboxItem>Show traces</DropdownMenuCheckboxItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuRadioGroup defaultValue='bottom'>
+      <DropdownMenuLabel>Map position</DropdownMenuLabel>
+      <DropdownMenuRadioItem value='top'>Ceiling</DropdownMenuRadioItem>
+      <DropdownMenuRadioItem value='bottom'>Floor</DropdownMenuRadioItem>
+    </DropdownMenuRadioGroup>
+  </DropdownMenuContent>
+</DropdownMenu>`
+      }
+    }
+  },
   name: 'Checkbox and radio items',
   render: () => (
     <DropdownMenu>
@@ -277,6 +345,33 @@ export const Shortcuts: Story = {
 }
 
 export const Submenu: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DropdownMenu>
+  <DropdownMenuTrigger render={<Button variant='outline' />}>Quill actions</DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>
+      New article
+      <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
+    </DropdownMenuItem>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>Send by Owl</DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <DropdownMenuItem>Email the Prophet</DropdownMenuItem>
+        <DropdownMenuItem>Gemino the link</DropdownMenuItem>
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem color='critical'>
+      Evanesco
+      <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>`
+      }
+    }
+  },
   name: 'Submenu, shortcuts, critical',
   render: () => (
     <DropdownMenu>
@@ -303,37 +398,107 @@ export const Submenu: Story = {
   )
 }
 
-/** Arrow keys move a visible highlight; a critical item draws it in its own color. */
-export const Keyboard: Story = {
-  render: () => (
-    <DropdownMenu>
+function Vault({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <DropdownMenu defaultOpen={defaultOpen}>
       <DropdownMenuTrigger render={<Button variant='outline' />}>Open the menu</DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>Vault holder</DropdownMenuItem>
         <DropdownMenuItem>Galleon balance</DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>Send by Owl</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem>Email the Prophet</DropdownMenuItem>
+            <DropdownMenuItem>Gemino the link</DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         <DropdownMenuItem color='critical'>Mischief managed</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  ),
+  )
+}
+
+// The a11y gate runs after `play`, when a menu a play opened has closed again: this story keeps
+// the menu open so the gate checks it.
+export const Open: Story = {
+  render: () => <Vault defaultOpen />,
+  play: async () => {
+    const menu = await within(document.body).findByRole('menu')
+    await waitFor(() => expect(menu).toBeVisible())
+    await expect(within(menu).getByRole('menuitem', { name: 'Vault holder' })).toBeVisible()
+  }
+}
+
+/** Enter, Space, or ArrowDown opens the menu; the arrows, Home, End, and typeahead move a visible highlight; Escape closes it and returns focus. */
+export const Keyboard: Story = {
+  render: () => <Vault />,
   play: async ({ canvas }) => {
     const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Open the menu' })
+    const highlighted = () =>
+      body.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
+    const highlightedName = () => highlighted()?.textContent ?? null
+    const closed = () => expect(body.queryByRole('menu')).toBeNull()
 
-    // Tab reaches the trigger and Enter opens the menu. Home pins the start of the highlight.
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await body.findByRole('menu')
-    await userEvent.keyboard('{Home}')
+    // Each key opens the menu only while it is closed: once it is open, focus is inside it.
+    await pressUntil('{Enter}', () => expect(body.getByRole('menu')).toBeVisible(), {
+      when: () => !body.queryByRole('menu')
+    })
+    await pressUntil('{Escape}', closed)
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await pressUntil(' ', () => expect(body.getByRole('menu')).toBeVisible(), {
+      when: () => !body.queryByRole('menu')
+    })
+    await pressUntil('{Escape}', closed)
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await pressUntil('{ArrowDown}', () => expect(body.getByRole('menu')).toBeVisible(), {
+      when: () => !body.queryByRole('menu')
+    })
+
+    // Home pins the start of the highlight, so each arrow's step is the same in every engine.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Vault holder'))
     const first = body.getByRole('menuitem', { name: 'Vault holder' })
     await expectHighlightedItem(first, body.getByRole('menuitem', { name: 'Galleon balance' }))
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Galleon balance'), {
+      when: () => highlightedName() === 'Vault holder'
+    })
+    await pressUntil('{ArrowUp}', () => expect(highlightedName()).toBe('Vault holder'), {
+      when: () => highlightedName() === 'Galleon balance'
+    })
 
-    await userEvent.keyboard('{End}')
+    // End reaches the last item, and a critical item draws the highlight in its own color.
+    await pressUntil('{End}', () => expect(highlightedName()).toBe('Mischief managed'))
     const critical = body.getByRole('menuitem', { name: 'Mischief managed' })
     await expectHighlightedItem(critical, first)
     const primary = getComputedStyle(first, '::before').backgroundColor
     await waitFor(() =>
       expect(getComputedStyle(critical, '::before').backgroundColor).not.toBe(primary)
     )
+
+    // Typing a letter highlights the next item that starts with it.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Vault holder'))
+    await pressUntil('g', () => expect(highlightedName()).toBe('Galleon balance'))
+
+    // ArrowRight on the submenu trigger opens its submenu, and ArrowLeft closes it.
+    await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Send by Owl'), {
+      when: () => highlightedName() === 'Galleon balance'
+    })
+    await pressUntil('{ArrowRight}', () => expect(body.getAllByRole('menu')).toHaveLength(2), {
+      when: () => body.getAllByRole('menu').length === 1
+    })
+    await pressUntil('{ArrowLeft}', () => expect(body.getAllByRole('menu')).toHaveLength(1), {
+      when: () => body.getAllByRole('menu').length === 2
+    })
+
+    // Enter picks the highlighted item, closes the menu, and returns focus to the trigger.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Vault holder'))
+    // One press: the control that takes it already holds focus (asserted above), and a second press
+    // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
+    // page for its exit animation, so the wait is longer on a loaded runner.
+    await userEvent.keyboard('{Enter}')
+    await waitFor(closed, { timeout: 10000 })
+    await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

@@ -92,6 +92,23 @@ Built on Base UI [Context Menu](https://base-ui.com/react/components/context-men
 
 <Canvas of={Stories.Submenu} />
 
+## Accessibility
+
+The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` items. A context menu has no key that opens it: it opens on right click or long press, so offer the same actions elsewhere for keyboard users. Once it is open, the `Keyboard` story walks the keys below, and the `Open` story keeps the menu open so the accessibility check reads it.
+
+| Key           | Action                                                                             |
+| ------------- | ---------------------------------------------------------------------------------- |
+| `ArrowDown`   | Highlights the next item. A disabled item stays in the order and `Enter` skips it. |
+| `ArrowUp`     | Highlights the previous item.                                                      |
+| `Home`, `End` | Highlights the first or the last item.                                             |
+| `ArrowRight`  | On `ContextMenuSubTrigger`: opens the submenu.                                     |
+| `ArrowLeft`   | In a submenu: closes it.                                                           |
+| `Enter`       | Picks the highlighted item and closes the menu.                                    |
+| `Escape`      | Closes the menu.                                                                   |
+
+- A `ContextMenuItem` needs visible text or an `aria-label`.
+- Keyboard behavior is Base UI's; see the Base UI [Context Menu](https://base-ui.com/react/components/context-menu) page for the rest.
+
 ## API reference
 
 Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `ContextMenuSub`, and `ContextMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ContextMenuContent` and `ContextMenuSubContent` it styles the popup.

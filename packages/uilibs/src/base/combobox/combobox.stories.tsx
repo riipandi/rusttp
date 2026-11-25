@@ -11,6 +11,7 @@ import {
   expectDisabledLook,
   expectHighlightedItem
 } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
@@ -85,14 +86,33 @@ const styles = stylex.create({
 
 export default meta
 
+// The look lives on `ComboboxInput` and the placement on `ComboboxContent`.
 type PlaygroundArgs = React.ComponentProps<typeof Combobox> &
-  Pick<React.ComponentProps<typeof ComboboxInput>, 'size' | 'variant' | 'showTrigger' | 'showClear'>
+  Pick<
+    React.ComponentProps<typeof ComboboxInput>,
+    'size' | 'variant' | 'showTrigger' | 'showClear'
+  > &
+  Pick<
+    React.ComponentProps<typeof ComboboxContent>,
+    'side' | 'sideOffset' | 'align' | 'alignOffset'
+  >
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
     controls: {
       disable: false,
-      include: ['size', 'variant', 'showTrigger', 'showClear', 'disabled', 'autoHighlight']
+      include: [
+        'size',
+        'variant',
+        'showTrigger',
+        'showClear',
+        'disabled',
+        'autoHighlight',
+        'side',
+        'sideOffset',
+        'align',
+        'alignOffset'
+      ]
     }
   },
   argTypes: {
@@ -101,7 +121,11 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     showTrigger: { control: 'boolean' },
     showClear: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    autoHighlight: { control: 'boolean' }
+    autoHighlight: { control: 'boolean' },
+    side: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' }
   },
   args: {
     items: frameworks,
@@ -110,9 +134,23 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     showTrigger: true,
     showClear: false,
     disabled: false,
-    autoHighlight: false
+    autoHighlight: false,
+    side: 'bottom',
+    sideOffset: 6,
+    align: 'start',
+    alignOffset: 0
   },
-  render: ({ size, variant, showTrigger, showClear, ...args }) => (
+  render: ({
+    size,
+    variant,
+    showTrigger,
+    showClear,
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    ...args
+  }) => (
     <Combobox {...args}>
       <ComboboxInput
         size={size}
@@ -121,7 +159,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         showClear={showClear}
         placeholder='Search school…'
       />
-      <ComboboxContent>
+      <ComboboxContent side={side} sideOffset={sideOffset} align={align} alignOffset={alignOffset}>
         <ComboboxEmpty>No school found.</ComboboxEmpty>
         <ComboboxList>
           {(item) => (
@@ -170,6 +208,21 @@ export const Variants: Story = {
 
 /** The three boxes of a combobox, in every size: the input, the trigger, and the chips. */
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={schools}>
+  <ComboboxInput size='large' aria-label='School' placeholder='School' />
+  <ComboboxContent>
+    <ComboboxEmpty>No school found.</ComboboxEmpty>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames} columnAxis='part' columns={comboboxParts} fill>
       {(size, part) =>
@@ -255,6 +308,27 @@ export const States: Story = {
 }
 
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const anchorRef = useRef(null)
+
+<Combobox items={schools} multiple defaultValue={['Hogwarts']}>
+  <ComboboxChips ref={anchorRef}>
+    <ComboboxValue>
+      {(selected) => selected.map((school) => <ComboboxChip key={school}>{school}</ComboboxChip>)}
+    </ComboboxValue>
+    <ComboboxChipsInput placeholder='Add school…' />
+  </ComboboxChips>
+  <ComboboxContent anchor={anchorRef}>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => {
     const [value, setValue] = React.useState<string[]>(['Hogwarts'])
     const anchorRef = React.useRef<HTMLDivElement>(null)
@@ -289,6 +363,24 @@ export const Multiple: Story = {
 }
 
 export const Popup: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={drinks}>
+  <ComboboxTrigger aria-label='Drink'>
+    <ComboboxValue placeholder='Select a drink' />
+  </ComboboxTrigger>
+  <ComboboxContent>
+    <ComboboxInput showTrigger={false} placeholder='Search drink…' />
+    <ComboboxEmpty>No drink found.</ComboboxEmpty>
+    <ComboboxList>
+      {(drink) => <ComboboxItem key={drink} value={drink}>{drink}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => (
     <Combobox items={fruits}>
       <ComboboxTrigger aria-label='Drink'>
@@ -310,6 +402,21 @@ export const Popup: Story = {
 }
 
 export const Clear: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={schools} defaultValue='Hogwarts'>
+  <ComboboxInput showClear placeholder='Search school…' />
+  <ComboboxContent>
+    <ComboboxEmpty>No school found.</ComboboxEmpty>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => (
     <Combobox items={frameworks} defaultValue='Hogwarts'>
       <ComboboxInput showClear placeholder='Search school…' />
@@ -403,10 +510,9 @@ export const AutoHighlight: Story = {
   )
 }
 
-export const Keyboard: Story = {
-  args: { items: frameworks },
-  render: (args) => (
-    <Combobox {...args}>
+function Schools({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <Combobox items={frameworks} defaultOpen={defaultOpen}>
       <ComboboxInput aria-label='School' placeholder='School' />
       <ComboboxContent>
         <ComboboxEmpty>No school found.</ComboboxEmpty>
@@ -419,31 +525,70 @@ export const Keyboard: Story = {
         </ComboboxList>
       </ComboboxContent>
     </Combobox>
-  ),
+  )
+}
+
+// The a11y gate runs after `play`, when a list a play opened has closed again: this story keeps
+// the list open so the gate checks it.
+export const Open: Story = {
+  render: () => <Schools defaultOpen />,
+  play: async () => {
+    const list = await within(document.body).findByRole('listbox')
+    await waitFor(() => expect(list).toBeVisible())
+    await expect(within(list).getAllByRole('option')).toHaveLength(frameworks.length)
+  }
+}
+
+/** ArrowDown opens the list and the arrows move a visible highlight through it, Enter picks, and Escape closes it. */
+export const Keyboard: Story = {
+  render: () => <Schools />,
   play: async ({ canvas }) => {
     const body = within(document.body)
     const input = canvas.getByRole('combobox', { name: 'School' })
+    const options = () => body.queryAllByRole('option')
+    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
+    const visible = () => expect(body.getByRole('listbox')).toBeVisible()
+    const closed = () => expect(body.queryByRole('listbox')).toBeNull()
+    // `aria-expanded` follows the open state at once; the listbox stays in the page while it fades
+    // out, and a key sent then would reach a closed combobox (Escape there clears the input).
+    const expanded = () => input.getAttribute('aria-expanded') === 'true'
 
-    // Tab reaches the input, the arrow opens the list and moves through it, Enter picks.
     await userEvent.tab()
     await expect(input).toHaveFocus()
-    await userEvent.keyboard('{ArrowDown}')
-    await body.findByRole('listbox')
-    await userEvent.keyboard('{ArrowDown}')
-    const options = await body.findAllByRole('option')
-    const highlighted = options.find((option) => option.hasAttribute('data-highlighted'))
-    if (highlighted) {
-      await expectHighlightedItem(
-        highlighted,
-        options.find((option) => option !== highlighted)
-      )
-    }
-    await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
-    // The highlighted option is the one the input now shows.
-    await expect(highlighted).toBeDefined()
-    await waitFor(() => expect(input).toHaveValue(highlighted?.textContent ?? ''))
-    await expect(input).not.toHaveValue('')
+
+    // ArrowDown opens the list; a further ArrowDown highlights the first option, then the next.
+    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
+      when: () => index() < 0
+    })
+    const first = index()
+    await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
+      when: () => index() === first
+    })
+    await pressUntil('{ArrowUp}', () => expect(index()).toBe(first), {
+      when: () => index() === first + 1
+    })
+    await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
+      when: () => index() === first
+    })
+    const picked = options()[first + 1]
+    if (!picked) throw new Error('No option to pick')
+    await expectHighlightedItem(picked, options()[first])
+
+    // Enter fills the input with the highlighted option and closes the list; focus stays in the input.
+    const label = picked.textContent ?? ''
+    await pressUntil('{Enter}', () => expect(input).toHaveValue(label), {
+      when: expanded
+    })
+    await waitFor(closed)
+    await expect(input).toHaveFocus()
+
+    // Escape closes a reopened list and keeps the value.
+    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    // Escape on a closed combobox clears the input, so it is sent only while the list is open.
+    await pressUntil('{Escape}', closed, { when: expanded })
+    await expect(input).toHaveValue(label)
+    await expect(input).toHaveFocus()
   }
 }
 

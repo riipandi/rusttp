@@ -38,6 +38,17 @@ Built on Base UI [Preview Card](https://base-ui.com/react/components/preview-car
 
 <Canvas of={Stories.Sides} />
 
+## Accessibility
+
+The card is a hover and focus hint for a link, and it has no role of its own: a screen reader does not announce it, so it may only repeat what the linked page shows. The trigger needs its own name. The `Keyboard` story walks the keys below, and the `Open` story keeps the card open so the accessibility check reads it.
+
+| Key      | Action                                        |
+| -------- | --------------------------------------------- |
+| `Tab`    | Focusing `PreviewCardTrigger` opens the card. |
+| `Escape` | Closes the card. Focus stays on the trigger.  |
+
+- Keyboard behavior is Base UI's; see the Base UI [Preview Card](https://base-ui.com/react/components/preview-card) page for the rest.
+
 ## API reference
 
 Only `PreviewCardContent` takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). It styles the popup. `PreviewCard` and `PreviewCardTrigger` are the Base UI parts unchanged.
@@ -77,5 +88,5 @@ These CSS variables are set on the positioner, and the popup inherits them.
 
 ## Caveats
 
-- The card is not reachable by touch, keyboard navigation, or screen reader, so it may only repeat what the linked page shows.
+- Keyboard users see the card when the trigger takes focus, but neither they, touch users, nor screen readers can reach its content, so it may only repeat what the linked page shows.
 - A floating popup flips to the opposite side when it has no room, so `side` is a preference.

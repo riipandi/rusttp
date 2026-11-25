@@ -92,6 +92,25 @@ Built on Base UI [Menu](https://base-ui.com/react/components/menu). Props not li
 
 <Canvas of={Stories.Submenu} />
 
+## Accessibility
+
+The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` items, opened from `DropdownMenuTrigger`. The trigger needs text or an `aria-label`, and so does each item. The `Keyboard` story walks the keys below, and the `Open` story keeps the menu open so the accessibility check reads it.
+
+| Key                | Action                                                                    |
+| ------------------ | ------------------------------------------------------------------------- |
+| `Enter` or `Space` | On the trigger: opens the menu. On an item: picks it and closes the menu. |
+| `ArrowDown`        | On the trigger: opens the menu. In the menu: highlights the next item.    |
+| `ArrowUp`          | Highlights the previous item.                                             |
+| `Home`, `End`      | Highlights the first or the last item.                                    |
+| A letter           | Highlights the next item whose label starts with it (typeahead).          |
+| `ArrowRight`       | On `DropdownMenuSubTrigger`: opens the submenu.                           |
+| `ArrowLeft`        | In a submenu: closes it.                                                  |
+| `Escape`           | Closes the menu and returns focus to the trigger.                         |
+
+- Focus moves into the menu when it opens. It stays on the menu items, and the highlighted item has a visible highlight (`data-highlighted`), in its own color for a `critical` item.
+- A disabled item stays in the arrow order and does nothing when picked.
+- Keyboard behavior is Base UI's; see the Base UI [Menu](https://base-ui.com/react/components/menu) page for the rest.
+
 ## API reference
 
 Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DropdownMenuContent` and `DropdownMenuSubContent` it styles the popup.
