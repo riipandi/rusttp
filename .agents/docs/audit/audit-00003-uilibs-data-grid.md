@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:09:48+07:00
+updated_at: 2026-11-26T00:11:41+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 3, fixed: 11, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 2, fixed: 12, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -62,7 +62,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | fixed |
 | F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | fixed |
 | F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | fixed |
-| F-08 | low | a11y | `data-grid-table-pager.tsx:204` | The pager is a `div`, not a named navigation | verified | open |
+| F-08 | low | a11y | `data-grid-table-pager.tsx:204` | The pager is a `div`, not a named navigation | verified | fixed |
 | F-09 | low | a11y | `data-grid-table-dnd.tsx:334,833` | Keyboard drag announcements are dnd-kit's defaults | unverified | fixed |
 | F-10 | low | a11y (2.3.3) | `data-grid-table.stylex.ts:428-443` | The expand chevron rotates under reduced motion | verified | fixed |
 | F-11 | low | StyleX contract | `data-grid.stylex.ts:508,510,521,542,545`, `data-grid-table.stylex.ts:59,911` | Literal sizes, opacities, and a blur | verified | fixed |
@@ -129,7 +129,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Location**: `data-grid-table-pager.tsx:204`. The page buttons are named and the current one has `aria-current` (`:148-149`); the surrounding element is a `div` with no landmark.
 - **Impact**: a screen reader's landmark list has no "pagination" entry. `Pagination` (the extra component) is a `nav`.
 - **Smallest fix**: `<nav aria-label={labels.pagination}>`.
-- **Confidence**: high. **Status**: open.
+- **Confidence**: high. **Status**: fixed. **Resolution**: the page buttons are a `nav` named `labels.pagination`; a play proves the contents.
 
 ### F-09 Keyboard drag announcements are dnd-kit's defaults
 

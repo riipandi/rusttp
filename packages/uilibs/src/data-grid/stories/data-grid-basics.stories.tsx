@@ -10,7 +10,7 @@ import type {
   SortingState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import {
   DataGrid,
   DataGridContainer,
@@ -188,6 +188,12 @@ export const Pagination: Story = {
   play: async ({ canvas }) => {
     // A plain table is named by `aria-label`, so a screen reader says which table it is on.
     await expect(await canvas.findByRole('table', { name: 'Novels' })).toBeVisible()
+    // The page buttons are one named navigation; the page-size select and the range text are not in it.
+    const pages = within(await canvas.findByRole('navigation', { name: 'Pagination' }))
+    await expect(pages.getByRole('button', { name: 'Go to page 2' })).toBeVisible()
+    await expect(pages.getByRole('button', { name: 'Go to next page' })).toBeVisible()
+    await expect(pages.queryByRole('combobox')).toBeNull()
+    await expect(pages.queryByText(/of 10/)).toBeNull()
   }
 }
 

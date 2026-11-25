@@ -236,7 +236,7 @@ function DataGridPagination<TData extends object>(
           <>
             <div {...stylex.props(s.infoText)}>{paginationInfo}</div>
             {pageCount > 1 && (
-              <div {...stylex.props(s.pages)}>
+              <nav aria-label={labels.pagination} {...stylex.props(s.pages)}>
                 <Button
                   size='small'
                   variant='ghost'
@@ -266,7 +266,7 @@ function DataGridPagination<TData extends object>(
                   <span {...stylex.props(visuallyHidden.root)}>{mergedProps.nextPageLabel}</span>
                   <ChevronRight {...stylex.props(s.arrowIcon)} />
                 </Button>
-              </div>
+              </nav>
             )}
           </>
         )}

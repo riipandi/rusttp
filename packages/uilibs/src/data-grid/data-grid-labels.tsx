@@ -47,6 +47,8 @@ export interface DataGridLabels extends DragLabels {
   /* Pagination. */
   rowsPerPage: string
   paginationInfo: (info: { from: number; to: number; count: number }) => string
+  /** The name of the navigation landmark around the page buttons. */
+  pagination: string
   previousPage: string
   nextPage: string
   goToPage: (page: number) => string
@@ -85,6 +87,7 @@ const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   allRowsLoaded: 'All records loaded',
   rowsPerPage: 'Rows per page',
   paginationInfo: ({ from, to, count }) => `${from} - ${to} of ${count}`,
+  pagination: 'Pagination',
   previousPage: 'Go to previous page',
   nextPage: 'Go to next page',
   goToPage: (page) => `Go to page ${page}`,
