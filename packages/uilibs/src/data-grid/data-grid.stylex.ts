@@ -322,17 +322,18 @@ export interface DataGridCellEditorMetrics {
 /**
  * The live `getComputedStyle().textAlign` read carries any CSS value
  * (`start`, `end`, `justify`, ...); the stylex rule accepts the directional
- * subset, and a start/end value resolves like the browser would render it.
+ * subset. `start` and `end` stay logical: the editor sits in the cell's own
+ * direction, so a right-to-left cell keeps its text on the right.
  */
-function computedTextAlign(value: string): 'left' | 'center' | 'right' {
-  const resolved: Record<string, 'left' | 'center' | 'right'> = {
-    start: 'left',
+function computedTextAlign(value: string): 'start' | 'center' | 'end' | 'left' | 'right' {
+  const resolved: Record<string, 'start' | 'center' | 'end' | 'left' | 'right'> = {
+    start: 'start',
     left: 'left',
     center: 'center',
-    end: 'right',
+    end: 'end',
     right: 'right'
   }
-  return resolved[value] ?? 'left'
+  return resolved[value] ?? 'start'
 }
 
 /**

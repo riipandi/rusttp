@@ -115,10 +115,16 @@ export const dataGridTableStyles = stylex.create({
   },
   // Pinned-cell boundary shadows (inset divider toward the scrollable side).
   thPinnedDividerStart: {
-    boxShadow: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   thPinnedDividerEnd: {
-    boxShadow: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   // Body cell.
   td: {
@@ -145,10 +151,16 @@ export const dataGridTableStyles = stylex.create({
     isolation: 'isolate'
   },
   tdPinnedDividerStart: {
-    boxShadow: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   tdPinnedDividerEnd: {
-    boxShadow: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   // Truncation when a column is resizable (td must not clip the selection
   // chrome, so with cell selection the truncation moves to the wrapper).
@@ -491,14 +503,13 @@ export const dataGridTableStyles = stylex.create({
   },
   resizeHandleLineEnd: {
     '::before': {
-      insetInlineEnd: 0,
-      transform: 'translateX(-1px)'
+      insetInlineEnd: 1
     }
   },
   resizeHandleLineCenter: {
     '::before': {
-      insetInlineEnd: '50%',
-      transform: 'translateX(50%)'
+      insetInline: 0,
+      marginInline: 'auto'
     }
   },
   resizeHandleLineHidden: {
@@ -518,8 +529,7 @@ export const dataGridTableStyles = stylex.create({
   },
   resizeHandleActiveLineEnd: {
     '::before': {
-      insetInlineEnd: 0,
-      transform: 'none'
+      insetInlineEnd: 0
     }
   },
   // Live (onChange) resize indicator.
@@ -539,8 +549,8 @@ export const dataGridTableStyles = stylex.create({
   },
   resizeIndicatorHead: {
     backgroundColor: colors.foregroundPrimary,
-    borderBottomLeftRadius: radius.small,
-    borderBottomRightRadius: radius.small,
+    borderEndEndRadius: radius.small,
+    borderEndStartRadius: radius.small,
     boxShadow: shadow.outline,
     left: 0,
     position: 'absolute',
@@ -880,10 +890,16 @@ export const dataGridTableVirtualStyles = stylex.create({
     isolation: 'isolate'
   },
   pinnedDividerStart: {
-    boxShadow: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset -1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   pinnedDividerEnd: {
-    boxShadow: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`
+    boxShadow: {
+      default: `inset 1px 0 0 0 ${colors.borderNeutralFaded}`,
+      ':dir(rtl)': `inset -1px 0 0 0 ${colors.borderNeutralFaded}`
+    }
   },
   utilityCenterCell: {
     padding: 0
