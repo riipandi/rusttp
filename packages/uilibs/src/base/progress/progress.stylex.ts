@@ -4,8 +4,8 @@ import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
-// Kept in sync with ../meter/meter.stylex.ts — intentional duplication
-// so both components stay independently styled but visually identical.
+// Progress and Meter share this stylesheet: they draw the same label, track, and fill, and differ
+// only in role (`progressbar`, `meter`) and in the Base UI parts they wrap.
 
 export const progressStyles = stylex.create({
   root: {
