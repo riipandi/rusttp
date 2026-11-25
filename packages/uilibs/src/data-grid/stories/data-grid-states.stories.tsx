@@ -5,6 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { ColumnDef, PaginationState, SortingState } from '@tanstack/react-table'
 import { useEffect, useMemo, useState } from 'react'
+import { expect } from 'storybook/test'
 import {
   DataGrid,
   DataGridColumnHeader,
@@ -708,6 +709,7 @@ export const ServerSidePagination: Story = {
                   <Search style={{ height: 16, width: 16 }} />
                 </InputGroupAddon>
                 <InputGroupInput
+                  aria-label='Search novels'
                   placeholder='Search...'
                   value={query}
                   onChange={(event) => {
@@ -744,5 +746,8 @@ export const ServerSidePagination: Story = {
         </div>
       </DataGrid>
     )
+  },
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByRole('textbox', { name: 'Search novels' })).toBeVisible()
   }
 }

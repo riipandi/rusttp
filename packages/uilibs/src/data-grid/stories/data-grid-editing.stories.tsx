@@ -194,6 +194,7 @@ export const CrudFeatures: Story = {
                 <Search style={{ height: 16, width: 16 }} />
               </InputGroupAddon>
               <InputGroupInput
+                aria-label='Search novels'
                 placeholder='Search novels...'
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
@@ -229,6 +230,9 @@ export const CrudFeatures: Story = {
         </Card>
       </DataGrid>
     )
+  },
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByRole('textbox', { name: 'Search novels' })).toBeVisible()
   }
 }
 
