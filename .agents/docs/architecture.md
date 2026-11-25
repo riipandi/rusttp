@@ -139,11 +139,11 @@ Alternatives considered:
 
 ### The UI library composes through one control scale, shared recipes, and a failing a11y gate
 
-Context: `audit-00001-uilibs` found controls that did not compose (a `lg` Button above a 36 px Input), wrappers that rejected `ref`, controls that were not Field controls, token-level contrast failures, and 81 stories with real axe violations that a `todo` gate never failed.
+Context: `audit-00001-uilibs` found controls that did not compose (a `large` Button above a 36 px Input), wrappers that rejected `ref`, controls that were not Field controls, token-level contrast failures, and 81 stories with real axe violations that a `todo` gate never failed.
 
 Decision (2026-11-20, `plan-00001-uilibs-improvement`):
 
-- One `ControlSize` scale, `sm` 32 / `md` 36 / `lg` 40, default `md`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xs` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
+- One `ControlSize` scale, `small` 32 / `medium` 36 / `large` 40, default `medium`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xsmall` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
 - Two focus languages by kind: text entry takes the primary border and a 2px inset outline, press targets a 2px outside ring (an inset ring clips a short label, an outside ring collides with a field's neighbours). Disabled is one recipe, `opacity: 0.5` and the not-allowed cursor.
 - `borderControl`, a token at 3:1 or more on the page, on `backgroundNeutral` (including its hover surface), and on elevation surfaces in both themes (light L 0.58, dark L 0.64 since plan 00005), is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
 - Wrappers are typed `React.ComponentProps<…>` (React 19 `ref` as a prop); no `forwardRef`. Built-in strings are per-component `labels` props with English defaults; no locale context.
@@ -158,12 +158,12 @@ Decision (2026-11-20, `plan-00001-uilibs-improvement`):
 Consequences:
 
 - (positive) one place changes every control's height, focus, invalid, and disabled behavior; a mixed row is correct by construction and the composition story asserts equal heights; every story passes axe in light and dark; no dependency was added.
-- (negative) the defaults grew where the scale moved them (Toggle `md` 32 to 36, Menubar 32 to 36, OTP slot 32 to 36, the `lg` text controls take 16 px type); there is no backward compatibility, so a renamed prop was renamed in the webapp too; Base UI behavior the library works around (OTP's first-slot label, the Toast close button's `aria-hidden`, no accordion arrow keys) is pinned by stories, not by types.
+- (negative) the defaults grew where the scale moved them (Toggle `medium` 32 to 36, Menubar 32 to 36, OTP slot 32 to 36, the `large` text controls take 16 px type); there is no backward compatibility, so a renamed prop was renamed in the webapp too; Base UI behavior the library works around (OTP's first-slot label, the Toast close button's `aria-hidden`, no accordion arrow keys) is pinned by stories, not by types.
 
 Alternatives considered:
 
-- Drop Button `xs` and `lg` instead of scaling the controls — rejected: breaks toolbars and the webapp's `lg` buttons.
-- `xs` on every control — rejected: a 28 px text field is a cramped target.
+- Drop Button `xsmall` and `large` instead of scaling the controls — rejected: breaks toolbars and the webapp's `large` buttons.
+- `xsmall` on every control — rejected: a 28 px text field is a cramped target.
 - A `--control-height` variable or a `<Control>` wrapper component — rejected: the first hides the size from the type system, the second cannot wrap Base UI parts that each render their own element.
 - Raising `borderNeutral` globally — rejected: heavier cards, tables, and separators everywhere.
 - `forwardRef` wrappers — rejected: deprecated in React 19 and a second code path.
@@ -295,7 +295,7 @@ Decision (`plan-00009-uilibs-reshaped-props-docs`):
 - D3: `media` (Button) and `dark` (Tooltip) read the constants `colors.white` and `colors.black` and `color-mix`, so they look the same in both themes. Axe checks them on a black backdrop.
 - D4: a visual-only prop emits no new data attribute. `highlighted` holds the hover fill through StyleX and sets no `data-highlighted`, which Base UI menu items own.
 - D5: every default renders as before, proven per phase by a computed-style comparison of the touched components before and after (96, 86, 174, and 72 elements; the only difference was a Skeleton animation frame).
-- D6: value sets Reshaped does not fix: Toggle `selectedColor` adds `positive` and `warning` (not `media` or `inherit`, a pressed state must stay distinguishable); Toggle `selectedVariant` is `ghost | outline | solid`, unset follows `variant` with `outline` pressing to the `ghost` tint; Dialog `size` is `sm | md` (`lg` needs a container token, left to the owner); `blurredOverlay` blurs by `unit.x1`; Button `inherit` has no cut-out `solid` (a tint instead).
+- D6: value sets Reshaped does not fix: Toggle `selectedColor` adds `positive` and `warning` (not `media` or `inherit`, a pressed state must stay distinguishable); Toggle `selectedVariant` is `ghost | outline | solid`, unset follows `variant` with `outline` pressing to the `ghost` tint; Dialog `size` is `small | medium` (`large` needs a container token, left to the owner); `blurredOverlay` blurs by `unit.x1`; Button `inherit` has no cut-out `solid` (a tint instead).
 - D7 and D8: each component folder has `<name>.mdx`, a docs page (import, anatomy, examples through `Canvas`, API reference with props, data attributes, and caveats; two-column tables, because the owner found wide tables hard to read), attached to the stories with `<Meta of={Stories} />`; a prop change updates it in the same commit. The shape is in `frontend.md` ("UI library"). The name is `<name>.mdx`: Storybook 10 cannot index `<name>.stories.mdx` (addon-docs excludes it, `preset.js:865`), found in Phase 5.
 - Along the way the data grid's declared-but-unread props were settled (`issue-00004`): `DataGridContainer` `border` and `DataGridTableHeadRow` `rowId` (as `data-header-row-id`, because the cell logic reads `data-row-id`) were wired and covered by stories, and `sizesInfo`, `sizesLabel`, `sizesDescription`, `more`, and `pinnable` were removed.
 
@@ -307,7 +307,7 @@ Consequences:
 Alternatives considered:
 
 - Implementing Reshaped's full prop set — rejected: it would break Base UI's state and ARIA model.
-- Named steps (`sm | md | lg`) or free pixel values for `padding` and `bleed` — rejected: the first is further from Reshaped, the second escapes the token scale.
+- Named steps (`small | medium | large`) or free pixel values for `padding` and `bleed` — rejected: the first is further from Reshaped, the second escapes the token scale.
 - `<ArgTypes>`/`<Controls>` for the props page — rejected: react-docgen lists every inherited Base UI and DOM prop and buries the ones this library adds.
 - A usage section on each page — rejected: it repeats the stories.
 - `<name>.docs.mdx` — rejected: it needs the same glob change and gains nothing over `<name>.mdx`.

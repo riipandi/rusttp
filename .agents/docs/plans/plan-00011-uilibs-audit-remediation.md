@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-25T03:49:19+07:00
-updated: 2026-11-25T05:20:00+07:00
+updated: 2026-11-25T06:00:00+07:00
 phases:
     - { id: 1, title: "W1 Gate recipe and honest gate comments", status: committed, note: "d7a77fa: `just test-ui` added; 956 of 956; no 'CI keeps' left until phase 4 restored it" }
     - { id: 2, title: "W1 Deterministic flaky plays", status: committed, note: "4951f2b: cause: a play could run before the StyleX dev stylesheet (150 ms poll) reached the page, so it measured an unstyled page (26 vs 32 px); the preview's `beforeEach` now waits for the stylesheet and fonts; the `waitFor` patches in Table and Alert are gone; 20 of 20 isolated reruns and 5 of 5 full runs green" }
@@ -116,6 +116,7 @@ The owner (2026-11-24) asked to carry out every recommendation from the uilibs a
 - **D6 (2026-11-25): tokens and shared styles change serially, first.** Every component reads `src/styles/*`. Changing them while tracks edit components means typecheck breaks in files a track does not own. Wave 2 runs alone.
 - **D7 (2026-11-25): validation is scoped per phase and full per wave.** A track runs typecheck (whole package), lint and format on its own paths, and the story and unit tests of its own folders. The coordinator runs the full matrix once every track of a wave has committed. Rejected: the full gate per parallel phase — several Chromium runs at once overload the machine, and a full run fails on another track's half-done work.
 - **D8 (2026-11-25): items the report rejected stay out unless the owner says yes.** Q49 to Q59 and Q61 default to the report's call. Each "Yes" adds an optional phase (O1 to O10, listed after the phases), run as an extra track in wave 5.
+- **D9 (2026-11-25, owner; not a numbered phase, no questionnaire question): size names are spelled out.** Every size name in `uilibs` follows the `container` and `radius` pattern: `xsmall`, `small`, `medium`, `large`, `xlarge`, `xxlarge`. Breakpoints stay `small` (the base, no query), `medium`, `large`, `xlarge`. The rename covered `ControlSize` and `DenseControlSize`, the `controlSizes`, `glyphSize`, and `markSize` keys, every component's `size` values and the stylesheet keys behind them (Button, Toggle, Tabs, Input, Select, Combobox, Autocomplete, NumberField, OTPField, Textarea, InputGroup, InputPhone, Checkbox, Radio, Switch, Badge, Avatar, Card, Dialog, AlertDialog, Item, Progress, Meter, Spinner, Pagination, Menubar, ToggleGroup, `toggleSize`, `InputGroupButtonSize`, `buttonSquare`), `Text`'s responsive keys (`s`, `m`, `l`, `xl` became `small`, `medium`, `large`, `xlarge`), and every caller in stories, docs pages, and `packages/webapp`, in the same commits (no alias). Phase notes above this line keep the names of their day (`sm`, `md`, `xs`); phases below use the new names. `shadow`, `radius`, `container`, and `unit` already had full names or numeric steps; `packages/emails` is separate from `uilibs` and keeps its own `sm | md`. Rejected: leaving component-local unions abbreviated — `Button size='small'` beside `Card size='sm'` is the inconsistency the owner asked to remove.
 
 ## Execution rules
 
@@ -253,7 +254,7 @@ Each phase: what lands, the report items (R-) and findings it covers, the questi
 
 **Track B** (`extra/stack`, `extra/container` new)
 
-39. **Stack and Container** (R-23; Q40, Q41). `Stack` (`direction`, `gap` as `UnitStep`, `align`, `justify`, `wrap`, `render`, responsive `{ s, m, l, xl }` values on direction, gap, align, justify, compiled to static media styles) and `Container` (keyed to the `container` tokens), with pages and stories. Validation: a play at 390 and 1000 px asserts the computed direction and gap per breakpoint. _Commit: `feat(uilibs): add Stack and Container layout primitives`._
+39. **Stack and Container** (R-23; Q40, Q41). `Stack` (`direction`, `gap` as `UnitStep`, `align`, `justify`, `wrap`, `render`, responsive `{ small, medium, large, xlarge }` values on direction, gap, align, justify, compiled to static media styles) and `Container` (keyed to the `container` tokens), with pages and stories. Validation: a play at 390 and 1000 px asserts the computed direction and gap per breakpoint. _Commit: `feat(uilibs): add Stack and Container layout primitives`._
 
 **Track C** (`src/theme`)
 
@@ -316,7 +317,7 @@ Each phase: what lands, the report items (R-) and findings it covers, the questi
 | O5 ContentToggle | Q53 | `extra/content-toggle` | `feat(uilibs): add ContentToggle` |
 | O6 Stack `columns` grid mode | Q56 | `extra/stack` (after 39) | `feat(uilibs): add a columns mode to Stack` |
 | O7 Floating side Sheet | Q57 | `extra/sheet` | `feat(uilibs): add a floating sheet style` |
-| O8 Dialog `size='lg'` and its container token | Q61 | serial in W2 (token), then `base/dialog` | `feat(uilibs): add a large dialog size` |
+| O8 Dialog `size='large'` and its container token | Q61 | serial in W2 (token), then `base/dialog` | `feat(uilibs): add a large dialog size` |
 | O9 Reshaped headless layer, hooks, runtime theming | Q58 | needs its own plan; contradicts plan-00009 D1 | — |
 | O10 Responsive control props | Q59 | needs its own plan; contradicts plan-00009 D1 | — |
 
