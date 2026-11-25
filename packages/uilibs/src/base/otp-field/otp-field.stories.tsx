@@ -47,6 +47,8 @@ const styles = stylex.create({
 
 export default meta
 
+const valueOf = (slot: HTMLElement) => (slot instanceof HTMLInputElement ? slot.value : '')
+
 export const Playground: Story = {
   parameters: {
     controls: { disable: false, include: ['length', 'size', 'variant', 'mask', 'disabled'] }
@@ -77,6 +79,20 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<OTPField variant='faded' length={4} aria-label='Code faded'>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>`
+      }
+    }
+  },
   args: { length: 4 },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
@@ -96,6 +112,20 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<OTPField size='large' length={4} aria-label='Code large'>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>`
+      }
+    }
+  },
   args: { length: 4 },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
@@ -178,6 +208,22 @@ export const States: Story = {
 }
 
 export const Joined: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<OTPField length={6} aria-label='Verification code'>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>`
+      }
+    }
+  },
   name: 'Joined slots',
   args: { length: 6, 'aria-label': 'Verification code' },
   render: (args) => (
@@ -195,6 +241,27 @@ export const Joined: Story = {
 }
 
 export const Separator: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<OTPField length={8} aria-label='Verification code'>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+  <OTPFieldSeparator />
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>`
+      }
+    }
+  },
   args: { length: 8, 'aria-label': 'Verification code' },
   render: (args) => (
     <OTPField {...args}>
@@ -290,9 +357,34 @@ export const Keyboard: Story = {
     await expect(slots[0]).toHaveValue('1')
     await expect(slots[1]).toHaveValue('2')
     await expect(slots[2]).toHaveFocus()
+    // Home goes to the first slot, End to the slot after the last filled one.
+    await userEvent.keyboard('{Home}')
+    await expect(slots[0]).toHaveFocus()
+    await userEvent.keyboard('{End}')
+    await expect(slots[2]).toHaveFocus()
     await userEvent.keyboard('{Backspace}')
     await expect(slots[1]).toHaveValue('')
     await expect(slots[1]).toHaveFocus()
+
+    // Fill the rest, then move between the slots without editing them.
+    await userEvent.keyboard('234')
+    await expect(slots.map(valueOf)).toEqual(['1', '2', '3', '4'])
+    await expect(slots[3]).toHaveFocus()
+    await userEvent.keyboard('{ArrowLeft}')
+    await expect(slots[2]).toHaveFocus()
+    await userEvent.keyboard('{Home}')
+    await expect(slots[0]).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    await expect(slots[1]).toHaveFocus()
+    await userEvent.keyboard('{End}')
+    await expect(slots[3]).toHaveFocus()
+
+    // Delete clears the focused slot and Ctrl + Backspace clears them all, back to the first.
+    await userEvent.keyboard('{Delete}')
+    await expect(slots[3]).toHaveValue('')
+    await userEvent.keyboard('{Control>}{Backspace}{/Control}')
+    await expect(slots.map(valueOf)).toEqual(['', '', '', ''])
+    await expect(slots[0]).toHaveFocus()
   }
 }
 

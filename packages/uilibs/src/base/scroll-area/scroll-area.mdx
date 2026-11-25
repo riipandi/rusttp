@@ -34,6 +34,13 @@ Built on Base UI [Scroll Area](https://base-ui.com/react/components/scroll-area)
 
 <Canvas of={Stories.Displays} />
 
+## Accessibility
+
+The viewport of a `ScrollArea` is a tab stop while its content overflows, so a keyboard user can reach it and scroll with the browser's own keys; with nothing to scroll it is skipped. The `Keyboard` story proves the tab stop. It answers no keys of its own.
+
+- The scrollbars are drawn over the content and take no focus.
+- Keyboard behavior is Base UI's; see the Base UI [Scroll Area](https://base-ui.com/react/components/scroll-area) page for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ScrollArea` it lands on the root, not the viewport.
@@ -72,3 +79,9 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | CSS variable                                              | Description            |
 | --------------------------------------------------------- | ---------------------- |
 | `--scroll-area-thumb-width`, `--scroll-area-thumb-height` | The size of the thumb. |
+
+## Caveats
+
+- Give the root a size, such as a `height` or a `width` in `style`. The content scrolls only when it is larger than the root.
+- `style` lands on the root, not on the viewport that holds your content. Put padding and layout on an inner element, as the stories do.
+- Scrollbars are drawn over the content and shown by `scrollbarDisplay`. `hidden` removes the bar, not the scrolling.

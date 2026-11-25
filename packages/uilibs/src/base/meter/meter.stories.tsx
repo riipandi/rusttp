@@ -50,6 +50,16 @@ export const Playground: Story = {
 }
 
 export const CustomRange: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Meter value={72} min={30} max={90}>
+  <MeterLabel>Cryptex pressure</MeterLabel>
+  <MeterValue>{(_, value) => \`\${value} psi\`}</MeterValue>
+</Meter>`
+      }
+    }
+  },
   name: 'Custom range',
   args: { value: 72, min: 30, max: 90, locale: 'en-US' },
   render: (args) => (
@@ -78,6 +88,15 @@ const barParts = (canvasElement: HTMLElement, selector: string) => {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Meter value={60} color='positive' aria-label='Gauge positive' />
+<Meter value={60} color='warning' aria-label='Gauge warning' />
+<Meter value={60} color='critical' aria-label='Gauge critical' />`
+      }
+    }
+  },
   args: { value: 60 },
   render: () => (
     <Axis axis='color' rows={colorNames}>
@@ -94,6 +113,14 @@ export const Colors: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Meter value={60} size='small' aria-label='Gauge small' />
+<Meter value={60} size='medium' aria-label='Gauge medium' />`
+      }
+    }
+  },
   args: { value: 60 },
   render: () => (
     <Axis axis='size' rows={['small', 'medium'] as const}>

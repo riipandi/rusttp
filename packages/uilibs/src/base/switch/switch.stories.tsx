@@ -64,6 +64,20 @@ export const Playground: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label>
+  <Switch size='small' defaultChecked />
+  small
+</Label>
+<Label>
+  <Switch size='large' defaultChecked />
+  large
+</Label>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
@@ -83,6 +97,19 @@ export const Sizes: Story = {
 }
 
 export const Description: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Field orientation='horizontal'>
+  <FieldContent>
+    <FieldLabel htmlFor='marketing'>Owl post from Gringotts</FieldLabel>
+    <FieldDescription>Receive Daily Prophet updates about new vault services.</FieldDescription>
+  </FieldContent>
+  <Switch id='marketing' />
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Field orientation='horizontal'>
       <FieldContent>
@@ -97,6 +124,27 @@ export const Description: Story = {
 const states = ['off', 'on', 'disabled', 'invalid'] as const
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label>
+  <Switch aria-label='Invisibility Cloak on' defaultChecked />
+  Invisibility Cloak on
+</Label>
+<Label>
+  <Switch aria-label='Invisibility Cloak disabled' disabled />
+  Invisibility Cloak disabled
+</Label>
+<Field orientation='horizontal' invalid>
+  <FieldContent>
+    <FieldLabel htmlFor='two-factor'>Gringotts security charms</FieldLabel>
+    <FieldError>A security charm is required to enter your vault.</FieldError>
+  </FieldContent>
+  <Switch id='two-factor' />
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={states}>
       {(state) =>
@@ -137,5 +185,40 @@ export const States: Story = {
     await expect(disabled).toHaveAttribute('aria-checked', 'false')
 
     await expect(control('invalid')).toHaveAttribute('data-invalid')
+  }
+}
+
+/** Tab reaches a switch, Space and Enter flip it, and Tab skips a disabled switch. */
+export const Keyboard: Story = {
+  render: () => (
+    <>
+      <Label>
+        <Switch aria-label='Invisibility Cloak' /> Invisibility Cloak
+      </Label>
+      <Label>
+        <Switch disabled aria-label='Elder Wand' /> Elder Wand
+      </Label>
+      <Label>
+        <Switch aria-label='Resurrection Stone' /> Resurrection Stone
+      </Label>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const cloak = canvas.getByRole('switch', { name: /Invisibility Cloak/ })
+    const wand = canvas.getByRole('switch', { name: /Elder Wand/ })
+    const stone = canvas.getByRole('switch', { name: /Resurrection Stone/ })
+
+    await userEvent.tab()
+    await expect(cloak).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(cloak).toHaveAttribute('aria-checked', 'true')
+    await userEvent.keyboard('{Enter}')
+    await expect(cloak).toHaveAttribute('aria-checked', 'false')
+
+    await userEvent.tab()
+    await expect(wand).not.toHaveFocus()
+    await expect(stone).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(stone).toHaveAttribute('aria-checked', 'true')
   }
 }

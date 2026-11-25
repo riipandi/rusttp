@@ -47,6 +47,18 @@ export const Playground: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Avatar size='small'>
+  <AvatarFallback>HP</AvatarFallback>
+</Avatar>
+<Avatar size='large'>
+  <AvatarFallback>HP</AvatarFallback>
+</Avatar>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
@@ -83,6 +95,17 @@ export const Fallback: Story = {
 }
 
 export const Badge: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Avatar>
+  <AvatarImage src='https://github.com/madeui.png' alt='@luna.lovegood' />
+  <AvatarFallback>LL</AvatarFallback>
+  <AvatarBadge />
+</Avatar>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(atoms.display.flex, atoms.gap['24px'])}>
       <Avatar>
@@ -121,6 +144,23 @@ export const Group: Story = {
 }
 
 export const GroupCount: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AvatarGroup>
+  <Avatar>
+    <AvatarImage src='https://github.com/madeui.png' alt='@harry.potter' />
+    <AvatarFallback>HP</AvatarFallback>
+  </Avatar>
+  <Avatar>
+    <AvatarImage src='https://github.com/github.png' alt='@ron.weasley' />
+    <AvatarFallback>RW</AvatarFallback>
+  </Avatar>
+  <AvatarGroupCount>+3</AvatarGroupCount>
+</AvatarGroup>`
+      }
+    }
+  },
   render: () => (
     <AvatarGroup>
       <Avatar>
@@ -145,6 +185,18 @@ const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as 
 
 /** The fallback in every fill and role; the a11y gate checks the contrast of each pair. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Avatar variant='faded' color='primary'>
+  <AvatarFallback>HP</AvatarFallback>
+</Avatar>
+<Avatar variant='solid' color='critical'>
+  <AvatarFallback>HP</AvatarFallback>
+</Avatar>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={variantNames} columnAxis='color' columns={colorNames}>
       {(variant, color) => (
@@ -179,5 +231,24 @@ export const Squared: Story = {
     await expect(getComputedStyle(root).borderTopLeftRadius).toBe('8px')
     // The fallback follows the root's corners.
     await expect(getComputedStyle(canvas.getByText('HG')).borderTopLeftRadius).toBe('8px')
+  }
+}
+
+// A 1 x 1 GIF: it decodes at once, so the image loads on every engine without the network.
+const pixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+
+/** `alt` names the picture, and once it loads the fallback text steps aside. */
+export const Named: Story = {
+  render: () => (
+    <Avatar>
+      <AvatarImage src={pixel} alt='Hermione Granger' />
+      <AvatarFallback>HG</AvatarFallback>
+    </Avatar>
+  ),
+  play: async ({ canvas }) => {
+    await waitFor(() =>
+      expect(canvas.getByRole('img', { name: 'Hermione Granger' })).toBeInTheDocument()
+    )
+    await expect(canvas.queryByText('HG')).toBeNull()
   }
 }

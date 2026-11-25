@@ -105,6 +105,16 @@ const colorNames = [...roleNames, 'media', 'inherit'] as const
 
 /** The four fills at the default color. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant='solid'>Expelliarmus</Button>
+<Button variant='faded'>Expelliarmus</Button>
+<Button variant='outline'>Expelliarmus</Button>
+<Button variant='ghost'>Expelliarmus</Button>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={fillNames}>
       {(variant) => <Button variant={variant}>Expelliarmus</Button>}
@@ -127,6 +137,17 @@ export const Variants: Story = {
  * black backdrop and `inherit` in a parent with its own text color.
  */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant='solid' color='primary'>Obliviate</Button>
+<Button variant='solid' color='critical'>Obliviate</Button>
+<Button variant='outline' color='positive'>Obliviate</Button>
+<Button variant='faded' color='media'>Obliviate</Button>
+<Button variant='ghost' color='inherit'>Obliviate</Button>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={fillNames} columnAxis='color' columns={colorNames}>
       {(variant, color) => {
@@ -176,6 +197,16 @@ const sizeLabels = {
 } as const
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button size='xsmall' variant='outline' icon={Plus}>Fairy</Button>
+<Button size='small' variant='outline' icon={Plus}>House-elf</Button>
+<Button size='medium' variant='outline' icon={Plus}>Wizard</Button>
+<Button size='large' variant='outline' icon={Plus}>Giant</Button>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
@@ -196,6 +227,17 @@ export const Sizes: Story = {
  * `aria-label`. A button that holds a custom node, such as a page number, takes `buttonSquare`.
  */
 export const IconSizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `{/* No children: a square, named by aria-label */}
+<Button size='medium' variant='outline' icon={Plus} aria-label='Accio medium' />
+
+{/* A custom node: compose the square through style */}
+<Button size='medium' variant='outline' style={buttonSquare.medium}>7</Button>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
@@ -227,6 +269,16 @@ export const IconSizes: Story = {
 
 /** Press states that are visible without interaction. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant='faded'>Open the cryptex</Button>
+<Button variant='faded' highlighted>Marauder’s Map</Button>
+<Button variant='faded' disabled>Petrified</Button>
+<Button variant='faded' loading>Apparating…</Button>`
+      }
+    }
+  },
   render: (args) => (
     <Axis axis='state' rows={['default', 'highlighted', 'disabled', 'loading'] as const}>
       {(state) => (
@@ -352,6 +404,15 @@ const onLinkClick = fn()
 const onLinkRef = fn()
 
 export const AsLink: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant='outline' render={<a href='#docs' />}>Read the Daily Prophet</Button>
+<Button variant='ghost' size='small' aria-current='page' render={<a href='#overview' />}>Overview</Button>
+<Button icon={ArrowRight} aria-label='Next page' render={<a href='#next' />} />`
+      }
+    }
+  },
   name: 'as link',
   render: () => (
     <div {...stylex.props(styles.row)}>
@@ -407,6 +468,14 @@ const textLeft = (element: Element) => {
 // A ghost button's padding indents its label from the content edge; a negative margin of the same
 // size lines the label up with the text above it (the recipe `button.mdx` documents).
 export const Aligned: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<p>Cast the charm at the edge of the line.</p>
+<Button variant='ghost' style={…}>Cancel</Button>`
+      }
+    }
+  },
   render: () => (
     <div>
       <p {...stylex.props(styles.paragraph)}>Cast the charm at the edge of the line.</p>
@@ -432,6 +501,41 @@ export const StyleOverride: Story = {
       </Button>
     </div>
   )
+}
+
+/** Tab reaches a button, Enter and Space press it, Tab skips a disabled one, and a loading one stays focusable but ignores both keys. */
+export const Keyboard: Story = {
+  render: (args) => (
+    <div {...stylex.props(styles.row)}>
+      <Button onClick={args.onClick}>Open the cryptex</Button>
+      <Button disabled onClick={args.onClick}>
+        Petrified
+      </Button>
+      <Button loading onClick={args.onClick}>
+        Apparating…
+      </Button>
+    </div>
+  ),
+  play: async ({ args, canvas }) => {
+    const open = canvas.getByRole('button', { name: 'Open the cryptex' })
+    const petrified = canvas.getByRole('button', { name: 'Petrified' })
+    const apparating = canvas.getByRole('button', { name: 'Apparating…' })
+
+    await userEvent.tab()
+    await expect(open).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
+    await userEvent.keyboard(' ')
+    await expect(args.onClick).toHaveBeenCalledTimes(2)
+
+    // Tab skips the disabled button and lands on the loading one, which keeps its focus.
+    await userEvent.tab()
+    await expect(petrified).not.toHaveFocus()
+    await expect(apparating).toHaveFocus()
+    await userEvent.keyboard('{Enter}')
+    await userEvent.keyboard(' ')
+    await expect(args.onClick).toHaveBeenCalledTimes(2)
+  }
 }
 
 export const OnClick: StoryObj<{ handleClick: ReturnType<typeof fn> }> = {

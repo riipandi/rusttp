@@ -2,7 +2,7 @@ import { Bell as BellIcon, User } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import {
   cellOf,
   denseControlHeights,
@@ -10,6 +10,7 @@ import {
   expectControlHeights
 } from '../../contracts/control-sizes'
 import { expectHitArea } from '../../contracts/hit-area'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.component'
@@ -40,19 +41,32 @@ export default meta
 
 // The list's look is a `TabsList` prop; the orientation is the root's.
 type PlaygroundArgs = ComponentProps<typeof Tabs> &
-  Pick<ComponentProps<typeof TabsList>, 'variant' | 'size'>
+  Pick<ComponentProps<typeof TabsList>, 'variant' | 'size'> & { itemWidth?: 'auto' | 'equal' }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['orientation', 'variant', 'size'] } },
+  parameters: {
+    controls: { disable: false, include: ['orientation', 'variant', 'size', 'itemWidth'] }
+  },
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
     variant: { control: 'radio', options: ['pills', 'pills-raised', 'bordered', 'borderless'] },
-    size: { control: 'radio', options: Object.keys(tabsSizes) }
+    size: { control: 'radio', options: Object.keys(tabsSizes) },
+    itemWidth: { control: 'radio', options: ['auto', 'equal'] }
   },
-  args: { defaultValue: 'account', orientation: 'horizontal', variant: 'pills', size: 'medium' },
-  render: ({ variant, size, ...args }) => (
+  args: {
+    defaultValue: 'account',
+    orientation: 'horizontal',
+    variant: 'pills',
+    size: 'medium',
+    itemWidth: 'auto'
+  },
+  render: ({ variant, size, itemWidth, ...args }) => (
     <Tabs {...args} style={styles.tabs}>
-      <TabsList variant={variant} size={size}>
+      <TabsList
+        variant={variant}
+        size={size}
+        itemWidth={itemWidth === 'equal' ? 'equal' : undefined}
+      >
         <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
         <TabsTrigger value='password'>Vault Password</TabsTrigger>
       </TabsList>
@@ -79,6 +93,18 @@ const variantNames = ['pills', 'pills-raised', 'bordered', 'borderless'] as cons
 
 /** The four lists: a tinted pill list, the same lifted on the raised surface, an underline on a rail, and the underline alone. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Tabs defaultValue='overview'>
+  <TabsList variant='bordered' aria-label='Newspapers bordered'>
+    <TabsTrigger value='overview'>Daily Prophet</TabsTrigger>
+    <TabsTrigger value='analytics'>The Quibbler</TabsTrigger>
+  </TabsList>
+</Tabs>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={variantNames}>
       {(variant) => (
@@ -110,6 +136,18 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Tabs defaultValue='one'>
+  <TabsList size='small' variant='pills' aria-label='Subjects small pills'>
+    <TabsTrigger value='one'>Charms</TabsTrigger>
+    <TabsTrigger value='two'>Potions</TabsTrigger>
+  </TabsList>
+</Tabs>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames} columnAxis='variant' columns={variantNames}>
       {(size, variant) => (
@@ -136,6 +174,20 @@ export const Sizes: Story = {
 }
 
 export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Tabs defaultValue='profile' orientation='vertical'>
+  <TabsList aria-label='Prefect desk vertical'>
+    <TabsTrigger value='profile'>Prefect</TabsTrigger>
+    <TabsTrigger value='account'>Gringotts Vault</TabsTrigger>
+    <TabsTrigger value='notifications'>Owl Post</TabsTrigger>
+  </TabsList>
+  <TabsContent value='profile'>Update your name at Hogwarts.</TabsContent>
+</Tabs>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
       {(orientation) => (
@@ -215,6 +267,7 @@ export const Icons: Story = {
   )
 }
 
+/** Tab enters the list on the selected tab, the arrows move focus and Enter selects, Home and End jump, and Tab leaves for the panel. */
 export const Keyboard: Story = {
   args: { defaultValue: 'account' },
   render: (args) => (
@@ -237,20 +290,50 @@ export const Keyboard: Story = {
     // Tab enters the list on the selected tab; the arrow keys move focus along it.
     await userEvent.tab()
     await expect(account).toHaveFocus()
-    await userEvent.keyboard('{ArrowRight}')
-    await expect(password).toHaveFocus()
+    await pressUntil('{ArrowRight}', () => expect(password).toHaveFocus(), {
+      when: () => document.activeElement === account
+    })
     // Focus moves first; Enter selects.
+    await expect(password).toHaveAttribute('aria-selected', 'false')
     await userEvent.keyboard('{Enter}')
     await expect(password).toHaveAttribute('aria-selected', 'true')
-    await userEvent.keyboard('{End}')
-    await expect(keys).toHaveFocus()
-    await userEvent.keyboard('{Home}')
-    await expect(account).toHaveFocus()
+    await pressUntil('{End}', () => expect(keys).toHaveFocus())
+    await pressUntil('{Home}', () => expect(account).toHaveFocus())
+
+    // The list loops: ArrowLeft on the first tab goes to the last, ArrowRight comes back.
+    await pressUntil('{ArrowLeft}', () => expect(keys).toHaveFocus(), {
+      when: () => document.activeElement === account
+    })
+    await pressUntil('{ArrowRight}', () => expect(account).toHaveFocus(), {
+      when: () => document.activeElement === keys
+    })
+
+    // Space selects the focused tab too, and Tab leaves the list for the selected panel.
+    await pressUntil('{End}', () => expect(keys).toHaveFocus())
+    await userEvent.keyboard(' ')
+    await expect(keys).toHaveAttribute('aria-selected', 'true')
+    await userEvent.tab()
+    await expect(canvas.getByRole('tabpanel', { name: 'Vault Keys' })).toHaveFocus()
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(keys).toHaveFocus())
   }
 }
 
 /** `itemWidth='equal'`: the list spans its parent and every trigger takes an equal share of it. */
 export const Widths: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Tabs defaultValue='one'>
+  <TabsList itemWidth='equal' aria-label='Wizards equal'>
+    <TabsTrigger value='one'>Ron</TabsTrigger>
+    <TabsTrigger value='two'>Hermione</TabsTrigger>
+    <TabsTrigger value='three'>Dumbledore</TabsTrigger>
+  </TabsList>
+</Tabs>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='width' rows={['auto', 'equal'] as const} wide>
       {(width) => (

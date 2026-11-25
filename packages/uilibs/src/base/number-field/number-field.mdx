@@ -66,6 +66,22 @@ Most uses are `<NumberFieldGroup />` alone.
 
 <Canvas of={Stories.MinMaxStep} />
 
+## Accessibility
+
+`NumberFieldInput` is a `textbox` named by the `Label` or `FieldLabel` around it. The built-in steppers are `button`s named by `labels.increase` and `labels.decrease` (`Increase` and `Decrease`), and they stay out of the tab order. The `Keyboard` story walks the table below, and `States` checks the invalid and disabled markup.
+
+| Key                                    | Action                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`                | Moves focus to the input. The steppers are not tab stops.                 |
+| `ArrowUp`, `ArrowDown`                 | Raises or lowers the value by `step`. The value stops at `min` and `max`. |
+| `Shift + ArrowUp`, `Shift + ArrowDown` | Steps by ten.                                                             |
+| `Home` and `End`                       | Jumps to `min` and `max` when they are set.                               |
+| Characters                             | Typed into the input.                                                     |
+
+- An invalid number field inside a `Field` marks its input `aria-invalid='true'`.
+- Pass `labels` to `NumberFieldGroup` to name the steppers in another language.
+- Keyboard behavior is Base UI's; see the Base UI [Number Field](https://base-ui.com/react/components/number-field) page for the rest.
+
 ## API reference
 
 Every part except `NumberFieldScrubArea` and `NumberFieldScrubAreaCursor` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

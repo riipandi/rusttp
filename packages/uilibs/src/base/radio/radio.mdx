@@ -46,6 +46,19 @@ The label wraps the whole card, so clicking anywhere on it selects the option.
 
 <Canvas of={Stories.ChoiceCard} />
 
+## Accessibility
+
+`RadioGroup` is a `radiogroup`, and each `RadioGroupItem` is a `radio` with `aria-checked`. An item has no text, so its name comes from a wrapping `label`, a `FieldLabel`, or `aria-label`; name the group with `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled and invalid markup.
+
+| Key                       | Action                                                                    |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`   | Moves focus into the group, onto the checked option, and out of it.       |
+| `ArrowDown`, `ArrowRight` | Moves focus to the next option and selects it. It wraps at the end.       |
+| `ArrowUp`, `ArrowLeft`    | Moves focus to the previous option and selects it. It wraps at the start. |
+
+- A disabled group or item takes no key and cannot be selected.
+- Keyboard behavior is Base UI's; see the Base UI [Radio](https://base-ui.com/react/components/radio) and [Radio Group](https://base-ui.com/react/components/radio-group) pages for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

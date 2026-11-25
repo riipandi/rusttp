@@ -52,6 +52,16 @@ export const Playground: Story = {
 }
 
 export const Label: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={72}>
+  <ProgressLabel>Gringotts vault capacity used</ProgressLabel>
+  <ProgressValue />
+</Progress>`
+      }
+    }
+  },
   args: { value: 72, locale: 'en-US' },
   render: (args) => (
     <Progress {...args} style={styles.root}>
@@ -109,6 +119,15 @@ const barParts = (canvasElement: HTMLElement, selector: string) => {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={60} color='positive' aria-label='Brewing positive' />
+<Progress value={60} color='warning' aria-label='Brewing warning' />
+<Progress value={60} color='critical' aria-label='Brewing critical' />`
+      }
+    }
+  },
   args: { value: 60 },
   render: () => (
     <Axis axis='color' rows={colorNames}>
@@ -126,6 +145,14 @@ export const Colors: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={60} size='small' aria-label='Brewing small' />
+<Progress value={60} size='medium' aria-label='Brewing medium' />`
+      }
+    }
+  },
   args: { value: 60 },
   render: () => (
     <Axis axis='size' rows={['small', 'medium'] as const}>

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect } from 'storybook/test'
+import { expect, userEvent } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -94,10 +94,30 @@ export const Playground: Story = {
     await expect(separators.length).toBe(3)
     await expect(separators[0]).toHaveAttribute('aria-orientation', 'horizontal')
     await expect(separators[1]).toHaveAttribute('aria-orientation', 'vertical')
+    // A separator takes no focus and answers no keys.
+    await userEvent.tab()
+    await expect(document.body).toHaveFocus()
   }
 }
 
 export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div>
+  <span>Louvre</span>
+  <Separator />
+  <span>Vatican</span>
+</div>
+
+<div>
+  <span>Louvre</span>
+  <Separator orientation='vertical' />
+  <span>Vatican</span>
+</div>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
       {(orientation) =>
@@ -148,6 +168,14 @@ export const List: Story = {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Separator color='neutral-faded' />
+<Separator color='neutral' />`
+      }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={['neutral-faded', 'neutral'] as const}>
       {(color) => <Separator color={color} />}
@@ -164,6 +192,14 @@ export const Colors: Story = {
 }
 
 export const Inset: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Separator />
+<Separator inset />`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.insetBox)}>
       <Separator data-testid='full' />

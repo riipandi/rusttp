@@ -37,6 +37,19 @@ Built on Base UI [Input](https://base-ui.com/react/components/input). Props not 
 
 <Canvas of={Stories.States} />
 
+## Accessibility
+
+An `Input` is a native `input`, so it is a `textbox` that takes typing and the browser's own editing keys. Inside a `Field` its name and description come from the field; alone it needs a `label` or an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled and invalid markup.
+
+| Key                     | Action                                                 |
+| ----------------------- | ------------------------------------------------------ |
+| `Tab` and `Shift + Tab` | Moves focus to the input. A disabled input is skipped. |
+| Characters              | Typed into the input. A disabled input takes none.     |
+
+- `aria-invalid='true'` is set when a surrounding `Field` is `invalid`.
+- `faded`, `ghost` and `headless` have no edge at rest, so give them a visible label; every variant draws the focus ring.
+- Keyboard behavior is the browser's; see the Base UI [Input](https://base-ui.com/react/components/input) page for how it joins a `Field`.
+
 ## API reference
 
 `Input` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

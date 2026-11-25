@@ -5,7 +5,7 @@ import * as Stories from './toggle.stories'
 
 # Toggle
 
-A button that is pressed or unpressed.
+A button that is pressed or unpressed. Use Switch for an on and off setting that takes effect at once, and Checkbox for a choice that is submitted with a form.
 
 ## Import
 
@@ -40,6 +40,17 @@ Built on Base UI [Toggle](https://base-ui.com/react/components/toggle). Props no
 ### States
 
 <Canvas of={Stories.States} />
+
+## Accessibility
+
+A `Toggle` is a `button` with `aria-pressed`. A toggle with only an icon has no name, so give it an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the pressed and disabled markup.
+
+| Key                     | Action                                                   |
+| ----------------------- | -------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the toggle. A disabled toggle is skipped. |
+| `Space` or `Enter`      | Presses or releases the toggle.                          |
+
+- Keyboard behavior is Base UI's; see the Base UI [Toggle](https://base-ui.com/react/components/toggle) page for the rest.
 
 ## API reference
 

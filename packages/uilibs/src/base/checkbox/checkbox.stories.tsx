@@ -85,6 +85,23 @@ export const Description: Story = {
 }
 
 export const Group: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<CheckboxGroup defaultValue={['newsletter']} aria-label='Owl post preferences'>
+  <Label>
+    <Checkbox name='newsletter' /> Daily Prophet
+  </Label>
+  <Label>
+    <Checkbox name='product-updates' /> Ministry memos
+  </Label>
+  <Label>
+    <Checkbox name='promotions' /> Weasleys' Wizard Wheezes deals
+  </Label>
+</CheckboxGroup>`
+      }
+    }
+  },
   render: () => (
     <CheckboxGroup defaultValue={['newsletter']} aria-label='Owl post preferences'>
       <Label>
@@ -101,6 +118,29 @@ export const Group: Story = {
 }
 
 export const GroupWithParent: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<CheckboxGroup
+  value={value}
+  onValueChange={setValue}
+  allValues={['comments', 'mentions', 'follows']}
+  aria-label='Owl post preferences'
+>
+  <Label>
+    <Checkbox parent /> All owl post
+  </Label>
+  <Label style={…}>
+    <Checkbox name='comments' /> Howlers
+  </Label>
+  <Label style={…}>
+    <Checkbox name='mentions' /> Prophet mentions
+  </Label>
+  …
+</CheckboxGroup>`
+      }
+    }
+  },
   name: 'Group with parent',
   render: () => {
     const [value, setValue] = React.useState<string[]>(['comments'])
@@ -214,6 +254,20 @@ export const GroupParentPlay: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label>
+  <Checkbox size='small' defaultChecked aria-label='House-elf small' />
+  small
+</Label>
+<Label>
+  <Checkbox size='large' defaultChecked aria-label='House-elf large' />
+  large
+</Label>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => (
@@ -235,6 +289,27 @@ export const Sizes: Story = {
 const states = ['unchecked', 'checked', 'indeterminate', 'disabled', 'invalid'] as const
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label>
+  <Checkbox indeterminate aria-label='Select all Marauders' />
+  Select all Marauders
+</Label>
+<Label>
+  <Checkbox disabled defaultChecked aria-label='Select all Marauders disabled' />
+  Select all Marauders disabled
+</Label>
+<Field orientation='horizontal' invalid>
+  <Checkbox id='terms' />
+  <FieldContent>
+    <FieldLabel htmlFor='terms'>Accept the Hogwarts school rules</FieldLabel>
+    <FieldError>You must accept the school rules before the Sorting begins.</FieldError>
+  </FieldContent>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={states}>
       {(state) =>
@@ -279,5 +354,44 @@ export const States: Story = {
     await expect(disabled).toHaveAttribute('aria-checked', 'true')
 
     await expect(box('invalid')).toHaveAttribute('data-invalid')
+  }
+}
+
+/** Tab reaches a checkbox, Space toggles it, Enter does not, and Tab skips a disabled one. */
+export const Keyboard: Story = {
+  render: () => (
+    <>
+      <Label>
+        <Checkbox aria-label='Accept the Hogwarts letter' /> Accept the Hogwarts letter
+      </Label>
+      <Label>
+        <Checkbox disabled aria-label='Join the Death Eaters' /> Join the Death Eaters
+      </Label>
+      <Label>
+        <Checkbox aria-label='Subscribe to the Quibbler' /> Subscribe to the Quibbler
+      </Label>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const letter = canvas.getByRole('checkbox', { name: /Accept the Hogwarts letter/ })
+    const disabled = canvas.getByRole('checkbox', { name: /Join the Death Eaters/ })
+    const quibbler = canvas.getByRole('checkbox', { name: /Subscribe to the Quibbler/ })
+
+    await userEvent.tab()
+    await expect(letter).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(letter).toHaveAttribute('aria-checked', 'true')
+    await userEvent.keyboard(' ')
+    await expect(letter).toHaveAttribute('aria-checked', 'false')
+    // Enter does not toggle a checkbox.
+    await userEvent.keyboard('{Enter}')
+    await expect(letter).toHaveAttribute('aria-checked', 'false')
+
+    // Tab skips the disabled checkbox.
+    await userEvent.tab()
+    await expect(disabled).not.toHaveFocus()
+    await expect(quibbler).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(quibbler).toHaveAttribute('aria-checked', 'true')
   }
 }

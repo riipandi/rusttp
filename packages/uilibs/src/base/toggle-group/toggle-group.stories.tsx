@@ -8,7 +8,9 @@ import {
   expectControlHeights,
   expectDisabledLook
 } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
+import { Button } from '../button'
 import { toggleSizes } from '../toggle/toggle.stylex'
 import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
@@ -111,6 +113,20 @@ export const Sizes: Story = {
 }
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToggleGroup variant='outline' selectedColor='primary' defaultValue={['left']}>
+  <ToggleGroupItem value='left' aria-label='Left outline'>
+    <AlignLeft size={16} />
+  </ToggleGroupItem>
+  <ToggleGroupItem value='center' aria-label='Center outline'>
+    <AlignCenter size={16} />
+  </ToggleGroupItem>
+</ToggleGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={['ghost', 'outline', 'solid'] as const}>
       {(variant) => (
@@ -139,6 +155,20 @@ const colorNames = ['neutral', 'primary', 'critical', 'positive', 'warning'] as 
 
 /** `selectedVariant` and `selectedColor` reach every item through the group; the a11y gate checks each pair. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToggleGroup selectedVariant='solid' selectedColor='critical' spacing='joined' defaultValue={['left']}>
+  <ToggleGroupItem value='left' aria-label='Left solid critical'>
+    <AlignLeft size={16} />
+  </ToggleGroupItem>
+  <ToggleGroupItem value='center' aria-label='Center solid critical'>
+    <AlignCenter size={16} />
+  </ToggleGroupItem>
+</ToggleGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis
       axis='selected'
@@ -186,6 +216,17 @@ export const Colors: Story = {
 const items = (root: HTMLElement) => Array.from(root.querySelectorAll('button'))
 
 export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToggleGroup orientation='vertical' variant='outline' spacing='joined' defaultValue={['center']}>
+  <ToggleGroupItem value='start' aria-label='Align start vertical'>Start</ToggleGroupItem>
+  <ToggleGroupItem value='center' aria-label='Align center vertical'>Center</ToggleGroupItem>
+  <ToggleGroupItem value='end' aria-label='Align end vertical'>End</ToggleGroupItem>
+</ToggleGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
       {(orientation) => (
@@ -224,6 +265,20 @@ export const Orientations: Story = {
 }
 
 export const Spacings: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToggleGroup spacing='joined' variant='outline' defaultValue={['left']}>
+  <ToggleGroupItem value='left' aria-label='Left joined'>
+    <AlignLeft size={16} />
+  </ToggleGroupItem>
+  <ToggleGroupItem value='center' aria-label='Center joined'>
+    <AlignCenter size={16} />
+  </ToggleGroupItem>
+</ToggleGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='spacing' rows={['gap', 'joined'] as const}>
       {(spacing) => (
@@ -282,5 +337,47 @@ export const States: Story = {
     for (const item of items(cellOf(canvasElement, 'state', 'default'))) {
       await expect(item).not.toBeDisabled()
     }
+  }
+}
+
+/** Tab enters the group in one stop, the arrows move focus along it, and Space or Enter presses the focused item. */
+export const Keyboard: Story = {
+  args: { defaultValue: ['bold'], multiple: false },
+  render: (args) => (
+    <>
+      <ToggleGroup {...args} variant='outline' aria-label='Charms'>
+        <ToggleGroupItem value='bold'>Charm</ToggleGroupItem>
+        <ToggleGroupItem value='italic'>Hex</ToggleGroupItem>
+        <ToggleGroupItem value='underline'>Jinx</ToggleGroupItem>
+      </ToggleGroup>
+      <Button size='small'>Cast</Button>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const charm = canvas.getByRole('button', { name: 'Charm' })
+    const hex = canvas.getByRole('button', { name: 'Hex' })
+    const jinx = canvas.getByRole('button', { name: 'Jinx' })
+    const after = canvas.getByRole('button', { name: 'Cast' })
+
+    // The group is one tab stop, on the first item.
+    await userEvent.tab()
+    await expect(charm).toHaveFocus()
+    await pressUntil('{ArrowRight}', () => expect(hex).toHaveFocus(), {
+      when: () => document.activeElement === charm
+    })
+    // Moving focus does not press; Space does, and releases the item that was pressed.
+    await expect(hex).not.toHaveAttribute('data-pressed')
+    await userEvent.keyboard(' ')
+    await expect(hex).toHaveAttribute('data-pressed')
+    await expect(charm).not.toHaveAttribute('data-pressed')
+
+    await pressUntil('{End}', () => expect(jinx).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await expect(jinx).toHaveAttribute('data-pressed')
+    await pressUntil('{Home}', () => expect(charm).toHaveFocus())
+
+    // Tab leaves the group in one press.
+    await userEvent.tab()
+    await expect(after).toHaveFocus()
   }
 }

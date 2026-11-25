@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, waitFor } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
@@ -105,6 +105,15 @@ const orientations = ['vertical', 'horizontal', 'both'] as const
 
 /** One scrollbar per axis, and a corner where two meet; `both` scrolls on both axes. */
 export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ScrollArea orientation='both' style={…}>
+  <div>…</div>
+</ScrollArea>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='orientation' rows={orientations} wide>
       {(orientation) => (
@@ -154,6 +163,18 @@ const displays = ['hover', 'scroll', 'visible', 'hidden'] as const
 
 /** When the bar shows: while hovering or scrolling (default), only while scrolling, always, or never. */
 export const Displays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ScrollArea scrollbarDisplay='visible' style={…}>
+  <div>
+    <div>Daily Prophet edition 50</div>
+    …
+  </div>
+</ScrollArea>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='display' rows={displays}>
       {(display) => (
@@ -180,5 +201,47 @@ export const Displays: Story = {
     await expect(opacity('hidden')).toBe('0')
     await expect(opacity('hover')).toBe('0')
     await expect(opacity('scroll')).toBe('0')
+  }
+}
+
+/** The viewport is a tab stop only while its content overflows, so a keyboard user can reach it to scroll. */
+export const Keyboard: Story = {
+  render: () => (
+    <>
+      <ScrollArea style={styles.box} data-testid='long'>
+        <div {...stylex.props(styles.inner)}>
+          {tags.slice(0, 20).map((tag) => (
+            <div key={tag} {...stylex.props(styles.tag)}>
+              {tag}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      <ScrollArea style={styles.box} data-testid='short'>
+        <div {...stylex.props(styles.inner)}>
+          <div {...stylex.props(styles.tag)}>Daily Prophet edition 1</div>
+        </div>
+      </ScrollArea>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const viewportOf = (testId: string) => {
+      const viewport = Array.from(canvas.getByTestId(testId).querySelectorAll('*')).find(
+        (el) => el.getAttribute('tabindex') !== null
+      )
+      if (!viewport) throw new Error(`No viewport in ${testId}`)
+      return viewport
+    }
+    const long = viewportOf('long')
+    const short = viewportOf('short')
+    await waitFor(() => expect(long).toHaveAttribute('tabindex', '0'))
+    await expect(long.scrollHeight).toBeGreaterThan(long.clientHeight)
+    await expect(short).toHaveAttribute('tabindex', '-1')
+
+    // Tab lands on the overflowing viewport, and the next Tab skips the one with nothing to scroll.
+    await userEvent.tab()
+    await expect(long).toHaveFocus()
+    await userEvent.tab()
+    await expect(short).not.toHaveFocus()
   }
 }

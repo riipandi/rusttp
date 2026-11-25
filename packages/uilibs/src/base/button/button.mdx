@@ -71,6 +71,20 @@ const styles = stylex.create({ aligned: { marginInlineStart: `calc(-1 * ${unit.x
 
 <Canvas of={Stories.Aligned} />
 
+## Accessibility
+
+A `Button` is a `button`, named by its text; an icon-only one is named by `aria-label`. The `Keyboard` story walks the table below, and the `States` and `Icons` stories check the names.
+
+| Key                     | Action                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the button. A disabled button is skipped; a loading one keeps its focus. |
+| `Enter` or `Space`      | Presses the button. A loading button ignores both.                                      |
+
+- A button with no children has no text, so it needs an `aria-label`. The glyphs given as `icon` and `endIcon` are hidden from assistive technology.
+- While `loading`, the button is `aria-busy` and keeps its name; the spinner adds no second announcement.
+- With `render`, the element keeps its own role and keys: a link is announced as a link, as the `As a link` example shows.
+- Keyboard behavior is Base UI's; see the Base UI [Button](https://base-ui.com/react/components/button) page for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

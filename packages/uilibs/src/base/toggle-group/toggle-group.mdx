@@ -44,6 +44,19 @@ Built on Base UI [Toggle Group](https://base-ui.com/react/components/toggle-grou
 
 <Canvas of={Stories.Orientations} />
 
+## Accessibility
+
+`ToggleGroup` is a `group` (name it with `aria-label`) and each `ToggleGroupItem` is a `button` with `aria-pressed`. An item with only an icon needs an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled markup.
+
+| Key                       | Action                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab`   | Moves focus into the group, on one item, and out of it in one press.                 |
+| `ArrowRight`, `ArrowLeft` | Moves focus to the next or previous item without pressing it.                        |
+| `Home`, `End`             | Moves focus to the first or last item.                                               |
+| `Space` or `Enter`        | Presses the focused item. Without `multiple`, the item that was pressed is released. |
+
+- Keyboard behavior is Base UI's; see the Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group) page for the rest.
+
 ## API reference
 
 Both parts also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

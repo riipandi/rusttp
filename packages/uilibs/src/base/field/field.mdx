@@ -75,6 +75,17 @@ Built on Base UI [Field](https://base-ui.com/react/components/field) and [Fields
 
 <Canvas of={Stories.States} />
 
+## Accessibility
+
+A `Field` names and describes the control inside it, so the control is a `textbox` (or `checkbox`, `switch`) named by `FieldLabel` and described by `FieldDescription` and `FieldError`. The `auto wiring`, `ExternalErrors`, and `States` stories prove each link, and the a11y check runs on every example.
+
+- `FieldLabel` is the control's accessible name; `FieldDescription` and a shown `FieldError` join its accessible description (`aria-describedby`).
+- `FieldError` with `errors` renders as `role='alert'` and is listed in the input's `aria-describedby`, so it is announced and read with the control.
+- `invalid` marks the control `aria-invalid='true'`.
+- A `FieldSet` is a `group` named by its `FieldLegend`.
+- A disabled `Field` draws its control with the disabled tokens, the same as a control disabled alone (the `Disabled` story).
+- Keyboard behavior belongs to the control inside; see the Base UI [Field](https://base-ui.com/react/components/field) and [Fieldset](https://base-ui.com/react/components/fieldset) pages for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

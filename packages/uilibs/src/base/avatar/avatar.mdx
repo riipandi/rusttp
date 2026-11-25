@@ -62,6 +62,13 @@ Each fill in each role. The color tints the fallback only.
 
 <Canvas of={Stories.GroupCount} />
 
+## Accessibility
+
+An avatar is not focusable and answers no keys. Its picture is named by the `alt` of `AvatarImage`, and its fallback is plain text. The `Named` and `Fallback` stories prove both.
+
+- Give `AvatarImage` an `alt` that is the person's or entity's name: it is the picture's accessible name.
+- `AvatarFallback` is text in the page, so a screen reader reads the initials as they are written. While the image loads or after it fails, the fallback is what the user gets; once the image loads, the fallback leaves the page.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

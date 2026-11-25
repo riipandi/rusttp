@@ -42,6 +42,18 @@ Built on Base UI [Collapsible](https://base-ui.com/react/components/collapsible)
 
 <Canvas of={Stories.FileTree} />
 
+## Accessibility
+
+`CollapsibleTrigger` is a `button` whose `aria-expanded` tells whether the panel is open, and `aria-controls` points at the panel. It is named by its own text, or by `aria-label` when it holds only an icon. The `Keyboard` story walks the table below.
+
+| Key                     | Action                                                     |
+| ----------------------- | ---------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the trigger. A disabled trigger is skipped. |
+| `Enter` or `Space`      | Opens a closed panel and closes an open one.               |
+
+- The `Playground` story shows that `aria-controls` names the panel.
+- Keyboard behavior is Base UI's; see the Base UI [Collapsible](https://base-ui.com/react/components/collapsible) page for the rest.
+
 ## API reference
 
 Only `CollapsibleContent` takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). `Collapsible` and `CollapsibleTrigger` are the Base UI parts unchanged. No part adds props.

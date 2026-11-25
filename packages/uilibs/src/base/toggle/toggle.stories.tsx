@@ -71,6 +71,15 @@ const colorNames = ['neutral', 'primary', 'critical', 'positive', 'warning'] as 
  * decides how a toggle looks once pressed, whatever it looks like at rest.
  */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Toggle variant='outline' selectedVariant='solid' selectedColor='primary' defaultPressed aria-label='Charm outline solid'>
+  Charm
+</Toggle>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={variantNames} columnAxis='selected' columns={selectedNames}>
       {(variant, selected) => (
@@ -118,6 +127,15 @@ export const Variants: Story = {
 
 /** The pressed state in every color of every fill; the a11y gate checks the contrast of each. */
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Toggle selectedVariant='solid' selectedColor='critical' defaultPressed aria-label='Pressed solid critical'>
+  critical
+</Toggle>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='selected' rows={variantNames} columnAxis='color' columns={colorNames}>
       {(selected, color) => (
@@ -149,6 +167,15 @@ export const Colors: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Toggle aria-label='Toggle charm default'>Charm</Toggle>
+<Toggle defaultPressed aria-label='Toggle charm pressed'>Charm</Toggle>
+<Toggle disabled aria-label='Toggle charm disabled'>Charm</Toggle>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'pressed', 'disabled'] as const}>
       {(state) => (
@@ -190,6 +217,14 @@ export const WithText: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Toggle size='small' aria-label='Toggle charm small'>Charm</Toggle>
+<Toggle size='large' aria-label='Toggle charm large'>Charm</Toggle>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={denseControlSizeNames}>
       {(size) => (
@@ -202,21 +237,38 @@ export const Sizes: Story = {
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
 }
 
+/** Tab reaches a toggle, Space and Enter press it, and Tab skips a disabled one. */
 export const Keyboard: Story = {
   render: () => (
-    <Toggle aria-label='Toggle hex'>
-      <Bold {...stylex.props(styles.icon)} />
-    </Toggle>
+    <>
+      <Toggle aria-label='Toggle hex'>
+        <Bold {...stylex.props(styles.icon)} />
+      </Toggle>
+      <Toggle disabled aria-label='Toggle jinx'>
+        <Italic {...stylex.props(styles.icon)} />
+      </Toggle>
+      <Toggle aria-label='Toggle charm'>
+        <Bold {...stylex.props(styles.icon)} />
+      </Toggle>
+    </>
   ),
   play: async ({ canvas }) => {
-    const el = canvas.getByRole('button', { name: 'Toggle hex' })
+    const hex = canvas.getByRole('button', { name: 'Toggle hex' })
+    const jinx = canvas.getByRole('button', { name: 'Toggle jinx' })
+    const charm = canvas.getByRole('button', { name: 'Toggle charm' })
 
-    // Tab reaches it; Space and Enter both press it.
     await userEvent.tab()
-    await expect(el).toHaveFocus()
+    await expect(hex).toHaveFocus()
     await userEvent.keyboard(' ')
-    await expect(el).toHaveAttribute('aria-pressed', 'true')
+    await expect(hex).toHaveAttribute('aria-pressed', 'true')
     await userEvent.keyboard('{Enter}')
-    await expect(el).toHaveAttribute('aria-pressed', 'false')
+    await expect(hex).toHaveAttribute('aria-pressed', 'false')
+
+    // Tab skips the disabled toggle.
+    await userEvent.tab()
+    await expect(jinx).not.toHaveFocus()
+    await expect(charm).toHaveFocus()
+    await userEvent.keyboard(' ')
+    await expect(charm).toHaveAttribute('aria-pressed', 'true')
   }
 }

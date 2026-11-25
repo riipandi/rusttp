@@ -37,6 +37,18 @@ Built on Base UI [Switch](https://base-ui.com/react/components/switch). Props no
 
 <Canvas of={Stories.Description} />
 
+## Accessibility
+
+A `Switch` is a `switch` that reports `aria-checked`. It has no text, so its name comes from a wrapping `Label`, a `FieldLabel`, or `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled and invalid markup.
+
+| Key                     | Action                                                   |
+| ----------------------- | -------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the switch. A disabled switch is skipped. |
+| `Space` or `Enter`      | Flips the switch.                                        |
+
+- An invalid switch inside a `Field` is marked `data-invalid`; show the reason with `FieldError`.
+- Keyboard behavior is Base UI's; see the Base UI [Switch](https://base-ui.com/react/components/switch) page for the rest.
+
 ## API reference
 
 `Switch` also takes `style`: StyleX styles that replace `className` and `style`. It lands on the track. See [Styling](?path=/docs/styling--docs).

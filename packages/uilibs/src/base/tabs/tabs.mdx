@@ -49,6 +49,21 @@ Built on Base UI [Tabs](https://base-ui.com/react/components/tabs). Props not li
 
 <Canvas of={Stories.Widths} />
 
+## Accessibility
+
+`TabsList` is a `tablist` (name it with `aria-label`), each `TabsTrigger` is a `tab` named by its text, and each `TabsContent` is a `tabpanel` named by its tab. The `Keyboard` story walks the table below.
+
+| Key                       | Action                                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`   | Enters the list on the selected tab, and leaves it for the selected panel. `Shift + Tab` goes back. |
+| `ArrowRight`, `ArrowLeft` | Moves focus to the next or previous tab. The list loops.                                            |
+| `Home`, `End`             | Moves focus to the first or last tab.                                                               |
+| `Enter` or `Space`        | Selects the focused tab. Moving focus does not select it.                                           |
+
+- `TabsContent` is a tab stop and draws the focus ring.
+- A disabled tab cannot be selected; the `States` story proves a press does nothing.
+- Keyboard behavior is Base UI's; see the Base UI [Tabs](https://base-ui.com/react/components/tabs) page for `activateOnFocus` and the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

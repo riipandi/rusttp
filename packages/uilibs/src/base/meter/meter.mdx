@@ -5,7 +5,7 @@ import * as Stories from './meter.stories'
 
 # Meter
 
-A bar that shows a numeric value within a known range, such as disk space used.
+A bar that shows a numeric value within a known range, such as disk space used. Use Progress instead for a task that moves toward done.
 
 ## Import
 
@@ -43,6 +43,14 @@ Built on Base UI [Meter](https://base-ui.com/react/components/meter). Props not 
 ### Sizes
 
 <Canvas of={Stories.Sizes} />
+
+## Accessibility
+
+The root is a `meter` named by `MeterLabel`, or by `aria-label` when there is no label, and it reports `aria-valuenow`, `aria-valuemin` and `aria-valuemax`. It is not interactive and answers no keys. The `Playground` and `Custom range` stories assert the role, the name and the values; `Colors` and `Sizes` name each meter with `aria-label`, and the a11y check runs on both.
+
+- Without a `MeterLabel`, set `aria-label`.
+- Color alone carries no meaning, so pair a non-neutral `color` with a label.
+- See the Base UI [Meter](https://base-ui.com/react/components/meter) page for the rest.
 
 ## API reference
 

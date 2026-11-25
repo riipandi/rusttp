@@ -52,6 +52,24 @@ Built on Base UI [OTP Field](https://base-ui.com/react/components/otp-field). Pr
 
 <Canvas of={Stories.Separator} />
 
+## Accessibility
+
+Every slot is a `textbox`. The first takes the name of the field (`aria-label`, `aria-labelledby`, or a `FieldLabel`) and the others are named `Character n of N`; the `Named by aria-label` and `States` stories assert both. The `Keyboard` story walks the table below.
+
+| Key                       | Action                                                                   |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab`   | Moves focus into the first slot.                                         |
+| Characters                | Fills the focused slot and moves focus to the next one.                  |
+| `Backspace`               | Clears the previous character and moves focus back one slot.             |
+| `Delete`                  | Clears the focused slot.                                                 |
+| `Ctrl + Backspace`        | Clears every slot and returns focus to the first.                        |
+| `ArrowLeft`, `ArrowRight` | Moves focus to the previous or next slot without editing.                |
+| `Home`, `End`             | Moves focus to the first slot, or to the slot after the last filled one. |
+
+- A disabled field takes no characters: every slot is disabled.
+- Pass `labels` to name the slots in another language.
+- Keyboard behavior is Base UI's; see the Base UI [OTP Field](https://base-ui.com/react/components/otp-field) page for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).

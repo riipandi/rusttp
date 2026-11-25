@@ -53,6 +53,20 @@ Built on Base UI [Toolbar](https://base-ui.com/react/components/toolbar). Props 
 
 <Canvas of={Stories.WithToggleGroup} />
 
+## Accessibility
+
+`Toolbar` is a `toolbar`: name it with `aria-label`. Its buttons, toggles, links, and inputs are one tab stop and move with the arrow keys. A toggle or toggle group item with only an icon needs an `aria-label`. The `Keyboard` story walks the table below.
+
+| Key                       | Action                                                                 |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`   | Moves focus into the toolbar, on one item, and out of it in one press. |
+| `ArrowRight`, `ArrowLeft` | Moves focus to the next or previous item. The row loops at the ends.   |
+| `Home`, `End`             | Do nothing: the toolbar does not handle them.                          |
+| `Space` or `Enter`        | Presses the focused item.                                              |
+
+- Use an input sparingly: the left and right arrows also move the text cursor, so Base UI documents that a horizontal toolbar with an input needs care.
+- Keyboard behavior is Base UI's; see the Base UI [Toolbar](https://base-ui.com/react/components/toolbar) page for the rest.
+
 ## API reference
 
 `Toolbar`, `ToolbarGroup`, and `ToolbarSeparator` also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` are the Base UI parts unchanged. No part adds props.

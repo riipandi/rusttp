@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion.component'
 
@@ -14,6 +15,8 @@ const meta = {
 type Story = StoryObj<typeof meta>
 
 export default meta
+
+const isOpen = (trigger: HTMLElement) => trigger.getAttribute('aria-expanded') === 'true'
 
 type PlaygroundArgs = ComponentProps<typeof Accordion> &
   Pick<ComponentProps<typeof AccordionTrigger>, 'iconPosition'>
@@ -60,6 +63,22 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger>Available vault</AccordionTrigger>
+    <AccordionContent>This vault can be selected and configured.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value='item-2' disabled>
+    <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+    <AccordionContent>Contact the Department of Mysteries to unlock this vault.</AccordionContent>
+  </AccordionItem>
+</Accordion>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled'] as const}>
       {(state) => (
@@ -105,6 +124,18 @@ export const States: Story = {
 
 /** The chevron before or after the label; only the look moves, so the keyboard works the same. */
 export const IconPositions: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger iconPosition='start'>Chamber of Secrets start</AccordionTrigger>
+    <AccordionContent>Only the heir of Slytherin may open it.</AccordionContent>
+  </AccordionItem>
+</Accordion>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='icon' rows={['end', 'start'] as const}>
       {(position) => (
@@ -153,6 +184,23 @@ export const IconPositions: Story = {
 }
 
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion multiple defaultValue={['item-1', 'item-2']}>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger>Can I unlock more than one chamber?</AccordionTrigger>
+    <AccordionContent>Yes. Pass \`multiple\` to keep several chambers open at once.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value='item-2'>
+    <AccordionTrigger>Is each horcrux tracked separately?</AccordionTrigger>
+    <AccordionContent>Yes. Each fragment keeps its own state.</AccordionContent>
+  </AccordionItem>
+  …
+</Accordion>`
+      }
+    }
+  },
   args: { multiple: true, defaultValue: ['item-1', 'item-2'] },
   render: (args) => (
     <Accordion {...args}>
@@ -259,6 +307,7 @@ export const MultiplePlay: Story = {
   }
 }
 
+/** Tab walks the triggers, Enter and Space open and close a panel, and the arrow keys leave focus where it is. */
 export const Keyboard: Story = {
   args: { multiple: false },
   render: (args) => (
@@ -267,7 +316,11 @@ export const Keyboard: Story = {
         <AccordionTrigger>Is the vault accessible?</AccordionTrigger>
         <AccordionContent>Yes, with a spoken Alohomora.</AccordionContent>
       </AccordionItem>
-      <AccordionItem value='item-2'>
+      <AccordionItem value='item-2' disabled>
+        <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+        <AccordionContent>Contact the Department of Mysteries.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value='item-3'>
         <AccordionTrigger>Is it enchanted?</AccordionTrigger>
         <AccordionContent>Yes, with the default charms.</AccordionContent>
       </AccordionItem>
@@ -275,20 +328,36 @@ export const Keyboard: Story = {
   ),
   play: async ({ canvas }) => {
     const first = canvas.getByRole('button', { name: 'Is the vault accessible?' })
-    const second = canvas.getByRole('button', { name: 'Is it enchanted?' })
+    const restricted = canvas.getByRole('button', { name: 'Ministry vault (restricted)' })
+    const third = canvas.getByRole('button', { name: 'Is it enchanted?' })
 
-    // Tab lands on the first trigger; Enter opens it, Space closes it.
+    // Tab lands on the first trigger; Enter opens it and Space closes it. Each press repeats only
+    // while the panel has not moved yet, so a retried key never undoes the first.
     await userEvent.tab()
     await expect(first).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await expect(first).toHaveAttribute('aria-expanded', 'true')
-    await userEvent.keyboard(' ')
-    await expect(first).toHaveAttribute('aria-expanded', 'false')
+    await pressUntil('{Enter}', () => expect(first).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(first)
+    })
+    await pressUntil(' ', () => expect(first).toHaveAttribute('aria-expanded', 'false'), {
+      when: () => isOpen(first)
+    })
 
-    // Every trigger is a tab stop: Base UI's accordion has no arrow-key navigation.
+    // The arrow keys do not move focus: every trigger is a tab stop, and Tab skips the disabled one.
+    await userEvent.keyboard('{ArrowDown}')
+    await expect(first).toHaveFocus()
     await userEvent.tab()
-    await expect(second).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await expect(second).toHaveAttribute('aria-expanded', 'true')
+    await waitFor(() => expect(third).toHaveFocus())
+    await expect(restricted).not.toHaveFocus()
+    await pressUntil('{Enter}', () => expect(third).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(third)
+    })
+
+    // Shift + Tab walks back. Without `multiple`, opening one panel closes the other.
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(first).toHaveFocus())
+    await pressUntil('{Enter}', () => expect(first).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(first)
+    })
+    await waitFor(() => expect(third).toHaveAttribute('aria-expanded', 'false'))
   }
 }

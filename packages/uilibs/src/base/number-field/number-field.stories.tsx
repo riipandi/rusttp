@@ -84,6 +84,18 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<NumberField variant='faded' defaultValue={7}>
+  <Label>
+    Galleons
+    <NumberFieldGroup />
+  </Label>
+</NumberField>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => (
@@ -101,6 +113,18 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<NumberField size='large' defaultValue={7}>
+  <Label>
+    Galleons
+    <NumberFieldGroup controls='sides' />
+  </Label>
+</NumberField>`
+      }
+    }
+  },
   render: () => (
     <Axis
       axis='size'
@@ -144,6 +168,26 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<NumberField defaultValue={7} disabled>
+  <Label>
+    Sickles disabled
+    <NumberFieldGroup />
+  </Label>
+</NumberField>
+
+<Field invalid>
+  <NumberField defaultValue={-3} min={0}>
+    <FieldLabel>Galleons</FieldLabel>
+    <NumberFieldGroup />
+  </NumberField>
+  <FieldError match>A vault cannot hold fewer than zero galleons.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
       {(state) =>
@@ -187,6 +231,18 @@ export const States: Story = {
 }
 
 export const MinMaxStep: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<NumberField defaultValue={20} min={0} max={100} step={5}>
+  <Label>
+    Butterbeer pints
+    <NumberFieldGroup />
+  </Label>
+</NumberField>`
+      }
+    }
+  },
   name: 'Min, max, and step',
   args: { defaultValue: 20, min: 0, max: 100, step: 5 },
   render: (args) => (
@@ -229,9 +285,10 @@ export const Formatted: Story = {
   )
 }
 
+/** The arrow keys step the value, Shift steps by ten, Home and End jump to the limits; the steppers are not tab stops. */
 export const Keyboard: Story = {
   render: () => (
-    <NumberField defaultValue={7} min={0} max={9}>
+    <NumberField defaultValue={7} min={0} max={99}>
       <Label>
         Galleons
         <NumberFieldGroup />
@@ -241,16 +298,25 @@ export const Keyboard: Story = {
   play: async ({ canvas }) => {
     const input = canvas.getByRole('textbox', { name: 'Galleons' })
 
-    // The arrow keys step the value, Home and End jump to the limits.
     await userEvent.tab()
     await expect(input).toHaveFocus()
+    // The steppers are for the pointer: they stay out of the tab order.
+    await expect(canvas.getByRole('button', { name: 'Increase' })).toHaveAttribute('tabindex', '-1')
+    await expect(canvas.getByRole('button', { name: 'Decrease' })).toHaveAttribute('tabindex', '-1')
+
     await userEvent.keyboard('{ArrowUp}')
     await expect(input).toHaveValue('8')
     await userEvent.keyboard('{ArrowDown}{ArrowDown}')
     await expect(input).toHaveValue('6')
+    // Shift takes the large step: ten.
+    await userEvent.keyboard('{Shift>}{ArrowUp}{/Shift}')
+    await expect(input).toHaveValue('16')
     await userEvent.keyboard('{End}')
-    await expect(input).toHaveValue('9')
+    await expect(input).toHaveValue('99')
     await userEvent.keyboard('{Home}')
+    await expect(input).toHaveValue('0')
+    // The value stops at the limit.
+    await userEvent.keyboard('{ArrowDown}')
     await expect(input).toHaveValue('0')
   }
 }

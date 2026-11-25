@@ -71,6 +71,16 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Input variant='outline' aria-label='Spell outline' placeholder='Spell' />
+<Input variant='faded' aria-label='Spell faded' placeholder='Spell' />
+<Input variant='ghost' aria-label='Spell ghost' placeholder='Spell' />
+<Input variant='headless' aria-label='Spell headless' placeholder='Spell' />`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => <Input variant={variant} aria-label={`Spell ${variant}`} placeholder='Spell' />}
@@ -80,6 +90,15 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Input size='small' aria-label='Spell small' placeholder='Spell' />
+<Input size='medium' aria-label='Spell medium' placeholder='Spell' />
+<Input size='large' aria-label='Spell large' placeholder='Spell' />`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => <Input size={size} aria-label={`Spell ${size}`} placeholder='Spell' />}
@@ -89,6 +108,20 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Input aria-label='Seal default' placeholder='Sealed by the Ministry' />
+<Input aria-label='Seal disabled' placeholder='Sealed by the Ministry' disabled />
+
+<Field invalid>
+  <FieldLabel htmlFor='email'>Owl post address</FieldLabel>
+  <Input id='email' type='email' defaultValue='ron.weasley@hogwarts' />
+  <FieldError match>That owl address is not registered with the Owl Office.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
       {(state) =>
@@ -159,5 +192,33 @@ export const WithButton: Story = {
     await userEvent.type(el, 'plexiglass')
     await expect(el).toHaveValue('plexiglass')
     await expect(canvas.getByRole('button', { name: 'Accio' })).toBeEnabled()
+  }
+}
+
+/** Tab reaches an input and typing fills it; Tab skips a disabled input, and Shift + Tab walks back. */
+export const Keyboard: Story = {
+  render: () => (
+    <div {...stylex.props(styles.field)}>
+      <Input aria-label='Spell' placeholder='Spell' />
+      <Input aria-label='Sealed' placeholder='Sealed by the Ministry' disabled />
+      <Input aria-label='Counter-spell' placeholder='Counter-spell' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const spell = canvas.getByRole('textbox', { name: 'Spell' })
+    const sealed = canvas.getByRole('textbox', { name: 'Sealed' })
+    const counter = canvas.getByRole('textbox', { name: 'Counter-spell' })
+
+    await userEvent.tab()
+    await expect(spell).toHaveFocus()
+    await userEvent.keyboard('lumos')
+    await expect(spell).toHaveValue('lumos')
+
+    await userEvent.tab()
+    await expect(sealed).not.toHaveFocus()
+    await expect(counter).toHaveFocus()
+
+    await userEvent.tab({ shift: true })
+    await expect(spell).toHaveFocus()
   }
 }

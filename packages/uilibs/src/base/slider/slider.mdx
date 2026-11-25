@@ -43,6 +43,22 @@ Pass an array to get one thumb per entry, and name each with `thumbLabels`.
 
 <Canvas of={Stories.Controlled} />
 
+## Accessibility
+
+Each thumb is a `slider` with `aria-valuenow`, `aria-valuemin` and `aria-valuemax`. A thumb has no text: name a single thumb with `aria-label` on `Slider` and each thumb of a range with `thumbLabels`. The `Keyboard` story walks the table below, and `Range` asserts the names.
+
+| Key                      | Action                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`  | Moves focus to a thumb. A range has one tab stop per thumb.                                        |
+| `ArrowRight`, `ArrowUp`  | Raises the value by `step`.                                                                        |
+| `ArrowLeft`, `ArrowDown` | Lowers the value by `step`.                                                                        |
+| `PageUp`, `PageDown`     | Raises or lowers the value by `largeStep`, 10 by default.                                          |
+| `Shift + Arrow`          | Steps by `largeStep`.                                                                              |
+| `Home`, `End`            | Jumps to the lowest or highest value the thumb may take. In a range a thumb stops at its neighbor. |
+
+- A disabled slider takes no keys; it is drawn with the disabled tokens, not dimmed.
+- Keyboard behavior is Base UI's; see the Base UI [Slider](https://base-ui.com/react/components/slider) page for the rest.
+
 ## API reference
 
 `Slider` also takes `style`: StyleX styles that replace `className` and `style`. It lands on the root. See [Styling](?path=/docs/styling--docs).

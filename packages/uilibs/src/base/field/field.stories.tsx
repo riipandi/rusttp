@@ -39,7 +39,26 @@ type PlaygroundArgs = Pick<ComponentProps<typeof Field>, 'orientation' | 'invali
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['orientation', 'invalid', 'disabled', 'kind'] }
+    controls: { disable: false, include: ['orientation', 'invalid', 'disabled', 'kind'] },
+    docs: {
+      source: {
+        code: `<FieldSet>
+  <FieldLegend>Ministry of Magic security pass</FieldLegend>
+  <FieldGroup>
+    <Field>
+      <FieldLabel htmlFor='field-name'>Wizard name</FieldLabel>
+      <Input id='field-name' placeholder='Hermione Granger' />
+      <FieldDescription>Embossed on your Daily Prophet press badge.</FieldDescription>
+    </Field>
+    <FieldSeparator>Owl contact</FieldSeparator>
+    <Field>
+      <FieldLabel htmlFor='field-email'>Owl post address</FieldLabel>
+      <Input id='field-email' type='email' placeholder='hermione.granger@hogwarts.edu' />
+    </Field>
+  </FieldGroup>
+</FieldSet>`
+      }
+    }
   },
   argTypes: {
     orientation: { control: 'radio', options: ['vertical', 'horizontal'] },
@@ -69,6 +88,21 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** The legend of a fieldset in its two looks: a heading (`legend`) or the size of a label. */
 export const Kinds: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FieldSet>
+  <FieldLegend kind='label'>Owl post label</FieldLegend>
+  <FieldGroup>
+    <Field>
+      <FieldLabel>Address label</FieldLabel>
+      <Input placeholder='hermione.granger@hogwarts.edu' />
+    </Field>
+  </FieldGroup>
+</FieldSet>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='kind' rows={['legend', 'label'] as const}>
       {(kind) => (
@@ -88,10 +122,24 @@ export const Kinds: Story = {
     const size = (kind: string) =>
       Number.parseFloat(getComputedStyle(canvas.getByText(`Owl post ${kind}`)).fontSize)
     await expect(size('legend')).toBeGreaterThan(size('label'))
+    // A fieldset is a group named by its legend.
+    await expect(canvas.getByRole('group', { name: 'Owl post legend' })).toBeInTheDocument()
+    await expect(canvas.getByRole('group', { name: 'Owl post label' })).toBeInTheDocument()
   }
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Field invalid>
+  <FieldLabel>Owl post address invalid</FieldLabel>
+  <Input placeholder='hermione.granger@hogwarts.edu' />
+  <FieldError>You must accept the school rules before the Sorting begins.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'invalid'] as const}>
       {(state) => (

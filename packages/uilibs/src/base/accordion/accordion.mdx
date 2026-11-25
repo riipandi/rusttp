@@ -52,6 +52,19 @@ Set `multiple` on `Accordion` to keep more than one item open.
 
 <Canvas of={Stories.States} />
 
+## Accessibility
+
+Each `AccordionTrigger` is a `button` named by its label, and `aria-expanded` tells whether its panel is open. The `Keyboard` story walks the table below.
+
+| Key                     | Action                                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves between the triggers. Every trigger is a tab stop, and a disabled item is skipped.     |
+| `Enter` or `Space`      | Opens a closed panel and closes an open one. Without `multiple`, opening one closes another. |
+
+- The arrow keys do not move focus between triggers.
+- The panel is not mounted while it is closed, so its text is not in the page until the item opens.
+- Keyboard behavior is Base UI's; see the Base UI [Accordion](https://base-ui.com/react/components/accordion) page for the rest.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
