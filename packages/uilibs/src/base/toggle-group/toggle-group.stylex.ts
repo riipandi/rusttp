@@ -28,17 +28,17 @@ export const toggleGroupOrientations = stylex.create({
 
 export const toggleGroupJoinedItems = stylex.create({
   horizontal: {
-    borderBottomLeftRadius: { default: 0, ':first-child': radius.large },
-    borderBottomRightRadius: { default: 0, ':last-child': radius.large },
-    borderTopLeftRadius: { default: 0, ':first-child': radius.large },
-    borderTopRightRadius: { default: 0, ':last-child': radius.large },
+    borderEndStartRadius: { default: 0, ':first-child': radius.large },
+    borderEndEndRadius: { default: 0, ':last-child': radius.large },
+    borderStartStartRadius: { default: 0, ':first-child': radius.large },
+    borderStartEndRadius: { default: 0, ':last-child': radius.large },
     paddingInline: unit.x2
   },
   vertical: {
-    borderBottomLeftRadius: { default: 0, ':last-child': radius.large },
-    borderBottomRightRadius: { default: 0, ':last-child': radius.large },
-    borderTopLeftRadius: { default: 0, ':first-child': radius.large },
-    borderTopRightRadius: { default: 0, ':first-child': radius.large },
+    borderEndStartRadius: { default: 0, ':last-child': radius.large },
+    borderEndEndRadius: { default: 0, ':last-child': radius.large },
+    borderStartStartRadius: { default: 0, ':first-child': radius.large },
+    borderStartEndRadius: { default: 0, ':first-child': radius.large },
     paddingInline: unit.x2
   }
 })
@@ -47,7 +47,7 @@ export const toggleGroupJoinedItems = stylex.create({
 // but the first so adjacent borders don't double up.
 export const toggleGroupJoinedOutline = stylex.create({
   horizontal: {
-    borderLeftWidth: { default: 0, ':first-child': stroke.ring1 }
+    borderInlineStartWidth: { default: 0, ':first-child': stroke.ring1 }
   },
   vertical: {
     borderTopWidth: { default: 0, ':first-child': stroke.ring1 }

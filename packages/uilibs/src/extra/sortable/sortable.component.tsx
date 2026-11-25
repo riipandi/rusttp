@@ -64,17 +64,17 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { zIndex } from '../../styles/tokens.stylex'
+import type { StyleProp } from '../../styles/types'
+import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
   defaultDragLabels,
   nameOfElement,
+  useDraggableName,
   type DragLabels
 } from './drag-announcements'
 import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -107,11 +107,11 @@ export const SortableItemContext = createContext<{
 const IsOverlayContext = createContext(false)
 
 export interface SortableLabels extends DragLabels {
-  /** Name of an item's drag handle. Defaults to `Drag to reorder`. */
-  handle: string
+  /** Name of an item's drag handle, from the item's own name. Defaults to `Reorder <name>`. */
+  handle: (name: string) => string
 }
 
-const defaultLabels: SortableLabels = { ...defaultDragLabels, handle: 'Drag to reorder' }
+const defaultLabels: SortableLabels = { ...defaultDragLabels, handle: (name) => `Reorder ${name}` }
 
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null
@@ -348,7 +348,9 @@ function Sortable<T>({
         </SortableContext>
         {mounted &&
           createPortal(
-            <DragOverlay dropAnimation={dropAnimationConfig}>{overlayContent}</DragOverlay>,
+            <DragOverlay dropAnimation={dropAnimationConfig} zIndex={zIndex.dragOverlay}>
+              {overlayContent}
+            </DragOverlay>,
             document.body
           )}
       </DndContext>
@@ -482,18 +484,20 @@ function SortableItemHandle({ style, render, cursor = true, ...props }: Sortable
     useContext(SortableItemContext)
   const { activeId, labels } = useContext(SortableInternalContext)
   const isOverlay = useContext(IsOverlayContext)
+  const { ref: nameRef, name } = useDraggableName('sortable-item', true)
 
   useLayoutEffect(() => (isOverlay ? undefined : registerHandle?.()), [isOverlay, registerHandle])
 
   return useRender({
     defaultTagName: 'div',
     render,
-    ref: isOverlay ? undefined : setActivatorNodeRef,
+    ref: isOverlay || !setActivatorNodeRef ? nameRef : [setActivatorNodeRef, nameRef],
     props: mergeProps<'div'>(
       {
-        'aria-label': labels.handle,
+        'aria-label': name === undefined ? undefined : labels.handle(name),
         ...(isOverlay ? {} : { ...attributes, ...listeners }),
         ...stylex.props(
+          focusRing.root,
           s.handle,
           cursor && isDragging && s.handleDragging,
           // Handles on non-dragged items hide while a drag is in flight.
@@ -536,7 +540,12 @@ function SortableOverlay({ children, ...props }: SortableOverlayProps) {
   if (!mounted) return null
 
   return createPortal(
-    <DragOverlay dropAnimation={dropAnimationConfig} modifiers={modifiers} {...props}>
+    <DragOverlay
+      dropAnimation={dropAnimationConfig}
+      modifiers={modifiers}
+      zIndex={zIndex.dragOverlay}
+      {...props}
+    >
       <IsOverlayContext.Provider value={true}>{content}</IsOverlayContext.Provider>
     </DragOverlay>,
     document.body

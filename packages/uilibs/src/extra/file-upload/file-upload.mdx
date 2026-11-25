@@ -1,0 +1,82 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './file-upload.stories'
+
+<Meta of={Stories} />
+
+# File Upload
+
+A file input with a drag-and-drop area. Inside a `Field` it takes the label, error, and invalid state.
+
+## Import
+
+```jsx
+import { FileUpload, FileUploadTrigger } from 'uilibs/extra/file-upload'
+```
+
+Built on Base UI [Field](https://base-ui.com/react/components/field) `Control` for the input and [useRender](https://base-ui.com/react/utils/use-render) for the root `div`, so `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **FileUpload:** the root `div` that receives the drag events. It renders a label around the hidden file input and the children, so the whole area opens the picker.
+- **FileUploadTrigger:** optional. A `span` that keeps a nested link or button in the text flow. It does not open the picker itself.
+
+```jsx
+<FileUpload name='…'>
+  <FileUploadTrigger />
+</FileUpload>
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Inline trigger
+
+<Canvas of={Stories.Trigger} />
+
+### Custom trigger
+
+A headless upload wraps any trigger, such as a `Button`.
+
+<Canvas of={Stories.Headless} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `FileUpload` it styles the root `div`.
+
+### FileUpload
+
+| Prop              | Description                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `name`            | `string` <br /> Name of the file input. Required.                                                                     |
+| `onChange`        | `({ name, value, event }) => void` <br /> Called with the chosen or dropped files as `value`, a `File[]`.             |
+| `disabled`        | `boolean` <br /> Disables the input and the drop area. Default `false`.                                               |
+| `variant`         | `outline`, `headless` <br /> `headless` draws no box, for a custom trigger. Default `outline`.                        |
+| `inline`          | `boolean` <br /> A more compact layout. Default `false`.                                                              |
+| `height`          | `string` or `number` <br /> A CSS height, or a number of px.                                                          |
+| `children`        | node, or a function receiving `{ highlighted }` <br /> `highlighted` is `true` while files are dragged over the area. |
+| `inputAttributes` | `input` props <br /> Passed to the file input, such as `accept` and `multiple`.                                       |
+
+These attributes are set on the inner file input by `Field`, not on the root. The drop area's edge turns critical when the input is invalid.
+
+| Data attribute  | Description                              |
+| --------------- | ---------------------------------------- |
+| `data-disabled` | Present when the field is disabled.      |
+| `data-invalid`  | Present when the field is invalid.       |
+| `data-valid`    | Present when the field is valid.         |
+| `data-touched`  | Present once the field has been touched. |
+| `data-dirty`    | Present once the value has changed.      |
+| `data-filled`   | Present when the field has a value.      |
+| `data-focused`  | Present while the input is focused.      |
+
+## Caveats
+
+- A drop skips the browser's own checks, so the component applies `accept` from `inputAttributes` itself, and without `multiple` it keeps only the first file.
+- The file input is visually hidden but still focusable. Keyboard focus draws a 2 px ring on the drop zone; a click does not.
+- A disabled upload ignores drops and does not highlight.

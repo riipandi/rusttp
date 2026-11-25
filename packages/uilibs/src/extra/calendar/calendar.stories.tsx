@@ -6,9 +6,14 @@ import * as React from 'react'
 import type { DayButton } from 'react-day-picker'
 import type { DateRange } from 'react-day-picker'
 import { arSA } from 'react-day-picker/locale'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button/button.component'
+import { buttonFills } from '../../base/button/button.stylex'
 import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
+import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
 import { Card, CardContent, CardFooter } from '../card/card.component'
@@ -65,7 +70,7 @@ const storyStyles = stylex.create({
     gap: unit.x0_5
   },
   dayCustomOutside: {
-    opacity: 0.4
+    color: colors.foregroundNeutralFaded
   },
   dayPrice: {
     fontSize: '0.625rem',
@@ -75,7 +80,7 @@ const storyStyles = stylex.create({
     color: colors.foregroundNeutralFaded
   },
   dayPriceSelected: {
-    color: colors.onBrand,
+    color: colors.onBackgroundPrimary,
     opacity: 0.8
   }
 })
@@ -84,27 +89,195 @@ type DayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'>
 
 const meta: Meta<typeof Calendar> = {
   title: 'Extra Components/Calendar',
-  component: Calendar,
-  parameters: {
-    layout: 'centered'
-  }
+  component: Calendar
 }
 
 export default meta
 type Story = StoryObj<typeof Calendar>
 
-export const Basic: Story = {
-  render: () => <Calendar mode='single' />
+const jan = new Date(2026, 0, 12)
+
+// Several calendars on one canvas: each navigation landmark needs its own name.
+const nav = (name: string) => ({ labelNav: () => `Navigation bar ${name}` })
+
+/** Single picks one day, multiple any number, range a start and an end with the days between. */
+export const Modes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar mode='single' defaultMonth={jan} selected={jan} />
+
+<Calendar mode='multiple' defaultMonth={jan} selected={[jan, …]} />
+
+<Calendar mode='range' defaultMonth={jan} selected={{ from: jan, to: …}} />`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='mode' rows={['single', 'multiple', 'range'] as const}>
+      {(mode) =>
+        mode === 'single' ? (
+          <Calendar mode='single' defaultMonth={jan} selected={jan} labels={nav(mode)} />
+        ) : mode === 'multiple' ? (
+          <Calendar
+            mode='multiple'
+            defaultMonth={jan}
+            selected={[jan, new Date(2026, 0, 15), new Date(2026, 0, 20)]}
+            labels={nav(mode)}
+          />
+        ) : (
+          <Calendar
+            mode='range'
+            defaultMonth={jan}
+            selected={{ from: jan, to: new Date(2026, 0, 16) }}
+            labels={nav(mode)}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const count = (mode: string, selector: string) =>
+      cellOf(canvasElement, 'mode', mode).querySelectorAll(selector).length
+    await expect(count('single', '[data-selected-single="true"]')).toBe(1)
+    await expect(count('multiple', '[data-selected-single="true"]')).toBe(3)
+    await expect(count('range', '[data-range-start="true"]')).toBe(1)
+    await expect(count('range', '[data-range-end="true"]')).toBe(1)
+    await expect(count('range', '[data-range-middle="true"]')).toBe(3)
+  }
 }
 
-export const Controlled: Story = {
-  render: () => {
+/** The caption is a label or two dropdowns; `numberOfMonths` draws that many months side by side. */
+export const Layouts: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Calendar mode='single' captionLayout='dropdown' numberOfMonths={2} />` }
+    }
+  },
+  render: () => (
+    <Axis
+      axis='caption'
+      rows={['label', 'dropdown'] as const}
+      columnAxis='months'
+      columns={['1', '2'] as const}
+    >
+      {(caption, months) => (
+        <Calendar
+          mode='single'
+          defaultMonth={jan}
+          captionLayout={caption}
+          numberOfMonths={Number(months)}
+          labels={nav(`${caption} ${months}`)}
+        />
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const caption of ['label', 'dropdown']) {
+      for (const months of ['1', '2']) {
+        const cell = canvasElement.querySelector(
+          `[data-caption="${caption}"][data-months="${months}"]`
+        )
+        if (!cell) throw new Error(`No cell for ${caption} ${months}`)
+        await expect(cell.querySelectorAll('[role="grid"]')).toHaveLength(Number(months))
+        // A dropdown caption has a month and a year select per month; a label has none.
+        await expect(cell.querySelectorAll('[role="combobox"]')).toHaveLength(
+          caption === 'dropdown' ? 2 * Number(months) : 0
+        )
+      }
+    }
+  }
+}
+
+type PlaygroundArgs = Pick<
+  React.ComponentProps<typeof Calendar>,
+  | 'captionLayout'
+  | 'showOutsideDays'
+  | 'numberOfMonths'
+  | 'showWeekNumber'
+  | 'weekStartsOn'
+  | 'buttonVariant'
+  | 'startMonth'
+  | 'endMonth'
+>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'captionLayout',
+        'showOutsideDays',
+        'numberOfMonths',
+        'showWeekNumber',
+        'weekStartsOn',
+        'buttonVariant',
+        'startMonth',
+        'endMonth'
+      ]
+    }
+  },
+  argTypes: {
+    captionLayout: {
+      control: 'radio',
+      options: ['label', 'dropdown', 'dropdown-months', 'dropdown-years']
+    },
+    showOutsideDays: { control: 'boolean' },
+    numberOfMonths: { control: 'radio', options: [1, 2] },
+    showWeekNumber: { control: 'boolean' },
+    weekStartsOn: { control: 'radio', options: [0, 1, 6] },
+    buttonVariant: { control: 'radio', options: Object.keys(buttonFills) },
+    startMonth: { control: 'date' },
+    endMonth: { control: 'date' }
+  },
+  args: {
+    captionLayout: 'label',
+    showOutsideDays: true,
+    numberOfMonths: 1,
+    showWeekNumber: false,
+    weekStartsOn: 0,
+    buttonVariant: 'ghost',
+    startMonth: new Date(1900, 0, 1),
+    endMonth: new Date(2100, 11, 31)
+  },
+  render: ({ startMonth, endMonth, ...args }) => {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
-    return <Calendar mode='single' selected={date} onSelect={setDate} />
+    // The date control hands back a timestamp once it is edited.
+    return (
+      <Calendar
+        {...args}
+        startMonth={startMonth && new Date(startMonth)}
+        endMonth={endMonth && new Date(endMonth)}
+        mode='single'
+        selected={date}
+        onSelect={setDate}
+      />
+    )
   }
 }
 
 export const DatePickerSingle: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Popover open={open} onOpenChange={setOpen}>
+  <PopoverTrigger render={<Button variant='outline' />}>
+    {date ? format(date, 'PPP') : 'Pick a date'}
+  </PopoverTrigger>
+  <PopoverContent align='start'>
+    <Calendar
+      mode='single'
+      selected={date}
+      onSelect={(nextDate) => {
+        setDate(nextDate)
+        setOpen(false)
+      }}
+    />
+  </PopoverContent>
+</Popover>`
+      }
+    }
+  },
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(new Date())
     const [open, setOpen] = React.useState(false)
@@ -207,39 +380,6 @@ export const DateTimePicker: Story = {
     )
   }
 }
-export const Range: Story = {
-  render: () => {
-    const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-      from: new Date(new Date().getFullYear(), 0, 12),
-      to: addDays(new Date(new Date().getFullYear(), 0, 12), 30)
-    })
-    return (
-      <Calendar
-        mode='range'
-        defaultMonth={dateRange?.from}
-        selected={dateRange}
-        onSelect={setDateRange}
-        numberOfMonths={2}
-      />
-    )
-  }
-}
-
-export const MultipleMonths: Story = {
-  render: () => {
-    const [dates, setDates] = React.useState<Date[] | undefined>([
-      new Date(new Date().getFullYear(), 0, 12),
-      new Date(new Date().getFullYear(), 0, 15),
-      new Date(new Date().getFullYear(), 0, 20)
-    ])
-    return <Calendar mode='multiple' selected={dates} onSelect={setDates} numberOfMonths={3} />
-  }
-}
-
-export const WithDropdowns: Story = {
-  render: () => <Calendar mode='single' captionLayout='dropdown' />
-}
-
 export const WithPresets: Story = {
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(
@@ -250,7 +390,7 @@ export const WithPresets: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'
@@ -273,7 +413,7 @@ export const WithPresets: Story = {
               <Button
                 key={preset.value}
                 variant='outline'
-                size='sm'
+                size='small'
                 style={storyStyles.buttonGroupButton}
                 onClick={() => {
                   const newDate = addDays(new Date(), preset.value)
@@ -298,7 +438,7 @@ export const DateAndTime: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar mode='single' selected={date} onSelect={setDate} />
         </CardContent>
@@ -346,7 +486,7 @@ export const BookedDates: Story = {
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'
@@ -364,14 +504,34 @@ export const BookedDates: Story = {
 }
 
 export const CustomDays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar
+  mode='range'
+  selected={range}
+  onSelect={setRange}
+  components={{
+    DayButton: ({ children, modifiers, day, ...props }) => (
+      <button {...props} {...stylex.props(calendarStyles.dayBtnBase, …)}>
+        {children}
+        <span>{price}</span>
+      </button>
+    )
+  }}
+/>`
+      }
+    }
+  },
   render: () => {
+    // A fixed month: the play counts the days of the range, so it cannot depend on today's date.
     const [range, setRange] = React.useState<DateRange | undefined>({
-      from: new Date(new Date().getFullYear(), 11, 8),
-      to: addDays(new Date(new Date().getFullYear(), 11, 8), 10)
+      from: new Date(2026, 11, 8),
+      to: new Date(2026, 11, 18)
     })
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='range'
@@ -397,6 +557,9 @@ export const CustomDays: Story = {
 
                 return (
                   <button
+                    // react-day-picker's own `className` goes first so the StyleX class below is
+                    // not replaced by it.
+                    {...dayBtnProps}
                     type='button'
                     data-day={day.date.toLocaleDateString()}
                     data-selected-single={isSelectedSingle}
@@ -405,7 +568,7 @@ export const CustomDays: Story = {
                     data-range-middle={modifiers.range_middle}
                     {...stylex.props(
                       calendarStyles.dayBtnBase,
-                      calendarStyles.dayBtnSelected && isSelectedSingle,
+                      isSelectedSingle && calendarStyles.dayBtnSelected,
                       modifiers.focused && calendarStyles.dayBtnFocused,
                       modifiers.range_start && calendarStyles.dayBtnRangeStart,
                       modifiers.range_end && calendarStyles.dayBtnRangeEnd,
@@ -413,7 +576,6 @@ export const CustomDays: Story = {
                       storyStyles.dayCustom,
                       modifiers.outside && storyStyles.dayCustomOutside
                     )}
-                    {...dayBtnProps}
                     // The name starts with everything the button shows: the number, then the price.
                     aria-label={[
                       [day.date.getDate(), !modifiers.outside && price].filter(Boolean).join(' '),
@@ -425,7 +587,9 @@ export const CustomDays: Story = {
                       <span
                         {...stylex.props(
                           storyStyles.dayPrice,
-                          modifiers.selected
+                          // Only the filled days (the ends and a single pick) are on the primary
+                          // color; the days between sit on the neutral tint.
+                          isSelectedSingle || modifiers.range_start || modifiers.range_end
                             ? storyStyles.dayPriceSelected
                             : storyStyles.dayPriceMuted
                         )}
@@ -441,17 +605,111 @@ export const CustomDays: Story = {
         </CardContent>
       </Card>
     )
+  },
+  play: async ({ canvasElement }) => {
+    // The range is 8 to 18 December: nine days between the two ends, and every one of the eleven is
+    // filled (the ends on the primary color, the days between on the neutral tint).
+    const filled = (part: string) =>
+      canvasElement.querySelectorAll<HTMLElement>(`[data-range-${part}="true"]`)
+    await expect(filled('middle')).toHaveLength(9)
+    await expect(filled('start')).toHaveLength(1)
+    await expect(filled('end')).toHaveLength(1)
+    for (const day of [...filled('start'), ...filled('middle'), ...filled('end')]) {
+      await expect(getComputedStyle(day).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    }
+  }
+}
+
+const ring = (element: HTMLElement) => {
+  const style = getComputedStyle(element)
+  return [style.outlineStyle, style.outlineWidth]
+}
+
+/** Keyboard focus draws the 2 px ring on the previous and next buttons and on the day, and the arrow keys move it. */
+export const Keyboard: Story = {
+  parameters: {
+    docs: { source: { code: `<Calendar mode='single' defaultMonth={jan} selected={jan} />` } }
+  },
+  render: () => (
+    <Calendar mode='single' defaultMonth={jan} selected={jan} labels={nav('keyboard')} />
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.tab()
+    const previous = canvas.getByRole('button', { name: /previous month/i })
+    await expect(previous).toHaveFocus()
+    await expect(ring(previous)).toEqual(['solid', '2px'])
+
+    const day = (date: number) => canvas.getByRole('button', { name: new RegExp(`^${date}, `) })
+    day(12).focus()
+    await waitFor(() => expect(ring(day(12))).toEqual(['solid', '2px']))
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(day(13)).toHaveFocus())
+    await waitFor(() => expect(ring(day(13))).toEqual(['solid', '2px']))
+    // The ring moved with the focus: the day left behind draws none.
+    await expect(ring(day(12))[0]).toBe('none')
+
+    // The other arrows step a day or a week; Home and End go to the week's first and last day.
+    // Idempotent keys repeat until they land; each stepping key passes a precondition.
+    await pressUntil('{ArrowLeft}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(13)
+    })
+    await pressUntil('{ArrowDown}', () => expect(day(19)).toHaveFocus(), {
+      when: () => document.activeElement === day(12)
+    })
+    await pressUntil('{ArrowUp}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(19)
+    })
+    await pressUntil('{End}', () => expect(day(17)).toHaveFocus())
+    await pressUntil('{Home}', () => expect(day(11)).toHaveFocus())
+    await pressUntil('{ArrowRight}', () => expect(day(12)).toHaveFocus(), {
+      when: () => document.activeElement === day(11)
+    })
+
+    // Enter and Space pick the focused day; the pick moves with the focus.
+    await pressUntil('{ArrowRight}', () => expect(day(13)).toHaveFocus(), {
+      when: () => document.activeElement === day(12)
+    })
+    await pressUntil(
+      '{Enter}',
+      () => expect(day(13)).toHaveAttribute('data-selected-single', 'true'),
+      {
+        when: () => day(13).getAttribute('data-selected-single') !== 'true'
+      }
+    )
+    await pressUntil('{ArrowRight}', () => expect(day(14)).toHaveFocus(), {
+      when: () => document.activeElement === day(13)
+    })
+    await pressUntil(' ', () => expect(day(14)).toHaveAttribute('data-selected-single', 'true'), {
+      when: () => day(14).getAttribute('data-selected-single') !== 'true'
+    })
+
+    // Page Down shows the next month and Page Up comes back.
+    const month = () => canvas.getByRole('status').textContent
+    const before = month()
+    await pressUntil('{PageDown}', () => expect(month()).not.toBe(before), {
+      when: () => month() === before
+    })
+    await pressUntil('{PageUp}', () => expect(month()).toBe(before), {
+      when: () => month() !== before
+    })
   }
 }
 
 export const WeekNumbers: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Calendar mode='single' selected={date} onSelect={setDate} showWeekNumber />`
+      }
+    }
+  },
   render: () => {
     const [date, setDate] = React.useState<Date | undefined>(
       new Date(new Date().getFullYear(), 0, 12)
     )
 
     return (
-      <Card size='sm'>
+      <Card size='small'>
         <CardContent>
           <Calendar
             mode='single'
@@ -477,5 +735,50 @@ export const Direction: Story = {
         locale={direction === 'rtl' ? arSA : undefined}
       />
     )
+  }
+}
+
+const arrowFlip = (canvas: { getByRole: (role: 'button', o: { name: RegExp }) => HTMLElement }) =>
+  [/previous month/i, /next month/i].map(
+    (name) =>
+      new DOMMatrix(
+        getComputedStyle(canvas.getByRole('button', { name }).querySelector('svg')!).transform
+      ).a
+  )
+
+/**
+ * `dir='rtl'` on a wrapper, with no `lang` anywhere, mirrors the month arrows. The flip is a
+ * `:dir(rtl)` rule, which the build must keep as `:dir()` (issue-00007): rewritten to a `:lang()`
+ * list it follows the language, and the picker's own `lang` (its locale) hides the wrapper's.
+ */
+export const RightToLeft: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div dir='rtl'>
+  <Calendar mode='single' />
+</div>`
+      }
+    }
+  },
+  render: () => (
+    <div dir='rtl'>
+      <Calendar mode='single' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(arrowFlip(canvas)).toEqual([-1, -1])
+  }
+}
+
+/** The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows. */
+export const ArabicLeftToRight: Story = {
+  render: () => (
+    <div dir='ltr'>
+      <Calendar mode='single' lang='ar' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(arrowFlip(canvas)).toEqual([1, 1])
   }
 }

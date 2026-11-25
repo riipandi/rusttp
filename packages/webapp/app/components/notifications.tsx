@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +24,7 @@ import {
   ItemGroup,
   ItemTitle
 } from 'uilibs/extra/item'
+import { Stack } from 'uilibs/extra/stack'
 import { visuallyHidden } from 'uilibs/styles/utils.stylex'
 import { useFormat } from '#/libraries/format'
 import { useMessages } from '#/libraries/messages'
@@ -38,7 +39,7 @@ function Row({ item }: { item: NotificationResponse }) {
   const { setRead, dismiss } = notificationsStore.actions
 
   return (
-    <Item size='xs' style={styles.row}>
+    <Item size='xsmall' style={styles.row}>
       {!item.read && <span aria-hidden='true' {...stylex.props(styles.unreadBar)} />}
       <ItemContent style={styles.content}>
         <ItemTitle style={[styles.title, item.read && styles.titleRead]}>
@@ -56,21 +57,20 @@ function Row({ item }: { item: NotificationResponse }) {
             render={
               <Button
                 variant='ghost'
-                size='icon-sm'
+                size='small'
+                icon={MoreHorizontal}
                 aria-label={m.notifications_row_actions({ title: item.title })}
                 style={styles.action}
               />
             }
-          >
-            <Icon svg={MoreHorizontal} size={16} />
-          </DropdownMenuTrigger>
+          />
           <DropdownMenuContent side='bottom' align='end'>
             <DropdownMenuItem style={styles.menuItem} onClick={() => setRead(item.id, !item.read)}>
-              <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutralFaded' />
+              <Icon svg={item.read ? Mail : MailOpen} size={14} color='neutral-faded' />
               {item.read ? m.notifications_mark_unread() : m.notifications_mark_read()}
             </DropdownMenuItem>
             <DropdownMenuItem
-              tone='critical'
+              color='critical'
               style={styles.menuItem}
               onClick={() => dismiss(item.id)}
             >
@@ -154,39 +154,38 @@ export function NotificationsPopover({
         collisionPadding={collisionPadding}
         style={styles.panel}
       >
-        <div {...stylex.props(styles.header)}>
-          <div {...stylex.props(styles.heading)}>
+        <Stack direction='row' align='center' justify='space-between' gap={2} style={styles.header}>
+          <Stack direction='row' align='center' gap={2} style={styles.heading}>
             <PopoverTitle>{m.notifications_title()}</PopoverTitle>
             {unread > 0 && (
-              <Badge variant='secondary' tone='primary'>
+              <Badge variant='faded' color='primary'>
                 {m.notifications_new_count({ count: unread })}
               </Badge>
             )}
-          </div>
+          </Stack>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
                 <Button
                   variant='ghost'
-                  size='icon-sm'
+                  size='small'
+                  icon={MoreHorizontal}
                   aria-label={m.notifications_menu()}
                   style={styles.action}
                 />
               }
-            >
-              <Icon svg={MoreHorizontal} size={16} />
-            </DropdownMenuTrigger>
+            />
             <DropdownMenuContent side='bottom' align='end'>
               <DropdownMenuItem
                 style={styles.menuItem}
                 disabled={unread === 0}
                 onClick={markAllRead}
               >
-                <Icon svg={MailOpen} size={14} color='neutralFaded' />
+                <Icon svg={MailOpen} size={14} color='neutral-faded' />
                 {m.notifications_mark_all_read()}
               </DropdownMenuItem>
               <DropdownMenuItem
-                tone='critical'
+                color='critical'
                 style={styles.menuItem}
                 disabled={items.length === 0}
                 onClick={dismissAll}
@@ -196,7 +195,7 @@ export function NotificationsPopover({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </Stack>
 
         {items.length > 0 ? (
           <ScrollArea fade style={styles.scroll}>
@@ -209,8 +208,8 @@ export function NotificationsPopover({
         ) : (
           <Empty style={styles.empty}>
             <EmptyHeader>
-              <EmptyMedia variant='icon'>
-                <Icon svg={Inbox} size={20} color='neutralFaded' />
+              <EmptyMedia kind='icon'>
+                <Icon svg={Inbox} size={20} color='neutral-faded' />
               </EmptyMedia>
               <EmptyTitle>{m.notifications_empty_title()}</EmptyTitle>
               <EmptyDescription>{m.notifications_empty_description()}</EmptyDescription>
@@ -219,15 +218,15 @@ export function NotificationsPopover({
         )}
 
         <div {...stylex.props(styles.footer)}>
-          <LinkButton
+          <Button
             render={<Link to={to} onClick={() => setOpen(false)} />}
             variant='ghost'
-            size='sm'
+            size='small'
             style={styles.footerLink}
           >
             {m.notifications_view_all()}
             <Icon svg={ArrowRight} size={14} />
-          </LinkButton>
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

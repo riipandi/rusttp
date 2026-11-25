@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './skeleton.stories'
+
+<Meta of={Stories} />
+
+# Skeleton
+
+A pulsing placeholder block shown while content loads.
+
+## Import
+
+```jsx
+import { Skeleton } from 'uilibs/extra/skeleton'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): it renders a `div`, and `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **Skeleton:** one empty block. It has no children; build the shape of the content from several blocks.
+
+```jsx
+<Skeleton />
+```
+
+## Examples
+
+### Shapes
+
+Size each block with `width`, `height`, and `borderRadius`.
+
+<Canvas of={Stories.Shapes} />
+
+### Card
+
+<Canvas of={Stories.Card} />
+
+### Announcing a loading state
+
+A skeleton says nothing to assistive technology. Put the state on the container instead: `role="status"` with `aria-busy="true"` while content loads, and a visually hidden line that names what is loading. When `aria-busy` returns to `false` and the content replaces the skeletons, the region announces the result.
+
+<Canvas of={Stories.Busy} />
+
+### List
+
+<Canvas of={Stories.List} />
+
+### As another element
+
+`render` swaps the `div` for a `span`, for a block inside running text.
+
+<Canvas of={Stories.AsElement} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Skeleton
+
+| Prop           | Description                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `width`        | `UnitStep`, `string` <br /> A count of `unit` steps (one step is 4px, so `12` is 48px) or a CSS length such as `'60%'`. Unset leaves the width to the layout. |
+| `height`       | `UnitStep`, `string` <br /> The same as `width`, for the height. Unset leaves the height to the layout.                                                       |
+| `render`       | `ReactElement`, function <br /> Swaps the `div` for another element, such as a `span`.                                                                        |
+| `borderRadius` | `xsmall`, `small`, `medium`, `large`, `xlarge`, `xxlarge`, `full`, `none` <br /> A corner radius token; `full` suits an avatar. Default `medium`.             |
+
+## Caveats
+
+- A unit step must be one of `0`, `0.5`, `1`, `1.5`, `2` to `10`, then `12`, `14`, `16`, `18`, `20`; any other length is a string.
+- The block is an empty `div` with no role or name, so it tells assistive technology nothing about the loading state. Wrap loading content in a `role="status"` container with `aria-busy` and a visually hidden label, as in the example above.

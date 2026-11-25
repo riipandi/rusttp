@@ -1,0 +1,95 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toggle-group.stories'
+
+<Meta of={Stories} />
+
+# Toggle Group
+
+A group of toggles that share one look.
+
+## Import
+
+```jsx
+import { ToggleGroup, ToggleGroupItem } from 'uilibs/base/toggle-group'
+```
+
+Built on Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group). Props not listed here pass through.
+
+## Anatomy
+
+- **ToggleGroup:** the root. It holds the pressed values and gives its items one look.
+- **ToggleGroupItem:** one toggle. It is a `Toggle` that takes its defaults from the group and needs a `value`.
+
+```jsx
+<ToggleGroup>
+  <ToggleGroupItem value='charm' />
+</ToggleGroup>
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Pressed colors
+
+<Canvas of={Stories.Colors} />
+
+### Spacing
+
+<Canvas of={Stories.Spacings} />
+
+### Orientations
+
+<Canvas of={Stories.Orientations} />
+
+## Accessibility
+
+`ToggleGroup` is a `group` (name it with `aria-label`) and each `ToggleGroupItem` is a `button` with `aria-pressed`. An item with only an icon needs an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled markup.
+
+| Key                       | Action                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab`   | Moves focus into the group, on one item, and out of it in one press.                 |
+| `ArrowRight`, `ArrowLeft` | Moves focus to the next or previous item without pressing it.                        |
+| `Home`, `End`             | Moves focus to the first or last item.                                               |
+| `Space` or `Enter`        | Presses the focused item. Without `multiple`, the item that was pressed is released. |
+
+- Keyboard behavior is Base UI's; see the Base UI [Toggle Group](https://base-ui.com/react/components/toggle-group) page for the rest.
+
+## API reference
+
+Both parts also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### ToggleGroup
+
+| Prop              | Description                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `variant`         | `ghost`, `outline`, `solid` <br /> The fill of the items at rest. Default `ghost`.                                      |
+| `selectedVariant` | `ghost`, `outline`, `solid` <br /> The fill of an item's pressed state, as on `Toggle`. Follows `variant` when unset.   |
+| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` <br /> The color of an item's pressed state. Default `neutral`. |
+| `size`            | `xsmall`, `small`, `medium`, `large` <br /> Height of the items. Default `medium`.                                      |
+| `spacing`         | `gap`, `joined` <br /> `joined` fuses the items into one segmented control. Default `gap`.                              |
+| `orientation`     | `horizontal`, `vertical` <br /> The direction of the group. Default `horizontal`.                                       |
+
+| Data attribute     | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| `data-orientation` | `horizontal` or `vertical`.                             |
+| `data-disabled`    | Present when the group is disabled.                     |
+| `data-multiple`    | Present when more than one item can be pressed at once. |
+
+### ToggleGroupItem
+
+It takes the `Toggle` props. `variant`, `selectedVariant`, `selectedColor`, and `size` default to the group's values.
+
+| Data attribute  | Description                        |
+| --------------- | ---------------------------------- |
+| `data-pressed`  | Present while the item is pressed. |
+| `data-disabled` | Present when the item is disabled. |
+
+## Caveats
+
+- `value` and `defaultValue` on `ToggleGroup` are arrays of strings, even when only one item can be pressed.
+- Pressing an item releases the others unless the group sets `multiple`.
+- An item with only an icon needs an `aria-label`.
+- The joined outline edges come from the group's `variant`. An item that sets `variant='outline'` itself in a joined group of another variant is not fused.

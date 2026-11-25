@@ -3,12 +3,15 @@ import { type CustomHotkeys, HotkeysProvider } from '@tanstack/react-hotkeys'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { batch } from '@tanstack/store'
 import * as React from 'react'
+import { TooltipProvider } from 'uilibs/base/tooltip'
+import { Stack } from 'uilibs/extra/stack'
 import { AnnouncementBar } from '#/components/announcement-bar'
 import { SkipLink } from '#/components/skip-link'
 import { commandBarStore } from '#/libraries/commandbar.store'
 import { appHotkeys } from '#/libraries/hotkeys'
 import { useMessages } from '#/libraries/messages'
 import { sidebarStore } from '#/libraries/sidebar.store'
+import { useCompact } from '#/libraries/viewport'
 import { styles } from '#/styles/pages/admin.stylex'
 import { CommandBar, useAdminHotkeys } from './-commandbar'
 import { Sidebar, useFoldSidebarOnSettings } from './-sidebar'
@@ -65,26 +68,38 @@ function resetAdminUi() {
   })
 }
 
-// Reads no store itself: the shortcuts and the sidebar's buttons call the store actions, so a
-// collapse or an open command bar renders only the parts that show it, not the whole layout.
+// Reads no store itself, only the viewport: the shortcuts and the sidebar's buttons call the store
+// actions, so a collapse or an open command bar renders only the parts that show it, not the whole
+// layout. Crossing the compact breakpoint swaps the sidebar for the top bar, which closes an open
+// popover; the stores keep the collapse and the unread count.
 function AdminLayout() {
   const m = useMessages()
+  const compact = useCompact()
   useFoldSidebarOnSettings()
   useAdminHotkeys()
   React.useEffect(() => resetAdminUi, [])
 
   return (
-    <div {...stylex.props(styles.root)}>
-      <SkipLink />
-      <Sidebar />
-      <AdminTopBar />
-      <div {...stylex.props(styles.content)}>
-        <AnnouncementBar label={m.admin_banner_demo_label()} tone='critical'>
-          {m.admin_banner_demo_notice()}
-        </AnnouncementBar>
-        <Outlet />
-      </div>
-      <CommandBar />
-    </div>
+    // The provider's zero delay shows a rail tooltip at once, and moving between tooltips keeps it.
+    // It lives here, not at the root: the landing and auth pages show no tooltip and would load
+    // Base UI's for nothing (89 KB of the entry; `pnpm --filter webapp size`).
+    <TooltipProvider>
+      <Stack direction={compact ? 'column' : 'row'} style={styles.root}>
+        <SkipLink />
+        {/* One chrome, not both hidden by CSS: a hidden one still ran its subscriptions. */}
+        {compact ? <AdminTopBar /> : <Sidebar />}
+        <div {...stylex.props(styles.content)}>
+          <AnnouncementBar
+            label={m.admin_banner_demo_label()}
+            color='critical'
+            style={styles.banner}
+          >
+            {m.admin_banner_demo_notice()}
+          </AnnouncementBar>
+          <Outlet />
+        </div>
+        <CommandBar />
+      </Stack>
+    </TooltipProvider>
   )
 }

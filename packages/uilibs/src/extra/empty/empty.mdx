@@ -1,0 +1,87 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './empty.stories'
+
+<Meta of={Stories} />
+
+# Empty
+
+A placeholder for a view with nothing to show: media, a title, a description, and actions.
+
+## Import
+
+```jsx
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from 'uilibs/extra/empty'
+```
+
+`Empty` is built on Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps its `div` for another element. The other parts are plain `div` elements. Props not listed here pass through.
+
+## Anatomy
+
+- **Empty:** the root, with a dashed edge.
+- **EmptyHeader:** groups the media, title, and description.
+- **EmptyMedia:** an icon, an avatar, or any other graphic.
+- **EmptyTitle:** what is missing.
+- **EmptyDescription:** a sentence of help under the title.
+- **EmptyContent:** the actions, such as a `Button`.
+
+```jsx
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia />
+    <EmptyTitle />
+    <EmptyDescription />
+  </EmptyHeader>
+  <EmptyContent />
+</Empty>
+```
+
+Every part except `Empty` is optional.
+
+## Examples
+
+### Media kinds
+
+<Canvas of={Stories.Kinds} />
+
+### With an avatar
+
+<Canvas of={Stories.WithAvatar} />
+
+### Replace the dashed edge
+
+Override the edge through `style` on `Empty`.
+
+<Canvas of={Stories.Outline} />
+
+### As another element
+
+`render` swaps the `div` for a `section`; name it through its title with `aria-labelledby`.
+
+<Canvas of={Stories.AsElement} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Empty
+
+| Prop     | Description                                                                               |
+| -------- | ----------------------------------------------------------------------------------------- |
+| `render` | `ReactElement`, function <br /> Swaps the `div` for another element, such as a `section`. |
+
+### EmptyMedia
+
+| Prop   | Description                                                                                    |
+| ------ | ---------------------------------------------------------------------------------------------- |
+| `kind` | `default`, `icon` <br /> `icon` puts the content on a rounded neutral tile. Default `default`. |
+
+## Caveats
+
+- `EmptyTitle` and `EmptyDescription` render a `div`, not a heading or a paragraph, so the title does not appear in the page outline.

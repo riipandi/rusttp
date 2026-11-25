@@ -1,8 +1,10 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { PageTitle } from '#/components/page-title'
@@ -30,14 +32,14 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.auth_signup_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_signup_subtitle()}</p>
-      </div>
+      </Stack>
 
-      <div {...stylex.props(styles.form)}>
+      <Stack gap={5}>
         <SocialButtons />
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -47,7 +49,7 @@ function RouteComponent() {
           void submit()
         }}
       >
-        <div {...stylex.props(styles.fields)}>
+        <Stack gap={5}>
           <div {...stylex.props(styles.nameRow)}>
             <Field of={form} path={['firstName']}>
               {(field) => (
@@ -90,8 +92,8 @@ function RouteComponent() {
           <Field of={form} path={['captcha']}>
             {(field) => <CaptchaField field={field} />}
           </Field>
-        </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        </Stack>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_signup_submit()}
         </Button>
         <p {...stylex.props(styles.fine)}>{m.auth_signup_terms()}</p>
@@ -99,7 +101,7 @@ function RouteComponent() {
 
       <p {...stylex.props(styles.switch)}>
         <MessageSlot message={m.auth_signup_have_account({ link: slotMarker('link') })} name='link'>
-          <Link to='/login' {...stylex.props(styles.linkStrong)}>
+          <Link render={<RouterLink to='/login' />} color='neutral' style={styles.linkStrong}>
             {m.auth_signup_sign_in()}
           </Link>
         </MessageSlot>

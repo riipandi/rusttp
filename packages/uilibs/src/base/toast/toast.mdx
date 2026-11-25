@@ -1,0 +1,98 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toast.stories'
+
+<Meta of={Stories} />
+
+# Toast
+
+A short message that stacks in a corner of the screen, raised by calling `toast` from anywhere.
+
+## Import
+
+```jsx
+import { toast, Toaster, toastManager, ToastProvider, useToast } from 'uilibs/base/toast'
+```
+
+Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not listed here pass through.
+
+## Anatomy
+
+- **ToastProvider:** holds the toast list. It is wired to the shared `toastManager`, so `toast` reaches it.
+- **Toaster:** renders the portal, the viewport, and every toast with its title, description, action, and close button.
+- **toast:** a function, not a component. `toast('Title', { description })` adds a toast, and `toast.success`, `toast.error`, `toast.promise`, `toast.update`, and `toast.close` cover the rest.
+- **useToast:** the hook form of the same API, for code inside React.
+- **toastManager:** the manager behind `toast`, for code that needs the Base UI manager itself.
+
+```jsx
+<ToastProvider>
+  {children}
+  <Toaster />
+</ToastProvider>
+```
+
+## Examples
+
+### Types
+
+<Canvas of={Stories.Types} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Action
+
+<Canvas of={Stories.Action} />
+
+### Position
+
+`Toaster` takes `style`, so a corner is a style override.
+
+<Canvas of={Stories.Position} />
+
+## Accessibility
+
+Each toast is a `dialog` named by its title; a toast without a title is named by `labels.notification`, and the stack sits in a `region` named Notifications. The `Keyboard` story walks the keys below, and the `Open` story leaves a toast on screen so the accessibility check reads it.
+
+| Key      | Action                                                                      |
+| -------- | --------------------------------------------------------------------------- |
+| `F6`     | Moves focus from anywhere on the page to the toast region.                  |
+| `Tab`    | From the region: to the newest toast, then to its action and close buttons. |
+| `Escape` | Closes the toast that holds focus and returns focus to where it was.        |
+
+- A toast with an action (`actionProps`) or a long message needs `timeout: 0` or a long `timeout`: a short toast can vanish before a keyboard user reaches it.
+- Keyboard behavior is Base UI's; see the Base UI [Toast](https://base-ui.com/react/components/toast) page for the rest.
+
+## API reference
+
+`Toaster` takes `style`: StyleX styles for the viewport, merged last. See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.
+
+### Toaster
+
+| Prop             | Description                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default `['down', 'right']`. |
+| `labels`         | `{ close, notification }` <br /> Names of the close button and of a toast without a title. Default `Close` and `Notification`.     |
+
+| Data attribute  | Description                                               |
+| --------------- | --------------------------------------------------------- |
+| `data-expanded` | Present while the stack is expanded (hovered or focused). |
+
+| CSS variable               | Description                     |
+| -------------------------- | ------------------------------- |
+| `--toast-frontmost-height` | The height of the newest toast. |
+
+### toast
+
+The options of `toast`, `toast.success`, and `toast.error` are Base UI's toast options without `title` and `data`, plus one:
+
+| Prop    | Description                                                                                                                                                       |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The accent color. `success` and `error` toasts imply `positive` and `critical`. Default `neutral`. |
+
+## Caveats
+
+- `toast` does nothing until a `ToastProvider` and a `Toaster` are mounted, usually once in the root layout.
+- `Toaster` renders each toast itself, so the viewport is the only part that takes `style`.
+- A toast without a title takes its accessible name from `labels.notification`.
+- Base UI keeps the close button out of the accessibility tree until the stack is focused.

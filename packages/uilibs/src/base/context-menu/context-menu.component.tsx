@@ -34,7 +34,9 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import {
   type DropdownMenuItemProps,
   DropdownMenuCheckboxItem,
@@ -46,10 +48,6 @@ import {
   DropdownMenuSubTrigger
 } from '../dropdown-menu'
 import { contextMenuStyles as s } from './context-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const ContextMenu = BaseContextMenu.Root
 export const ContextMenuGroup = BaseContextMenu.Group
@@ -82,7 +80,7 @@ export function ContextMenuContent({
   ...props
 }: ContextMenuContentProps) {
   return (
-    <BaseContextMenu.Portal>
+    <BaseContextMenu.Portal container={usePortalContainer()}>
       <BaseContextMenu.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -125,7 +123,7 @@ export function ContextMenuSubContent({
 }: ContextMenuContentProps) {
   return (
     <ContextMenuContent
-      side='right'
+      side='inline-end'
       sideOffset={sideOffset}
       alignOffset={alignOffset}
       {...props}

@@ -1,13 +1,12 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { container, stroke } from '../../styles/tokens.stylex'
+import { breakpoints, container, stroke } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 export const alertDialogStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     opacity: {
       default: 1,
@@ -18,11 +17,11 @@ export const alertDialogStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',
@@ -49,19 +48,19 @@ export const alertDialogStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   header: {
     alignItems: {
       default: 'center',
-      '@media (min-width: 660px)': 'flex-start'
+      [breakpoints.medium]: 'flex-start'
     },
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x1_5,
     textAlign: {
       default: 'center',
-      '@media (min-width: 660px)': 'left'
+      [breakpoints.medium]: 'start'
     }
   },
   media: {
@@ -76,29 +75,27 @@ export const alertDialogStyles = stylex.create({
   },
   footer: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`,
-    borderBottomLeftRadius: radius.xlarge,
-    borderBottomRightRadius: radius.xlarge,
+    borderEndEndRadius: radius.xxlarge,
+    borderEndStartRadius: radius.xxlarge,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,
     display: 'flex',
     flexDirection: {
       default: 'column-reverse',
-      '@media (min-width: 660px)': 'row'
+      [breakpoints.medium]: 'row'
     },
     gap: unit.x2,
     justifyContent: {
       default: 'stretch',
-      '@media (min-width: 660px)': 'flex-end'
+      [breakpoints.medium]: 'flex-end'
     },
     marginBottom: `calc(-1 * ${unit.x4})`,
     marginInline: `calc(-1 * ${unit.x4})`,
     padding: unit.x4
   },
   title: {
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {
@@ -111,13 +108,13 @@ export const alertDialogStyles = stylex.create({
 })
 
 export const alertDialogSizes = stylex.create({
-  md: {
+  medium: {
     width: {
       default: container.medium,
-      '@media (min-width: 660px)': container.large
+      [breakpoints.medium]: container.large
     }
   },
-  sm: {
+  small: {
     width: container.medium
   }
 })

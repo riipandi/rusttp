@@ -24,13 +24,11 @@ import { Field as BaseField } from '@base-ui/react/field'
 import { Fieldset as BaseFieldset } from '@base-ui/react/fieldset'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type } from '../../styles/type.stylex'
+import type { StyleProp } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
-import { fieldLegendVariants as legendVariants } from './field.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+import { fieldLabelStyles as labelStyles, fieldLegendKinds as legendKinds } from './field.stylex'
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -41,17 +39,18 @@ export function FieldSet({
   return <BaseFieldset.Root {...props} {...stylex.props(s.set, style)} />
 }
 
-export type FieldLegendVariant = 'legend' | 'label'
+export type FieldLegendKind = 'legend' | 'label'
 
 export function FieldLegend({
-  variant = 'legend',
+  kind = 'legend',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseFieldset.Legend>, 'className' | 'style'> &
-  StyleProp & { variant?: FieldLegendVariant }) {
-  return (
-    <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendVariants[variant], style)} />
-  )
+  StyleProp & {
+    /** `legend` is a heading; `label` sizes the legend like a field label. */
+    kind?: FieldLegendKind
+  }) {
+  return <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendKinds[kind], style)} />
 }
 
 export function FieldGroup({ style, ...props }: DivProps) {
@@ -83,11 +82,16 @@ export function FieldLabel({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseField.Label>, 'className' | 'style'> & StyleProp) {
-  return <BaseField.Label {...props} {...stylex.props(s.labelBase, s.label, style)} />
+  return (
+    <BaseField.Label
+      {...props}
+      {...stylex.props(type.body2, labelStyles.base, labelStyles.invalid, s.label, style)}
+    />
+  )
 }
 
 export function FieldTitle({ style, ...props }: DivProps) {
-  return <div {...props} {...stylex.props(s.title, style)} />
+  return <div {...props} {...stylex.props(type.body2, s.title, style)} />
 }
 
 export function FieldDescription({
@@ -135,10 +139,12 @@ export function FieldError({ children, errors, style, ...props }: FieldErrorProp
 
   if (errors) {
     if (!external) return null
+    // `match` forces the Base UI error to render, so it registers its id with the surrounding
+    // Field and the control's `aria-describedby` points at the message.
     return (
-      <div role='alert' {...props} {...stylex.props(s.error, style)}>
+      <BaseField.Error match role='alert' {...props} {...stylex.props(s.error, style)}>
         {external}
-      </div>
+      </BaseField.Error>
     )
   }
 

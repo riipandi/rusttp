@@ -1,8 +1,10 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { SocialButtons } from '#/components/social-buttons'
@@ -29,14 +31,14 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.page_auth_login()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_login_subtitle()}</p>
-      </div>
+      </Stack>
 
-      <div {...stylex.props(styles.form)}>
+      <Stack gap={5}>
         <SocialButtons />
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -46,7 +48,7 @@ function RouteComponent() {
           void submit()
         }}
       >
-        <div {...stylex.props(styles.fields)}>
+        <Stack gap={5}>
           <Field of={form} path={['email']}>
             {(field) => (
               <TextField
@@ -69,20 +71,27 @@ function RouteComponent() {
           <Field of={form} path={['captcha']}>
             {(field) => <CaptchaField field={field} />}
           </Field>
-        </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        </Stack>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_login_submit()}
         </Button>
       </Form>
 
-      <div {...stylex.props(styles.links)}>
-        <Link to='/signup' {...stylex.props(styles.link)}>
+      <Stack
+        direction='row'
+        wrap
+        align='center'
+        justify='space-between'
+        gap={2}
+        style={styles.links}
+      >
+        <Link render={<RouterLink to='/signup' />} color='neutral' style={styles.link}>
           {m.auth_login_create_account()}
         </Link>
-        <Link to='/forgot-password' {...stylex.props(styles.link)}>
+        <Link render={<RouterLink to='/forgot-password' />} color='neutral' style={styles.link}>
           {m.auth_login_forgot()}
         </Link>
-      </div>
+      </Stack>
     </>
   )
 }

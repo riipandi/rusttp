@@ -5,12 +5,11 @@ import { polar, radialArc } from '@tanstack/charts/polar'
 import { expect } from 'storybook/test'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Chart, ChartContainer } from '../chart.component'
-import { canvasDecorator, seriesColors } from '../chart.samples'
+import { canvasDecorator, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/ProgressCircle',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -85,7 +84,7 @@ function ProgressCircle({ fraction, label }: ProgressStoryProps) {
   const percent = Math.round(fraction * 100)
 
   return (
-    <ChartContainer config={{ value: { label: 'Progress', color: seriesColors.brand } }}>
+    <ChartContainer config={{ value: { label: 'Progress', color: seriesNames.brand } }}>
       <div {...stylex.props(styles.relative)}>
         <Chart definition={definition} ariaLabel={label} height={120} width={120} />
         <div {...stylex.props(styles.overlay)}>
@@ -96,9 +95,17 @@ function ProgressCircle({ fraction, label }: ProgressStoryProps) {
   )
 }
 
-export const Default: Story = {
-  name: 'Default',
-  render: () => <ProgressCircle fraction={0.68} label='Shelves restocked' />,
+interface PlaygroundArgs {
+  fraction: number
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['fraction'] } },
+  argTypes: {
+    fraction: { control: { type: 'range', min: 0, max: 1, step: 0.01 } }
+  },
+  args: { fraction: 0.68 },
+  render: ({ fraction }) => <ProgressCircle fraction={fraction} label='Shelves restocked' />,
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Shelves restocked' })
     await expect(chart).toBeVisible()

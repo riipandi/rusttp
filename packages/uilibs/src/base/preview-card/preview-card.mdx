@@ -1,0 +1,92 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './preview-card.stories'
+
+<Meta of={Stories} />
+
+# Preview Card
+
+A preview shown when the user hovers or focuses a link. Use Popover when the content is interactive.
+
+## Import
+
+```jsx
+import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from 'uilibs/base/preview-card'
+```
+
+Built on Base UI [Preview Card](https://base-ui.com/react/components/preview-card). Props not listed here pass through.
+
+## Anatomy
+
+- **PreviewCard:** the root. It holds the open state.
+- **PreviewCardTrigger:** the link that opens the card on hover or focus.
+- **PreviewCardContent:** the popup. It renders the portal and the positioner itself.
+
+```jsx
+<PreviewCard>
+  <PreviewCardTrigger />
+  <PreviewCardContent />
+</PreviewCard>
+```
+
+## Examples
+
+### Preview a profile
+
+<Canvas of={Stories.Playground} />
+
+### Sides
+
+<Canvas of={Stories.Sides} />
+
+## Accessibility
+
+The card is a hover and focus hint for a link, and it has no role of its own: a screen reader does not announce it, so it may only repeat what the linked page shows. The trigger needs its own name. The `Keyboard` story walks the keys below, and the `Open` story keeps the card open so the accessibility check reads it.
+
+| Key      | Action                                        |
+| -------- | --------------------------------------------- |
+| `Tab`    | Focusing `PreviewCardTrigger` opens the card. |
+| `Escape` | Closes the card. Focus stays on the trigger.  |
+
+- Keyboard behavior is Base UI's; see the Base UI [Preview Card](https://base-ui.com/react/components/preview-card) page for the rest.
+
+## API reference
+
+Only `PreviewCardContent` takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). It styles the popup. `PreviewCard` and `PreviewCardTrigger` are the Base UI parts unchanged.
+
+### PreviewCardTrigger
+
+| Data attribute    | Description                     |
+| ----------------- | ------------------------------- |
+| `data-popup-open` | Present while the card is open. |
+
+### PreviewCardContent
+
+The positioner props go to the positioner.
+
+| Prop          | Description                                                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` <br /> Which side of the trigger the card opens on. Default `bottom`. |
+| `sideOffset`  | `number` or a function <br /> Gap from the trigger, in pixels. Default `4`.                                                          |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the side. Default `center`.                                                          |
+| `alignOffset` | `number` or a function <br /> Shift along the alignment axis, in pixels. Default `4`.                                                |
+
+| Data attribute        | Description                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| `data-open`           | Present while the card is open.                                                              |
+| `data-closed`         | Present while the card is closed.                                                            |
+| `data-starting-style` | Present as the card begins to open.                                                          |
+| `data-ending-style`   | Present as the card closes.                                                                  |
+| `data-side`           | The side the popup is on: `top`, `bottom`, `left`, `right`, `inline-end`, or `inline-start`. |
+| `data-align`          | `start`, `center`, or `end`.                                                                 |
+
+These CSS variables are set on the positioner, and the popup inherits them.
+
+| CSS variable         | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `--available-height` | The space between the trigger and the viewport edge. |
+| `--transform-origin` | The point the popup grows from, for animating it.    |
+
+## Caveats
+
+- Keyboard users see the card when the trigger takes focus, but neither they, touch users, nor screen readers can reach its content, so it may only repeat what the linked page shows.
+- A floating popup flips to the opposite side when it has no room, so `side` is a preference.

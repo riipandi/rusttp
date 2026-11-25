@@ -1,0 +1,132 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './navigation-menu.stories'
+
+<Meta of={Stories} />
+
+# Navigation Menu
+
+Links and menus for site navigation.
+
+## Import
+
+```jsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuPositioner,
+  NavigationMenuTrigger
+} from 'uilibs/base/navigation-menu'
+```
+
+Built on Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu). Props not listed here pass through.
+
+## Anatomy
+
+- **NavigationMenu:** the root, a `nav` landmark. It renders the portal, the positioner, the popup, and the viewport itself.
+- **NavigationMenuList:** the list of items.
+- **NavigationMenuItem:** one entry in the list: a trigger with content, or a plain link.
+- **NavigationMenuTrigger:** the button that opens an item's content. It renders its own chevron.
+- **NavigationMenuContent:** the panel of links shown while its trigger is open.
+- **NavigationMenuLink:** a link, in a panel or directly in an item.
+- **NavigationMenuPositioner:** the portal and positioner that `NavigationMenu` renders. Do not add it yourself.
+
+```jsx
+<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger />
+      <NavigationMenuContent>
+        <NavigationMenuLink />
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink />
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+
+## Examples
+
+### Triggers with panels
+
+<Canvas of={Stories.Playground} />
+
+### Plain links
+
+Set `active` on the link for the current page.
+
+<Canvas of={Stories.Link} />
+
+## Accessibility
+
+The root is a `nav` landmark named by `labels.menu`, and an open panel is a second landmark named by `labels.popup`. Each trigger is a `button` that reports `aria-expanded`, and a plain item is a `link`; mark the current page with `active` on its `NavigationMenuLink`. The `Keyboard` story walks the keys below, and the `Open` story keeps a panel open so the accessibility check reads it.
+
+| Key                | Action                                                              |
+| ------------------ | ------------------------------------------------------------------- |
+| `Tab`              | Moves focus to the next trigger or link.                            |
+| `Enter` or `Space` | On `NavigationMenuTrigger`: opens its panel. On a link: follows it. |
+| `Escape`           | Closes the panel. Focus stays on the trigger.                       |
+
+- Keyboard behavior is Base UI's; see the Base UI [Navigation Menu](https://base-ui.com/react/components/navigation-menu) page for moving into a panel with the arrows.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `NavigationMenu` it styles the root, and on `NavigationMenuPositioner` the positioner.
+
+### NavigationMenu
+
+| Prop     | Description                                                                                                                   |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `align`  | `start`, `center`, `end` <br /> Alignment of the popup relative to the menu. Default `start`.                                 |
+| `labels` | `{ menu, popup }` <br /> Accessible names of the menu's `nav` landmark and of the popup's. Default `Main` and `Main details`. |
+
+### NavigationMenuTrigger
+
+| Data attribute    | Description                                                                   |
+| ----------------- | ----------------------------------------------------------------------------- |
+| `data-popup-open` | Present while its content is open. The chevron turns and the fill shows then. |
+| `data-pressed`    | Present while the trigger is pressed.                                         |
+| `data-disabled`   | Present when the trigger is disabled.                                         |
+
+### NavigationMenuContent
+
+| Data attribute              | Description                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `data-open`                 | Present while the popup is open.                                                    |
+| `data-closed`               | Present while the popup is closed.                                                  |
+| `data-starting-style`       | Present as the content begins to appear.                                            |
+| `data-ending-style`         | Present as the content disappears.                                                  |
+| `data-activation-direction` | `left`, `right`, `up`, or `down`: the direction another trigger was activated from. |
+
+### NavigationMenuLink
+
+| Data attribute | Description                                                             |
+| -------------- | ----------------------------------------------------------------------- |
+| `data-active`  | Present when the link is the current page. The link takes a faded fill. |
+
+### NavigationMenuPositioner
+
+The positioner that `NavigationMenu` renders. The root passes it only `align`.
+
+| Prop          | Description                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` <br /> Which side of the trigger the popup opens on. Default `bottom`. |
+| `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `8`.                                                      |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                     |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `0`.                                                |
+
+| CSS variable          | Description                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `--positioner-width`  | The positioner's width. The popup animates its size with it.                               |
+| `--positioner-height` | The positioner's height.                                                                   |
+| `--available-width`   | The space between the trigger and the viewport edge. The positioner's `max-width` uses it. |
+| `--transform-origin`  | The point the popup grows from.                                                            |
+
+## Caveats
+
+- Two `nav` landmarks exist while a popup is open, so give each its own name through `labels`. The defaults are `Main` and `Main details`.
+- `NavigationMenu` passes only `align` to its positioner, so `side`, `sideOffset`, and `alignOffset` keep their defaults.

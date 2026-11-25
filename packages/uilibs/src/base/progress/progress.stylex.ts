@@ -4,8 +4,8 @@ import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
-// Kept in sync with ../meter/meter.stylex.ts — intentional duplication
-// so both components stay independently styled but visually identical.
+// Progress and Meter share this stylesheet: they draw the same label, track, and fill, and differ
+// only in role (`progressbar`, `meter`) and in the Base UI parts they wrap.
 
 export const progressStyles = stylex.create({
   root: {
@@ -17,10 +17,9 @@ export const progressStyles = stylex.create({
   },
   track: {
     alignItems: 'center',
-    backgroundColor: colors.backgroundNeutral,
+    backgroundColor: colors.backgroundTrack,
     borderRadius: radius.full,
     display: 'flex',
-    height: unit.x1,
     // Forced colors drop backgrounds: the track gets an edge and the fill a system color.
     outline: { default: 'none', '@media (forced-colors: active)': '1px solid CanvasText' },
     overflowX: 'hidden',
@@ -28,10 +27,6 @@ export const progressStyles = stylex.create({
     width: '100%'
   },
   indicator: {
-    backgroundColor: {
-      default: colors.backgroundPrimary,
-      '@media (forced-colors: active)': 'Highlight'
-    },
     height: '100%',
     transitionDuration: duration.fast,
     transitionProperty: { default: 'width', '@media (prefers-reduced-motion: reduce)': 'none' },
@@ -47,6 +42,25 @@ export const progressStyles = stylex.create({
     fontSize: fontSize.body2,
     fontVariantNumeric: 'tabular-nums',
     lineHeight: fontLineHeight.body2,
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   }
+})
+
+// The fill by role; forced colors give every role the system highlight.
+const fill = (color: string) => ({
+  backgroundColor: { default: color, '@media (forced-colors: active)': 'Highlight' }
+})
+
+export const progressColors = stylex.create({
+  neutral: fill(colors.foregroundNeutralFaded),
+  primary: fill(colors.backgroundPrimary),
+  positive: fill(colors.backgroundPositive),
+  warning: fill(colors.backgroundWarning),
+  critical: fill(colors.backgroundCritical)
+})
+
+// `medium` is the bar as it was before sizes existed.
+export const progressSizes = stylex.create({
+  small: { height: unit.x0_5 },
+  medium: { height: unit.x1 }
 })

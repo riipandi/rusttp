@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
+import { stroke, zIndex } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily } from '../../styles/tokens.stylex'
 
@@ -9,9 +9,9 @@ import { fontFamily } from '../../styles/tokens.stylex'
  * narrower than the slots (a 6-digit code on a 320px screen) instead of overflowing it.
  */
 export const otpFieldSlotSizes = stylex.create({
-  sm: { width: unit.x8 },
-  md: { width: unit.x9 },
-  lg: { width: unit.x10 }
+  small: { width: unit.x8 },
+  medium: { width: unit.x9 },
+  large: { width: unit.x10 }
 })
 
 export const otpFieldStyles = stylex.create({
@@ -31,17 +31,17 @@ export const otpFieldStyles = stylex.create({
   // on the first slot, and end radii — joined-slot look. The box and state
   // model come from `controlBase`; a focused slot draws above its neighbors.
   slot: {
-    borderBottomLeftRadius: { default: 0, ':first-child': radius.large },
-    borderBottomRightRadius: { default: 0, ':last-child': radius.large },
-    borderTopLeftRadius: { default: 0, ':first-child': radius.large },
-    borderTopRightRadius: { default: 0, ':last-child': radius.large },
+    borderEndStartRadius: { default: 0, ':first-child': radius.large },
+    borderEndEndRadius: { default: 0, ':last-child': radius.large },
+    borderStartStartRadius: { default: 0, ':first-child': radius.large },
+    borderStartEndRadius: { default: 0, ':last-child': radius.large },
     marginInlineStart: { default: `calc(-1 * ${stroke.ring1})`, ':first-child': 0 },
     flexShrink: 1,
     minWidth: 0,
     padding: 0,
     position: 'relative',
     textAlign: 'center',
-    zIndex: { default: 0, ':focus': 1 }
+    zIndex: { default: zIndex.base, ':focus': zIndex.raised }
   },
   // Names the field for its first slot without taking space in the row.
   hiddenLabel: {

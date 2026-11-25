@@ -5,7 +5,7 @@
  * Colors (default: neutral): primary|neutral|positive|warning|critical
  * Variants: solid|faded|outline|ghost
  * Shape: pill|rectangle|rounded
- * Size: xs|sm|md|lg|xl
+ * Size: xsmall|small|medium|large|xlarge
  *
  * @ref: https://www.reshaped.so/docs/getting-started/overview
  * @ref: https://madeui.com/docs/customization
@@ -99,9 +99,9 @@ export const fontLineHeight = stylex.defineVars({
 })
 
 export const fontLetterSpacing = stylex.defineVars({
-  headline1: 'normal',
-  headline2: 'normal',
-  headline3: 'normal',
+  headline1: '-0.03em',
+  headline2: '-0.025em',
+  headline3: '-0.02em',
   featured1: 'normal',
   featured2: 'normal',
   featured3: 'normal',
@@ -161,26 +161,46 @@ export const radius = stylex.defineVars({
   medium: '8px',
   large: '10px',
   xlarge: '12px',
+  xxlarge: '16px',
   full: '999px',
   none: '0px'
 })
 
+/**
+ * The stacking layers, low to high. Each is one decision, made here: a popover opened from a modal
+ * sits above it, a toast above both, and a dragged item above everything. A component names its
+ * layer and never writes a number. `popover` covers every positioned popup (menus, select, combobox,
+ * tooltip) because any of them can open from inside a modal.
+ */
 export const zIndex = stylex.defineConsts({
-  relative: 10,
-  absolute: 100,
-  fixed: 200
+  base: 0,
+  raised: 10,
+  sticky: 50,
+  dropdown: 100,
+  overlay: 200,
+  modal: 210,
+  popover: 300,
+  toast: 400,
+  dragOverlay: 500
 })
 
+/**
+ * The widths the breakpoints start at, in px. `useMediaQuery` restates them: a hook runs at runtime
+ * and cannot import compiled StyleX constants.
+ */
 export const viewport = stylex.defineConsts({
   medium: 660,
   large: 900,
   xlarge: 1280
 })
 
+/**
+ * Mobile-first: each query applies from its width up, so a wider one stacks over the narrower ones.
+ * The base style is the small one, so there is no `small` query; write the narrow case as `default`.
+ */
 export const breakpoints = stylex.defineConsts({
-  small: '@media (max-width: 659px)',
-  medium: '@media (min-width: 660px) and (max-width: 899px)',
-  large: '@media (min-width: 900px) and (max-width: 1279px)',
+  medium: '@media (min-width: 660px)',
+  large: '@media (min-width: 900px)',
   xlarge: '@media (min-width: 1280px)'
 })
 
@@ -199,4 +219,13 @@ export const easing = stylex.defineVars({
   standard: 'cubic-bezier(0.2, 0, 0, 1)',
   accelerate: 'cubic-bezier(0.4, 0, 1, 1)',
   decelerate: 'cubic-bezier(0, 0, 0.2, 1)'
+})
+
+/** Durations that are not themed: the loops (spinner, skeleton, loader text) and Command's entrance stagger. */
+export const motionLoop = stylex.defineConsts({
+  spin: '1s',
+  spinSlow: '3s',
+  pulse: '2s',
+  shimmer: '2.5s',
+  stagger: '40ms'
 })

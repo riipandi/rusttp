@@ -7,7 +7,6 @@ import { duration, easing } from '../../styles/tokens.stylex'
 
 export const dialogStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     opacity: {
       default: 1,
@@ -18,11 +17,11 @@ export const dialogStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',
@@ -50,12 +49,14 @@ export const dialogStyles = stylex.create({
     },
     transitionTimingFunction: easing.decelerate,
     width: container.xxlarge,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
+  // `size='small'`: a narrower dialog; `medium` is the base width.
+  contentSmall: { width: container.large },
   // Position only: the look is `CloseButton`.
   close: {
+    insetInlineEnd: unit.x3,
     position: 'absolute',
-    right: unit.x3,
     top: unit.x3
   },
   header: {
@@ -70,9 +71,7 @@ export const dialogStyles = stylex.create({
     justifyContent: 'flex-end'
   },
   title: {
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {

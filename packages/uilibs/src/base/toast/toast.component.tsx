@@ -37,42 +37,45 @@
 import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { Tone } from '../../styles/tone'
+import type { ColorRole } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
-import { toastStyles as s, toastTones as tones } from './toast.stylex'
+import { toastStyles as s, toastColors as colors } from './toast.stylex'
 
 /** The manager behind the imperative `toast` API — pass to `useToast` consumers if needed. */
 export const toastManager = BaseToast.createToastManager()
 
+export type ToastColor = ColorRole
+
 type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
   /** The color role of the toast's accent; `neutral` unless the type implies one. */
-  tone?: Tone
+  color?: ToastColor
 }
 
-const toneNames: readonly string[] = ['neutral', 'primary', 'positive', 'warning', 'critical']
+const colorNames: readonly string[] = ['neutral', 'primary', 'positive', 'warning', 'critical']
 
-// `success` and `error` toasts (the helpers, and `toast.promise` outcomes) have a tone of their own.
-const typeTones: Record<string, Tone> = { success: 'positive', error: 'critical' }
+// `success` and `error` toasts (the helpers, and `toast.promise` outcomes) have a color of their own.
+const typeColors: Record<string, ToastColor> = { success: 'positive', error: 'critical' }
 
-function toneOf(data: unknown, type: string | undefined): Tone {
-  if (typeof data === 'object' && data !== null && 'tone' in data) {
-    const { tone } = data
-    const named = toneNames.find((name): name is Tone => name === tone)
+function colorOf(data: unknown, type: string | undefined): ToastColor {
+  if (typeof data === 'object' && data !== null && 'color' in data) {
+    const { color } = data
+    const named = colorNames.find((name): name is ToastColor => name === color)
     if (named) return named
   }
-  return (type && typeTones[type]) || 'neutral'
+  return (type && typeColors[type]) || 'neutral'
 }
 
 function addToast(title: React.ReactNode, options?: ToastAddOptions) {
-  const { tone, ...rest } = options ?? {}
-  return toastManager.add({ title, ...rest, data: tone ? { tone } : undefined })
+  const { color, ...rest } = options ?? {}
+  return toastManager.add({ title, ...rest, data: color ? { color } : undefined })
 }
 
 /**
  * Imperative API, callable anywhere — event handlers, stores, outside React:
  * `toast('Saved')`, `toast.error('Failed', { description: '…' })`,
- * `toast('Heads up', { tone: 'warning' })`,
+ * `toast('Heads up', { color: 'warning' })`,
  * `toast.promise(save(), { loading: '…', success: '…', error: '…' })`.
  * Requires `ToastProvider` + `Toaster` to be mounted (e.g. in the root layout).
  */
@@ -117,7 +120,7 @@ function ToastList({
       swipeDirection={swipeDirection}
       // A toast is a dialog and needs a name; the title gives it one when there is a title.
       aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
-      {...stylex.props(s.root, tones[toneOf(t.data, t.type)])}
+      {...stylex.props(s.root, colors[colorOf(t.data, t.type)])}
     >
       <div {...stylex.props(s.content)}>
         <div {...stylex.props(s.text)}>
@@ -147,7 +150,7 @@ export interface ToasterProps {
  */
 export function Toaster({ swipeDirection = ['down', 'right'], labels, style }: ToasterProps) {
   return (
-    <BaseToast.Portal>
+    <BaseToast.Portal container={usePortalContainer()}>
       <BaseToast.Viewport {...stylex.props(s.viewport, style)}>
         <ToastList swipeDirection={swipeDirection} labels={labels} />
       </BaseToast.Viewport>

@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './button-group.stories'
+
+<Meta of={Stories} />
+
+# Button Group
+
+Fuses Buttons, Inputs, and similar controls into one segmented control.
+
+## Import
+
+```jsx
+import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from 'uilibs/extra/button-group'
+import { Button } from 'uilibs/base/button'
+```
+
+A plain `div` with `role='group'`, not built on Base UI; `ButtonGroupSeparator` is the library's `Separator`. Props not listed here pass through.
+
+## Anatomy
+
+- **ButtonGroup:** the root. Each element child is one member; the group gives it its position through context.
+- **ButtonGroupText:** optional static label, such as a prefix.
+- **ButtonGroupSeparator:** optional divider between children. Filled Buttons get a divider without it.
+- **Button:** a member that joins the group: Button, Input, Select trigger, or InputGroup.
+
+```jsx
+<ButtonGroup>
+  <ButtonGroupText />
+  <ButtonGroupSeparator />
+  <Button />
+</ButtonGroup>
+```
+
+## Examples
+
+### Orientations
+
+<Canvas of={Stories.Orientations} />
+
+### Split button
+
+<Canvas of={Stories.Split} />
+
+### Text
+
+<Canvas of={Stories.Text} />
+
+### Input
+
+<Canvas of={Stories.WithInput} />
+
+## Accessibility
+
+The group is a `group`; name it with `aria-label` when the buttons alone do not say what they share. Every member stays its own Tab stop. The `Keyboard` story walks a group with a split button.
+
+| Key                     | Action                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab` | Move between the members in order, the menu button of a split button included. |
+| `Enter` or `Space`      | Press the focused button.                                                      |
+| `Enter`                 | On the menu button of a split button: opens its menu.                          |
+| `Escape`                | Closes that menu and returns focus to the menu button.                         |
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### ButtonGroup
+
+| Prop          | Description                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orientation` | `horizontal`, `vertical` <br /> The direction the children are laid out. Default `horizontal`.                                              |
+| `size`        | `small`, `medium`, `large` <br /> The size of every Button, Input, Select trigger, and InputGroup in the group; a member's own `size` wins. |
+| `variant`     | `solid`, `faded`, `outline`, `ghost` <br /> The variant of every Button in the group; a Button's own `variant` wins. Inputs keep their own. |
+
+### ButtonGroupSeparator
+
+It takes the `Separator` props, `color` and `inset` among them.
+
+| Prop          | Description                                                                    |
+| ------------- | ------------------------------------------------------------------------------ |
+| `orientation` | `horizontal`, `vertical` <br /> The direction of the line. Default `vertical`. |
+
+## Caveats
+
+- Each element child is one member, and a member is joined as a whole: a wrapper such as a menu or a Tooltip is fine, because its Button reads the group from the React tree, but a wrapper with two Buttons gives both the same position. Only Button, Input, Select trigger, InputGroup, and ButtonGroupText join; any other control is styled by hand.
+- The group travels through the React tree, portals included: a Button inside a popup that a member opens takes the group's `size` and `variant` and joins at the member's position. Keep action buttons out of a member's popup, or render them outside the group.
+- A bordered member (outline Button, Input) shares its neighbour's edge; a filled Button (`solid` or `faded`) gets a divider instead.
+- Fragments are opened up and text children are kept. A Fragment's children are members like the others.
+- Give the group an `aria-label` when its purpose is not clear from the buttons.

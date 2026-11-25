@@ -42,6 +42,16 @@ export const scrollAreaStyles = stylex.create({
   }
 })
 
+// `scrollbarDisplay`: `hover` is the base style above; the others replace its opacity.
+export const scrollAreaDisplays = stylex.create({
+  scroll: {
+    opacity: { default: 0, '[data-scrolling]': 1 },
+    transitionDelay: { default: duration.slow, '[data-scrolling]': '0s' }
+  },
+  visible: { opacity: 1 },
+  hidden: { opacity: 0, pointerEvents: 'none' }
+})
+
 export const scrollAreaScrollbarOrientations = stylex.create({
   vertical: {
     height: '100%',
@@ -52,6 +62,14 @@ export const scrollAreaScrollbarOrientations = stylex.create({
     height: unit.x3
   }
 })
+
+/**
+ * The fade mask: the block gradient plus the inline one. `--scroll-area-fade-inline-start` is the
+ * fade at the scroll origin, which is the right edge in right-to-left, and a gradient has no
+ * logical direction, so the rtl rule points it the other way.
+ */
+const fadeMask = (inline: 'left' | 'right') =>
+  `linear-gradient(to bottom, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-block-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-block-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-block-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-block-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-block-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-block-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-block-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-block-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-block-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-block-end) * 0.2), rgb(0 0 0 / 0%) 100%), linear-gradient(to ${inline}, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-inline-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-inline-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-inline-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-inline-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-inline-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-inline-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-inline-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-inline-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-inline-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-inline-end) * 0.2), rgb(0 0 0 / 0%) 100%)`
 
 export const scrollAreaFadeStyles = stylex.create({
   fade: {
@@ -64,8 +82,10 @@ export const scrollAreaFadeStyles = stylex.create({
       animationRange: '0 32px, calc(100% - 32px) 100%, 0 32px, calc(100% - 32px) 100%',
       animationTimingFunction: 'linear',
       maskComposite: 'intersect',
-      maskImage:
-        'linear-gradient(to bottom, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-block-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-block-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-block-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-block-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-block-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-block-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-block-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-block-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-block-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-block-end) * 0.2), rgb(0 0 0 / 0%) 100%), linear-gradient(to right, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-inline-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-inline-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-inline-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-inline-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-inline-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-inline-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-inline-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-inline-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-inline-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-inline-end) * 0.2), rgb(0 0 0 / 0%) 100%)'
+      maskImage: {
+        default: fadeMask('right'),
+        ':dir(rtl)': fadeMask('left')
+      }
     }
   }
 })

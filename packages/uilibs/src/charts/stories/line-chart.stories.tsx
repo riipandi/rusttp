@@ -5,6 +5,8 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { UIProvider } from '../../base/provider'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
 import {
   canvasDecorator,
@@ -14,12 +16,11 @@ import {
   checkoutConfig,
   checkoutScales,
   seriesColors
-} from '../chart.samples'
+} from './chart.samples'
 
 const meta = {
   title: 'Visualizations/LineChart',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -44,41 +45,78 @@ const groupedTooltipOptions = {
   sort: 'color-domain'
 } as const
 
-export const Multiple: Story = {
-  name: 'Multiple series',
-  render: () => {
-    const definition = defineChart({
-      marks: [
-        lineY(checkouts, {
-          id: 'Robert Langdon',
-          x: 'month',
-          y: 'langdon',
-          stroke: seriesColors.langdon,
-          strokeWidth: 2
-        }),
-        lineY(checkouts, {
-          id: 'Harry Potter',
-          x: 'month',
-          y: 'potter',
-          stroke: seriesColors.potter,
-          strokeWidth: 2
-        }),
-        ...interaction.marks
-      ],
-      scales: checkoutScales,
-      theme: chartTheme,
-      motion: chartMotion,
-      focus: interaction.focus,
-      tooltip: groupedTooltipOptions
-    })
+interface LineOptions {
+  points?: boolean
+  legend?: boolean
+  langdon?: boolean
+  potter?: boolean
+}
 
-    return (
-      <ChartContainer config={checkoutConfig}>
-        <Chart definition={definition} ariaLabel='Monthly checkouts trend' height={260} />
-        <ChartLegend />
-      </ChartContainer>
-    )
+function MultipleLines({
+  points = false,
+  legend = true,
+  langdon = true,
+  potter = true
+}: LineOptions) {
+  const definition = defineChart({
+    marks: [
+      ...(langdon
+        ? [
+            lineY(checkouts, {
+              id: 'Robert Langdon',
+              x: 'month',
+              y: 'langdon',
+              stroke: seriesColors.langdon,
+              strokeWidth: 2,
+              points
+            })
+          ]
+        : []),
+      ...(potter
+        ? [
+            lineY(checkouts, {
+              id: 'Harry Potter',
+              x: 'month',
+              y: 'potter',
+              stroke: seriesColors.potter,
+              strokeWidth: 2,
+              points
+            })
+          ]
+        : []),
+      ...interaction.marks
+    ],
+    scales: checkoutScales,
+    theme: chartTheme,
+    motion: chartMotion,
+    focus: interaction.focus,
+    tooltip: groupedTooltipOptions
+  })
+
+  return (
+    <ChartContainer config={checkoutConfig}>
+      <Chart definition={definition} ariaLabel='Monthly checkouts trend' height={260} />
+      {legend && (
+        <ChartLegend
+          hide={Object.entries({ langdon, potter }).flatMap(([key, on]) => (on ? [] : [key]))}
+        />
+      )}
+    </ChartContainer>
+  )
+}
+
+type PlaygroundArgs = Required<LineOptions>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['points', 'legend', 'langdon', 'potter'] } },
+  argTypes: {
+    points: { control: 'boolean' },
+    legend: { control: 'boolean' },
+    langdon: { control: 'boolean' },
+    potter: { control: 'boolean' }
   },
+  args: { points: false, legend: true, langdon: true, potter: true },
+  render: (args) => <MultipleLines {...args} />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: 'Monthly checkouts trend' })).toBeVisible()
     await expect(canvas.getByText('Robert Langdon')).toBeVisible()
@@ -86,54 +124,59 @@ export const Multiple: Story = {
   }
 }
 
-export const WithDots: Story = {
-  name: 'With dots',
-  render: () => {
-    const definition = defineChart({
-      marks: [
-        lineY(checkouts, {
-          id: 'Robert Langdon',
-          x: 'month',
-          y: 'langdon',
-          stroke: seriesColors.langdon,
-          strokeWidth: 2,
-          points: true
-        }),
-        lineY(checkouts, {
-          id: 'Harry Potter',
-          x: 'month',
-          y: 'potter',
-          stroke: seriesColors.potter,
-          strokeWidth: 2,
-          points: true
-        }),
-        ...interaction.marks
-      ],
-      scales: checkoutScales,
-      theme: chartTheme,
-      motion: chartMotion,
-      focus: interaction.focus,
-      tooltip: groupedTooltipOptions
-    })
+function DotLines() {
+  const definition = defineChart({
+    marks: [
+      lineY(checkouts, {
+        id: 'Robert Langdon',
+        x: 'month',
+        y: 'langdon',
+        stroke: seriesColors.langdon,
+        strokeWidth: 2,
+        points: true
+      }),
+      lineY(checkouts, {
+        id: 'Harry Potter',
+        x: 'month',
+        y: 'potter',
+        stroke: seriesColors.potter,
+        strokeWidth: 2,
+        points: true
+      }),
+      ...interaction.marks
+    ],
+    scales: checkoutScales,
+    theme: chartTheme,
+    motion: chartMotion,
+    focus: interaction.focus,
+    tooltip: groupedTooltipOptions
+  })
 
-    return (
-      <ChartContainer config={checkoutConfig}>
-        <Chart
-          definition={definition}
-          ariaLabel='Monthly checkouts trend with markers'
-          height={260}
-        />
-        <ChartLegend />
-      </ChartContainer>
-    )
-  },
-  play: async ({ canvas }) => {
-    const chart = canvas.getByRole('img', { name: 'Monthly checkouts trend with markers' })
-    await expect(chart).toBeVisible()
-    // One dot per datum per series.
-    await expect(chart.querySelectorAll('circle').length).toBeGreaterThanOrEqual(
-      checkouts.length * 2
-    )
+  return (
+    <ChartContainer config={checkoutConfig}>
+      <Chart
+        definition={definition}
+        ariaLabel='Monthly checkouts trend with markers'
+        height={260}
+      />
+      <ChartLegend />
+    </ChartContainer>
+  )
+}
+
+/** The line alone, or with a marker on every datum (`points`). */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={['line', 'dots'] as const} wide>
+      {(variant) => (variant === 'line' ? <MultipleLines /> : <DotLines />)}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const dots = (variant: string) =>
+      cellOf(canvasElement, 'variant', variant).querySelectorAll('[role="img"] circle').length
+    // One dot per datum per series; the plain line draws none.
+    await expect(dots('dots')).toBeGreaterThanOrEqual(checkouts.length * 2)
+    await expect(dots('line')).toBeLessThan(dots('dots'))
   }
 }
 

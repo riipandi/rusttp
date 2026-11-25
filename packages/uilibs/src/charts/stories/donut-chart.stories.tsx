@@ -7,13 +7,13 @@ import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
+import { chartColors } from '../chart-colors'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from '../chart.samples'
+import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/DonutChart',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -32,7 +32,10 @@ const donutDefinition = defineChart({
           z: 'house',
           innerRadius: 56,
           outerRadius: 96,
-          fill: (datum) => houseConfig[datum.house.toLowerCase()]?.color ?? 'transparent'
+          fill: (datum) => {
+            const name = houseConfig[datum.house.toLowerCase()]?.color
+            return name ? chartColors[name] : 'transparent'
+          }
         })
       ]
     })
@@ -77,14 +80,36 @@ const styles = stylex.create({
   }
 })
 
-export const HousePoints: Story = {
-  name: 'House points',
-  render: () => (
-    <ChartContainer config={houseConfig}>
-      <Chart definition={donutDefinition} ariaLabel='Hogwarts house points' height={220} />
-      <ChartLegend />
-    </ChartContainer>
-  ),
+interface PlaygroundArgs {
+  legend: boolean
+  centerTotal: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend', 'centerTotal'] } },
+  argTypes: {
+    legend: { control: 'boolean' },
+    centerTotal: { control: 'boolean' }
+  },
+  args: { legend: true, centerTotal: false },
+  render: ({ legend, centerTotal }) => {
+    const total = houses.reduce((sum, row) => sum + row.points, 0)
+
+    return (
+      <ChartContainer config={houseConfig}>
+        <div {...stylex.props(styles.relative)}>
+          <Chart definition={donutDefinition} ariaLabel='Hogwarts house points' height={220} />
+          {centerTotal && (
+            <div {...stylex.props(styles.centerOverlay)}>
+              <span {...stylex.props(styles.centerTotal)}>{total}</span>
+              <span {...stylex.props(styles.centerCaption)}>points</span>
+            </div>
+          )}
+        </div>
+        {legend && <ChartLegend />}
+      </ChartContainer>
+    )
+  },
   play: async ({ canvas }) => {
     const chart = canvas.getByRole('img', { name: 'Hogwarts house points' })
     await expect(chart).toBeVisible()

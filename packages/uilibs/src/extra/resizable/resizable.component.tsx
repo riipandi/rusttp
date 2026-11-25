@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Group as GroupPrimitive, Panel as PanelPrimitive } from 'react-resizable-panels'
 import { Separator as SeparatorPrimitive } from 'react-resizable-panels'
+import type { StyleProp } from '../../styles/types'
 import { resizableStyles as s } from './resizable.stylex'
 
 type Orientation = 'horizontal' | 'vertical'
@@ -16,10 +17,6 @@ const indicatorByVariant: Record<
   pill: { horizontal: s.pillHorizontalGroup, vertical: s.pillVerticalGroup },
   spring: { horizontal: s.springHorizontalGroup, vertical: s.springVerticalGroup },
   capsule: { horizontal: s.capsuleHorizontalGroup, vertical: s.capsuleVerticalGroup }
-}
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
 }
 
 /**

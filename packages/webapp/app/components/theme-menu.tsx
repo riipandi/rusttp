@@ -29,14 +29,14 @@ export function ThemeMenu({ style }: { style?: stylex.StyleXStyles }) {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger style={style}>
-        {current && <Icon svg={current.icon} size={16} color='neutralFaded' />}
+        {current && <Icon svg={current.icon} size={16} color='neutral-faded' />}
         {m.theme_label()}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
         <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
           {options.map(({ value, label, icon }) => (
             <DropdownMenuRadioItem key={value} value={value} closeOnClick style={style}>
-              <Icon svg={icon} size={16} color='neutralFaded' />
+              <Icon svg={icon} size={16} color='neutral-faded' />
               {label}
             </DropdownMenuRadioItem>
           ))}

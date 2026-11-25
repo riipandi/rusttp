@@ -4,7 +4,6 @@ import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
-  // A solid strip above the header. It scrolls away with the page; the header below stays sticky.
   root: {
     display: 'flex',
     boxSizing: 'border-box',
@@ -24,7 +23,7 @@ export const styles = stylex.create({
     margin: 0,
     textWrap: 'balance'
   },
-  // The action borrows the strip's text color, so it reads on every tone; the hover tint is that
+  // The action borrows the strip's text color, so it reads on every color; the hover tint is that
   // color at low alpha.
   action: {
     color: 'inherit',
@@ -43,7 +42,7 @@ export const styles = stylex.create({
   }
 })
 
-export const tones = stylex.create({
+export const barColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
   primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
   positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },

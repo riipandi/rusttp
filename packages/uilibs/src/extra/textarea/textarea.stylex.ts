@@ -5,19 +5,19 @@ import { fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 /** Minimum height and type of a textarea; the single-line scale of `controlSizes` does not apply. */
 export const textareaSizes = stylex.create({
-  sm: {
+  small: {
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     minHeight: unit.x14,
     paddingInline: unit.x3
   },
-  md: {
+  medium: {
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     minHeight: unit.x16,
     paddingInline: unit.x3
   },
-  lg: {
+  large: {
     fontSize: fontSize.body1,
     lineHeight: fontLineHeight.body1,
     minHeight: unit.x18,

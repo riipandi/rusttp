@@ -58,10 +58,7 @@ export const styles = stylex.create({
     width: unit.x5
   },
   itemLabel: {
-    display: 'flex',
-    alignItems: 'baseline',
     flex: 1,
-    gap: unit.x2,
     minWidth: 0
   },
   itemMeta: {
@@ -84,9 +81,6 @@ export const styles = stylex.create({
   },
   // The key hints under the list: what the keyboard does here, for a person who has not met it.
   footer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x4,
     flexShrink: 0,
     paddingBlock: unit.x3,
     paddingInline: unit.x4,
@@ -106,16 +100,11 @@ export const styles = stylex.create({
     gap: unit.x1
   },
   panel: {
-    display: 'flex',
-    flexDirection: 'column',
     maxHeight: `min(${container.xlarge}, 70dvh)`,
     // Focused by the dialog on open (`initialFocus`), so it never draws a ring of its own.
     outline: 'none'
   },
   panelHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x2,
     flexShrink: 0,
     padding: unit.x2,
     borderBlockEndWidth: 1,
@@ -134,8 +123,6 @@ export const styles = stylex.create({
     padding: unit.x2
   },
   panelGroup: {
-    display: 'flex',
-    flexDirection: 'column',
     marginBlockEnd: unit.x2
   },
   panelGroupLabel: {
@@ -147,16 +134,10 @@ export const styles = stylex.create({
     fontWeight: fontWeight.medium
   },
   row: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x3,
     paddingBlock: unit.x1,
     paddingInline: unit.x2
   },
   rowText: {
-    display: 'flex',
-    flexDirection: 'column',
     minWidth: 0
   },
   rowName: {
@@ -167,9 +148,6 @@ export const styles = stylex.create({
     fontSize: fontSize.caption1
   },
   rowKeys: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x1,
     flexShrink: 0
   },
   unbound: {

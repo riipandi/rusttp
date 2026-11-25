@@ -1,10 +1,12 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { createFileRoute, useNavigate, Link as RouterLink } from '@tanstack/react-router'
+import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
+import { Link } from 'uilibs/extra/link'
+import { Stack } from 'uilibs/extra/stack'
 import { PasswordField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
@@ -37,10 +39,10 @@ function RouteComponent() {
 
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
+      <Stack gap={2}>
         <PageTitle>{m.auth_reset_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_subtitle()}</p>
-      </div>
+      </Stack>
 
       <Form
         noValidate
@@ -50,7 +52,7 @@ function RouteComponent() {
           void submit()
         }}
       >
-        <div {...stylex.props(styles.fields)}>
+        <Stack gap={5}>
           <Field of={form} path={['password']}>
             {(field) => (
               <PasswordField
@@ -69,8 +71,8 @@ function RouteComponent() {
               />
             )}
           </Field>
-        </div>
-        <Button type='submit' size='lg' style={styles.submit}>
+        </Stack>
+        <Button type='submit' size='large' style={styles.submit}>
           {m.auth_reset_submit()}
         </Button>
       </Form>
@@ -82,17 +84,21 @@ function InvalidLink() {
   const m = useMessages()
   return (
     <>
-      <div {...stylex.props(styles.heading)}>
-        <StatusIcon svg={CircleAlert} tone='critical' />
+      <Stack gap={2}>
+        <StatusIcon svg={CircleAlert} color='critical' />
         <PageTitle>{m.auth_reset_invalid_title()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
-      </div>
+      </Stack>
 
-      <LinkButton render={<Link to='/forgot-password' />} size='lg'>
+      <Button render={<RouterLink to='/forgot-password' />} size='large'>
         {m.auth_reset_invalid_action()}
-      </LinkButton>
+      </Button>
 
-      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+      <Link
+        render={<RouterLink to='/login' />}
+        color='neutral'
+        style={[styles.link, styles.backLink, stylex.defaultMarker()]}
+      >
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>

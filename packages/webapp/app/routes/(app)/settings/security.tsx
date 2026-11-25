@@ -1,7 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute } from '@tanstack/react-router'
+import { Container } from 'uilibs/extra/container'
+import { Stack } from 'uilibs/extra/stack'
 import { PageTitle } from '#/components/page-title'
 import { getMessages, useMessages } from '#/libraries/messages'
+import { layoutSize } from '#/styles/constants.stylex'
 import { styles as layout } from '#/styles/element/layout.stylex'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
@@ -13,11 +16,15 @@ export const Route = createFileRoute('/(app)/settings/security')({
 function RouteComponent() {
   const m = useMessages()
   return (
-    <main {...stylex.props(layout.main, layout.container, styles.main)}>
-      <div {...stylex.props(styles.heading)}>
+    <Stack
+      render={<Container render={<main />} size={layoutSize.page} />}
+      gap={10}
+      style={[layout.main, layout.gutter, styles.main]}
+    >
+      <Stack gap={1}>
         <PageTitle>{m.page_app_security_settings()}</PageTitle>
         <p {...stylex.props(styles.subtitle)}>{m.page_app_security_settings_description()}</p>
-      </div>
-    </main>
+      </Stack>
+    </Stack>
   )
 }

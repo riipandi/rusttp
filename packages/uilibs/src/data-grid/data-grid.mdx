@@ -1,0 +1,311 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './stories/data-grid-basics.stories'
+
+<Meta of={Stories} />
+
+# Data Grid
+
+A table for large, interactive data: sorting, filtering, paging, pinning, resizing, row and cell selection, spreadsheet editing, and drag reordering. For a static table of a few rows, use [Table](?path=/docs/extra-components-table--docs).
+
+## Import
+
+```jsx
+import {
+  DataGrid,
+  DataGridCellSelection,
+  DataGridColumnFilter,
+  DataGridColumnHeader,
+  DataGridContainer,
+  dataGridFeatures,
+  DataGridPagination,
+  DataGridProvider,
+  DataGridScrollArea,
+  DataGridSelectionBar,
+  DataGridTable,
+  DataGridTableBody,
+  DataGridTableHead,
+  DataGridTableRowExpand,
+  DataGridTableRowPin,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll
+} from 'uilibs/data-grid'
+```
+
+Built on [TanStack Table](https://tanstack.com/table), [TanStack Virtual](https://tanstack.com/virtual), and [dnd-kit](https://docs.dndkit.com). The grid never owns your data: every write goes back through a callback.
+
+## Anatomy
+
+- **DataGrid:** the root. It renders no element; it publishes layout, messages, and callbacks to the parts below it. `DataGridProvider` is the same without the defaults.
+- **DataGridCellSelection:** optional, headless spreadsheet controller (keyboard, clipboard, fill handle). It needs `tableLayout.cellSelection`.
+- **DataGridContainer:** the frame around the grid.
+- **DataGridScrollArea:** a scroll area with a grid-aware scrollbar around the table.
+- **DataGridTable:** header, body, optional footer, and the add-row button, assembled from `DataGridTableHead` and `DataGridTableBody`. Swap it for `DataGridTableVirtual`, `DataGridTableDnd` (draggable columns), or `DataGridTableDndRows` (draggable rows).
+- **DataGridSelectionBar:** optional bar with the selected row count and your bulk actions. It is hidden while no row is selected.
+- **DataGridPagination:** page-size select, record range, and page buttons.
+- **DataGridColumnHeader:** a header cell with title, sort, and a menu for pinning, moving, and hiding. It goes in a column definition's `header` and takes a `DataGridColumnFilter` in its `filter` prop.
+- **DataGridTableRowSelect, DataGridTableRowSelectAll, DataGridTableRowExpand, DataGridTableRowPin, DataGridTableDndRowHandle:** row controls that go in a column definition's `cell` (or `header`, for select-all).
+- **DataGridTableFootRow, DataGridTableFootRowCell:** footer rows, passed as `footerContent` to a table.
+
+```jsx
+<DataGrid table={table} recordCount={…}>
+  <DataGridCellSelection table={table} />
+  <DataGridContainer>
+    <DataGridScrollArea table={table}>
+      <DataGridTable table={table} />
+    </DataGridScrollArea>
+  </DataGridContainer>
+  <DataGridSelectionBar table={table} />
+  <DataGridPagination table={table} />
+</DataGrid>
+```
+
+Create `table` with `useTable` and `dataGridFeatures`, and give every part that takes `table` the same instance as `DataGrid`.
+
+## Examples
+
+### Pagination
+
+<Canvas of={Stories.Pagination} />
+
+### Dense layout
+
+`tableLayout.dense` tightens the cell padding.
+
+<Canvas of={Stories.DenseLayout} />
+
+## Accessibility
+
+With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab stop: the grid itself holds DOM focus and `aria-activedescendant` names the focused cell, so a screen reader follows it. The `Keyboard` story in the Editing group walks these keys.
+
+| Key                                        | Action                                                                     |
+| ------------------------------------------ | -------------------------------------------------------------------------- |
+| Arrow keys                                 | Move the focused cell one step. At an edge the focus stays put.            |
+| `Home`, `End`                              | Jump to the first or last cell of the row.                                 |
+| `Control + ArrowUp`, `Control + ArrowDown` | Jump to the first or last row of the column.                               |
+| `Tab` and `Shift + Tab`                    | Move to the next or previous cell, instead of leaving the grid.            |
+| `Shift + Arrow keys`                       | Grow the selection from the focused cell.                                  |
+| `Escape`                                   | Clears the selection. In the editor it closes the editor.                  |
+| `Enter`                                    | Opens the editor on the focused cell, when the column has `meta.cellEdit`. |
+| `Delete`                                   | Clears the focused cell through `onCellsChange`.                           |
+
+- The cell editor is a text field that takes focus when it opens.
+
+## API reference
+
+`DataGridContainer`, `DataGridScrollArea`, `DataGridPagination`, `DataGridSelectionBar`, `DataGridColumnHeader`, `DataGridTableDndRowHandle`, `DataGridTableFootRowCell`, `DataGridTableBodyRowSkeleton`, and `DataGridTableRowExpand` also take `style`: StyleX styles that replace `className` and `style`. `DataGrid` accepts `style` but does not apply it. See [Styling](?path=/docs/styling--docs).
+
+### DataGrid, DataGridProvider
+
+`DataGridProvider` takes the same props with a required `table` and without the defaults.
+
+| Prop                    | Description                                                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `table`                 | table instance from `useTable` <br /> The grid's table. Required; `DataGrid` throws without it.                                                                                                                                       |
+| `recordCount`           | `number` <br /> Total records, used for paging and counts. Required.                                                                                                                                                                  |
+| `isLoading`             | `boolean` <br /> Shows the loading state. Default `false`.                                                                                                                                                                            |
+| `loadingMode`           | `skeleton`, `spinner` <br /> How the loading state looks. Default `skeleton`.                                                                                                                                                         |
+| `loadingMessage`        | `ReactNode` <br /> Overrides the loading label. Default from `labels`.                                                                                                                                                                |
+| `fetchingMoreMessage`   | `ReactNode` <br /> Shown while more rows load in infinite mode. Default from `labels`.                                                                                                                                                |
+| `allRowsLoadedMessage`  | `ReactNode` <br /> Shown after the last infinite page. Default from `labels`.                                                                                                                                                         |
+| `emptyMessage`          | `ReactNode` <br /> Shown when there are no rows. Default from `labels`.                                                                                                                                                               |
+| `labels`                | `Partial<DataGridLabels>` <br /> Overrides built-in strings; a specific prop such as `emptyMessage` still wins. Default English.                                                                                                      |
+| `onRowClick`            | `(row) => void` <br /> Makes rows clickable.                                                                                                                                                                                          |
+| `onRowCreate`           | `() => void` <br /> Adds an "Add row" button as the last body row.                                                                                                                                                                    |
+| `rowCreateLabel`        | `ReactNode` <br /> Label of that button. Default from `labels`.                                                                                                                                                                       |
+| `appendRow`             | `ReactNode` <br /> A `tr` rendered after the data rows, such as a draft row.                                                                                                                                                          |
+| `getRowStatus`          | `(row) => 'new' \| 'dirty' \| 'deleted' \| undefined` <br /> Tints or strikes a row.                                                                                                                                                  |
+| `getCellStatus`         | `(row, columnId) => 'dirty' \| 'invalid' \| undefined` <br /> Marks a cell corner.                                                                                                                                                    |
+| `onCellsChange`         | `(details) => void` <br /> Receives each paste, cut, clear, fill, or edit batch. Without it writes do nothing.                                                                                                                        |
+| `onCellEditRequest`     | `(request) => void` <br /> Asks you to open an editor for the focused cell.                                                                                                                                                           |
+| `onCellSelectionChange` | `(snapshot) => void` <br /> Fires on every selection change with the resolved focus and ranges.                                                                                                                                       |
+| `onCellsCopy`           | `(details) => void` <br /> Fires after the clipboard is written.                                                                                                                                                                      |
+| `tableLayout`           | object, see below <br /> Layout and feature switches.                                                                                                                                                                                 |
+| `tableStyles`           | object of StyleX styles <br /> Per-part styles: `base`, `header`, `headerRow`, `headerSticky`, `body`, `bodyRow`, `footer`, `edgeCell`, `rowNew`, `rowDirty`, `rowDeleted`, `rowPinned`, `rowCreate`, `cellFillHandle`. Default `{}`. |
+| `children`              | `ReactNode` <br /> The grid parts.                                                                                                                                                                                                    |
+
+### tableLayout
+
+| Key                     | Description                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `dense`                 | `boolean` <br /> Tighter cell padding. Default `false`.                                                          |
+| `cellBorder`            | `boolean` <br /> Borders between cells. Default `false`.                                                         |
+| `rowBorder`             | `boolean` <br /> Borders between rows. Default `true`.                                                           |
+| `stripped`              | `boolean` <br /> Alternating row tint. Default `false`.                                                          |
+| `headerBackground`      | `boolean` <br /> Fills the header. Default `false`.                                                              |
+| `footerBackground`      | `boolean` <br /> Fills the footer. Default `false`.                                                              |
+| `headerBorder`          | `boolean` <br /> Border under the header. Default `true`.                                                        |
+| `headerSticky`          | `boolean` <br /> Keeps the header in view while scrolling. Default `false`.                                      |
+| `width`                 | `auto`, `fixed` <br /> Column width mode. Default `fixed`.                                                       |
+| `columnsVisibility`     | `boolean` <br /> Lets a header menu hide columns. Default `false`.                                               |
+| `columnsResizable`      | `boolean` <br /> Adds resize handles. Default `false`.                                                           |
+| `columnsResizeMode`     | `onChange`, `onEnd` <br /> Overrides the table's `columnResizeMode`, which defaults to `onEnd`.                  |
+| `columnsPinnable`       | `boolean` <br /> Lets columns pin to either edge. Default `false`.                                               |
+| `columnsMovable`        | `boolean` <br /> Adds move left and right menu items. Default `false`.                                           |
+| `columnsDraggable`      | `boolean` <br /> Lets columns be dragged in `DataGridTableDnd`. Default `false`.                                 |
+| `rowsPinnable`          | `boolean` <br /> Lets rows pin to the top or bottom. Default `false`.                                            |
+| `cellSelection`         | `boolean` <br /> Spreadsheet selection, keyboard, and clipboard; mount `DataGridCellSelection`. Default `false`. |
+| `cellSelectionMode`     | `single`, `range` <br /> `single` keeps one focused cell. Default `range`.                                       |
+| `cellFillHandle`        | `boolean` <br /> Drag-to-fill handle; needs `cellSelection`. Default `false`.                                    |
+| `cellFillHandleVariant` | `dot`, `ring`, `square` <br /> The handle's look. Default `dot`.                                                 |
+| `cellEditMode`          | `dblclick`, `click` <br /> Which mouse gesture opens the editor. Default `dblclick`.                             |
+| `cellEditEnterAdvance`  | `boolean` <br /> Enter commits and moves focus down; Shift+Enter moves up. Default `false`.                      |
+
+### Column meta
+
+Set on `columnDef.meta` (`DataGridColumnMeta`).
+
+| Key               | Description                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `headerTitle`     | `string` <br /> Header and visibility label; falls back to a string `header`, then the id.                                           |
+| `headerStyle`     | StyleX styles <br /> Extra styles for the header cell.                                                                               |
+| `cellStyle`       | StyleX styles <br /> Extra styles for the body cell.                                                                                 |
+| `skeleton`        | `ReactNode` <br /> Cell content while loading.                                                                                       |
+| `expandedContent` | `(row) => ReactNode` <br /> Detail panel shown when the row expands.                                                                 |
+| `autoSize`        | `boolean` <br /> Absorbs free width under `columnsResizable` and reflows with the container. Default `false`.                        |
+| `fillWidth`       | `boolean` <br /> Absorbs the free-space strip; one column per grid. Default `false`.                                                 |
+| `cellEdit`        | `{ editable, parse, format, clearValue, control }` <br /> Marks the column writable for paste, fill, clear, and the built-in editor. |
+
+`cellEdit` keys: `editable` (`boolean` or `(row) => boolean`, default `true`), `parse` (`(raw, row) => unknown`, return `undefined` to reject), `format` (`(value, row) => string`), `clearValue` (default `null`), and `control` (`text` or `textarea`).
+
+### Layout parts
+
+| Prop                               | Description                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------- |
+| `DataGridContainer` `border`       | `boolean` <br /> Draws an edge around the grid, with rounded corners. Default `false`. |
+| `DataGridScrollArea` `table`       | table <br /> The grid's table instance. Required.                                      |
+| `DataGridScrollArea` `children`    | `ReactNode` <br /> The table. Required.                                                |
+| `DataGridScrollArea` `orientation` | `horizontal`, `vertical`, `both` <br /> Which scrollbars show. Default `both`.         |
+
+`DataGridContainer` also takes `children` (required). `DataGridScrollArea` wraps the table in a Base UI ScrollArea; its other props pass through to that root.
+
+### Tables
+
+`DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, and `DataGridTableDndRows` each take `table` (required, the grid's table instance) and `footerContent` (`ReactNode`, rows or cells for the footer). `DataGridTableHeader` renders only the header, for a body that scrolls in a separate viewport, and takes `table`.
+
+| Prop                  | Description                                                                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `renderHeader`        | `boolean` <br /> On `DataGridTable` and `DataGridTableVirtual`: set `false` to render the body alone. Default `true`.                              |
+| `handleDragEnd`       | `(event: DragEndEvent) => void` <br /> On `DataGridTableDnd` and `DataGridTableDndRows`: reorder `columnOrder` or your data here. Required.        |
+| `dataIds`             | `UniqueIdentifier[]` <br /> On `DataGridTableDndRows`: row ids in display order. Required.                                                         |
+| `collisionDetection`  | dnd-kit collision function <br /> On `DataGridTableDndRows`: how the drop target is found. Default `closestCenter`.                                |
+| `modifiers`           | dnd-kit modifiers <br /> On `DataGridTableDndRows`: replaces the axis restriction; the container clamp always applies. Default vertical axis only. |
+| `sortingStrategy`     | dnd-kit sorting strategy <br /> On `DataGridTableDndRows`: return `null` to leave rows put while dragging. Default holds rows in place.            |
+| `renderRowDecoration` | `({ row, isDragging, isOver }) => ReactNode` <br /> On `DataGridTableDndRows`: per-row slot for drop indicators and depth guides.                  |
+| `dropIndicator`       | `boolean` <br /> On `DataGridTableDndRows`: line on the seam the row would land on. Default `true`.                                                |
+| `onDragStart`         | `(event) => void` <br /> On `DataGridTableDndRows`: dnd-kit drag start.                                                                            |
+| `onDragMove`          | `(event) => void` <br /> On `DataGridTableDndRows`: dnd-kit drag move.                                                                             |
+| `onDragOver`          | `(event) => void` <br /> On `DataGridTableDndRows`: dnd-kit drag over.                                                                             |
+| `onDragCancel`        | `(event) => void` <br /> On `DataGridTableDndRows`: dnd-kit drag cancel.                                                                           |
+
+#### DataGridTableVirtual
+
+A virtualized table with controlled scrolling and infinite loading.
+
+| Prop                       | Description                                                                                                                                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `height`                   | `number`, `string` <br /> Height of the scrolling body.                                                                                                                                                     |
+| `estimateSize`             | `number` <br /> Estimated row height in px. Default `48`.                                                                                                                                                   |
+| `overscan`                 | `number` <br /> Rows rendered beyond the view. Default `10`.                                                                                                                                                |
+| `scrollBehavior`           | `ScrollBehavior` <br /> Animation when revealing a target row or column. Default `auto`.                                                                                                                    |
+| `scrollToRowIndex`         | `number` <br /> Center-section row index to reveal.                                                                                                                                                         |
+| `scrollToRowAlign`         | `auto`, `center`, `start`, `end` <br /> Alignment for the revealed row. Default `auto`.                                                                                                                     |
+| `scrollToColumnIndex`      | `number` <br /> Center visible column index to reveal.                                                                                                                                                      |
+| `scrollToColumnAlign`      | `auto`, `center`, `start`, `end` <br /> Alignment for the revealed column. Default `auto`.                                                                                                                  |
+| `columnVirtualizerOptions` | `{ enabled, overscan }` <br /> Opt-in column windowing; needs a fixed layout and a single header row.                                                                                                       |
+| `onFetchMore`              | `() => void` <br /> Turns on infinite mode and asks for the next page near the end.                                                                                                                         |
+| `isFetchingMore`           | `boolean` <br /> Shows the fetching row and holds further requests. Default `false`.                                                                                                                        |
+| `hasMore`                  | `boolean` <br /> `false` shows the all-loaded row and stops requests.                                                                                                                                       |
+| `fetchMoreOffset`          | `number` <br /> Distance from the end that triggers `onFetchMore`. Default `0`.                                                                                                                             |
+| `virtualizerOptions`       | TanStack Virtual options <br /> Passed to the virtualizer; `estimateSize`, `getItemKey`, and `getScrollElement` also receive the row or the grid's elements, and `enabled: false` turns virtualization off. |
+
+### Column and cell parts
+
+| Prop                                        | Description                                                                                        |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `DataGridColumnHeader` `table`              | table <br /> The grid's table instance. Required.                                                  |
+| `DataGridColumnHeader` `column`             | column <br /> The column this header belongs to. Required.                                         |
+| `DataGridColumnHeader` `title`              | `string` <br /> Falls back to `meta.headerTitle`, then a string `header`, then the column id.      |
+| `DataGridColumnHeader` `icon`               | `ReactNode` <br /> Shown beside the title.                                                         |
+| `DataGridColumnHeader` `filter`             | `ReactNode` <br /> A filter control, usually `DataGridColumnFilter`.                               |
+| `DataGridColumnHeader` `visibility`         | `boolean` <br /> Adds the columns submenu; needs `tableLayout.columnsVisibility`. Default `false`. |
+| `DataGridColumnFilter` `options`            | `{ label, value, icon? }[]` <br /> The choices of the faceted multi-select. Required.              |
+| `DataGridColumnFilter` `column`             | column <br /> The column to filter.                                                                |
+| `DataGridColumnFilter` `title`              | `string` <br /> Label on the trigger.                                                              |
+| `DataGridColumnVisibility` `table`          | table <br /> The grid's table instance. Required.                                                  |
+| `DataGridColumnVisibility` `trigger`        | element <br /> The element that opens the menu of column checkboxes. Required.                     |
+| `DataGridTableRowExpand` `row`              | TanStack row <br /> The row to toggle. Required.                                                   |
+| `DataGridTableRowExpand` `indent`           | `number` <br /> Pixels of indent per tree depth. Default `20`.                                     |
+| `DataGridTableRowExpand` `children`         | `ReactNode` <br /> Replaces the toggle icon. Default a chevron.                                    |
+| `DataGridTableDndRowHandle` `disabled`      | `boolean` <br /> Mutes the grip but keeps the gutter. Default `false`.                             |
+| `DataGridTableDndRowHandle` `disabledLabel` | `string` <br /> Announced and shown on hover while disabled.                                       |
+
+`DataGridTableRowSelect` takes `row`, `DataGridTableRowPin` takes `row` and `table`, and `DataGridTableRowSelectAll` takes `table`; all are required.
+
+### Pagination, selection, and cell selection
+
+| Prop                                     | Description                                                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `DataGridPagination` `sizes`             | `number[]` <br /> Page-size choices. Default `5, 10, 25, 50, 100`.                                       |
+| `DataGridPagination` `sizesSkeleton`     | `ReactNode` <br /> Placeholder for the size select while loading. Default a skeleton.                    |
+| `DataGridPagination` `moreLimit`         | `number` <br /> Page buttons shown per group. Default `5`.                                               |
+| `DataGridPagination` `info`              | `string` <br /> Template with `{from}`, `{to}`, and `{count}`. Default from `labels`.                    |
+| `DataGridPagination` `infoSkeleton`      | `ReactNode` <br /> Placeholder for the range text while loading. Default a skeleton.                     |
+| `DataGridPagination` `rowsPerPageLabel`  | `string` <br /> Label of the size select. Default from `labels`.                                         |
+| `DataGridPagination` `previousPageLabel` | `string` <br /> Name of the previous button. Default from `labels`.                                      |
+| `DataGridPagination` `nextPageLabel`     | `string` <br /> Name of the next button. Default from `labels`.                                          |
+| `DataGridPagination` `ellipsisText`      | `string` <br /> Text of the group-jump buttons. Default from `labels`.                                   |
+| `DataGridCellSelection` `apiRef`         | ref to `DataGridCellSelectionApi` <br /> Exposes `focusCell`, `clearSelection`, and `scrollToCell`.      |
+| `DataGridCellSelection` `clipboard`      | `boolean` <br /> Native copy, cut, and paste. Default `true`.                                            |
+| `DataGridCellSelection` `keyboard`       | `boolean` <br /> Arrows, Home/End, paging, Enter, F2, type-to-edit, Tab, Delete, Escape. Default `true`. |
+| `DataGridSelectionBar` `children`        | `ReactNode` <br /> Your bulk actions.                                                                    |
+| `DataGridSelectionBar` `label`           | `(count) => ReactNode` <br /> The count text. Default `<n> selected`.                                    |
+| `DataGridSelectionBar` `clearLabel`      | `ReactNode` <br /> Label of the clear button. Default `Clear`.                                           |
+| `DataGridSelectionBar` `onClear`         | `() => void` <br /> Runs after the selection is reset.                                                   |
+
+`DataGridPagination`, `DataGridCellSelection`, and `DataGridSelectionBar` also take `table` (required).
+
+### Table building blocks
+
+`DataGridTable` and `DataGridTableVirtual` assemble these; use them for a custom table. Props, all required unless marked:
+
+- `DataGridTableBase`: `table`, `children` (the `thead`, `tbody`, and `tfoot`).
+- `DataGridTableViewport`: `table`, `children`, `viewportRef` (optional, receives the viewport element), and `style` (optional `CSSProperties`, inline CSS and not StyleX).
+- `DataGridTableHead`, `DataGridTableBody`, `DataGridTableFoot`: `children` only. `DataGridTableRowSpacer` and `DataGridTableLoader` take no props.
+- `DataGridTableAddRow`, `DataGridTableEmpty`, `DataGridTableFillHeadCell`, `DataGridTableFillBodyCell`: `table` only.
+- `DataGridTableHeadRow`: `children`, `rowId` (rendered as `data-header-row-id`).
+- `DataGridTableHeadRowCell`: `header`, `table`, `children`; optional `dndRef` and `dndStyle` from `DataGridTableDnd`.
+- `DataGridTableHeadRowCellResize`: `header`, `table`.
+- `DataGridTableFootRow`: `table`, `children`. `DataGridTableFootRowCell`: optional `children` and `colSpan`.
+- `DataGridTableBodyRowSkeleton`: `children`; optional `wantsBorder` (draws the bottom border) and `stripe` (alternating tint under `stripped`).
+- `DataGridTableBodyRowSkeletonCell`: `column`, `table`, `children`.
+- `DataGridTableBodyRow`: `row`, `table`, `children`; optional `pinnedBoundary` (`top` or `bottom`), `rowRef`, `dndRef` and `dndStyle` from `DataGridTableDndRows`, `dataIndex` (rendered as `data-index`), `stripe`, `wantsBorder`.
+- `DataGridTableBodyRowCell`: `cell`, `table`, `children`; optional `dndRef`, `dndStyle`, `columnIndex` (rendered as `data-column-index`), `isFirstRow` and `isLastRow` (clamp the selection outline), `nextPinned`, `prevPinned`, `nextIsFillCell`, `rowSelected` and `rowStatus` (`new`, `dirty`, `deleted`) to tint pinned cells.
+- `DataGridTableBodyRowExpandded` (spelled so in the export): `row` only.
+- `DataGridTableRenderedRow`: a body row with its cells, pinning, and expansion. `row`, `table`; optional `pinnedBoundary`, `rowRef`, `rowIndex`, `stripe` (default derived), `wantsBorder`, `isFirstRow`, `isLastRow`, `centerWindow` (`{ start, end }`, renders only that slice of center cells).
+
+| Data attribute             | Description                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `data-state`               | Set by this library on a body row: `selected` while the row is selected.                                                        |
+| `data-row-status`          | Set by this library on a body row: `new`, `dirty`, or `deleted`, from `getRowStatus`.                                           |
+| `data-row-pinned-boundary` | Set by this library on a body row: `top` or `bottom` on the edge of a pinned group.                                             |
+| `data-cell-status`         | Set by this library on a body cell: `dirty` or `invalid`, from `getCellStatus`.                                                 |
+| `data-pinned`              | Set by this library on head and body cells: `start` or `end` while the column is pinned.                                        |
+| `data-cell-selected`       | Set by this library on a body cell: present while the cell is in the selection.                                                 |
+| `data-cell-focused`        | Set by this library on a body cell: present on the focused cell.                                                                |
+| `data-cell-edge-top`       | Set by this library on a body cell: present on the selection's top edge. `-right`, `-bottom`, and `-left` mark the other edges. |
+
+### Hooks and helpers
+
+- `useDataGrid`: reads the grid context (`props`, `recordCount`, `isLoading`, `labels`) inside a `DataGrid`.
+- `dataGridFeatures`: the TanStack feature bundle the grid renders against. `mergeDataGridLabels` merges `labels` overrides over the English defaults.
+- Column and cell: `getColumnHeaderLabel`, `toDataGridDomId`, `getDataGridCellSelectionCellAttrs`, `getPinningStyles`, `getDataGridTreeIndentStyle`, `getDataGridScrollAreaViewport`.
+- Rows and headers: `getDataGridTableRowSections`, `getDataGridTableResolvedRows`, `getDataGridTableMergedHeaderGroups`, `hasDataGridTableRightPinnedColumns`.
+- Clipboard and edits: `parseDataGridClipboardText`, `serializeDataGridClipboardText`, `tileDataGridClipboardBlock`, `buildDataGridPasteDetails`, `buildDataGridClearDetails`, `invertDataGridCellsChange` (swaps a batch's values for undo and redo), `getDataGridActiveRegionGrid`, `getDataGridVisibleSelectedCellCount`.
+
+## Caveats
+
+- Without `onCellsChange`, copy still works but paste, cut, clear, fill, and edit write nothing.
+- `DataGridCellSelection` needs `tableLayout.cellSelection`; with it on the table renders as `role="grid"`, and a page change clears the selection.
+- `DataGridColumnHeader` does not forward the `div` attributes its type extends.
+- `DataGridTableBodyRowExpandded` is exported with that spelling.
+- `DataGridTableViewport` takes `style` as inline `CSSProperties`, not StyleX.

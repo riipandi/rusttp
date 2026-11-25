@@ -6,17 +6,14 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, mulberry32, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/BollingerBand',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -54,9 +51,9 @@ const priceRows: readonly PriceDay[] = (() => {
 })()
 
 const priceConfig = {
-  price: { label: 'Price', color: seriesColors.langdon },
-  sma: { label: 'SMA-10', color: seriesColors.neutral },
-  band: { label: '±2σ band', color: seriesColors.brand }
+  price: { label: 'Price', color: seriesNames.langdon },
+  sma: { label: 'SMA-10', color: seriesNames.neutral },
+  band: { label: '±2σ band', color: seriesNames.brand }
 } as const
 
 const priceScales = {
@@ -64,36 +61,62 @@ const priceScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Moonstone: Story = {
-  name: 'Moonstone price',
-  render: () => {
+interface PlaygroundArgs {
+  band: boolean
+  sma: boolean
+  price: boolean
+  legend: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['band', 'sma', 'price', 'legend'] } },
+  argTypes: {
+    band: { control: 'boolean' },
+    sma: { control: 'boolean' },
+    price: { control: 'boolean' },
+    legend: { control: 'boolean' }
+  },
+  args: { band: true, sma: true, price: true, legend: true },
+  render: ({ band, sma, price, legend }) => {
     const definition = defineChart({
       marks: [
         // Band first so the price line paints on top of the translucent fill.
-        areaY(priceRows, {
-          id: 'band',
-          x: 'day',
-          y1: 'lower',
-          y2: 'upper',
-          fill: seriesColors.brand,
-          fillOpacity: 0.12,
-          stroke: 'none'
-        }),
-        lineY(priceRows, {
-          id: 'sma',
-          x: 'day',
-          y: 'sma',
-          stroke: seriesColors.neutral,
-          strokeWidth: 1.5,
-          strokeDasharray: '4 3'
-        }),
-        lineY(priceRows, {
-          id: 'price',
-          x: 'day',
-          y: 'price',
-          stroke: seriesColors.langdon,
-          strokeWidth: 2
-        }),
+        ...(band
+          ? [
+              areaY(priceRows, {
+                id: 'band',
+                x: 'day',
+                y1: 'lower',
+                y2: 'upper',
+                fill: seriesColors.brand,
+                fillOpacity: 0.12,
+                stroke: 'none'
+              })
+            ]
+          : []),
+        ...(sma
+          ? [
+              lineY(priceRows, {
+                id: 'sma',
+                x: 'day',
+                y: 'sma',
+                stroke: seriesColors.neutral,
+                strokeWidth: 1.5,
+                strokeDasharray: '4 3'
+              })
+            ]
+          : []),
+        ...(price
+          ? [
+              lineY(priceRows, {
+                id: 'price',
+                x: 'day',
+                y: 'price',
+                stroke: seriesColors.langdon,
+                strokeWidth: 2
+              })
+            ]
+          : []),
         crosshair({ x: { label: true }, y: false, marker: true })
       ],
       scales: priceScales,
@@ -113,7 +136,11 @@ export const Moonstone: Story = {
           ariaLabel='Moonstone powder price with Bollinger band'
           height={260}
         />
-        <ChartLegend />
+        {legend && (
+          <ChartLegend
+            hide={Object.entries({ price, sma, band }).flatMap(([key, on]) => (on ? [] : [key]))}
+          />
+        )}
       </ChartContainer>
     )
   },

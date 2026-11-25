@@ -1,35 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect, fn, userEvent } from 'storybook/test'
+import type { ComponentProps } from 'react'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, radius, stroke } from '../../styles/tokens.stylex'
+import { Button } from '../button'
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from '../field'
 import { RadioGroup, RadioGroupItem } from './radio.component'
+import { radioSizes } from './radio.stylex'
 
 const meta = {
   title: 'Base Components/Radio',
   component: RadioGroup,
-  parameters: { layout: 'centered' },
-  argTypes: {
-    disabled: { control: 'boolean' }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof RadioGroup>
 
 type Story = StoryObj<typeof meta>
@@ -59,7 +44,7 @@ const styles = stylex.create({
     gap: 8
   },
   disabled: {
-    opacity: 0.5
+    color: colors.foregroundDisabled
   },
   groupGap4: {
     gap: 16
@@ -88,13 +73,22 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { defaultValue: 'Slytherin' },
-  render: (args) => (
+type PlaygroundArgs = ComponentProps<typeof RadioGroup> &
+  Pick<ComponentProps<typeof RadioGroupItem>, 'size'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['size', 'disabled', 'readOnly'] } },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(radioSizes) },
+    disabled: { control: 'boolean' },
+    readOnly: { control: 'boolean' }
+  },
+  args: { defaultValue: 'Slytherin', size: 'medium', disabled: false, readOnly: false },
+  render: ({ size, ...args }) => (
     <RadioGroup {...args}>
       {options.map((option) => (
         <label key={option} {...stylex.props(styles.label)}>
-          <RadioGroupItem value={option} /> {option}
+          <RadioGroupItem value={option} size={size} /> {option}
         </label>
       ))}
     </RadioGroup>
@@ -112,7 +106,83 @@ export const Playground: Story = {
   }
 }
 
+const states = ['default', 'disabled', 'invalid'] as const
+
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<RadioGroup defaultValue='a' disabled aria-label='Dossier disabled'>
+  <label>
+    <RadioGroupItem value='a' /> Illuminati dossier
+  </label>
+  <label>
+    <RadioGroupItem value='b' /> Priory of Sion dossier
+  </label>
+</RadioGroup>
+
+<Field invalid>
+  <RadioGroup defaultValue='a' aria-label='Dossier invalid'>…</RadioGroup>
+</Field>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='state' rows={states}>
+      {(state) => {
+        const group = (
+          <RadioGroup
+            defaultValue='a'
+            disabled={state === 'disabled'}
+            aria-label={`Dossier ${state}`}
+          >
+            <label {...stylex.props(styles.label, state === 'disabled' && styles.disabled)}>
+              <RadioGroupItem value='a' /> Illuminati dossier
+            </label>
+            <label {...stylex.props(styles.label, state === 'disabled' && styles.disabled)}>
+              <RadioGroupItem value='b' /> Priory of Sion dossier
+            </label>
+          </RadioGroup>
+        )
+        return state === 'invalid' ? <Field invalid>{group}</Field> : group
+      }}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = (state: string) =>
+      Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[role="radio"]'))
+    for (const item of items('disabled')) {
+      await expect(item).toHaveAttribute('data-disabled')
+      await expectDisabledLook(item)
+    }
+    const [first, second] = items('disabled')
+    if (!first || !second) throw new Error('Disabled radios not found')
+    await userEvent.click(second)
+    await expect(second).toHaveAttribute('aria-checked', 'false')
+    await expect(first).toHaveAttribute('aria-checked', 'true')
+
+    for (const item of items('invalid')) await expect(item).toHaveAttribute('data-invalid')
+    for (const item of items('default')) await expect(item).not.toHaveAttribute('data-invalid')
+  }
+}
+
 export const Description: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<RadioGroup defaultValue='starter'>
+  <Field orientation='horizontal'>
+    <RadioGroupItem value='starter' id='plan-starter' />
+    <FieldContent>
+      <FieldLabel htmlFor='plan-starter'>Owl post plan</FieldLabel>
+      <FieldDescription>Five vault visits a month and standard owl support.</FieldDescription>
+    </FieldContent>
+  </Field>
+  …
+</RadioGroup>`
+      }
+    }
+  },
   args: { defaultValue: 'starter' },
   render: (args) => (
     <RadioGroup {...args} style={styles.groupGap4}>
@@ -130,6 +200,24 @@ export const Description: Story = {
 }
 
 export const ChoiceCard: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<RadioGroup defaultValue='pro'>
+  <Field orientation='horizontal'>
+    <FieldLabel style={…}>
+      <RadioGroupItem value='starter' />
+      <FieldContent>
+        <FieldTitle>Owl post plan</FieldTitle>
+        <FieldDescription>Five vault visits a month and standard owl support.</FieldDescription>
+      </FieldContent>
+    </FieldLabel>
+  </Field>
+  …
+</RadioGroup>`
+      }
+    }
+  },
   name: 'Choice card',
   args: { defaultValue: 'pro' },
   render: (args) => (
@@ -150,34 +238,6 @@ export const ChoiceCard: Story = {
   )
 }
 
-export const Disabled: Story = {
-  args: { defaultValue: 'a', disabled: true },
-  render: (args) => (
-    <RadioGroup {...args}>
-      <label {...stylex.props(styles.label, styles.disabled)}>
-        <RadioGroupItem value='a' /> Illuminati dossier
-      </label>
-      <label {...stylex.props(styles.label, styles.disabled)}>
-        <RadioGroupItem value='b' /> Priory of Sion dossier
-      </label>
-    </RadioGroup>
-  ),
-  play: async ({ canvas }) => {
-    const items = canvas.getAllByRole('radio')
-    for (const item of items) {
-      await expect(item).toHaveAttribute('data-disabled')
-      await expect(getComputedStyle(item).opacity).toBe('0.5')
-      await expect(getComputedStyle(item).cursor).toBe('not-allowed')
-    }
-
-    const second = items[1]
-    if (!second) throw new Error('Second radio not found')
-    await userEvent.click(second)
-    await expect(second).toHaveAttribute('aria-checked', 'false')
-    await expect(items[0]).toHaveAttribute('aria-checked', 'true')
-  }
-}
-
 export const OnValueChange: StoryObj<{ handleChange: ReturnType<typeof fn> }> = {
   name: 'onValueChange',
   args: { handleChange: fn() },
@@ -194,5 +254,82 @@ export const OnValueChange: StoryObj<{ handleChange: ReturnType<typeof fn> }> = 
     await userEvent.click(canvas.getByRole('radio', { name: 'Gryffindor' }))
     // onValueChange carries (value, eventDetails) — check the value arg.
     await expect(args.handleChange.mock.calls[0]?.[0]).toBe('Gryffindor')
+  }
+}
+
+export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<RadioGroup defaultValue='house' aria-label='House small'>
+  <label>
+    <RadioGroupItem value='house' size='small' /> small
+  </label>
+</RadioGroup>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
+      {(size) => (
+        <RadioGroup defaultValue='house' aria-label={`House ${size}`}>
+          <label {...stylex.props(styles.label)}>
+            <RadioGroupItem value='house' size={size} /> {size}
+          </label>
+        </RadioGroup>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectBoxSizes(canvasElement, '[role="radio"]', {
+      small: [12, 12],
+      medium: [16, 16],
+      large: [20, 20]
+    })
+}
+
+/** Tab enters the group on the checked option, the arrow keys move focus and select, and Space selects the focused one. */
+export const Keyboard: Story = {
+  args: { defaultValue: 'Slytherin' },
+  render: (args) => (
+    <>
+      <RadioGroup {...args} aria-label='House'>
+        {options.map((option) => (
+          <label key={option} {...stylex.props(styles.label)}>
+            <RadioGroupItem value={option} /> {option}
+          </label>
+        ))}
+      </RadioGroup>
+      <Button size='small'>Sort me</Button>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const gryffindor = canvas.getByRole('radio', { name: 'Gryffindor' })
+    const slytherin = canvas.getByRole('radio', { name: 'Slytherin' })
+    const ravenclaw = canvas.getByRole('radio', { name: 'Ravenclaw' })
+    const after = canvas.getByRole('button', { name: 'Sort me' })
+
+    // The group is one tab stop, and it is the checked option.
+    await userEvent.tab()
+    await expect(slytherin).toHaveFocus()
+    await userEvent.keyboard('{ArrowDown}')
+    await waitFor(() => expect(ravenclaw).toHaveFocus())
+    await expect(ravenclaw).toHaveAttribute('aria-checked', 'true')
+    await expect(slytherin).toHaveAttribute('aria-checked', 'false')
+
+    // The arrows wrap around the ends.
+    await userEvent.keyboard('{ArrowDown}')
+    await waitFor(() => expect(gryffindor).toHaveFocus())
+    await expect(gryffindor).toHaveAttribute('aria-checked', 'true')
+    await userEvent.keyboard('{ArrowUp}')
+    await waitFor(() => expect(ravenclaw).toHaveFocus())
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() => expect(gryffindor).toHaveFocus())
+    await userEvent.keyboard('{ArrowLeft}')
+    await waitFor(() => expect(ravenclaw).toHaveFocus())
+
+    // Tab leaves the group in one press.
+    await userEvent.tab()
+    await expect(after).toHaveFocus()
   }
 }

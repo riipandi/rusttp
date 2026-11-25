@@ -1,0 +1,122 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './calendar.stories'
+
+<Meta of={Stories} />
+
+# Calendar
+
+A month grid to pick a day, several days, or a range.
+
+## Import
+
+```jsx
+import { Calendar } from 'uilibs/extra/calendar'
+```
+
+Built on [react-day-picker](https://daypicker.dev) `DayPicker`; the month and year dropdowns use the library's Select. Props not listed here pass through.
+
+## Anatomy
+
+- **Calendar:** the whole picker. It draws the grid, the previous and next buttons, and the caption itself, so it has no child parts. `mode` is `single`, `multiple`, or `range`, and `selected` and `onSelect` hold the choice.
+
+```jsx
+<Calendar mode='single' selected={date} onSelect={setDate} />
+```
+
+## Examples
+
+### Modes
+
+<Canvas of={Stories.Modes} />
+
+### Layouts
+
+<Canvas of={Stories.Layouts} />
+
+### Date picker
+
+A calendar in a Popover.
+
+<Canvas of={Stories.DatePickerSingle} />
+
+### Keyboard
+
+The previous and next buttons and the focused day draw a 2 px ring; the arrow keys move between days.
+
+<Canvas of={Stories.Keyboard} />
+
+### Custom days
+
+A `DayButton` of your own replaces the day cell. Compose the `calendarStyles` for the day, and spread react-day-picker's props before your own `stylex.props`, or its `className` replaces the StyleX class.
+
+<Canvas of={Stories.CustomDays} />
+
+### Week numbers
+
+<Canvas of={Stories.WeekNumbers} />
+
+### Right to left
+
+Set `dir='rtl'` on the document or a wrapper: the month arrows mirror and the grid reads right to left. A `lang` is not needed, and Arabic text in a `dir='ltr'` page keeps its arrows.
+
+<Canvas of={Stories.RightToLeft} />
+
+## Accessibility
+
+The calendar is react-day-picker's grid with this library's styles. The `Keyboard` example above walks it. The rest of the day-picker's accessibility is documented at [daypicker.dev](https://daypicker.dev).
+
+| Key                       | Action                                                               |
+| ------------------------- | -------------------------------------------------------------------- |
+| `Tab`                     | Reaches the previous-month button first.                             |
+| `ArrowLeft`, `ArrowRight` | Move focus to the previous or next day.                              |
+| `ArrowUp`, `ArrowDown`    | Move focus to the same day of the previous or next week.             |
+| `Home`, `End`             | Move focus to the first or last day of the week.                     |
+| `Enter` or `Space`        | Picks the focused day; the selection moves with it in `single` mode. |
+| `PageUp`, `PageDown`      | Show the previous or next month.                                     |
+
+- A day button's name starts with its number, so a spoken command such as "click 13" matches (WCAG 2.5.3).
+- Give each calendar on a page its own `labels.labelNav`: the navigation landmarks need different names.
+
+## API reference
+
+`Calendar` also takes `style`: StyleX styles that replace `className` and `style`. They land on the root. See [Styling](?path=/docs/styling--docs).
+
+### Calendar
+
+| Prop              | Description                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buttonVariant`   | `solid`, `faded`, `outline`, `ghost` <br /> The fill of the previous and next buttons. Default `ghost`.                                                                                  |
+| `showOutsideDays` | `boolean` <br /> Shows the days of the neighbouring months. Default `true`.                                                                                                              |
+| `captionLayout`   | react-day-picker's values, such as `label` and `dropdown` <br /> `label` shows the month as text. Default `label`.                                                                       |
+| `startMonth`      | `Date` <br /> The first month the calendar can show. Default January 1900.                                                                                                               |
+| `endMonth`        | `Date` <br /> The last month the calendar can show. Default December 2100.                                                                                                               |
+| `labels`          | react-day-picker's `labels` functions <br /> Your functions replace the defaults one by one. Default: `labelDayButton` starts with the day number.                                       |
+| `formatters`      | react-day-picker's `formatters` functions <br /> Your functions replace the defaults one by one. Default: `formatMonthDropdown` is the short month.                                      |
+| `locale`          | react-day-picker's `Locale` <br /> The language of the month, weekday, and day names, and of `data-day`. Default the browser's.                                                          |
+| `classNames`      | react-day-picker's `classNames` <br /> Class names merged over the calendar's own on each part. Prefer `style` and the `calendarStyles` recipe; this is react-day-picker's escape hatch. |
+| `components`      | react-day-picker's `components` <br /> Replaces a part, such as `DayButton`; the `CustomDays` story shows one.                                                                           |
+
+Set by this library on each day button:
+
+| Data attribute         | Description                                                           |
+| ---------------------- | --------------------------------------------------------------------- |
+| `data-day`             | The date, formatted by `toLocaleDateString` in the calendar's locale. |
+| `data-selected-single` | `true` for a selected day that is not part of a range.                |
+| `data-range-start`     | `true` on the first day of a range.                                   |
+| `data-range-end`       | `true` on the last day of a range.                                    |
+| `data-range-middle`    | `true` on the days between the ends.                                  |
+
+Set by react-day-picker on each day cell:
+
+| Data attribute  | Description                                 |
+| --------------- | ------------------------------------------- |
+| `data-today`    | Present on today's date.                    |
+| `data-outside`  | Present on a day of a neighbouring month.   |
+| `data-disabled` | Present on a disabled day.                  |
+| `data-focused`  | Present on the day that has keyboard focus. |
+
+## Caveats
+
+- Several calendars on one page each need their own `labels.labelNav`, or axe reports duplicate landmark names.
+- The default day name starts with the visible number, as WCAG 2.5.3 asks; a `labels.labelDayButton` of your own replaces it.
+- Navigation stops at January 1900 and December 2100 unless you set `startMonth` and `endMonth`.

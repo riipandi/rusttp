@@ -1,30 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { pressUntil } from '../../contracts/keyboard'
 import { Button } from '../button'
-import { toast, ToastProvider, Toaster, useToast } from './toast.component'
+import { toast, ToastProvider, Toaster, useToast, type ToastColor } from './toast.component'
 
 const meta = {
   title: 'Base Components/Toast',
   component: ToastProvider,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ToastProvider>
 
 type Story = StoryObj<typeof meta>
@@ -68,20 +53,43 @@ function DurationButton() {
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <ToastProvider>
-      <Button
-        variant='outline'
-        onClick={() =>
-          toast('Scheduled: Hogsmeade trip', {
-            description: 'Departure from Platform 9¾ at 11:00 AM'
-          })
-        }
-      >
+// The text and color are options of the `toast()` call, not props of the provider.
+type PlaygroundArgs = Pick<ComponentProps<typeof ToastProvider>, 'timeout' | 'limit'> &
+  Pick<ComponentProps<typeof Toaster>, 'swipeDirection'> & {
+    title: string
+    description: string
+    color: ToastColor
+  }
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['title', 'description', 'color', 'timeout', 'limit', 'swipeDirection']
+    }
+  },
+  argTypes: {
+    title: { control: 'text' },
+    description: { control: 'text' },
+    color: { control: 'radio', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] },
+    timeout: { control: 'number' },
+    limit: { control: 'number' },
+    swipeDirection: { control: 'select', options: ['up', 'down', 'left', 'right'] }
+  },
+  args: {
+    title: 'Scheduled: Hogsmeade trip',
+    description: 'Departure from Platform 9¾ at 11:00 AM',
+    color: 'neutral',
+    timeout: 5000,
+    limit: 3,
+    swipeDirection: 'down'
+  },
+  render: ({ title, description, color, timeout, limit, swipeDirection }) => (
+    <ToastProvider timeout={timeout} limit={limit}>
+      <Button variant='outline' onClick={() => toast(title, { description, color })}>
         Show Ministry notice
       </Button>
-      <Toaster />
+      <Toaster swipeDirection={swipeDirection} />
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
@@ -135,6 +143,19 @@ export const Duration: Story = {
 }
 
 export const Types: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToastProvider>
+  <Button onClick={() => toast.success('Vault updated at Gringotts')}>Success</Button>
+  <Button onClick={() => toast.error('Alohomora failed', { description: 'The door is still locked.' })}>
+    Error
+  </Button>
+  <Toaster />
+</ToastProvider>`
+      }
+    }
+  },
   render: () => (
     <ToastProvider>
       <div {...stylex.props(styles.row)}>
@@ -162,6 +183,24 @@ export const Types: Story = {
 }
 
 export const Action: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToastProvider>
+  <Button
+    onClick={() =>
+      toast('Howler silenced', {
+        actionProps: { children: 'Rewind', onClick: () => toast('Howler restored') }
+      })
+    }
+  >
+    Silence a Howler
+  </Button>
+  <Toaster />
+</ToastProvider>`
+      }
+    }
+  },
   render: () => (
     <ToastProvider>
       <Button
@@ -183,6 +222,16 @@ export const Action: Story = {
 }
 
 export const Position: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToastProvider>
+  <Button onClick={() => toast("Owl delivered to the Headmaster's tower")}>Show owl delivery</Button>
+  <Toaster style={…} />
+</ToastProvider>`
+      }
+    }
+  },
   render: () => (
     <ToastProvider>
       <Button variant='outline' onClick={() => toast("Owl delivered to the Headmaster's tower")}>
@@ -193,19 +242,31 @@ export const Position: Story = {
   )
 }
 
-const toneNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
-export const Tones: Story = {
+export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ToastProvider>
+  <Button onClick={() => toast('Owl post: critical', { color: 'critical', timeout: 0 })}>
+    critical
+  </Button>
+  <Toaster />
+</ToastProvider>`
+      }
+    }
+  },
   render: () => (
     <ToastProvider>
       <div {...stylex.props(styles.row)}>
-        {toneNames.map((tone) => (
+        {colorNames.map((color) => (
           <Button
-            key={tone}
+            key={color}
             variant='outline'
-            onClick={() => toast(`Owl post: ${tone}`, { tone, timeout: 0 })}
+            onClick={() => toast(`Owl post: ${color}`, { color, timeout: 0 })}
           >
-            {tone}
+            {color}
           </Button>
         ))}
       </div>
@@ -214,20 +275,20 @@ export const Tones: Story = {
   ),
   play: async ({ canvas }) => {
     const body = within(document.body)
-    const edge = async (tone: (typeof toneNames)[number]) => {
-      await userEvent.click(canvas.getByRole('button', { name: tone }))
-      const title = await body.findByText(`Owl post: ${tone}`)
+    const edge = async (color: (typeof colorNames)[number]) => {
+      await userEvent.click(canvas.getByRole('button', { name: color }))
+      const title = await body.findByText(`Owl post: ${color}`)
       const root = title.closest('[role="dialog"]')
       if (!root) throw new Error('Toast root not found')
-      const color = getComputedStyle(root).borderTopColor
+      const edgeColor = getComputedStyle(root).borderTopColor
       toast.close()
-      await waitFor(() => expect(body.queryByText(`Owl post: ${tone}`)).toBeNull())
-      return color
+      await waitFor(() => expect(body.queryByText(`Owl post: ${color}`)).toBeNull())
+      return edgeColor
     }
-    // A toned toast has its own accent; the neutral one keeps the quiet edge.
+    // A colored toast has its own accent; the neutral one keeps the quiet edge.
     const neutral = await edge('neutral')
-    for (const tone of toneNames.slice(1)) {
-      await expect(await edge(tone)).not.toBe(neutral)
+    for (const color of colorNames.slice(1)) {
+      await expect(await edge(color)).not.toBe(neutral)
     }
   }
 }
@@ -249,5 +310,65 @@ export const CloseLabel: Story = {
     // Base UI keeps the close button out of the accessibility tree until the stack is focused,
     // so it is found by its attribute, not by role.
     await expect(toastRoot?.querySelector('button')).toHaveAttribute('aria-label', 'Dismiss')
+  }
+}
+
+function Notice() {
+  return (
+    <ToastProvider>
+      <Button
+        variant='outline'
+        onClick={() => toast('Owl delivered', { description: 'From Hogwarts', timeout: 0 })}
+      >
+        Send an owl
+      </Button>
+      <Toaster />
+    </ToastProvider>
+  )
+}
+
+// A toast has no open-at-rest prop (it is raised by calling `toast`), so this story raises one that
+// does not time out. The a11y gate runs after `play`, so it reads the toast left on screen.
+export const Open: Story = {
+  render: () => <Notice />,
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Send an owl' }))
+    const toastRoot = (await within(document.body).findByText('Owl delivered')).closest(
+      '[role="dialog"]'
+    )
+    await waitFor(() => expect(toastRoot).toBeVisible())
+    await expect(toastRoot).toHaveAccessibleName('Owl delivered')
+  }
+}
+
+/** F6 moves focus to the toasts, Tab reaches a toast, and Escape closes the focused toast. */
+export const Keyboard: Story = {
+  render: () => <Notice />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'Send an owl' })
+    const title = () => body.queryByText('Owl delivered')
+
+    await userEvent.click(trigger)
+    await waitFor(() => expect(title()).toBeVisible())
+    const toastRoot = title()?.closest('[role="dialog"]')
+    if (!(toastRoot instanceof HTMLElement)) throw new Error('Toast root not found')
+
+    const region = () => body.getByRole('region', { name: 'Notifications' })
+
+    // F6 moves focus from anywhere to the toast region.
+    await pressUntil('{F6}', () => expect(region()).toHaveFocus())
+
+    // Tab from the region reaches the toast, and the next Tab its close button.
+    await pressUntil('{Tab}', () => expect(toastRoot).toHaveFocus(), {
+      when: () => document.activeElement === region()
+    })
+    await pressUntil('{Tab}', () => expect(toastRoot.querySelector('button')).toHaveFocus(), {
+      when: () => document.activeElement === toastRoot
+    })
+
+    // Escape closes the toast that holds focus, and focus returns to where it was.
+    await pressUntil('{Escape}', () => expect(title()).toBeNull(), { when: () => !!title() })
+    await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

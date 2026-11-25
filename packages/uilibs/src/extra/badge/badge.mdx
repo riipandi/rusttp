@@ -1,0 +1,79 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './badge.stories'
+
+<Meta of={Stories} />
+
+# Badge
+
+A compact status label. `variant` sets the fill and `color` sets the role.
+
+## Import
+
+```jsx
+import { Badge } from 'uilibs/extra/badge'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render), so `render` swaps the `span` for another element. Props not listed here pass through.
+
+## Anatomy
+
+- **Badge:** the whole label, a `span` by default. The glyphs and the dismiss button come from `icon`, `endIcon`, and `onDismiss`, not from child parts.
+
+```jsx
+<Badge>Gryffindor</Badge>
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+Dismissible and highlighted badges.
+
+<Canvas of={Stories.States} />
+
+## Accessibility
+
+A badge is text. It takes a Tab stop only through `onDismiss`, which adds a dismiss button named `Dismiss` (`labels.dismiss`), or through a link `render`. The `Keyboard` story presses the dismiss button.
+
+| Key                | Action                                                            |
+| ------------------ | ----------------------------------------------------------------- |
+| `Tab`              | Focuses the dismiss button, the only stop in a dismissible badge. |
+| `Enter` or `Space` | Calls `onDismiss`.                                                |
+
+- The `icon` and `endIcon` glyphs are hidden from assistive technology, so the label carries the meaning.
+
+## API reference
+
+`Badge` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Badge
+
+| Prop          | Description                                                                                                                            |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`     | `solid`, `faded`, `outline`, `ghost` <br /> The fill. Default `solid`.                                                                 |
+| `color`       | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role. Default `primary` for `solid`, `neutral` for the other fills. |
+| `size`        | `small`, `medium`, `large` <br /> Type, padding, and glyph size. Default `medium`.                                                     |
+| `rounded`     | `boolean` <br /> A pill; `false` gives squarer corners. Default `true`.                                                                |
+| `icon`        | glyph component <br /> A glyph before the label.                                                                                       |
+| `endIcon`     | glyph component <br /> A glyph after the label, before the dismiss button.                                                             |
+| `highlighted` | `boolean` <br /> Fades the badge to 0.8 opacity to mark it as the current one. Default `false`.                                        |
+| `onDismiss`   | `() => void` <br /> Adds a trailing dismiss button that calls this.                                                                    |
+| `labels`      | `{ dismiss }` <br /> Name of the dismiss button. Default `Dismiss`.                                                                    |
+
+## Caveats
+
+- Do not combine `onDismiss` with a link `render`: a button cannot sit inside a link.
+- The dismiss button is a 24px touch target at every size, larger than its glyph; its hit area overlaps the badge's own padding and text.
+- `icon` and `endIcon` are sized by `size` and hidden from assistive technology, so the label must carry the meaning.

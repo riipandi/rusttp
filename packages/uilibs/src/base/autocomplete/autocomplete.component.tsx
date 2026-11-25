@@ -37,14 +37,18 @@ import { Autocomplete as BaseAutocomplete } from '@base-ui/react/autocomplete'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import {
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants
+} from '../../styles/control.stylex'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { autocompleteStyles as s } from './autocomplete.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 /**
  * Free-text input with a filtered suggestion popup — unlike Combobox, any
@@ -56,18 +60,27 @@ export const AutocompleteValue = BaseAutocomplete.Value
 export const AutocompleteCollection = BaseAutocomplete.Collection
 
 export function AutocompleteInput({
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style' | 'size'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; `medium` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <BaseAutocomplete.Input
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.input, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.input,
+        style
+      )}
     />
   )
 }
@@ -91,7 +104,7 @@ export function AutocompleteContent({
   ...props
 }: AutocompleteContentProps) {
   return (
-    <BaseAutocomplete.Portal>
+    <BaseAutocomplete.Portal container={usePortalContainer()}>
       <BaseAutocomplete.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -131,7 +144,7 @@ export function AutocompleteItem({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
-  return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
+  return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function AutocompleteGroup({

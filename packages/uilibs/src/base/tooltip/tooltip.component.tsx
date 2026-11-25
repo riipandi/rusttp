@@ -24,6 +24,7 @@ import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { tooltipStyles as s } from './tooltip.stylex'
 
 // Instant tooltips by default (Base UI's own default is 600ms).
@@ -39,15 +40,21 @@ export const TooltipTrigger = BaseTooltip.Trigger
 
 export interface TooltipContentProps
   extends
-    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style'>,
+    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style' | 'color'>,
     Pick<
       React.ComponentProps<typeof BaseTooltip.Positioner>,
       'align' | 'alignOffset' | 'side' | 'sideOffset'
     > {
+  /**
+   * The surface: `neutral` (default) matches the other popups; `inverted` is the foreground color on
+   * the page; `dark` is black with white text in both themes.
+   */
+  color?: 'neutral' | 'inverted' | 'dark'
   style?: stylex.StyleXStyles
 }
 
 export function TooltipContent({
+  color = 'neutral',
   style,
   children,
   side = 'top',
@@ -57,7 +64,7 @@ export function TooltipContent({
   ...props
 }: TooltipContentProps) {
   return (
-    <BaseTooltip.Portal>
+    <BaseTooltip.Portal container={usePortalContainer()}>
       <BaseTooltip.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -72,6 +79,8 @@ export function TooltipContent({
             popupFx.fade,
             popupFx.pose,
             s.popup,
+            color === 'inverted' && s.popupInverted,
+            color === 'dark' && s.popupDark,
             ring({ shadow: shadow.raised }),
             style
           )}
@@ -85,8 +94,22 @@ export function TooltipContent({
               aria-hidden='true'
               {...stylex.props(s.arrowSvg)}
             >
-              <path d='M0 6 L6 0 L12 6 Z' {...stylex.props(s.arrowFill)} />
-              <path d='M0 6 L6 0 L12 6' {...stylex.props(s.arrowStroke)} />
+              <path
+                d='M0 6 L6 0 L12 6 Z'
+                {...stylex.props(
+                  s.arrowFill,
+                  color === 'inverted' && s.arrowFillInverted,
+                  color === 'dark' && s.arrowFillDark
+                )}
+              />
+              <path
+                d='M0 6 L6 0 L12 6'
+                {...stylex.props(
+                  s.arrowStroke,
+                  color === 'inverted' && s.arrowStrokeInverted,
+                  color === 'dark' && s.arrowStrokeDark
+                )}
+              />
             </svg>
           </BaseTooltip.Arrow>
         </BaseTooltip.Popup>

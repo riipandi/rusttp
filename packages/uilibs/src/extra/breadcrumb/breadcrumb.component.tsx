@@ -1,12 +1,10 @@
 import { ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { visuallyHidden } from '../../styles/utils.stylex'
+import { glyphSize } from '../../styles/glyph'
+import type { ColorRole, StyleProp } from '../../styles/types'
+import { mirrorInRtl, visuallyHidden } from '../../styles/utils.stylex'
 import { breadcrumbStyles as s } from './breadcrumb.stylex'
-
-interface StyleXStyleProps {
-  style?: stylex.StyleXStyles
-}
 
 /** Built-in words of the breadcrumb parts; each part reads the keys it shows. */
 export interface BreadcrumbLabels {
@@ -16,6 +14,11 @@ export interface BreadcrumbLabels {
   more: string
 }
 
+/** A breadcrumb is `neutral`, or `primary` for the current page. */
+export type BreadcrumbColor = Extract<ColorRole, 'neutral' | 'primary'>
+
+const BreadcrumbColorContext = React.createContext<BreadcrumbColor>('neutral')
+
 const defaultLabels: BreadcrumbLabels = { breadcrumb: 'Breadcrumb', more: 'More' }
 
 interface LabelsProps {
@@ -23,63 +26,71 @@ interface LabelsProps {
 }
 
 export function Breadcrumb({
+  color = 'neutral',
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+}: Omit<React.ComponentProps<'nav'>, 'className' | 'style' | 'color'> &
+  StyleProp &
+  LabelsProps & {
+    /** The role of the links; `neutral` (default) or `primary`. */
+    color?: BreadcrumbColor
+  }) {
   return (
-    <nav
-      aria-label={{ ...defaultLabels, ...labels }.breadcrumb}
-      {...props}
-      {...stylex.props(style)}
-    />
+    <BreadcrumbColorContext.Provider value={color}>
+      <nav
+        aria-label={{ ...defaultLabels, ...labels }.breadcrumb}
+        {...props}
+        {...stylex.props(style)}
+      />
+    </BreadcrumbColorContext.Provider>
   )
 }
 
 export function BreadcrumbList({
   style,
   ...props
-}: Omit<React.ComponentProps<'ol'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'ol'>, 'className' | 'style'> & StyleProp) {
   return <ol {...props} {...stylex.props(s.list, style)} />
 }
 
 export function BreadcrumbItem({
   style,
   ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
   return <li {...props} {...stylex.props(s.item, style)} />
 }
 
 export function BreadcrumbLink({
   style,
   ...props
-}: Omit<React.ComponentProps<'a'>, 'className' | 'style'> & StyleXStyleProps) {
-  return <a {...props} {...stylex.props(s.link, style)} />
+}: Omit<React.ComponentProps<'a'>, 'className' | 'style'> & StyleProp) {
+  const color = React.useContext(BreadcrumbColorContext)
+  return <a {...props} {...stylex.props(s.link, color === 'primary' && s.linkPrimary, style)} />
 }
 
 export function BreadcrumbPage({
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps) {
-  return (
-    <span
-      role='link'
-      aria-disabled='true'
-      aria-current='page'
-      {...props}
-      {...stylex.props(s.page, style)}
-    />
-  )
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+  return <span aria-current='page' {...props} {...stylex.props(s.page, style)} />
 }
 
 export function BreadcrumbSeparator({
   children,
   style,
   ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleXStyleProps) {
+}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
-      {children ?? <ChevronRight size={14} strokeWidth={1.5} aria-hidden />}
+      {children ?? (
+        <ChevronRight
+          size={glyphSize.xsmall}
+          strokeWidth={1.5}
+          aria-hidden
+          {...stylex.props(mirrorInRtl.root)}
+        />
+      )}
     </li>
   )
 }
@@ -88,10 +99,10 @@ export function BreadcrumbEllipsis({
   labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleXStyleProps & LabelsProps) {
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
-      <MoreHorizontal size={16} strokeWidth={2} aria-hidden />
+      <MoreHorizontal size={glyphSize.medium} strokeWidth={2} aria-hidden />
       <span {...stylex.props(visuallyHidden.root)}>{{ ...defaultLabels, ...labels }.more}</span>
     </span>
   )

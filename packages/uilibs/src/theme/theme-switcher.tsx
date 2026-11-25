@@ -1,6 +1,9 @@
 import { Monitor, Moon, Sun } from '@keyline-icons/react'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '../base/button'
+import type { Glyph } from '../styles/types'
 import { useTheme } from './theme'
+import { themeSwitcherStyles as s } from './theme-switcher.stylex'
 
 const cycle: Record<string, string> = { light: 'dark', dark: 'system', system: 'light' }
 
@@ -20,6 +23,36 @@ const defaultLabels: ThemeSwitcherLabels = {
   toLight: 'Switch to light mode'
 }
 
+const icons = { light: Sun, dark: Moon, system: Monitor } as const
+const iconNames = ['light', 'dark', 'system'] as const
+
+/**
+ * The three theme icons, stacked: the current one turns in and fades up while the last one turns
+ * out and fades away. It reads the theme itself, so `Button` gets one stable glyph and the icons
+ * keep their elements across a switch, which is what lets the transition run.
+ */
+const ThemeGlyph: Glyph = ({ size = 16, ...props }) => {
+  const { theme } = useTheme()
+  const current = theme === 'light' || theme === 'dark' ? theme : 'system'
+  return (
+    <span aria-hidden='true' {...stylex.props(s.glyph(size))}>
+      {iconNames.map((name) => {
+        const Icon = icons[name]
+        return (
+          <span
+            key={name}
+            data-icon={name}
+            data-current={name === current ? '' : undefined}
+            {...stylex.props(s.icon, name === current ? s.shown : s.hidden)}
+          >
+            <Icon size={size} {...props} />
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
 export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels> }) {
   const { theme, setTheme } = useTheme()
   const current = theme ?? 'system'
@@ -29,16 +62,13 @@ export function ThemeSwitcher({ labels }: { labels?: Partial<ThemeSwitcherLabels
     dark: names.toSystem,
     system: names.toLight
   }
-  const Icon = current === 'light' ? Sun : current === 'dark' ? Moon : Monitor
 
   return (
     <Button
       variant='ghost'
-      size='icon-md'
+      icon={ThemeGlyph}
       onClick={() => setTheme(cycle[current] ?? 'light')}
       aria-label={byTheme[current]}
-    >
-      <Icon size={16} aria-hidden />
-    </Button>
+    />
   )
 }

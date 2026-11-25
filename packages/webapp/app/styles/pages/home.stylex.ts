@@ -7,17 +7,8 @@ import { breakpoints } from '#/styles/constants.stylex'
 // a tall screen and still fits a 720px-high laptop viewport without scrolling.
 export const styles = stylex.create({
   main: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
     gap: 'clamp(1.5rem, 6dvh, 4rem)',
     paddingBlock: 'clamp(1.5rem, 5dvh, 4rem)'
-  },
-  hero: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: unit.x5
   },
   title: {
     margin: 0,

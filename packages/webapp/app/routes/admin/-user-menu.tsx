@@ -2,7 +2,7 @@ import { AppWindow, ChevronDown, LogOut, Shield, User } from '@keyline-icons/rea
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
-import { Button } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,23 +59,26 @@ export function AdminUserMenu({
         render={
           <Button
             variant='ghost'
-            size={mobile ? 'lg' : 'icon-md'}
+            size={mobile ? 'large' : 'medium'}
             aria-label={m.user_menu_trigger_named({
               initials: adminProfile.initials,
               name: adminProfile.name
             })}
-            style={[mobile ? styles.pill : styles.bare, stylex.defaultMarker()]}
+            style={[
+              mobile ? styles.pill : [buttonSquare.medium, styles.bare],
+              stylex.defaultMarker()
+            ]}
           />
         }
       >
-        <Avatar size='sm' style={styles.avatar}>
+        <Avatar size='small' style={styles.avatar}>
           <AvatarFallback style={styles.triggerInitials}>{adminProfile.initials}</AvatarFallback>
         </Avatar>
         {mobile && (
           <>
             <span {...stylex.props(styles.pillName)}>{adminProfile.firstName}</span>
             <span {...stylex.props(styles.pillChevron)}>
-              <Icon svg={ChevronDown} size={14} color='neutralFaded' />
+              <Icon svg={ChevronDown} size={14} color='neutral-faded' />
             </span>
           </>
         )}
@@ -112,7 +115,7 @@ export function AdminUserMenu({
               render={<Link to={to} />}
               style={mobile ? styles.menuItemTouch : undefined}
             >
-              <Icon svg={icon} size={16} color='neutralFaded' />
+              <Icon svg={icon} size={16} color='neutral-faded' />
               {label}
             </DropdownMenuItem>
           ))}
@@ -125,7 +128,7 @@ export function AdminUserMenu({
               render={<Link to={to} />}
               style={mobile ? styles.menuItemTouch : undefined}
             >
-              <Icon svg={icon} size={16} color='neutralFaded' />
+              <Icon svg={icon} size={16} color='neutral-faded' />
               {label}
             </DropdownMenuItem>
           ))}
@@ -138,7 +141,7 @@ export function AdminUserMenu({
           render={<Link to={signOutTo} />}
           style={mobile ? styles.menuItemTouch : undefined}
         >
-          <Icon svg={LogOut} size={16} color='neutralFaded' />
+          <Icon svg={LogOut} size={16} color='neutral-faded' />
           {m.user_menu_sign_out()}
         </DropdownMenuItem>
       </DropdownMenuContent>

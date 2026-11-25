@@ -43,8 +43,6 @@ export const inputGroupStyles = stylex.create({
     backgroundColor: 'transparent',
     borderStyle: 'none',
     flex: 1,
-    // The group dims as a whole when its input is disabled.
-    opacity: 1,
     outline: 'none'
   },
   textarea: {
@@ -55,9 +53,9 @@ export const inputGroupStyles = stylex.create({
 
 /** An input fills the group's border box: the control height minus the two 1px borders. */
 export const inputGroupControlHeights = stylex.create({
-  sm: { height: `calc(${unit.x8} - ${stroke.ring1} * 2)` },
-  md: { height: `calc(${unit.x9} - ${stroke.ring1} * 2)` },
-  lg: { height: `calc(${unit.x10} - ${stroke.ring1} * 2)` }
+  small: { height: `calc(${unit.x8} - ${stroke.ring1} * 2)` },
+  medium: { height: `calc(${unit.x9} - ${stroke.ring1} * 2)` },
+  large: { height: `calc(${unit.x10} - ${stroke.ring1} * 2)` }
 })
 
 export const inputGroupAddonAligns = stylex.create({
@@ -65,12 +63,12 @@ export const inputGroupAddonAligns = stylex.create({
   'inline-start': {
     order: -1,
     paddingBlock: 0,
-    paddingLeft: unit.x2
+    paddingInlineStart: unit.x2
   },
   'inline-end': {
     order: 9,
     paddingBlock: 0,
-    paddingRight: unit.x2
+    paddingInlineEnd: unit.x2
   },
   'block-start': {
     justifyContent: 'flex-start',
@@ -89,21 +87,19 @@ export const inputGroupAddonAligns = stylex.create({
 })
 
 export const inputGroupButtonSizes = stylex.create({
-  xs: {
+  xsmall: {
     borderRadius: radius.small,
     gap: unit.x1,
     height: unit.x6,
     paddingInline: unit.x1_5
   },
-  'icon-xs': {
-    borderRadius: radius.small,
-    height: unit.x6,
-    paddingInline: 0,
-    width: unit.x6
-  },
-  'icon-sm': {
-    height: unit.x8,
-    paddingInline: 0,
-    width: unit.x8
+  small: {
+    height: unit.x8
   }
+})
+
+// The square of an addon button with no children, composed after `inputGroupButtonSizes`.
+export const inputGroupButtonSquare = stylex.create({
+  xsmall: { paddingInline: 0, width: unit.x6 },
+  small: { paddingInline: 0, width: unit.x8 }
 })

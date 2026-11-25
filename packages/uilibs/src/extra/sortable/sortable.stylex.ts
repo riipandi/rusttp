@@ -36,7 +36,7 @@ export const sortableStyles = stylex.create({
   },
   itemDragging: {
     opacity: 1,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   itemOver: {
     backgroundColor: colors.backgroundPrimaryFaded,
@@ -67,7 +67,6 @@ export const sortableStyles = stylex.create({
       ':active': 1,
       '@media (pointer: coarse)': 1
     },
-    outline: 'none',
     touchAction: 'none',
     transitionDuration: duration.medium,
     transitionProperty: 'color, opacity',

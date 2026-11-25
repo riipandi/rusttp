@@ -3,13 +3,10 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Separator } from '../../base/separator'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { itemStyles as s, itemVariants, itemSizes } from './item.stylex'
-import { itemMediaVariants as mediaVariants } from './item.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+import { itemMediaKinds as mediaKinds } from './item.stylex'
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
@@ -36,8 +33,9 @@ export function ItemSeparator({ ...props }: React.ComponentProps<typeof Separato
   )
 }
 
-export type ItemVariant = 'default' | 'outline' | 'muted'
-export type ItemSize = 'xs' | 'sm' | 'md'
+/** `ghost` is the bare row, `outline` adds an edge, `faded` a soft neutral fill. */
+export type ItemVariant = 'ghost' | 'outline' | 'faded'
+export type ItemSize = 'xsmall' | 'small' | 'medium'
 
 export interface ItemProps
   extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
@@ -45,27 +43,28 @@ export interface ItemProps
   size?: ItemSize
 }
 
-export function Item({ variant = 'default', size = 'md', style, render, ...props }: ItemProps) {
+export function Item({ variant = 'ghost', size = 'medium', style, render, ...props }: ItemProps) {
   const inGroup = React.useContext(ItemGroupContext)
-  return useRender({
+  const item = useRender({
     defaultTagName: 'div',
     props: mergeProps<'div'>(
-      inGroup ? { role: 'listitem' } : {},
       stylex.props(focusRing.root, s.root, itemVariants[variant], itemSizes[size], style),
       props
     ),
     render
   })
+  // The `listitem` role sits on a wrapper, not on the item: a rendered link keeps its own role.
+  return inGroup ? <div role='listitem'>{item}</div> : item
 }
 
-export type ItemMediaVariant = 'default' | 'icon' | 'image'
+export type ItemMediaKind = 'default' | 'icon' | 'image'
 
 export function ItemMedia({
-  variant = 'default',
+  kind = 'default',
   style,
   ...props
-}: DivProps & { variant?: ItemMediaVariant }) {
-  return <div {...props} {...stylex.props(s.media, mediaVariants[variant], style)} />
+}: DivProps & { kind?: ItemMediaKind }) {
+  return <div {...props} {...stylex.props(s.media, mediaKinds[kind], style)} />
 }
 
 export function ItemContent({ style, ...props }: DivProps) {

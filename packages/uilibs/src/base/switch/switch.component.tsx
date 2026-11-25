@@ -13,11 +13,12 @@ import { Switch as BaseSwitch } from '@base-ui/react/switch'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { switchStyles as s } from './switch.stylex'
 import { switchRootSizes as rootSizes } from './switch.stylex'
 import { switchThumbSizes as thumbSizes } from './switch.stylex'
 
-export type SwitchSize = 'sm' | 'md'
+export type SwitchSize = ControlSize
 
 export interface SwitchProps extends Omit<
   React.ComponentProps<typeof BaseSwitch.Root>,
@@ -27,7 +28,7 @@ export interface SwitchProps extends Omit<
   style?: stylex.StyleXStyles
 }
 
-export function Switch({ size = 'md', style, ...props }: SwitchProps) {
+export function Switch({ size = 'medium', style, ...props }: SwitchProps) {
   return (
     <BaseSwitch.Root
       {...props}

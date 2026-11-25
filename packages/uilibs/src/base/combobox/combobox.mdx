@@ -1,0 +1,233 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './combobox.stories'
+
+<Meta of={Stories} />
+
+# Combobox
+
+A searchable select. Choose it over Select for a list the user searches, and over Autocomplete when the value must be one of the items.
+
+## Import
+
+```jsx
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxCollection,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxLabel,
+  ComboboxList,
+  ComboboxSeparator,
+  ComboboxTrigger,
+  ComboboxValue
+} from 'uilibs/base/combobox'
+```
+
+Built on Base UI [Combobox](https://base-ui.com/react/components/combobox). `Combobox`, `ComboboxValue` and `ComboboxCollection` are Base UI's parts, and `comboboxCreateItems` is Base UI's `createItems`, re-exported unchanged. Props not listed here pass through.
+
+## Anatomy
+
+- **Combobox:** the root. Pass `items` to it, and `multiple` for several values.
+- **ComboboxInput:** the search input. It renders the dropdown button and, with `showClear`, a clear button.
+- **ComboboxTrigger:** a select-like button that shows the value. It renders its chevron itself. Use it instead of the input to open the popup.
+- **ComboboxValue:** renders the current value, inside a trigger or chips.
+- **ComboboxChips:** the box that holds the chips and their input when `multiple`. It is also the popup anchor.
+- **ComboboxChip:** one chosen value. It renders its remove button itself.
+- **ComboboxChipsInput:** the inline input inside the chips box. It has no box of its own.
+- **ComboboxContent:** the popup. It renders the portal and the positioner itself.
+- **ComboboxEmpty:** the message shown when no item matches.
+- **ComboboxList:** the list of options. Its children can be a render function over the filtered items.
+- **ComboboxItem:** one option. It renders its check mark itself.
+- **ComboboxSeparator:** a line between items or groups.
+- **ComboboxGroup:** a set of items under one label.
+- **ComboboxLabel:** the heading of a group.
+- **ComboboxCollection:** renders the items of a group from a render function.
+
+```jsx
+<>
+  {/* One value, searched in an input */}
+  <Combobox items={…}>
+    <ComboboxInput />
+    <ComboboxContent>
+      <ComboboxEmpty />
+      <ComboboxList>
+        <ComboboxItem />
+        <ComboboxSeparator />
+        <ComboboxGroup>
+          <ComboboxLabel />
+          <ComboboxCollection>
+            <ComboboxItem />
+          </ComboboxCollection>
+        </ComboboxGroup>
+      </ComboboxList>
+    </ComboboxContent>
+  </Combobox>
+
+  {/* Several values, as chips */}
+  <Combobox items={…} multiple>
+    <ComboboxChips>
+      <ComboboxValue>
+        <ComboboxChip />
+      </ComboboxValue>
+      <ComboboxChipsInput />
+    </ComboboxChips>
+    <ComboboxContent anchor={…} />
+  </Combobox>
+
+  {/* One value, searched inside the popup */}
+  <Combobox items={…}>
+    <ComboboxTrigger>
+      <ComboboxValue />
+    </ComboboxTrigger>
+    <ComboboxContent>
+      <ComboboxInput showTrigger={false} />
+      <ComboboxList />
+    </ComboboxContent>
+  </Combobox>
+</>
+```
+
+## Examples
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Clear button
+
+<Canvas of={Stories.Clear} />
+
+### Several values
+
+Set `multiple` on `Combobox` and pass a ref of `ComboboxChips` as `anchor` of `ComboboxContent`.
+
+<Canvas of={Stories.Multiple} />
+
+### Search inside the popup
+
+<Canvas of={Stories.Popup} />
+
+## Accessibility
+
+`ComboboxInput` is a `combobox` and its popup a `listbox` of `option`s. Name a standalone input, trigger, or chips input with `aria-label`; inside a `Field` the `FieldLabel` names it. A placeholder is not a name. The `Keyboard` story walks the keys below, and the `Open` story keeps the list open so the accessibility check reads it.
+
+| Key         | Action                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `ArrowDown` | Opens the list; once open, highlights the next option.                                     |
+| `ArrowUp`   | Highlights the previous option.                                                            |
+| `Enter`     | Fills the input with the highlighted option and closes the list. Focus stays in the input. |
+| `Escape`    | Closes the list and keeps the value. On an already closed combobox it clears the input.    |
+| Typing      | Filters the list to the options that match.                                                |
+
+- Focus stays in the input while the arrows move through the options; the highlighted option has `data-highlighted` and a visible highlight.
+- Keyboard behavior is Base UI's; see the Base UI [Combobox](https://base-ui.com/react/components/combobox) page for the rest.
+
+## API reference
+
+Every part except `Combobox`, `ComboboxValue` and `ComboboxCollection` also takes `style`: StyleX styles that replace `className` and `style`. On `ComboboxContent` it lands on the popup, and on `ComboboxInput` on the wrapper around the input and its buttons. See [Styling](?path=/docs/styling--docs).
+
+### ComboboxInput
+
+| Prop          | Description                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `size`        | `small`, `medium`, `large` <br /> Height and type: 32, 36 or 40 px. Default `medium`.                                   |
+| `variant`     | `outline`, `faded`, `ghost`, `headless` <br /> The box around the input. Default `outline`.                             |
+| `showTrigger` | `boolean` <br /> Renders the dropdown button. Set `false` when a `ComboboxTrigger` anchors the popup. Default `true`.   |
+| `showClear`   | `boolean` <br /> Renders a clear button before the dropdown button. Default `false`.                                    |
+| `labels`      | `{ clear, open }` <br /> The accessible names of the clear and dropdown buttons. Default `Clear value` and `Open list`. |
+| `inputStyle`  | StyleX styles <br /> Styles the inner input element instead of the wrapper.                                             |
+
+| Data attribute    | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `data-popup-open` | Present while the popup is open.                      |
+| `data-disabled`   | Present when the input is disabled.                   |
+| `data-readonly`   | Present when the input is read-only.                  |
+| `data-invalid`    | Present when a surrounding `Field` marks it invalid.  |
+| `data-filled`     | Present when the input has a value, inside a `Field`. |
+| `data-list-empty` | Present when no item matches.                         |
+
+### ComboboxTrigger
+
+| Prop       | Description                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| `size`     | `small`, `medium`, `large` <br /> Height and type. Default `medium`.                          |
+| `variant`  | `outline`, `faded`, `ghost`, `headless` <br /> The box around the trigger. Default `outline`. |
+| `showIcon` | `boolean` <br /> Renders the chevron. Set `false` for an icon-only trigger. Default `true`.   |
+
+| Data attribute     | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `data-popup-open`  | Present while the popup is open.                     |
+| `data-placeholder` | Present when no value is chosen.                     |
+| `data-disabled`    | Present when the trigger is disabled.                |
+| `data-invalid`     | Present when a surrounding `Field` marks it invalid. |
+| `data-pressed`     | Present while the trigger is pressed.                |
+
+### ComboboxChips
+
+| Prop      | Description                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------- |
+| `size`    | `small`, `medium`, `large` <br /> Minimum height and type. Default `medium`.                |
+| `variant` | `outline`, `faded`, `ghost`, `headless` <br /> The box around the chips. Default `outline`. |
+
+### ComboboxChip
+
+| Prop     | Description                                                                                                                                                       |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labels` | `{ remove(text) }` <br /> The accessible name of the remove button. `text` is the chip's children when they are a string. Default `Remove <text>`, else `Remove`. |
+
+### ComboboxContent
+
+| Prop                 | Description                                                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `side`               | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `bottom`. |
+| `sideOffset`         | `number` or an offset function <br /> Distance from the anchor, in px. Default `6`.                                                 |
+| `align`              | `start`, `center`, `end` <br /> Alignment along the anchor's edge. Default `start`.                                                 |
+| `alignOffset`        | `number` or an offset function <br /> Offset along the alignment axis, in px. Default `0`.                                          |
+| `anchor`             | element, ref, virtual element or a function returning one <br /> What the popup positions against.                                  |
+| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own.                                       |
+
+| Data attribute        | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `data-open`           | Present while the popup is open.                 |
+| `data-side`           | The side of the anchor the popup is on.          |
+| `data-align`          | `start`, `center` or `end`.                      |
+| `data-starting-style` | Present as the popup begins to open.             |
+| `data-ending-style`   | Present as the popup closes.                     |
+| `data-empty`          | Present when no item matches.                    |
+| `data-anchor-hidden`  | Present when the anchor is scrolled out of view. |
+
+| CSS variable         | Description                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| `--anchor-width`     | The anchor's width. The popup is set to this width.                                 |
+| `--anchor-height`    | The anchor's height.                                                                |
+| `--available-width`  | Space between the anchor and the viewport edge, horizontally.                       |
+| `--available-height` | Space between the anchor and the viewport edge. The popup's height is capped by it. |
+| `--transform-origin` | The point the popup grows from, for animations.                                     |
+
+### ComboboxItem
+
+| Data attribute     | Description                            |
+| ------------------ | -------------------------------------- |
+| `data-selected`    | Present while the item is selected.    |
+| `data-highlighted` | Present while the item is highlighted. |
+| `data-disabled`    | Present when the item is disabled.     |
+
+### ComboboxSeparator
+
+| Data attribute     | Description                 |
+| ------------------ | --------------------------- |
+| `data-orientation` | `horizontal` or `vertical`. |
+
+## Caveats
+
+- Name a standalone `ComboboxInput`, `ComboboxTrigger` or `ComboboxChipsInput` with `aria-label`; inside a `Field` the `FieldLabel` names it. A placeholder is not a name.
+- `ComboboxChips` is the popup's anchor. Pass a `ref` to it and give the same ref to `anchor` on `ComboboxContent`.
+- The remove button of a chip is named from its children only when they are a string; otherwise it is named `Remove` unless you set `labels.remove`.
+- The dropdown and clear buttons inside `ComboboxInput` have `tabIndex={-1}`, so they are skipped by Tab.
+- The CSS variables are set on the positioner that `ComboboxContent` renders, so the popup and its children inherit them.

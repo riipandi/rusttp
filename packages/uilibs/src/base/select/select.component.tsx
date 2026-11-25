@@ -37,14 +37,20 @@ import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@keyline-icons/re
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import {
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants
+} from '../../styles/control.stylex'
+import { glyphSize, markSize } from '../../styles/glyph'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize, Glyph } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
+import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
 import { selectStyles as s } from './select.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const Select = BaseSelect.Root
 export const SelectValue = BaseSelect.Value
@@ -55,23 +61,45 @@ export const SelectGroup = BaseSelect.Group
  * shows only the value or placeholder, so give it an `aria-label` (or `aria-labelledby`).
  */
 export function SelectTrigger({
-  size = 'md',
+  size: sizeProp,
+  variant = 'outline',
+  icon: Icon,
   style,
   children,
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
+    /** A glyph before the value; it is decoration, so the name still comes from the label. */
+    icon?: Glyph
   }) {
+  const group = useButtonGroup()
+  const size = sizeProp ?? group?.size ?? 'medium'
   return (
     <BaseSelect.Trigger
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.trigger,
+        buttonGroupMember(group, false),
+        style
+      )}
     >
-      {children}
+      {Icon ? (
+        <span {...stylex.props(s.lead)}>
+          <Icon size={glyphSize[size]} aria-hidden {...stylex.props(s.glyph)} />
+          {children}
+        </span>
+      ) : (
+        children
+      )}
       <BaseSelect.Icon {...stylex.props(s.icon)}>
-        <ChevronsUpDown size={16} strokeWidth={1.5} aria-hidden />
+        <ChevronsUpDown size={glyphSize[size]} strokeWidth={1.5} aria-hidden />
       </BaseSelect.Icon>
     </BaseSelect.Trigger>
   )
@@ -84,9 +112,9 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
       {...stylex.props(s.scrollArrow, direction === 'up' ? s.scrollArrowUp : s.scrollArrowDown)}
     >
       {direction === 'up' ? (
-        <ChevronUp size={12} strokeWidth={2} aria-hidden />
+        <ChevronUp size={markSize.medium} strokeWidth={2} aria-hidden />
       ) : (
-        <ChevronDown size={12} strokeWidth={2} aria-hidden />
+        <ChevronDown size={markSize.medium} strokeWidth={2} aria-hidden />
       )}
     </Arrow>
   )
@@ -112,7 +140,7 @@ export function SelectContent({
   ...props
 }: SelectContentProps) {
   return (
-    <BaseSelect.Portal>
+    <BaseSelect.Portal container={usePortalContainer()}>
       <BaseSelect.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -153,10 +181,10 @@ export function SelectItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Item>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseSelect.Item {...props} {...stylex.props(s.item, style)}>
+    <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
       <BaseSelect.ItemIndicator {...stylex.props(s.itemIndicator)}>
-        <Check size={12} strokeWidth={2} aria-hidden />
+        <Check size={markSize.medium} strokeWidth={2} aria-hidden />
       </BaseSelect.ItemIndicator>
     </BaseSelect.Item>
   )

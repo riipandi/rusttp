@@ -1,39 +1,29 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { fontSize, fontWeight, unit, zIndex } from 'uilibs/styles/tokens.stylex'
 import { layoutSize } from '#/styles/constants.stylex'
 
-// The shell every route shares. `container` is the one content width (header, page, footer line up);
-// `center` is a single reading column for pages with nothing else on them (404, error).
+// The shell every route shares. `Container` at `layoutSize.page` is the one content width (header,
+// page, footer line up) and `gutter` its inset.
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
-    display: 'flex',
-    flexDirection: 'column',
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
   },
-  container: {
-    boxSizing: 'border-box',
-    width: '100%',
-    maxWidth: layoutSize.page,
-    marginInline: 'auto',
+  gutter: {
     paddingInline: layoutSize.gutter
   },
   header: {
     position: 'sticky',
     top: 0,
-    zIndex: 10,
+    zIndex: zIndex.sticky,
     backgroundColor: colors.backgroundPage,
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',
     borderBottomColor: colors.borderNeutralFaded
   },
   headerRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x4,
     height: unit.x14
   },
   brand: {
@@ -47,25 +37,6 @@ export const styles = stylex.create({
   },
   main: {
     flex: 1
-  },
-  center: {
-    flex: 1,
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: unit.x4,
-    width: '100%',
-    maxWidth: layoutSize.reading,
-    marginInline: 'auto',
-    padding: unit.x6
-  },
-  actions: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: unit.x2,
-    marginBlockStart: unit.x2
   },
   footer: {
     paddingBlock: unit.x6,

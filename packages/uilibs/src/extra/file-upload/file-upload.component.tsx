@@ -3,6 +3,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { StyleProp } from '../../styles/types'
 import { fileUploadStyles as styles } from './file-upload.stylex'
 
 export interface FileUploadChangeArgs {
@@ -11,10 +12,10 @@ export interface FileUploadChangeArgs {
   event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>
 }
 
-export interface FileUploadProps extends Omit<
-  useRender.ComponentProps<'div'>,
-  'children' | 'onChange' | 'style'
-> {
+export interface FileUploadProps
+  extends
+    Omit<useRender.ComponentProps<'div'>, 'children' | 'className' | 'onChange' | 'style'>,
+    StyleProp {
   /** Name of the input element */
   name: string
   /** Disable the file upload input */
@@ -31,7 +32,6 @@ export interface FileUploadProps extends Omit<
   inline?: boolean
   /** Additional attributes for the input element */
   inputAttributes?: React.ComponentProps<'input'>
-  style?: stylex.StyleXStyles
 }
 
 /** Whether `file` matches an `accept` list the way the native picker reads it: `.ext`, `type/*`, `type/subtype`. */

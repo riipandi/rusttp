@@ -39,27 +39,14 @@ export const fieldStyles = stylex.create({
     gap: unit.x0_5,
     lineHeight: fontLineHeight.body2
   },
-  labelBase: {
-    alignItems: 'center',
-    display: 'flex',
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body2,
-    fontWeight: fontWeight.medium,
-    gap: unit.x2,
-    userSelect: 'none'
-  },
   label: {
-    color: { default: null, '[data-invalid]': colors.foregroundCritical },
-    lineHeight: fontLineHeight.body2,
     width: 'fit-content'
   },
   title: {
     alignItems: 'center',
     display: 'flex',
-    fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
     gap: unit.x2,
-    lineHeight: fontLineHeight.body2,
     width: 'fit-content'
   },
   description: {
@@ -67,7 +54,7 @@ export const fieldStyles = stylex.create({
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.body2,
     margin: 0,
-    textAlign: 'left'
+    textAlign: 'start'
   },
   separator: {
     lineHeight: fontLineHeight.body2,
@@ -102,11 +89,28 @@ export const fieldStyles = stylex.create({
     gap: unit.x1,
     listStyle: 'disc',
     margin: 0,
-    paddingLeft: unit.x4
+    paddingInlineStart: unit.x4
   }
 })
 
-export const fieldLegendVariants = stylex.create({
+/**
+ * The look of a form label, shared by `FieldLabel` and `Label`: compose `base`, then `invalid`
+ * (critical while the label has `data-invalid`), after `type.body2`.
+ */
+export const fieldLabelStyles = stylex.create({
+  base: {
+    alignItems: 'center',
+    display: 'flex',
+    fontWeight: fontWeight.medium,
+    gap: unit.x2,
+    userSelect: 'none'
+  },
+  invalid: {
+    color: { default: null, '[data-invalid]': colors.foregroundCritical }
+  }
+})
+
+export const fieldLegendKinds = stylex.create({
   legend: {
     fontSize: fontSize.body1
   },

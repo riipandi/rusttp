@@ -1,15 +1,51 @@
+import { mergeProps } from '@base-ui/react/merge-props'
+import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { cardStyles as s, cardSizes as sizes } from './card.stylex'
+import { type } from '../../styles/type.stylex'
+import { cardStates, cardStyles as s, cardSizes as sizes } from './card.stylex'
 
 interface DivProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
   style?: stylex.StyleXStyles
 }
 
-export type CardSize = 'sm' | 'md'
+export type CardSize = 'small' | 'medium'
 
-export function Card({ size = 'md', style, ...props }: DivProps & { size?: CardSize }) {
-  return <div {...props} {...stylex.props(s.root, sizes[size], style)} />
+export interface CardProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
+  style?: stylex.StyleXStyles
+  size?: CardSize
+  /** Marks the card as chosen: a primary edge and `data-selected`. Name the choice for assistive technology yourself (a `role` and `aria-selected`, or a control inside). */
+  selected?: boolean
+  /** Lifts the card with the raised shadow. */
+  raised?: boolean
+}
+
+/** Renders a `div`; `render` swaps it for another element, such as an `article` or a link. */
+export function Card({
+  size = 'medium',
+  selected = false,
+  raised = false,
+  style,
+  render,
+  ...props
+}: CardProps) {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      {
+        ...stylex.props(
+          s.root,
+          sizes[size],
+          raised && cardStates.raised,
+          selected && cardStates.selected,
+          style
+        ),
+        'data-selected': selected || undefined
+      } as React.ComponentPropsWithRef<'div'>,
+      props
+    ),
+    render
+  })
 }
 
 export function CardHeader({ style, ...props }: DivProps) {
@@ -22,7 +58,7 @@ export function CardTitle({
 }: Omit<React.ComponentProps<'h3'>, 'className' | 'style'> & {
   style?: stylex.StyleXStyles
 }) {
-  return <h3 {...props} {...stylex.props(s.title, style)} />
+  return <h3 {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function CardDescription({

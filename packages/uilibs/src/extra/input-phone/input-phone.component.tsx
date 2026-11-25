@@ -15,7 +15,13 @@ import flags from 'react-phone-number-input/flags'
 import { comboboxCreateItems } from '../../base/combobox'
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput } from '../../base/combobox'
 import { ComboboxItem, ComboboxList, ComboboxTrigger } from '../../base/combobox'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
+import {
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
@@ -40,8 +46,10 @@ export interface InputPhoneProps extends Omit<
   /** Render the country selector. Set `false` for a digits-only field.
    * Defaults to `true`. */
   withCountrySelect?: boolean
-  /** Control height and type; `md` (36px) by default. */
+  /** Control height and type; `medium` (36px) by default. */
   size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
   /** Visible and accessible strings; English by default. */
   labels?: Partial<InputPhoneLabels>
   /** Marks the field visually as invalid. */
@@ -53,8 +61,11 @@ export interface InputPhoneProps extends Omit<
 }
 
 export interface InputPhoneLabels {
-  /** Name of the country trigger. Defaults to `Select country`. */
-  selectCountry: string
+  /**
+   * Name of the country trigger, from the name of the selected country (`United States`, or
+   * `International` when none is). Defaults to `Select country, <name>`.
+   */
+  selectCountry: (country: string) => string
   /** Placeholder of the country search. Defaults to `Search country…`. */
   searchCountry: string
   /** Text shown when the search matches no country. Defaults to `No country found.` */
@@ -62,7 +73,7 @@ export interface InputPhoneLabels {
 }
 
 const defaultLabels: InputPhoneLabels = {
-  selectCountry: 'Select country',
+  selectCountry: (country) => `Select country, ${country}`,
   searchCountry: 'Search country…',
   noCountry: 'No country found.'
 }
@@ -83,6 +94,7 @@ interface CountrySelectProps {
 interface PhoneContextValue {
   containerRef: React.RefObject<HTMLDivElement | null>
   size: ControlSize
+  variant: ControlVariant
   labels: InputPhoneLabels
 }
 
@@ -90,11 +102,18 @@ interface PhoneContextValue {
 // so what they share with `InputPhone` travels through context.
 const PhoneContext = React.createContext<PhoneContextValue | null>(null)
 
-/** Flag SVG from the library's bundled flags (no external requests). */
-function FlagComponent({ country, countryName }: BasePhoneInput.FlagProps) {
+/**
+ * Flag SVG from the library's bundled flags (no external requests). `countryName` is the full name
+ * and becomes the SVG title; a flag beside the name in text is `decorative`, so it is not read twice.
+ */
+function FlagComponent({
+  country,
+  countryName,
+  decorative
+}: BasePhoneInput.FlagProps & { decorative?: boolean }) {
   const Flag = country ? flags[country] : undefined
   return (
-    <span {...stylex.props(s.flag)}>
+    <span aria-hidden={decorative || undefined} {...stylex.props(s.flag)}>
       {Flag ? <Flag title={countryName} /> : <GlobeIcon {...stylex.props(s.flagFallback)} />}
     </span>
   )
@@ -111,6 +130,8 @@ function CountrySelect({
   const phone = React.useContext(PhoneContext)
   const containerRef = phone?.containerRef
   const labels = phone?.labels ?? defaultLabels
+  const countryName =
+    countryList.find((entry) => entry.value === selectedCountry)?.label ?? selectedCountry ?? ''
   const collection = React.useMemo(
     () =>
       comboboxCreateItems(countryList, {
@@ -130,12 +151,12 @@ function CountrySelect({
     >
       <ComboboxTrigger
         disabled={disabled || readOnly}
-        aria-label={labels.selectCountry}
+        aria-label={labels.selectCountry(countryName)}
         size={phone?.size}
-        showChevron={false}
+        showIcon={false}
         style={s.countryTrigger}
       >
-        <FlagComponent country={selectedCountry} countryName={selectedCountry} />
+        <FlagComponent country={selectedCountry} countryName={countryName} />
       </ComboboxTrigger>
       <ComboboxContent
         anchor={containerRef ?? undefined}
@@ -157,7 +178,7 @@ function CountrySelect({
           {(item: CountryEntry) =>
             item.value ? (
               <ComboboxItem key={item.value} value={item.value}>
-                <FlagComponent country={item.value} countryName={item.label} />
+                <FlagComponent country={item.value} countryName={item.label} decorative />
                 <span {...stylex.props(s.countryLabel)}>{item.label}</span>
                 <span {...stylex.props(s.countryCode)}>
                   +{BasePhoneInput.getCountryCallingCode(item.value)}
@@ -193,7 +214,8 @@ function PhoneInputContainer({
       {...stylex.props(
         controlBase.root,
         controlBase.within,
-        controlSizes[phone?.size ?? 'md'],
+        controlVariantsWithin[phone?.variant ?? 'outline'],
+        controlSizes[phone?.size ?? 'medium'],
         s.root,
         style
       )}
@@ -209,7 +231,10 @@ function PhoneInput({
 }) {
   const phone = React.useContext(PhoneContext)
   return (
-    <BaseInput {...props} {...stylex.props(controlSizes[phone?.size ?? 'md'], s.control, style)} />
+    <BaseInput
+      {...props}
+      {...stylex.props(controlSizes[phone?.size ?? 'medium'], s.control, style)}
+    />
   )
 }
 
@@ -220,7 +245,8 @@ export function InputPhone({
   onCountryChange,
   addInternationalOption = true,
   withCountrySelect = true,
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   labels,
   invalid = false,
   disabled,
@@ -230,8 +256,8 @@ export function InputPhone({
 }: InputPhoneProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
   const context = React.useMemo(
-    () => ({ containerRef, size, labels: { ...defaultLabels, ...labels } }),
-    [size, labels]
+    () => ({ containerRef, size, variant, labels: { ...defaultLabels, ...labels } }),
+    [size, variant, labels]
   )
 
   return (

@@ -5,18 +5,15 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
-import { Chart, ChartContainer } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import { Chart, ChartContainer, ChartLegend } from '../chart.component'
+import { canvasDecorator, chartTheme, mulberry32, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Boxplot',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -51,9 +48,17 @@ const boxScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Charms: Story = {
-  name: 'Charms exam scores',
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend'] } },
+  argTypes: {
+    legend: { control: 'boolean' }
+  },
+  args: { legend: false },
+  render: ({ legend }) => {
     const definition = defineChart({
       marks: [
         boxY(examScores, {
@@ -78,12 +83,13 @@ export const Charms: Story = {
     })
 
     return (
-      <ChartContainer config={{ scores: { label: 'Charms score', color: seriesColors.brand } }}>
+      <ChartContainer config={{ scores: { label: 'Charms score', color: seriesNames.brand } }}>
         <Chart
           definition={definition}
           ariaLabel='Charms exam score distribution per house'
           height={280}
         />
+        {legend && <ChartLegend />}
       </ChartContainer>
     )
   },

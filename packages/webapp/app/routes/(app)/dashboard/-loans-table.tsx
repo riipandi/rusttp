@@ -8,10 +8,10 @@ import { type Messages, useMessages } from '#/libraries/messages'
 import type { LoanResponse, LoanStatus } from '#/schemas/loans.schema'
 import { styles } from '#/styles/pages/dashboard.stylex'
 
-const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'tone'>> = {
-  Borrowed: { variant: 'secondary' },
+const statusBadge: Record<LoanStatus, Pick<BadgeProps, 'variant' | 'color'>> = {
+  Borrowed: { variant: 'faded' },
   'Due soon': { variant: 'outline' },
-  Overdue: { tone: 'critical' },
+  Overdue: { variant: 'solid', color: 'critical' },
   Returned: { variant: 'ghost' }
 }
 
@@ -29,7 +29,7 @@ export function LoansTable({ loans }: { loans: LoanResponse[] }) {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyMedia variant='icon'>
+          <EmptyMedia kind='icon'>
             <Icon svg={BookOpen} size={16} />
           </EmptyMedia>
           <EmptyTitle>{m.loans_empty_title()}</EmptyTitle>

@@ -10,7 +10,7 @@ description: >-
 
 # Rust Verify & Harden
 
-Run the quality gates, fix what fails, then do a focused safety and performance pass on the code the change touched. The project's contracts in `.agents/docs/rules.md` (dependency direction, modules, data, migrations, Rust code) win over anything here.
+Run the quality gates, fix what fails, then do a focused safety and performance pass on the code the change touched. The project's contracts in `.agents/docs/backend.md` (dependency direction, modules, data and migrations, Rust code, CLI, traps) win over anything here; `crates/AGENTS.md` and `apps/AGENTS.md` list the must-knows.
 
 ## Sources of truth
 
@@ -29,7 +29,7 @@ Fixing rules:
 3. **Test fails** — fix the bug, not the assertion.
 4. **Workspace hygiene** (flag, fix if trivial): a crate missing `[lints] workspace = true`; a dependency version written in a member instead of `[workspace.dependencies]`; a crate on disk that `[workspace] members` does not include.
 
-Edition 2024 rules to enforce in new or changed code:
+Edition 2024 rules for new or changed code:
 
 - Every unsafe operation sits in an explicit `unsafe {}` block, even inside `unsafe fn`; `extern` blocks are `unsafe extern`.
 - `gen` is a reserved keyword.
@@ -45,7 +45,7 @@ Scope: files changed in Phase 1 plus their direct callers and callees.
 2. **Deadlocks** — a `std::sync::Mutex` / `RwLock` guard held across `.await`; nested locks taken in inconsistent order; a lock held while calling back into code that may take it again; blocking I/O or CPU-heavy work on the async executor (use `spawn_blocking`).
 3. **Races** — `unsafe impl Send/Sync` without proof; `static mut`; check-then-act on shared state or on the database (prefer a single SQL statement, a row lock, or a unique constraint over read-then-write). Run `cargo miri test` only on crates with `unsafe` and only if miri is installed. Use `loom` only if it is already a dev-dependency.
 4. **Database** — a transaction held across unrelated `.await`s or external calls; a pool connection acquired and kept for the life of a task; N+1 queries in a loop.
-5. **Module boundaries** (see `.agents/docs/rules.md`) — a module importing another module's non-`api` items; a framework crate depending on a module; a query touching another module's schema; DDL inside a domain module.
+5. **Module boundaries** (`.agents/docs/backend.md`, "Dependency direction", "Modules") — a module importing another module's non-`api` items; a framework crate depending on a module; a query touching another module's schema; DDL inside a domain module.
 
 Apply a fix only when it is local and low-risk, with one line of reasoning. Report instead of fixing anything that changes behavior, ownership structure, or public API.
 
@@ -55,7 +55,7 @@ Same scope. Look for needless `clone()` / `to_string()` on hot paths, `Vec` / `S
 
 ## Phase 4 — Close out
 
-1. Re-run every gate from Phase 1; all must pass.
+1. Re-run every gate from Phase 1; all must pass. A change under `apps/server` also gets a probe against the running binary (`just run serve`, then `just test-api` or `curl`): the unit suite never exercises the composition root.
 2. Summarize, in the user's language:
     - **Files changed**, each with its reason.
     - **Issues found** by category (leak, deadlock, race, database, boundary, perf), with `file:line`.

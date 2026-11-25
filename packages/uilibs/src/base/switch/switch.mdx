@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './switch.stories'
+
+<Meta of={Stories} />
+
+# Switch
+
+An on and off control that takes effect right away.
+
+## Import
+
+```jsx
+import { Switch } from 'uilibs/base/switch'
+```
+
+Built on Base UI [Switch](https://base-ui.com/react/components/switch). Props not listed here pass through.
+
+## Anatomy
+
+- **Switch:** the track. It renders its own thumb.
+
+```jsx
+<Switch />
+```
+
+## Examples
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### With a description
+
+<Canvas of={Stories.Description} />
+
+## Accessibility
+
+A `Switch` is a `switch` that reports `aria-checked`. It has no text, so its name comes from a wrapping `Label`, a `FieldLabel`, or `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled and invalid markup.
+
+| Key                     | Action                                                   |
+| ----------------------- | -------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the switch. A disabled switch is skipped. |
+| `Space` or `Enter`      | Flips the switch.                                        |
+
+- An invalid switch inside a `Field` is marked `data-invalid`; show the reason with `FieldError`.
+- Keyboard behavior is Base UI's; see the Base UI [Switch](https://base-ui.com/react/components/switch) page for the rest.
+
+## API reference
+
+`Switch` also takes `style`: StyleX styles that replace `className` and `style`. It lands on the track. See [Styling](?path=/docs/styling--docs).
+
+### Switch
+
+| Prop   | Description                                                                                                  |
+| ------ | ------------------------------------------------------------------------------------------------------------ |
+| `size` | `small`, `medium`, `large` <br /> Track and thumb size: 28 by 16, 36 by 20 or 48 by 24 px. Default `medium`. |
+
+| Data attribute   | Description                                          |
+| ---------------- | ---------------------------------------------------- |
+| `data-checked`   | Present when the switch is on.                       |
+| `data-unchecked` | Present when the switch is off.                      |
+| `data-disabled`  | Present when the switch is disabled.                 |
+| `data-readonly`  | Present when the switch is read-only.                |
+| `data-required`  | Present when the switch is required.                 |
+| `data-invalid`   | Present when a surrounding `Field` marks it invalid. |
+
+## Caveats
+
+- A switch has no text. Wrap it in a `label`, pair it with a `FieldLabel`, or set `aria-label`.
+- It renders a `span`, not an `input`, so `:disabled` never matches; style the disabled look with `[data-disabled]`.

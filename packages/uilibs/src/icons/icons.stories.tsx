@@ -2,6 +2,8 @@ import { CircleMinus, CirclePlus } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import { expect } from 'storybook/test'
+import { Button } from '../base/button'
 import { colors } from '../styles/colors.stylex'
 import { fontSize, fontWeight } from '../styles/tokens.stylex'
 import { FacebookIcon, GitHubIcon, GoogleIcon, InstagramIcon } from './index'
@@ -20,22 +22,7 @@ const icons = [
 
 const meta = {
   title: 'Extra Components/Icons',
-  parameters: { layout: 'centered' },
-  tags: [],
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.alignItems.center,
-          atoms.justifyContent.center,
-          atoms.minWidth['448px']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: []
 } satisfies Meta
 
 export default meta
@@ -58,6 +45,7 @@ function PlaygroundComponent({ size = 24, color }: PlaygroundArgs) {
 }
 
 export const Playground: Story = {
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
   argTypes: {
     size: { control: { type: 'range', min: 12, max: 64, step: 4 } },
     color: { control: 'color' }
@@ -67,7 +55,16 @@ export const Playground: Story = {
 }
 
 export const Gallery: Story = {
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<GitHubIcon size={20} />
+<GoogleIcon size={20} />
+<XIcon size={20} />`
+      }
+    }
+  },
   render: () => (
     <div
       {...stylex.props(
@@ -100,7 +97,14 @@ export const Gallery: Story = {
         </div>
       ))}
     </div>
-  )
+  ),
+  // Each brand icon is an image named for the brand, so a bare icon is never silent.
+  play: async ({ canvas }) => {
+    for (const { name } of icons) {
+      const label = name === 'X (Twitter)' ? 'X' : name
+      await expect(canvas.getByRole('img', { name: label })).toBeInTheDocument()
+    }
+  }
 }
 
 const sizeSteps = [16, 20, 24, 32, 48] as const
@@ -108,14 +112,7 @@ const sizeSteps = [16, 20, 24, 32, 48] as const
 export const Sizes: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div
-      {...stylex.props(
-        atoms.display.flex,
-        atoms.flexDirection.column,
-        atoms.gap['1.5rem'],
-        atoms.minWidth['320px']
-      )}
-    >
+    <div {...stylex.props(atoms.display.flex, atoms.flexDirection.column, atoms.gap['1.5rem'])}>
       {icons.slice(0, 4).map(({ name, component: Icon }) => (
         <div
           key={name}
@@ -175,4 +172,31 @@ export const InContext: Story = {
       <WhatsAppIcon size={16} color={colors.foregroundNeutralFaded} />
     </div>
   )
+}
+
+/** Beside a visible label an icon is decoration: hide it, and the button's name is its text. */
+export const InButton: Story = {
+  name: 'In a button',
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<Button variant='outline'>
+  <GitHubIcon size={18} aria-hidden='true' />
+  Continue with GitHub
+</Button>`
+      }
+    }
+  },
+  render: () => (
+    <Button variant='outline'>
+      <GitHubIcon size={18} aria-hidden='true' />
+      Continue with GitHub
+    </Button>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: 'Continue with GitHub' })).toBeInTheDocument()
+    // `aria-hidden` removes the icon's own `GitHub` name, so the button is not read twice.
+    await expect(canvas.queryByRole('img', { name: 'GitHub' })).toBeNull()
+  }
 }

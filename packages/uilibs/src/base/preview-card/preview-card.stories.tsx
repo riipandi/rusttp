@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar'
@@ -11,23 +14,7 @@ import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from './preview-c
 const meta = {
   title: 'Base Components/PreviewCard',
   component: PreviewCard,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof PreviewCard>
 
 type Story = StoryObj<typeof meta>
@@ -50,22 +37,49 @@ const styles = stylex.create({
   muted: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1
-  },
-  sidesRow: {
-    alignItems: 'center',
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8
   }
 })
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <PreviewCard>
+type PlaygroundArgs = ComponentProps<typeof PreviewCard> &
+  Pick<ComponentProps<typeof PreviewCardContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['side', 'sideOffset', 'align', 'alignOffset'] },
+    docs: {
+      source: {
+        code: `<PreviewCard>
+  <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
+  <PreviewCardContent side='bottom' align='center'>
+    <Avatar>
+      <AvatarImage src='…' alt='@dumbledore' />
+      <AvatarFallback>AD</AvatarFallback>
+    </Avatar>
+    <span>@dumbledore</span>
+    <span>Transfiguration professor at Hogwarts — keeper of the Philosopher's Stone.</span>
+  </PreviewCardContent>
+</PreviewCard>`
+      }
+    }
+  },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' }
+  },
+  args: { side: 'bottom', sideOffset: 4, align: 'center', alignOffset: 4 },
+  render: ({ side, sideOffset, align, alignOffset, ...args }) => (
+    <PreviewCard {...args}>
       <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
-      <PreviewCardContent>
+      <PreviewCardContent
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+      >
         <div {...stylex.props(styles.row)}>
           <Avatar>
             <AvatarImage src='https://github.com/vercel.png' alt='@dumbledore' />
@@ -95,15 +109,79 @@ export const Playground: Story = {
   }
 }
 
+/** Each side opens its own card; the popup flips when the canvas leaves it no room, so the side is not asserted. */
 export const Sides: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<PreviewCard>
+  <PreviewCardTrigger render={<Button variant='outline' />}>top</PreviewCardTrigger>
+  <PreviewCardContent side='top'>Preview floats to the top</PreviewCardContent>
+</PreviewCard>`
+      }
+    }
+  },
   render: () => (
-    <div {...stylex.props(styles.sidesRow)}>
-      {sides.map((side) => (
-        <PreviewCard key={side}>
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <PreviewCard>
           <PreviewCardTrigger render={<Button variant='outline' />}>{side}</PreviewCardTrigger>
           <PreviewCardContent side={side}>Preview floats to the {side}</PreviewCardContent>
         </PreviewCard>
-      ))}
-    </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
+        name: side
+      })
+      await userEvent.hover(trigger)
+      await body.findByText(`Preview floats to the ${side}`)
+      await userEvent.unhover(trigger)
+      await waitFor(() => expect(body.queryByText(`Preview floats to the ${side}`)).toBeNull())
+    }
+  }
+}
+
+function Profile({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <PreviewCard defaultOpen={defaultOpen}>
+      <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
+      <PreviewCardContent>
+        <div {...stylex.props(styles.info)}>
+          <span {...stylex.props(styles.name)}>@dumbledore</span>
+          <span>Transfiguration professor at Hogwarts.</span>
+        </div>
+      </PreviewCardContent>
+    </PreviewCard>
   )
+}
+
+// The a11y gate runs after `play`, when a card a play opened has closed again: this story keeps the
+// card open so the gate checks it.
+export const Open: Story = {
+  render: () => <Profile defaultOpen />,
+  play: async () => {
+    const card = await within(document.body).findByText('Transfiguration professor at Hogwarts.')
+    await waitFor(() => expect(card).toBeVisible())
+  }
+}
+
+/** Focusing the trigger opens the card, and Escape closes it. */
+export const Keyboard: Story = {
+  render: () => <Profile />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: '@dumbledore' })
+    const card = () => body.queryByText('Transfiguration professor at Hogwarts.')
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await waitFor(() => expect(card()).toBeVisible())
+
+    await pressUntil('{Escape}', () => expect(card()).toBeNull())
+    await expect(trigger).toHaveFocus()
+  }
 }

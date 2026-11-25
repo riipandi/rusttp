@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { Button } from 'uilibs/base/button'
 import { Separator } from 'uilibs/base/separator'
+import { Stack } from 'uilibs/extra/stack'
 import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { fontSize, unit } from 'uilibs/styles/tokens.stylex'
@@ -14,9 +15,6 @@ const styles = stylex.create({
     gap: unit.x3
   },
   divider: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x3,
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.body2
   },
@@ -31,20 +29,30 @@ export function SocialButtons() {
   return (
     <>
       <div {...stylex.props(styles.group)}>
-        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with Google')}>
+        <Button
+          type='button'
+          variant='outline'
+          size='large'
+          onClick={notWired('Sign in with Google')}
+        >
           <GoogleIcon size={18} aria-hidden='true' />
           Google
         </Button>
-        <Button type='button' variant='outline' size='lg' onClick={notWired('Sign in with GitHub')}>
+        <Button
+          type='button'
+          variant='outline'
+          size='large'
+          onClick={notWired('Sign in with GitHub')}
+        >
           <GitHubIcon size={18} aria-hidden='true' />
           GitHub
         </Button>
       </div>
-      <div {...stylex.props(styles.divider)}>
+      <Stack direction='row' align='center' gap={3} style={styles.divider}>
         <Separator style={styles.line} />
         {m.social_divider()}
         <Separator style={styles.line} />
-      </div>
+      </Stack>
     </>
   )
 }

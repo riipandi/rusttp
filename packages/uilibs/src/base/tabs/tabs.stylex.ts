@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -25,7 +25,8 @@ export const tabsStyles = stylex.create({
     padding: unit.x1,
     width: 'fit-content'
   },
-  listLine: {
+  // `bordered`: the underline list sits on a border rail.
+  listBordered: {
     backgroundColor: 'transparent',
     borderBottomColor: colors.borderNeutralFaded,
     borderBottomStyle: 'solid',
@@ -33,6 +34,35 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     gap: 0,
     padding: 0
+  },
+  // `borderless`: the same list with no rail, for a parent that draws its own border.
+  listBorderless: {
+    backgroundColor: 'transparent',
+    borderRadius: radius.none,
+    gap: 0,
+    padding: 0
+  },
+  // `pills-raised`: the pill list lifts off the page on the raised surface; the active pill takes
+  // the neutral tint, since the list is no longer tinted.
+  listRaised: {
+    backgroundColor: colors.backgroundElevationBase,
+    boxShadow: shadow.raised
+  },
+  triggerRaised: {
+    backgroundColor: {
+      default: 'transparent',
+      '[data-active]': colors.backgroundNeutral
+    }
+  },
+  // `itemWidth='equal'`: the list spans its parent and every trigger takes an equal share of it. A
+  // vertical list stays as wide as its widest trigger, so the shares there are the triggers' own.
+  listEqual: {
+    width: { default: '100%', '[data-orientation="vertical"]': 'fit-content' }
+  },
+  triggerEqual: {
+    flexBasis: { default: 0, '[data-orientation="vertical"]': 'auto' },
+    flexGrow: { default: 1, '[data-orientation="vertical"]': 0 },
+    minWidth: 0
   },
   trigger: {
     alignItems: 'center',
@@ -48,7 +78,12 @@ export const tabsStyles = stylex.create({
       default: 0,
       '@media (forced-colors: active)': { default: 0, '[data-active]': stroke.ring1 }
     },
-    color: { default: colors.foregroundNeutralFaded, '[data-active]': colors.foregroundNeutral },
+    color: {
+      default: colors.foregroundNeutralFaded,
+      '[data-active]:not([data-disabled])': colors.foregroundNeutral,
+      ':disabled': colors.foregroundDisabled,
+      '[data-disabled]': colors.foregroundDisabled
+    },
     display: 'inline-flex',
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
@@ -62,7 +97,7 @@ export const tabsStyles = stylex.create({
     whiteSpace: 'nowrap'
   },
   // Underline style: the active tab draws a bar over the list's bottom border.
-  triggerLine: {
+  triggerUnderline: {
     backgroundColor: 'transparent',
     borderBottomColor: {
       default: 'transparent',
@@ -74,27 +109,39 @@ export const tabsStyles = stylex.create({
     borderRadius: radius.none,
     marginBottom: `calc(-1 * ${stroke.ring1})`
   },
+  // The `xsmall` pill is 20px tall, under the 24px target (WCAG 2.5.8): a hit area makes up the rest
+  // inside the list's own padding, so it reaches neither the list's edge nor a neighbor.
+  triggerHitArea: {
+    position: 'relative',
+    '::after': {
+      content: '""',
+      insetBlock: `calc(-1 * ${unit.x0_5})`,
+      insetInline: 0,
+      position: 'absolute'
+    }
+  },
+  // With no rail to overlap, the bar takes no negative margin.
+  triggerBorderless: { marginBottom: 0 },
   content: {
     color: colors.foregroundNeutral,
     fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    outline: 'none'
+    lineHeight: fontLineHeight.body2
   }
 })
 
-// The list is as tall as a control of its size (`xs` 28, `sm` 32, `md` 36, `lg` 40). A
+// The list is as tall as a control of its size (`xsmall` 28, `small` 32, `medium` 36, `large` 40). A
 // pill list has 4px of padding around its tabs, so its tab is 8px shorter; an underline
-// list has none, so its tab is the full height.
+// list (`bordered`, `borderless`) has none, so its tab is the full height.
 export const tabsSizes = stylex.create({
-  xs: { fontSize: fontSize.caption1, height: unit.x5 },
-  sm: { fontSize: fontSize.body2, height: unit.x6 },
-  md: { fontSize: fontSize.body2, height: unit.x7 },
-  lg: { fontSize: fontSize.body1, height: unit.x8 }
+  xsmall: { fontSize: fontSize.caption1, height: unit.x5 },
+  small: { fontSize: fontSize.body2, height: unit.x6 },
+  medium: { fontSize: fontSize.body2, height: unit.x7 },
+  large: { fontSize: fontSize.body1, height: unit.x8 }
 })
 
-export const tabsLineSizes = stylex.create({
-  xs: { fontSize: fontSize.caption1, height: unit.x7 },
-  sm: { fontSize: fontSize.body2, height: unit.x8 },
-  md: { fontSize: fontSize.body2, height: unit.x9 },
-  lg: { fontSize: fontSize.body1, height: unit.x10 }
+export const tabsUnderlineSizes = stylex.create({
+  xsmall: { fontSize: fontSize.caption1, height: unit.x7 },
+  small: { fontSize: fontSize.body2, height: unit.x8 },
+  medium: { fontSize: fontSize.body2, height: unit.x9 },
+  large: { fontSize: fontSize.body1, height: unit.x10 }
 })

@@ -57,11 +57,14 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { zIndex } from '../../styles/tokens.stylex'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
   defaultDragLabels,
   nameOfElement,
+  useDraggableName,
   type DragLabels
 } from '../sortable/drag-announcements'
 import { kanbanStyles } from './kanban.stylex'
@@ -71,11 +74,17 @@ import { kanbanStyles } from './kanban.stylex'
 // ---------------------------------------------------------------------------
 
 export interface KanbanLabels extends DragLabels {
-  /** Name of a column's drag handle. Defaults to `Reorder column`. */
-  columnHandle: string
+  /** Name of a column's drag handle, from the column's name (its `aria-label`, else its value). Defaults to `Reorder column <name>`. */
+  columnHandle: (name: string) => string
+  /** Name of the board region. Defaults to `Kanban board`. */
+  board: string
 }
 
-const defaultLabels: KanbanLabels = { ...defaultDragLabels, columnHandle: 'Reorder column' }
+const defaultLabels: KanbanLabels = {
+  ...defaultDragLabels,
+  columnHandle: (name) => `Reorder column ${name}`,
+  board: 'Kanban board'
+}
 
 interface KanbanContextProps<T> {
   columns: Record<string, T[]>
@@ -159,10 +168,6 @@ const MEASURING_CONFIG = { droppable: { strategy: MeasuringStrategy.Always } }
 const collisionDetectionStrategy: CollisionDetection = (args) => {
   const pointerCollisions = pointerWithin(args)
   return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args)
-}
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
 }
 
 type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
@@ -599,7 +604,7 @@ function Kanban<T>({
 export type KanbanBoardProps = DivRenderProps
 
 function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
-  const { columnIds } = useContext(KanbanContext)
+  const { columnIds, labels } = useContext(KanbanContext)
 
   return (
     <SortableContext items={columnIds} strategy={rectSortingStrategy}>
@@ -608,6 +613,10 @@ function KanbanBoard({ style, render, ...props }: KanbanBoardProps) {
         render,
         props: mergeProps<'div'>(
           {
+            // A landmark for the scrolling board. Its handles and items are already Tab stops, so
+            // the region itself takes none.
+            role: 'region',
+            'aria-label': labels.board,
             ...stylex.props(kanbanStyles.board, style),
             'data-slot': 'kanban-board',
             children: props.children
@@ -705,16 +714,19 @@ export interface KanbanColumnHandleProps extends DivRenderProps {
 function KanbanColumnHandle({ style, render, cursor = true, ...props }: KanbanColumnHandleProps) {
   const { attributes, listeners, isDragging, disabled } = useContext(ColumnContext)
   const { activeId, labels } = useContext(KanbanContext)
+  const { ref, name } = useDraggableName('kanban-column', false)
 
   return useRender({
     defaultTagName: 'div',
     render,
+    ref,
     props: mergeProps<'div'>(
       {
         // The drag attributes make the handle a button; without a name it is an unlabelled one.
-        'aria-label': labels.columnHandle,
+        'aria-label': name === undefined ? undefined : labels.columnHandle(name),
         ...stylex.props(
           stylex.defaultMarker(),
+          focusRing.root,
           kanbanStyles.columnHandle,
           cursor &&
             (isDragging ? kanbanStyles.columnHandleDragging : kanbanStyles.columnHandleGrab),
@@ -883,7 +895,12 @@ function KanbanOverlay({ children, style, ...props }: KanbanOverlayProps) {
     : undefined
 
   return createPortal(
-    <DragOverlay dropAnimation={dropAnimationConfig} modifiers={modifiers} {...props}>
+    <DragOverlay
+      dropAnimation={dropAnimationConfig}
+      modifiers={modifiers}
+      zIndex={zIndex.dragOverlay}
+      {...props}
+    >
       <IsOverlayContext.Provider value={true}>
         <div {...ghostProps} style={{ ...ghostProps.style, ...ghostSize }}>
           {content}

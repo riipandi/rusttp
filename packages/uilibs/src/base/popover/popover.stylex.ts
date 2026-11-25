@@ -22,7 +22,6 @@ export const popoverStyles = stylex.create({
       '[data-ending-style]': 0
     },
     outline: 'none',
-    padding: unit.x4,
     width: container.small
   },
   header: {
@@ -42,4 +41,32 @@ export const popoverStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     margin: 0
   }
+})
+
+// `padding` counts `unit` steps, as Reshaped's number does: each step is a static style on the unit token.
+export const popoverPadding = stylex.create({
+  0: { padding: 0 },
+  0.5: { padding: unit.x0_5 },
+  1: { padding: unit.x1 },
+  1.5: { padding: unit.x1_5 },
+  2: { padding: unit.x2 },
+  3: { padding: unit.x3 },
+  4: { padding: unit.x4 },
+  5: { padding: unit.x5 },
+  6: { padding: unit.x6 },
+  7: { padding: unit.x7 },
+  8: { padding: unit.x8 },
+  9: { padding: unit.x9 },
+  10: { padding: unit.x10 },
+  12: { padding: unit.x12 },
+  14: { padding: unit.x14 },
+  16: { padding: unit.x16 },
+  18: { padding: unit.x18 },
+  20: { padding: unit.x20 }
+})
+
+// `borderRadius`: `medium` is the base popup's radius.
+export const popoverRadii = stylex.create({
+  medium: { borderRadius: radius.medium },
+  large: { borderRadius: radius.large }
 })

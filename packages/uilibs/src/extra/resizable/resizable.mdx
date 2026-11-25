@@ -1,0 +1,102 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './resizable.stories'
+
+<Meta of={Stories} />
+
+# Resizable
+
+Panels the user resizes by dragging the handle between them.
+
+## Import
+
+```jsx
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'uilibs/extra/resizable'
+```
+
+Built on [react-resizable-panels](https://github.com/bvaughn/react-resizable-panels). Props not listed here pass through.
+
+## Anatomy
+
+- **ResizablePanelGroup:** the container. It sets the direction the panels flow.
+- **ResizablePanel:** one panel. Its children render in an inner element of this library's own.
+- **ResizableHandle:** the draggable separator between two panels. It can show a grip.
+
+```jsx
+<ResizablePanelGroup>
+  <ResizablePanel />
+  <ResizableHandle aria-label='…' />
+  <ResizablePanel />
+</ResizablePanelGroup>
+```
+
+## Examples
+
+### Handle variants
+
+<Canvas of={Stories.Variants} />
+
+### Orientations
+
+The arrow keys grow the first panel along the group's axis.
+
+<Canvas of={Stories.Orientations} />
+
+### Nested groups
+
+<Canvas of={Stories.NestedMixed} />
+
+### Three panels
+
+<Canvas of={Stories.ThreePanels} />
+
+## Accessibility
+
+Each `ResizableHandle` is a focusable `separator` and needs a name from `aria-label`. The `Keyboard` story drives one handle, and the Orientations example shows the arrows follow the group's axis.
+
+| Key                     | Action                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab` | Reach each handle: one stop per handle.                                                    |
+| Arrow keys              | Move the bar along the group's axis, and back with the opposite arrow.                     |
+| `Home`, `End`           | Send the bar to the smallest and the largest size its panels allow (`minSize`, `maxSize`). |
+
+- The handle reports its position in `aria-valuenow`.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ResizablePanel` it lands on an inner element, so padding never stops the panel from shrinking to zero. Add `overflow` there to scroll within the panel.
+
+### ResizablePanelGroup
+
+| Prop          | Description                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `orientation` | `horizontal`, `vertical` <br /> The direction the panels flow. `horizontal` is a row with vertical bars. Default `horizontal`. |
+
+| Data attribute | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `data-group`   | Always present. Set by react-resizable-panels. |
+
+### ResizablePanel
+
+| Data attribute  | Description                                                        |
+| --------------- | ------------------------------------------------------------------ |
+| `data-panel`    | Always present. Set by react-resizable-panels.                     |
+| `data-disabled` | Present when the panel is disabled. Set by react-resizable-panels. |
+
+### ResizableHandle
+
+| Prop         | Description                                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `variant`    | `pill`, `spring`, `capsule` <br /> The look of the grip that `withHandle` shows; `capsule` also boxes the bar. Default `pill`. |
+| `withHandle` | `boolean` <br /> Shows a grip on the bar. Default `false`.                                                                     |
+
+| Data attribute     | Description                                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `data-separator`   | `inactive`, `hover`, `active`, `focus`, or `disabled`. Set by react-resizable-panels.                |
+| `aria-orientation` | The bar's own orientation, the opposite of the group's `orientation`. Set by react-resizable-panels. |
+| `aria-disabled`    | Present when the handle is disabled. Set by react-resizable-panels.                                  |
+
+## Caveats
+
+- A handle is a focusable separator with no text, so name it with `aria-label`.
+- A handle must be a direct child of the group, between two panels.
+- To keep the layout between visits, use `useDefaultLayout` from `react-resizable-panels`.

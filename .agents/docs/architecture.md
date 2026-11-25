@@ -1,8 +1,8 @@
 # Architecture
 
-updated: 2026-11-20T06:05:00+07:00
+updated: 2026-11-25T12:45:00+07:00
 
-The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`; this file keeps the why, so a settled decision is not re-litigated.
+The architecture and the reasoning behind it. The layout lives in `shape.md`; the binding rules derived from these decisions live in `rules.md`, `backend.md`, and `frontend.md`; this file keeps the why, so a settled decision is not re-litigated.
 
 ## Module anatomy
 
@@ -131,7 +131,7 @@ Alternatives considered:
 - `axum-connect` — rejected: thinner protocol coverage and less active than `connectrpc`, which passes the Connect conformance suite.
 - Connect at the root (`/<package.Service>/<Method>`) — rejected: it shares the namespace with SPA routes and needs a proxy entry per package.
 - Porting vite-rs — rejected: it serves `index.html` as built (one head for every page; templating is out of its scope, its README says), and it runs Vite as a child of the Rust process, so every Rust restart restarts Vite. Its dev proxy is the one part kept, in vixum.
-- Keeping Vite's `index.html` and writing the page head into it — replaced (2026-11-19, owner): the document's static parts belonged to the frontend package while the server owned the rest; the shell now lives with the server, and dev keeps Vite's tags through `transformIndexHtml` instead of hand-written HMR and preamble tags (the Saka/olivere-vite shape writes them by hand).
+- Keeping Vite's `index.html` and writing the page head into it — replaced (2026-11-19, owner): the document's static parts belonged to the frontend package while the server owned the rest; the shell now lives with the server, and dev keeps Vite's tags through `transformIndexHtml` instead of hand-written HMR and preamble tags.
 - Vite in front with a proxy to the server — rejected: two ports between dev and production, and the head stays static.
 - `rust-embed` — rejected: cache headers, precompression, and the SPA fallback would be hand-written; `tower-http` `ServeDir` — rejected: the binary would need `dist/` beside it at runtime.
 - watchexec restarting `cargo run` (with `systemfd`/`listenfd` holding the socket) — rejected: the server is down for the whole compile and stays down when the build fails; the plugin keeps the old server answering in both cases, with one process to run.
@@ -139,28 +139,31 @@ Alternatives considered:
 
 ### The UI library composes through one control scale, shared recipes, and a failing a11y gate
 
-Context: `audit-00001-uilibs` found controls that did not compose (a `lg` Button above a 36 px Input), wrappers that rejected `ref`, controls that were not Field controls, token-level contrast failures, and 81 stories with real axe violations that a `todo` gate never failed.
+Context: `audit-00001-uilibs` found controls that did not compose (a `large` Button above a 36 px Input), wrappers that rejected `ref`, controls that were not Field controls, token-level contrast failures, and 81 stories with real axe violations that a `todo` gate never failed.
 
 Decision (2026-11-20, `plan-00001-uilibs-improvement`):
 
-- One `ControlSize` scale, `sm` 32 / `md` 36 / `lg` 40, default `md`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xs` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
-- Two focus languages by kind: text entry takes the primary border and a 2px inset outline, press targets a 2px outside ring (an inset ring clips a short label, an outside ring collides with a field's neighbours). Disabled is one recipe, `opacity: 0.5` and the not-allowed cursor.
-- `borderControl`, a token at 3:1 or more on the page and elevation surfaces in both themes, is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
+- One `ControlSize` scale, `small` 32 / `medium` 36 / `large` 40, default `medium`, on Button, every text control, Toggle, ToggleGroup, Tabs, and Menubar; `xsmall` 28 exists only on Button, Toggle, and Tabs (`DenseControlSize`). The recipes are StyleX in `styles/control.stylex.ts`: `controlSizes`, `controlBase` (text entry, with `within` for wrappers that hold the real input), and `controlPress` (press targets). Components compose them before their own style, as `popupFx` is composed.
+- Two focus languages by kind: text entry takes the primary border and a 2px inset outline, press targets a 2px outside ring (an inset ring clips a short label, an outside ring collides with a field's neighbours). Disabled is one recipe, the disabled color tokens and the not-allowed cursor (plan-00011 Q15 replaced `opacity: 0.5`, which stacked).
+- `borderControl`, a token at 3:1 or more on the page, on `backgroundNeutral` (including its hover surface), and on elevation surfaces in both themes (light L 0.58, dark L 0.64 since plan 00005), is the edge of text controls, Checkbox, Radio, and the off Switch; dividers and cards keep `borderNeutralFaded`. Contrast is measured with browser-style sRGB blending.
 - Wrappers are typed `React.ComponentProps<…>` (React 19 `ref` as a prop); no `forwardRef`. Built-in strings are per-component `labels` props with English defaults; no locale context.
-- Alert, Badge, and Toast take `tone` (`neutral | primary | positive | warning | critical`); `destructive` variants became `tone='critical'`. Alert is a polite `status` unless given `role='alert'`.
-- `LinkButton` lives in `base/button` and takes `render` (`<a href>` or a router `<Link to>`), so the library does not depend on the router; it puts `role='link'` back on the rendered element, which Base UI turns into `button`. A loading Button is disabled but focusable and reports `aria-busy`.
+- Alert, Badge, and Toast take `color` (`neutral | primary | positive | warning | critical`); `destructive` variants became `color='critical'`. Alert has no role unless `announce` opts into `role='status'` (plan-00011 Q29).
+- Color and fill are separate props (plan-00008 D7, 2026-11-22): `tone` was renamed `color` (Reshaped's word for the role) and `variant` became the fill only, `solid | faded | outline | ghost` on Button and Badge (`primary` is `solid` with `color='primary'`, `secondary` is `faded` with `color='neutral'`). Defaults keep today's look: a bare Button or Badge is the solid primary one. Button became a full fill × color matrix (`primary | neutral | critical`, then `positive | warning` too, D10), which added looks (solid neutral, faded primary, faded critical, outline primary, ghost primary, and the two new colors) built from existing color tokens. The first draft folded `tone` into one `variant` axis and was rejected because it dropped critical `outline` and `ghost` and the colored faded and outlined Badge. Reshaped's neutral default and its size names (`small | medium | large | xlarge`) were not adopted.
+- The Reshaped props the library adopted (plan-00008 D10 to D15, 2026-11-22), each default reproducing the look it had before: Button `rounded`, `fullWidth`, `icon`, `endIcon`, `raised`; Badge `size`, `rounded` (default `true`, the reverse of Reshaped's, since a Badge was already a pill), `icon`, `onDismiss` with `labels.dismiss`; text-entry `variant` `outline | faded | ghost | headless` (default `outline`, so the 3:1 `borderControl` edge rule applies to `outline` only); Checkbox, Radio, Switch `size`; Tabs `pills | bordered | borderless` (the old `default` and `line`) and Toggle `ghost | outline | solid` with `selectedColor`; Avatar `color`, `variant`, `squared`; Progress, Meter, Spinner `color` and `size`; Tooltip `color` `neutral | inverted`; Separator `color` and `inset`; Breadcrumb `color`; Card `selected` and `raised`; Popover `elevation`; Item `variant` `ghost | outline | faded`; Icon `color` `neutral-faded`. Not adopted: Reshaped's neutral default and size names, `pills-raised`, `selectedVariant`, Tooltip `dark`, `media` and `inherit` Button colors. Kept because they name a shape or a content kind, not a fill or role: `ItemMedia` and `EmptyMedia` `variant`, the Resizable handle `variant`, `FieldLegend` `variant`, Kanban's overlay `variant`, Card and AlertDialog `size`, the data grid's `tableLayout` flags.
+- Stories are grouped by prop axis and the canvas is fluid (plan-00008 D1, D2, D5, D6, D9): one story per axis drawn with `Axis`, one `States` story per component, `Sizes` replacing the per-component `ControlSizes` (the cross-component contract story stays), and no per-file `minWidth`, so a 390 px layout is visible. Rejected: one story per value, one matrix story crossing every prop, per-file decorators.
+- Links take `render` (`<a href>` or a router `<Link to>`), so the library does not depend on the router: `Link` (`extra/link`) is the text link and `Button render={<a />}` is the link that looks like a button, both through `useRender` so the rendered anchor keeps its `link` role (plan-00011 D3 and Q38; `LinkButton` is removed and its role override with it). A loading Button is disabled but focusable and reports `aria-busy`.
 - Glyphs are `@keyline-icons/react` components used directly (`size`, `strokeWidth`); the `Icon` wrapper stays in `extra`, so `base` parts do not import it. `ContextMenu` items are the DropdownMenu's: Base UI 1.9 exports the same Menu parts under both names.
 - The a11y gate fails by default (`.storybook/preview.tsx`); `STORYBOOK_A11Y_GATE=todo|off` relaxes it locally. The one allowlist entry is Base UI's focus guard (`[data-base-ui-focus-guard]`).
 
 Consequences:
 
 - (positive) one place changes every control's height, focus, invalid, and disabled behavior; a mixed row is correct by construction and the composition story asserts equal heights; every story passes axe in light and dark; no dependency was added.
-- (negative) the defaults grew where the scale moved them (Toggle `md` 32 to 36, Menubar 32 to 36, OTP slot 32 to 36, the `lg` text controls take 16 px type); there is no backward compatibility, so a renamed prop was renamed in the webapp too; Base UI behavior the library works around (OTP's first-slot label, the Toast close button's `aria-hidden`, no accordion arrow keys) is pinned by stories, not by types.
+- (negative) the defaults grew where the scale moved them (Toggle `medium` 32 to 36, Menubar 32 to 36, OTP slot 32 to 36, the `large` text controls take 16 px type); there is no backward compatibility, so a renamed prop was renamed in the webapp too; Base UI behavior the library works around (OTP's first-slot label, the Toast close button's `aria-hidden`, no accordion arrow keys) is pinned by stories, not by types.
 
 Alternatives considered:
 
-- Drop Button `xs` and `lg` instead of scaling the controls — rejected: breaks toolbars and the webapp's `lg` buttons.
-- `xs` on every control — rejected: a 28 px text field is a cramped target.
+- Drop Button `xsmall` and `large` instead of scaling the controls — rejected: breaks toolbars and the webapp's `large` buttons.
+- `xsmall` on every control — rejected: a 28 px text field is a cramped target.
 - A `--control-height` variable or a `<Control>` wrapper component — rejected: the first hides the size from the type system, the second cannot wrap Base UI parts that each render their own element.
 - Raising `borderNeutral` globally — rejected: heavier cards, tables, and separators everywhere.
 - `forwardRef` wrappers — rejected: deprecated in React 19 and a second code path.
@@ -175,7 +178,7 @@ Context: the webapp's forms ran on TanStack Form with zod through a `createFormH
 Decision (2026-11-20, owner, `plan-00002-webapp-forms-formisch`):
 
 - Formisch with Valibot replaces both. The schema is the single source of the form's types, rules, and shape; `field.errors` arrives as strings and `handleSubmit` validates and focuses.
-- The forms keep the `uilibs` `Form` and `Field`; field components take the Formisch field store and are rendered by Formisch's `Field` (`shape.md`, `rules.md` "Webapp forms").
+- The forms keep the `uilibs` `Form` and `Field`; field components take the Formisch field store and are rendered by Formisch's `Field` (`frontend.md`, "Webapp forms").
 - zod and TanStack Form are removed outright, with no compatibility layer. zod remains in the lockfile only as a build-time dependency of `@tanstack/router-generator`; it does not reach the shipped SPA.
 
 Consequences:
@@ -232,6 +235,143 @@ Alternatives considered:
 - A test per defect only — rejected: it would pin the three audited bugs and miss the next one of the same kind.
 - Extending the Storybook gate to full pages — rejected: stories render components, and the defects live in the composition of layout and components.
 
-## Parked
+### The webapp's entry load has a budget, and the admin layout mounts one chrome
 
-- Community and enterprise editions (an `enterprise` Cargo feature, port overrides in the kernel, a license gate) — set aside by the owner on 2026-11-19. Revisit only when the owner raises it.
+Context (2026-11-22): plan 00004 left `issue-00003-ui-audit-leftovers`: the entry chunk grew from 303 to 363 KB and the cause was blamed on `useMessages`. Building the commits in between and summing the entry with its static imports showed 422 KB, then 457 KB (`useMessages`, about 35 KB), then 547 KB: the larger step (89 KB, 31 KB gzip) was `TooltipProvider` moved to the root, which pulled Base UI's tooltip into every page. The same audit parked a double-mounted admin chrome, two contrast gaps, and a 2.4k-line data grid.
+
+Decision (2026-11-22, owner, `plan-00005-ui-leftovers-remediation`):
+
+- The entry load is budgeted: `pnpm --filter webapp size` fails over 480 KB raw or 152 KB gzip (the measured 458 KB / 146 KB plus about 5%). `TooltipProvider` moves into the admin and customer layouts.
+- The admin layout renders the sidebar or the top bar by `useCompact()`, not both with a CSS hide. This reverses plan 00004 D12 (both stayed mounted for a clean tab order and two cheap subscriptions).
+- Chart series take the `foreground*` tokens and `borderControl` changes value (light L 0.58, dark L 0.64). This lifts plan 00004 D1 (tokens frozen) for those two cases; no token was added.
+- The data grid splits by responsibility, code moved unchanged: the cell controller into ops, editor, and controller; the table into head, body, and utils, with one-way dependencies and an identical public surface. This reverses plan 00004 D11 (structure kept, F-26 deferred).
+- A lazy per-language message catalog was built and measured, then dropped: Paraglide's `locale-modules` output still imports every language from its index, so the split had to live in `libraries/messages.ts` (an async language change, a top-level await in `main.tsx`); one language is 19.2 KB raw and 6.0 KB gzip, the entry went from 458.1 KB / 145.9 KB gzip to 442.8 KB / 146.6 KB, and the build gained chunks.
+
+Consequences:
+
+- (positive) a size regression fails a command instead of waiting for someone to look; the landing and auth pages no longer load Base UI's tooltip; one bell and one account menu are live per viewport; control edges and chart series pass 3:1 on neutral surfaces; no data-grid source file passes about 1250 lines.
+- (negative) a route outside the two layouts that shows a tooltip adds its own provider or gets Base UI's 600 ms delay; crossing 767px closes an open popover; control edges look stronger on the page (4.28 and 5.77 against 3.36 and 3.84); `git blame` on the grid goes through the move commits.
+
+Alternatives considered:
+
+- A lazy per-locale catalog — built and rejected on the numbers above; the route-group partition (a key partition by area, shared keys loaded twice, a loader per route) would save more but costs the most, and is reopened only if messages breach the budget.
+- Keeping the root provider and lazy-loading Base UI inside it — rejected: the provider is the import.
+- A size-limit dependency — rejected: 50 lines of Node read the manifest.
+- Keeping both chromes mounted — rejected: two live subscriptions are the reason the item existed; a shared popover host would add a layer for a swap this small.
+- New `chart*` tokens, labeling the weak series only, or lifting `backgroundNeutral` — rejected: more surface for the same effect, the status quo, and a change to every neutral surface.
+- Splitting `DataGridCellSelection` into hooks — rejected: a behavior refactor with no defect behind it.
+
+### The webapp's unit tests run in a real browser, with one Vitest version
+
+Context (2026-11-22): `packages/webapp` had no unit test runner (`issue-00003` item 5); a store change (the same array when nothing changes) had been checked with a scratch script and deleted. `uilibs` already ran Vitest 5 in Chromium with its versions written inline.
+
+Decision (2026-11-22, owner, `plan-00006-webapp-unit-tests`):
+
+- Vitest 5 in browser mode on Chromium, with `vitest-browser-react`, `@vitest/ui`, and `@vitest/coverage-v8`; every Vitest package is a workspace catalog entry and `uilibs` moves onto it.
+- Tests sit beside their source; coverage is v8 with no threshold; `just test-web*` recipes exist and `just verify` is unchanged.
+- The webapp has its own `vitest.config.ts` with Paraglide and the React Compiler on, not `vite.config.ts`.
+
+Consequences:
+
+- (positive) the stores, hooks, and schemas run against a real `localStorage`, `matchMedia`, and DOM; a hook test sees the compiled memoization, which is where the language-change trap lives.
+- (negative) a run starts Chromium (a second or two); browser mode cannot reset modules, so tests reset singletons by hand; the webapp tests are one more command outside `verify`.
+
+Alternatives considered:
+
+- jsdom or happy-dom with `@testing-library/react` — rejected: an imitation DOM and two more dependencies outside the `uilibs` pattern.
+- The `node` environment only — rejected: the locale store and the hooks touch `window`.
+- `@vitest/coverage-istanbul` — rejected: it instruments code and fights the React Compiler and StyleX pipeline.
+- A coverage threshold now — rejected: the figure would be arbitrary before a baseline exists.
+- Vitest versions inline in the packages that use them — rejected: two sources of one version.
+
+### The UI library takes the safe Reshaped props, and each component has a props page
+
+Context (2026-11-23): after `plan-00008` the props followed Reshaped's `color` and `variant` model, but props Reshaped has were still missing. The owner had them curated against Base UI and asked for a props reference beside each component.
+
+Decision (`plan-00009-uilibs-reshaped-props-docs`):
+
+- D1: every prop judged safe is implemented, 29 in all; a prop is safe when it changes only the look (a StyleX style, an attribute Base UI already emits, an `aria-hidden` glyph) and touches none of Base UI's state, focus, keyboard handling, ARIA roles, portal, or positioning. The rest are left out: Button `loadingAriaLabel`, Badge `hidden` and `Badge.Container`, Switch `reversed`, Separator `contentPosition` and `blank`, `startSlot`/`endSlot`/`prefix`/`suffix` on Input and Select, menu item `selected` and `highlighted`, and the responsive `{ s, m, l }` values.
+- D2: `padding` and `bleed` take Reshaped's number, counted in `unit` steps (`UnitStep`, `0` to `20`). A map of static styles on the `unit` tokens (Popover `padding`) or, for a value known only at run time or given as a CSS length, one dynamic style fed by `unitLength` (Skeleton, Table cells, Alert `bleed`). No token was added.
+- D3: `media` (Button) and `dark` (Tooltip) read the constants `colors.white` and `colors.black` and `color-mix`, so they look the same in both themes. Axe checks them on a black backdrop.
+- D4: a visual-only prop emits no new data attribute. `highlighted` holds the hover fill through StyleX and sets no `data-highlighted`, which Base UI menu items own.
+- D5: every default renders as before, proven per phase by a computed-style comparison of the touched components before and after (96, 86, 174, and 72 elements; the only difference was a Skeleton animation frame).
+- D6: value sets Reshaped does not fix: Toggle `selectedColor` adds `positive` and `warning` (not `media` or `inherit`, a pressed state must stay distinguishable); Toggle `selectedVariant` is `ghost | outline | solid`, unset follows `variant` with `outline` pressing to the `ghost` tint; Dialog `size` is `small | medium` (`large` needs a container token, left to the owner); `blurredOverlay` blurs by `unit.x1`; Button `inherit` has no cut-out `solid` (a tint instead).
+- D7 and D8: each component folder has `<name>.mdx`, a docs page (import, anatomy, examples through `Canvas`, API reference with props, data attributes, and caveats; two-column tables, because the owner found wide tables hard to read), attached to the stories with `<Meta of={Stories} />`; a prop change updates it in the same commit. The shape is in `frontend.md` ("UI library"). The name is `<name>.mdx`: Storybook 10 cannot index `<name>.stories.mdx` (addon-docs excludes it, `preset.js:865`), found in Phase 5.
+- Along the way the data grid's declared-but-unread props were settled (`issue-00004`): `DataGridContainer` `border` and `DataGridTableHeadRow` `rowId` (as `data-header-row-id`, because the cell logic reads `data-row-id`) were wired and covered by stories, and `sizesInfo`, `sizesLabel`, `sizesDescription`, `more`, and `pinnable` were removed.
+
+Consequences:
+
+- (positive) the look the owner asked for is one prop away, the Base UI behavior is untouched, and a reader finds a component's added props in Storybook without reading its source; the Storybook MCP addon serves the same pages to agents.
+- (negative) 65 pages to keep in step with their components, by convention only (no script checks them); a Toggle pressed look is set through variables, which is harder to read than a flat map.
+
+Alternatives considered:
+
+- Implementing Reshaped's full prop set — rejected: it would break Base UI's state and ARIA model.
+- Named steps (`small | medium | large`) or free pixel values for `padding` and `bleed` — rejected: the first is further from Reshaped, the second escapes the token scale.
+- `<ArgTypes>`/`<Controls>` for the props page — rejected: react-docgen lists every inherited Base UI and DOM prop and buries the ones this library adds.
+- A usage section on each page — rejected: it repeats the stories.
+- `<name>.docs.mdx` — rejected: it needs the same glob change and gains nothing over `<name>.mdx`.
+- A new token for a media or dark surface — rejected: the constants already carry it.
+
+### The Command input draws no focus ring
+
+Context (2026-11-25): `audit-00002` F-11 found that the Command input shows no ring, only a comment in `command.stylex.ts` said why, and the audit asked for the decision to be recorded.
+
+Decision (owner, `plan-00011-uilibs-audit-remediation` Q35): the input keeps no ring. The field holds focus the whole time its palette is open, it is the only field in it, and its caret is the focus indicator; a ring on a control that can never lose focus kept drawing the eye (WCAG 2.4.7 accepts a visible caret for a text field). The options inside the list are different: a highlighted option must show a 3:1 indicator, which is plan-00011 phase 10 (X-01).
+
+Consequences:
+
+- (positive) the palette stays quiet; the decision is findable in one place, and a reader of the stylesheet is not tempted to add a ring.
+- (negative) `contracts/focus-visible.stories.tsx` cannot assert a ring on this input; the story asserts that it has focus, not how it looks.
+
+Alternatives considered:
+
+- A 2px ring like the other text controls — rejected: it is on from the moment the palette opens, so it never marks a change.
+
+### Names, roles, and targets: interactive means one Tab stop, one name, one 24 px target
+
+Context (2026-11-25): `audit-00002` found a chart that took a Tab stop and showed no ring, a scroll wrapper that was always a region, drag handles every item shared one name for, and controls under 24 px.
+
+Decision (owner, `plan-00011-uilibs-audit-remediation` Q31 to Q34, wave 3):
+
+- Q31: a chart is a Tab stop only when it is interactive (it has a `tooltip`) and then draws the focus ring on its host; a static chart takes none.
+- Q32: `ChartContainer` takes `description` (the svg `<desc>`), and the docs page recommends the same rows in a `Table` with a `TableCaption` as the data alternative.
+- Q33: the Kanban board is a `role='region'` named by `labels.board` with no tab stop of its own; Sortable and Kanban handle names are functions of the item or column name (`labels.handle`, `labels.columnHandle`).
+- Q34: the board's padding is kept.
+- A control under 24 px reaches it through an `::after` hit area (`contracts/hit-area.ts`), not a larger box; a scroll wrapper is a focusable region only while it overflows.
+
+Consequences:
+
+- (positive) a keyboard user meets no stop without a ring or a name; the rules are asserted by plays, not only documented.
+- (negative) `labels` shapes changed (no backward compatibility), and a caller that nests a chart in its own focus order must add the `tooltip` or a wrapper.
+
+Alternatives considered:
+
+- Always a Tab stop for charts, with the ring — rejected: a static chart has nothing to operate.
+- Growing the stepper, tab, and dismiss boxes to 24 px — rejected: it changes the look of every dense row.
+
+### The uilibs audit remediation: one vocabulary, a gate in CI, and the decisions behind it
+
+Context (2026-11-24): the uilibs audit report (R-01 to R-39) found a gate that nothing ran, tokens that meant different things in different files, defects in keyboard highlight, focus, and form errors, and no docs for keyboard use. The owner asked for every recommendation, and `plan-00011-uilibs-audit-remediation` did it in 59 phases and 8 waves, answering a 69-question questionnaire (an unanswered question meant the recommendation applied, Q00).
+
+Decision (D1 to D9 of the plan, with the answers that changed a recommendation):
+
+- D1: every recommendation runs; a "No" answer drops the work it names. D2: no backward compatibility, so a replaced name (`breakpoints.small`, Button `icon-*` sizes, Popover `elevation` values, Pagination `isActive`, DataGrid `i18n`, `LinkButton`, unused color tokens) disappeared in the phase that replaced it, with its webapp callers.
+- D3: `Link` is a `useRender` component, not a router wrapper, and Button takes `render` for a link that looks like a button (Q38 done differently: `LinkButton` removed). `Stack`, `Container`, `Hidden`, `Image`, `BadgeAnchor`, `ThemeScope`, and an animated `ThemeSwitcher` were added; `Carousel` and `ProgressIndicator` were the two optional "Yes" answers (Q51, Q52).
+- D4 to D7: waves and tracks ran in one checkout on disjoint file sets, with the tokens and shared styles changing serially first; the catalog and agent docs synced at wave close; validation was scoped per phase and full per wave.
+- D9 (owner): every size name is spelled out (`xsmall` to `xxlarge`), also the breakpoints and `Text`'s responsive keys.
+- Owner answers that differ from the recommendation: breakpoint names stay `small`-family (Q08); `fontLetterSpacing` stays and the typography roles read it (Q16); the unused color tokens were removed after a Reshaped check (Q14); the branch stayed `ui-polish` (Q05); Q61, Q49 to Q50, and Q53 to Q59 stayed "No" (no large Dialog, no Breadcrumb collapse, no controlled Pagination, no headless layer or responsive control props, which would reverse plan-00009 D1).
+- The gate: `just test-ui` (Chromium, light and dark, plus the `unit` project), the Firefox and WebKit nightly in `.github/workflows/uilibs.yml`, the 390 px overflow gate, and `just check-ui-docs`; the Menubar stories carry `skip-webkit` (F-12, upstream).
+
+Consequences:
+
+- (positive) a regression in the a11y, focus, contrast, overflow, or docs contract fails a run; one scale of tokens and shared types replaces per-file restatements; every component has a docs page with keyboard behavior proved by a play.
+- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors, each with a unit test) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; the data grid has an open audit (`audit-00003`).
+
+Alternatives considered:
+
+- One plan per priority (P0, P1, P2) — rejected: the owner asked for all of it, and the token work gates most of the rest.
+- Worktrees or orbs for the parallel tracks — rejected by the owner (limited storage); tracks shared one tree with a commit protocol.
+- TanStack `createLink` for `Link` — rejected: it ties the library to one router.
+- Per-phase edits to the shared docs — rejected: concurrent edits to one file in one tree overwrite each other.
+- Porting Reshaped's HSLuv code for the rebrand script — rejected: a small OKLCH script needs no dependency and no licence notice.

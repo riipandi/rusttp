@@ -53,6 +53,7 @@ release/
 .data/
 .cache
 .output
+.vitest
 .wrangler
 .netlify
 .temp

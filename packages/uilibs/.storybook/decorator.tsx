@@ -183,10 +183,13 @@ export function GlobalDecorator({ context, children }: GlobalDecoratorProps) {
       >
         <style dangerouslySetInnerHTML={{ __html: canvasBackgroundCss }} />
         {children}
-        <CanvasControls
-          direction={direction}
-          onToggleDirection={() => setDirection((current) => (current === 'ltr' ? 'rtl' : 'ltr'))}
-        />
+        {/* A docs page renders many stories inline: the fixed overlay would float over the page. */}
+        {context.viewMode === 'docs' ? null : (
+          <CanvasControls
+            direction={direction}
+            onToggleDirection={() => setDirection((current) => (current === 'ltr' ? 'rtl' : 'ltr'))}
+          />
+        )}
       </ThemeProvider>
     </UIProvider>
   )

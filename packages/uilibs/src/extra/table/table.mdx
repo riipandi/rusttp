@@ -1,0 +1,123 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './table.stories'
+
+<Meta of={Stories} />
+
+# Table
+
+A data table that scrolls sideways in a focusable region when it is too wide; for single-column rows, use Item instead, and for sorting, selection, or editing use [Data Grid](?path=/docs/data-grid-basics--data-grid).
+
+## Import
+
+```jsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow
+} from 'uilibs/extra/table'
+```
+
+Built on the native table elements (`table`, `thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, `caption`). Props not listed here pass through.
+
+## Anatomy
+
+- **Table:** the `table`. It renders a `div` around itself. While the table is wider than its column, the `div` scrolls, takes focus, and becomes a `role="region"` named by `labels.region` or the caption.
+- **TableCaption:** the caption. It is optional and sits below the table.
+- **TableHeader:** the `thead`. It is optional.
+- **TableBody:** the `tbody`.
+- **TableFooter:** the `tfoot`. It is optional.
+- **TableRow:** a `tr`. It goes in a header, body, or footer.
+- **TableHead:** a `th`. It goes in a row.
+- **TableCell:** a `td`. It goes in a row.
+
+```jsx
+<Table>
+  <TableCaption />
+  <TableHeader>
+    <TableRow>
+      <TableHead />
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+  <TableFooter>
+    <TableRow>
+      <TableCell />
+    </TableRow>
+  </TableFooter>
+</Table>
+```
+
+## Examples
+
+### Borders
+
+<Canvas of={Stories.Borders} />
+
+### Highlighted row
+
+<Canvas of={Stories.States} />
+
+### Alignment and width
+
+<Canvas of={Stories.Alignment} />
+
+### Scroll region
+
+A table wider than its column scrolls inside a named region a keyboard can reach. The region is named by `labels.region`, or by the `TableCaption` when there is no label.
+
+<Canvas of={Stories.ScrollRegion} />
+
+### A table that fits
+
+A table that fits its column is not a region and adds no Tab stop.
+
+<Canvas of={Stories.FitsColumn} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Table` it styles the `table`; the region's `style` is not exposed.
+
+### Table
+
+| Prop           | Description                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| `border`       | `boolean` <br /> Draws an edge around the table, with rounded corners. Default `false`.               |
+| `columnBorder` | `boolean` <br /> Draws an edge between the columns. Default `false`.                                  |
+| `labels`       | `{ region: string }` <br /> The name of the scroll region. Default: the `TableCaption`, else `Table`. |
+
+### TableRow
+
+| Prop          | Description                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `highlighted` | `boolean` <br /> Tints the row. Visual only; pair it with `aria-selected` where the table is selectable. Default `false`. |
+
+### TableHead
+
+Replaces the native `align` and `width` attributes.
+
+| Prop            | Description                                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `align`         | `start`, `center`, `end` <br /> Horizontal alignment of the content. Unset keeps the cell's own default.              |
+| `verticalAlign` | `start`, `center`, `end` <br /> Vertical alignment of the content. Unset keeps the cell's own default.                |
+| `width`         | `UnitStep`, `string` <br /> The column width: a count of `unit` steps (`12` is 48px) or a CSS length such as `'30%'`. |
+| `minWidth`      | `UnitStep` <br /> The minimum column width, as a count of `unit` steps.                                               |
+
+### TableCell
+
+Takes the same props as `TableHead`.
+
+## Caveats
+
+- The region exists only while the table overflows (a `ResizeObserver` watches it), so a narrow table adds no Tab stop. Name each table with a `TableCaption` or `labels.region`, so a screen reader can tell regions apart when they do scroll.
+- Give an icon-only header cell text wrapped in `visuallyHidden` from `uilibs/styles/utils.stylex`.
+- A unit step is one of `0`, `0.5`, `1`, `1.5`, `2` to `10`, then `12`, `14`, `16`, `18`, `20`; any other width is a string.
+- Cells do not wrap: `TableHead` and `TableCell` set `white-space: nowrap`, so long text widens the table and scrolls it.

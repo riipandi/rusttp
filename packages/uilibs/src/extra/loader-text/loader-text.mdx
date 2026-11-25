@@ -1,0 +1,64 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './loader-text.stories'
+
+<Meta of={Stories} />
+
+# LoaderText
+
+A line of text with a shimmer while work is in progress, which can cross-fade to a second line when the work completes.
+
+## Import
+
+```jsx
+import { LoaderText } from 'uilibs/extra/loader-text'
+```
+
+Renders this library's `Text`. The props below are its own; every other `Text` prop (`align`, `maxLines`, `render`, and so on) and any DOM prop pass through to it.
+
+## Anatomy
+
+- **LoaderText:** the line. It renders an optional icon, the loading text, and the completed text when one is given; with a completed text, the two sit in one `role="status"` region.
+
+```jsx
+<LoaderText />
+```
+
+## Examples
+
+### Loading and completed
+
+<Canvas of={Stories.States} />
+
+### Complete on demand
+
+Set `completed` from state to run the cross-fade.
+
+<Canvas of={Stories.Completed} />
+
+### Text only
+
+<Canvas of={Stories.WithoutIcon} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### LoaderText
+
+| Prop            | Description                                                                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `children`      | `ReactNode` <br /> The text shown while loading.                                                                                                                |
+| `variant`       | `headline-1` to `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2` <br /> The type style, as on `Text`. Default `body-2`. |
+| `weight`        | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black` <br /> The font weight, as on `Text`.                                                    |
+| `color`         | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled` <br /> The text color, as on `Text`.                                       |
+| `icon`          | `ComponentType<IconProps>` <br /> A glyph before the text, sized to it.                                                                                         |
+| `completedText` | `ReactNode` <br /> The text that cross-fades with `children` once `completed` is `true`.                                                                        |
+| `completed`     | `boolean` <br /> Stops the shimmer. Default `false`.                                                                                                            |
+
+## Caveats
+
+- LoaderText is a line of text for one step of a running task. For a bare busy mark with no text, use [Spinner](?path=/docs/extra-components-spinner--docs).
+- Without `completedText`, `completed` only stops the shimmer; nothing replaces the text.
+- Both texts stay mounted for the cross-fade. Only the current one is visible, and the other has `aria-hidden`, so assistive technology reads one text at a time.
+- With `completedText`, the texts sit in a `role="status"` live region: a screen reader announces the completed text when `completed` becomes `true`. Without it, nothing announces, because nothing changes.
+- `variant` and `weight` also accept one value per breakpoint, as on `Text`.

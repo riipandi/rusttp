@@ -1,39 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Button } from '../../base/button'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { Badge } from '../badge'
 import { Spinner } from './spinner.component'
+import { spinnerColors } from './spinner.stylex'
 
 const meta = {
   title: 'Extra Components/Spinner',
   component: Spinner,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Spinner>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
-  iconXs: { height: 14, width: 14 },
-  iconLg: { height: 24, width: 24 },
   spinnerSm: { height: 12, width: 12 },
   row: {
     alignItems: 'center',
@@ -58,9 +41,15 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  render: () => (
+  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  argTypes: {
+    size: { control: 'radio', options: ['small', 'medium', 'large'] },
+    color: { control: 'radio', options: ['inherit', ...Object.keys(spinnerColors)] }
+  },
+  args: { size: 'medium', color: 'inherit' },
+  render: (args) => (
     <Button disabled>
-      <Spinner /> Divining…
+      <Spinner {...args} /> Divining…
     </Button>
   ),
   // Inside a Button the spinner is decoration: the button keeps its own name and there is no
@@ -74,6 +63,9 @@ export const Playground: Story = {
 }
 
 export const Alone: Story = {
+  parameters: {
+    docs: { source: { code: `<Spinner labels={{ loading: 'Consulting the Marauder’s Map' }} />` } }
+  },
   render: () => <Spinner labels={{ loading: 'Consulting the Marauder’s Map' }} />,
   // On its own it is a polite live region with the given name.
   play: async ({ canvas }) => {
@@ -84,19 +76,49 @@ export const Alone: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<Spinner size='large' labels={{ loading: 'Loading large' }} />` } }
+  },
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      <Spinner style={styles.iconXs} />
-      <Spinner />
-      <Spinner style={styles.iconLg} />
-    </div>
-  )
+    <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
+      {(size) => <Spinner size={size} labels={{ loading: `Loading ${size}` }} />}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    // The glyph spins, and a turned square's bounding box is wider than the square: WebKit has
+    // ticked the animation by the time this runs, so read the layout width, not the box.
+    const side = (size: string) =>
+      Number.parseFloat(
+        getComputedStyle(canvas.getByRole('status', { name: `Loading ${size}` })).width
+      )
+    await expect([side('small'), side('medium'), side('large')]).toEqual([12, 16, 20])
+  }
+}
+
+export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Spinner color='primary' labels={{ loading: 'Loading primary' }} />` }
+    }
+  },
+  render: () => (
+    <Axis axis='color' rows={['inherit', 'primary', 'positive', 'warning', 'critical'] as const}>
+      {(color) => <Spinner color={color} labels={{ loading: `Loading ${color}` }} />}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const tint = (color: string) =>
+      getComputedStyle(canvas.getByRole('status', { name: `Loading ${color}` })).color
+    await expect(
+      new Set(['inherit', 'primary', 'positive', 'warning', 'critical'].map(tint)).size
+    ).toBe(5)
+  }
 }
 
 export const Composition: Story = {
   render: () => (
     <div {...stylex.props(styles.stack)}>
-      <Badge variant='secondary'>
+      <Badge variant='faded'>
         <Spinner {...stylex.props(styles.spinnerSm)} />
         Brewing
       </Badge>

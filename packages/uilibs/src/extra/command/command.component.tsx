@@ -5,12 +5,14 @@ import * as React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../base/dialog'
 import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
+import { glyphSize } from '../../styles/glyph'
+import { highlightedItem } from '../../styles/popup.stylex'
+import type { StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
 
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+/** True inside a `CommandDialog`, whose own ring is the palette's edge. */
+const InDialogContext = React.createContext(false)
 
 export interface CommandProps
   extends
@@ -28,9 +30,10 @@ export interface CommandProps
  * root; `CommandList` accepts a render function over the filtered items.
  */
 export function Command({ style, children, ...props }: CommandProps) {
+  const inDialog = React.useContext(InDialogContext)
   return (
     <BaseAutocomplete.Root inline open autoHighlight keepHighlight {...props}>
-      <div {...stylex.props(s.root, style)}>{children}</div>
+      <div {...stylex.props(s.root, !inDialog && s.edge, style)}>{children}</div>
     </BaseAutocomplete.Root>
   )
 }
@@ -81,7 +84,9 @@ export function CommandDialog({
       >
         <DialogTitle style={visuallyHidden.root}>{names.title}</DialogTitle>
         <DialogDescription style={visuallyHidden.root}>{names.description}</DialogDescription>
-        <div {...stylex.props(s.inner)}>{children}</div>
+        <div {...stylex.props(s.inner)}>
+          <InDialogContext.Provider value>{children}</InDialogContext.Provider>
+        </div>
       </DialogContent>
     </Dialog>
   )
@@ -94,7 +99,12 @@ export function CommandInput({
   return (
     <>
       <div {...stylex.props(s.inputWrap, style)}>
-        <Search size={16} strokeWidth={1.5} aria-hidden {...stylex.props(s.inputIcon)} />
+        <Search
+          size={glyphSize.medium}
+          strokeWidth={1.5}
+          aria-hidden
+          {...stylex.props(s.inputIcon)}
+        />
         <BaseAutocomplete.Input {...props} {...stylex.props(s.input)} />
       </div>
       <Separator />
@@ -151,7 +161,7 @@ export function CommandItem({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
-  return <BaseAutocomplete.Item {...props} {...stylex.props(s.item, style)} />
+  return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function CommandSeparator({

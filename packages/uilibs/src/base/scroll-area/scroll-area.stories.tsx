@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import {
   container,
@@ -13,42 +14,17 @@ import {
   stroke
 } from '../../styles/tokens.stylex'
 import { Separator } from '../separator'
-import { ScrollArea, ScrollBar } from './scroll-area.component'
+import { ScrollArea } from './scroll-area.component'
 
 const meta = {
   title: 'Base Components/ScrollArea',
   component: ScrollArea,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof ScrollArea>
 
 type Story = StoryObj<typeof meta>
 
 const tags = Array.from({ length: 50 }, (_, i) => `Daily Prophet edition ${50 - i}`)
-
-const artworks = [
-  { title: 'The Mona Lisa', artist: 'Jacques Saunière' },
-  { title: 'The Vitruvian Man', artist: 'Robert Langdon' },
-  { title: 'The Last Supper Cipher', artist: 'Silas' },
-  { title: 'Portrait of Hogwarts', artist: 'Luna Lovegood' },
-  { title: "Marauder's Map", artist: 'Sirius Black' },
-  { title: 'The Golden Snitch', artist: 'Dobby' }
-]
 
 const styles = stylex.create({
   root: {
@@ -74,46 +50,40 @@ const styles = stylex.create({
   tag: {
     fontSize: fontSize.body2
   },
-  wide: {
-    width: container.xlarge
-  },
-  row: {
-    display: 'flex',
-    gap: 16,
-    paddingBottom: 16,
-    width: 'max-content'
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    fontFamily: fontFamily.body,
-    gap: 8,
-    width: container.xsmall
-  },
-  thumb: {
-    backgroundColor: colors.backgroundNeutral,
+  box: {
     borderColor: colors.borderNeutral,
     borderRadius: radius.medium,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    height: 64,
-    width: '100%'
+    height: container.xsmall,
+    maxWidth: '100%',
+    width: container.xlarge
   },
-  title: {
-    fontSize: fontSize.body2,
-    fontWeight: fontWeight.medium
-  },
-  artist: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1
+  grid: {
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: fontFamily.body,
+    gap: 8,
+    padding: 16,
+    // Wider than the box, so there is something to scroll sideways.
+    width: 640
   }
 })
 
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <ScrollArea style={styles.root} fade>
+  parameters: {
+    controls: { disable: false, include: ['fade', 'orientation', 'scrollbarDisplay'] }
+  },
+  argTypes: {
+    fade: { control: 'boolean' },
+    orientation: { control: 'radio', options: ['vertical', 'horizontal', 'both'] },
+    scrollbarDisplay: { control: 'radio', options: ['hover', 'scroll', 'visible', 'hidden'] }
+  },
+  args: { fade: true, orientation: 'vertical', scrollbarDisplay: 'hover' },
+  render: (args) => (
+    <ScrollArea {...args} style={styles.root}>
       <div {...stylex.props(styles.inner)}>
         <h4 {...stylex.props(styles.heading)}>Daily Prophet editions</h4>
         {tags.map((tag) => (
@@ -131,19 +101,147 @@ export const Playground: Story = {
   }
 }
 
-export const Horizontal: Story = {
+const orientations = ['vertical', 'horizontal', 'both'] as const
+
+/** One scrollbar per axis, and a corner where two meet; `both` scrolls on both axes. */
+export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ScrollArea orientation='both' style={…}>
+  <div>…</div>
+</ScrollArea>`
+      }
+    }
+  },
   render: () => (
-    <ScrollArea style={styles.wide}>
-      <div {...stylex.props(styles.row)}>
-        {artworks.map((art) => (
-          <div key={art.title} {...stylex.props(styles.card)}>
-            <div {...stylex.props(styles.thumb)} />
-            <div {...stylex.props(styles.title)}>{art.title}</div>
-            <div {...stylex.props(styles.artist)}>{art.artist}</div>
+    <Axis axis='orientation' rows={orientations} wide>
+      {(orientation) => (
+        <ScrollArea style={styles.box} orientation={orientation}>
+          <div {...stylex.props(styles.grid)}>
+            {tags.slice(0, 20).map((tag) => (
+              <div key={tag} {...stylex.props(styles.tag)}>
+                {tag}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <ScrollBar orientation='horizontal' />
-    </ScrollArea>
-  )
+        </ScrollArea>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const area = (orientation: string) => cellOf(canvasElement, 'orientation', orientation)
+    const bars = (orientation: string) =>
+      Array.from(
+        new Set(
+          Array.from(area(orientation).querySelectorAll('[data-orientation]')).map((el) =>
+            el.getAttribute('data-orientation')
+          )
+        )
+      )
+    // The scrollbars mount once Base UI has measured the content.
+    await waitFor(() => expect(bars('both')).toHaveLength(2))
+    await expect(bars('vertical')).toEqual(['vertical'])
+    await expect(bars('horizontal')).toEqual(['horizontal'])
+    await expect(bars('both')).toEqual(expect.arrayContaining(['horizontal', 'vertical']))
+
+    // `both` scrolls on both axes: a wheel event moves the viewport along each.
+    const target = Array.from(area('both').querySelectorAll('*')).find(
+      (el) => el.scrollWidth > el.clientWidth + 1 && el.scrollHeight > el.clientHeight + 1
+    )
+    if (!target) throw new Error('No viewport that scrolls on both axes')
+    target.dispatchEvent(new WheelEvent('wheel', { deltaX: 40, deltaY: 40, bubbles: true }))
+    // A synthetic wheel event does not scroll by itself: set the offsets the browser would.
+    target.scrollLeft = 40
+    target.scrollTop = 40
+    await expect(target.scrollLeft).toBeGreaterThan(0)
+    await expect(target.scrollTop).toBeGreaterThan(0)
+  }
+}
+
+const displays = ['hover', 'scroll', 'visible', 'hidden'] as const
+
+/** When the bar shows: while hovering or scrolling (default), only while scrolling, always, or never. */
+export const Displays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ScrollArea scrollbarDisplay='visible' style={…}>
+  <div>
+    <div>Daily Prophet edition 50</div>
+    …
+  </div>
+</ScrollArea>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='display' rows={displays}>
+      {(display) => (
+        <ScrollArea style={styles.box} scrollbarDisplay={display}>
+          <div {...stylex.props(styles.inner)}>
+            {tags.slice(0, 12).map((tag) => (
+              <div key={tag} {...stylex.props(styles.tag)}>
+                {tag}
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const opacity = (display: string) => {
+      const bar = cellOf(canvasElement, 'display', display).querySelector('[data-orientation]')
+      if (!bar) throw new Error(`No scrollbar for ${display}`)
+      return getComputedStyle(bar).opacity
+    }
+    // At rest, with no pointer over it and no scrolling: only `visible` shows the bar.
+    await expect(opacity('visible')).toBe('1')
+    await expect(opacity('hidden')).toBe('0')
+    await expect(opacity('hover')).toBe('0')
+    await expect(opacity('scroll')).toBe('0')
+  }
+}
+
+/** The viewport is a tab stop only while its content overflows, so a keyboard user can reach it to scroll. */
+export const Keyboard: Story = {
+  render: () => (
+    <>
+      <ScrollArea style={styles.box} data-testid='long'>
+        <div {...stylex.props(styles.inner)}>
+          {tags.slice(0, 20).map((tag) => (
+            <div key={tag} {...stylex.props(styles.tag)}>
+              {tag}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      <ScrollArea style={styles.box} data-testid='short'>
+        <div {...stylex.props(styles.inner)}>
+          <div {...stylex.props(styles.tag)}>Daily Prophet edition 1</div>
+        </div>
+      </ScrollArea>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const viewportOf = (testId: string) => {
+      const viewport = Array.from(canvas.getByTestId(testId).querySelectorAll('*')).find(
+        (el) => el.getAttribute('tabindex') !== null
+      )
+      if (!viewport) throw new Error(`No viewport in ${testId}`)
+      return viewport
+    }
+    const long = viewportOf('long')
+    const short = viewportOf('short')
+    await waitFor(() => expect(long).toHaveAttribute('tabindex', '0'))
+    await expect(long.scrollHeight).toBeGreaterThan(long.clientHeight)
+    await expect(short).toHaveAttribute('tabindex', '-1')
+
+    // Tab lands on the overflowing viewport, and the next Tab skips the one with nothing to scroll.
+    await userEvent.tab()
+    await expect(long).toHaveFocus()
+    await userEvent.tab()
+    await expect(short).not.toHaveFocus()
+  }
 }

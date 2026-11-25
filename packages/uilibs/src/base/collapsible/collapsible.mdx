@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './collapsible.stories'
+
+<Meta of={Stories} />
+
+# Collapsible
+
+One panel that expands and collapses.
+
+## Import
+
+```jsx
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'uilibs/base/collapsible'
+```
+
+Built on Base UI [Collapsible](https://base-ui.com/react/components/collapsible). Props not listed here pass through.
+
+## Anatomy
+
+- **Collapsible:** the root. It holds the open state.
+- **CollapsibleTrigger:** the button that toggles the panel. It has no styles of its own.
+- **CollapsibleContent:** the panel. It animates its height as it opens and closes. Base UI calls this part `Panel`.
+
+```jsx
+<Collapsible>
+  <CollapsibleTrigger />
+  <CollapsibleContent />
+</Collapsible>
+```
+
+## Examples
+
+### Toggle a panel
+
+<Canvas of={Stories.Playground} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Nested folders
+
+<Canvas of={Stories.FileTree} />
+
+## Accessibility
+
+`CollapsibleTrigger` is a `button` whose `aria-expanded` tells whether the panel is open, and `aria-controls` points at the panel. It is named by its own text, or by `aria-label` when it holds only an icon. The `Keyboard` story walks the table below.
+
+| Key                     | Action                                                     |
+| ----------------------- | ---------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the trigger. A disabled trigger is skipped. |
+| `Enter` or `Space`      | Opens a closed panel and closes an open one.               |
+
+- The `Playground` story shows that `aria-controls` names the panel.
+- Keyboard behavior is Base UI's; see the Base UI [Collapsible](https://base-ui.com/react/components/collapsible) page for the rest.
+
+## API reference
+
+Only `CollapsibleContent` takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). `Collapsible` and `CollapsibleTrigger` are the Base UI parts unchanged. No part adds props.
+
+### Collapsible
+
+| Data attribute | Description                        |
+| -------------- | ---------------------------------- |
+| `data-open`    | Present while the panel is open.   |
+| `data-closed`  | Present while the panel is closed. |
+
+### CollapsibleTrigger
+
+| Data attribute    | Description                      |
+| ----------------- | -------------------------------- |
+| `data-panel-open` | Present while the panel is open. |
+
+### CollapsibleContent
+
+| Data attribute        | Description                          |
+| --------------------- | ------------------------------------ |
+| `data-open`           | Present while the panel is open.     |
+| `data-closed`         | Present while the panel is closed.   |
+| `data-starting-style` | Present as the panel begins to open. |
+| `data-ending-style`   | Present as the panel closes.         |
+
+| CSS variable                 | Description                           |
+| ---------------------------- | ------------------------------------- |
+| `--collapsible-panel-height` | The panel's height, for animating it. |
+| `--collapsible-panel-width`  | The panel's width.                    |
+
+## Caveats
+
+- Bring your own trigger look, for example `render={<Button />}`: `CollapsibleTrigger` is unstyled.
+- The panel hides overflow while it animates, so content that must spill outside it, such as a shadow, gets clipped.

@@ -11,7 +11,7 @@ export const toastStyles = stylex.create({
     position: 'fixed',
     right: unit.x4,
     width: container.medium,
-    zIndex: zIndex.fixed
+    zIndex: zIndex.toast
   },
   root: {
     // Behind toasts peek out above the frontmost one, shrunk slightly; swipe
@@ -19,7 +19,7 @@ export const toastStyles = stylex.create({
     '--toast-gap': unit.x2,
     alignItems: 'flex-start',
     backgroundColor: colors.backgroundElevationOverlay,
-    // The accent is `toastTones`; a neutral toast has the quiet edge.
+    // The accent is `toastColors`; a neutral toast has the quiet edge.
     borderColor: colors.borderNeutralFaded,
     borderRadius: radius.medium,
     borderStyle: 'solid',
@@ -65,7 +65,7 @@ export const toastStyles = stylex.create({
     },
     transitionTimingFunction: easing.decelerate,
     width: '100%',
-    zIndex: `calc(${zIndex.fixed} - var(--toast-index))`
+    zIndex: `calc(${zIndex.toast} - var(--toast-index))`
   },
   content: {
     alignItems: 'flex-start',
@@ -126,7 +126,7 @@ export const toastStyles = stylex.create({
   }
 })
 
-export const toastTones = stylex.create({
+export const toastColors = stylex.create({
   neutral: {},
   primary: { borderColor: colors.borderPrimary },
   positive: { borderColor: colors.borderPositive },

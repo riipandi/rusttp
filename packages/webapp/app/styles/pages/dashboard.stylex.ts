@@ -12,6 +12,8 @@ export const styles = stylex.create({
       [breakpoints.medium]: 'flex'
     },
     gridTemplateColumns: '1fr auto 1fr',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: {
       default: unit.x2,
       [breakpoints.medium]: unit.x6
@@ -27,10 +29,6 @@ export const styles = stylex.create({
     }
   },
   headerEnd: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: unit.x2,
     marginInlineStart: {
       default: 0,
       [breakpoints.medium]: 'auto'
@@ -66,6 +64,8 @@ export const styles = stylex.create({
   navItem: {
     color: colors.foregroundNeutralFaded
   },
+  // The page and its pending state are in the entry chunk (`pendingComponent` is not split), so they
+  // lay out with plain flex rather than `Stack`, which would join the entry load (`just size`).
   main: {
     display: 'flex',
     flexDirection: 'column',

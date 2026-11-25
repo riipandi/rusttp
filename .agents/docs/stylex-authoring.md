@@ -191,6 +191,12 @@ Other supported @-rules include `@supports` and `@container` queries.
 
 **IMPORTANT: The `default` key is required when using nested conditions. Use `null` when no style should apply for the default case.**
 
+**Responsive sets (`packages/uilibs`).** A set that changes several properties per breakpoint (`Text`, `Stack`, `Hidden`) keys the whole style on the media query, mobile-first: `{ [breakpoints.medium]: { flexDirection: 'row' } }`. Do not nest the media inside a property of a style that also sets the base value: `stylex.props` keeps only the last style per property, so the nested set erases the base. A media const used as a `create` key resolves only from the file that defines it, so each stylesheet that keys on one restates `breakpoints` (`text.stylex.ts`, `stack.stylex.ts`, `hidden.stylex.ts`) and a unit test compares the mirror with `styles/tokens.stylex.ts`; changing a breakpoint edits the tokens and the three mirrors (and the numbers in `hooks/use-media-query.ts`).
+
+**Direction (`packages/uilibs`).** `':dir(rtl)'` follows the `dir` attribute: `packages/plugins/src/stylex.ts` tells lightningcss to keep `:dir()` (the default browserslist lists Chrome 109, which lacks it, and lightningcss would rewrite the rule into a `:lang()` list; issue-00007). A transform has no logical form (`rotate`, `scaleX`), so a mirrored icon uses a `:dir(rtl)` variant; position and spacing use logical properties (`insetInlineEnd`, `marginInlineStart`). A consumer that compiles `uilibs` through its own StyleX pipeline passes the same exclusion.
+
+**Logical, not physical (`packages/uilibs`).** Content that lays out along the reading direction uses logical properties: `insetInlineStart` and `insetInlineEnd`, `marginInlineStart`, `paddingInlineEnd`, `borderInlineStartWidth`, `borderStartStartRadius` (and `StartEnd`, `EndStart`, `EndEnd`), `textAlign: 'start'` or `'end'`. A physical `left`, `right`, `marginLeft`, `paddingRight`, `borderLeft*`, `border(Top|Bottom)(Left|Right)Radius`, or `textAlign: 'left'` stays only where the side is the point: a part placed by an API `side` (`Sheet`, `Drawer`, Tooltip's `data-side`), a fixed screen corner (`Toast`), a centre (`left: '50%'` with `translate(-50%, …)`), or geometry measured from rects (data-grid editor, resize indicator). A glyph that points along the reading direction (a chevron, an arrow) takes `mirrorInRtl` from `styles/utils.stylex.ts`; a transform, a shadow offset, or a gradient direction that must flip uses a `:dir(rtl)` variant. A menu or popup that opens beside its trigger uses `side='inline-end'`, not `'right'`. `src/styles/logical-properties.test.ts` fails when a stylesheet outside `Sheet`, `Drawer`, and the data-grid editor metrics holds one of the physical properties above; `src/contracts/rtl.stories.tsx` proves the placement with `dir="rtl"` in all three engines, so a new inline-edge part adds a story there.
+
 ---
 
 ## Dynamic styles
@@ -210,6 +216,10 @@ const styles = stylex.create({
 <div {...stylex.props(styles.bar(100))} />
 <div {...stylex.props(styles.positioned(mouseX, mouseY))} />
 ```
+
+A size prop that takes Reshaped's number counts `unit` steps (`3` is 12px) and also accepts a CSS length (`'60%'`). Type it `UnitStep | (string & {})`, turn it into a length with `unitLength` from `styles/utils.stylex.ts`, and pass the result to a dynamic style (`width: (value: string) => ({ width: value })`). A value known only at run time then reaches the stylesheet through a variable, and no token is added (`Skeleton`, `TableCell`, `Alert` `bleed`).
+
+A color that must not follow the theme (Button `color='media'`, Tooltip `color='dark'`) reads the constants `colors.white` and `colors.black` and `color-mix(in srgb, <color> N%, transparent)` for its tints, so it looks the same in both themes and needs no token. `inherit` takes `currentColor` and mixes it into the fill and the edge the same way; it has no cut-out `solid`, because `currentColor` is the element's own color. A story shows `media` on a black backdrop (`colors.black`) so axe checks white on black, not white on the page.
 
 ---
 
@@ -583,12 +593,36 @@ Compose in this order, so the later style wins: the recipe, the size, the compon
 <BaseButton {...stylex.props(controlPress.root, s.root, controlSizes[size], s.size, style)} />
 ```
 
-- **Sizes.** `controlSizes` is `sm` 32, `md` 36, `lg` 40 (height, inline padding, type); `DenseControlSize` adds `xs` 28 for Button, Toggle, and Tabs, whose own size styles carry it. A size style that needs a different padding or width overrides it after `controlSizes`. A textarea uses its own `textareaSizes` (minimum heights), because a fixed `height` would stop it growing.
+- **Size names are spelled out.** Every size scale in `uilibs` (a `size` prop, a recipe key, the `glyphSize` and `markSize` maps, a responsive key, a breakpoint, `container`, `radius`) uses `xsmall`, `small`, `medium`, `large`, `xlarge`, `xxlarge`, and so on; never `xs`, `sm`, `md`, `lg`, `xl`, or a one-letter key. `unit` steps (`x1`, `x2`) are a spacing scale, not a size name.
+- **Sizes.** `controlSizes` is `small` 32, `medium` 36, `large` 40 (height, inline padding, type); `DenseControlSize` adds `xsmall` 28 for Button, Toggle, and Tabs, whose own size styles carry it. A size style that needs a different padding or width overrides it after `controlSizes`. A textarea uses its own `textareaSizes` (minimum heights), because a fixed `height` would stop it growing.
 - **Two focus recipes.** `controlBase` (text entry) draws the primary border and a 2px outline offset inward; `controlPress` draws a 2px ring outside the box. A tab keeps its ring inside its pill (`outlineOffset` negative) because the pill would clip an outside ring. The 3px halo remains only on the Slider thumb.
-- **Focus ring.** A ring that is not part of `controlBase` or `controlPress` (a menu trigger, a link-like part) composes `focusRing.root` from `src/styles/utils.stylex` first (`stylex.props(focusRing.root, s.root, style)`) and sets `outlineOffset` itself; a StyleX constant cannot carry the value across files (`defineConsts` takes static values, a color variable is not), so the recipe is a style. Forced colors and reduced motion are nested in the value like any other condition: `outline: { default: 'none', '@media (forced-colors: active)': { default: 'none', ':focus-visible': `${stroke.ring2} solid Highlight` } }`, `animationName: { default: spin, '@media (prefers-reduced-motion: reduce)': 'none' }`. Base UI focuses a hidden input inside a Slider thumb, so its focus styles read `:has(:focus-visible)`, not `:focus-visible`.
-- **State model.** `controlBase` reads `:focus-visible`, `[data-invalid]` (the critical border), and `:disabled` or `[data-disabled]` (half opacity, not-allowed cursor); `.within` reads the same from descendants with `:has(:focus-visible)` and `:has([data-invalid])`, and dims for `[data-disabled]` or a disabled `input`/`textarea` inside, never for a disabled stepper or addon button alone. Disabled is `opacity: 0.5`, not the removed disabled color tokens.
-- **Control edge.** `colors.borderControl` is the edge of a text control, Checkbox, Radio, and the off Switch; dividers and cards use `borderNeutralFaded`.
+- **Focus ring.** A ring that is not part of `controlBase` or `controlPress` (a menu trigger, a link-like part) composes `focusRing.root` from `src/styles/utils.stylex` first (`stylex.props(focusRing.root, s.root, style)`) and sets `outlineOffset` itself; a StyleX constant cannot carry the value across files (`defineConsts` takes static values, a color variable is not), so the recipe is a style. Forced colors and reduced motion are nested in the value like any other condition: `outline: { default: 'none', '@media (forced-colors: active)': { default: 'none', ':focus-visible': `${stroke.ring2} solid Highlight` } }`, `animationName: { default: spin, '@media (prefers-reduced-motion: reduce)': 'none' }`. Base UI focuses a hidden input inside a Slider thumb, so its focus styles read `:has(:focus-visible)`, not `:focus-visible`. `src/contracts/focus-visible.stories.tsx` is the contract for every Tab stop that composes the ring itself (Tabs panel, Sortable and Kanban handles, Kanban items, Link, Button as a link, an interactive chart): a new focusable part adds a case there, and a case checks the library ring with `expectLibraryRing` (a 2 px solid outline, on the part that draws it when the focused element is not that part, such as a chart's host), because `expectFocusIndicator` also accepts the browser's default ring on an anchor or a `tabindex` element and so cannot tell a part that dropped `focusRing.root`. A part with its own proof (FileUpload `Focus`, the highlighted option and menu item, the Calendar day, Chart `Tab order`) keeps it there.
+- **State model.** `controlBase` reads `:focus-visible`, `[data-invalid]` (the critical border), and `:disabled` or `[data-disabled]` (`foregroundDisabled` text, `borderDisabled` edge, not-allowed cursor); `.within` reads the same from descendants with `:has(:focus-visible)` and `:has([data-invalid])`, and reads disabled from `[data-disabled]` or a disabled `input`/`textarea` inside, never from a disabled stepper or addon button alone. Disabled is drawn with the disabled color tokens, never `opacity`: opacity stacks (a disabled control in a disabled field dropped to a quarter), a color does not. A state that competes with disabled (`[data-checked]`, `[data-pressed]`) is written `[data-checked]:not([data-disabled])`, because equal-specificity attribute keys have no reliable order in StyleX's output. A loading Button is `data-disabled` too but carries `data-loading`, which its disabled keys exclude.
+- **Touch target.** A control whose box is under 24 px (NumberField stepper, `xsmall` pill Tab, Badge dismiss) reaches WCAG 2.5.8's 24 px with an `::after` hit area, `position: absolute` with a negative `inset` on a `position: relative` host; never by enlarging the box. A parent with `overflow: hidden` clips it, so each child rounds its own corner instead. `src/contracts/hit-area.ts` (`hitSize`, `expectHitArea`) measures it in a play.
+- **Control edge.** `colors.borderControl` is the edge of a text control, Checkbox, Radio, and the off Switch; dividers and cards use `borderNeutralFaded`. A mark that is not the active one (an idle dot in `ProgressIndicator`) also draws `borderControl`, not `backgroundTrack`, which is about 1.1:1 on a white page.
+- **Overriding padding.** A consumer `style` that changes a component's padding sets the longhands (`paddingBlock`, `paddingInline`): a `padding` shorthand loses to the component's own longhand (`Badge`'s `paddingInline`), as the `BadgeAnchor` status dot found.
+- **Scroll strips and range ends.** A strip that scrolls and takes the keyboard is a focusable `role='group'` (`tabIndex={0}`, `focusRing.root` with a negative `outlineOffset` so a clipping parent cannot cut the ring), and a button that disables at the end of its range keeps `focusableWhenDisabled` (Carousel).
+- **Portals.** A popup of a new Base UI portal component passes `container={usePortalContainer()}` so it takes the theme of the nearest `ThemeScope`.
 - **Do not set a fixed `height` on a Field-wrapped control beside others**: the size scale is what keeps a Button and an input equal, and the composition story in `src/contracts/control-sizes.stories.tsx` asserts it.
+
+### Tokens and shared recipes (`packages/uilibs`, plan-00011 wave 2)
+
+One vocabulary, so a component names a value instead of restating it. Every literal that has a token here is a defect.
+
+- **Breakpoints** are mobile-first `min-width` constants (`breakpoints.medium` 660, `.large` 900, `.xlarge` 1280); `small` is the base style and has no query. `useMediaQuery` and the `viewport` constants restate the widths in px.
+- **`zIndex`** is a named scale: `base` 0, `raised` 10, `sticky` 50, `dropdown` 100, `overlay` 200, `modal` 210, `popover` 300, `toast` 400, `dragOverlay` 500, so a popover opened from a modal sits above it and a toast above both. A literal z-index is a defect; the data grid keeps a `gridLayer` ladder that is local to its own stacking context.
+- **`motionLoop`** holds the loop durations (`spin`, `spinSlow`, `pulse`, `shimmer`, `stagger`); a looping animation also has a `prefers-reduced-motion` branch.
+- **Disabled** is drawn with `foregroundDisabled`, `borderDisabled`, and `backgroundNeutral`, never `opacity` (see "State model").
+- **`scrim`** is the themed backdrop color, composed through `popupFx.scrim` and `popupFx.scrimBlurred`; **`backgroundTrack`** is the track of Progress, Meter, and Slider, dark enough in both themes that the primary fill reads against it.
+- **`highlightedItem`** (`styles/popup.stylex.ts`) is the keyboard-highlighted option or menu item of Select, Combobox, Autocomplete, the three menus, and Command: a neutral fill and a 2px primary bar on the start edge (the critical color for a critical item). The bar is what clears 3:1; the fill alone was 1.07:1.
+- **Typography roles** are `type.<role>` (`styles/type.stylex.ts`), composed before a part's own style (`stylex.props(type.body1, s.title)`); a title that sets its own font size is a defect. `fontLetterSpacing` stays and is read by the roles (headlines tighten to -0.02 to -0.03em); `fontWeight` stays `defineConsts`, with per-role `fontWeightVar` for theming.
+- **Glyph and mark sizes** come from `glyphSize[size]` and `markSize` (`styles/glyph.ts`), plain numbers because the icon takes them as `size`; the glyph type is `Glyph`.
+- **Shared types** (`styles/types.ts`): `ColorRole`, `ControlSize`, `DenseControlSize`, `StyleProp`, `Glyph`. A component derives its own `color` and `size` from them with `Extract` or `Exclude` and says so on its page.
+- **Chart series** take `chart1` to `chart8` (themed, 3:1 against the page in both themes, ordered so blue and orange come first), and `ChartConfigItem.color` is a palette name.
+- **Colors that are gone**: `brand`, `onBrand`, `onBackgroundNeutral`, and `backgroundPageFaded` were unused and removed; the text on a primary fill is `onBackgroundPrimary`.
+- **Light theme restated.** `lightColors` and `lightShadows` repeat every light token so a subtree can turn light inside a dark page (`ThemeScope`); `contrast.test.ts` fails when they drift from `colors.stylex.ts`. The page defaults to `color-scheme: light`.
+- **Rebrand.** `pnpm --filter uilibs rebrand <hue>` rewrites the 21 primary tokens in `colors.stylex.ts` and `themes.ts`; it moves each token's lightness with its hue so the contrast ratios hold (the same OKLCH lightness is not the same luminance in every hue). Run the `unit` project after it.
+- **Hit areas and hidden text.** `visuallyHidden` uses `marginBlock: -1` and `marginInline: 0`: a negative end margin pushes its 1px box past the page edge in RTL. A hit area that overhangs the control (Switch) sets only the axis that needs it.
 
 ### Contrast (measured, sRGB blending as a browser composites)
 
@@ -603,13 +637,23 @@ Text pairs clear 4.5:1, control edges 3:1. Recompute with the OKLCH values in `c
 | `foregroundPrimary` on `backgroundPage` | 5.83 | 8.59 |
 | `foregroundCritical` on `backgroundPage` | 6.15 | 7.70 |
 | `foregroundWarning` on `backgroundPage` | 5.62 | 8.59 |
-| `onBrand` on `backgroundPrimary` | 5.15 | 5.15 |
-| `onBrand` on `backgroundPrimaryHighlighted` (Button hover) | 6.47 | 4.55 |
+| `onBackgroundPrimary` on `backgroundPrimary` | 5.15 | 5.15 |
+| `onBackgroundPrimary` on `backgroundPrimaryHighlighted` (Button hover) | 6.47 | 4.55 |
 | `onBackgroundCritical` on `backgroundCritical` | 4.57 | 4.57 |
 | `onBackgroundCritical` on `backgroundCriticalHighlighted` (Button hover) | 5.86 | 5.51 |
 | `foregroundNeutral` on `backgroundNeutralHighlighted` (secondary hover) | 12.66 | 9.64 |
 | `borderControl` on `backgroundPage` | 3.36 | 3.84 |
 | `borderControl` on `backgroundElevationOverlay` | 3.36 | 3.25 |
+
+---
+
+## Corner radius (`packages/uilibs`)
+
+`radius` is `xsmall` 4, `small` 6, `medium` 8, `large` 10, `xlarge` 12, `xxlarge` 16, `full`, `none`. Pick the step by the size of the surface, then check the nesting:
+
+- **Large surfaces take `xxlarge`.** A surface that fills a viewport edge or the middle of the screen (Dialog, AlertDialog, Command, Sheet, Drawer) reads out of proportion at 12px. Surfaces in the page flow stay lower: Card, Alert, and Table `large`, Empty `xlarge`. A popup anchored to a control stays `medium` or `large`.
+- **A child that follows the parent's corner uses the parent's radius minus the gap.** Command's list pads 6px inside a 16px box, so a row is `large` (10px). A child that sits at least the radius away from the corner (content inside a Dialog's 24px padding, a Card in a Dialog) needs no matching radius. A part flush with the parent's edge (the AlertDialog footer's bottom corners) takes the parent's radius exactly. Inside a border, subtract the ring (`calc(${radius.medium} - ${stroke.ring1})`, NumberField).
+- **Sheet and Drawer round only the corners that face the page**, on the edge-docked side; the corners against the screen edge stay square.
 
 ---
 

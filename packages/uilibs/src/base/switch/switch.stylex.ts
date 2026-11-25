@@ -8,8 +8,10 @@ export const switchStyles = stylex.create({
   root: {
     backgroundColor: {
       default: colors.borderControl,
-      '[data-checked]': colors.backgroundPrimary,
+      '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
       '[data-invalid]': colors.backgroundCritical,
+      ':disabled': colors.backgroundNeutral,
+      '[data-disabled]': colors.backgroundNeutral,
       // Forced colors: the track is an outlined box that fills with Highlight when on.
       '@media (forced-colors: active)': { default: 'Canvas', '[data-checked]': 'Highlight' }
     },
@@ -21,17 +23,18 @@ export const switchStyles = stylex.create({
     flexShrink: 0,
     padding: unit.x0_5,
     position: 'relative',
-    // Invisible expanded hit area (larger touch target).
+    // Invisible expanded hit area (larger touch target). Block axis only: every track is wider than
+    // the 24px minimum, and an inline overhang widens the page when the switch sits at its edge.
     '::after': {
       content: '""',
       insetBlock: `calc(-1 * ${unit.x2})`,
-      insetInline: `calc(-1 * ${unit.x3})`,
       position: 'absolute'
     }
   },
   thumb: {
     backgroundColor: {
       default: colors.backgroundPage,
+      '[data-disabled]': colors.foregroundDisabled,
       '@media (forced-colors: active)': 'CanvasText'
     },
     borderRadius: radius.full,
@@ -45,31 +48,52 @@ export const switchStyles = stylex.create({
 })
 
 export const switchRootSizes = stylex.create({
-  md: {
+  medium: {
     height: unit.x5,
     width: unit.x9
   },
-  sm: {
+  small: {
     height: unit.x4,
     width: unit.x7
+  },
+  large: {
+    height: unit.x6,
+    width: unit.x12
   }
 })
 
 export const switchThumbSizes = stylex.create({
-  md: {
+  medium: {
     height: unit.x4,
     transform: {
       default: 'translateX(0)',
-      '[data-checked]': `translateX(${unit.x4})`
+      '[data-checked]': {
+        default: `translateX(${unit.x4})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x4}))`
+      }
     },
     width: unit.x4
   },
-  sm: {
+  small: {
     height: unit.x3,
     transform: {
       default: 'translateX(0)',
-      '[data-checked]': `translateX(${unit.x3})`
+      '[data-checked]': {
+        default: `translateX(${unit.x3})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x3}))`
+      }
     },
     width: unit.x3
+  },
+  large: {
+    height: unit.x5,
+    transform: {
+      default: 'translateX(0)',
+      '[data-checked]': {
+        default: `translateX(${unit.x6})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x6}))`
+      }
+    },
+    width: unit.x5
   }
 })

@@ -17,12 +17,6 @@ export const styles = stylex.create({
     paddingBlockEnd: unit.x2,
     paddingInline: unit.x4
   },
-  // The close button shares the avatar's row, so the two center on one line.
-  sheetProfileTop: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
   sheetClose: {
     height: unit.x9,
     width: unit.x9
@@ -50,15 +44,7 @@ export const styles = stylex.create({
     gap: unit.x3
   },
   sheetNav: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x3,
     paddingInline: unit.x3
-  },
-  sheetGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1_5
   },
   sheetGroupLabel: {
     paddingInline: unit.x3,
@@ -89,9 +75,6 @@ export const styles = stylex.create({
   },
   sheetItemSecondaryDense: {
     height: unit.x8
-  },
-  sheetGroupDense: {
-    gap: unit.x1
   },
   sheetItemCurrent: {
     color: colors.foregroundNeutral,

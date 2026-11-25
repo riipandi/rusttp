@@ -1,0 +1,115 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './item.stories'
+
+<Meta of={Stories} />
+
+# Item
+
+A row with media, content, and actions; `ItemGroup` stacks several as a list. For multi-column records, use Table.
+
+## Import
+
+```jsx
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle
+} from 'uilibs/extra/item'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Item` renders a `div` and `render` swaps the element. The other parts render a `div`, except `ItemDescription` (`p`) and `ItemSeparator`, which is the library's `Separator`. Props not listed here pass through.
+
+## Anatomy
+
+- **ItemGroup:** optional. A `role="list"` column that stacks items.
+- **Item:** one row. Inside a group it sits in a `div` with `role="listitem"`.
+- **ItemHeader:** a full-width row at the top of the item.
+- **ItemMedia:** an icon, an avatar, or an image at the start of the row.
+- **ItemContent:** the text column.
+- **ItemTitle:** the row's name.
+- **ItemDescription:** a supporting line under the title, a `p`.
+- **ItemActions:** buttons or other controls at the end of the row.
+- **ItemFooter:** a full-width row at the bottom of the item.
+- **ItemSeparator:** a line between items in a group.
+
+```jsx
+<ItemGroup>
+  <Item>
+    <ItemHeader />
+    <ItemMedia />
+    <ItemContent>
+      <ItemTitle />
+      <ItemDescription />
+    </ItemContent>
+    <ItemActions />
+    <ItemFooter />
+  </Item>
+  <ItemSeparator />
+</ItemGroup>
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### A list of items
+
+<Canvas of={Stories.Group} />
+
+### As a link
+
+`render` swaps the `div` for an anchor, so hover and focus states apply to the link.
+
+<Canvas of={Stories.Link} />
+
+### A group of links
+
+Inside an `ItemGroup`, the `listitem` role sits on a wrapper around each item, so a rendered link stays a link.
+
+<Canvas of={Stories.LinkGroup} />
+
+## Accessibility
+
+An `Item` is not interactive by itself. Rendered as a link, it is one Tab stop, and inside an `ItemGroup` the `listitem` role sits on a wrapper so each link keeps its `link` role. The `Keyboard` story tabs through a group of links.
+
+| Key                     | Action                                        |
+| ----------------------- | --------------------------------------------- |
+| `Tab` and `Shift + Tab` | Move between the linked items, one stop each. |
+| `Enter`                 | Follows the focused item.                     |
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Item
+
+| Prop      | Description                                                                                                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `variant` | `ghost`, `outline`, `faded` <br /> `ghost` is the bare row, `outline` adds an edge, `faded` a soft neutral fill. Default `ghost`. |
+| `size`    | `xsmall`, `small`, `medium` <br /> Padding and gap: `xsmall` is the tightest, `medium` the most open. Default `medium`.           |
+
+### ItemMedia
+
+| Prop   | Description                                                                                           |
+| ------ | ----------------------------------------------------------------------------------------------------- |
+| `kind` | `default`, `icon`, `image` <br /> `icon` colors a glyph; `image` rounds a picture. Default `default`. |
+
+## Caveats
+
+- Outside an `ItemGroup`, an `Item` has no `listitem` role and no wrapper.
+- Inside an `ItemGroup`, `Item` renders a `div` wrapper with the `listitem` role around the item, so `render` can swap in a link without losing its role.
+- Inside a group, `ItemSeparator` drops its separator role so the list stays valid.
+- `ItemHeader` and `ItemFooter` each take a full row, so place them first and last in the `Item`.

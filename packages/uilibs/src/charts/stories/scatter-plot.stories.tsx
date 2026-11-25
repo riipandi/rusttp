@@ -5,17 +5,14 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, mulberry32, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/ScatterPlot',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -45,8 +42,8 @@ const dayStudents = students.filter((s) => s.cohort === 'Day class')
 const nightStudents = students.filter((s) => s.cohort === 'Night study')
 
 const scatterConfig = {
-  day: { label: 'Day class', color: seriesColors.langdon },
-  night: { label: 'Night study', color: seriesColors.potter }
+  day: { label: 'Day class', color: seriesNames.langdon },
+  night: { label: 'Night study', color: seriesNames.potter }
 } as const
 
 const scatterScales = {
@@ -54,49 +51,75 @@ const scatterScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const Practice: Story = {
-  name: 'Practice vs power',
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+  trend: boolean
+  day: boolean
+  night: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend', 'trend', 'day', 'night'] } },
+  argTypes: {
+    legend: { control: 'boolean' },
+    trend: { control: 'boolean' },
+    day: { control: 'boolean' },
+    night: { control: 'boolean' }
+  },
+  args: { legend: true, trend: true, day: true, night: true },
+  render: ({ legend, trend, day, night }) => {
     const definition = defineChart({
       marks: [
-        linearRegressionY(students, {
-          id: 'trend',
-          x: 'hours',
-          y: 'power',
-          stroke: seriesColors.neutral,
-          strokeWidth: 1.5,
-          strokeDasharray: '5 4'
-        }),
-        dot(dayStudents, {
-          id: 'day',
-          x: 'hours',
-          y: 'power',
-          r: 4,
-          fill: scatterConfig.day.color,
-          fillOpacity: 0.85,
-          states: [
-            {
-              when: { focus: 'primary' },
-              style: { r: 6 },
-              transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-            }
-          ]
-        }),
-        dot(nightStudents, {
-          id: 'night',
-          x: 'hours',
-          y: 'power',
-          r: 4,
-          fill: scatterConfig.night.color,
-          fillOpacity: 0.85,
-          states: [
-            {
-              when: { focus: 'primary' },
-              style: { r: 6 },
-              transition: { type: 'tween', duration: 150, easing: 'ease-out' }
-            }
-          ]
-        })
+        ...(trend
+          ? [
+              linearRegressionY(students, {
+                id: 'trend',
+                x: 'hours',
+                y: 'power',
+                stroke: seriesColors.neutral,
+                strokeWidth: 1.5,
+                strokeDasharray: '5 4'
+              })
+            ]
+          : []),
+        ...(day
+          ? [
+              dot(dayStudents, {
+                id: 'day',
+                x: 'hours',
+                y: 'power',
+                r: 4,
+                fill: scatterConfig.day.color,
+                fillOpacity: 0.85,
+                states: [
+                  {
+                    when: { focus: 'primary' },
+                    style: { r: 6 },
+                    transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                  }
+                ]
+              })
+            ]
+          : []),
+        ...(night
+          ? [
+              dot(nightStudents, {
+                id: 'night',
+                x: 'hours',
+                y: 'power',
+                r: 4,
+                fill: scatterConfig.night.color,
+                fillOpacity: 0.85,
+                states: [
+                  {
+                    when: { focus: 'primary' },
+                    style: { r: 6 },
+                    transition: { type: 'tween', duration: 150, easing: 'ease-out' }
+                  }
+                ]
+              })
+            ]
+          : [])
       ],
       scales: scatterScales,
       theme: chartTheme,
@@ -118,7 +141,11 @@ export const Practice: Story = {
           ariaLabel='Practice hours versus spell power with trend line'
           height={280}
         />
-        <ChartLegend />
+        {legend && (
+          <ChartLegend
+            hide={Object.entries({ day, night }).flatMap(([key, on]) => (on ? [] : [key]))}
+          />
+        )}
       </ChartContainer>
     )
   },

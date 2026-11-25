@@ -58,7 +58,7 @@ const styles = stylex.create({
     minHeight: unit.x12,
     paddingBlock: unit.x2,
     paddingInline: unit.x4,
-    backgroundColor: colors.backgroundPageFaded,
+    backgroundColor: colors.backgroundNeutralFaded,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: colors.borderControl,
@@ -102,7 +102,7 @@ export function TextField({ field, label, description, autoComplete, inputMode }
       <Input
         {...field.props}
         id={id}
-        size='lg'
+        size='large'
         inputMode={inputMode}
         autoComplete={autoComplete}
         value={field.input ?? ''}
@@ -133,9 +133,9 @@ export function PasswordField({
       <InputPassword
         {...field.props}
         id={id}
-        size='lg'
+        size='large'
         autoComplete={autoComplete}
-        labels={{ show: m.form_password_show(), hide: m.form_password_hide() }}
+        labels={{ toggle: m.form_password_show() }}
         value={field.input ?? ''}
         onBlur={() => {
           field.props.onBlur()
@@ -247,7 +247,7 @@ export function CodeField({
     <Field name={field.props.name} invalid={field.errors !== null}>
       <FieldLabel id={labelId}>{label}</FieldLabel>
       <OTPField
-        size='lg'
+        size='large'
         style={styles.code}
         name={field.props.name}
         length={length}

@@ -1,35 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { duration, easing, fontSize, radius, unit } from '../../styles/tokens.stylex'
-import { shelfStatuses, statusColors, statusLabels } from '../chart.samples'
-import type { AvailabilityStatus } from '../chart.samples'
+import { canvasDecorator, shelfStatuses, statusColors, statusLabels } from './chart.samples'
+import type { AvailabilityStatus } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Tracker',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['659px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -97,7 +79,7 @@ const styles = stylex.create({
 
 const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
 
-function Tracker() {
+function Tracker({ weekLabels = true }: { weekLabels?: boolean }) {
   return (
     <div
       role='img'
@@ -119,18 +101,28 @@ function Tracker() {
           </Tooltip>
         ))}
       </div>
-      <div {...stylex.props(styles.weekLabels)}>
-        {weeks.map((week) => (
-          <span key={week}>{week}</span>
-        ))}
-      </div>
+      {weekLabels && (
+        <div {...stylex.props(styles.weekLabels)}>
+          {weeks.map((week) => (
+            <span key={week}>{week}</span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-export const ShelfAvailability: Story = {
-  name: 'Shelf availability',
-  render: () => <Tracker />,
+interface PlaygroundArgs {
+  weekLabels: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['weekLabels'] } },
+  argTypes: {
+    weekLabels: { control: 'boolean' }
+  },
+  args: { weekLabels: true },
+  render: ({ weekLabels }) => <Tracker weekLabels={weekLabels} />,
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('img', { name: /Shelf status for The Da Vinci Code/ })

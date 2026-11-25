@@ -30,10 +30,6 @@ export const styles = stylex.create({
     overflow: 'hidden'
   },
   header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
     flexShrink: 0,
     paddingBlock: unit.x2,
     paddingInlineStart: unit.x4,
@@ -43,9 +39,6 @@ export const styles = stylex.create({
     borderBlockEndColor: colors.borderNeutralFaded
   },
   heading: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: unit.x2,
     minWidth: 0
   },
   // Only this part scrolls, so the header and the footer stay in view. The `ScrollArea` carries the

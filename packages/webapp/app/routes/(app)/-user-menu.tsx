@@ -2,7 +2,7 @@ import { LogOut, Shield, User } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
-import { Button } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,13 +41,12 @@ export function UserMenu() {
         render={
           <Button
             variant='ghost'
-            size='icon-md'
             aria-label={m.user_menu_trigger_initials({ initials: profile.initials })}
-            style={styles.trigger}
+            style={[buttonSquare.medium, styles.trigger]}
           />
         }
       >
-        <Avatar size='sm'>
+        <Avatar size='small'>
           <AvatarFallback style={styles.triggerInitials}>{profile.initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -66,7 +65,7 @@ export function UserMenu() {
         <DropdownMenuGroup>
           {accountItems(m).map((item) => (
             <DropdownMenuItem key={item.label} render={<Link to={item.to} />}>
-              <Icon svg={item.icon} size={16} color='neutralFaded' />
+              <Icon svg={item.icon} size={16} color='neutral-faded' />
               {item.label}
             </DropdownMenuItem>
           ))}
@@ -76,7 +75,7 @@ export function UserMenu() {
         <LanguageMenu />
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link to='/' />}>
-          <Icon svg={LogOut} size={16} color='neutralFaded' />
+          <Icon svg={LogOut} size={16} color='neutral-faded' />
           {m.user_menu_sign_out()}
         </DropdownMenuItem>
       </DropdownMenuContent>

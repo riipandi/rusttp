@@ -1,0 +1,105 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toolbar.stories'
+
+<Meta of={Stories} />
+
+# Toolbar
+
+A container that groups buttons, toggles, links, and inputs.
+
+## Import
+
+```jsx
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarInput,
+  ToolbarLink,
+  ToolbarSeparator
+} from 'uilibs/base/toolbar'
+```
+
+Built on Base UI [Toolbar](https://base-ui.com/react/components/toolbar). Props not listed here pass through.
+
+## Anatomy
+
+- **Toolbar:** the root. It draws the border and lays its items out in a row.
+- **ToolbarGroup:** a set of items that are laid out together.
+- **ToolbarButton:** a button in the toolbar's keyboard order. It has no styles: render a `Button` or `Toggle` through `render`.
+- **ToolbarLink:** a link in the toolbar's keyboard order. It has no styles.
+- **ToolbarInput:** an input in the toolbar's keyboard order. It has no styles: render an `Input` through `render`.
+- **ToolbarSeparator:** a vertical divider between items.
+
+```jsx
+<Toolbar>
+  <ToolbarGroup>
+    <ToolbarButton render={<Toggle />} />
+  </ToolbarGroup>
+  <ToolbarSeparator />
+  <ToolbarButton render={<Button />} />
+  <ToolbarLink />
+  <ToolbarInput />
+</Toolbar>
+```
+
+## Examples
+
+### Toggles and a button
+
+<Canvas of={Stories.Playground} />
+
+### With a toggle group
+
+<Canvas of={Stories.WithToggleGroup} />
+
+## Accessibility
+
+`Toolbar` is a `toolbar`: name it with `aria-label`. Its buttons, toggles, links, and inputs are one tab stop and move with the arrow keys. A toggle or toggle group item with only an icon needs an `aria-label`. The `Keyboard` story walks the table below.
+
+| Key                       | Action                                                                 |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab`   | Moves focus into the toolbar, on one item, and out of it in one press. |
+| `ArrowRight`, `ArrowLeft` | Moves focus to the next or previous item. The row loops at the ends.   |
+| `Home`, `End`             | Do nothing: the toolbar does not handle them.                          |
+| `Space` or `Enter`        | Presses the focused item.                                              |
+
+- Use an input sparingly: the left and right arrows also move the text cursor, so Base UI documents that a horizontal toolbar with an input needs care.
+- Keyboard behavior is Base UI's; see the Base UI [Toolbar](https://base-ui.com/react/components/toolbar) page for the rest.
+
+## API reference
+
+`Toolbar`, `ToolbarGroup`, and `ToolbarSeparator` also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` are the Base UI parts unchanged. No part adds props.
+
+### Toolbar
+
+| Data attribute     | Description                           |
+| ------------------ | ------------------------------------- |
+| `data-orientation` | `horizontal` or `vertical`.           |
+| `data-disabled`    | Present when the toolbar is disabled. |
+
+### ToolbarGroup
+
+| Data attribute     | Description                         |
+| ------------------ | ----------------------------------- |
+| `data-orientation` | `horizontal` or `vertical`.         |
+| `data-disabled`    | Present when the group is disabled. |
+
+### ToolbarButton
+
+| Data attribute     | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| `data-orientation` | The toolbar's orientation.                              |
+| `data-disabled`    | Present when the button is disabled.                    |
+| `data-focusable`   | Present when the button stays focusable while disabled. |
+
+### ToolbarSeparator
+
+| Data attribute     | Description                                                           |
+| ------------------ | --------------------------------------------------------------------- |
+| `data-orientation` | The separator's orientation, which is perpendicular to the toolbar's. |
+
+## Caveats
+
+- Compose a toggle group by placing `ToggleGroup` in the toolbar and rendering each item through `<ToolbarButton render={<ToggleGroupItem value='…' />} />`.
+- A toggle or toggle group item with only an icon needs an `aria-label`.

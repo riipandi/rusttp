@@ -15,24 +15,45 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { colors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
+import type { ColorRole, ControlSize, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
-import { avatarStyles as s, avatarSizes as sizes } from './avatar.stylex'
+import { avatarFills, avatarStyles as s, avatarSizes as sizes } from './avatar.stylex'
 
-export type AvatarSize = 'sm' | 'md' | 'lg'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+export type AvatarSize = ControlSize
+export type AvatarVariant = 'solid' | 'faded'
+export type AvatarColor = ColorRole
 
 type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
 
 export function Avatar({
-  size = 'md',
+  size = 'medium',
+  variant = 'faded',
+  color = 'neutral',
+  squared = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAvatar.Root>, 'className' | 'style'> &
-  StyleProp & { size?: AvatarSize }) {
-  return <BaseAvatar.Root {...props} {...stylex.props(s.root, sizes[size], style)} />
+}: Omit<React.ComponentProps<typeof BaseAvatar.Root>, 'className' | 'style' | 'color'> &
+  StyleProp & {
+    size?: AvatarSize
+    /** The fallback's fill: `faded` (a soft tint, default) or `solid`. */
+    variant?: AvatarVariant
+    /** The fallback's role color; `neutral` by default. */
+    color?: AvatarColor
+    /** Rounded corners instead of a circle. */
+    squared?: boolean
+  }) {
+  return (
+    <BaseAvatar.Root
+      {...props}
+      {...stylex.props(
+        s.root,
+        avatarFills[variant][color],
+        sizes[size],
+        squared && s.squared,
+        style
+      )}
+    />
+  )
 }
 
 export function AvatarImage({
@@ -83,7 +104,7 @@ export function AvatarGroup({ style, children, ...props }: DivProps) {
 
 /** Trailing "+N" indicator for an `AvatarGroup`, sized to match `Avatar`. */
 export function AvatarGroupCount({
-  size = 'md',
+  size = 'medium',
   style,
   ...props
 }: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & { size?: AvatarSize }) {

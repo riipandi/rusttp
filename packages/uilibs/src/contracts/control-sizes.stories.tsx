@@ -18,8 +18,18 @@ import { InputPhone } from '../extra/input-phone'
 import { HiddenLabel, controlSizeNames } from './control-sizes'
 
 const meta = {
-  title: 'Contracts/Control sizes',
-  parameters: { layout: 'centered' }
+  title: 'Contracts/Control heights per size',
+  parameters: {
+    layout: 'centered',
+    // A row of every control on purpose: it is wider than a phone.
+    overflow: 'allowed',
+    docs: {
+      description: {
+        component:
+          'Every form control shares one height per size (`small` 32, `medium` 36, `large` 40).'
+      }
+    }
+  }
 } satisfies Meta
 
 export default meta
@@ -40,7 +50,8 @@ const styles = stylex.create({
 const houses = [{ label: 'Gryffindor', value: 'gryffindor' }]
 
 /** Every text control, Toggle, Tab list, and Menubar beside a Button of the same size: one row of equal heights per size. */
-export const BesideAButton: Story = {
+export const ControlHeightsPerSize: Story = {
+  name: 'Control heights per size',
   render: () => (
     <div {...stylex.props(styles.grid)}>
       {controlSizeNames.map((size) => (

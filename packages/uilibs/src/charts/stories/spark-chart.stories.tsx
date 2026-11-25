@@ -6,9 +6,9 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { expect } from 'storybook/test'
 import { useIsMobile } from '../../hooks/use-media-query'
 import { colors } from '../../styles/colors.stylex'
-import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
+import { breakpoints, fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
 import { Chart } from '../chart.component'
-import { canvasDecorator, checkouts, seriesColors } from '../chart.samples'
+import { canvasDecorator, checkouts, seriesColors } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/SparkChart',
@@ -17,8 +17,6 @@ const meta = {
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -51,13 +49,11 @@ const styles = stylex.create({
   row: {
     display: 'grid',
     gap: unit.x3,
-    // One column on mobile, three across from the medium breakpoint up.
-    // Media keys use raw strings (StyleX authoring) anchored to the project
-    // breakpoint token (small = 660px); the layout lives in the grid, not in
-    // the runtime hook.
+    // One column on mobile, three across from the medium breakpoint up; the layout lives in the
+    // grid, not in the runtime hook.
     gridTemplateColumns: {
       default: 'repeat(1, minmax(0, 1fr))',
-      '@media (min-width: 660px)': 'repeat(3, minmax(0, 1fr))'
+      [breakpoints.medium]: 'repeat(3, minmax(0, 1fr))'
     },
     width: '100%'
   },
@@ -82,9 +78,17 @@ const styles = stylex.create({
   }
 })
 
-export const KpiRow: Story = {
-  name: 'KPI sparkline row',
-  render: () => {
+interface PlaygroundArgs {
+  shown: string[]
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['shown'] } },
+  argTypes: {
+    shown: { control: 'check', options: cards.map((card) => card.label) }
+  },
+  args: { shown: cards.map((card) => card.label) },
+  render: ({ shown }) => {
     const isMobile = useIsMobile()
     const sparkHeight = isMobile ? 36 : 48
 
@@ -92,6 +96,7 @@ export const KpiRow: Story = {
       <div {...stylex.props(styles.row)}>
         {cards.map((card, index) => {
           const color = sparkColors[index]
+          if (!shown.includes(card.label)) return null
           const definition = defineChart({
             marks: [
               card.kind === 'area'

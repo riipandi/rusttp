@@ -27,12 +27,10 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
-import { ring } from '../../styles/utils.stylex'
-import { popoverStyles as s } from './popover.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
+import type { StyleProp } from '../../styles/types'
+import { ring, type UnitStep } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
+import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
 
 export const Popover = BasePopover.Root
 export const PopoverTrigger = BasePopover.Trigger
@@ -45,10 +43,19 @@ export interface PopoverContentProps
       React.ComponentProps<typeof BasePopover.Positioner>,
       'align' | 'alignOffset' | 'collisionAvoidance' | 'collisionPadding' | 'side' | 'sideOffset'
     > {
+  /** The `shadow` token the popup draws: `outline`, `raised` (default), or the deepest `overlay`. */
+  elevation?: 'outline' | 'raised' | 'overlay'
+  /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
+  padding?: UnitStep
+  /** Corner radius: `medium` (default) or `large`. */
+  borderRadius?: 'medium' | 'large'
   style?: stylex.StyleXStyles
 }
 
 export function PopoverContent({
+  elevation = 'raised',
+  padding = 4,
+  borderRadius = 'medium',
   style,
   side = 'bottom',
   sideOffset = 4,
@@ -59,7 +66,7 @@ export function PopoverContent({
   ...props
 }: PopoverContentProps) {
   return (
-    <BasePopover.Portal>
+    <BasePopover.Portal container={usePortalContainer()}>
       <BasePopover.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -76,7 +83,9 @@ export function PopoverContent({
             popupFx.fade,
             popupFx.pose,
             s.popup,
-            ring({ shadow: shadow.raised }),
+            popoverPadding[padding],
+            popoverRadii[borderRadius],
+            ring({ shadow: shadow[elevation] }),
             style
           )}
         />

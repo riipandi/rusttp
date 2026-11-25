@@ -33,15 +33,21 @@ import { Check, ChevronDown, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { type ControlSize, controlBase, controlSizes } from '../../styles/control.stylex'
-import { popupFx } from '../../styles/popup.stylex'
+import {
+  type ControlVariant,
+  controlBase,
+  controlSizes,
+  controlVariants,
+  controlVariantsWithin
+} from '../../styles/control.stylex'
+import { glyphSize, markSize } from '../../styles/glyph'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ControlSize } from '../../styles/types'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const Combobox = BaseCombobox.Root
 export const ComboboxValue = BaseCombobox.Value
@@ -49,7 +55,7 @@ export const ComboboxCollection = BaseCombobox.Collection
 export const comboboxCreateItems = BaseComboboxNamespace.createItems
 
 function TriggerChevron() {
-  return <ChevronDown size={16} strokeWidth={1.5} aria-hidden />
+  return <ChevronDown size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
 }
 
 // Select-like trigger button — anchors the popup when the input lives inside
@@ -57,26 +63,35 @@ function TriggerChevron() {
 // `showTrigger`). Inside a `Field` the `FieldLabel` names it; on its own, give it
 // an `aria-label`, since the value or placeholder is its only text.
 export function ComboboxTrigger({
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   style,
   children,
-  showChevron = true,
+  showIcon = true,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; `medium` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
     /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
      * InputPhone country flag). Defaults to `true`. */
-    showChevron?: boolean
+    showIcon?: boolean
   }) {
   return (
     <BaseCombobox.Trigger
       {...props}
-      {...stylex.props(controlBase.root, controlSizes[size], s.trigger, style)}
+      {...stylex.props(
+        controlBase.root,
+        controlSizes[size],
+        controlVariants[variant],
+        s.trigger,
+        style
+      )}
     >
       {children}
-      {showChevron ? (
+      {showIcon ? (
         <BaseCombobox.Icon {...stylex.props(s.triggerIcon)}>
           <TriggerChevron />
         </BaseCombobox.Icon>
@@ -97,7 +112,8 @@ export interface ComboboxInputLabels {
  * names it; on its own, give it an `aria-label`: a placeholder is not a name.
  */
 export function ComboboxInput({
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   style,
   inputStyle,
   showTrigger = true,
@@ -106,8 +122,10 @@ export function ComboboxInput({
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style' | 'size'> &
   StyleProp & {
-    /** Control height and type; `md` (36px) by default. */
+    /** Control height and type; `medium` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
     /** Accessible names of the built-in buttons. */
     labels?: Partial<ComboboxInputLabels>
     /** Style applied directly to the inner input element. */
@@ -126,6 +144,7 @@ export function ComboboxInput({
         {...stylex.props(
           controlBase.root,
           controlSizes[size],
+          controlVariants[variant],
           s.input,
           showTrigger && showClear
             ? s.inputPaddingButtons2
@@ -143,7 +162,7 @@ export function ComboboxInput({
             showTrigger ? s.inputClearWithTrigger : s.inputClearAlone
           )}
         >
-          <X size={16} strokeWidth={1.5} aria-hidden />
+          <X size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
         </BaseCombobox.Clear>
       )}
       {showTrigger && (
@@ -162,13 +181,16 @@ export function ComboboxInput({
 // Container for chips in a multi-select combobox — also serves as the popup
 // anchor (pass a ref to `ComboboxContent`'s `anchor`), so it forwards `ref`.
 export function ComboboxChips({
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Chips>, 'className' | 'style'> &
   StyleProp & {
-    /** Minimum height and type; `md` (36px) by default. */
+    /** Minimum height and type; `medium` (36px) by default. */
     size?: ControlSize
+    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+    variant?: ControlVariant
   }) {
   return (
     <BaseCombobox.Chips
@@ -176,6 +198,7 @@ export function ComboboxChips({
       {...stylex.props(
         controlBase.root,
         controlBase.within,
+        controlVariantsWithin[variant],
         comboboxChipsSizes[size],
         s.chips,
         style
@@ -212,7 +235,7 @@ export function ComboboxChip({
         )}
         {...stylex.props(focusRing.root, s.chipRemove)}
       >
-        <X size={10} strokeWidth={1.5} aria-hidden />
+        <X size={markSize.small} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ChipRemove>
     </BaseCombobox.Chip>
   )
@@ -247,7 +270,7 @@ export function ComboboxContent({
   ...props
 }: ComboboxContentProps) {
   return (
-    <BaseCombobox.Portal>
+    <BaseCombobox.Portal container={usePortalContainer()}>
       <BaseCombobox.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -286,10 +309,10 @@ export function ComboboxItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Item>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseCombobox.Item {...props} {...stylex.props(s.item, style)}>
+    <BaseCombobox.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       {children}
       <BaseCombobox.ItemIndicator render={<span {...stylex.props(s.indicator)} />}>
-        <Check size={16} strokeWidth={1.5} aria-hidden />
+        <Check size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
       </BaseCombobox.ItemIndicator>
     </BaseCombobox.Item>
   )

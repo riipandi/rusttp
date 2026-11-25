@@ -1,11 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { radius, unit, stroke } from '../../styles/tokens.stylex'
+import { breakpoints, radius, unit, stroke, zIndex } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
-
-// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
-// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
-// same file, so an open-ended query is written out.
 
 export const calendarConsts = stylex.defineConsts({
   cellSize: '2rem'
@@ -14,10 +10,6 @@ export const calendarConsts = stylex.defineConsts({
 export const calendarStyles = stylex.create({
   buttonNav: {
     height: calendarConsts.cellSize,
-    opacity: {
-      ':disabled': 0.5,
-      default: 1
-    },
     padding: 0,
     userSelect: 'none',
     width: calendarConsts.cellSize
@@ -80,26 +72,26 @@ export const calendarStyles = stylex.create({
     minWidth: calendarConsts.cellSize,
     position: 'relative',
     width: '100%',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   dayBtnFocused: {
-    outline: `${stroke.ring1} solid ${colors.foregroundPrimary}`,
-    outlineOffset: stroke.ring1,
+    outline: `${stroke.ring2} solid ${colors.foregroundPrimary}`,
+    outlineOffset: stroke.ring2,
     position: 'relative',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   dayBtnRangeEnd: {
     backgroundColor: {
       ':hover': colors.backgroundPrimary,
       default: colors.backgroundPrimary
     },
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    borderBottomRightRadius: radius.medium,
-    borderTopRightRadius: radius.medium,
+    borderEndStartRadius: 0,
+    borderStartStartRadius: 0,
+    borderEndEndRadius: radius.medium,
+    borderStartEndRadius: radius.medium,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   dayBtnRangeMiddle: {
@@ -118,13 +110,13 @@ export const calendarStyles = stylex.create({
       ':hover': colors.backgroundPrimary,
       default: colors.backgroundPrimary
     },
-    borderBottomLeftRadius: radius.medium,
-    borderBottomRightRadius: 0,
-    borderTopLeftRadius: radius.medium,
-    borderTopRightRadius: 0,
+    borderEndStartRadius: radius.medium,
+    borderEndEndRadius: 0,
+    borderStartStartRadius: radius.medium,
+    borderStartEndRadius: 0,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   dayBtnSelected: {
@@ -134,13 +126,12 @@ export const calendarStyles = stylex.create({
     },
     borderRadius: radius.medium,
     color: {
-      ':hover': colors.onBrand,
-      default: colors.onBrand
+      ':hover': colors.onBackgroundPrimary,
+      default: colors.onBackgroundPrimary
     }
   },
   disabled: {
-    color: colors.foregroundNeutralFaded,
-    opacity: 0.5
+    color: colors.foregroundDisabled
   },
   dropdownContent: {
     width: 'max-content'
@@ -173,7 +164,7 @@ export const calendarStyles = stylex.create({
     justifyContent: 'center',
     position: 'relative',
     width: 'fit-content',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   hidden: {
     visibility: 'hidden'
@@ -199,11 +190,11 @@ export const calendarStyles = stylex.create({
   months: {
     display: 'flex',
     flexDirection: {
-      '@media (min-width: 660px)': 'row',
+      [breakpoints.medium]: 'row',
       default: 'column'
     },
     gap: {
-      '@media (min-width: 900px)': unit.x6,
+      [breakpoints.large]: unit.x6,
       default: unit.x4
     },
     position: 'relative'
@@ -217,7 +208,7 @@ export const calendarStyles = stylex.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    zIndex: 1
+    zIndex: zIndex.base
   },
   outside: {
     color: colors.foregroundNeutralFaded
@@ -227,17 +218,17 @@ export const calendarStyles = stylex.create({
       backgroundColor: colors.backgroundNeutralFaded,
       bottom: 0,
       content: '""',
-      left: 0,
+      insetInlineStart: 0,
       position: 'absolute',
       top: 0,
       width: '1rem'
     },
     backgroundColor: colors.backgroundNeutralFaded,
-    borderBottomRightRadius: radius.medium,
-    borderTopRightRadius: radius.medium,
+    borderEndEndRadius: radius.medium,
+    borderStartEndRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
-    zIndex: 0
+    zIndex: zIndex.base
   },
   rangeMiddle: {
     borderRadius: 0
@@ -248,16 +239,16 @@ export const calendarStyles = stylex.create({
       bottom: 0,
       content: '""',
       position: 'absolute',
-      right: 0,
+      insetInlineEnd: 0,
       top: 0,
       width: '1rem'
     },
     backgroundColor: colors.backgroundNeutralFaded,
-    borderBottomLeftRadius: radius.medium,
-    borderTopLeftRadius: radius.medium,
+    borderEndStartRadius: radius.medium,
+    borderStartStartRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
-    zIndex: 0
+    zIndex: zIndex.base
   },
   root: {
     backgroundColor: colors.backgroundElevationBase,

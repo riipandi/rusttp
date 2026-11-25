@@ -1,10 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
-import { fontFamily, fontSize } from '../../styles/tokens.stylex'
+import { breakpoints, fontFamily, fontSize } from '../../styles/tokens.stylex'
 import { unit } from '../../styles/tokens.stylex'
-
-// Raw `@media` strings below mirror the `viewport` values in `styles/tokens.stylex.ts` (medium 660, large 900,
-// xlarge 1280): `breakpoints` is a set of closed ranges, and StyleX 0.19 only inlines media consts declared in the
-// same file, so an open-ended query is written out.
 
 export const paginationStyles = stylex.create({
   nav: {
@@ -23,15 +19,15 @@ export const paginationStyles = stylex.create({
     padding: 0
   },
   previous: {
-    paddingLeft: unit.x1_5
+    paddingInlineStart: unit.x1_5
   },
   next: {
-    paddingRight: unit.x1_5
+    paddingInlineEnd: unit.x1_5
   },
   linkText: {
     display: {
       default: 'none',
-      '@media (min-width: 660px)': 'block'
+      [breakpoints.medium]: 'block'
     }
   },
   ellipsis: {

@@ -2,16 +2,14 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { container, duration, easing } from 'uilibs/styles/tokens.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints, motion } from '#/styles/constants.stylex'
+import { motion } from '#/styles/constants.stylex'
 
 // The admin sidebar: a header strip, a navigation that scrolls, and an account footer, a column
-// beside the page whose two dividers run edge to edge. Below the compact breakpoint it is gone: the
-// top bar and its navigation sheet take over (`routes/admin/-topbar.tsx`).
+// beside the page whose two dividers run edge to edge. Below the compact breakpoint it is not
+// rendered: the top bar and its navigation sheet take over (`routes/admin/route.tsx`).
 export const styles = stylex.create({
   root: {
     boxSizing: 'border-box',
-    display: { default: 'flex', [breakpoints.compact]: 'none' },
-    flexDirection: 'column',
     flexShrink: 0,
     // 16rem plus a half step (264px): the next container token (18rem) is a 32px jump.
     width: `calc(${container.xsmall} + ${unit.x2})`,
@@ -42,57 +40,101 @@ export const styles = stylex.create({
     boxSizing: 'border-box',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
     flex: 'none',
     height: unit.x14,
     paddingTop: unit.x1,
-    // 22px: the logo's center lands on the icon column (x=32), where the rail's expand button puts it.
-    paddingInlineStart: `calc(${unit.x6} - ${unit.x0_5})`,
-    paddingInlineEnd: unit.x3
-  },
-  // Start-aligned, not centered: the 32px expand button starts 16px in, so the logo stays on the
-  // icon column (x=32) in both states and does not slide while the width animates. Both longhands:
-  // a `paddingInline` shorthand would lose to the header's own start and end padding.
-  headerCollapsed: {
-    justifyContent: 'flex-start',
-    paddingInlineStart: unit.x4,
-    paddingInlineEnd: 0
+    position: 'relative',
+    // 22px: the logo's center lands on the icon column (x=32), which is also its center in the rail.
+    paddingInlineStart: `calc(${unit.x6} - ${unit.x0_5})`
   },
   // The collapse and expand triggers sit quieter than the nav they act on: the faded foreground
   // (the idle items' color, so the contrast is the same) until hover or focus lifts them.
+  // The toggle is anchored to the sidebar's end edge, so it travels with the width as it animates;
+  // in the rail its 32px box starts 16px in, centered on the icon column.
   trigger: {
+    position: 'absolute',
+    insetBlockStart: `calc(50% + ${unit.x0_5})`,
+    insetInlineEnd: unit.x3,
+    transform: 'translateY(-50%)',
+    transitionDuration: duration.slow,
+    transitionProperty: {
+      default: 'inset-inline-end, background-color, color',
+      [motion.reduce]: 'none'
+    },
+    transitionTimingFunction: easing.standard,
     color: {
       default: colors.foregroundNeutralFaded,
       ':hover': colors.foregroundNeutral,
       ':focus-visible': colors.foregroundNeutral
     }
   },
+  // 15px: the rail is 64px wide and its 1px end border is inside the box, so the button starts at 16.
+  triggerRail: {
+    insetInlineEnd: `calc(${unit.x4} - 1px)`
+  },
   brand: {
     // The logo is sized in em, so this shrinks mark and wordmark together.
     fontSize: fontSize.body1
   },
-  // The logo and the expand icon share one cell; hovering or focusing the header swaps them.
+  // The wordmark fades (the aside clips it as the width closes); it never unmounts.
+  wordmark: {
+    whiteSpace: 'nowrap',
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      [motion.reduce]: 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  // In the rail the logo is the header's face: it gives way to the expand icon while the header is
+  // hovered, or the toggle has keyboard focus (a pointer click leaves focus on the button, which
+  // must not hold the icon).
+  logoRail: {
+    display: 'flex',
+    opacity: {
+      default: 1,
+      [stylex.when.ancestor(':hover')]: 0,
+      [stylex.when.ancestor(':has(:focus-visible)')]: 0
+    },
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      [motion.reduce]: 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  // The two toggle icons share one cell and crossfade: close while expanded, open on hover in the rail.
   swap: {
     display: 'grid',
     placeItems: 'center'
   },
-  swapLogo: {
+  swapClose: {
     gridArea: '1 / 1',
     display: 'flex',
-    fontSize: fontSize.body1,
-    opacity: {
-      default: 1,
-      [stylex.when.ancestor(':hover')]: 0,
-      [stylex.when.ancestor(':focus-within')]: 0
-    }
+    opacity: 1,
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      [motion.reduce]: 'none'
+    },
+    transitionTimingFunction: easing.standard
   },
-  swapIcon: {
+  swapOpen: {
     gridArea: '1 / 1',
     display: 'flex',
+    opacity: 0,
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity',
+      [motion.reduce]: 'none'
+    },
+    transitionTimingFunction: easing.standard
+  },
+  swapOpenRail: {
     opacity: {
       default: 0,
       [stylex.when.ancestor(':hover')]: 1,
-      [stylex.when.ancestor(':focus-within')]: 1
+      [stylex.when.ancestor(':has(:focus-visible)')]: 1
     }
   },
   // The search-like command bar trigger, between the header and the navigation.
@@ -107,9 +149,6 @@ export const styles = stylex.create({
   },
   nav: {
     boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x5,
     flex: 1,
     // The only part that scrolls: between the two dividers.
     minHeight: 0,
@@ -231,9 +270,7 @@ export const styles = stylex.create({
   },
   // No gap: the label's own bottom padding is the step to the list, so it folds away with the row.
   group: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column'
+    position: 'relative'
   },
   groupLabel: {
     minHeight: 0,
@@ -252,9 +289,6 @@ export const styles = stylex.create({
     fontWeight: fontWeight.medium
   },
   list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1,
     margin: 0,
     padding: 0,
     listStyle: 'none'
@@ -279,10 +313,6 @@ export const styles = stylex.create({
   // tall enough for a 48px row with 8px above and below.
   account: {
     boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
     flexShrink: 0,
     height: unit.x14,
     minWidth: 0,

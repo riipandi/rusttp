@@ -1,0 +1,131 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './popover.stories'
+
+<Meta of={Stories} />
+
+# Popover
+
+Interactive content in a floating panel opened by a trigger. Use Tooltip to name a control, and Preview Card to preview a link on hover.
+
+## Import
+
+```jsx
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger
+} from 'uilibs/base/popover'
+```
+
+Built on Base UI [Popover](https://base-ui.com/react/components/popover). Props not listed here pass through.
+
+## Anatomy
+
+- **Popover:** the root. It holds the open state.
+- **PopoverTrigger:** the button that opens the popover.
+- **PopoverContent:** the popup. It renders the portal and the positioner itself.
+- **PopoverHeader:** a layout wrapper for the title and description. Optional.
+- **PopoverTitle:** the popover's name.
+- **PopoverDescription:** supporting text.
+- **PopoverClose:** a button that closes the popover.
+
+```jsx
+<Popover>
+  <PopoverTrigger />
+  <PopoverContent>
+    <PopoverHeader>
+      <PopoverTitle />
+      <PopoverDescription />
+    </PopoverHeader>
+    <PopoverClose />
+  </PopoverContent>
+</Popover>
+```
+
+## Examples
+
+### Placement
+
+<Canvas of={Stories.Placement} />
+
+### Elevations
+
+`elevation` names the `shadow` token the popup draws: `outline`, `raised` (the default), or `overlay`.
+
+<Canvas of={Stories.Elevations} />
+
+### Padding
+
+<Canvas of={Stories.Paddings} />
+
+### With a form
+
+<Canvas of={Stories.Form} />
+
+## Accessibility
+
+The popup is a `dialog`, named by `PopoverTitle` and described by `PopoverDescription`. Give it a `PopoverTitle`, or an `aria-label` on `PopoverContent` when there is no visible heading. The `Keyboard` story walks the keys below, and the `Open` story keeps the popup open so the accessibility check reads it.
+
+| Key                | Action                                               |
+| ------------------ | ---------------------------------------------------- |
+| `Enter` or `Space` | On `PopoverTrigger`: opens the popover.              |
+| `Tab`              | Moves focus to the next control inside the popup.    |
+| `Escape`           | Closes the popover and returns focus to the trigger. |
+
+- Focus moves to the first focusable control in the popup when it opens (the first input in the examples).
+- Keyboard behavior is Base UI's; see the Base UI [Popover](https://base-ui.com/react/components/popover) page for focus options such as `initialFocus`, `finalFocus`, and `modal`.
+
+## API reference
+
+`PopoverContent`, `PopoverHeader`, `PopoverTitle`, and `PopoverDescription` also take `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `PopoverContent` it styles the popup. `Popover`, `PopoverTrigger`, and `PopoverClose` are the Base UI parts unchanged.
+
+### PopoverTrigger
+
+| Data attribute    | Description                           |
+| ----------------- | ------------------------------------- |
+| `data-popup-open` | Present while the popover is open.    |
+| `data-pressed`    | Present while the trigger is pressed. |
+| `data-disabled`   | Present when the trigger is disabled. |
+
+### PopoverContent
+
+The positioner props go to the positioner.
+
+| Prop                 | Description                                                                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `elevation`          | `outline`, `raised`, `overlay` <br /> The `shadow` token the popup draws, from the lightest to the deepest. Default `raised`.                                                |
+| `padding`            | `0`, `0.5`, `1`, `1.5`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `12`, `14`, `16`, `18`, `20` <br /> Space inside the popup, in `unit` steps. `4` is 16px. Default `4`. |
+| `borderRadius`       | `medium`, `large` <br /> Corner radius. Default `medium`.                                                                                                                    |
+| `side`               | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` <br /> Which side of the trigger the popup opens on. Default `bottom`.                                        |
+| `sideOffset`         | `number` or a function <br /> Gap from the trigger, in pixels. Default `4`.                                                                                                  |
+| `align`              | `start`, `center`, `end` <br /> Alignment along the side. Default `center`.                                                                                                  |
+| `alignOffset`        | `number` or a function <br /> Shift along the alignment axis, in pixels. Default `0`.                                                                                        |
+| `collisionAvoidance` | Base UI positioner value <br /> How the popup moves to stay in view.                                                                                                         |
+| `collisionPadding`   | Base UI positioner value <br /> Space kept from the viewport edge.                                                                                                           |
+
+| Data attribute        | Description                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| `data-open`           | Present while the popover is open.                                                           |
+| `data-closed`         | Present while the popover is closed.                                                         |
+| `data-starting-style` | Present as the popover begins to open.                                                       |
+| `data-ending-style`   | Present as the popover closes.                                                               |
+| `data-side`           | The side the popup is on: `top`, `bottom`, `left`, `right`, `inline-end`, or `inline-start`. |
+| `data-align`          | `start`, `center`, or `end`.                                                                 |
+
+These CSS variables are set on the positioner, and the popup inherits them.
+
+| CSS variable         | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `--available-height` | The space between the trigger and the viewport edge. |
+| `--anchor-width`     | The trigger's width.                                 |
+| `--transform-origin` | The point the popup grows from, for animating it.    |
+
+## Caveats
+
+- A popover without a `PopoverTitle` needs an `aria-label` on `PopoverContent` to give the dialog a name.
+- `PopoverContent` already wraps itself in a portal and positioner. There is no `PopoverPortal` export.
+- A floating popup flips to the opposite side when it has no room, so `side` is a preference.

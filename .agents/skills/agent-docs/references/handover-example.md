@@ -5,7 +5,7 @@ plan: plan-<nnnnn>-<topic>
 wave: —
 ---
 
-# Handover — YYYY-MM-DD HH:MM
+# Handover: <what the session closed or left open>
 
 > Example handover document — generic names throughout. A session
 > compaction: what the next agent or the owner needs to pick the work

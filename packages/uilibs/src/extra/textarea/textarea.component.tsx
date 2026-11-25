@@ -2,15 +2,18 @@ import { Field as BaseField } from '@base-ui/react/field'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
-import { type ControlSize, controlBase } from '../../styles/control.stylex'
+import { type ControlVariant, controlBase, controlVariants } from '../../styles/control.stylex'
+import type { ControlSize } from '../../styles/types'
 import { textareaSizes, textareaStyles as s } from './textarea.stylex'
 
 export interface TextareaProps extends Omit<
   React.ComponentProps<'textarea'>,
   'className' | 'style'
 > {
-  /** Minimum height and type; `md` (64px) by default. */
+  /** Minimum height and type; `medium` (64px) by default. */
   size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
   style?: stylex.StyleXStyles
   /** Grow the textarea with its content instead of a fixed height. */
   autoResize?: boolean
@@ -18,7 +21,8 @@ export interface TextareaProps extends Omit<
 
 /** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */
 export function Textarea({
-  size = 'md',
+  size = 'medium',
+  variant = 'outline',
   style,
   autoResize = false,
   onChange,
@@ -65,6 +69,7 @@ export function Textarea({
           onChange={handleChange}
           {...stylex.props(
             controlBase.root,
+            controlVariants[variant],
             textareaSizes[size],
             s.root,
             autoResize && s.autoResize,

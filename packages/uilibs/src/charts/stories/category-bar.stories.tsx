@@ -1,35 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
-import { houses, houseConfig } from '../chart.samples'
+import { chartColors } from '../chart-colors'
+import { canvasDecorator, houses, houseConfig } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/CategoryBar',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['659px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -42,7 +25,10 @@ export default meta
 //   segment it lands in.
 
 const total = houses.reduce((sum, row) => sum + row.points, 0)
-const houseColor = (house: string) => houseConfig[house.toLowerCase()]?.color ?? 'currentColor'
+const houseColor = (house: string) => {
+  const name = houseConfig[house.toLowerCase()]?.color
+  return name ? chartColors[name] : 'currentColor'
+}
 
 // Color of the segment that contains the marker value (prefix-sum lookup).
 function markerColorAt(value: number): string {
@@ -150,7 +136,7 @@ const styles = stylex.create({
   })
 })
 
-export function CategoryBar() {
+export function CategoryBar({ boundaryLabels = true }: { boundaryLabels?: boolean }) {
   return (
     <div
       role='img'
@@ -158,25 +144,27 @@ export function CategoryBar() {
       {...stylex.props(styles.wrapper)}
     >
       {/* Cumulative boundary labels: 0 on the left, the total on the right. */}
-      <div {...stylex.props(styles.labels)}>
-        <div {...stylex.props(styles.labelsEdge)} style={{ left: 0 }}>
-          0
-        </div>
-        {houses.map((row, index) => (
-          <div
-            key={row.house}
-            {...stylex.props(styles.labelCell)}
-            style={{ width: `${((row.points / total) * 100).toFixed(2)}%` }}
-          >
-            {labels[index] !== null ? (
-              <span {...stylex.props(styles.labelValue)}>{labels[index]}</span>
-            ) : null}
+      {boundaryLabels && (
+        <div {...stylex.props(styles.labels)}>
+          <div {...stylex.props(styles.labelsEdge)} style={{ left: 0 }}>
+            0
           </div>
-        ))}
-        <div {...stylex.props(styles.labelsEdge)} style={{ right: 0 }}>
-          {total}
+          {houses.map((row, index) => (
+            <div
+              key={row.house}
+              {...stylex.props(styles.labelCell)}
+              style={{ width: `${((row.points / total) * 100).toFixed(2)}%` }}
+            >
+              {labels[index] !== null ? (
+                <span {...stylex.props(styles.labelValue)}>{labels[index]}</span>
+              ) : null}
+            </div>
+          ))}
+          <div {...stylex.props(styles.labelsEdge)} style={{ right: 0 }}>
+            {total}
+          </div>
         </div>
-      </div>
+      )}
 
       <div {...stylex.props(styles.barRow)}>
         <div {...stylex.props(styles.segments)}>
@@ -207,9 +195,17 @@ export function CategoryBar() {
   )
 }
 
-export const HouseDistribution: Story = {
-  name: 'House points share',
-  render: () => <CategoryBar />,
+interface PlaygroundArgs {
+  boundaryLabels: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['boundaryLabels'] } },
+  argTypes: {
+    boundaryLabels: { control: 'boolean' }
+  },
+  args: { boundaryLabels: true },
+  render: ({ boundaryLabels }) => <CategoryBar boundaryLabels={boundaryLabels} />,
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('img', { name: /House points distribution/ })).toBeVisible()
 

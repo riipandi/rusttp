@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './otp-field.stories'
+
+<Meta of={Stories} />
+
+# OTP Field
+
+A one-time code input made of one character slot per digit.
+
+## Import
+
+```jsx
+import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from 'uilibs/base/otp-field'
+```
+
+Built on Base UI [OTP Field](https://base-ui.com/react/components/otp-field). Props not listed here pass through.
+
+## Anatomy
+
+- **OTPField:** the root. It holds the value and passes `size` and `variant` down to every slot. Set `length` to the number of slots.
+- **OTPFieldGroup:** optional. A `div` that joins its slots into one box.
+- **OTPFieldSlot:** one character input. Render one per character of `length`.
+- **OTPFieldSeparator:** optional. A divider with a minus glyph between groups.
+
+```jsx
+<OTPField length={6}>
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+  <OTPFieldSeparator />
+  <OTPFieldGroup>
+    <OTPFieldSlot />
+  </OTPFieldGroup>
+</OTPField>
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Joined slots
+
+<Canvas of={Stories.Joined} />
+
+### Separator
+
+<Canvas of={Stories.Separator} />
+
+## Accessibility
+
+Every slot is a `textbox`. The first takes the name of the field (`aria-label`, `aria-labelledby`, or a `FieldLabel`) and the others are named `Character n of N`; the `Named by aria-label` and `States` stories assert both. The `Keyboard` story walks the table below.
+
+| Key                       | Action                                                                   |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `Tab` and `Shift + Tab`   | Moves focus into the first slot.                                         |
+| Characters                | Fills the focused slot and moves focus to the next one.                  |
+| `Backspace`               | Clears the previous character and moves focus back one slot.             |
+| `Delete`                  | Clears the focused slot.                                                 |
+| `Ctrl + Backspace`        | Clears every slot and returns focus to the first.                        |
+| `ArrowLeft`, `ArrowRight` | Moves focus to the previous or next slot without editing.                |
+| `Home`, `End`             | Moves focus to the first slot, or to the slot after the last filled one. |
+
+- A disabled field takes no characters: every slot is disabled.
+- Pass `labels` to name the slots in another language.
+- Keyboard behavior is Base UI's; see the Base UI [OTP Field](https://base-ui.com/react/components/otp-field) page for the rest.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### OTPField
+
+| Prop      | Description                                                                                                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `size`    | `small`, `medium`, `large` <br /> Slot height and type. Default `medium`.                                                         |
+| `variant` | `outline`, `faded`, `ghost`, `headless` <br /> The box around each slot. Default `outline`.                                       |
+| `labels`  | `{ slot }` <br /> `slot(position, length)` returns the accessible name of every slot after the first. Default `Character n of N`. |
+| `length`  | `number` <br /> How many slots there are. Required.                                                                               |
+
+| Data attribute  | Description                                          |
+| --------------- | ---------------------------------------------------- |
+| `data-complete` | Present when every slot is filled.                   |
+| `data-filled`   | Present when at least one slot has a character.      |
+| `data-focused`  | Present while one of the slots has focus.            |
+| `data-disabled` | Present when the field is disabled.                  |
+| `data-readonly` | Present when the field is read-only.                 |
+| `data-required` | Present when the field is required.                  |
+| `data-invalid`  | Present when a surrounding `Field` marks it invalid. |
+
+### OTPFieldSlot
+
+| Data attribute  | Description                                          |
+| --------------- | ---------------------------------------------------- |
+| `data-filled`   | Present when the slot holds a character.             |
+| `data-complete` | Present when every slot is filled.                   |
+| `data-focused`  | Present while any slot has focus.                    |
+| `data-disabled` | Present when the field is disabled.                  |
+| `data-invalid`  | Present when a surrounding `Field` marks it invalid. |
+
+### OTPFieldSeparator
+
+| Data attribute     | Description                 |
+| ------------------ | --------------------------- |
+| `data-orientation` | `horizontal` or `vertical`. |
+
+## Caveats
+
+- Name the field with `aria-label`, `aria-labelledby`, or a `FieldLabel`. The first slot takes that name and the others are named `Character n of N`.
+- Base UI ignores `aria-label` on the first slot, so `OTPField` turns a root `aria-label` into a visually hidden label that the first slot points at.
+- Slots are numbered by their order in the document, so render them in order inside the root.
+- A slot is as wide as the control is tall, and shrinks when the row is narrower than the slots.

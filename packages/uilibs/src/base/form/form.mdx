@@ -1,0 +1,67 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './form.stories'
+
+<Meta of={Stories} />
+
+# Form
+
+A native form that validates the fields inside it and shows their errors in one place.
+
+## Import
+
+```jsx
+import { Field, FieldError, FieldLabel } from 'uilibs/base/field'
+import { Form } from 'uilibs/base/form'
+```
+
+Built on Base UI [Form](https://base-ui.com/react/components/form). Props not listed here pass through.
+
+## Anatomy
+
+- **Form:** the root `form` element. Fields inside it report their errors to it.
+- **Field:** each control sits in a `Field` with a `name`. The form's `errors` prop is keyed by that name, so a server action can set an error on one field.
+
+```jsx
+<Form>
+  <Field name='…'>
+    <FieldLabel />
+    {/* a control, such as Input */}
+    <FieldError />
+  </Field>
+</Form>
+```
+
+## Examples
+
+### Validation on submit
+
+A short wizard name fails the field's `validate` function and the message appears under it.
+
+<Canvas of={Stories.Playground} />
+
+### Errors from the server
+
+Pass `errors` to `Form`, an object keyed by each field's `name`. The field shows its message under the control and the control is described by it, the way a validation message from `validate` is.
+
+<Canvas of={Stories.ServerErrors} />
+
+## Accessibility
+
+A `Form` is a native `form`: a field's label, description and message come from its `Field`, and the submit button is the form's default action. The `Keyboard` story walks the table below, and `server errors` proves the message is linked to its control.
+
+| Key                     | Action                                                                                                           |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves between the fields and the submit button.                                                                  |
+| `Enter`                 | In a text field, submits the form. If a field fails, nothing is sent and focus moves to the first failing field. |
+
+- A message from `errors` is listed in its control's `aria-describedby` and the control is `aria-invalid`.
+- Keyboard behavior is Base UI's; see the Base UI [Form](https://base-ui.com/react/components/form) page for the rest.
+
+## API reference
+
+`Form` adds no props of its own and sets no data attributes. It also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+## Caveats
+
+- A `Field` without a `name` adds no value to the submitted values and cannot receive an external error.
+- A control with `type='email'` or `required` is also checked by the browser on submit; pass `noValidate` to the form when a schema should be the only validator.

@@ -1,2 +1,2 @@
 export * from './badge.component'
-export * from './badge.stylex'
+export * from './badge-anchor.component'

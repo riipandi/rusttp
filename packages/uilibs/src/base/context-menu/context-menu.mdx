@@ -1,0 +1,158 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './context-menu.stories'
+
+<Meta of={Stories} />
+
+# Context Menu
+
+A menu that opens at the pointer on right click or long press. Use Dropdown Menu for a menu opened from a button.
+
+## Import
+
+```jsx
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger
+} from 'uilibs/base/context-menu'
+```
+
+Built on Base UI [Context Menu](https://base-ui.com/react/components/context-menu). Props not listed here pass through.
+
+## Anatomy
+
+- **ContextMenu:** the root. It holds the open state.
+- **ContextMenuTrigger:** the area that opens the menu on right click or long press.
+- **ContextMenuContent:** the popup. It renders the portal and the positioner itself.
+- **ContextMenuGroup:** groups items under a label.
+- **ContextMenuLabel:** the heading of a group or radio group. It must sit inside one.
+- **ContextMenuItem:** an action. It can hold a `ContextMenuShortcut`.
+- **ContextMenuShortcut:** the key hint at the end of an item.
+- **ContextMenuCheckboxItem:** an item that toggles on and off, with a check indicator.
+- **ContextMenuRadioGroup:** holds radio items, of which one is chosen.
+- **ContextMenuRadioItem:** one choice in a radio group, with a check indicator.
+- **ContextMenuSeparator:** a divider between items.
+- **ContextMenuSub:** the root of a submenu.
+- **ContextMenuSubTrigger:** the item that opens the submenu. It renders the chevron itself.
+- **ContextMenuSubContent:** the submenu popup.
+- **ContextMenuPortal:** exported only for custom compositions. `ContextMenuContent` already includes it.
+
+```jsx
+<ContextMenu>
+  <ContextMenuTrigger />
+  <ContextMenuContent>
+    <ContextMenuItem>
+      <ContextMenuShortcut />
+    </ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuGroup>
+      <ContextMenuLabel />
+      <ContextMenuCheckboxItem />
+    </ContextMenuGroup>
+    <ContextMenuRadioGroup>
+      <ContextMenuRadioItem />
+    </ContextMenuRadioGroup>
+    <ContextMenuSub>
+      <ContextMenuSubTrigger />
+      <ContextMenuSubContent>
+        <ContextMenuItem />
+      </ContextMenuSubContent>
+    </ContextMenuSub>
+  </ContextMenuContent>
+</ContextMenu>
+```
+
+## Examples
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Checkbox items
+
+<Canvas of={Stories.Checkboxes} />
+
+### Submenu
+
+<Canvas of={Stories.Submenu} />
+
+## Accessibility
+
+The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` items. A context menu has no key that opens it: it opens on right click or long press, so offer the same actions elsewhere for keyboard users. Once it is open, the `Keyboard` story walks the keys below, and the `Open` story keeps the menu open so the accessibility check reads it.
+
+| Key           | Action                                                                             |
+| ------------- | ---------------------------------------------------------------------------------- |
+| `ArrowDown`   | Highlights the next item. A disabled item stays in the order and `Enter` skips it. |
+| `ArrowUp`     | Highlights the previous item.                                                      |
+| `Home`, `End` | Highlights the first or the last item.                                             |
+| `ArrowRight`  | On `ContextMenuSubTrigger`: opens the submenu.                                     |
+| `ArrowLeft`   | In a submenu: closes it.                                                           |
+| `Enter`       | Picks the highlighted item and closes the menu.                                    |
+| `Escape`      | Closes the menu.                                                                   |
+
+- A `ContextMenuItem` needs visible text or an `aria-label`.
+- Keyboard behavior is Base UI's; see the Base UI [Context Menu](https://base-ui.com/react/components/context-menu) page for the rest.
+
+## API reference
+
+Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `ContextMenuSub`, and `ContextMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ContextMenuContent` and `ContextMenuSubContent` it styles the popup.
+
+`ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuSubTrigger`, `ContextMenuShortcut`, `ContextMenuSeparator`, and `ContextMenuLabel` are the Dropdown Menu parts under another name. Their props and data attributes (`color`, `icon`, `inset`, `data-highlighted`, `data-checked`, and the rest) are listed on the Dropdown Menu page.
+
+### ContextMenuTrigger
+
+| Data attribute    | Description                     |
+| ----------------- | ------------------------------- |
+| `data-popup-open` | Present while the menu is open. |
+| `data-pressed`    | Present while the menu is open. |
+
+### ContextMenuContent
+
+| Prop          | Description                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `right`. |
+| `sideOffset`  | `number` or a function <br /> Distance from the anchor, in pixels. Default `0`.                                                    |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                  |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `4`.                                             |
+
+| Data attribute        | Description                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| `data-open`           | Present while the menu is open.                                                              |
+| `data-closed`         | Present while the menu is closed.                                                            |
+| `data-starting-style` | Present as the menu begins to open.                                                          |
+| `data-ending-style`   | Present as the menu closes.                                                                  |
+| `data-side`           | The side the popup is on: `top`, `bottom`, `left`, `right`, `inline-end`, or `inline-start`. |
+| `data-align`          | `start`, `center`, or `end`.                                                                 |
+
+### ContextMenuSubContent
+
+It takes the `ContextMenuContent` props and data attributes, with other defaults.
+
+| Prop          | Description                                                                                                                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of its trigger the submenu opens on. Default `inline-end`, so it follows the reading direction. |
+| `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `0`.                                                                                                 |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                                                                |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `-4`.                                                                                          |
+
+## Caveats
+
+- `ContextMenuTrigger` sets `user-select: none`, so text inside it cannot be selected.
+- `ContextMenuLabel` throws unless it sits inside a `ContextMenuGroup` or `ContextMenuRadioGroup`.
+- `ContextMenuContent` already wraps itself in a portal and positioner. Do not add `ContextMenuPortal` around it.

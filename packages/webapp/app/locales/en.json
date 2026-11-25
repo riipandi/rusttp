@@ -114,7 +114,6 @@
     "form_caps_lock": "Caps Lock is on.",
     "form_captcha_label": "I am not a robot",
     "form_code_slot": "Character {position} of {length}",
-    "form_password_hide": "Hide password",
     "form_password_show": "Show password",
     "home_inside": "What is inside",
     "home_interface": "Interface",

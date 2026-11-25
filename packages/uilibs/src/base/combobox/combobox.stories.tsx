@@ -1,10 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  controlHeights,
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants,
+  expectDisabledLook,
+  expectHighlightedItem
+} from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
 import {
   Combobox,
@@ -27,31 +37,12 @@ import {
 const meta = {
   title: 'Base Components/Combobox',
   component: Combobox,
-  parameters: { layout: 'centered' },
-  argTypes: {
-    multiple: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    autoHighlight: { control: 'boolean' }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Combobox>
 
 type Story = StoryObj<typeof meta>
+
+const comboboxParts = ['input', 'trigger', 'chips'] as const
 
 const frameworks = ['Hogwarts', 'Beauxbatons', 'Durmstrang', 'Ilvermorny', 'Uagadou']
 
@@ -95,12 +86,80 @@ const styles = stylex.create({
 
 export default meta
 
-export const Playground: Story = {
-  args: { items: frameworks },
-  render: (args) => (
+// The look lives on `ComboboxInput` and the placement on `ComboboxContent`.
+type PlaygroundArgs = React.ComponentProps<typeof Combobox> &
+  Pick<
+    React.ComponentProps<typeof ComboboxInput>,
+    'size' | 'variant' | 'showTrigger' | 'showClear'
+  > &
+  Pick<
+    React.ComponentProps<typeof ComboboxContent>,
+    'side' | 'sideOffset' | 'align' | 'alignOffset'
+  >
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'size',
+        'variant',
+        'showTrigger',
+        'showClear',
+        'disabled',
+        'autoHighlight',
+        'side',
+        'sideOffset',
+        'align',
+        'alignOffset'
+      ]
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    showTrigger: { control: 'boolean' },
+    showClear: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    autoHighlight: { control: 'boolean' },
+    side: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
+    sideOffset: { control: 'number' },
+    align: { control: 'radio', options: ['start', 'center', 'end'] },
+    alignOffset: { control: 'number' }
+  },
+  args: {
+    items: frameworks,
+    size: 'medium',
+    variant: 'outline',
+    showTrigger: true,
+    showClear: false,
+    disabled: false,
+    autoHighlight: false,
+    side: 'bottom',
+    sideOffset: 6,
+    align: 'start',
+    alignOffset: 0
+  },
+  render: ({
+    size,
+    variant,
+    showTrigger,
+    showClear,
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    ...args
+  }) => (
     <Combobox {...args}>
-      <ComboboxInput placeholder='Search school…' />
-      <ComboboxContent>
+      <ComboboxInput
+        size={size}
+        variant={variant}
+        showTrigger={showTrigger}
+        showClear={showClear}
+        placeholder='Search school…'
+      />
+      <ComboboxContent side={side} sideOffset={sideOffset} align={align} alignOffset={alignOffset}>
         <ComboboxEmpty>No school found.</ComboboxEmpty>
         <ComboboxList>
           {(item) => (
@@ -124,13 +183,152 @@ export const Playground: Story = {
     await expect(options.length).toBe(1)
     await expect(target).toHaveTextContent('Hogwarts')
 
-    // Selecting fills the input and closes the popup.
+    // Selecting fills the input and closes the popup. axe runs right after `play`, and a popup
+    // still closing (WebKit under load) is a listbox without a name, so wait for it to go.
     await userEvent.click(target)
     await waitFor(() => expect(input).toHaveValue('Hogwarts'))
+    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+  }
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => (
+        <Combobox items={frameworks}>
+          <ComboboxInput variant={variant} aria-label={`School ${variant}`} placeholder='School' />
+        </Combobox>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) =>
+    expectControlVariants(canvasElement, (cell) => cell.querySelector('input'))
+}
+
+/** The three boxes of a combobox, in every size: the input, the trigger, and the chips. */
+export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={schools}>
+  <ComboboxInput size='large' aria-label='School' placeholder='School' />
+  <ComboboxContent>
+    <ComboboxEmpty>No school found.</ComboboxEmpty>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames} columnAxis='part' columns={comboboxParts} fill>
+      {(size, part) =>
+        part === 'input' ? (
+          <Combobox items={frameworks}>
+            <ComboboxInput size={size} aria-label={`School ${size}`} placeholder='School' />
+          </Combobox>
+        ) : part === 'trigger' ? (
+          <Combobox items={frameworks}>
+            <ComboboxTrigger size={size} aria-label={`School trigger ${size}`}>
+              School
+            </ComboboxTrigger>
+          </Combobox>
+        ) : (
+          <Combobox items={frameworks} multiple>
+            <ComboboxChips size={size}>
+              <ComboboxChipsInput aria-label={`Schools ${size}`} placeholder='Schools' />
+            </ComboboxChips>
+          </Combobox>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const part of comboboxParts) {
+      await expectControlHeights(canvasElement, controlHeights, `[data-part="${part}"]`)
+    }
+  }
+}
+
+export const States: Story = {
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel>School</FieldLabel>
+            <Combobox items={frameworks}>
+              <ComboboxInput placeholder='Choose a school' />
+              <ComboboxContent>
+                <ComboboxEmpty>No school found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+            <FieldError match>Pick the school that sent your letter.</FieldError>
+          </Field>
+        ) : (
+          <Combobox items={frameworks} disabled={state === 'disabled'}>
+            <ComboboxInput aria-label={`School ${state}`} placeholder='Search school…' />
+            <ComboboxContent>
+              <ComboboxEmpty>No school found.</ComboboxEmpty>
+              <ComboboxList>
+                {(item) => (
+                  <ComboboxItem key={item} value={item}>
+                    {item}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    const disabled = canvas.getByRole('combobox', { name: 'School disabled' })
+    await expect(disabled).toBeDisabled()
+    await expectDisabledLook(disabled)
+    await userEvent.click(disabled)
+    await expect(within(document.body).queryByRole('option')).toBeNull()
+
+    const invalid = canvas.getByRole('combobox', { name: 'School' })
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
+    await expect(invalid).toHaveAccessibleDescription('Pick the school that sent your letter.')
   }
 }
 
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const anchorRef = useRef(null)
+
+<Combobox items={schools} multiple defaultValue={['Hogwarts']}>
+  <ComboboxChips ref={anchorRef}>
+    <ComboboxValue>
+      {(selected) => selected.map((school) => <ComboboxChip key={school}>{school}</ComboboxChip>)}
+    </ComboboxValue>
+    <ComboboxChipsInput placeholder='Add school…' />
+  </ComboboxChips>
+  <ComboboxContent anchor={anchorRef}>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => {
     const [value, setValue] = React.useState<string[]>(['Hogwarts'])
     const anchorRef = React.useRef<HTMLDivElement>(null)
@@ -165,6 +363,24 @@ export const Multiple: Story = {
 }
 
 export const Popup: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={drinks}>
+  <ComboboxTrigger aria-label='Drink'>
+    <ComboboxValue placeholder='Select a drink' />
+  </ComboboxTrigger>
+  <ComboboxContent>
+    <ComboboxInput showTrigger={false} placeholder='Search drink…' />
+    <ComboboxEmpty>No drink found.</ComboboxEmpty>
+    <ComboboxList>
+      {(drink) => <ComboboxItem key={drink} value={drink}>{drink}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => (
     <Combobox items={fruits}>
       <ComboboxTrigger aria-label='Drink'>
@@ -186,6 +402,21 @@ export const Popup: Story = {
 }
 
 export const Clear: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Combobox items={schools} defaultValue='Hogwarts'>
+  <ComboboxInput showClear placeholder='Search school…' />
+  <ComboboxContent>
+    <ComboboxEmpty>No school found.</ComboboxEmpty>
+    <ComboboxList>
+      {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`
+      }
+    }
+  },
   render: () => (
     <Combobox items={frameworks} defaultValue='Hogwarts'>
       <ComboboxInput showClear placeholder='Search school…' />
@@ -260,30 +491,6 @@ export const CustomItems: Story = {
   )
 }
 
-export const Disabled: Story = {
-  render: () => (
-    <Combobox items={frameworks} disabled>
-      <ComboboxInput placeholder='Search school…' />
-      <ComboboxContent>
-        <ComboboxEmpty>No school found.</ComboboxEmpty>
-        <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item} value={item}>
-              {item}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByPlaceholderText('Search school…')
-    await expect(input).toBeDisabled()
-    await userEvent.click(input)
-    await expect(within(document.body).queryByRole('option')).toBeNull()
-  }
-}
-
 export const AutoHighlight: Story = {
   name: 'Auto highlight',
   render: () => (
@@ -303,82 +510,9 @@ export const AutoHighlight: Story = {
   )
 }
 
-export const ControlSizes: Story = {
-  render: () => (
-    <ControlSizesColumn>
-      {(size) => (
-        <Combobox items={frameworks}>
-          <ComboboxInput size={size} aria-label={`School ${size}`} placeholder='School' />
-        </Combobox>
-      )}
-    </ControlSizesColumn>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-export const TriggerControlSizes: Story = {
-  render: () => (
-    <ControlSizesColumn>
-      {(size) => (
-        <Combobox items={frameworks}>
-          <ComboboxTrigger size={size} aria-label={`School ${size}`}>
-            School
-          </ComboboxTrigger>
-        </Combobox>
-      )}
-    </ControlSizesColumn>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-export const ChipsControlSizes: Story = {
-  render: () => (
-    <ControlSizesColumn>
-      {(size) => (
-        <Combobox items={frameworks} multiple>
-          <ComboboxChips size={size}>
-            <ComboboxChipsInput aria-label={`Schools ${size}`} placeholder='Schools' />
-          </ComboboxChips>
-        </Combobox>
-      )}
-    </ControlSizesColumn>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
-}
-
-export const Invalid: Story = {
-  args: { items: frameworks },
-  render: (args) => (
-    <Field invalid>
-      <FieldLabel>School</FieldLabel>
-      <Combobox {...args}>
-        <ComboboxInput placeholder='Choose a school' />
-        <ComboboxContent>
-          <ComboboxEmpty>No school found.</ComboboxEmpty>
-          <ComboboxList>
-            {(item) => (
-              <ComboboxItem key={item} value={item}>
-                {item}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxContent>
-      </Combobox>
-      <FieldError match>Pick the school that sent your letter.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByRole('combobox', { name: 'School' })
-    await expect(input).toHaveAttribute('aria-invalid', 'true')
-    await expect(input).toHaveAttribute('data-invalid')
-    await expect(input).toHaveAccessibleDescription('Pick the school that sent your letter.')
-  }
-}
-
-export const Keyboard: Story = {
-  args: { items: frameworks },
-  render: (args) => (
-    <Combobox {...args}>
+function Schools({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <Combobox items={frameworks} defaultOpen={defaultOpen}>
       <ComboboxInput aria-label='School' placeholder='School' />
       <ComboboxContent>
         <ComboboxEmpty>No school found.</ComboboxEmpty>
@@ -391,25 +525,70 @@ export const Keyboard: Story = {
         </ComboboxList>
       </ComboboxContent>
     </Combobox>
-  ),
+  )
+}
+
+// The a11y gate runs after `play`, when a list a play opened has closed again: this story keeps
+// the list open so the gate checks it.
+export const Open: Story = {
+  render: () => <Schools defaultOpen />,
+  play: async () => {
+    const list = await within(document.body).findByRole('listbox')
+    await waitFor(() => expect(list).toBeVisible())
+    await expect(within(list).getAllByRole('option')).toHaveLength(frameworks.length)
+  }
+}
+
+/** ArrowDown opens the list and the arrows move a visible highlight through it, Enter picks, and Escape closes it. */
+export const Keyboard: Story = {
+  render: () => <Schools />,
   play: async ({ canvas }) => {
     const body = within(document.body)
     const input = canvas.getByRole('combobox', { name: 'School' })
+    const options = () => body.queryAllByRole('option')
+    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
+    const visible = () => expect(body.getByRole('listbox')).toBeVisible()
+    const closed = () => expect(body.queryByRole('listbox')).toBeNull()
+    // `aria-expanded` follows the open state at once; the listbox stays in the page while it fades
+    // out, and a key sent then would reach a closed combobox (Escape there clears the input).
+    const expanded = () => input.getAttribute('aria-expanded') === 'true'
 
-    // Tab reaches the input, the arrow opens the list and moves through it, Enter picks.
     await userEvent.tab()
     await expect(input).toHaveFocus()
-    await userEvent.keyboard('{ArrowDown}')
-    await body.findByRole('listbox')
-    await userEvent.keyboard('{ArrowDown}')
-    const options = await body.findAllByRole('option')
-    const highlighted = options.find((option) => option.hasAttribute('data-highlighted'))
-    await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
-    // The highlighted option is the one the input now shows.
-    await expect(highlighted).toBeDefined()
-    await waitFor(() => expect(input).toHaveValue(highlighted?.textContent ?? ''))
-    await expect(input).not.toHaveValue('')
+
+    // ArrowDown opens the list; a further ArrowDown highlights the first option, then the next.
+    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
+      when: () => index() < 0
+    })
+    const first = index()
+    await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
+      when: () => index() === first
+    })
+    await pressUntil('{ArrowUp}', () => expect(index()).toBe(first), {
+      when: () => index() === first + 1
+    })
+    await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
+      when: () => index() === first
+    })
+    const picked = options()[first + 1]
+    if (!picked) throw new Error('No option to pick')
+    await expectHighlightedItem(picked, options()[first])
+
+    // Enter fills the input with the highlighted option and closes the list; focus stays in the input.
+    const label = picked.textContent ?? ''
+    await pressUntil('{Enter}', () => expect(input).toHaveValue(label), {
+      when: expanded
+    })
+    await waitFor(closed)
+    await expect(input).toHaveFocus()
+
+    // Escape closes a reopened list and keeps the value.
+    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    // Escape on a closed combobox clears the input, so it is sent only while the list is open.
+    await pressUntil('{Escape}', closed, { when: expanded })
+    await expect(input).toHaveValue(label)
+    await expect(input).toHaveFocus()
   }
 }
 

@@ -6,9 +6,9 @@ import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/t
 
 /** Minimum height and type of the chips field, at the same heights as `controlSizes`. */
 export const comboboxChipsSizes = stylex.create({
-  sm: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x8 },
-  md: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x9 },
-  lg: { fontSize: fontSize.body1, lineHeight: fontLineHeight.body1, minHeight: unit.x10 }
+  small: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x8 },
+  medium: { fontSize: fontSize.body2, lineHeight: fontLineHeight.body2, minHeight: unit.x9 },
+  large: { fontSize: fontSize.body1, lineHeight: fontLineHeight.body1, minHeight: unit.x10 }
 })
 
 export const comboboxStyles = stylex.create({
@@ -86,10 +86,9 @@ export const comboboxStyles = stylex.create({
     fontSize: fontSize.caption1,
     gap: unit.x1,
     lineHeight: fontLineHeight.caption1,
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1,
-    paddingLeft: unit.x2,
-    paddingRight: unit.x1
+    paddingInlineEnd: unit.x1,
+    paddingInlineStart: unit.x2
   },
   chipRemove: {
     alignItems: 'center',
@@ -137,6 +136,7 @@ export const comboboxStyles = stylex.create({
     flexDirection: 'column',
     fontFamily: fontFamily.body,
     maxHeight: `min(${container.small}, var(--available-height))`,
+    maxWidth: 'var(--available-width)',
     opacity: {
       default: 1,
       '[data-starting-style]': 0,
@@ -153,15 +153,11 @@ export const comboboxStyles = stylex.create({
   },
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     borderRadius: radius.small,
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -170,10 +166,9 @@ export const comboboxStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     marginInline: unit.x1,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1_5,
-    paddingLeft: unit.x2,
-    paddingRight: unit.x8,
+    paddingInlineEnd: unit.x8,
+    paddingInlineStart: unit.x2,
     position: 'relative',
     userSelect: 'none'
   },
@@ -184,7 +179,7 @@ export const comboboxStyles = stylex.create({
     justifyContent: 'center',
     pointerEvents: 'none',
     position: 'absolute',
-    right: unit.x2,
+    insetInlineEnd: unit.x2,
     width: unit.x4
   },
   label: {

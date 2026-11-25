@@ -23,10 +23,10 @@ import {
 // can opt into the same categorical palette outside the chart host.
 
 const chartPaletteOverrides = {
-  '--ts-chart-1': colors.backgroundPrimary,
-  '--ts-chart-2': colors.backgroundPositive,
-  '--ts-chart-3': colors.backgroundWarning,
-  '--ts-chart-4': colors.backgroundCritical,
+  '--ts-chart-1': colors.foregroundPrimary,
+  '--ts-chart-2': colors.foregroundPositive,
+  '--ts-chart-3': colors.foregroundWarning,
+  '--ts-chart-4': colors.foregroundCritical,
   '--chart-foreground': colors.foregroundNeutral,
   '--chart-muted': colors.foregroundNeutralFaded,
   '--chart-grid': colors.borderNeutralFaded
@@ -58,6 +58,11 @@ export const chartStyles = stylex.create({
   chart: {
     ...chartPaletteOverrides,
     ...chartTooltipOverrides,
+    outline: {
+      default: 'none',
+      ':has(svg:focus-visible)': `${stroke.ring2} solid ${colors.foregroundPrimary}`
+    },
+    outlineOffset: stroke.ring2,
     width: '100%'
   },
   legend: {

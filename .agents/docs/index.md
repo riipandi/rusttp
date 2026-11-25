@@ -1,31 +1,56 @@
 # Agents Documentation Index
 
-updated: 2026-11-22T07:05:00+07:00
+updated: 2026-11-25T18:40:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
 ## Core documents
 
-| Path                           | Read it for                                                                                                                                                 |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/AGENTS.md`                   | The workflow rules: read order, ambiguous-decision protocol, skill map, workflow, git.                                                                      |
-| `.agents/docs/index.md`        | The documentation map — this file.                                                                                                                          |
-| `.agents/docs/shape.md`        | The repository's shape: the layout, the toolchain, the commands.                                                                                            |
-| `.agents/docs/rules.md`        | The detailed rules behind `AGENTS.md`: contracts (dependency direction, modules, data, migrations, errors, Rust code, tests), how-to-change recipes, traps. |
-| `.agents/docs/ui-components.md` | The `packages/uilibs` inventory: every component's import path, parts, primitive, `size`, `tone`, and `labels`; how to use and extend the library. |
-| `.agents/docs/stylex-authoring.md` | How to write StyleX styles: `create`, `props`, variables, themes, antipatterns, and the library's control recipes with the contrast table. Read before touching any `*.stylex.ts`. |
-| `.agents/docs/stylex-installation.md` | StyleX build setup per bundler, options, TypeScript, troubleshooting. Read when changing the compiler pipeline. |
-| `.agents/docs/architecture.md` | The architecture: module anatomy, lifecycle, and the decision records with their rejected alternatives.                                                     |
+| Path | Read it for |
+| --- | --- |
+| `/AGENTS.md` | Always-on rules: ambiguity protocol, workflow, git, the skill map. Scoped `AGENTS.md` files in `apps/`, `crates/`, `packages/webapp/`, `packages/uilibs/` add the area's must-knows. |
+| `.agents/docs/index.md` | This map. |
+| `.agents/docs/shape.md` | Layout, toolchain, commands and gates, compose stacks. |
+| `.agents/docs/rules.md` | Cross-area rules: where a fact lives, dependencies, sample data, secrets and dev credentials, the build and dev loop. |
+| `.agents/docs/backend.md` | Rust contracts and traps: dependency direction, modules, data and migrations, errors and transport, the SPA document, Rust code, CLI, tests. |
+| `.agents/docs/frontend.md` | `packages/` contracts and traps: layout, UI library, webapp forms, state, i18n, accessibility, shortcuts, bundle, tests. |
+| `.agents/docs/architecture.md` | Module anatomy, lifecycle, and the decision records with rejected alternatives. |
+| `packages/uilibs/.storybook/stories/components.mdx` | The `packages/uilibs` catalog, shown in Storybook as "Components": conventions, look-alikes, every component with a link to its page. Read it before building or changing any UI. |
+| `.agents/docs/stylex-authoring.md` | How to write StyleX styles and the control recipes. Read before touching any `*.stylex.ts`. |
+| `.agents/docs/stylex-installation.md` | StyleX build setup. Read when changing the compiler pipeline. |
+
+## Terms
+
+- **Agent docs** — `.agents/docs/` (this ledger and the core documents), `AGENTS.md` (root and scoped), and the project skills in `.agents/skills/`: written for agents, English, with `file:line` evidence.
+- **Human docs** — `docs/`: written for people, no paths or internals.
+
+There is no `llms.txt`; "LLM docs" in an archived plan means agent docs.
 
 ## Docs sync
 
-`AGENTS.md` carries the rule: a behavior change and its documentation land in the same turn and the same commit. This file is the map the rule dispatches on — when a diff touches what a document claims, update that document and the matching row here.
+A behavior change and its documentation land in the same commit; `rules.md` ("Where a fact lives") names the file, and this map gets the matching row.
+
+## Project skills (`.agents/skills/`)
+
+| Skill | Use it for |
+| --- | --- |
+| `agent-docs` | Every ledger or docs change: plans, issues, roadmap, handovers, index, archive, `docs/`. |
+| `handoff` | Writing a handover on the owner's request. |
+| `deep-audit` | Evidence-based audit of a feature or the system (backend side); report in `audit/`. |
+| `ui-audit` | Audit of `packages/webapp` and `packages/uilibs`: a11y, StyleX tokens, i18n, entry budget, screens per state and width; same report shape as `deep-audit`. |
+| `rust-verify-harden` | Rust quality gates and the leak, deadlock, race, and boundary pass. |
+
+The other entries in `.agents/skills/` are links to skills shipped by pnpm packages (TanStack), git-ignored and owned upstream.
 
 ## Plans (`.agents/docs/plans/`)
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-None live. `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md` (done, 2026-11-22) are in `.agents/docs/archive/`.
+| File | Status | Subject |
+| --- | --- | --- |
+| (none live) | | Every plan is archived. |
+
+Archived: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -34,28 +59,27 @@ Findings that outlive a turn. The directory lists only files with `open` or `con
 | File                               | Status                                  | Subject                                                                                                              |
 | ---------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `issue-00001-workspace-hygiene.md` | considering (6 resolved, 1 considering) | Workspace hygiene: everything resolved except the location of domain modules (`modules/` vs `apps/server/modules/`). |
-| `issue-00003-ui-audit-leftovers.md` | considering (1 open, 5 considering) | What plan 00004 left out: entry chunk growth, palette contrast gaps, data grid size, double-mounted admin chrome, no webapp unit runner, the `AGENTS.md` line. |
 
 ## Roadmap (`.agents/docs/roadmap/`)
 
-Parked improvements with a named unlock. None yet; the dual-edition idea is parked inside `architecture.md` ("Parked").
+Parked improvements with a named unlock.
+
+| File | Status | Subject |
+| --- | --- | --- |
+| `roadmap-00001-parked-verifications.md` | living | Manual checks no code can replace (real screen reader, forced-colors OS mode, physical device) and the community/enterprise edition idea. |
 
 ## Handovers (`.agents/docs/handover/`)
 
-Session compactions, `handover-<nnnnn>-<topic>.md`; the directory keeps the five newest.
+Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary>`. The directory keeps `partial` handovers and the newest one; a `done` handover moves to the archive.
 
-| File                                     | Status | Subject                                                                                       |
-| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `handover-00003-uilibs-improvement.md`   | done   | Plan 00001 closed: what landed in `packages/uilibs`, the commits, what stayed open, the trap. |
-| `handover-00004-webapp-forms-formisch.md` | done  | Plan 00002 closed: the auth forms moved from TanStack Form and zod to Formisch and Valibot.   |
-| `handover-00005-webapp-nav-container-demo.md` | partial | No plan: container demo stack, responsive navigation, collapsible admin sidebar, tooltip, devtools theme. |
-| `handover-00006-admin-sidebar-followups.md` | partial | Plan 00003 closed: tooltip gate, measured contrast, persisted sidebar collapse, rail logo link; issue 00002 open. |
-| `handover-00007-ui-audit-remediation.md` | partial | Plan 00004 closed: the UI audit's fixes, the commits, issue 00003 open, the traps. |
+| File | Status | Subject |
+| --- | --- | --- |
+| `handover-00014-uilibs-audit-remediation.md` | done | Plan 00011 closed: the uilibs audit remediation in 59 phases, the gate in CI (stories in three engines, the 390 px overflow gate, the docs checker), the rebrand script, `audit-00003` for the data grid, issue-00007 and issue-00008 still open. |
 
 ## Audits (`.agents/docs/audit/`)
 
-Point-in-time reviews written by the `deep-audit` skill. None live; `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) is in `.agents/docs/archive/`.
+Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. Live: `audit-00003-uilibs-data-grid.md` (in_review, 2026-11-25: 15 findings, all open, report only: 2 medium, resolve in a later plan). `audit-00001-uilibs.md` (completed, 2026-11-20: 25 findings fixed, F-26 deferred) and `audit-00002-ui-uilibs.md` (completed, 2026-11-25: 14 fixed, F-11 won't fix, F-12 deferred) are in `.agents/docs/archive/`.
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged: `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `audit-00001-uilibs.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00001-cli-transport-vixum.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21).
+Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `plan-00009-uilibs-reshaped-props-docs.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `handover-00011-uilibs-stories-by-prop.md`, `handover-00012-uilibs-reshaped-props-docs.md`, `plan-00010-uilibs-playground-controls.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22), `issue-00004-data-grid-unread-props.md` (resolved 2026-11-24), `issue-00005-data-grid-unread-layout-flags.md` (resolved 2026-11-24), `issue-00006-description-list-no-controls.md` (resolved 2026-11-24), `issue-00007-stylex-dir-rtl-matches-lang.md` (resolved 2026-11-25), `issue-00008-command-dialog-escape-act-webkit.md` (resolved 2026-11-25), `plan-00011-uilibs-audit-remediation.md` (done 2026-11-25), `audit-00002-ui-uilibs.md` (completed 2026-11-25), `handover-00013-uilibs-playground-controls.md`.

@@ -3,7 +3,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
 import { duration, fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
-import { breakpoints, layoutSize } from '#/styles/constants.stylex'
+import { breakpoints } from '#/styles/constants.stylex'
 
 export const styles = stylex.create({
   split: {
@@ -26,7 +26,7 @@ export const styles = stylex.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     padding: unit.x12,
-    backgroundColor: colors.backgroundPageFaded,
+    backgroundColor: colors.backgroundNeutralFaded,
     borderRightWidth: 1,
     borderRightStyle: 'solid',
     borderRightColor: colors.borderNeutralFaded
@@ -48,13 +48,7 @@ export const styles = stylex.create({
     lineHeight: 1.6
   },
   formSide: {
-    display: 'flex',
-    flexDirection: 'column',
     padding: unit.x6
-  },
-  topRow: {
-    display: 'flex',
-    alignItems: 'center'
   },
   theme: {
     marginInlineStart: 'auto'
@@ -67,30 +61,13 @@ export const styles = stylex.create({
   },
   formWrap: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: unit.x8,
-    width: '100%',
-    maxWidth: layoutSize.form,
-    marginInline: 'auto',
     paddingBlock: unit.x10
-  },
-  heading: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x2
   },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x5
-  },
-  fields: {
     display: 'flex',
     flexDirection: 'column',
     gap: unit.x5
@@ -106,17 +83,7 @@ export const styles = stylex.create({
     color: colors.foregroundNeutralFaded,
     lineHeight: 1.6
   },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x3
-  },
   links: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: unit.x2,
     fontSize: fontSize.body2
   },
   // First and last name side by side, stacked on a narrow screen so a message has room.
@@ -141,29 +108,30 @@ export const styles = stylex.create({
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.medium
   },
-  // Navigation links: quiet until hovered, then the text darkens and the underline draws in.
+  // Navigation links (`Link`, `color='neutral'`): quiet until hovered, then the text darkens.
   link: {
     color: {
       default: colors.foregroundNeutralFaded,
       ':hover': colors.foregroundNeutral
-    },
-    textDecorationLine: 'underline',
-    textDecorationColor: {
-      default: 'currentColor',
-      ':hover': 'currentColor'
-    },
-    textDecorationThickness: { default: '1px', ':hover': '2px' },
-    textUnderlineOffset: '0.25em',
-    transitionDuration: duration.fast,
-    transitionProperty: 'color, text-decoration-thickness'
+    }
   },
   // A button that reads as one of the page's links (a placeholder action, not a navigation).
   linkButton: {
     padding: 0,
     borderStyle: 'none',
     backgroundColor: 'transparent',
+    color: {
+      default: colors.foregroundNeutralFaded,
+      ':hover': colors.foregroundNeutral
+    },
     cursor: 'pointer',
-    font: 'inherit'
+    font: 'inherit',
+    textDecorationLine: 'underline',
+    textDecorationColor: 'currentColor',
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
+    textUnderlineOffset: '0.25em',
+    transitionDuration: duration.fast,
+    transitionProperty: 'color, text-decoration-thickness'
   },
   // "Already have an account? Sign in": one centered line, the link a step stronger than the text.
   switch: {
@@ -173,14 +141,7 @@ export const styles = stylex.create({
     fontSize: fontSize.body2
   },
   linkStrong: {
-    color: colors.foregroundNeutral,
-    fontWeight: fontWeight.medium,
-    textDecorationLine: 'underline',
-    textDecorationColor: 'currentColor',
-    textDecorationThickness: { default: '1px', ':hover': '2px' },
-    textUnderlineOffset: '0.25em',
-    transitionDuration: duration.fast,
-    transitionProperty: 'text-decoration-thickness'
+    fontWeight: fontWeight.medium
   },
   backLink: {
     display: 'inline-flex',

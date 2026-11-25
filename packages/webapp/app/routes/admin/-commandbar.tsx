@@ -36,6 +36,7 @@ import {
   CommandSeparator
 } from 'uilibs/extra/command'
 import { Icon } from 'uilibs/extra/icon'
+import { Stack } from 'uilibs/extra/stack'
 import { useTheme } from 'uilibs/theme'
 import { AppShortcut, Shortcut, ariaKeyShortcuts, useShortcutText } from '#/components/shortcut'
 import { themes } from '#/components/theme-menu'
@@ -52,7 +53,7 @@ import { groups as settingsGroups } from './settings/-nav'
 // The command bar: one dialog that runs a command by name (Cmd+K on macOS, Ctrl+K elsewhere), with a
 // keyboard-shortcuts panel inside it that lists every declared shortcut and records a new one.
 //
-// While it is open its scope is exclusive, so the page's own hotkeys (`G O`, Cmd+B, …) are suspended
+// While it is open its scope is exclusive, so the page's own hotkeys (`G O`, Cmd+/, …) are suspended
 // and typing a command never navigates; they come back when it closes.
 
 interface CommandEntry {
@@ -98,7 +99,7 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
   const button = (
     <Button
       variant='outline'
-      size={collapsed ? 'icon-md' : 'md'}
+      size='medium'
       // The name is what the button shows (WCAG 2.5.3: a voice user says what they see); the longer
       // purpose is its description.
       aria-label={`${m.commandbar_search()} ${shortcutText}`.trim()}
@@ -136,17 +137,28 @@ export function CommandBarTrigger({ collapsed }: { collapsed: boolean }) {
 
 export function CommandBar() {
   const open = useSelector(commandBarStore, (state) => state.open)
-  // The overlay owns the keyboard while it is mounted: its scope is exclusive, so every hotkey on
-  // the page behind it is suspended. It is mounted only while open, so the scope is too.
-  return open ? (
-    <HotkeysProvider scope='commandbar' exclusive>
-      <CommandBarDialog />
+  // The dialog stays mounted and closed, so a change of `open` runs its enter and exit transitions
+  // (a dialog mounted already open has no starting state to fade from). Its content mounts only
+  // while it is open or fading out. The overlay owns the keyboard while it is open: its scope is
+  // exclusive, so every hotkey on the page behind it is suspended, and `enabled` hands the keyboard
+  // back the moment it closes, not when the fade ends.
+  return (
+    <HotkeysProvider scope='commandbar' exclusive enabled={open}>
+      <CommandBarDialog open={open} />
     </HotkeysProvider>
-  ) : null
+  )
 }
 
-function CommandBarDialog() {
+function CommandBarDialog({ open }: { open: boolean }) {
   const m = useMessages()
+  // The content outlives `open` while the dialog fades out, so a bar reopened in that window would
+  // keep the last query: it is cleared on every open instead of on unmount.
+  const [query, setQuery] = React.useState('')
+  const [wasOpen, setWasOpen] = React.useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setQuery('')
+  }
   const panel = useSelector(commandBarStore, (state) => state.panel)
   const { setOpen: onOpenChange, show: onPanelChange } = commandBarStore.actions
   const panelRef = React.useRef<HTMLDivElement>(null)
@@ -283,7 +295,7 @@ function CommandBarDialog() {
 
   return (
     <CommandDialog
-      open
+      open={open}
       onOpenChange={onOpenChange}
       // Focus is not sent back to the sidebar trigger on close: the bar opens from a hotkey as
       // often as from the trigger, and a ring left on the trigger after Escape reads as a stuck
@@ -303,6 +315,8 @@ function CommandBarDialog() {
       ) : (
         <Command
           items={groups}
+          value={query}
+          onValueChange={setQuery}
           // The search matches what a row says and the words it carries (its group, a synonym),
           // so `sessions`, `security`, or `hotkeys` all find their page.
           itemToStringValue={(item) =>
@@ -337,14 +351,20 @@ function CommandBarDialog() {
                       }}
                     >
                       <span {...stylex.props(styles.itemIcon)}>
-                        <Icon svg={item.icon} size={16} color='neutralFaded' />
+                        <Icon svg={item.icon} size={16} color='neutral-faded' />
                       </span>
-                      <span {...stylex.props(styles.itemLabel)}>
+                      <Stack
+                        render={<span />}
+                        direction='row'
+                        align='baseline'
+                        gap={2}
+                        style={styles.itemLabel}
+                      >
                         {item.label}
                         {item.value === '/admin/notifications' && unread > 0 && (
                           <span {...stylex.props(styles.itemMeta)}>{unreadLabel}</span>
                         )}
-                      </span>
+                      </Stack>
                       {item.hotkey && (
                         <AppShortcut id={item.hotkey} hidden style={styles.itemKeys} />
                       )}
@@ -355,7 +375,7 @@ function CommandBarDialog() {
             )}
           </CommandList>
           <Separator />
-          <div aria-hidden='true' {...stylex.props(styles.footer)}>
+          <Stack aria-hidden='true' direction='row' align='center' gap={4} style={styles.footer}>
             <span {...stylex.props(styles.footerHint)}>
               <Shortcut hotkey='ArrowUp' /> <Shortcut hotkey='ArrowDown' />{' '}
               {m.commandbar_hint_move()}
@@ -370,7 +390,7 @@ function CommandBarDialog() {
                 <Shortcut hotkey='Escape' /> {m.commandbar_hint_close()}
               </span>
             </span>
-          </div>
+          </Stack>
         </Command>
       )}
     </CommandDialog>
@@ -403,19 +423,23 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
   const [editing, setEditing] = React.useState<AppHotkeyId | null>(null)
 
   return (
-    <div ref={ref} tabIndex={-1} {...stylex.props(styles.panel)}>
-      <div {...stylex.props(styles.panelHeader)}>
-        <Button variant='ghost' size='icon-sm' aria-label={m.shortcuts_back()} onClick={onBack}>
-          <Icon svg={ArrowLeft} size={16} />
-        </Button>
+    <Stack ref={ref} tabIndex={-1} style={styles.panel}>
+      <Stack direction='row' align='center' gap={2} style={styles.panelHeader}>
+        <Button
+          variant='ghost'
+          size='small'
+          icon={ArrowLeft}
+          aria-label={m.shortcuts_back()}
+          onClick={onBack}
+        />
         <h2 {...stylex.props(styles.panelTitle)}>{m.shortcuts_title()}</h2>
-      </div>
+      </Stack>
       <div {...stylex.props(styles.panelList)}>
         {groups.map((group) => (
-          <section
+          <Stack
             key={group}
-            aria-labelledby={`${groupId}-${group}`}
-            {...stylex.props(styles.panelGroup)}
+            render={<section aria-labelledby={`${groupId}-${group}`} />}
+            style={styles.panelGroup}
           >
             <h3 id={`${groupId}-${group}`} {...stylex.props(styles.panelGroupLabel)}>
               {names[group] ?? group}
@@ -431,10 +455,10 @@ function ShortcutsPanel({ ref, onBack }: { ref: React.Ref<HTMLDivElement>; onBac
                   onEdit={(on) => setEditing(on ? appHotkey.id : null)}
                 />
               ))}
-          </section>
+          </Stack>
         ))}
       </div>
-    </div>
+    </Stack>
   )
 }
 
@@ -494,8 +518,8 @@ function ShortcutRow({
   }, [editing, recorder])
 
   return (
-    <div {...stylex.props(styles.row)}>
-      <div {...stylex.props(styles.rowText)}>
+    <Stack direction='row' align='center' justify='space-between' gap={3} style={styles.row}>
+      <Stack style={styles.rowText}>
         <span {...stylex.props(styles.rowName)}>{hotkeyNames(m)[id]}</span>
         {editing && recorder.isRecording && (
           <output {...stylex.props(styles.rowHint)}>
@@ -505,8 +529,8 @@ function ShortcutRow({
                 : m.shortcuts_recording_hint())}
           </output>
         )}
-      </div>
-      <div {...stylex.props(styles.rowKeys)}>
+      </Stack>
+      <Stack direction='row' align='center' gap={1} style={styles.rowKeys}>
         {appHotkey.hotkey ? (
           <Shortcut hotkey={appHotkey.hotkey} />
         ) : (
@@ -514,7 +538,7 @@ function ShortcutRow({
         )}
         <Button
           variant='ghost'
-          size='sm'
+          size='small'
           aria-label={m.shortcuts_change_named({ name: hotkeyNames(m)[id] })}
           onClick={() => {
             onEdit(true)
@@ -526,14 +550,13 @@ function ShortcutRow({
         {isCustom && (
           <Button
             variant='ghost'
-            size='icon-sm'
+            size='small'
+            icon={RotateCcw}
             aria-label={m.shortcuts_reset_named({ name: hotkeyNames(m)[id] })}
             onClick={() => resetCustomHotkey(id)}
-          >
-            <Icon svg={RotateCcw} size={14} />
-          </Button>
+          />
         )}
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

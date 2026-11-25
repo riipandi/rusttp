@@ -7,7 +7,6 @@ import { duration, easing } from '../../styles/tokens.stylex'
 
 export const sheetStyles = stylex.create({
   overlay: {
-    backgroundColor: `color-mix(in srgb, ${colors.black} 50%, transparent)`,
     inset: 0,
     opacity: {
       default: 1,
@@ -18,7 +17,7 @@ export const sheetStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
@@ -42,12 +41,12 @@ export const sheetStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   // Position only: the look is `CloseButton`.
   close: {
+    insetInlineEnd: unit.x3,
     position: 'absolute',
-    right: unit.x3,
     top: unit.x3
   },
   header: {
@@ -65,9 +64,7 @@ export const sheetStyles = stylex.create({
   },
   title: {
     color: colors.foregroundNeutral,
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {
@@ -86,8 +83,8 @@ export const sheetSides = stylex.create({
       '[data-starting-style]': `translateX(${unit.x10})`,
       '[data-ending-style]': `translateX(${unit.x10})`
     },
-    borderBottomLeftRadius: radius.xlarge,
-    borderTopLeftRadius: radius.xlarge,
+    borderBottomLeftRadius: radius.xxlarge,
+    borderTopLeftRadius: radius.xxlarge,
     borderLeftColor: colors.borderNeutralFaded,
     borderLeftStyle: 'solid',
     borderLeftWidth: stroke.ring1,
@@ -103,8 +100,8 @@ export const sheetSides = stylex.create({
       '[data-starting-style]': `translateX(calc(-1 * ${unit.x10}))`,
       '[data-ending-style]': `translateX(calc(-1 * ${unit.x10}))`
     },
-    borderBottomRightRadius: radius.xlarge,
-    borderTopRightRadius: radius.xlarge,
+    borderBottomRightRadius: radius.xxlarge,
+    borderTopRightRadius: radius.xxlarge,
     borderRightColor: colors.borderNeutralFaded,
     borderRightStyle: 'solid',
     borderRightWidth: stroke.ring1,
@@ -121,8 +118,8 @@ export const sheetSides = stylex.create({
       '[data-ending-style]': `translateY(calc(-1 * ${unit.x10}))`
     },
     borderBottomColor: colors.borderNeutralFaded,
-    borderBottomLeftRadius: radius.xlarge,
-    borderBottomRightRadius: radius.xlarge,
+    borderBottomLeftRadius: radius.xxlarge,
+    borderBottomRightRadius: radius.xxlarge,
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring1,
     left: 0,
@@ -137,8 +134,8 @@ export const sheetSides = stylex.create({
     },
     borderBottomStyle: 'none',
     borderTopColor: colors.borderNeutralFaded,
-    borderTopLeftRadius: radius.xlarge,
-    borderTopRightRadius: radius.xlarge,
+    borderTopLeftRadius: radius.xxlarge,
+    borderTopRightRadius: radius.xxlarge,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,
     bottom: 0,

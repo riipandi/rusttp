@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
+import { Stack } from 'uilibs/extra/stack'
 import { useFormat } from '#/libraries/format'
 import { type Messages, useMessages } from '#/libraries/messages'
 import type { SummaryItemResponse } from '#/schemas/loans.schema'
@@ -18,10 +19,10 @@ export function Summary({ items }: { items: SummaryItemResponse[] }) {
   return (
     <dl {...stylex.props(styles.summary)}>
       {items.map(({ id, value }) => (
-        <div key={id} {...stylex.props(styles.summaryItem)}>
+        <Stack key={id} gap={1}>
           <dt {...stylex.props(styles.summaryLabel)}>{summaryLabel(m)[id]}</dt>
           <dd {...stylex.props(styles.summaryValue)}>{format.number(value)}</dd>
-        </div>
+        </Stack>
       ))}
     </dl>
   )

@@ -1,0 +1,163 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title='Styling' parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }} />
+
+# Styling
+
+The components are Base UI parts styled with [StyleX](https://stylexjs.com). They take a `style` prop and never a `className`, so every override goes through StyleX and merges with the component's own styles.
+
+## Styling a component
+
+Every component and part accepts `style`. It takes StyleX styles: an object from `stylex.create`, an array of them, or [atoms](#inline-styles-with-atoms). It is merged last, so it wins over the component's own styles.
+
+```tsx
+import * as stylex from '@stylexjs/stylex'
+import { Button } from 'uilibs/base/button'
+import { colors } from 'uilibs/styles/colors.stylex'
+import { unit } from 'uilibs/styles/tokens.stylex'
+
+const styles = stylex.create({
+  owl: {
+    backgroundColor: colors.backgroundPositive,
+    paddingInline: unit.x6
+  }
+})
+
+export function SendOwl() {
+  return <Button style={styles.owl}>Send an owl</Button>
+}
+```
+
+Take colors, spacing, radius, and motion from the tokens in `uilibs/styles/`, not from literal values, so a theme change reaches your styles too. See [Theming](?path=/docs/theming--docs).
+
+## Inline styles with atoms
+
+`@stylexjs/atoms` exposes each CSS property as an object, for a one-off tweak that is not worth a `stylex.create` block. Atoms compile to the same output as `stylex.create`, so they carry no runtime cost.
+
+```tsx
+import atoms from '@stylexjs/atoms'
+import { Badge } from 'uilibs/extra/badge'
+
+export function Houses() {
+  return (
+    <>
+      <Badge style={atoms.marginTop._16px}>Gryffindor</Badge>
+      <Badge style={[atoms.marginTop._16px, atoms.width['120px']]}>Hufflepuff</Badge>
+    </>
+  )
+}
+```
+
+- A value is a property access: `atoms.display.flex`, `atoms.flexDirection.column`.
+- A value that starts with a number takes a leading underscore: `atoms.padding._16px`.
+- A value that is not a valid identifier uses brackets: `atoms.width['calc(100% - 20px)']`.
+- A value known only at run time is a call: `atoms.color(value)`. Use it sparingly.
+
+Atoms set one property each and take no conditions. For a hover, a data attribute, or a media query, use `stylex.create`.
+
+## Styling a state
+
+Base UI parts mark their state with `data-*` attributes. Target one in a `stylex.create` style by nesting it in the property value, next to `default`.
+
+```tsx
+import * as stylex from '@stylexjs/stylex'
+import { Toggle } from 'uilibs/base/toggle'
+import { colors } from 'uilibs/styles/colors.stylex'
+
+const styles = stylex.create({
+  toggle: {
+    backgroundColor: {
+      default: colors.backgroundNeutral,
+      '[data-pressed]': colors.backgroundPrimary,
+      '[data-disabled]': colors.backgroundNeutralFaded
+    }
+  }
+})
+
+export function Lumos() {
+  return <Toggle style={styles.toggle as stylex.StyleXStyles}>Lumos</Toggle>
+}
+```
+
+Put the condition inside the value, as above. A condition as a top-level key of the style object is not valid StyleX.
+
+TypeScript types an attribute condition such as `'[data-pressed]'` as `unknown`, so it rejects `style={styles.toggle}`. Cast with `as stylex.StyleXStyles`, as in the example. A pseudo-class condition such as `':hover'` needs no cast.
+
+### Common attributes
+
+Each component page lists the attributes of every part. These are the ones you will meet most.
+
+| Attribute                                   | Meaning                                                                                      |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `data-disabled`                             | The part is disabled.                                                                        |
+| `data-highlighted`                          | The item is under the pointer or has keyboard focus: menu, select, combobox, autocomplete.   |
+| `data-checked`                              | A checkbox, radio, switch, or menu item is on.                                               |
+| `data-indeterminate`                        | A checkbox is mixed, or a progress bar has no known value.                                   |
+| `data-pressed`                              | A toggle is on, or a trigger is pressed.                                                     |
+| `data-open`                                 | An item, panel, or popup is open: accordion, collapsible, dialog, popover, tooltip.          |
+| `data-popup-open`                           | The trigger's popup is open.                                                                 |
+| `data-panel-open`                           | The trigger of an accordion item or collapsible has its panel open.                          |
+| `data-active`                               | The current tab or navigation item.                                                          |
+| `data-selected`                             | The chosen item in a select or combobox. Also set on `Card` when `selected`.                 |
+| `data-invalid`, `data-valid`                | A field control failed or passed validation.                                                 |
+| `data-focused`, `data-filled`, `data-dirty` | A field control has focus, has a value, or has changed.                                      |
+| `data-touched`, `data-required`             | A field control was visited, or must be filled.                                              |
+| `data-readonly`                             | A field control cannot be edited.                                                            |
+| `data-orientation`                          | `horizontal` or `vertical`.                                                                  |
+| `data-side`, `data-align`                   | Where a popup sits against its trigger: `top`, `right`, `bottom`, `left`, `start`, `center`. |
+| `data-starting-style`                       | A popup or panel is about to enter. It is present for the first frame only.                  |
+| `data-ending-style`                         | A popup or panel is leaving, until its exit animation ends.                                  |
+
+An attribute is present or absent, with these exceptions: `data-orientation`, `data-side`, and `data-align` carry a value. Match it with `[data-orientation='vertical']`.
+
+### Enter and exit animation
+
+A popup animates in from `data-starting-style` and out to `data-ending-style`. Set the resting value as the default and the entering and leaving value on the two attributes, then add a `transition`.
+
+```tsx
+const styles = stylex.create({
+  popup: {
+    opacity: {
+      default: 1,
+      '[data-starting-style]': 0,
+      '[data-ending-style]': 0
+    },
+    transitionDuration: '150ms',
+    transitionProperty: 'opacity'
+  }
+})
+```
+
+The popups in this library already do this through `popupFx` in `uilibs/styles/popup.stylex`. Compose it rather than rewriting it.
+
+## CSS variables
+
+Base UI parts also set CSS variables, which you read with `var()`.
+
+| Variable                                                 | Description                                                                      |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `--anchor-width`, `--anchor-height`                      | Positioned popups: the size of the trigger, to match a popup to it.              |
+| `--available-width`, `--available-height`                | Positioned popups: the space left in the viewport, to cap the popup's size.      |
+| `--transform-origin`                                     | Positioned popups: the point to scale from, so a popup grows out of its trigger. |
+| `--accordion-panel-height`, `--collapsible-panel-height` | The height of an open panel, to animate it.                                      |
+| `--card-spacing`                                         | `Card`: the inline padding of its sections. `size` sets it.                      |
+
+A part's CSS variables are listed on its page.
+
+## Helpers
+
+All from `uilibs/styles/utils.stylex`.
+
+| Helper           | Description                                                                   |
+| ---------------- | ----------------------------------------------------------------------------- |
+| `focusRing.root` | The focus-visible outline every focusable part uses.                          |
+| `ring({ … })`    | An edge drawn as a box shadow. Use it on popups instead of a border.          |
+| `visuallyHidden` | Text for assistive technology only, such as the name of an icon-only control. |
+| `unitLength`     | A `unit` step count or a CSS length as a style value.                         |
+
+## Caveats
+
+- **No `className`.** A component that takes `style` rejects `className` and a raw style object. Wrap it in your own element if a third-party tool needs a class.
+- **Tokens only.** Colors, spacing, radius, and motion come from `uilibs/styles/`. A literal value does not follow the theme.
+- **Conditions nest in the value.** `{ default: …, '[data-pressed]': … }`, never a top-level key. A style with an attribute condition needs the `as stylex.StyleXStyles` cast when you pass it to `style`.
+- **Portaled parts.** A popup renders under `body`, outside the element you put it in. A style that depends on its ancestors, such as a descendant selector, does not reach it.

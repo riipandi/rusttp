@@ -5,19 +5,14 @@ import * as React from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Field, FieldError, FieldLabel } from '../../base/field'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { FileUpload, FileUploadTrigger } from './file-upload.component'
 
 const meta = {
   title: 'Extra Components/FileUpload',
-  component: FileUpload,
-  parameters: { layout: 'centered' },
-  argTypes: {
-    variant: { control: 'select', options: ['outline', 'headless'] },
-    inline: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    name: { control: 'text' }
-  }
+  component: FileUpload
 } satisfies Meta<typeof FileUpload>
 
 export default meta
@@ -25,7 +20,8 @@ type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   width: {
-    width: 480
+    maxWidth: 480,
+    width: '100%'
   },
   col: {
     alignItems: 'center',
@@ -64,17 +60,29 @@ const styles = stylex.create({
   },
   padded: {
     padding: 12
+  },
+  edgeProbe: {
+    color: colors.borderControl
   }
 })
 
 export const Playground: Story = {
-  args: { name: 'file' },
-  render: function PlaygroundRender() {
+  parameters: {
+    controls: { disable: false, include: ['variant', 'inline', 'disabled', 'height'] }
+  },
+  argTypes: {
+    variant: { control: 'radio', options: ['outline', 'headless'] },
+    inline: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    height: { control: { type: 'range', min: 80, max: 320, step: 20 } }
+  },
+  args: { name: 'file', variant: 'outline', inline: false, disabled: false, height: 160 },
+  render: function PlaygroundRender(args) {
     const [files, setFiles] = React.useState<File[]>([])
 
     return (
       <div {...stylex.props(styles.stack, styles.width)}>
-        <FileUpload name='file' onChange={(args) => setFiles((prev) => [...prev, ...args.value])}>
+        <FileUpload {...args} onChange={(change) => setFiles((prev) => [...prev, ...change.value])}>
           <div {...stylex.props(styles.col)}>
             <Mic {...stylex.props(styles.icon)} strokeWidth={1.8} />
             Drop wand permits here
@@ -97,7 +105,154 @@ export const Playground: Story = {
   }
 }
 
+export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file-outline' variant='outline'>
+  <div>
+    <Mic />
+    Drop wand permits here
+  </div>
+</FileUpload>
+
+<FileUpload name='file-headless' variant='headless'>
+  <Button variant='outline'>Upload wand permit</Button>
+</FileUpload>`
+      }
+    }
+  },
+  args: { name: 'file' },
+  render: () => (
+    <Axis axis='variant' rows={['outline', 'headless'] as const}>
+      {(variant) => (
+        <FileUpload name={`file-${variant}`} variant={variant}>
+          {variant === 'outline' ? (
+            <div {...stylex.props(styles.col)}>
+              <Mic {...stylex.props(styles.icon)} strokeWidth={1.8} />
+              Drop wand permits here
+            </div>
+          ) : (
+            <Button variant='outline'>Upload wand permit</Button>
+          )}
+        </FileUpload>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const box = (variant: string) => {
+      // The drop surface is the label that wraps the hidden input.
+      const el = cellOf(canvasElement, 'variant', variant).querySelector('label')
+      if (!el) throw new Error(`No upload for ${variant}`)
+      return getComputedStyle(el)
+    }
+    // The outline variant draws the drop zone's edge; headless draws nothing of its own.
+    await expect(box('outline').borderTopStyle).toBe('dashed')
+    await expect(box('headless').borderTopStyle).not.toBe('dashed')
+  }
+}
+
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='wand-disabled' disabled>
+  <div>Drop wand permits here</div>
+</FileUpload>
+
+<Field invalid>
+  <FieldLabel>Owl license</FieldLabel>
+  <FileUpload name='owl-license' inputAttributes={{ accept: 'image/*' }}>
+    Drop the license here
+  </FileUpload>
+  <FieldError match>The Owl Office needs a photo of the license.</FieldError>
+</Field>`
+      }
+    }
+  },
+  args: { name: 'file' },
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel>Owl license</FieldLabel>
+            <FileUpload name='owl-license' inputAttributes={{ accept: 'image/*' }}>
+              Drop the license here
+            </FileUpload>
+            <FieldError match>The Owl Office needs a photo of the license.</FieldError>
+          </Field>
+        ) : (
+          <FileUpload name={`wand-${state}`} disabled={state === 'disabled'}>
+            <div {...stylex.props(styles.row)}>
+              <Mic {...stylex.props(styles.icon)} strokeWidth={1.8} />
+              Drop wand permits here
+            </div>
+          </FileUpload>
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const input = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('input[type="file"]')
+      if (!el) throw new Error(`No file input for ${state}`)
+      return el
+    }
+    await expect(input('default')).toBeEnabled()
+    await expect(input('disabled')).toBeDisabled()
+
+    const invalid = input('invalid')
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+    await expect(invalid).toHaveAttribute('data-invalid')
+    await expect(canvas.getByLabelText('Owl license')).toBe(invalid)
+  }
+}
+
+/** The keyboard stop is the hidden input: its drop zone draws a 2px ring, and an edge that clears 3:1. */
+export const Focus: Story = {
+  args: { name: 'file' },
+  render: () => (
+    <div {...stylex.props(styles.width)}>
+      <span data-testid='edge' {...stylex.props(styles.edgeProbe)} />
+      <FileUpload name='owl-license' inputAttributes={{ 'aria-label': 'Owl license' }}>
+        Drop the license here
+      </FileUpload>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('Owl license')
+    const zone = input.closest('label')
+    if (!zone) throw new Error('Drop zone not found')
+
+    await expect(getComputedStyle(zone).outlineStyle).toBe('none')
+    await expect(getComputedStyle(zone).borderTopColor).toBe(
+      getComputedStyle(canvas.getByTestId('edge')).color
+    )
+
+    await userEvent.tab()
+    await expect(input).toHaveFocus()
+    const ring = getComputedStyle(zone)
+    await expect(ring.outlineStyle).toBe('solid')
+    await expect(ring.outlineWidth).toBe('2px')
+  }
+}
+
 export const Trigger: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file'>
+  <div>
+    Drop wand permits here, or{' '}
+    <FileUploadTrigger>
+      <span>browse Honeydukes</span>
+    </FileUploadTrigger>
+  </div>
+</FileUpload>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <div {...stylex.props(styles.width)}>
@@ -113,7 +268,27 @@ export const Trigger: Story = {
   )
 }
 
-export const Variants: Story = {
+/** The headless composition: the picker wraps any trigger, inline or block. */
+export const Headless: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file' inline onChange={…}>
+  <div>Owl order</div>
+</FileUpload>
+
+<FileUpload name='file-2' variant='headless' onChange={…}>
+  <Button variant='outline'>Upload wand permit</Button>
+</FileUpload>
+
+<FileUpload name='file-4' variant='headless' inline onChange={…}>
+  {(props) => (
+    <Button variant={props.highlighted ? 'solid' : 'faded'}>Upload potion license</Button>
+  )}
+</FileUpload>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <div {...stylex.props(styles.stack)}>
@@ -128,9 +303,7 @@ export const Variants: Story = {
       </FileUpload>
       <FileUpload name='file-4' variant='headless' inline onChange={console.log}>
         {(props) => (
-          <Button variant={props.highlighted ? 'primary' : 'secondary'}>
-            Upload potion license
-          </Button>
+          <Button variant={props.highlighted ? 'solid' : 'faded'}>Upload potion license</Button>
         )}
       </FileUpload>
     </div>
@@ -181,44 +354,6 @@ export const OnChange: StoryObj<{
       value: [file],
       event: expect.objectContaining({ target: input })
     })
-  }
-}
-
-export const Disabled: Story = {
-  args: { name: 'test-name', disabled: true },
-  render: (args) => (
-    <div data-testid='root' {...stylex.props(styles.width)}>
-      <FileUpload {...args}>
-        <div {...stylex.props(styles.row)}>
-          <Mic {...stylex.props(styles.icon)} strokeWidth={1.8} />
-          Drop wand permits here
-        </div>
-      </FileUpload>
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const input = canvas.getByTestId('root').querySelector('input')
-    await expect(input).toBeDisabled()
-  }
-}
-
-export const Invalid: Story = {
-  args: { name: 'owl-license' },
-  render: (args) => (
-    <Field invalid style={styles.width}>
-      <FieldLabel>Owl license</FieldLabel>
-      <FileUpload {...args} inputAttributes={{ accept: 'image/*' }}>
-        Drop the license here
-      </FileUpload>
-      <FieldError match>The Owl Office needs a photo of the license.</FieldError>
-    </Field>
-  ),
-  play: async ({ canvas, canvasElement }) => {
-    const input = canvasElement.querySelector('input[type="file"]')
-    if (!input) throw new Error('File input not found')
-    await expect(input).toHaveAttribute('aria-invalid', 'true')
-    await expect(input).toHaveAttribute('data-invalid')
-    await expect(canvas.getByLabelText('Owl license')).toBe(input)
   }
 }
 

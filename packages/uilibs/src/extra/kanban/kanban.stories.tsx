@@ -2,22 +2,23 @@ import { GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Meter } from '../../base/meter'
 import { Progress } from '../../base/progress'
 import { toast } from '../../base/toast'
+import { pressUntil } from '../../contracts/keyboard'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { radius, stroke, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
 import { Badge } from '../badge'
 import { Kanban, KanbanBoard, KanbanItem, KanbanOverlay } from './'
 import { KanbanColumn, KanbanColumnContent, KanbanColumnHandle } from './'
+import type { KanbanRootProps } from './'
 
 const meta = {
   title: 'Extra Components/Kanban',
-  parameters: { layout: 'padded' },
   tags: [] // ['autodocs']
 } satisfies Meta<typeof Kanban>
 
@@ -387,7 +388,7 @@ function PriorityBadge({ priority }: { priority: NonNullable<Task['priority']> }
   // item body, which would otherwise stretch it full width.
   if (priority === 'high') {
     return (
-      <Badge tone='critical' style={styles.badgePriority}>
+      <Badge color='critical' style={styles.badgePriority}>
         {priority}
       </Badge>
     )
@@ -444,10 +445,178 @@ function fakePersistToBackend(value: Record<string, BackendTask[]>) {
 }
 
 // ---------------------------------------------------------------------------
+// Playground
+// ---------------------------------------------------------------------------
+
+const playgroundColumns: Column[] = [
+  {
+    id: 'diagon',
+    title: 'Diagon Alley',
+    color: colors.foregroundNeutralFaded,
+    tasks: [
+      { id: 'task-1', title: 'Buy a wand at Ollivanders' },
+      { id: 'task-2', title: 'Visit Gringotts vault 713' },
+      { id: 'task-3', title: 'Find the Leaky Cauldron' }
+    ]
+  },
+  {
+    id: 'hogwarts',
+    title: 'Hogwarts',
+    color: colors.foregroundPrimary,
+    tasks: [
+      { id: 'task-4', title: 'Brew Polyjuice Potion' },
+      { id: 'task-5', title: 'Cast a Patronus' }
+    ]
+  },
+  {
+    id: 'louvre',
+    title: 'Louvre',
+    color: colors.foregroundWarning,
+    tasks: [
+      { id: 'task-6', title: 'Decode the cryptex' },
+      { id: 'task-7', title: 'Follow the Rose Line' }
+    ]
+  },
+  {
+    id: 'vatican',
+    title: 'Vatican Archives',
+    color: colors.foregroundPositive,
+    tasks: [
+      { id: 'task-8', title: 'Read the Diagramma' },
+      { id: 'task-9', title: 'Catch the Golden Snitch' }
+    ]
+  }
+]
+
+// `restoreOnCancel` and the commit callback are root props; the rest choose what the story
+// composes around the board.
+type PlaygroundArgs = Pick<KanbanRootProps<Task>, 'restoreOnCancel' | 'onValueCommit'> & {
+  columns: number
+  columnHandle: boolean
+  overlay: boolean
+}
+
+function KanbanPlayground({
+  restoreOnCancel,
+  onValueCommit,
+  columns: count,
+  columnHandle,
+  overlay
+}: PlaygroundArgs) {
+  const [columns, setColumns] = useState<Column[]>(playgroundColumns)
+  const visible = columns.slice(0, count)
+
+  // The record's key order carries the order of the shown columns; the hidden ones follow them.
+  const handleValueChange = (next: Record<string, Task[]>) =>
+    setColumns((prev) => [
+      ...Object.keys(next).flatMap((id) => {
+        const column = prev.find((candidate) => candidate.id === id)
+        return column ? [{ ...column, tasks: next[id] ?? column.tasks }] : []
+      }),
+      ...prev.filter((column) => !(column.id in next))
+    ])
+
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Kanban
+        value={getColumnsValue(visible)}
+        onValueChange={handleValueChange}
+        getItemValue={(task) => task.id}
+        onValueCommit={onValueCommit}
+        restoreOnCancel={restoreOnCancel}
+        style={styles.fillWidth}
+      >
+        <KanbanBoard>
+          {visible.map((column) => (
+            <KanbanColumn key={column.id} value={column.id}>
+              <div {...stylex.props(styles.columnHeader)}>
+                <span {...stylex.props(styles.columnTitle)}>{column.title}</span>
+                <Badge variant='outline' style={styles.columnCount}>
+                  {column.tasks.length}
+                </Badge>
+                {columnHandle && (
+                  <KanbanColumnHandle style={styles.handleEnd}>
+                    <GripVertical size={16} />
+                  </KanbanColumnHandle>
+                )}
+              </div>
+              <KanbanColumnContent value={column.id}>
+                {column.tasks.map((task) => (
+                  <KanbanItem key={task.id} value={task.id}>
+                    <div {...stylex.props(styles.itemBody)}>
+                      <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
+                    </div>
+                  </KanbanItem>
+                ))}
+              </KanbanColumnContent>
+            </KanbanColumn>
+          ))}
+        </KanbanBoard>
+        {overlay && (
+          <KanbanOverlay style={styles.ghostOverlay}>
+            {({ variant }) => (
+              <div
+                {...stylex.props(
+                  styles.ghostBox,
+                  variant === 'column' ? styles.ghostColumn : styles.ghostItem
+                )}
+              />
+            )}
+          </KanbanOverlay>
+        )}
+      </Kanban>
+    </div>
+  )
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['restoreOnCancel', 'columns', 'columnHandle', 'overlay']
+    }
+  },
+  argTypes: {
+    restoreOnCancel: { control: 'boolean' },
+    columns: { control: { type: 'range', min: 2, max: playgroundColumns.length, step: 1 } },
+    columnHandle: { control: 'boolean' },
+    overlay: { control: 'boolean' }
+  },
+  args: {
+    restoreOnCancel: false,
+    columns: 3,
+    columnHandle: true,
+    overlay: true,
+    onValueCommit: fn()
+  },
+  render: (args) => <KanbanPlayground {...args} />
+}
+
+// ---------------------------------------------------------------------------
 // Story 1: Kanban board with placeholder overlay
 // ---------------------------------------------------------------------------
 
 export const PlaceholderOverlay: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban value={value} onValueChange={setValue} getItemValue={(task) => task.id}>
+  <KanbanBoard>
+    <KanbanColumn value='todo'>
+      <KanbanColumnHandle>
+        <GripVertical />
+      </KanbanColumnHandle>
+      <KanbanColumnContent value='todo'>
+        <KanbanItem value='task-1'>Research competitors</KanbanItem>
+        <KanbanItem value='task-2'>Design system audit</KanbanItem>
+      </KanbanColumnContent>
+    </KanbanColumn>
+  </KanbanBoard>
+  <KanbanOverlay>{({ variant }) => <div style={…} />}</KanbanOverlay>
+</Kanban>`
+      }
+    }
+  },
   render: () => {
     const [columns, setColumns] = useState<Column[]>(initialColumns)
     const value = getColumnsValue(columns)
@@ -797,7 +966,7 @@ export const StackedFrame: Story = {
                         <div {...stylex.props(styles.itemBody)}>
                           <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
                           <div {...stylex.props(styles.assigneeRow)}>
-                            <Avatar size='sm'>
+                            <Avatar size='small'>
                               <AvatarImage src={task.assigneeAvatar} alt={task.assignee} />
                               <AvatarFallback>{task.assignee?.charAt(0)}</AvatarFallback>
                             </Avatar>
@@ -999,6 +1168,20 @@ export const FeatureRoadmap: Story = {
 // ---------------------------------------------------------------------------
 
 export const PersistedToBackend: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban
+  value={columns}
+  onValueChange={setColumns}
+  getItemValue={(task) => task.id}
+  onValueCommit={(value) => save(value)}
+>
+  <KanbanBoard>…</KanbanBoard>
+</Kanban>`
+      }
+    }
+  },
   render: () => {
     const initialBackendColumns: Record<string, BackendTask[]> = {
       todo: [
@@ -1028,7 +1211,7 @@ export const PersistedToBackend: Story = {
           {isSaving && <span {...stylex.props(styles.toolbarStatus)}>Saving...</span>}
           <Button
             variant='outline'
-            size='sm'
+            size='small'
             style={styles.toolbarEnd}
             onClick={() => {
               toast.success('Changes synced')
@@ -1098,6 +1281,7 @@ export const PersistedToBackend: Story = {
 }
 
 const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+const lifted = () => document.querySelector('[data-dragging="true"]') !== null
 
 /** A keyboard drag names the task, not its id, and speaks the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1149,6 +1333,177 @@ export const KeyboardAnnouncements: Story = {
     await expect(live()).not.toContain('task-')
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(live()).toContain('Dragging cancelled. Research competitors'))
+    await new Promise((resolve) => setTimeout(resolve, 400))
+  }
+}
+
+/** The board is a named region, and each column handle is named after its column. */
+export const Names: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Kanban
+  value={value}
+  onValueChange={setValue}
+  getItemValue={(task) => task.id}
+  labels={{ board: 'Sprint board' }}
+>
+  <KanbanBoard>
+    <KanbanColumn value='todo' aria-label='To Do'>
+      <KanbanColumnHandle>
+        <GripVertical />
+      </KanbanColumnHandle>
+      <KanbanColumnContent value='todo'>
+        <KanbanItem value='task-1'>Research competitors</KanbanItem>
+      </KanbanColumnContent>
+    </KanbanColumn>
+  </KanbanBoard>
+</Kanban>`
+      }
+    }
+  },
+  render: () => {
+    const [columns, setColumns] = useState<Column[]>(initialColumns)
+    const handleValueChange = (newValue: Record<string, Task[]>) => {
+      setColumns((prev) =>
+        Object.keys(newValue).map((id) => {
+          const existing = prev.find((col) => col.id === id)
+          return existing
+            ? { ...existing, tasks: newValue[id] ?? existing.tasks }
+            : { id, title: id, tasks: newValue[id] ?? [] }
+        })
+      )
+    }
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Kanban
+          value={getColumnsValue(columns)}
+          onValueChange={handleValueChange}
+          getItemValue={(task) => task.id}
+          labels={{ board: 'Sprint board' }}
+          style={styles.fillWidth}
+        >
+          <KanbanBoard>
+            {columns.map((column) => (
+              <KanbanColumn key={column.id} value={column.id} aria-label={column.title}>
+                <div {...stylex.props(styles.columnHeader)}>
+                  <span {...stylex.props(styles.columnTitle)}>{column.title}</span>
+                  <KanbanColumnHandle style={styles.handleEnd}>
+                    <GripVertical size={16} />
+                  </KanbanColumnHandle>
+                </div>
+                <KanbanColumnContent value={column.id}>
+                  {column.tasks.map((task) => (
+                    <KanbanItem key={task.id} value={task.id}>
+                      <div {...stylex.props(styles.itemBody)}>
+                        <span {...stylex.props(styles.itemTitle)}>{task.title}</span>
+                      </div>
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+        </Kanban>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const board = canvas.getByRole('region', { name: 'Sprint board' })
+    // A landmark, not a Tab stop: the handles and items inside already are.
+    await expect(board).not.toHaveAttribute('tabindex')
+    const names = canvas
+      .getAllByRole('button', { name: /^Reorder column / })
+      .map((handle) => handle.getAttribute('aria-label'))
+    await expect(names).toEqual(initialColumns.map((column) => `Reorder column ${column.title}`))
+  }
+}
+
+/** Items and column handles are the Tab stops: Space lifts one, the arrows move it, Space drops it, Escape puts it back. */
+export const Keyboard: Story = {
+  // The columns sit side by side from `medium` up, so ArrowRight reorders them; on a phone they
+  // stack and the arrow is ArrowDown.
+  parameters: { viewport: { defaultViewport: 'desktop' } },
+  render: () => {
+    const [value, setValue] = useState<Record<string, Task[]>>({
+      todo: [
+        { id: 'task-1', title: 'Research competitors' },
+        { id: 'task-2', title: 'Design system audit' }
+      ],
+      done: [{ id: 'task-8', title: 'Setup project' }]
+    })
+
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Kanban value={value} onValueChange={setValue} getItemValue={(task) => task.id}>
+          <KanbanBoard>
+            {Object.entries(value).map(([id, tasks]) => (
+              <KanbanColumn key={id} value={id} aria-label={columnLabel(id)}>
+                <KanbanColumnHandle>
+                  <GripVertical size={16} />
+                </KanbanColumnHandle>
+                <KanbanColumnContent value={id}>
+                  {tasks.map((task) => (
+                    <KanbanItem key={task.id} value={task.id}>
+                      {task.title}
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+        </Kanban>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const itemsOf = (column: string) =>
+      Array.from(
+        canvasElement.querySelectorAll(
+          `[data-slot="kanban-column"][data-value="${column}"] [data-slot="kanban-item"]`
+        )
+      ).map((item) => item.textContent)
+    const columns = () =>
+      Array.from(canvasElement.querySelectorAll('[data-slot="kanban-column"]')).map((column) =>
+        column.getAttribute('data-value')
+      )
+    const research = () => canvas.getByText('Research competitors')
+    const handle = (name: string) => canvas.getByRole('button', { name: `Reorder column ${name}` })
+
+    // Tab goes handle, items, handle, items: the board itself is not a stop.
+    await userEvent.tab()
+    await waitFor(() => expect(handle('To Do')).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(research()).toHaveFocus())
+    await userEvent.tab()
+    await waitFor(() => expect(canvas.getByText('Design system audit')).toHaveFocus())
+
+    // Lift the first item, step it down one, and drop it: the order changes and focus stays on it.
+    research().focus()
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{ArrowDown}', () => expect(live()).toContain('Research competitors moved'), {
+      when: () => lifted() && !live().includes('Research competitors moved')
+    })
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() =>
+      expect(itemsOf('todo')).toEqual(['Design system audit', 'Research competitors'])
+    )
+    await waitFor(() => expect(research()).toHaveFocus())
+
+    // Lift it again and cancel: Escape drops nothing.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{Escape}', () => expect(lifted()).toBe(false))
+    await expect(itemsOf('todo')).toEqual(['Design system audit', 'Research competitors'])
+
+    // A column handle reorders the columns the same way.
+    handle('To Do').focus()
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil('{ArrowRight}', () => expect(live()).toContain('moved'), {
+      when: () => lifted() && !live().includes('moved')
+    })
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() => expect(columns()).toEqual(['done', 'todo']))
     await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }

@@ -2,10 +2,11 @@ import { use, useCallback, useSyncExternalStore } from 'react'
 import { browser } from 'react-dom'
 
 /**
- * Viewport breakpoints, aligned with `viewport` and `breakpoints` in
- * `styles/tokens.stylex.ts` (small <660, medium 660, large 900, xlarge 1280). Values are
- * restated here because hooks run at runtime and cannot import StyleX compiled constants.
- * `small` is an upper bound only (`max-small` is `<660px`): as a lower bound it would equal `medium`.
+ * Viewport breakpoints, aligned with `viewport` in `styles/tokens.stylex.ts` (medium 660, large 900,
+ * xlarge 1280; `breakpoints` are the same widths as min-width queries). Values are restated here
+ * because hooks run at runtime and cannot import StyleX compiled constants. `small` is the base
+ * below `medium`, so it is an upper bound only (`max-small` is `<660px`): as a lower bound it would
+ * equal `medium`.
  */
 const BREAKPOINTS = {
   small: 660,
@@ -56,9 +57,8 @@ function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): s
       const bp = segment.slice(4)
       if (isBreakpoint(bp)) parts.push(resolveMax(bp))
     } else if (isBreakpoint(segment)) {
-      // Named breakpoints are lower bounds in this system; the bare form
-      // resolves to the matching range boundary defined by `breakpoints`
-      // (small is <660 only, so "small" as a min falls through to raw passthrough).
+      // Named breakpoints are lower bounds in this system, like the `breakpoints` tokens; the bare
+      // form is `min-width` (`small` is the base below `medium`, so "small" as a min resolves to 660).
       parts.push(resolveMin(segment))
     }
   }

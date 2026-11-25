@@ -22,6 +22,7 @@ export const autocompleteStyles = stylex.create({
     flexDirection: 'column',
     fontFamily: fontFamily.body,
     maxHeight: `min(${container.small}, var(--available-height))`,
+    maxWidth: 'var(--available-width)',
     opacity: {
       default: 1,
       '[data-starting-style]': 0,
@@ -38,15 +39,11 @@ export const autocompleteStyles = stylex.create({
   },
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
     borderRadius: radius.small,
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -55,7 +52,6 @@ export const autocompleteStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     marginInline: unit.x1,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1_5,
     paddingInline: unit.x2,
     userSelect: 'none'

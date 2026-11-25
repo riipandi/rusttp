@@ -7,7 +7,7 @@
  * <InputGroup>
  *   <InputGroupInput type="password|text" />
  *   <InputGroupAddon align="inline-end">
- *     <InputGroupButton aria-pressed={visible} aria-label=…>
+ *     <InputGroupButton aria-pressed={visible} aria-label="Show password">
  *       {visible ? hideIcon : showIcon}
  *     </InputGroupButton>
  *   </InputGroupAddon>
@@ -17,8 +17,8 @@
 import { Eye, EyeOff } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { buttonVariants } from '../../base/button'
-import { Icon } from '../icon'
+import type { ButtonVariant } from '../../base/button'
+import type { Glyph } from '../../styles/types'
 import {
   InputGroup,
   InputGroupAddon,
@@ -28,13 +28,15 @@ import {
 } from '../input-group'
 
 export interface InputPasswordLabels {
-  /** Name of the toggle while the password is hidden. Defaults to `Show password`. */
-  show: string
-  /** Name of the toggle while the password is visible. Defaults to `Hide password`. */
-  hide: string
+  /**
+   * Name of the toggle. It stays the same in both states, and `aria-pressed` says which one it is
+   * in, so a screen reader reads "Show password, pressed" and never "Hide password, pressed".
+   * Defaults to `Show password`.
+   */
+  toggle: string
 }
 
-const defaultLabels: InputPasswordLabels = { show: 'Show password', hide: 'Hide password' }
+const defaultLabels: InputPasswordLabels = { toggle: 'Show password' }
 
 export interface InputPasswordProps extends Omit<
   React.ComponentProps<typeof InputGroupInput>,
@@ -47,20 +49,17 @@ export interface InputPasswordProps extends Omit<
   defaultVisible?: boolean
   /** Fired when the user toggles visibility. */
   onVisibleChange?: (visible: boolean) => void
-  /** Icon shown when the password is hidden (pressing it reveals the value). Defaults to an eye. */
-  showIcon?: React.ReactNode
-  /** Icon shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
-  hideIcon?: React.ReactNode
-  /** Accessible names of the toggle; English by default. */
+  /** Glyph shown when the password is hidden (pressing it reveals the value). Defaults to an eye. */
+  showIcon?: Glyph
+  /** Glyph shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
+  hideIcon?: Glyph
+  /** Accessible name of the toggle; English by default. */
   labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
-  toggleVariant?: keyof typeof buttonVariants
-  /** Toggle button size. Defaults to `icon-xs`. */
+  toggleVariant?: ButtonVariant
+  /** Toggle button size. Defaults to `xsmall`. */
   toggleSize?: InputGroupButtonSize
 }
-
-const defaultShowIcon = <Icon svg={Eye} size={16} color='neutralFaded' />
-const defaultHideIcon = <Icon svg={EyeOff} size={16} color='neutralFaded' />
 
 /** Resolve a controlled or uncontrolled boolean. */
 function useUncontrolledState(
@@ -78,15 +77,16 @@ function useUncontrolledState(
 
 export function InputPassword({
   size,
+  variant,
   style,
   visible: visibleProp,
   defaultVisible = false,
   onVisibleChange,
-  showIcon,
-  hideIcon,
+  showIcon = Eye,
+  hideIcon = EyeOff,
   labels,
   toggleVariant = 'ghost',
-  toggleSize = 'icon-xs',
+  toggleSize = 'xsmall',
   ...props
 }: InputPasswordProps) {
   const [visible, setVisible] = useUncontrolledState(visibleProp, defaultVisible)
@@ -98,11 +98,8 @@ export function InputPassword({
     onVisibleChange?.(next)
   }, [visible, onVisibleChange, setVisible])
 
-  const showIconNode = showIcon ?? defaultShowIcon
-  const hideIconNode = hideIcon ?? defaultHideIcon
-
   return (
-    <InputGroup size={size} style={style}>
+    <InputGroup size={size} variant={variant} style={style}>
       <InputGroupInput
         type={visible ? 'text' : 'password'}
         autoComplete='new-password'
@@ -113,12 +110,11 @@ export function InputPassword({
           type='button'
           variant={toggleVariant}
           size={toggleSize}
+          icon={visible ? hideIcon : showIcon}
           aria-pressed={visible}
-          aria-label={visible ? names.hide : names.show}
+          aria-label={names.toggle}
           onClick={toggle}
-        >
-          {visible ? hideIconNode : showIconNode}
-        </InputGroupButton>
+        />
       </InputGroupAddon>
     </InputGroup>
   )

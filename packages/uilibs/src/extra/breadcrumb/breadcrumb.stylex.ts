@@ -32,6 +32,11 @@ export const breadcrumbStyles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: 'color'
   },
+  // `primary`: the links take the primary color; the current page keeps the text color.
+  linkPrimary: {
+    color: colors.foregroundPrimary,
+    textDecoration: { default: 'none', ':hover': 'underline' }
+  },
   page: {
     color: colors.foregroundNeutral
   },

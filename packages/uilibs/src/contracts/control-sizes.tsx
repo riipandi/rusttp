@@ -1,26 +1,35 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect } from 'storybook/test'
-import type { ControlSize, DenseControlSize } from '../styles/control.stylex'
+import { expect, waitFor } from 'storybook/test'
+import { colors } from '../styles/colors.stylex'
+import { glyphSize } from '../styles/glyph'
+import { type } from '../styles/type.stylex'
+import type { ControlSize, DenseControlSize } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 
 /** The height a control of each size has, in px (`controlSizes`). */
-export const controlHeights = { sm: 32, md: 36, lg: 40 } as const satisfies Record<
+export const controlHeights = { small: 32, medium: 36, large: 40 } as const satisfies Record<
   ControlSize,
   number
 >
 
-/** The same, with the `xs` (28px) that Button, Toggle, and Tabs add. */
-export const denseControlHeights = { xs: 28, ...controlHeights } as const satisfies Record<
+/** The same, with the `xsmall` (28px) that Button, Toggle, and Tabs add. */
+export const denseControlHeights = { xsmall: 28, ...controlHeights } as const satisfies Record<
   DenseControlSize,
   number
 >
 
-export const controlSizeNames = ['sm', 'md', 'lg'] as const satisfies readonly ControlSize[]
+export const controlSizeNames = [
+  'small',
+  'medium',
+  'large'
+] as const satisfies readonly ControlSize[]
 
-const styles = stylex.create({
-  column: { display: 'flex', flexDirection: 'column', gap: 12, width: 320 }
-})
+/** The scale with `xsmall` first, for Button, Toggle, and Tabs. */
+export const denseControlSizeNames = [
+  'xsmall',
+  ...controlSizeNames
+] as const satisfies readonly DenseControlSize[]
 
 /** A label that names a control without adding to the row, placed after the control so it stays the cell's first element. */
 export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -31,45 +40,9 @@ export function HiddenLabel({ htmlFor, children }: { htmlFor: string; children: 
   )
 }
 
-function SizeCells<S extends DenseControlSize>({
-  sizes,
-  children
-}: {
-  sizes: readonly S[]
-  children: (size: S) => React.ReactNode
-}) {
-  return (
-    <div {...stylex.props(styles.column)}>
-      {sizes.map((size) => (
-        <div key={size} data-size={size}>
-          {children(size)}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-/** One cell per size of the scale; the control under test is the cell's first element. */
-export function ControlSizesColumn({
-  children
-}: {
-  children: (size: ControlSize) => React.ReactNode
-}) {
-  return <SizeCells sizes={controlSizeNames}>{children}</SizeCells>
-}
-
-/** The same with `xs` first, for Button, Toggle, and Tabs. */
-export function DenseControlSizesColumn({
-  children
-}: {
-  children: (size: DenseControlSize) => React.ReactNode
-}) {
-  return <SizeCells sizes={['xs', ...controlSizeNames] as const}>{children}</SizeCells>
-}
-
 /** Height of the control in the cell of `size`. */
-export function measureControl(root: HTMLElement, size: string) {
-  const control = root.querySelector(`[data-size="${size}"]`)?.firstElementChild
+export function measureControl(root: HTMLElement, size: string, cell = '') {
+  const control = root.querySelector(`[data-size="${size}"]${cell}`)?.firstElementChild
   if (!control) throw new Error(`No control rendered for size ${size}`)
   return control.getBoundingClientRect().height
 }
@@ -77,9 +50,185 @@ export function measureControl(root: HTMLElement, size: string) {
 /** Asserts every size renders at its height from the scale (or at `heights` for a field that is not one line). */
 export async function expectControlHeights(
   root: HTMLElement,
-  heights: Partial<Record<DenseControlSize, number>> = controlHeights
+  heights: Partial<Record<DenseControlSize, number>> = controlHeights,
+  /** Narrows the cells when a second axis crosses the sizes (`[data-part="trigger"]`). */
+  cell = ''
 ) {
   for (const [size, height] of Object.entries(heights)) {
-    await expect(measureControl(root, size)).toBe(height)
+    await expect(measureControl(root, size, cell)).toBe(height)
+  }
+}
+
+/** The computed value of a color token, which compiles to a `var(--x…)`: read through a probe element. */
+function resolvedColor(token: string, property: 'color' | 'borderTopColor' = 'color'): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty(property === 'color' ? 'color' : 'border-top-color', token)
+  probe.style.borderTopStyle = 'solid'
+  document.body.append(probe)
+  const value = getComputedStyle(probe)[property]
+  probe.remove()
+  return value
+}
+
+/**
+ * Asserts the disabled look of a control: it is drawn with the disabled tokens (`foregroundDisabled`
+ * for its text, `borderDisabled` for its edge, or `backgroundNeutral` for its fill), never with
+ * `opacity`, which stacks. For an element that takes the cursor itself (an input or a trigger), also
+ * asserts `not-allowed`; a wrapper around an input passes `cursor: false`.
+ */
+export async function expectDisabledLook(element: Element, { cursor = true } = {}) {
+  const style = getComputedStyle(element)
+  await expect(style.opacity).toBe('1')
+  const marks = [
+    style.color === resolvedColor(colors.foregroundDisabled),
+    style.borderTopColor === resolvedColor(colors.borderDisabled, 'borderTopColor'),
+    style.backgroundColor === resolvedColor(colors.backgroundNeutral)
+  ]
+  await expect(marks.some(Boolean)).toBe(true)
+  if (cursor) await expect(style.cursor).toBe('not-allowed')
+}
+
+/** The fills of a text-entry control, in the order its `Variants` story draws them. */
+export const controlVariantNames = ['outline', 'faded', 'ghost', 'headless'] as const
+
+/**
+ * Asserts the fills of a `Variants` story (cells carry `data-variant`): `faded`, `ghost`, and
+ * `headless` each differ from `outline` in fill or edge, and every one shows a focus indicator when
+ * focused (they have no 3:1 edge at rest, so the ring is what marks the control). `find` picks the
+ * box in a cell when it is not the cell's first element.
+ */
+export async function expectControlVariants(
+  root: HTMLElement,
+  find: (cell: Element) => Element | null = (cell) => cell.firstElementChild
+) {
+  const box = (variant: string) => {
+    const cell = root.querySelector(`[data-variant="${variant}"]`)
+    const element = cell ? find(cell) : null
+    if (!(element instanceof HTMLElement)) throw new Error(`No control rendered for ${variant}`)
+    return element
+  }
+  const look = (variant: string) => {
+    const style = getComputedStyle(box(variant))
+    return { fill: style.backgroundColor, edge: style.borderTopColor }
+  }
+  const outline = look('outline')
+  await expect(look('faded').fill).not.toBe(outline.fill)
+  for (const variant of ['faded', 'ghost', 'headless']) {
+    await expect(look(variant).edge).not.toBe(outline.edge)
+  }
+  for (const variant of controlVariantNames) {
+    const element = box(variant)
+    const focusable = element.matches('input,textarea,button')
+      ? element
+      : element.querySelector<HTMLElement>('input,textarea,button')
+    if (!focusable) throw new Error(`Nothing to focus in ${variant}`)
+    focusable.focus()
+    await expect(focusable).toHaveFocus()
+    await expect(getComputedStyle(element).outlineStyle).not.toBe('none')
+    focusable.blur()
+  }
+}
+
+/** Asserts the rendered box (`width`, `height`) of `selector` in each `data-size` cell. */
+export async function expectBoxSizes(
+  root: HTMLElement,
+  selector: string,
+  boxes: Record<string, readonly [number, number]>
+) {
+  for (const [size, [width, height]] of Object.entries(boxes)) {
+    const element = root.querySelector(`[data-size="${size}"] ${selector}`)
+    if (!element) throw new Error(`No ${selector} rendered for size ${size}`)
+    const rect = element.getBoundingClientRect()
+    await expect([rect.width, rect.height]).toEqual([width, height])
+  }
+}
+
+/** The cell of an `Axis` story where `data-<axis>` is `value`; scope a query to it with `within`. */
+export function cellOf(root: HTMLElement, axis: string, value: string): HTMLElement {
+  const cell = root.querySelector(`[data-${axis}="${value}"]`)
+  if (!(cell instanceof HTMLElement)) throw new Error(`No ${axis} cell for ${value}`)
+  return cell
+}
+
+/**
+ * The backdrop of a modal popup (a dialog or a sheet): its sibling in the portal that paints a
+ * background. A focus guard sits between them, so it is not the popup's previous sibling.
+ */
+export function backdropOf(popup: HTMLElement): HTMLElement {
+  const backdrop = Array.from(popup.parentElement?.children ?? []).find(
+    (el): el is HTMLElement =>
+      el instanceof HTMLElement && getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'
+  )
+  if (!backdrop) throw new Error('No backdrop beside the popup')
+  return backdrop
+}
+
+/**
+ * Asserts a docked popup (a sheet or a drawer) sits flush against `edge` of the viewport. It
+ * waits, since the popup slides in from its edge.
+ */
+export async function expectDockedTo(element: Element, edge: 'top' | 'right' | 'bottom' | 'left') {
+  await waitFor(async () => {
+    const rect = element.getBoundingClientRect()
+    const root = document.documentElement
+    const gap = {
+      top: rect.top,
+      left: rect.left,
+      right: root.clientWidth - rect.right,
+      bottom: root.clientHeight - rect.bottom
+    }[edge]
+    await expect(Math.abs(gap)).toBeLessThanOrEqual(1)
+  })
+}
+
+/**
+ * Asserts the keyboard-highlighted option or menu item draws its state (`highlightedItem` in
+ * `styles/popup.stylex.ts`): a fill and a 2px bar on the start edge. When given an unhighlighted
+ * sibling, asserts it draws neither, so the state is told apart from the rest of the list.
+ */
+export async function expectHighlightedItem(item: Element, rest?: Element) {
+  await waitFor(async () => {
+    await expect(item).toHaveAttribute('data-highlighted')
+    await expect(getComputedStyle(item).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    const bar = getComputedStyle(item, '::before')
+    await expect(bar.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    await expect(bar.width).toBe('2px')
+  })
+  if (rest) {
+    await expect(rest).not.toHaveAttribute('data-highlighted')
+    await expect(getComputedStyle(rest).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await expect(getComputedStyle(rest, '::before').backgroundColor).toBe('rgba(0, 0, 0, 0)')
+  }
+}
+
+const pickType = (style: CSSStyleDeclaration) =>
+  [style.fontFamily, style.fontSize, style.lineHeight, style.letterSpacing].join('|')
+
+/**
+ * Asserts a text part draws the type role it names (`type.<role>` in `styles/type.stylex.ts`):
+ * family, size, line height, and letter spacing. The weight is left out because a part may set its
+ * own (a title is semibold). The role is read from a probe styled by the recipe itself.
+ */
+export async function expectTypeRole(element: Element, role: keyof typeof type) {
+  const probe = document.createElement('span')
+  probe.className = stylex.props(type[role]).className ?? ''
+  document.body.append(probe)
+  const want = getComputedStyle(probe)
+  const have = getComputedStyle(element)
+  const expected = pickType(want)
+  probe.remove()
+  await expect(pickType(have)).toBe(expected)
+}
+
+/**
+ * Asserts the first glyph (an svg) of each `size` cell of a `Sizes` story is `glyphSize[size]`
+ * wide, so a glyph grows with its control. Sizes the map has no entry for are skipped.
+ */
+export async function expectGlyphSizes(root: HTMLElement, sizes: readonly string[]) {
+  for (const size of sizes) {
+    const glyph = cellOf(root, 'size', size).querySelector('svg')
+    const expected = Object.entries(glyphSize).find(([name]) => name === size)?.[1]
+    if (!glyph || expected === undefined) throw new Error(`No glyph or no glyphSize for ${size}`)
+    await expect(glyph.getBoundingClientRect().width).toBe(expected)
   }
 }

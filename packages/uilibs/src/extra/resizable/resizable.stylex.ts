@@ -39,7 +39,6 @@ export const resizableStyles = stylex.create({
     cursor: 'col-resize',
     display: 'flex',
     justifyContent: 'center',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     // The focus cue is a box-shadow and a color, both dropped by forced colors: an outline there.
     outline: {
       default: 'none',
@@ -63,7 +62,7 @@ export const resizableStyles = stylex.create({
   handleHitArea: {
     backgroundColor: 'transparent',
     position: 'absolute',
-    zIndex: zIndex.relative
+    zIndex: zIndex.raised
   },
   handleHitAreaHorizontalGroup: {
     bottom: 0,
@@ -101,7 +100,7 @@ export const resizableStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'background-color'
     },
     transitionTimingFunction: easing.standard,
-    zIndex: zIndex.relative
+    zIndex: zIndex.raised
   },
   pillHorizontalGroup: {
     height: {

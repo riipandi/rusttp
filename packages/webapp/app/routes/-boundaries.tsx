@@ -2,12 +2,14 @@ import { CircleAlert, SearchX } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type ErrorComponentProps, useRouter } from '@tanstack/react-router'
 import type * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
+import { Container } from 'uilibs/extra/container'
 import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
 import { ThemeProvider } from 'uilibs/theme'
 import { useMessages } from '#/libraries/messages'
-import { styles as layout } from '#/styles/element/layout.stylex'
+import { layoutSize } from '#/styles/constants.stylex'
+import { styles } from '#/styles/element/boundaries.stylex'
 
 function Boundary({
   icon,
@@ -28,9 +30,9 @@ function Boundary({
   return (
     <ThemeProvider attribute='data-theme' defaultTheme='system'>
       <title>{`${title} - Rusttp`}</title>
-      <div {...stylex.props(layout.root)}>
-        <main {...stylex.props(layout.center)}>
-          <Icon svg={icon} size={32} color='neutralFaded' />
+      <div {...stylex.props(styles.root)}>
+        <Container render={<main />} size={layoutSize.reading} style={styles.center}>
+          <Icon svg={icon} size={32} color='neutral-faded' />
           <Text variant='featured-3' weight='bold' render={<h1>{title}</h1>} />
           <Text color='neutral-faded'>{description}</Text>
           {detail && (
@@ -38,8 +40,8 @@ function Boundary({
               {detail}
             </Text>
           )}
-          <div {...stylex.props(layout.actions)}>{children}</div>
-        </main>
+          <div {...stylex.props(styles.actions)}>{children}</div>
+        </Container>
       </div>
     </ThemeProvider>
   )
@@ -55,8 +57,8 @@ export function GlobalNotFound() {
       title={m.boundary_not_found_title()}
       description={m.boundary_not_found_description()}
     >
-      <LinkButton render={<Link to='/' />}>{m.boundary_back_home()}</LinkButton>
-      <Button variant='secondary' onClick={() => router.history.back()}>
+      <Button render={<Link to='/' />}>{m.boundary_back_home()}</Button>
+      <Button variant='faded' color='neutral' onClick={() => router.history.back()}>
         {m.boundary_go_back()}
       </Button>
     </Boundary>
@@ -74,9 +76,9 @@ export function GlobalError({ error, reset }: ErrorComponentProps) {
       detail={import.meta.env.DEV && error instanceof Error ? error.message : undefined}
     >
       <Button onClick={reset}>{m.boundary_try_again()}</Button>
-      <LinkButton render={<Link to='/' />} variant='secondary'>
+      <Button render={<Link to='/' />} variant='faded' color='neutral'>
         {m.boundary_back_home()}
-      </LinkButton>
+      </Button>
     </Boundary>
   )
 }

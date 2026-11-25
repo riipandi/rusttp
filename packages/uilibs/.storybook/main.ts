@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 import { mergeConfig } from 'vite'
 
 export default {
-  stories: ['./stories/**/*.mdx', '../src/**/*.stories.@(mdx|jsx|tsx)'],
+  stories: ['./stories/**/*.mdx', '../src/**/*.mdx', '../src/**/*.stories.@(jsx|tsx)'],
   addons: [
     '@storybook/addon-a11y',
     {
@@ -35,7 +35,14 @@ export default {
   async viteFinal(viteConfig) {
     return mergeConfig(viteConfig, {
       resolve: { tsconfigPaths: true },
-      build: { chunkSizeWarningLimit: 1024 * 4 },
+      build: {
+        chunkSizeWarningLimit: 1024 * 4,
+        rolldownOptions: {
+          checks: {
+            bundlerTimings: false
+          }
+        }
+      },
       server: undefined,
       plugins: [
         stylexPlugin({

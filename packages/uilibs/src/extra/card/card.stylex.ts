@@ -5,7 +5,7 @@ import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 
 // `--card-spacing` lets `size` retune the paddings owned by the sections
-// below without prop-drilling: `sizes.sm` sets it, every section's own
+// below without prop-drilling: `sizes.small` sets it, every section's own
 // padding reads it with a fallback. It's a plain per-variant value (not a
 // Base UI attribute-conditional default), so the custom-property gotcha in
 // STYLEX.md (conditional default beating a layered [data-*] rule) doesn't
@@ -33,10 +33,8 @@ export const cardStyles = stylex.create({
     rowGap: unit.x1_5
   },
   title: {
-    fontSize: fontSize.body1,
     fontWeight: fontWeight.semibold,
     gridColumn: 1,
-    lineHeight: fontLineHeight.body1,
     margin: 0
   },
   description: {
@@ -63,7 +61,17 @@ export const cardStyles = stylex.create({
   }
 })
 
+// `selected` doubles the edge (the border plus an inner outline), so it is not told by color alone.
+export const cardStates = stylex.create({
+  selected: {
+    borderColor: colors.borderPrimary,
+    outline: `${stroke.ring1} solid ${colors.borderPrimary}`,
+    outlineOffset: `calc(-1 * ${stroke.ring1})`
+  },
+  raised: { boxShadow: shadow.raised }
+})
+
 export const cardSizes = stylex.create({
-  md: {},
-  sm: { '--card-spacing': unit.x4 }
+  medium: {},
+  small: { '--card-spacing': unit.x4 }
 })

@@ -5,17 +5,14 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, mulberry32, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, mulberry32, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/CumulativeHistogram',
   component: undefined,
-  parameters: { layout: 'padded' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -43,9 +40,17 @@ const scoreScales = {
   y: { scale: scaleLinear, nice: true, grid: true }
 } as const
 
-export const OwlPotions: Story = {
-  name: 'OWL Potions scores',
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend'] } },
+  argTypes: {
+    legend: { control: 'boolean' }
+  },
+  args: { legend: true },
+  render: ({ legend }) => {
     const definition = defineChart({
       marks: [
         rect(cumBins, {
@@ -79,14 +84,14 @@ export const OwlPotions: Story = {
 
     return (
       <ChartContainer
-        config={{ cumulative: { label: 'Cumulative students', color: seriesColors.green } }}
+        config={{ cumulative: { label: 'Cumulative students', color: seriesNames.green } }}
       >
         <Chart
           definition={definition}
           ariaLabel='Cumulative histogram of OWL Potions scores'
           height={260}
         />
-        <ChartLegend />
+        {legend && <ChartLegend />}
       </ChartContainer>
     )
   },

@@ -6,17 +6,14 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
 import { Chart, ChartContainer, ChartLegend } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Slopegraph',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -42,12 +39,23 @@ const slopeScales = {
   y: { scale: scaleLinear, nice: true, grid: false }
 } as const
 
-export const HouseCup: Story = {
-  name: 'House cup',
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+  shown: string[]
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend', 'shown'] } },
+  argTypes: {
+    legend: { control: 'boolean' },
+    shown: { control: 'check', options: houses.map((house) => house.house) }
+  },
+  args: { legend: true, shown: houses.map((house) => house.house) },
+  render: ({ legend, shown }) => {
+    const visible = houses.filter((house) => shown.includes(house.house))
     const definition = defineChart({
       marks: [
-        link(houses, {
+        link(visible, {
           id: 'slope',
           x1: () => 'Christmas',
           y1: 'christmas',
@@ -57,7 +65,7 @@ export const HouseCup: Story = {
           strokeWidth: 2
         }),
         // `dot.fill` is a plain string, so each house paints its own pair.
-        ...houses.flatMap((h) => [
+        ...visible.flatMap((h) => [
           dot([h], {
             id: `${h.house} christmas`,
             x: () => 'Christmas',
@@ -74,7 +82,7 @@ export const HouseCup: Story = {
           })
         ]),
         // End labels double as the y read-out; no axis ticks needed.
-        text(houses, {
+        text(visible, {
           id: 'christmasLabel',
           x: () => 'Christmas',
           y: 'christmas',
@@ -84,7 +92,7 @@ export const HouseCup: Story = {
           fontSize: 11,
           fill: (d) => d.color
         }),
-        text(houses, {
+        text(visible, {
           id: 'yearEndLabel',
           x: () => 'Year end',
           y: 'yearEnd',
@@ -109,10 +117,10 @@ export const HouseCup: Story = {
     return (
       <ChartContainer
         config={{
-          Gryffindor: { label: 'Gryffindor', color: seriesColors.langdon },
-          Slytherin: { label: 'Slytherin', color: seriesColors.green },
-          Ravenclaw: { label: 'Ravenclaw', color: seriesColors.amber },
-          Hufflepuff: { label: 'Hufflepuff', color: seriesColors.red }
+          Gryffindor: { label: 'Gryffindor', color: seriesNames.langdon },
+          Slytherin: { label: 'Slytherin', color: seriesNames.green },
+          Ravenclaw: { label: 'Ravenclaw', color: seriesNames.amber },
+          Hufflepuff: { label: 'Hufflepuff', color: seriesNames.red }
         }}
       >
         <Chart
@@ -120,7 +128,11 @@ export const HouseCup: Story = {
           ariaLabel='House cup points at Christmas versus year end'
           height={280}
         />
-        <ChartLegend />
+        {legend && (
+          <ChartLegend
+            hide={houses.map((house) => house.house).filter((name) => !shown.includes(name))}
+          />
+        )}
       </ChartContainer>
     )
   },

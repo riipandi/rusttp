@@ -12,7 +12,7 @@ import {
   spellingDays,
   spellingTotal,
   type ReadingDay
-} from '../chart.samples'
+} from './chart.samples'
 
 const meta = {
   title: 'Visualizations/Heatmap',
@@ -154,15 +154,30 @@ async function expectHeatmapStory(
   }
 }
 
-export const Playground: Story = {
-  name: 'Playground',
-  render: () => (
-    <Heatmap
-      days={spellingDays}
-      label={`Daily reading activity spelling the mantra, ${spellingTotal} chapters total`}
-      summary={`${spellingTotal} chapters read spelling the mantra`}
-    />
-  ),
+interface PlaygroundArgs {
+  period: 'spelling' | 'reading'
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['period'] } },
+  argTypes: {
+    period: { control: 'radio', options: ['spelling', 'reading'] }
+  },
+  args: { period: 'spelling' },
+  render: ({ period }) =>
+    period === 'spelling' ? (
+      <Heatmap
+        days={spellingDays}
+        label={`Daily reading activity spelling the mantra, ${spellingTotal} chapters total`}
+        summary={`${spellingTotal} chapters read spelling the mantra`}
+      />
+    ) : (
+      <Heatmap
+        days={readingDays}
+        label={`Daily reading activity across the 1991–1992 Hogwarts school year, ${readingTotal} chapters total`}
+        summary={`${readingTotal} chapters read in the first year`}
+      />
+    ),
   play: async (context) => {
     await expectHeatmapStory(
       context,

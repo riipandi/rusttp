@@ -3,9 +3,10 @@ import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'uilibs/base/tooltip'
+import { Button, buttonSquare } from 'uilibs/base/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Icon } from 'uilibs/extra/icon'
+import { Stack } from 'uilibs/extra/stack'
 import { Logo } from '#/components/logo'
 import { type NavItem, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -25,24 +26,24 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   // The label stays in the row and fades, so the icon never moves while the width animates.
   const content = (
     <>
-      <Icon svg={icon} size={16} color={to ? undefined : 'neutralFaded'} />
+      <Icon svg={icon} size={16} color={to ? undefined : 'neutral-faded'} />
       <span {...stylex.props(styles.label, collapsed && styles.faded)}>{label}</span>
     </>
   )
   // Collapsed, the label is gone from the row: it becomes the accessible name and a tooltip.
   const trigger = to ? (
-    <LinkButton
+    <Button
       render={<Link to={to} />}
-      current={current}
+      aria-current={current ? 'page' : undefined}
       variant='ghost'
-      size='sm'
+      size='small'
       aria-label={collapsed ? label : undefined}
       style={style}
     />
   ) : (
     <Button
       variant='ghost'
-      size='sm'
+      size='small'
       aria-disabled
       aria-label={collapsed ? label : undefined}
       style={style}
@@ -90,8 +91,12 @@ function NotifyEntry({ collapsed }: { collapsed: boolean }) {
         trigger={
           <Button
             variant='ghost'
-            size='icon-md'
-            style={[styles.notifyButton, styles.itemIdle, anyUnread && styles.itemUnread]}
+            style={[
+              buttonSquare.medium,
+              styles.notifyButton,
+              styles.itemIdle,
+              anyUnread && styles.itemUnread
+            ]}
           />
         }
       />
@@ -108,6 +113,28 @@ export function useFoldSidebarOnSettings() {
   React.useLayoutEffect(() => sidebarStore.actions.setRail(onSettings), [onSettings])
 }
 
+/**
+ * True once the rail has finished closing. The logo gives way to the expand icon while the header is
+ * hovered, but right after a click the pointer is still over the header as the width shrinks away
+ * from it: reacting to that hover would start the swap and reverse it a frame later. The swap waits
+ * for the width animation (`duration.slow`, 300ms), so a click leaves the logo alone.
+ */
+function useRailSettled(collapsed: boolean) {
+  const [settled, setSettled] = React.useState(collapsed)
+  const [seen, setSeen] = React.useState(collapsed)
+  // A toggle starts the wait again; adjusting state while rendering avoids an effect that sets it.
+  if (seen !== collapsed) {
+    setSeen(collapsed)
+    setSettled(false)
+  }
+  React.useEffect(() => {
+    if (!collapsed || settled) return undefined
+    const timer = setTimeout(() => setSettled(true), 320)
+    return () => clearTimeout(timer)
+  }, [collapsed, settled])
+  return settled
+}
+
 export function Sidebar() {
   const m = useMessages()
   const id = React.useId()
@@ -115,117 +142,113 @@ export function Sidebar() {
   const collapsed = useSelector(sidebarCollapsed)
   const toggle = sidebarStore.actions.setCollapsed
   const navGroups = groups(m)
+  const settled = useRailSettled(collapsed)
 
   return (
-    <aside {...stylex.props(styles.root, collapsed && styles.rootCollapsed)}>
-      {/* The provider's zero delay shows a rail tooltip at once, and moving between items keeps it. */}
-      <TooltipProvider>
-        {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
-        <div
-          {...stylex.props(
-            styles.header,
-            collapsed && styles.headerCollapsed,
-            collapsed && stylex.defaultMarker()
-          )}
-        >
-          {/* Collapsed, the logo is the toggle's face; expanded, the brand is beside it. The button is
-              one element in one position, so a keyboard user's focus stays on it through a toggle. */}
-          {!collapsed && (
-            // Not a link: the Overview item already leads to `/admin`.
-            <span {...stylex.props(layout.brand, styles.brand)}>
-              <Logo />
-              Rusttp
-            </span>
-          )}
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant='ghost'
-                  size='icon-sm'
-                  aria-label={m.admin_sidebar_toggle()}
-                  aria-expanded={!collapsed}
-                  aria-controls={navId}
-                  onClick={() => toggle(!collapsed)}
-                  style={styles.trigger}
-                />
-              }
-            >
-              {collapsed ? (
-                <span {...stylex.props(styles.swap)}>
-                  <span {...stylex.props(styles.swapLogo)}>
-                    <Logo />
-                  </span>
-                  <span {...stylex.props(styles.swapIcon)}>
-                    <Icon svg={PanelLeftOpen} size={16} />
-                  </span>
-                </span>
-              ) : (
+    <Stack render={<aside />} style={[styles.root, collapsed && styles.rootCollapsed]}>
+      {/* Collapsed, the whole strip is the hover target that swaps the logo for the expand icon. */}
+      {/* One header for both states, so a toggle only moves and fades what is already there: the
+            logo stays where it is, the wordmark fades, and the toggle rides the sidebar's edge
+            (the rail is 64px wide, so the same logo sits on the icon column in both). One
+            button in one position also keeps a keyboard user's focus through a toggle. */}
+      <div {...stylex.props(styles.header, stylex.defaultMarker())}>
+        {/* Not a link: the Overview item already leads to `/admin`. */}
+        <span {...stylex.props(layout.brand, styles.brand)}>
+          <span {...stylex.props(collapsed && settled && styles.logoRail)}>
+            <Logo />
+          </span>
+          <span
+            aria-hidden={collapsed || undefined}
+            {...stylex.props(styles.wordmark, collapsed && styles.faded)}
+          >
+            Rusttp
+          </span>
+        </span>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant='ghost'
+                size='small'
+                aria-label={m.admin_sidebar_toggle()}
+                aria-expanded={!collapsed}
+                aria-controls={navId}
+                onClick={() => toggle(!collapsed)}
+                style={[buttonSquare.small, styles.trigger, collapsed && styles.triggerRail]}
+              />
+            }
+          >
+            <span {...stylex.props(styles.swap)}>
+              <span {...stylex.props(styles.swapClose, collapsed && styles.faded)}>
                 <Icon svg={PanelLeftClose} size={16} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent side='right'>
-              {collapsed ? m.admin_sidebar_expand() : m.admin_sidebar_collapse()}
-            </TooltipContent>
-          </Tooltip>
-        </div>
+              </span>
+              <span {...stylex.props(styles.swapOpen, collapsed && settled && styles.swapOpenRail)}>
+                <Icon svg={PanelLeftOpen} size={16} />
+              </span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side='right'>
+            {collapsed ? m.admin_sidebar_expand() : m.admin_sidebar_collapse()}
+          </TooltipContent>
+        </Tooltip>
+      </div>
 
-        <div {...stylex.props(styles.search)}>
-          <CommandBarTrigger collapsed={collapsed} />
-        </div>
+      <div {...stylex.props(styles.search)}>
+        <CommandBarTrigger collapsed={collapsed} />
+      </div>
 
-        <nav
-          id={navId}
-          aria-label={m.admin_nav_landmark()}
-          {...stylex.props(styles.nav, styles.navUnderSearch)}
-        >
-          {navGroups.map(({ label, items }) => (
-            <div key={label ?? 'main'} {...stylex.props(styles.group)}>
-              {label && (
-                <>
-                  {/* Collapsed, the label's row folds to nothing and a muted rule marks the break. */}
+      <Stack
+        render={<nav id={navId} aria-label={m.admin_nav_landmark()} />}
+        gap={5}
+        style={[styles.nav, styles.navUnderSearch]}
+      >
+        {navGroups.map(({ label, items }) => (
+          <Stack key={label ?? 'main'} style={styles.group}>
+            {label && (
+              <>
+                {/* Collapsed, the label's row folds to nothing and a muted rule marks the break. */}
+                <span
+                  aria-hidden='true'
+                  {...stylex.props(styles.rule, collapsed && styles.ruleShown)}
+                />
+                <div
+                  {...stylex.props(styles.groupLabelRow, collapsed && styles.groupLabelRowFolded)}
+                >
                   <span
-                    aria-hidden='true'
-                    {...stylex.props(styles.rule, collapsed && styles.ruleShown)}
-                  />
-                  <div
-                    {...stylex.props(styles.groupLabelRow, collapsed && styles.groupLabelRowFolded)}
+                    id={`${id}-${label}`}
+                    {...stylex.props(styles.groupLabel, collapsed && styles.faded)}
                   >
-                    <span
-                      id={`${id}-${label}`}
-                      {...stylex.props(styles.groupLabel, collapsed && styles.faded)}
-                    >
-                      {label}
-                    </span>
-                  </div>
-                </>
-              )}
-              <ul
-                aria-labelledby={label ? `${id}-${label}` : undefined}
-                {...stylex.props(styles.list)}
-              >
-                {items.map((item) => (
-                  <li key={item.label}>
-                    <NavEntry item={item} collapsed={collapsed} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
+                    {label}
+                  </span>
+                </div>
+              </>
+            )}
+            <Stack
+              render={<ul aria-labelledby={label ? `${id}-${label}` : undefined} />}
+              gap={1}
+              style={styles.list}
+            >
+              {items.map((item) => (
+                <li key={item.label}>
+                  <NavEntry item={item} collapsed={collapsed} />
+                </li>
+              ))}
+            </Stack>
+          </Stack>
+        ))}
+      </Stack>
 
-        {/* Room for the bell above the account strip; it opens and closes with the width. */}
-        <div
-          aria-hidden='true'
-          {...stylex.props(styles.notifyRoom, collapsed && styles.notifyRoomOpen)}
-        />
+      {/* Room for the bell above the account strip; it opens and closes with the width. */}
+      <div
+        aria-hidden='true'
+        {...stylex.props(styles.notifyRoom, collapsed && styles.notifyRoomOpen)}
+      />
 
-        <div {...stylex.props(styles.account)}>
-          <AdminUserMenu collapsed={collapsed} />
-        </div>
+      <Stack direction='row' align='center' justify='space-between' gap={2} style={styles.account}>
+        <AdminUserMenu collapsed={collapsed} />
+      </Stack>
 
-        <NotifyEntry collapsed={collapsed} />
-      </TooltipProvider>
-    </aside>
+      <NotifyEntry collapsed={collapsed} />
+    </Stack>
   )
 }

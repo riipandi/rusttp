@@ -9,11 +9,16 @@
  *
  * The `definition` is a plain TanStack `defineChart()` value; series keys in
  * the `config` map to mark `id`s so tooltips and legends can resolve labels
- * and colors. A mark color is any CSS color, a theme token (`colors.backgroundPrimary`, a
+ * and colors. A mark color is any CSS color, a theme token (`colors.foregroundPrimary`, a
  * `var()` string) included: TanStack paints it as an SVG presentation attribute, and a browser
  * resolves `var()` there (checked in Chromium, light and dark), so a series follows the theme.
  * A series that carries meaning needs 3:1 against the page (WCAG 1.4.11) or a second cue: a
  * label, a pattern, or a legend entry next to it.
+ *
+ * Assistive technology: a chart is one `role='img'` named by `ariaLabel`. `description` on the
+ * container (or `ariaDescription` on a chart) adds the accessible description, and a chart with a
+ * tooltip is one Tab stop that draws the library focus ring; a chart without one has no Tab stop.
+ * For the values themselves, put a `Table` of the same rows next to the chart (see `charts.mdx`).
  *
  * SSR and multi-chart hygiene: keep `initialWidth` stable across server and
  * client, and give every chart in the same document an explicit `idPrefix` so
@@ -33,11 +38,13 @@ import { RendererChart as TanStackChart } from '@tanstack/charts/react/tooltip'
 import type { ChartTooltipBodyRenderContext } from '@tanstack/charts/react/tooltip'
 import type { RendererChartProps as TanStackRendererChartProps } from '@tanstack/charts/react/tooltip'
 import * as React from 'react'
+import { type ChartColorName, chartColors } from './chart-colors'
 import { chartStyles as s } from './chart.stylex'
 
 export interface ChartConfigItem {
   label?: React.ReactNode
-  color?: string
+  /** The series color, one of the palette (`chart1` to `chart8`); a theme-aware token, never a free color string. */
+  color?: ChartColorName
   icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }
 
@@ -58,28 +65,33 @@ const chartMotionRenderer = motion({
   transition: { type: 'tween', duration: 200, easing: 'ease-out' }
 })
 
-const ChartContext = React.createContext<ChartConfig | null>(null)
-
-/** Resolves the nearest `ChartContainer` config. Throws outside a container. */
-export function useChartConfig(): ChartConfig {
-  const config = React.useContext(ChartContext)
-  if (!config) {
-    throw new Error('Chart components must be used within a ChartContainer')
-  }
-  return config
+interface ChartContextValue {
+  config: ChartConfig
+  description?: string
 }
+
+const ChartContext = React.createContext<ChartContextValue | null>(null)
 
 export interface ChartContainerProps extends Omit<
   useRender.ComponentProps<'div'>,
   'className' | 'style'
 > {
   config: ChartConfig
+  /** What the chart shows, in a sentence or two: the trend, the range, the outlier. Every chart inside takes it as its accessible description. */
+  description?: string
   style?: stylex.StyleXStyles
 }
 
-export function ChartContainer({ config, style, render, ...props }: ChartContainerProps) {
+export function ChartContainer({
+  config,
+  description,
+  style,
+  render,
+  ...props
+}: ChartContainerProps) {
+  const value = React.useMemo(() => ({ config, description }), [config, description])
   return (
-    <ChartContext.Provider value={config}>
+    <ChartContext.Provider value={value}>
       {useRender({
         defaultTagName: 'div',
         props: mergeProps<'div'>(stylex.props(s.root, style), props),
@@ -90,7 +102,6 @@ export function ChartContainer({ config, style, render, ...props }: ChartContain
 }
 
 interface ChartOwnProps<TDatum, TXValue extends ChartValue, TYValue extends ChartValue> {
-  config?: ChartConfig
   style?: stylex.StyleXStyles
   renderTooltipBody?: (
     context: ChartTooltipBodyRenderContext<TDatum, TXValue, TYValue>
@@ -111,28 +122,43 @@ export function Chart<
   TDatum = unknown,
   TXValue extends ChartValue = ChartValue,
   TYValue extends ChartValue = ChartValue
->({ config, style, renderTooltipBody, ...props }: ChartProps<TDatum, TXValue, TYValue>) {
-  const contextConfig = React.useContext(ChartContext)
-  const activeConfig = config ?? contextConfig
+>({
+  ariaDescription,
+  style,
+  renderTooltipBody,
+  tabIndex,
+  onRender,
+  ...props
+}: ChartProps<TDatum, TXValue, TYValue>) {
+  const context = React.useContext(ChartContext)
+
+  // TanStack makes the svg a Tab stop unless `focus` or `keyboard` is off. A chart with no tooltip
+  // has nothing to read at a point, so it gets no stop either; an explicit `tabIndex` wins.
+  const interactive = Boolean(props.definition.tooltip)
 
   // Rich tooltip bodies stay opt-in via `renderTooltipBody`; the default is
   // the native body (title, per-series rows with swatches, locale formatting)
   // themed through the `--ts-chart-tooltip-*` variables on the host class.
+  // TanStack puts `className` on the host div only, so the ring is drawn on the host while the
+  // svg holds focus (`chart.stylex.ts`). The svg keeps the browser's own ring, a second one, and
+  // nothing in StyleX reaches it, so it is switched off on the element TanStack hands back.
   const chartProps = stylex.props(s.chart, style)
-  const chart = (
+  return (
     <TanStackChart
       {...props}
+      ariaDescription={ariaDescription ?? context?.description}
+      tabIndex={tabIndex ?? (interactive ? undefined : -1)}
+      onRender={(rendered) => {
+        if (rendered.surface.element instanceof SVGElement) {
+          rendered.surface.element.style.outline = 'none'
+        }
+        onRender?.(rendered)
+      }}
       renderer={chartMotionRenderer}
       renderTooltipBody={renderTooltipBody}
       className={chartProps.className}
       style={chartProps.style}
     />
-  )
-
-  return activeConfig ? (
-    <ChartContext.Provider value={activeConfig}>{chart}</ChartContext.Provider>
-  ) : (
-    chart
   )
 }
 
@@ -148,12 +174,13 @@ export interface ChartLegendProps extends Omit<React.ComponentProps<'div'>, 'cla
  * component conditionally renders nothing, and hooks may not follow an early
  * return — the tooltip content swap happens through `renderTooltipBody`. */
 export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps) {
-  const contextConfig = React.useContext(ChartContext)
+  const contextConfig = React.useContext(ChartContext)?.config
   const activeConfig = config ?? contextConfig ?? {}
 
   const entries = Object.entries(activeConfig).filter(
     ([key, item]) => Boolean(item.color) && !hide?.includes(key)
   )
+
   if (entries.length === 0) {
     return null
   }
@@ -165,9 +192,13 @@ export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps)
         return (
           <div key={key} {...stylex.props(s.legendItem)}>
             {Icon ? (
-              <Icon height={12} width={12} color={item.color} />
+              <Icon height={12} width={12} color={item.color && chartColors[item.color]} />
             ) : (
-              <span {...stylex.props(s.legendSwatch(item.color ?? 'currentColor'))} />
+              <span
+                {...stylex.props(
+                  s.legendSwatch(item.color ? chartColors[item.color] : 'currentColor')
+                )}
+              />
             )}
             {item.label ?? key}
           </div>

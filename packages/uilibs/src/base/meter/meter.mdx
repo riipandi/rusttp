@@ -1,0 +1,72 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './meter.stories'
+
+<Meta of={Stories} />
+
+# Meter
+
+A bar that shows a numeric value within a known range, such as disk space used. Use Progress instead for a task that moves toward done.
+
+## Import
+
+```jsx
+import { Meter, MeterLabel, MeterValue } from 'uilibs/base/meter'
+```
+
+Built on Base UI [Meter](https://base-ui.com/react/components/meter). Props not listed here pass through.
+
+## Anatomy
+
+- **Meter:** the root. It takes `value`, `min`, and `max`, and renders the track and the indicator itself, after its children.
+- **MeterLabel:** the text that names the meter.
+- **MeterValue:** the formatted value. A function child formats it yourself.
+- **MeterTrack:** the groove behind the fill. `Meter` renders it, so you do not place it.
+- **MeterIndicator:** the fill. `Meter` renders it inside the track, so you do not place it.
+
+```jsx
+<Meter value={24}>
+  <MeterLabel />
+  <MeterValue />
+</Meter>
+```
+
+## Examples
+
+### Custom range
+
+<Canvas of={Stories.CustomRange} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+## Accessibility
+
+The root is a `meter` named by `MeterLabel`, or by `aria-label` when there is no label, and it reports `aria-valuenow`, `aria-valuemin` and `aria-valuemax`. It is not interactive and answers no keys. The `Playground` and `Custom range` stories assert the role, the name and the values; `Colors` and `Sizes` name each meter with `aria-label`, and the a11y check runs on both.
+
+- Without a `MeterLabel`, set `aria-label`.
+- Color alone carries no meaning, so pair a non-neutral `color` with a label.
+- See the Base UI [Meter](https://base-ui.com/react/components/meter) page for the rest.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Meter
+
+| Prop    | Description                                                                                             |
+| ------- | ------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role of the fill. Default `primary`. |
+| `size`  | `small`, `medium` <br /> Bar thickness: `small` is 2px, `medium` is 4px. Default `medium`.              |
+
+Base UI lists no data attributes or CSS variables for the meter parts.
+
+## Caveats
+
+- Without a `MeterLabel`, give the meter an `aria-label`; the Colors and Sizes stories do.
+- Pair a non-neutral `color` with a label, because color alone carries no meaning.
+- `color` and `size` are read from `Meter` by the track and the indicator through context, so they are not props of those parts.

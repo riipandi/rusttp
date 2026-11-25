@@ -34,10 +34,13 @@ export const localStorageAdapter: ThemeStorage = {
   }
 }
 
+/** A key is a name, not a pattern: `.` and `+` are common in storage keys. */
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 export const cookieStorageAdapter: ThemeStorage = {
   getItem: (key) => {
     if (isServer) return null
-    const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'))
+    const match = document.cookie.match(new RegExp(`(^| )${escapeRegExp(key)}=([^;]+)`))
     return match?.[2] ?? null
   },
   setItem: (key, value) => {

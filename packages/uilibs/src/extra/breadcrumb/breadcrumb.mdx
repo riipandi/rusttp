@@ -1,0 +1,107 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './breadcrumb.stories'
+
+<Meta of={Stories} />
+
+# Breadcrumb
+
+A trail of links that shows where the current page sits in the site.
+
+## Import
+
+```jsx
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
+} from 'uilibs/extra/breadcrumb'
+```
+
+Plain `nav`, `ol`, `li`, `a`, and `span` elements, not built on Base UI. Props not listed here pass through.
+
+## Anatomy
+
+- **Breadcrumb:** the `nav` landmark. It sets the link color for the parts below.
+- **BreadcrumbList:** the `ol` that holds the items and separators.
+- **BreadcrumbItem:** one `li` in the trail.
+- **BreadcrumbLink:** an ancestor link, an `a`.
+- **BreadcrumbPage:** the current location. Plain text with `aria-current='page'`: it is not a link.
+- **BreadcrumbSeparator:** an `li` between two items, not inside one. It shows a chevron unless it has children.
+- **BreadcrumbEllipsis:** optional marker for collapsed levels, with hidden text for assistive technology.
+
+```jsx
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage />
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+## Examples
+
+### Collapsed levels
+
+<Canvas of={Stories.Ellipsis} />
+
+### Ellipsis as a menu
+
+<Canvas of={Stories.Dropdown} />
+
+### Custom separator
+
+<Canvas of={Stories.CustomSeparator} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+## Accessibility
+
+The trail is a `navigation` landmark named by `labels.breadcrumb`, and the current page is text with `aria-current='page'`, not a link. The `Keyboard` story walks the tab order and the collapsed-levels menu, and the `Translated` story proves the landmark name.
+
+| Key                     | Action                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Visit the links and the collapsed-levels button in order. The current page and the separators are not stops.  |
+| `Enter`                 | On the collapsed-levels button: opens the menu. On a menu item: picks it, closes the menu, and returns focus. |
+| `Home` and `ArrowDown`  | In the menu: move to the first item and to the next one.                                                      |
+| `Escape`                | Closes the menu and returns focus to the collapsed-levels button.                                             |
+
+- The button that opens a menu around `BreadcrumbEllipsis` needs an `aria-label`, because the ellipsis is only a mark.
+- The menu is a [Dropdown Menu](?path=/docs/base-components-dropdownmenu--docs); its own keys are Base UI's.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `Breadcrumb` it lands on the `nav`.
+
+### Breadcrumb
+
+| Prop     | Description                                                                                     |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| `color`  | `neutral`, `primary` <br /> The role of the links in every `BreadcrumbLink`. Default `neutral`. |
+| `labels` | `{ breadcrumb }` <br /> Name of the `nav` landmark. Default `Breadcrumb`.                       |
+
+### BreadcrumbEllipsis
+
+| Prop     | Description                                                                      |
+| -------- | -------------------------------------------------------------------------------- |
+| `labels` | `{ more }` <br /> Text for assistive technology on the ellipsis. Default `More`. |
+
+## Caveats
+
+- `BreadcrumbPage` is a plain `span` with `aria-current='page'` and no role, so a screen reader announces the current page as text, not as a disabled link.
+- A `BreadcrumbEllipsis` inside a menu trigger needs its own `aria-label` on the trigger; the Dropdown story sets one.
+- `BreadcrumbSeparator` is an `li` marked `aria-hidden`, so keep it a sibling of the items, not a child of one.

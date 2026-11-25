@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { container, unit } from 'uilibs/styles/tokens.stylex'
+import { container, unit, zIndex } from 'uilibs/styles/tokens.stylex'
 import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 // The page's inset, shared by the page and the small-screen top bar so the bar's menu and bell
@@ -8,11 +8,14 @@ import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 // 3rem: beside a sidebar, a wide gutter reads as a gap.
 const inset = layoutSize.adminInset
 
+// The announcement strip's height beside the sidebar: its one-line message stays at the strip's
+// `minHeight` there (`styles/element/announcement-bar.stylex.ts`), so the sticky settings aside starts
+// below it. Below the compact breakpoint the message may wrap, but the aside is gone there.
+const banner = unit.x10
+
 export const styles = stylex.create({
   root: {
     minHeight: '100dvh',
-    display: 'flex',
-    flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
     backgroundColor: colors.backgroundPage,
     color: colors.foregroundNeutral
   },
@@ -20,16 +23,23 @@ export const styles = stylex.create({
     flex: 1,
     minWidth: 0
   },
-  // Below the compact breakpoint the sidebar is gone and this bar stands in: the menu trigger, the
+  // The announcement strip stays in view: at the top beside the sidebar, under the sticky top bar
+  // below the compact breakpoint.
+  banner: {
+    position: 'sticky',
+    top: { default: 0, [breakpoints.compact]: unit.x14 },
+    zIndex: zIndex.sticky
+  },
+  // Below the compact breakpoint the sidebar is not rendered and this bar stands in: the menu trigger, the
   // brand centered, and the notification trigger, in three equal-weight zones.
   topbar: {
-    display: { default: 'none', [breakpoints.compact]: 'grid' },
+    display: 'grid',
     gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'center',
     gap: unit.x2,
     position: 'sticky',
     top: 0,
-    zIndex: 10,
+    zIndex: zIndex.sticky,
     boxSizing: 'border-box',
     height: unit.x14,
     paddingInline: inset,
@@ -47,28 +57,13 @@ export const styles = stylex.create({
     marginInlineEnd: `calc(-1 * ${unit.x2})`
   },
   main: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x10,
     padding: inset
-  },
-  heading: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: unit.x1
   },
   subtitle: {
     margin: 0,
     color: colors.foregroundNeutralFaded
   },
-  // The settings pages: a secondary aside beside the page. Below the compact breakpoint the aside
-  // is gone and a select above the page stands in (`routes/admin/settings/-settings-nav.tsx`).
-  settings: {
-    display: 'flex',
-    flexDirection: { default: 'row', [breakpoints.compact]: 'column' },
-    alignItems: { default: 'flex-start', [breakpoints.compact]: 'stretch' }
-  },
-  // Like the sidebar: a column the full height of the viewport with its own divider, items inset by
+  // Like the sidebar: a column the height of the viewport below the pinned banner, with its own divider, items inset by
   // the same step as the sidebar's nav, and the first item level with the page title.
   // The groups stack with the sidebar's own step between them.
   settingsAside: {
@@ -78,9 +73,9 @@ export const styles = stylex.create({
     gap: unit.x5,
     flexShrink: 0,
     position: 'sticky',
-    top: 0,
+    top: banner,
     width: container.xsmall,
-    height: '100dvh',
+    height: `calc(100dvh - ${banner})`,
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     scrollbarWidth: 'thin',

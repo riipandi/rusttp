@@ -1,0 +1,86 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './image.stories'
+
+<Meta of={Stories} />
+
+# Image
+
+A picture that keeps its box when it cannot load. The box holds its ratio, and a fallback fills it in place of the picture.
+
+## Import
+
+```jsx
+import { Image } from 'uilibs/extra/image'
+```
+
+Built on [AspectRatio](?path=/docs/extra-components-aspectratio--docs), so `aspectRatio` is the same ratio. Props not listed here pass to the `img`. `style` applies to the box, not the `img`.
+
+## Anatomy
+
+- **Image:** the box, a `div` that clips the corners. With `aspectRatio` it is an `AspectRatio`; without it, the box takes the picture's own height.
+- **The `img`:** the picture, filling the box.
+- **The fallback:** a `div` that replaces the `img` when `src` fails. It carries the picture's name, so a screen reader still finds it.
+
+```jsx
+<Image src={url} alt='The Marauder’s Map' aspectRatio={16 / 9} fallback={<Icon />} />
+```
+
+## Examples
+
+### Display modes
+
+`cover` crops the picture to fill the box; `contain` fits all of it inside.
+
+<Canvas of={Stories.DisplayModes} />
+
+### Border radii
+
+<Canvas of={Stories.BorderRadii} />
+
+### Fallback
+
+A source that fails keeps the box and its ratio, with or without a `fallback`.
+
+<Canvas of={Stories.Fallback} />
+
+### Recovery
+
+A new `src` after a failure gets a new try.
+
+<Canvas of={Stories.Recovery} />
+
+### Decorative
+
+A picture that only decorates takes `alt=''`. Its fallback is hidden from assistive technology too.
+
+<Canvas of={Stories.Decorative} />
+
+### Natural height
+
+<Canvas of={Stories.NaturalHeight} />
+
+## API reference
+
+`Image` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Image
+
+| Prop           | Description                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------- |
+| `src`          | `string` <br /> The picture. Required.                                                                          |
+| `alt`          | `string` <br /> What the picture shows. Required; `''` marks a decorative picture, which a screen reader skips. |
+| `fallback`     | `ReactNode` <br /> Shown in the box when `src` fails to load, such as a glyph or initials.                      |
+| `aspectRatio`  | `number` <br /> Width divided by height, such as `16 / 9`. Without it the box takes the picture's own height.   |
+| `borderRadius` | `none`, `small`, `medium`, `large`, `full` <br /> Corner radius of the box. Default `none`.                     |
+| `displayMode`  | `cover`, `contain` <br /> `cover` crops to fill the box; `contain` fits all of the picture. Default `cover`.    |
+
+| Data attribute | Description                                            |
+| -------------- | ------------------------------------------------------ |
+| `data-slot`    | `image-fallback` on the fallback, set by this library. |
+
+## Caveats
+
+- `alt` is required and has no default: write the name, or `''` on purpose.
+- The fallback replaces the `img` until `src` changes; a failed picture does not retry on its own.
+- Use [Avatar](?path=/docs/base-components-avatar--docs) for a person's picture with initials; Image is for content pictures that need a ratio.
+- Without `aspectRatio` and without a loaded picture, the fallback box is 80px high.

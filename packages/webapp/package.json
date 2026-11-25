@@ -8,6 +8,10 @@
         "generate": "NODE_OPTIONS=--disable-warning=Warning tsr generate && paraglide-js compile --project ./project.inlang",
         "build": "pnpm --silent generate && tsrs --noEmit --fast && vite build",
         "preview": "vite preview",
+        "size": "node scripts/entry-size.mjs",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:ui": "vitest --ui",
         "typecheck": "pnpm --silent generate && tsrs --noEmit --fast"
     },
     "dependencies": {
@@ -38,10 +42,16 @@
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "catalog:",
+        "@vitest/browser-playwright": "catalog:",
+        "@vitest/coverage-v8": "catalog:",
+        "@vitest/ui": "catalog:",
         "oxc-transform-react": "catalog:",
+        "playwright": "catalog:",
         "plugins": "workspace:*",
         "tsrs": "catalog:",
         "vite": "catalog:",
-        "vite-plugin-devtools-json": "catalog:"
+        "vite-plugin-devtools-json": "catalog:",
+        "vitest": "catalog:",
+        "vitest-browser-react": "catalog:"
     }
 }

@@ -37,10 +37,51 @@ export const alertStyles = stylex.create({
     insetBlockStart: unit.x4,
     insetInlineEnd: unit.x4,
     position: 'absolute'
-  }
+  },
+  // With a glyph or `inline` the notice is a row: the glyph, then the text stacked in `content`.
+  row: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: unit.x3
+  },
+  // `inline` puts the action on the row with the text, and wraps it under the text when the notice
+  // is too narrow for both: the text keeps a basis of 16rem.
+  inline: {
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  glyph: {
+    flexShrink: 0
+  },
+  content: {
+    display: 'flex',
+    flexBasis: 0,
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexShrink: 1,
+    gap: unit.x1,
+    minWidth: 0
+  },
+  contentInline: {
+    flexBasis: '16rem'
+  },
+  actionInline: {
+    flexShrink: 0,
+    marginInlineStart: 'auto',
+    position: 'static'
+  },
+  // `bleed` runs the notice out past its parent's padding to the edges, so it drops the side edges
+  // and the corners; the margin is set by `bleedBy`.
+  bleed: {
+    borderInlineEndWidth: 0,
+    borderInlineStartWidth: 0,
+    borderRadius: 0,
+    width: 'auto'
+  },
+  bleedBy: (margin: string) => ({ marginInline: margin })
 })
 
-export const alertTones = stylex.create({
+export const alertColors = stylex.create({
   neutral: {},
   primary: {
     borderColor: colors.borderPrimary,

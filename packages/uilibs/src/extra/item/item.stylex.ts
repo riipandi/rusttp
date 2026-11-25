@@ -54,7 +54,7 @@ export const itemStyles = stylex.create({
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     margin: 0,
-    textAlign: 'left'
+    textAlign: 'start'
   },
   actions: {
     alignItems: 'center',
@@ -71,37 +71,37 @@ export const itemStyles = stylex.create({
 })
 
 export const itemVariants = stylex.create({
-  default: {
+  ghost: {
     borderColor: 'transparent'
   },
   outline: {
     borderColor: colors.borderNeutralFaded
   },
-  muted: {
+  faded: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`,
     borderColor: 'transparent'
   }
 })
 
 export const itemSizes = stylex.create({
-  xs: {
+  xsmall: {
     gap: unit.x2,
     paddingBlock: unit.x2,
     paddingInline: unit.x3
   },
-  sm: {
+  small: {
     gap: unit.x3,
     paddingBlock: unit.x3,
     paddingInline: unit.x3
   },
-  md: {
-    gap: unit.x3,
-    paddingBlock: unit.x3,
-    paddingInline: unit.x3
+  medium: {
+    gap: unit.x4,
+    paddingBlock: unit.x4,
+    paddingInline: unit.x4
   }
 })
 
-export const itemMediaVariants = stylex.create({
+export const itemMediaKinds = stylex.create({
   default: {},
   icon: {
     color: colors.foregroundNeutral

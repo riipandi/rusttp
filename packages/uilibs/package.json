@@ -19,6 +19,8 @@
         "storybook:build": "NODE_OPTIONS=--disable-warning=DEP0205 storybook build -o .output/storybook",
         "storybook:start": "vite preview --outDir .output/storybook --port 6006 --host 0.0.0.0 --strictPort",
         "test": "vitest run",
+        "check:docs": "node scripts/check-docs.ts",
+        "rebrand": "node scripts/rebrand.ts",
         "typecheck": "tsrs --noEmit --fast"
     },
     "dependencies": {
@@ -54,7 +56,7 @@
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "catalog:",
-        "@vitest/browser-playwright": "^5.1.1",
+        "@vitest/browser-playwright": "catalog:",
         "date-fns": "catalog:",
         "playwright": "catalog:",
         "plugins": "workspace:*",
@@ -62,6 +64,6 @@
         "storybook": "catalog:",
         "tsrs": "catalog:",
         "vite": "catalog:",
-        "vitest": "^5.1.1"
+        "vitest": "catalog:"
     }
 }

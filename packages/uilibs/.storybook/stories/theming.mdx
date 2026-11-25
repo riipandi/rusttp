@@ -1,0 +1,228 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ProviderStories from '../../src/base/provider.stories'
+
+<Meta title='Theming' parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }} />
+
+# Theming
+
+Every color, shadow, radius, and motion value is a StyleX variable, so a theme is a set of replacement values. The light values are the defaults. The dark values are one `stylex.createTheme` that `ThemeProvider` switches on. A component never checks which theme is active.
+
+## Setup
+
+Put `UIProvider` and `ThemeProvider` once at the root of the app, and render [ThemeSwitcher](?path=/docs/extra-components-themeswitcher--docs) wherever the user should change theme.
+
+```tsx
+import { UIProvider } from 'uilibs/base/provider'
+import { ThemeProvider, ThemeSwitcher } from 'uilibs/theme'
+
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <UIProvider>
+      <ThemeProvider attribute='data-theme' defaultTheme='system'>
+        <ThemeSwitcher />
+        {children}
+      </ThemeProvider>
+    </UIProvider>
+  )
+}
+```
+
+`ThemeProvider` sets the theme on the `<html>` element before first paint, so the page does not flash the wrong theme. It stores the choice, follows the system setting while the theme is `system`, and syncs across tabs.
+
+### ThemeProvider
+
+| Prop                        | Description                                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `defaultTheme`              | `string` <br /> The theme before the user picks one. `system` follows the operating system. Default `system`.    |
+| `enableSystem`              | `boolean` <br /> Lets `system` resolve to light or dark from `prefers-color-scheme`. Default `true`.             |
+| `forcedTheme`               | `string` <br /> Pins the theme for the page, ignoring the stored choice.                                         |
+| `themes`                    | `string[]` <br /> The theme names. Default `['light', 'dark']`.                                                  |
+| `attribute`                 | `class`, `data-*`, or an array <br /> The attribute written on `<html>`. Use `data-theme`. Default `data-theme`. |
+| `value`                     | `Record<string, string>` <br /> Maps a theme name to the attribute value you want.                               |
+| `storage`                   | `localStorage`, `cookie`, or an adapter <br /> Where the choice is kept. Default `localStorage`.                 |
+| `storageKey`                | `string` <br /> The key the choice is stored under. Default `theme`.                                             |
+| `enableColorScheme`         | `boolean` <br /> Sets the CSS `color-scheme` so built-in controls and scrollbars match. Default `true`.          |
+| `disableTransitionOnChange` | `boolean` <br /> Turns off CSS transitions while the theme switches, so colors change at once. Default `false`.  |
+
+### useTheme
+
+`useTheme()` reads and sets the theme from any component under the provider.
+
+| Value           | Description                                                                            |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `theme`         | `string` <br /> The chosen theme, such as `light`, `dark`, or `system`.                |
+| `resolvedTheme` | `string` <br /> The theme in effect. It is `light` or `dark` when `theme` is `system`. |
+| `systemTheme`   | `light`, `dark` <br /> The operating system's preference.                              |
+| `setTheme`      | `(theme: string) => void` <br /> Changes the theme and stores it.                      |
+| `forcedTheme`   | `string` <br /> The pinned theme, when the provider has one.                           |
+| `themes`        | `string[]` <br /> The theme names, plus `system` when it is enabled.                   |
+
+### UIProvider
+
+`UIProvider` (`uilibs/base/provider`) sets two things for every Base UI part below it: the CSP nonce and the reading direction. Every prop is optional.
+
+| Prop                   | Description                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nonce`                | `string` <br /> The nonce Base UI puts on the inline `<style>` and `<script>` elements it renders, for a strict Content Security Policy.             |
+| `disableStyleElements` | `boolean` <br /> Stops Base UI from rendering those inline `<style>` elements at all. Use it when the policy forbids inline styles. Default `false`. |
+| `direction`            | `ltr`, `rtl` <br /> The reading direction Base UI parts use in script, such as a slider's arrow keys. Default `ltr`.                                 |
+
+`direction` does not set the `dir` attribute. See [Right to left](#right-to-left) below.
+
+### ThemeSwitcher
+
+A ghost icon button that cycles light, dark, and system, with an animated icon. Its accessible name says which theme a press switches to, and `labels` translates it. The [ThemeSwitcher page](?path=/docs/extra-components-themeswitcher--docs) has the props, the keys, and the motion rules.
+
+## What the root element carries
+
+| On `<html>`               | Meaning                                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `data-theme`              | `light` or `dark`. Target it in plain CSS, such as `html[data-theme='dark']`. A StyleX style does not need it. |
+| A generated class         | The compiled dark theme. It is present only while the theme is `dark`.                                         |
+| `style="color-scheme: …"` | Set when `enableColorScheme` is on.                                                                            |
+
+## Tokens
+
+Import tokens from `uilibs/styles/`. Use a token instead of a literal value, so a theme change reaches your styles.
+
+| Token                                                           | Description                                                                                                                                       |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colors`                                                        | Roles `primary`, `neutral`, `positive`, `warning`, `critical`, each as `background`, `foreground`, and `border`. See below. From `colors.stylex`. |
+| `shadow`                                                        | `outline`, `raised`, `overlay`. From `colors.stylex`.                                                                                             |
+| `radius`                                                        | `xsmall` to `xxlarge`, `full`, `none`. From `tokens.stylex`.                                                                                      |
+| `fontFamily`, `fontSize`, `fontLineHeight`, `fontLetterSpacing` | The type scale from `headline1` to `caption2`, and `monospace`. From `tokens.stylex`. Headlines track tighter; every other role is `normal`.      |
+| `duration`, `easing`                                            | `rapid` to `slow`, and `standard`, `accelerate`, `decelerate`. From `tokens.stylex`.                                                              |
+| `unit`                                                          | Spacing in 4px steps, `x0_5` to `x20`. From `tokens.stylex`.                                                                                      |
+| `stroke`, `container`, `zIndex`, `breakpoints`                  | Ring widths, popup and panel widths, layers, and media queries. From `tokens.stylex`.                                                             |
+
+Tokens made with `defineVars` (`colors`, `shadow`, `radius`, the type scale, `duration`, `easing`) can be replaced by a theme. Tokens made with `defineConsts` (`unit`, `stroke`, `container`, `zIndex`, `breakpoints`, `fontWeight`) are fixed at build time.
+
+### Color tokens
+
+A color token is a role plus a part: `backgroundPrimary`, `foregroundCritical`, `borderPositive`. Most come in modifiers.
+
+| Modifier           | Use                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `Faded`            | A soft tint. Pair a `foreground` token with a `Faded` background for readable text.    |
+| `Highlighted`      | The hover and pressed state of a solid background.                                     |
+| `HighlightedFaded` | The hover state of a faded background.                                                 |
+| `onBackground*`    | The text color for a solid background of that role. Use it instead of picking a color. |
+
+Also: `backgroundPage` for the page, `backgroundElevationBase` and `backgroundElevationOverlay` for raised surfaces, `backgroundTrack` for the track of Progress, Meter, and Slider (dark enough in both themes for the primary fill to read against it), `scrim` for the backdrop of a modal, `borderControl` for the edge of a form control, `borderDisabled` and `foregroundDisabled` for disabled parts, and the constants `black` and `white`, which are the same in both themes.
+
+## Customizing
+
+### Across the app
+
+The library ships as source, so the tokens are yours to change. Edit the light values in `colors.stylex.ts` and the dark values in `themes.ts`. A dark theme is a `stylex.createTheme` that lists only the tokens that differ.
+
+```tsx
+const darkColors = stylex.createTheme(colors, {
+  backgroundPage: 'oklch(0.16 0 89.88)',
+  backgroundPrimary: 'oklch(0.55 0.135 39.4)',
+  foregroundPrimary: 'oklch(0.756 0.115 45.84)'
+})
+```
+
+Change the primary role as a group: its background, highlighted, faded, border, and foreground values. Text pairs need a 4.5:1 contrast ratio and control edges 3:1, and the story tests check them in both themes.
+
+### In one part of the page
+
+Create a theme with `stylex.createTheme` and apply it to an element with `stylex.props`. Everything inside takes the new values.
+
+```tsx
+import * as stylex from '@stylexjs/stylex'
+import { colors } from 'uilibs/styles/colors.stylex'
+
+const slytherin = stylex.createTheme(colors, {
+  backgroundPrimary: 'oklch(0.45 0.12 150)',
+  backgroundPrimaryHighlighted: 'oklch(0.4 0.12 150)',
+  backgroundPrimaryFaded: 'oklch(0.97 0.02 150)',
+  foregroundPrimary: 'oklch(0.4 0.12 150)',
+  borderPrimary: 'oklch(0.4 0.12 150)'
+})
+
+export function House({ children }: { children: React.ReactNode }) {
+  return <section {...stylex.props(slytherin)}>{children}</section>
+}
+```
+
+Until the provider sets a theme, the page reads as `color-scheme: light`, so native scrollbars and form widgets match the tokens, not the operating system.
+
+### One part of the page in its own mode
+
+To draw a subtree dark or light whatever the page is, wrap it in `ThemeScope` from `uilibs/theme`. `inverted` is the opposite of the surrounding theme: the page's, or the enclosing scope's.
+
+```tsx
+import { ThemeScope } from 'uilibs/theme'
+
+export function Sidebar({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeScope colorMode='dark' render={<aside />}>
+      {children}
+    </ThemeScope>
+  )
+}
+```
+
+A scope paints the theme class, the page surface, the text color, and `color-scheme` on its element, so the tokens, the native scrollbars, and the form widgets all follow it. It needs no provider of its own; without one, `inverted` treats the page as light. The [ThemeScope page](?path=/docs/extra-components-themescope--docs) has the modes, nesting, and popups.
+
+Dialogs, menus, popovers, and tooltips render under `body`, outside the scope's element, so a scope gives them their own themed element at the end of the body and every popup in this library portals into it. A popup you build on Base UI yourself does the same with `usePortalContainer()`:
+
+```tsx
+import { Popover } from '@base-ui/react/popover'
+import { usePortalContainer } from 'uilibs/theme'
+
+export function Hint({ children }: { children: React.ReactNode }) {
+  const container = usePortalContainer()
+  return (
+    <Popover.Root>
+      <Popover.Trigger>Hint</Popover.Trigger>
+      <Popover.Portal container={container}>
+        <Popover.Positioner>
+          <Popover.Popup>{children}</Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  )
+}
+```
+
+`usePortalContainer()` returns the nearest scope's portal element, `null` while it mounts (the portal waits), and `undefined` outside any scope, where Base UI portals to the body as before.
+
+To force a whole subtree to a fixed palette without a scope, apply `darkColors` and `darkShadows`, or `lightColors` and `lightShadows`, from `uilibs/styles/themes` with `stylex.props` the way the Slytherin example above does. A popup opened inside that subtree keeps the app theme (see Caveats).
+
+## Right to left
+
+Two things make a form read right to left, and `UIProvider` is only one of them. The `dir` attribute, on the document or a subtree, turns the layout, the logical StyleX properties (`marginInlineStart`, `insetInlineEnd`), and the text. `UIProvider direction='rtl'` tells the Base UI parts that read a direction in script, so a slider's `ArrowLeft` moves toward the maximum.
+
+<Canvas of={ProviderStories.RightToLeft} />
+
+- Set both. `dir` alone leaves a slider's keys running left to right; `direction` alone leaves the layout and the text as they were.
+- The Storybook toolbar's direction toggle sets both for any story.
+- Calendar's month arrows, the data grid's expand chevrons, and its pager arrows mirror with `dir` alone; no `lang` is needed.
+- Menus, lists, fields, joined controls, and the close buttons of dialogs and sheets place their parts at the inline edges, so `dir` alone moves a check, a shortcut, or a rounded end to the other side. A submenu opens toward `inline-end`.
+- `Sheet`, `Drawer`, and `Toast` keep the screen side they are given: `side='left'` is the left edge in both directions.
+
+## Rebrand in one command
+
+The primary role is 7 tokens in 3 places: the light values in `colors.stylex.ts`, and the dark values and the restated light theme in `themes.ts`, 21 lines in all. Each is an `oklch()` color, and a rebrand changes only the hue. The script does it for you.
+
+```bash
+pnpm --filter uilibs rebrand 250
+```
+
+The argument is a hue in degrees (red is about 25, orange 50, green 150, blue 255, purple 305). The script rewrites the `background`, `border`, and `foreground` tokens of the primary role and nothing else. Each token keeps its own offset from the base hue, so the dark theme's slightly warmer border and text still sit beside its fill.
+
+- **Contrast holds.** Chroma stays as it is, and lightness moves with the hue so every token keeps its luminance, which is what the 4.5:1 and 3:1 ratios measure. The same lightness is not the same luminance in every hue: a blue at 0.58 is brighter than an orange at 0.58.
+- **Check the result.** Run `pnpm --filter uilibs exec vitest run --project unit`. A hue with little room in the sRGB gamut, such as a saturated yellow, can clip a color; lower the chroma of the token that fails.
+- **It is one-way.** The values are rounded to four places, so running it back to the old hue lands near the old values, not on them. Revert with git.
+- **Not covered.** The categorical chart colors (`chart1` to `chart8`) and the `onBackgroundPrimary` text color stay as they are. Edit them by hand if the new brand needs them.
+
+## Caveats
+
+- **Portaled popups.** A dialog, menu, popover, or tooltip renders under `body`, outside the element that carries a `stylex.createTheme` theme, so it keeps the app theme. Use `ThemeScope` when the popups should follow, or limit a local theme to inline content.
+- **One provider.** A `ThemeProvider` inside another is ignored and passes its children through.
+- **Only `dark` gets the dark class.** A theme name other than `light` or `dark` sets the attribute and nothing else. You style it yourself.
+- **Custom storage and the first paint.** The inline script that applies the theme before first paint supports `localStorage` and `cookie`. A custom storage adapter skips it, so the page can flash the default theme until React runs.
+- **Server rendering.** The server renders the default theme. With `defaultTheme='system'`, the inline script corrects it before paint, so keep the provider at the root.

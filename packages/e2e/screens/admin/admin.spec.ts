@@ -141,13 +141,41 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(toggle).toBeFocused()
   })
 
-  test('Mod+B expands and collapses the sidebar', async ({ admin }) => {
+  test('the rail shows the logo after a click, and the expand icon only on hover', async ({
+    admin
+  }) => {
+    await admin.openReady()
+    await admin.collapseButton().click()
+    await expect(admin.expandButton()).toBeVisible()
+    // The mark in the brand, and the expand icon (the toggle's second face).
+    const logo = admin.page.locator('aside svg').first().locator('xpath=..')
+    const icon = admin.expandButton().locator('xpath=./span/span[2]')
+
+    // The click leaves focus on the button, but a pointer focus must not hold the icon, and the
+    // pointer still being over the header as the rail closes must not flash it either.
+    await admin.page.mouse.move(700, 400)
+    await expect(logo).toHaveCSS('opacity', '1')
+    await expect(icon).toHaveCSS('opacity', '0')
+
+    await admin.expandButton().hover()
+    await expect(icon).toHaveCSS('opacity', '1')
+    await expect(logo).toHaveCSS('opacity', '0')
+  })
+
+  test('Mod+/ expands and collapses the sidebar', async ({ admin }) => {
     await admin.openReady()
     await expect(admin.collapseButton()).toBeVisible()
 
-    await admin.mod('b')
+    await admin.mod('/')
     await expect(admin.expandButton()).toBeVisible()
-    await admin.mod('b')
+    await admin.mod('/')
+    await expect(admin.collapseButton()).toBeVisible()
+
+    // Mod+Shift+/ is the shortcuts panel, not this toggle.
+    await admin.page.keyboard.press('ControlOrMeta+Shift+/')
+    await expect(admin.page.getByRole('button', { name: 'Back to commands' })).toBeVisible()
+    await admin.page.keyboard.press('Escape')
+    await expect(admin.commandBar()).toHaveCount(0)
     await expect(admin.collapseButton()).toBeVisible()
   })
 
@@ -173,7 +201,7 @@ test.describe('admin command bar and hotkeys', () => {
 
     // Neither the sidebar shortcut nor a sequence reaches the page behind the bar. The page is
     // hidden from the accessibility tree while the dialog is open, so check it once it closes.
-    await admin.mod('b')
+    await admin.mod('/')
     await admin.page.keyboard.press('g')
     await admin.page.keyboard.press('u')
     await admin.page.keyboard.press('Escape')
@@ -182,7 +210,7 @@ test.describe('admin command bar and hotkeys', () => {
     await expect(admin.page).toHaveURL(/\/admin$/)
 
     // And they are back once it has closed.
-    await admin.mod('b')
+    await admin.mod('/')
     await expect(admin.expandButton()).toBeVisible()
   })
 
@@ -243,5 +271,36 @@ test.describe('skip link and not-wired controls', () => {
     await admin.page.keyboard.press('Enter')
 
     await expect(admin.page.locator('main')).toBeFocused()
+  })
+})
+
+test.describe('admin chrome', () => {
+  test.skip(({ isMobile }) => isMobile, 'The test sets the viewport itself')
+
+  test('mounts the sidebar or the top bar, never both, and swaps across the breakpoint', async ({
+    admin
+  }) => {
+    const { page } = admin
+    const bell = page.getByRole('button', { name: /^Notifications/ })
+    const sidebar = admin.sidebar()
+    const topBar = page.locator('header').filter({ has: bell })
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await admin.openReady()
+    await expect(sidebar).toHaveCount(1)
+    await expect(bell).toHaveCount(1)
+    await expect(bell).toBeVisible()
+    await expect(topBar).toHaveCount(0)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(sidebar).toHaveCount(0)
+    await expect(bell).toHaveCount(1)
+    await expect(bell).toBeVisible()
+    await expect(topBar).toHaveCount(1)
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await expect(sidebar).toHaveCount(1)
+    await expect(bell).toHaveCount(1)
+    await expect(topBar).toHaveCount(0)
   })
 })

@@ -1,0 +1,134 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './pagination.stories'
+
+<Meta of={Stories} />
+
+# Pagination
+
+Page navigation made of links; it holds no state, so you render the links and mark the current one.
+
+## Import
+
+```jsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from 'uilibs/extra/pagination'
+```
+
+Built on plain `nav`, `ul`, and `li` elements, with `Button` rendered as an `a` for the links. Props not listed here pass through.
+
+## Anatomy
+
+- **Pagination:** the `nav` landmark.
+- **PaginationContent:** the `ul` that holds the items.
+- **PaginationItem:** an `li`. Each link and the ellipsis sits in its own item, a direct child of the content.
+- **PaginationLink:** a page link, an `a` rendered through `Button`'s `render`.
+- **PaginationPrevious:** a link to the previous page. It renders its own chevron and text.
+- **PaginationNext:** a link to the next page. It renders its own text and chevron.
+- **PaginationEllipsis:** a mark for skipped pages. It renders its own text for assistive technology.
+
+```jsx
+<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href='…' />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href='…' />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href='…' />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+```
+
+## Examples
+
+### Page links
+
+<Canvas of={Stories.Playground} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Icons only
+
+Set an empty `previous` or `next` label to drop the text.
+
+<Canvas of={Stories.IconsOnly} />
+
+### Translated
+
+<Canvas of={Stories.Translated} />
+
+## Accessibility
+
+The pager is a `navigation` landmark named by `labels.pagination`. Every page is a real link, and the current one has `aria-current='page'`. The `Keyboard` story walks the links.
+
+| Key                     | Action                                                                    |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Visit Previous, each page, and Next in order. The ellipsis is not a stop. |
+| `Enter`                 | Follows the focused link.                                                 |
+
+- With an empty `previous` or `next` label, the link keeps its name from `previousPage` or `nextPage`.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Pagination
+
+| Prop     | Description                                                                           |
+| -------- | ------------------------------------------------------------------------------------- |
+| `labels` | `{ pagination: string }` <br /> The name of the `nav` landmark. Default `Pagination`. |
+
+### PaginationLink
+
+| Prop      | Description                                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `current` | `boolean` <br /> Marks the current page: an outline fill and `aria-current="page"`. Without it the fill is ghost.      |
+| `size`    | `xsmall`, `small`, `medium`, `large` <br /> The `Button` sizes; a page link is a square of its size. Default `medium`. |
+
+| Data attribute  | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `data-disabled` | Present when the link is disabled.                           |
+| `aria-current`  | `page` on the active link. Set by this library, not Base UI. |
+
+### PaginationPrevious
+
+A `PaginationLink` fixed at size `medium`. It takes the other `PaginationLink` props except `size`.
+
+| Prop     | Description                                                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labels` | `{ previous: string, previousPage: string }` <br /> The visible text and the accessible name. Default `Previous` and `Go to previous page`. |
+
+### PaginationNext
+
+A `PaginationLink` fixed at size `medium`. It takes the other `PaginationLink` props except `size`.
+
+| Prop     | Description                                                                                                                 |
+| -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `labels` | `{ next: string, nextPage: string }` <br /> The visible text and the accessible name. Default `Next` and `Go to next page`. |
+
+### PaginationEllipsis
+
+| Prop     | Description                                                                             |
+| -------- | --------------------------------------------------------------------------------------- |
+| `labels` | `{ morePages: string }` <br /> The text for assistive technology. Default `More pages`. |
+
+## Caveats
+
+- Each part reads only its own `labels`. Pass the same object to `Pagination`, `PaginationPrevious`, `PaginationNext`, and `PaginationEllipsis` to translate them together.
+- With an empty `previous` or `next`, the link keeps its accessible name from `previousPage` or `nextPage`.
+- `PaginationLink` always renders a plain `a` and has no `render` prop.

@@ -1,0 +1,67 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './label.stories'
+
+<Meta of={Stories} />
+
+# Label
+
+The caption of a form control used outside a `Field`; inside a `Field`, use `FieldLabel`.
+
+## Import
+
+```jsx
+import { Label } from 'uilibs/extra/label'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): it renders a `label`, and `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **Label:** the caption. It can wrap the control or point at it with `htmlFor`.
+
+```jsx
+<Label htmlFor='owl-name'>Owl name</Label>
+```
+
+## Examples
+
+### Wrap a control
+
+A click on the text reaches the control inside the label.
+
+<Canvas of={Stories.Playground} />
+
+### Point at a control
+
+`htmlFor` names a control the label does not wrap; a click on the text focuses it.
+
+<Canvas of={Stories.ForInput} />
+
+### Invalid
+
+It looks like `FieldLabel`, and turns the critical color while it has `data-invalid`.
+
+<Canvas of={Stories.Invalid} />
+
+### As another element
+
+`render` swaps the `label` for a `span` that names a group through `aria-labelledby`.
+
+<Canvas of={Stories.AsElement} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+| Prop     | Description                                                                              |
+| -------- | ---------------------------------------------------------------------------------------- |
+| `render` | `ReactElement`, function <br /> Swaps the `label` for another element, such as a `span`. |
+
+| Data attribute | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `data-invalid` | Set it yourself on a label outside a `Field`: the text turns the critical color. Inside a `Field`, use `FieldLabel`. |
+
+## Caveats
+
+- Without a wrapped control or an `htmlFor` that matches the control's `id`, the label names nothing.
+- The text is `user-select: none`, so a visitor cannot select it.

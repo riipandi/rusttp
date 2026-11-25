@@ -34,13 +34,12 @@ import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
-import { popupFx } from '../../styles/popup.stylex'
-import { ring } from '../../styles/utils.stylex'
+import { glyphSize } from '../../styles/glyph'
+import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
+import { mirrorInRtl, ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export const DropdownMenu = BaseMenu.Root
 export const DropdownMenuTrigger = BaseMenu.Trigger
@@ -67,7 +66,7 @@ export function DropdownMenuContent({
   ...props
 }: DropdownMenuContentProps) {
   return (
-    <BaseMenu.Portal>
+    <BaseMenu.Portal container={usePortalContainer()}>
       <BaseMenu.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -92,24 +91,45 @@ export function DropdownMenuContent({
 }
 
 export interface DropdownMenuItemProps
-  extends Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style'>, StyleProp {
-  /** `critical` marks a destructive or irreversible item. */
-  tone?: 'critical'
+  extends
+    Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
+    StyleProp {
+  /** `critical` marks a destructive or irreversible item; `primary` a recommended one. */
+  color?: Extract<ColorRole, 'neutral' | 'critical' | 'primary'>
+  /** A glyph before the label; it is decoration, so the item's name is still its label. */
+  icon?: Glyph
   /** Indents the item to align with checkbox/radio item labels. */
   inset?: boolean
 }
 
-export function DropdownMenuItem({ style, tone, inset, ...props }: DropdownMenuItemProps) {
+export function DropdownMenuItem({
+  style,
+  color,
+  icon: Icon,
+  inset,
+  children,
+  ...props
+}: DropdownMenuItemProps) {
   return (
     <BaseMenu.Item
       {...props}
-      {...stylex.props(s.item, inset && s.itemInset, tone === 'critical' && s.itemCritical, style)}
-    />
+      {...stylex.props(
+        highlightedItem.root,
+        s.item,
+        inset && s.itemInset,
+        color === 'critical' && s.itemCritical,
+        color === 'primary' && s.itemPrimary,
+        style
+      )}
+    >
+      {Icon ? <Icon size={glyphSize.medium} aria-hidden {...stylex.props(s.itemIcon)} /> : null}
+      {children}
+    </BaseMenu.Item>
   )
 }
 
 function IndicatorCheck() {
-  return <Check size={16} strokeWidth={1.5} aria-hidden />
+  return <Check size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
 }
 
 export function DropdownMenuCheckboxItem({
@@ -118,7 +138,10 @@ export function DropdownMenuCheckboxItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.CheckboxItem>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseMenu.CheckboxItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
+    <BaseMenu.CheckboxItem
+      {...props}
+      {...stylex.props(highlightedItem.root, s.item, s.indicatorItem, style)}
+    >
       <span {...stylex.props(s.indicator)}>
         <BaseMenu.CheckboxItemIndicator>
           <IndicatorCheck />
@@ -135,7 +158,10 @@ export function DropdownMenuRadioItem({
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.RadioItem>, 'className' | 'style'> & StyleProp) {
   return (
-    <BaseMenu.RadioItem {...props} {...stylex.props(s.item, s.indicatorItem, style)}>
+    <BaseMenu.RadioItem
+      {...props}
+      {...stylex.props(highlightedItem.root, s.item, s.indicatorItem, style)}
+    >
       <span {...stylex.props(s.indicator)}>
         <BaseMenu.RadioItemIndicator>
           <IndicatorCheck />
@@ -156,14 +182,14 @@ export function DropdownMenuSubTrigger({
   return (
     <BaseMenu.SubmenuTrigger
       {...props}
-      {...stylex.props(s.item, s.subTrigger, inset && s.itemInset, style)}
+      {...stylex.props(highlightedItem.root, s.item, s.subTrigger, inset && s.itemInset, style)}
     >
       {children}
       <ChevronRight
-        size={16}
+        size={glyphSize.medium}
         strokeWidth={1.5}
         aria-hidden
-        {...stylex.props(s.subTriggerChevron)}
+        {...stylex.props(s.subTriggerChevron, mirrorInRtl.root)}
       />
     </BaseMenu.SubmenuTrigger>
   )
@@ -177,7 +203,7 @@ export function DropdownMenuSubContent({
 }: DropdownMenuContentProps) {
   return (
     <DropdownMenuContent
-      side='right'
+      side='inline-end'
       sideOffset={sideOffset}
       alignOffset={alignOffset}
       {...props}

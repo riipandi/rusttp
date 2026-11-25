@@ -3,12 +3,11 @@ import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontLineHeight, radius, unit } from '../../styles/tokens.stylex'
-import { canvasDecorator, hpBooks } from '../chart.samples'
+import { canvasDecorator, hpBooks } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/BarList',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
@@ -97,9 +96,19 @@ function BarList({ rows, highlightFirst = true }: BarListProps) {
   )
 }
 
-export const Default: Story = {
-  name: 'Most borrowed books',
-  render: () => <BarList rows={hpBooks.toSorted((a, b) => b.pages - a.pages)} />,
+interface PlaygroundArgs {
+  highlightFirst: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['highlightFirst'] } },
+  argTypes: {
+    highlightFirst: { control: 'boolean' }
+  },
+  args: { highlightFirst: true },
+  render: ({ highlightFirst }) => (
+    <BarList rows={hpBooks.toSorted((a, b) => b.pages - a.pages)} highlightFirst={highlightFirst} />
+  ),
   play: async ({ canvas }) => {
     const list = canvas.getByRole('list', { name: 'Most borrowed Harry Potter books' })
     await expect(list).toBeVisible()

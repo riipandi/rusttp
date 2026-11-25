@@ -1,0 +1,101 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './avatar.stories'
+
+<Meta of={Stories} />
+
+# Avatar
+
+A person or entity shown as an image, with a fallback when the image is missing.
+
+## Import
+
+```jsx
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage
+} from 'uilibs/base/avatar'
+```
+
+Built on Base UI [Avatar](https://base-ui.com/react/components/avatar). `AvatarBadge`, `AvatarGroup`, and `AvatarGroupCount` are plain elements. Props not listed here pass through.
+
+## Anatomy
+
+- **Avatar:** the root. It sets the size and the fallback's color.
+- **AvatarImage:** the picture.
+- **AvatarFallback:** initials or an icon. It shows while the image loads and when it fails.
+- **AvatarBadge:** optional status dot anchored to the bottom-right corner.
+- **AvatarGroup:** optional wrapper that overlaps its avatars, each with a page-colored ring.
+- **AvatarGroupCount:** optional trailing "+N" indicator for a group.
+
+```jsx
+<AvatarGroup>
+  <Avatar>
+    <AvatarImage />
+    <AvatarFallback />
+    <AvatarBadge />
+  </Avatar>
+  <AvatarGroupCount />
+</AvatarGroup>
+```
+
+## Examples
+
+### Colors
+
+Each fill in each role. The color tints the fallback only.
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### Status badge
+
+<Canvas of={Stories.Badge} />
+
+### Group with a count
+
+<Canvas of={Stories.GroupCount} />
+
+## Accessibility
+
+An avatar is not focusable and answers no keys. Its picture is named by the `alt` of `AvatarImage`, and its fallback is plain text. The `Named` and `Fallback` stories prove both.
+
+- Give `AvatarImage` an `alt` that is the person's or entity's name: it is the picture's accessible name.
+- `AvatarFallback` is text in the page, so a screen reader reads the initials as they are written. While the image loads or after it fails, the fallback is what the user gets; once the image loads, the fallback leaves the page.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Avatar
+
+| Prop      | Description                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| `size`    | `small`, `medium`, `large` <br /> Width and height. Default `medium`.                                        |
+| `variant` | `faded`, `solid` <br /> The fallback's fill. Default `faded`.                                                |
+| `color`   | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The fallback's role color. Default `neutral`. |
+| `squared` | `boolean` <br /> Rounded corners instead of a circle. Default `false`.                                       |
+
+### AvatarImage
+
+| Data attribute | Description                            |
+| -------------- | -------------------------------------- |
+| `data-loading` | Present while the image is loading.    |
+| `data-error`   | Present when the image failed to load. |
+
+### AvatarGroupCount
+
+| Prop   | Description                                                                     |
+| ------ | ------------------------------------------------------------------------------- |
+| `size` | `small`, `medium`, `large` <br /> Matches the `Avatar` sizes. Default `medium`. |
+
+## Caveats
+
+- `AvatarGroup` wraps each child in a `span`, so the group styles its direct children, not nested ones.
+- The ring between grouped avatars is `colors.backgroundPage`, so on any other surface it shows as a visible edge.

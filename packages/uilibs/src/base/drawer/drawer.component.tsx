@@ -24,12 +24,12 @@
 import { Drawer as BaseDrawer } from '@base-ui/react/drawer'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { popupFx } from '../../styles/popup.stylex'
+import { type } from '../../styles/type.stylex'
+import type { StyleProp } from '../../styles/types'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { drawerStyles as s } from './drawer.stylex'
 import { drawerDirections as directions, drawerSwipeHandles as swipeHandles } from './drawer.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export type DrawerSwipeDirection = 'up' | 'right' | 'down' | 'left'
 
@@ -69,21 +69,36 @@ export const DrawerClose = BaseDrawer.Close
 export const DrawerPortal = BaseDrawer.Portal
 
 export function DrawerOverlay({
+  blurredOverlay = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Backdrop>, 'className' | 'style'> & StyleProp) {
-  return <BaseDrawer.Backdrop {...props} {...stylex.props(s.overlay, style)} />
+}: Omit<React.ComponentProps<typeof BaseDrawer.Backdrop>, 'className' | 'style'> &
+  StyleProp & {
+    /** Blurs the page behind the backdrop. */
+    blurredOverlay?: boolean
+  }) {
+  return (
+    <BaseDrawer.Backdrop
+      {...props}
+      {...stylex.props(popupFx.scrim, s.overlay, blurredOverlay && popupFx.scrimBlurred, style)}
+    />
+  )
 }
 
 export function DrawerContent({
   style,
   children,
+  blurredOverlay = false,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Popup>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseDrawer.Popup>, 'className' | 'style'> &
+  StyleProp & {
+    /** Blurs the page behind the backdrop (a modal drawer only). */
+    blurredOverlay?: boolean
+  }) {
   const { modal, showSwipeHandle, swipeDirection } = React.useContext(DrawerContext)
   return (
-    <BaseDrawer.Portal>
-      {modal && <DrawerOverlay />}
+    <BaseDrawer.Portal container={usePortalContainer()}>
+      {modal && <DrawerOverlay blurredOverlay={blurredOverlay} />}
       <BaseDrawer.Viewport {...stylex.props(s.viewport, modal && s.viewportModal)}>
         <BaseDrawer.Popup {...props} {...stylex.props(s.popup, directions[swipeDirection], style)}>
           {showSwipeHandle && <DrawerSwipeHandle />}
@@ -128,7 +143,7 @@ export function DrawerTitle({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDrawer.Title>, 'className' | 'style'> & StyleProp) {
-  return <BaseDrawer.Title {...props} {...stylex.props(s.title, style)} />
+  return <BaseDrawer.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function DrawerDescription({

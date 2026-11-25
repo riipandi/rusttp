@@ -1,9 +1,10 @@
 import { ChevronRight, File as FileIcon, Folder as FolderIcon } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, stroke, unit, container } from '../../styles/tokens.stylex'
 import { fontWeight, radius } from '../../styles/tokens.stylex'
@@ -13,15 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsib
 const meta = {
   title: 'Base Components/Collapsible',
   component: Collapsible,
-  parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Collapsible>
 
 type Story = StoryObj<typeof meta>
@@ -151,11 +144,40 @@ function File({ name, depth = 1 }: { name: string; depth?: number }) {
 export default meta
 
 export const Playground: Story = {
-  render: () => (
-    <Collapsible defaultOpen {...stylex.props(styles.root)}>
+  // `defaultOpen` only seeds the state, so the render remounts the panel when it changes.
+  parameters: {
+    controls: { disable: false, include: ['defaultOpen', 'disabled'] },
+    docs: {
+      source: {
+        code: `<Collapsible defaultOpen>
+  <div>
+    <span>@hermione starred 3 repositories</span>
+    <CollapsibleTrigger render={<Button variant='ghost' size='small' />}>Alohomora</CollapsibleTrigger>
+  </div>
+  <div>@marauders/map</div>
+  <CollapsibleContent>
+    <div>@gringotts/vaults</div>
+    <div>@ministry/memos</div>
+  </CollapsibleContent>
+</Collapsible>`
+      }
+    }
+  },
+  argTypes: {
+    defaultOpen: { control: 'boolean' },
+    disabled: { control: 'boolean' }
+  },
+  args: { defaultOpen: true, disabled: false },
+  render: ({ defaultOpen, ...args }) => (
+    <Collapsible
+      key={String(defaultOpen)}
+      defaultOpen={defaultOpen}
+      {...args}
+      {...stylex.props(styles.root)}
+    >
       <div {...stylex.props(styles.header)}>
         <span {...stylex.props(styles.title)}>@hermione starred 3 repositories</span>
-        <CollapsibleTrigger render={<Button variant='ghost' size='sm' />}>
+        <CollapsibleTrigger render={<Button variant='ghost' size='small' />}>
           Alohomora
         </CollapsibleTrigger>
       </div>
@@ -181,7 +203,66 @@ export const Playground: Story = {
   }
 }
 
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Collapsible disabled>
+  <CollapsibleTrigger render={<Button variant='outline' size='small' />}>Alohomora disabled</CollapsibleTrigger>
+  <CollapsibleContent>
+    <div>@gringotts/vaults</div>
+  </CollapsibleContent>
+</Collapsible>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='state' rows={['closed', 'open', 'disabled'] as const}>
+      {(state) => (
+        <Collapsible defaultOpen={state === 'open'} disabled={state === 'disabled'}>
+          <CollapsibleTrigger render={<Button variant='outline' size='small' />}>
+            Alohomora {state}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div {...stylex.props(styles.repo)}>@gringotts/vaults</div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const trigger = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('button')
+      if (!el) throw new Error(`No trigger for ${state}`)
+      return el
+    }
+    await expect(trigger('closed')).toHaveAttribute('aria-expanded', 'false')
+    await expect(trigger('open')).toHaveAttribute('aria-expanded', 'true')
+
+    const disabled = trigger('disabled')
+    await expect(disabled).toHaveAttribute('data-disabled')
+    await userEvent.click(disabled)
+    await expect(disabled).toHaveAttribute('aria-expanded', 'false')
+  }
+}
+
 export const FileTree: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Collapsible defaultOpen>
+  <CollapsibleTrigger style={…}>marauders-map</CollapsibleTrigger>
+  <CollapsibleContent>
+    <Collapsible defaultOpen>
+      <CollapsibleTrigger style={…}>spells</CollapsibleTrigger>
+      <CollapsibleContent>…</CollapsibleContent>
+    </Collapsible>
+    <div>incantations.ts</div>
+  </CollapsibleContent>
+</Collapsible>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.tree)}>
       <Folder name='marauders-map' defaultOpen depth={0}>
@@ -205,5 +286,48 @@ export const FileTree: Story = {
     await userEvent.click(closed)
     await expect(closed).toHaveAttribute('aria-expanded', 'true')
     await expect(canvas.getByText('golden-snitch.ico')).toBeInTheDocument()
+  }
+}
+
+/** Tab reaches the trigger, Enter opens the panel, Space closes it, and Tab skips a disabled trigger. */
+export const Keyboard: Story = {
+  render: () => (
+    <>
+      <Collapsible>
+        <CollapsibleTrigger render={<Button variant='outline' size='small' />}>
+          Alohomora
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div {...stylex.props(styles.repo)}>@gringotts/vaults</div>
+        </CollapsibleContent>
+      </Collapsible>
+      <Collapsible disabled>
+        <CollapsibleTrigger render={<Button variant='outline' size='small' />}>
+          Colloportus
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div {...stylex.props(styles.repo)}>@ministry/memos</div>
+        </CollapsibleContent>
+      </Collapsible>
+      <Button size='small'>Reparo</Button>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('button', { name: 'Alohomora' })
+    const disabled = canvas.getByRole('button', { name: 'Colloportus' })
+    const after = canvas.getByRole('button', { name: 'Reparo' })
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.keyboard('{Enter}')
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.keyboard(' ')
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    // Tab skips the disabled trigger.
+    await userEvent.tab()
+    await expect(disabled).not.toHaveFocus()
+    await expect(after).toHaveFocus()
   }
 }

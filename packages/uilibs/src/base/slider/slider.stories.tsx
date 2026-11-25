@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontFamily, fontSize } from '../../styles/tokens.stylex'
 import { Slider } from './slider.component'
@@ -10,27 +11,7 @@ import { Slider } from './slider.component'
 const meta = {
   title: 'Base Components/Slider',
   component: Slider,
-  parameters: { layout: 'centered' },
-  argTypes: {
-    disabled: { control: 'boolean' },
-    orientation: { control: 'radio', options: ['horizontal', 'vertical'] }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Slider>
 
 type Story = StoryObj<typeof meta>
@@ -64,8 +45,28 @@ const styles = stylex.create({
 
 export default meta
 
+const thumbValue = (thumb: HTMLElement) => thumb.getAttribute('aria-valuenow')
+
 export const Playground: Story = {
-  args: { defaultValue: 50, 'aria-label': 'Volume' },
+  parameters: {
+    controls: { disable: false, include: ['min', 'max', 'step', 'orientation', 'disabled'] }
+  },
+  argTypes: {
+    min: { control: 'number' },
+    max: { control: 'number' },
+    step: { control: 'number' },
+    orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    disabled: { control: 'boolean' }
+  },
+  args: {
+    defaultValue: 50,
+    min: 0,
+    max: 100,
+    step: 1,
+    orientation: 'horizontal',
+    disabled: false,
+    'aria-label': 'Volume'
+  },
   render: (args) => <Slider {...args} style={styles.root} />,
   play: async ({ canvas }) => {
     // Base UI exposes more than one slider element; pick the value thumb.
@@ -85,7 +86,80 @@ export const Playground: Story = {
   }
 }
 
+export const Orientations: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Slider orientation='vertical' defaultValue={[40]} aria-label='Volume vertical' />`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='orientation' rows={['horizontal', 'vertical'] as const}>
+      {(orientation) => (
+        <div {...stylex.props(orientation === 'vertical' && styles.verticalRow)}>
+          <Slider
+            orientation={orientation}
+            defaultValue={[40]}
+            aria-label={`Volume ${orientation}`}
+          />
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const orientation of ['horizontal', 'vertical']) {
+      const root = cellOf(canvasElement, 'orientation', orientation).querySelector(
+        `[data-orientation="${orientation}"]`
+      )
+      if (!root) throw new Error(`No ${orientation} slider`)
+      const { width, height } = root.getBoundingClientRect()
+      await expect(width > height).toBe(orientation === 'horizontal')
+    }
+  }
+}
+
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Slider defaultValue={[40]} disabled aria-label='Volume disabled' />`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <Slider
+          defaultValue={[40]}
+          disabled={state === 'disabled'}
+          aria-label={`Volume ${state}`}
+          style={styles.root}
+        />
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    // A disabled slider is drawn with the disabled tokens, so nothing in it is dimmed by opacity.
+    const disabledParts = Array.from(
+      cellOf(canvasElement, 'state', 'disabled').querySelectorAll('[data-disabled]')
+    )
+    await expect(disabledParts.length).toBeGreaterThan(0)
+    for (const part of disabledParts) await expect(getComputedStyle(part).opacity).toBe('1')
+    await expect(
+      cellOf(canvasElement, 'state', 'default').querySelector('[data-disabled]')
+    ).toBeNull()
+  }
+}
+
 export const Range: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Slider defaultValue={[25, 75]} thumbLabels={['Minimum price', 'Maximum price']} />`
+      }
+    }
+  },
   args: { defaultValue: [25, 75], thumbLabels: ['Minimum price', 'Maximum price'] },
   render: (args) => <Slider {...args} style={styles.root} />,
   play: async ({ canvas }) => {
@@ -96,16 +170,18 @@ export const Range: Story = {
   }
 }
 
-export const Vertical: Story = {
-  args: { orientation: 'vertical', defaultValue: [40], 'aria-label': 'Volume' },
-  render: (args) => (
-    <div {...stylex.props(styles.verticalRow)}>
-      <Slider {...args} />
-    </div>
-  )
-}
-
 export const Controlled: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Slider
+  aria-label='Volume'
+  value={value}
+  onValueChange={(next) => setValue(typeof next === 'number' ? [next] : [...next])}
+/>`
+      }
+    }
+  },
   args: { value: [40] },
   render: () => {
     const [value, setValue] = React.useState([40])
@@ -124,7 +200,48 @@ export const Controlled: Story = {
   }
 }
 
-export const Disabled: Story = {
-  args: { disabled: true, defaultValue: [40], 'aria-label': 'Volume' },
-  render: (args) => <Slider {...args} style={styles.root} />
+/** The arrow keys step the thumb, Shift or Page Up and Down take the large step, Home and End jump to the ends, and a range has one tab stop per thumb. */
+export const Keyboard: Story = {
+  args: {
+    defaultValue: [20, 60],
+    min: 0,
+    max: 100,
+    step: 1,
+    thumbLabels: ['Minimum price', 'Maximum price']
+  },
+  render: (args) => <Slider {...args} style={styles.root} />,
+  play: async ({ canvas }) => {
+    const min = canvas.getByRole('slider', { name: 'Minimum price' })
+    const max = canvas.getByRole('slider', { name: 'Maximum price' })
+
+    await userEvent.tab()
+    await expect(min).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowLeft}')
+    await expect(thumbValue(min)).toBe('21')
+    await userEvent.keyboard('{ArrowUp}')
+    await expect(thumbValue(min)).toBe('22')
+    await userEvent.keyboard('{ArrowDown}')
+    await expect(thumbValue(min)).toBe('21')
+    // The large step is 10.
+    await userEvent.keyboard('{PageUp}')
+    await expect(thumbValue(min)).toBe('31')
+    await userEvent.keyboard('{PageDown}')
+    await expect(thumbValue(min)).toBe('21')
+    await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+    await expect(thumbValue(min)).toBe('31')
+
+    // Home and End jump to the ends of the range the thumb may take.
+    await userEvent.keyboard('{Home}')
+    await expect(thumbValue(min)).toBe('0')
+    await userEvent.keyboard('{End}')
+    await expect(thumbValue(min)).toBe('60')
+
+    // Each thumb is its own tab stop, and the thumbs do not cross.
+    await userEvent.tab()
+    await expect(max).toHaveFocus()
+    await userEvent.keyboard('{Home}')
+    await expect(thumbValue(max)).toBe('60')
+    await userEvent.keyboard('{End}')
+    await expect(thumbValue(max)).toBe('100')
+  }
 }

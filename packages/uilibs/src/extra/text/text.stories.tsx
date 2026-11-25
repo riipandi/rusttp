@@ -1,60 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
+import { type } from '../../styles/type.stylex'
 import { Text } from './text.component'
+import {
+  textAlignStyles,
+  textColorStyles,
+  textVariantStyles,
+  textWeightStyles
+} from './text.stylex'
 
 const meta = {
   title: 'Extra Components/Text',
   component: Text,
-  parameters: { layout: 'fullscreen' },
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: [
-        'headline-1',
-        'headline-2',
-        'headline-3',
-        'featured-1',
-        'featured-2',
-        'featured-3',
-        'featured-4',
-        'featured-5',
-        'featured-6',
-        'body-1',
-        'body-2',
-        'caption-1',
-        'caption-2'
-      ]
-    },
-    color: {
-      control: 'select',
-      options: [
-        'neutral',
-        'neutral-faded',
-        'positive',
-        'warning',
-        'critical',
-        'primary',
-        'disabled'
-      ]
-    },
-    weight: {
-      control: 'select',
-      options: ['light', 'regular', 'medium', 'semibold', 'bold', 'extrabold', 'black']
-    },
-    align: { control: 'inline-radio', options: ['start', 'center', 'end'] },
-    decoration: { control: 'select', options: ['underline', 'line-through'] },
-    wrap: { control: 'select', options: ['balance', 'nowrap'] }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding('16px'), atoms.width('100%'))}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Text>
 
 type Story = StoryObj<typeof meta>
@@ -73,58 +34,177 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'children',
+        'variant',
+        'color',
+        'weight',
+        'align',
+        'decoration',
+        'wrap',
+        'maxLines',
+        'monospace',
+        'numeric'
+      ]
+    }
+  },
+  argTypes: {
+    children: { control: 'text' },
+    variant: { control: 'select', options: Object.keys(textVariantStyles) },
+    color: { control: 'select', options: Object.keys(textColorStyles) },
+    weight: { control: 'select', options: Object.keys(textWeightStyles) },
+    align: { control: 'inline-radio', options: Object.keys(textAlignStyles) },
+    decoration: { control: 'select', options: ['underline', 'line-through'] },
+    wrap: { control: 'select', options: ['balance', 'nowrap'] },
+    maxLines: { control: 'number' },
+    monospace: { control: 'boolean' },
+    numeric: { control: 'boolean' }
+  },
   args: {
     variant: 'body-1',
-    children: 'Professor Langdon deciphered the cryptex beneath the Louvre'
+    children: 'Professor Langdon deciphered the cryptex beneath the Louvre',
+    monospace: false,
+    numeric: false
   },
   render: (args) => <Text {...args} />
 }
 
+const variantNames = [
+  'headline-1',
+  'headline-2',
+  'headline-3',
+  'featured-1',
+  'featured-2',
+  'featured-3',
+  'featured-4',
+  'featured-5',
+  'featured-6',
+  'body-1',
+  'body-2',
+  'caption-1',
+  'caption-2'
+] as const
+
+// The `type` recipe each variant name maps to (`headline-1` is `type.headline1`).
+const roleOf: Record<(typeof variantNames)[number], keyof typeof type> = {
+  'headline-1': 'headline1',
+  'headline-2': 'headline2',
+  'headline-3': 'headline3',
+  'featured-1': 'featured1',
+  'featured-2': 'featured2',
+  'featured-3': 'featured3',
+  'featured-4': 'featured4',
+  'featured-5': 'featured5',
+  'featured-6': 'featured6',
+  'body-1': 'body1',
+  'body-2': 'body2',
+  'caption-1': 'caption1',
+  'caption-2': 'caption2'
+}
+
 export const Variants: Story = {
+  parameters: { docs: { source: { code: `<Text variant='featured-3'>Lumos</Text>` } } },
   render: () => (
-    <div {...stylex.props(styles.col)}>
-      <Text variant='headline-1'>The Boy Who Lived</Text>
-      <Text variant='headline-2'>The Lost Symbol</Text>
-      <Text variant='headline-3'>Hogwarts: A History</Text>
-      <Text variant='featured-1'>The Louvre by Night</Text>
-      <Text variant='featured-2'>Gringotts Under Lockdown</Text>
-      <Text variant='featured-3'>Decoding the Cryptex</Text>
-      <Text variant='featured-4'>Secrets of the Priory</Text>
-      <Text variant='featured-5'>The Last Supper Cipher</Text>
-      <Text variant='featured-6'>Shadows of the Vatican</Text>
-      <Text variant='body-1'>Langdon studied the symbols in silence.</Text>
-      <Text variant='body-2'>Hermione cast the charm perfectly.</Text>
-      <Text variant='caption-1'>From the Daily Prophet archives</Text>
-      <Text variant='caption-2'>Grand Gallery, the Louvre</Text>
-      <Text variant={{ s: 'body-2', m: 'featured-4' }}>Responsive variant</Text>
-    </div>
-  )
+    <Axis axis='variant' rows={variantNames}>
+      {(variant) => <Text variant={variant}>Lumos</Text>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const size = (variant: string) =>
+      parseFloat(
+        getComputedStyle(
+          cellOf(canvasElement, 'variant', variant).firstElementChild ?? canvasElement
+        ).fontSize
+      )
+    // The scale runs from headlines down to captions.
+    await expect(size('headline-1')).toBeGreaterThan(size('body-1'))
+    await expect(size('body-1')).toBeGreaterThan(size('caption-2'))
+    // Every variant draws the type role of its name, the one the component text parts compose.
+    for (const variant of variantNames) {
+      await expectTypeRole(
+        cellOf(canvasElement, 'variant', variant).firstElementChild ?? canvasElement,
+        roleOf[variant]
+      )
+    }
+  }
 }
 
-export const Weight: Story = {
+const weightNames = ['regular', 'medium', 'semibold', 'bold', 'extrabold'] as const
+
+export const Weights: Story = {
   render: () => (
-    <div {...stylex.props(styles.col)}>
-      <Text weight='regular'>Regular</Text>
-      <Text weight='medium'>Medium</Text>
-      <Text weight='semibold'>Semibold</Text>
-      <Text weight='bold'>Bold</Text>
-      <Text weight='extrabold'>Extrabold</Text>
-      <Text weight={{ s: 'regular', m: 'bold' }}>Responsive weight</Text>
-    </div>
-  )
+    <Axis axis='weight' rows={weightNames}>
+      {(weight) => <Text weight={weight}>{weight}</Text>}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const weights = weightNames.map(
+      (weight) =>
+        getComputedStyle(cellOf(canvasElement, 'weight', weight).firstElementChild ?? canvasElement)
+          .fontWeight
+    )
+    await expect(new Set(weights).size).toBe(weightNames.length)
+  }
 }
 
-export const Color: Story = {
+const colorNames = [
+  'neutral',
+  'neutral-faded',
+  'primary',
+  'positive',
+  'warning',
+  'critical',
+  'disabled'
+] as const
+
+export const Colors: Story = {
+  parameters: { docs: { source: { code: `<Text color='critical'>critical</Text>` } } },
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => (
+        <Text color={color} aria-disabled={color === 'disabled' ? true : undefined}>
+          {color}
+        </Text>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const tints = colorNames.map(
+      (color) =>
+        getComputedStyle(cellOf(canvasElement, 'color', color).firstElementChild ?? canvasElement)
+          .color
+    )
+    await expect(new Set(tints).size).toBe(colorNames.length)
+  }
+}
+
+/** A prop takes a per-breakpoint object as well as a single value. */
+export const Responsive: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
+
+<Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
+
+<Text variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}>
+  Steps up at each breakpoint, then back down
+</Text>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
-      <Text>Neutral</Text>
-      <Text color='neutral-faded'>Faded</Text>
-      <Text color='positive'>Positive</Text>
-      <Text color='warning'>Warning</Text>
-      <Text color='critical'>Critical</Text>
-      <Text color='primary'>Primary</Text>
-      <Text color='disabled' aria-disabled>
-        Disabled
+      <Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
+      <Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
+      <Text align={{ small: 'center', medium: 'start' }}>Responsive alignment</Text>
+      <Text
+        variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}
+      >
+        Steps up at each breakpoint, then back down
       </Text>
     </div>
   )
@@ -181,18 +261,26 @@ export const Align: Story = {
       <Text align='start'>Expelliarmus</Text>
       <Text align='center'>Expelliarmus</Text>
       <Text align='end'>Expelliarmus</Text>
-      <Text align={{ s: 'center', m: 'start' }}>Responsive alignment</Text>
     </div>
   )
 }
 
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Text render={<h1 />}>The Da Vinci Code</Text>
+
+<Text variant='featured-2'>Chapter 1: The Louvre</Text>`
+      }
+    }
+  },
   name: 'as',
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Text render={<h1 />}>The Da Vinci Code</Text>
       <Text variant='featured-2'>Chapter 1: The Louvre</Text>
-      <Text variant={{ s: 'featured-2', m: 'featured-3' }}>Chapter 2: The Vatican</Text>
+      <Text variant={{ small: 'featured-2', medium: 'featured-3' }}>Chapter 2: The Vatican</Text>
     </div>
   ),
   play: async ({ canvas }) => {

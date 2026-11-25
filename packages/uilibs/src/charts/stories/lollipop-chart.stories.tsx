@@ -5,18 +5,15 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
 import { expect } from 'storybook/test'
-import { Chart, ChartContainer } from '../chart.component'
-import { canvasDecorator, chartTheme, seriesColors } from '../chart.samples'
+import { Chart, ChartContainer, ChartLegend } from '../chart.component'
+import { canvasDecorator, chartTheme, seriesColors, seriesNames } from './chart.samples'
 
 const meta = {
   title: 'Visualizations/LollipopChart',
   component: undefined,
-  parameters: { layout: 'centered' },
   tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
-
-type Story = StoryObj<typeof meta>
 
 export default meta
 
@@ -45,9 +42,17 @@ const masteryScales = {
   y: { scale: () => scaleBand().padding(0.35) }
 } as const
 
-export const Ranked: Story = {
-  name: 'Ranked mastery',
-  render: () => {
+interface PlaygroundArgs {
+  legend: boolean
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: { controls: { disable: false, include: ['legend'] } },
+  argTypes: {
+    legend: { control: 'boolean' }
+  },
+  args: { legend: false },
+  render: ({ legend }) => {
     const definition = defineChart({
       marks: [
         link(spells, {
@@ -85,12 +90,13 @@ export const Ranked: Story = {
     })
 
     return (
-      <ChartContainer config={{ mastery: { label: 'Mastery', color: seriesColors.langdon } }}>
+      <ChartContainer config={{ mastery: { label: 'Mastery', color: seriesNames.langdon } }}>
         <Chart
           definition={definition}
           ariaLabel='Spell mastery ranked from strongest to weakest'
           height={280}
         />
+        {legend && <ChartLegend />}
       </ChartContainer>
     )
   },

@@ -59,7 +59,7 @@ export const emptyStyles = stylex.create({
   }
 })
 
-export const emptyMediaVariants = stylex.create({
+export const emptyMediaKinds = stylex.create({
   default: {},
   icon: {
     backgroundColor: colors.backgroundNeutral,

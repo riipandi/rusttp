@@ -1,0 +1,217 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './dropdown-menu.stories'
+
+<Meta of={Stories} />
+
+# Dropdown Menu
+
+A menu of actions that opens from a trigger. Context Menu and Menubar items are the same components.
+
+## Import
+
+```jsx
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger
+} from 'uilibs/base/dropdown-menu'
+```
+
+Built on Base UI [Menu](https://base-ui.com/react/components/menu). Props not listed here pass through.
+
+## Anatomy
+
+- **DropdownMenu:** the root. It holds the open state.
+- **DropdownMenuTrigger:** the button that opens the menu.
+- **DropdownMenuContent:** the popup. It renders the portal and the positioner itself.
+- **DropdownMenuGroup:** groups items under a label.
+- **DropdownMenuLabel:** the heading of a group or radio group. It must sit inside one.
+- **DropdownMenuItem:** an action. It can hold a `DropdownMenuShortcut`.
+- **DropdownMenuShortcut:** the key hint at the end of an item.
+- **DropdownMenuCheckboxItem:** an item that toggles on and off, with a check indicator.
+- **DropdownMenuRadioGroup:** holds radio items, of which one is chosen.
+- **DropdownMenuRadioItem:** one choice in a radio group, with a check indicator.
+- **DropdownMenuSeparator:** a divider between items.
+- **DropdownMenuSub:** the root of a submenu.
+- **DropdownMenuSubTrigger:** the item that opens the submenu. It renders the chevron itself.
+- **DropdownMenuSubContent:** the submenu popup.
+- **DropdownMenuPortal:** exported only for custom compositions. `DropdownMenuContent` already includes it.
+
+```jsx
+<DropdownMenu>
+  <DropdownMenuTrigger />
+  <DropdownMenuContent>
+    <DropdownMenuGroup>
+      <DropdownMenuLabel />
+      <DropdownMenuItem>
+        <DropdownMenuShortcut />
+      </DropdownMenuItem>
+      <DropdownMenuCheckboxItem />
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuRadioGroup>
+      <DropdownMenuRadioItem />
+    </DropdownMenuRadioGroup>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger />
+      <DropdownMenuSubContent>
+        <DropdownMenuItem />
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+## Examples
+
+### States
+
+<Canvas of={Stories.States} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Checkbox and radio items
+
+<Canvas of={Stories.Checkboxes} />
+
+### Submenu
+
+<Canvas of={Stories.Submenu} />
+
+## Accessibility
+
+The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` items, opened from `DropdownMenuTrigger`. The trigger needs text or an `aria-label`, and so does each item. The `Keyboard` story walks the keys below, and the `Open` story keeps the menu open so the accessibility check reads it.
+
+| Key                | Action                                                                    |
+| ------------------ | ------------------------------------------------------------------------- |
+| `Enter` or `Space` | On the trigger: opens the menu. On an item: picks it and closes the menu. |
+| `ArrowDown`        | On the trigger: opens the menu. In the menu: highlights the next item.    |
+| `ArrowUp`          | Highlights the previous item.                                             |
+| `Home`, `End`      | Highlights the first or the last item.                                    |
+| A letter           | Highlights the next item whose label starts with it (typeahead).          |
+| `ArrowRight`       | On `DropdownMenuSubTrigger`: opens the submenu.                           |
+| `ArrowLeft`        | In a submenu: closes it.                                                  |
+| `Escape`           | Closes the menu and returns focus to the trigger.                         |
+
+- Focus moves into the menu when it opens. It stays on the menu items, and the highlighted item has a visible highlight (`data-highlighted`), in its own color for a `critical` item.
+- A disabled item stays in the arrow order and does nothing when picked.
+- Keyboard behavior is Base UI's; see the Base UI [Menu](https://base-ui.com/react/components/menu) page for the rest.
+
+## API reference
+
+Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DropdownMenuContent` and `DropdownMenuSubContent` it styles the popup.
+
+### DropdownMenuTrigger
+
+| Data attribute    | Description                           |
+| ----------------- | ------------------------------------- |
+| `data-popup-open` | Present while the menu is open.       |
+| `data-pressed`    | Present while the trigger is pressed. |
+| `data-disabled`   | Present when the trigger is disabled. |
+
+### DropdownMenuContent
+
+| Prop          | Description                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` <br /> Which side of the trigger the popup opens on. Default `bottom`. |
+| `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `4`.                                                      |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                     |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `0`.                                                |
+
+| Data attribute        | Description                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| `data-open`           | Present while the menu is open.                                                              |
+| `data-closed`         | Present while the menu is closed.                                                            |
+| `data-starting-style` | Present as the menu begins to open.                                                          |
+| `data-ending-style`   | Present as the menu closes.                                                                  |
+| `data-side`           | The side the popup is on: `top`, `bottom`, `left`, `right`, `inline-end`, or `inline-start`. |
+| `data-align`          | `start`, `center`, or `end`.                                                                 |
+
+These CSS variables are set on the positioner, and the popup inherits them.
+
+| CSS variable         | Description                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `--available-height` | The space between the trigger and the viewport edge. The popup's `max-height` uses it. |
+| `--anchor-width`     | The trigger's width.                                                                   |
+| `--transform-origin` | The point the popup grows from, for animating it.                                      |
+
+### DropdownMenuSubContent
+
+It takes the `DropdownMenuContent` props and data attributes, with other defaults.
+
+| Prop          | Description                                                                                                                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `side`        | `top`, `bottom`, `left`, `right`, `inline-end`, `inline-start` <br /> Which side of its trigger the submenu opens on. Default `inline-end`, so it follows the reading direction. |
+| `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `0`.                                                                                                 |
+| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                                                                |
+| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `-4`.                                                                                          |
+
+### DropdownMenuItem
+
+| Prop    | Description                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `critical`, `primary` <br /> `critical` marks a destructive or irreversible item; `primary` a recommended one. |
+| `icon`  | A glyph component <br /> A glyph before the label. It is hidden from assistive technology.                                |
+| `inset` | `boolean` <br /> Indents the item to align with checkbox and radio item labels.                                           |
+
+| Data attribute     | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `data-highlighted` | Present while the item has focus or the pointer. |
+| `data-disabled`    | Present when the item is disabled.               |
+
+### DropdownMenuCheckboxItem
+
+| Data attribute     | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `data-checked`     | Present while the item is checked.               |
+| `data-unchecked`   | Present while the item is not checked.           |
+| `data-highlighted` | Present while the item has focus or the pointer. |
+| `data-disabled`    | Present when the item is disabled.               |
+
+### DropdownMenuRadioItem
+
+| Data attribute     | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `data-checked`     | Present while the item is the chosen one.        |
+| `data-unchecked`   | Present while the item is not chosen.            |
+| `data-highlighted` | Present while the item has focus or the pointer. |
+| `data-disabled`    | Present when the item is disabled.               |
+
+### DropdownMenuSubTrigger
+
+| Prop    | Description                                                                        |
+| ------- | ---------------------------------------------------------------------------------- |
+| `inset` | `boolean` <br /> Indents the trigger to align with checkbox and radio item labels. |
+
+| Data attribute     | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `data-popup-open`  | Present while the submenu is open.               |
+| `data-highlighted` | Present while the item has focus or the pointer. |
+| `data-disabled`    | Present when the trigger is disabled.            |
+
+### DropdownMenuLabel
+
+| Prop    | Description                                                                      |
+| ------- | -------------------------------------------------------------------------------- |
+| `inset` | `boolean` <br /> Indents the label to align with checkbox and radio item labels. |
+
+## Caveats
+
+- `DropdownMenuLabel` throws unless it sits inside a `DropdownMenuGroup` or `DropdownMenuRadioGroup`.
+- `DropdownMenuContent` already wraps itself in a portal and positioner. Do not add `DropdownMenuPortal` around it.
+- A disabled item dims but keeps the default cursor, unlike a form control.
+- `icon` is decoration: the item is still named by its label alone.

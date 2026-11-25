@@ -1,0 +1,118 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './accordion.stories'
+
+<Meta of={Stories} />
+
+# Accordion
+
+A stack of headings that each open and close a panel of content.
+
+## Import
+
+```jsx
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from 'uilibs/base/accordion'
+```
+
+Built on Base UI [Accordion](https://base-ui.com/react/components/accordion). Props not listed here pass through.
+
+## Anatomy
+
+- **Accordion:** the root. It holds the items and which of them are open.
+- **AccordionItem:** one collapsible section.
+- **AccordionTrigger:** the button that toggles its item. It renders the heading and the chevron itself.
+- **AccordionContent:** the panel shown while the item is open. Base UI calls this part `Panel`.
+
+```jsx
+<Accordion>
+  <AccordionItem>
+    <AccordionTrigger />
+    <AccordionContent />
+  </AccordionItem>
+</Accordion>
+```
+
+## Examples
+
+### Open several panels
+
+Set `multiple` on `Accordion` to keep more than one item open.
+
+<Canvas of={Stories.Multiple} />
+
+### Chevron position
+
+<Canvas of={Stories.IconPositions} />
+
+### Disabled items
+
+<Canvas of={Stories.States} />
+
+## Accessibility
+
+Each `AccordionTrigger` is a `button` named by its label, and `aria-expanded` tells whether its panel is open. The `Keyboard` story walks the table below.
+
+| Key                     | Action                                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves between the triggers. Every trigger is a tab stop, and a disabled item is skipped.     |
+| `Enter` or `Space`      | Opens a closed panel and closes an open one. Without `multiple`, opening one closes another. |
+
+- The arrow keys do not move focus between triggers.
+- The panel is not mounted while it is closed, so its text is not in the page until the item opens.
+- Keyboard behavior is Base UI's; see the Base UI [Accordion](https://base-ui.com/react/components/accordion) page for the rest.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Accordion
+
+| Data attribute     | Description                             |
+| ------------------ | --------------------------------------- |
+| `data-disabled`    | Present when the accordion is disabled. |
+| `data-orientation` | `vertical` or `horizontal`.             |
+
+### AccordionItem
+
+| Data attribute  | Description                        |
+| --------------- | ---------------------------------- |
+| `data-open`     | Present while the item is open.    |
+| `data-disabled` | Present when the item is disabled. |
+| `data-index`    | The item's position, from 0.       |
+
+### AccordionTrigger
+
+| Prop           | Description                                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `iconPosition` | `start`, `end` <br /> Which side of the label the chevron is on. The DOM and focus order stay the same. Default `end`. |
+
+| Data attribute    | Description                             |
+| ----------------- | --------------------------------------- |
+| `data-panel-open` | Present while the item's panel is open. |
+| `data-disabled`   | Present when the item is disabled.      |
+| `data-index`      | The item's position, from 0.            |
+
+### AccordionContent
+
+On this part `style` applies to the inner wrapper of the panel, not the panel itself.
+
+| Data attribute        | Description                          |
+| --------------------- | ------------------------------------ |
+| `data-open`           | Present while the panel is open.     |
+| `data-orientation`    | `vertical` or `horizontal`.          |
+| `data-starting-style` | Present as the panel begins to open. |
+| `data-ending-style`   | Present as the panel closes.         |
+
+| CSS variable               | Description                           |
+| -------------------------- | ------------------------------------- |
+| `--accordion-panel-height` | The panel's height, for animating it. |
+| `--accordion-panel-width`  | The panel's width.                    |
+
+## Caveats
+
+- `iconPosition='start'` moves the chevron with CSS `order`, so screen readers and the Tab order still meet the label first.
+- The trigger already sits inside a heading. Do not wrap it in another one.

@@ -1,48 +1,59 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
-import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion.component'
 
 const meta = {
   title: 'Base Components/Accordion',
   component: Accordion,
-  parameters: { layout: 'fullscreen' },
-  argTypes: {
-    multiple: { control: 'boolean' }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Accordion>
 
 type Story = StoryObj<typeof meta>
 
 export default meta
 
-export const Playground: Story = {
-  args: { multiple: false, defaultValue: ['item-1'] },
-  render: (args) => (
+const isOpen = (trigger: HTMLElement) => trigger.getAttribute('aria-expanded') === 'true'
+
+type PlaygroundArgs = ComponentProps<typeof Accordion> &
+  Pick<ComponentProps<typeof AccordionTrigger>, 'iconPosition'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['multiple', 'disabled', 'loopFocus', 'iconPosition'] }
+  },
+  argTypes: {
+    multiple: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    loopFocus: { control: 'boolean' },
+    iconPosition: { control: 'radio', options: ['end', 'start'] }
+  },
+  args: {
+    multiple: false,
+    disabled: false,
+    loopFocus: true,
+    iconPosition: 'end',
+    defaultValue: ['item-1']
+  },
+  render: ({ iconPosition, ...args }) => (
     <Accordion {...args}>
       <AccordionItem value='item-1'>
-        <AccordionTrigger>Is the vault accessible?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is the vault accessible?</AccordionTrigger>
         <AccordionContent>
           Yes. It follows the Gringotts access pattern and unlocks with a spoken Alohomora.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='item-2'>
-        <AccordionTrigger>Is it enchanted?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is it enchanted?</AccordionTrigger>
         <AccordionContent>
           Yes. It comes with default charms that match the other artefacts in the collection.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='item-3'>
-        <AccordionTrigger>Is it animated?</AccordionTrigger>
+        <AccordionTrigger iconPosition={iconPosition}>Is it animated?</AccordionTrigger>
         <AccordionContent>
           Yes. It animates open with the panel height, as if lifted by Wingardium Leviosa.
         </AccordionContent>
@@ -51,7 +62,145 @@ export const Playground: Story = {
   )
 }
 
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger>Available vault</AccordionTrigger>
+    <AccordionContent>This vault can be selected and configured.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value='item-2' disabled>
+    <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+    <AccordionContent>Contact the Department of Mysteries to unlock this vault.</AccordionContent>
+  </AccordionItem>
+</Accordion>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled'] as const}>
+      {(state) => (
+        <Accordion>
+          <AccordionItem value='item-1'>
+            <AccordionTrigger>Available vault</AccordionTrigger>
+            <AccordionContent>This vault can be selected and configured.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value='item-2' disabled={state === 'disabled'}>
+            <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+            <AccordionContent>
+              Contact the Department of Mysteries to unlock this vault.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const triggers = (state: string) => {
+      const [available, restricted] = Array.from(
+        cellOf(canvasElement, 'state', state).querySelectorAll('button')
+      )
+      if (!available || !restricted) throw new Error(`Accordion triggers not found for ${state}`)
+      return { available, restricted }
+    }
+    // Disabled item: marked with data-disabled and never expands.
+    const disabled = triggers('disabled')
+    await expect(disabled.restricted).toHaveAttribute('data-disabled')
+    await userEvent.click(disabled.restricted)
+    await expect(disabled.restricted).toHaveAttribute('aria-expanded', 'false')
+
+    // The enabled sibling still works.
+    await userEvent.click(disabled.available)
+    await expect(disabled.available).toHaveAttribute('aria-expanded', 'true')
+
+    const enabled = triggers('default')
+    await expect(enabled.restricted).not.toHaveAttribute('data-disabled')
+    await userEvent.click(enabled.restricted)
+    await expect(enabled.restricted).toHaveAttribute('aria-expanded', 'true')
+  }
+}
+
+/** The chevron before or after the label; only the look moves, so the keyboard works the same. */
+export const IconPositions: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger iconPosition='start'>Chamber of Secrets start</AccordionTrigger>
+    <AccordionContent>Only the heir of Slytherin may open it.</AccordionContent>
+  </AccordionItem>
+</Accordion>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='icon' rows={['end', 'start'] as const}>
+      {(position) => (
+        <Accordion>
+          <AccordionItem value='item-1'>
+            <AccordionTrigger
+              iconPosition={position}
+            >{`Chamber of Secrets ${position}`}</AccordionTrigger>
+            <AccordionContent>Only the heir of Slytherin may open it.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const parts = (position: string) => {
+      const trigger = cellOf(canvasElement, 'icon', position).querySelector('button')
+      const chevron = trigger?.querySelector('svg')
+      if (!trigger || !chevron) throw new Error(`No trigger for ${position}`)
+      return {
+        trigger,
+        chevron: chevron.getBoundingClientRect(),
+        box: trigger.getBoundingClientRect()
+      }
+    }
+    // `end` pins the chevron to the trailing edge; `start` puts it on the leading edge, before the label.
+    const end = parts('end')
+    await expect(Math.abs(Math.round(end.box.right - end.chevron.right))).toBe(0)
+    const start = parts('start')
+    await expect(Math.abs(Math.round(start.chevron.left - start.box.left))).toBe(0)
+    const range = document.createRange()
+    range.selectNodeContents(start.trigger)
+    const label = Array.from(start.trigger.childNodes).find(
+      (node) => node.nodeType === Node.TEXT_NODE
+    )
+    if (!label) throw new Error('No label')
+    range.selectNodeContents(label)
+    await expect(range.getBoundingClientRect().left).toBeGreaterThan(start.chevron.right)
+
+    // The DOM order is unchanged, so the label is still the first child and the keyboard opens it.
+    await expect(start.trigger.firstChild?.nodeType).toBe(Node.TEXT_NODE)
+    start.trigger.focus()
+    await userEvent.keyboard('{Enter}')
+    await expect(start.trigger).toHaveAttribute('aria-expanded', 'true')
+  }
+}
+
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Accordion multiple defaultValue={['item-1', 'item-2']}>
+  <AccordionItem value='item-1'>
+    <AccordionTrigger>Can I unlock more than one chamber?</AccordionTrigger>
+    <AccordionContent>Yes. Pass \`multiple\` to keep several chambers open at once.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value='item-2'>
+    <AccordionTrigger>Is each horcrux tracked separately?</AccordionTrigger>
+    <AccordionContent>Yes. Each fragment keeps its own state.</AccordionContent>
+  </AccordionItem>
+  …
+</Accordion>`
+      }
+    }
+  },
   args: { multiple: true, defaultValue: ['item-1', 'item-2'] },
   render: (args) => (
     <Accordion {...args}>
@@ -75,39 +224,6 @@ export const Multiple: Story = {
       </AccordionItem>
     </Accordion>
   )
-}
-
-export const Disabled: Story = {
-  args: { multiple: false },
-  render: (args) => (
-    <Accordion {...args}>
-      <AccordionItem value='item-1'>
-        <AccordionTrigger>Available vault</AccordionTrigger>
-        <AccordionContent>This vault can be selected and configured.</AccordionContent>
-      </AccordionItem>
-      <AccordionItem value='item-2' disabled>
-        <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
-        <AccordionContent>
-          Contact the Department of Mysteries to unlock this vault.
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
-  play: async ({ canvas }) => {
-    const triggers = canvas.getAllByRole('button')
-    const available = triggers[0]
-    const restricted = triggers[1]
-    if (!available || !restricted) throw new Error('Accordion triggers not found')
-
-    // Disabled item: marked with data-disabled and never expands.
-    await expect(restricted).toHaveAttribute('data-disabled')
-    await userEvent.click(restricted)
-    await expect(restricted).toHaveAttribute('aria-expanded', 'false')
-
-    // The enabled sibling still works.
-    await userEvent.click(available)
-    await expect(available).toHaveAttribute('aria-expanded', 'true')
-  }
 }
 
 export const OpenClose: Story = {
@@ -191,6 +307,7 @@ export const MultiplePlay: Story = {
   }
 }
 
+/** Tab walks the triggers, Enter and Space open and close a panel, and the arrow keys leave focus where it is. */
 export const Keyboard: Story = {
   args: { multiple: false },
   render: (args) => (
@@ -199,7 +316,11 @@ export const Keyboard: Story = {
         <AccordionTrigger>Is the vault accessible?</AccordionTrigger>
         <AccordionContent>Yes, with a spoken Alohomora.</AccordionContent>
       </AccordionItem>
-      <AccordionItem value='item-2'>
+      <AccordionItem value='item-2' disabled>
+        <AccordionTrigger>Ministry vault (restricted)</AccordionTrigger>
+        <AccordionContent>Contact the Department of Mysteries.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value='item-3'>
         <AccordionTrigger>Is it enchanted?</AccordionTrigger>
         <AccordionContent>Yes, with the default charms.</AccordionContent>
       </AccordionItem>
@@ -207,20 +328,36 @@ export const Keyboard: Story = {
   ),
   play: async ({ canvas }) => {
     const first = canvas.getByRole('button', { name: 'Is the vault accessible?' })
-    const second = canvas.getByRole('button', { name: 'Is it enchanted?' })
+    const restricted = canvas.getByRole('button', { name: 'Ministry vault (restricted)' })
+    const third = canvas.getByRole('button', { name: 'Is it enchanted?' })
 
-    // Tab lands on the first trigger; Enter opens it, Space closes it.
+    // Tab lands on the first trigger; Enter opens it and Space closes it. Each press repeats only
+    // while the panel has not moved yet, so a retried key never undoes the first.
     await userEvent.tab()
     await expect(first).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await expect(first).toHaveAttribute('aria-expanded', 'true')
-    await userEvent.keyboard(' ')
-    await expect(first).toHaveAttribute('aria-expanded', 'false')
+    await pressUntil('{Enter}', () => expect(first).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(first)
+    })
+    await pressUntil(' ', () => expect(first).toHaveAttribute('aria-expanded', 'false'), {
+      when: () => isOpen(first)
+    })
 
-    // Every trigger is a tab stop: Base UI's accordion has no arrow-key navigation.
+    // The arrow keys do not move focus: every trigger is a tab stop, and Tab skips the disabled one.
+    await userEvent.keyboard('{ArrowDown}')
+    await expect(first).toHaveFocus()
     await userEvent.tab()
-    await expect(second).toHaveFocus()
-    await userEvent.keyboard('{Enter}')
-    await expect(second).toHaveAttribute('aria-expanded', 'true')
+    await waitFor(() => expect(third).toHaveFocus())
+    await expect(restricted).not.toHaveFocus()
+    await pressUntil('{Enter}', () => expect(third).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(third)
+    })
+
+    // Shift + Tab walks back. Without `multiple`, opening one panel closes the other.
+    await userEvent.tab({ shift: true })
+    await waitFor(() => expect(first).toHaveFocus())
+    await pressUntil('{Enter}', () => expect(first).toHaveAttribute('aria-expanded', 'true'), {
+      when: () => !isOpen(first)
+    })
+    await waitFor(() => expect(third).toHaveAttribute('aria-expanded', 'false'))
   }
 }

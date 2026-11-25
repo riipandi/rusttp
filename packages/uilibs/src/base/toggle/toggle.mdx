@@ -1,0 +1,75 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './toggle.stories'
+
+<Meta of={Stories} />
+
+# Toggle
+
+A button that is pressed or unpressed. Use Switch for an on and off setting that takes effect at once, and Checkbox for a choice that is submitted with a form.
+
+## Import
+
+```jsx
+import { Toggle } from 'uilibs/base/toggle'
+```
+
+Built on Base UI [Toggle](https://base-ui.com/react/components/toggle). Props not listed here pass through.
+
+## Anatomy
+
+- **Toggle:** the button. It has no parts.
+
+```jsx
+<Toggle />
+```
+
+## Examples
+
+### Variants
+
+<Canvas of={Stories.Variants} />
+
+### Pressed colors
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+### States
+
+<Canvas of={Stories.States} />
+
+## Accessibility
+
+A `Toggle` is a `button` with `aria-pressed`. A toggle with only an icon has no name, so give it an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the pressed and disabled markup.
+
+| Key                     | Action                                                   |
+| ----------------------- | -------------------------------------------------------- |
+| `Tab` and `Shift + Tab` | Moves focus to the toggle. A disabled toggle is skipped. |
+| `Space` or `Enter`      | Presses or releases the toggle.                          |
+
+- Keyboard behavior is Base UI's; see the Base UI [Toggle](https://base-ui.com/react/components/toggle) page for the rest.
+
+## API reference
+
+`Toggle` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Toggle
+
+| Prop              | Description                                                                                                                                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`         | `ghost`, `outline`, `solid` <br /> The fill at rest. `ghost` is transparent until hover, `outline` adds an edge, and `solid` rests on a neutral fill. Default `ghost`.                                                                 |
+| `selectedVariant` | `ghost`, `outline`, `solid` <br /> The fill of the pressed state: a tint, an edge, or a fill of `selectedColor`. Follows `variant`, except that `outline` presses to the `ghost` tint. Default `solid` for `solid`, `ghost` otherwise. |
+| `selectedColor`   | `neutral`, `primary`, `critical`, `positive`, `warning` <br /> The color of the pressed state. Default `neutral`.                                                                                                                      |
+| `size`            | `xsmall`, `small`, `medium`, `large` <br /> Height on the control scale. Default `medium`.                                                                                                                                             |
+
+| Data attribute  | Description                          |
+| --------------- | ------------------------------------ |
+| `data-pressed`  | Present while the toggle is pressed. |
+| `data-disabled` | Present when the toggle is disabled. |
+
+## Caveats
+
+- A toggle with only an icon needs an `aria-label`.

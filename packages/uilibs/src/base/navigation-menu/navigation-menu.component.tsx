@@ -32,13 +32,12 @@ import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { shadow } from '../../styles/colors.stylex'
+import { markSize } from '../../styles/glyph'
+import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
+import { usePortalContainer } from '../../theme/theme-scope.context'
 import { navigationMenuStyles as s } from './navigation-menu.stylex'
-
-interface StyleProp {
-  style?: stylex.StyleXStyles
-}
 
 export interface NavigationMenuLabels {
   /** Name of the menu's `nav` landmark. Defaults to `Main`. */
@@ -98,7 +97,12 @@ export function NavigationMenuTrigger({
   return (
     <BaseNavigationMenu.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
       {children}
-      <ChevronDown size={12} strokeWidth={2} aria-hidden {...stylex.props(s.triggerChevron)} />
+      <ChevronDown
+        size={markSize.medium}
+        strokeWidth={2}
+        aria-hidden
+        {...stylex.props(s.triggerChevron)}
+      />
     </BaseNavigationMenu.Trigger>
   )
 }
@@ -129,7 +133,7 @@ export function NavigationMenuPositioner({
   StyleProp) {
   const labels = React.useContext(NavigationMenuLabelsContext)
   return (
-    <BaseNavigationMenu.Portal>
+    <BaseNavigationMenu.Portal container={usePortalContainer()}>
       <BaseNavigationMenu.Positioner
         side={side}
         sideOffset={sideOffset}

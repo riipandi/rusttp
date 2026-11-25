@@ -8,7 +8,6 @@ export const sliderHaloShadow = `0 0 0 ${stroke.ring3} color-mix(in srgb, ${colo
 
 export const sliderStyles = stylex.create({
   control: {
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     alignItems: 'center',
     display: 'flex',
     position: 'relative',
@@ -16,11 +15,10 @@ export const sliderStyles = stylex.create({
     userSelect: 'none'
   },
   controlDisabled: {
-    opacity: 0.5,
     pointerEvents: 'none'
   },
   track: {
-    backgroundColor: colors.backgroundNeutral,
+    backgroundColor: colors.backgroundTrack,
     borderRadius: radius.full,
     flexGrow: 1,
     // Forced colors drop backgrounds: the track gets an edge and the range a system color.
@@ -32,13 +30,17 @@ export const sliderStyles = stylex.create({
   range: {
     backgroundColor: {
       default: colors.backgroundPrimary,
+      '[data-disabled]': colors.foregroundDisabled,
       '@media (forced-colors: active)': 'Highlight'
     },
     userSelect: 'none'
   },
   thumb: {
     backgroundColor: colors.backgroundPage,
-    borderColor: colors.foregroundPrimary,
+    borderColor: {
+      default: colors.foregroundPrimary,
+      '[data-disabled]': colors.foregroundDisabled
+    },
     borderRadius: radius.full,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,

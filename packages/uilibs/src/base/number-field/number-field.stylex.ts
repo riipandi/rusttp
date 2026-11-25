@@ -7,9 +7,9 @@ import { duration } from '../../styles/tokens.stylex'
 
 /** Width of a side stepper: a square the height of the control, as in `controlSizes`. */
 export const numberFieldButtonSizes = stylex.create({
-  sm: { width: unit.x8 },
-  md: { width: unit.x9 },
-  lg: { width: unit.x10 }
+  small: { width: unit.x8 },
+  medium: { width: unit.x9 },
+  large: { width: unit.x10 }
 })
 
 export const numberFieldStyles = stylex.create({
@@ -47,29 +47,31 @@ export const numberFieldStyles = stylex.create({
     borderStyle: 'none',
     color: {
       default: colors.foregroundNeutralFaded,
-      ':hover:not(:disabled)': colors.foregroundNeutral
+      ':hover:not(:disabled)': colors.foregroundNeutral,
+      ':disabled': colors.foregroundDisabled
     },
     cursor: { default: 'pointer', ':disabled': 'not-allowed' },
     display: 'flex',
     justifyContent: 'center',
     outline: 'none',
     padding: 0,
+    position: 'relative',
     transitionDuration: duration.fast,
     transitionProperty: 'background-color, color'
   },
   decrement: {
-    borderBottomLeftRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderRightColor: colors.borderNeutralFaded,
-    borderRightStyle: 'solid',
-    borderRightWidth: stroke.ring1,
-    borderTopLeftRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderEndStartRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineEndColor: colors.borderNeutralFaded,
+    borderInlineEndStyle: 'solid',
+    borderInlineEndWidth: stroke.ring1,
+    borderStartStartRadius: `calc(${radius.medium} - ${stroke.ring1})`
   },
   increment: {
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderLeftColor: colors.borderNeutralFaded,
-    borderLeftStyle: 'solid',
-    borderLeftWidth: stroke.ring1,
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineStartColor: colors.borderNeutralFaded,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: stroke.ring1,
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`
   },
   // Stacked controls: a narrow column pinned to the end edge with two
   // half-height buttons on top of each other (chevron up / chevron down).
@@ -77,26 +79,42 @@ export const numberFieldStyles = stylex.create({
   // the input instead of covering it.
   controls: {
     alignItems: 'stretch',
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderLeftColor: colors.borderNeutralFaded,
-    borderLeftStyle: 'solid',
-    borderLeftWidth: stroke.ring1,
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineStartColor: colors.borderNeutralFaded,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: stroke.ring1,
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     display: 'flex',
     flexDirection: 'column',
-    flexShrink: 0,
-    overflow: 'hidden'
+    flexShrink: 0
   },
   controlStacked: {
     width: unit.x6
   },
+  // Two half-height buttons share the column, so each is under 24px tall (WCAG 2.5.8). The hit
+  // area grows 24px away from the other button, past the field's edge, so the two never overlap.
+  // The column does not clip (no `overflow`): each button rounds its own corner instead.
   controlStackedFirst: {
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    '::after': {
+      bottom: 0,
+      content: '""',
+      height: unit.x6,
+      insetInline: 0,
+      position: 'absolute'
+    }
   },
   controlStackedLast: {
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
-    borderTopWidth: stroke.ring1
+    borderTopWidth: stroke.ring1,
+    '::after': {
+      content: '""',
+      height: unit.x6,
+      insetInline: 0,
+      position: 'absolute',
+      top: 0
+    }
   }
 })

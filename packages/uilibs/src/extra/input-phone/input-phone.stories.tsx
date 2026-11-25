@@ -1,32 +1,24 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, userEvent } from 'storybook/test'
 import { Field, FieldError, FieldLabel } from '../../base/field'
-import { ControlSizesColumn, expectControlHeights } from '../../contracts/control-sizes'
+import {
+  cellOf,
+  controlSizeNames,
+  controlVariantNames,
+  expectControlHeights,
+  expectControlVariants,
+  expectDisabledLook
+} from '../../contracts/control-sizes'
+import { Axis } from '../../contracts/story-axes'
+import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { InputPhone } from './input-phone.component'
 
 const meta = {
   title: 'Extra Components/InputPhone',
   component: InputPhone,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof InputPhone>
 
 type Story = StoryObj<typeof meta>
@@ -46,16 +38,133 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: [
+        'size',
+        'variant',
+        'disabled',
+        'invalid',
+        'readOnly',
+        'withCountrySelect',
+        'addInternationalOption'
+      ]
+    }
+  },
+  argTypes: {
+    size: { control: 'radio', options: Object.keys(controlSizes) },
+    variant: { control: 'radio', options: Object.keys(controlVariants) },
+    disabled: { control: 'boolean' },
+    invalid: { control: 'boolean' },
+    readOnly: { control: 'boolean' },
+    withCountrySelect: { control: 'boolean' },
+    addInternationalOption: { control: 'boolean' }
+  },
+  args: {
+    size: 'medium',
+    variant: 'outline',
+    disabled: false,
+    invalid: false,
+    readOnly: false,
+    withCountrySelect: true,
+    addInternationalOption: true
+  },
   render: (args) => (
     <div {...stylex.props(styles.wrap)}>
       <InputPhone aria-label='Phone number' {...args} />
     </div>
+  )
+}
+
+/** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
+export const Variants: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPhone variant='faded' aria-label='Phone faded' />` } }
+  },
+  render: () => (
+    <Axis axis='variant' rows={controlVariantNames}>
+      {(variant) => <InputPhone variant={variant} aria-label={`Phone ${variant}`} />}
+    </Axis>
   ),
-  argTypes: {
-    disabled: { control: 'boolean' },
-    invalid: { control: 'boolean' },
-    readOnly: { control: 'boolean' },
-    withCountrySelect: { control: 'boolean' }
+  play: async ({ canvasElement }) => expectControlVariants(canvasElement)
+}
+
+export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPhone size='large' aria-label='Phone large' />` } }
+  },
+  render: () => (
+    <Axis axis='size' rows={controlSizeNames}>
+      {(size) => <InputPhone size={size} aria-label={`Phone ${size}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
+}
+
+export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputPhone aria-label='Owl line disabled' defaultCountry='US' placeholder='(555) 013-1692' disabled />
+
+<InputPhone aria-label='Owl line readOnly' defaultCountry='US' value='+12135551234' readOnly />
+
+<Field invalid>
+  <FieldLabel htmlFor='phone-invalid'>Emergency contact</FieldLabel>
+  <InputPhone id='phone-invalid' defaultCountry='US' placeholder='(555) 000-0000' invalid />
+  <FieldError>Enter a valid phone number.</FieldError>
+</Field>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='state' rows={['default', 'disabled', 'readOnly', 'invalid'] as const}>
+      {(state) =>
+        state === 'invalid' ? (
+          <Field invalid>
+            <FieldLabel htmlFor='phone-invalid'>Emergency contact</FieldLabel>
+            <InputPhone
+              id='phone-invalid'
+              defaultCountry='US'
+              placeholder='(555) 000-0000'
+              invalid
+            />
+            <FieldError>Enter a valid phone number.</FieldError>
+          </Field>
+        ) : (
+          <InputPhone
+            aria-label={`Owl line ${state}`}
+            defaultCountry='US'
+            {...(state === 'readOnly'
+              ? { value: '+12135551234', onChange: () => {}, readOnly: true }
+              : { placeholder: '(555) 013-1692', disabled: state === 'disabled' })}
+          />
+        )
+      }
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const input = (state: string) => {
+      const el = cellOf(canvasElement, 'state', state).querySelector('input[type="tel"]')
+      if (!el) throw new Error(`No phone input for ${state}`)
+      return el
+    }
+    const disabled = input('disabled')
+    await expect(disabled).toBeDisabled()
+    await userEvent.type(disabled, '123')
+    await expect(disabled).toHaveValue('')
+    const group = disabled.closest('[role="group"]')
+    if (!group) throw new Error('No phone group')
+    await expectDisabledLook(group, { cursor: false })
+
+    const readOnly = input('readOnly')
+    await expect(readOnly).toHaveAttribute('readonly')
+    await expect(readOnly).toHaveValue('+1 213 555 1234')
+
+    await expect(
+      cellOf(canvasElement, 'state', 'invalid').querySelector('[data-invalid]')
+    ).not.toBeNull()
   }
 }
 
@@ -79,6 +188,13 @@ export const International: Story = {
 }
 
 export const RestrictedCountries: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputPhone countries={['ID', 'SG', 'MY']} defaultCountry='ID' placeholder='812 3456 7890' />`
+      }
+    }
+  },
   name: 'Restricted countries',
   render: () => (
     <div {...stylex.props(styles.wrap)}>
@@ -100,30 +216,6 @@ export const WithDefaultValue: Story = {
   }
 }
 
-export const Invalid: Story = {
-  render: () => (
-    <Field invalid style={styles.field}>
-      <FieldLabel htmlFor='phone-invalid'>Emergency contact</FieldLabel>
-      <InputPhone id='phone-invalid' defaultCountry='US' placeholder='(555) 000-0000' invalid />
-      <FieldError>Enter a valid phone number.</FieldError>
-    </Field>
-  )
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <div {...stylex.props(styles.wrap)}>
-      <InputPhone placeholder='Sealed by the Ministry' disabled />
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const el = canvas.getByRole('textbox')
-    await expect(el).toBeDisabled()
-    await userEvent.type(el, '123')
-    await expect(el).toHaveValue('')
-  }
-}
-
 export const WithoutCountry: Story = {
   name: 'Without country',
   render: () => (
@@ -138,24 +230,24 @@ export const WithoutCountry: Story = {
   }
 }
 
-export const ReadOnly: Story = {
-  name: 'Read only',
+/** The country button is named for the country it shows, and its flag carries the full name. */
+export const CountryNames: Story = {
+  name: 'Country names',
   render: () => (
-    <Field style={styles.field}>
-      <FieldLabel htmlFor='phone-readonly'>Registered owl line</FieldLabel>
+    <div {...stylex.props(styles.field)}>
+      <InputPhone aria-label='Phone number' defaultCountry='US' />
       <InputPhone
-        id='phone-readonly'
-        defaultCountry='US'
-        value='+12135551234'
-        onChange={() => {}}
-        readOnly
+        aria-label='Nomor telepon'
+        defaultCountry='ID'
+        labels={{ selectCountry: (country) => `Pilih negara, ${country}` }}
       />
-    </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
-    const el = canvas.getByRole('textbox')
-    await expect(el).toHaveAttribute('readonly')
-    await expect(el).toHaveValue('+1 213 555 1234')
+    const us = canvas.getByRole('combobox', { name: 'Select country, United States' })
+    await expect(us.querySelector('svg title')).toHaveTextContent('United States')
+    const id = canvas.getByRole('combobox', { name: 'Pilih negara, Indonesia' })
+    await expect(id.querySelector('svg title')).toHaveTextContent('Indonesia')
   }
 }
 
@@ -170,13 +262,4 @@ export const Interaction: Story = {
     await userEvent.type(el, '2135551234')
     await expect(el).toHaveValue('(213) 555-1234')
   }
-}
-
-export const ControlSizes: Story = {
-  render: () => (
-    <ControlSizesColumn>
-      {(size) => <InputPhone size={size} aria-label={`Phone ${size}`} />}
-    </ControlSizesColumn>
-  ),
-  play: async ({ canvasElement }) => expectControlHeights(canvasElement)
 }

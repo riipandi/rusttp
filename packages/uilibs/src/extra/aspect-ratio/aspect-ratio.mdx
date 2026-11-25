@@ -1,0 +1,49 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './aspect-ratio.stories'
+
+<Meta of={Stories} />
+
+# Aspect Ratio
+
+A box that keeps a fixed width-to-height ratio, for an image, a video, or a map.
+
+## Import
+
+```jsx
+import { AspectRatio } from 'uilibs/extra/aspect-ratio'
+```
+
+A plain `div`, not built on Base UI. Props not listed here pass through.
+
+## Anatomy
+
+- **AspectRatio:** the box. It takes the width of its container and sets its height from `ratio`.
+
+```jsx
+<AspectRatio ratio={16 / 9}>{content}</AspectRatio>
+```
+
+## Examples
+
+### Image
+
+<Canvas of={Stories.Playground} />
+
+### Ratios
+
+<Canvas of={Stories.Ratios} />
+
+## API reference
+
+`AspectRatio` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### AspectRatio
+
+| Prop    | Description                                                                 |
+| ------- | --------------------------------------------------------------------------- |
+| `ratio` | `number` <br /> Width divided by height, such as `16 / 9` or `1`. Required. |
+
+## Caveats
+
+- The box is a plain layout `div` with no role or name; the content inside carries the accessibility, such as the `alt` of an image.
+- The box is `width: 100%` and relative, so a parent without a width gives it none; set a width on the parent or pass `style`.

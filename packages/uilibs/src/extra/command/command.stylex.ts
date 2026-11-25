@@ -1,13 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
-import { stroke, container, duration, easing } from '../../styles/tokens.stylex'
+import { stroke, container, duration, easing, motionLoop } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 
 export const commandStyles = stylex.create({
   root: {
     backgroundColor: colors.backgroundElevationOverlay,
-    borderRadius: radius.xlarge,
+    borderRadius: radius.xxlarge,
     color: colors.foregroundNeutral,
     display: 'flex',
     flexDirection: 'column',
@@ -16,46 +16,61 @@ export const commandStyles = stylex.create({
     overflow: 'hidden',
     width: '100%'
   },
+  // On the page the palette has the same fill as its surroundings, so it draws its own edge. In a
+  // `CommandDialog` it does not: the dialog's ring is the edge, and a second one would double it.
+  edge: {
+    borderColor: colors.borderNeutral,
+    borderStyle: 'solid',
+    borderWidth: stroke.ring1
+  },
   // Higher than center, where the eye goes first, and wide enough that the longest label and its
   // shortcut share a row. It opens by rising a few pixels and fading in, not by scaling: the box
   // is the focus, so it should not appear to swell.
   // Higher than center, where the eye goes first, and wide enough that the longest label and its
   // shortcut share a row. The box keeps the dialog's own centring and fade; the rise is `inner`.
   dialogContent: {
-    borderRadius: radius.xlarge,
-    // A firmer edge than the dialog's own faded ring (which the dim overlay swallows) and a deeper
-    // shadow under it: the palette floats over the page, so its outline has to read in both themes.
-    // Two rings, the neutral border and a hairline of the page's lighter tone just inside it, so the
-    // edge shows against a near-black overlay too. Set here, after the dialog's ring, so it wins.
-    boxShadow: `0 0 0 ${stroke.ring1} ${colors.borderNeutral}, inset 0 0 0 ${stroke.ring1} ${colors.borderNeutralFaded}, 0 24px 48px -12px rgb(0 0 0 / 0.28), 0 8px 16px -8px rgb(0 0 0 / 0.16)`,
+    borderRadius: radius.xxlarge,
+    // The edge and shadow are the dialog's own: its 1px ring and `shadow.overlay`.
     gap: 0,
     maxHeight: `calc(100dvh - ${unit.x16})`,
     overflow: 'hidden',
     padding: 0,
     top: '15%',
+    // The box only fades, on the dialog's own timing (its centring never changes, so it cannot
+    // appear to swell); the motion is `inner`'s.
     transform: 'translate(-50%, 0)',
     width: container.xxlarge
   },
-  // The rise: the content inside the box lifts a few pixels as the box fades in, so the box never
-  // appears to swell and the transform it centres with is left alone.
+  // The content lifts a few pixels into place a beat after the box starts to fade in, so the frame
+  // settles first and the rows follow; it leaves with the box, on the box's own timing, drifting up a touch.
   inner: {
     display: 'flex',
     flexDirection: 'column',
     minHeight: 0,
     opacity: {
       default: 1,
-      '[data-starting-style] > &': 0
+      [stylex.when.ancestor('[data-starting-style]')]: 0,
+      [stylex.when.ancestor('[data-ending-style]')]: 0
     },
     translate: {
       default: '0 0',
-      '[data-starting-style] > &': '0 8px'
+      [stylex.when.ancestor('[data-starting-style]')]: '0 6px',
+      [stylex.when.ancestor('[data-ending-style]')]: '0 -2px'
+    },
+    transitionDelay: {
+      default: motionLoop.stagger,
+      [stylex.when.ancestor('[data-ending-style]')]: '0ms',
+      '@media (prefers-reduced-motion: reduce)': '0ms'
     },
     transitionDuration: duration.medium,
     transitionProperty: {
       default: 'opacity, translate',
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
-    transitionTimingFunction: easing.standard
+    transitionTimingFunction: {
+      default: easing.standard,
+      [stylex.when.ancestor('[data-ending-style]')]: easing.decelerate
+    }
   },
   // The field is the room's header, not a box in it: a tall row with the icon, the text, and a
   // divider under it. No edge changes when it is focused (it is always the focus while the bar is
@@ -123,15 +138,12 @@ export const commandStyles = stylex.create({
   // Rows are compact (32px) so more of the list fits, and lead with an icon slot so labels align.
   item: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-highlighted]': colors.backgroundNeutralFaded
-    },
-    borderRadius: radius.medium,
+    // Concentric with the box: its xxlarge corner (16px) minus the list's 6px padding is 10px.
+    borderRadius: radius.large,
     color: {
       default: null,
       '[data-highlighted]': colors.foregroundNeutral,
-      '[data-disabled]': colors.foregroundNeutralFaded
+      '[data-disabled]': colors.foregroundDisabled
     },
     cursor: 'default',
     display: 'flex',
@@ -140,7 +152,6 @@ export const commandStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     minHeight: unit.x8,
     outline: 'none',
-    opacity: { default: 1, '[data-disabled]': 0.5 },
     paddingBlock: unit.x1,
     paddingInline: unit.x3,
     position: 'relative',
@@ -158,6 +169,6 @@ export const commandStyles = stylex.create({
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     letterSpacing: '0.1em',
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   }
 })

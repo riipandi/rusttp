@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import { expect, waitFor } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { container, radius } from '../../styles/tokens.stylex'
 import { AspectRatio } from './aspect-ratio.component'
@@ -9,24 +9,14 @@ import { AspectRatio } from './aspect-ratio.component'
 const meta = {
   title: 'Extra Components/AspectRatio',
   component: AspectRatio,
-  parameters: { layout: 'fullscreen' },
-  argTypes: {
-    ratio: { control: { type: 'number', min: 0.5, step: 0.1 } }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div {...stylex.props(atoms.padding['20px'], atoms.minWidth['448px'], atoms.width['100%'])}>
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof AspectRatio>
 
 type Story = StoryObj<typeof meta>
 
 const styles = stylex.create({
   frame: {
+    maxWidth: '100%',
     width: container.large
   },
   smallFrame: {
@@ -49,6 +39,19 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AspectRatio ratio={16 / 9}>
+  <img src='…' alt='The Mona Lisa in the Louvre' />
+</AspectRatio>`
+      }
+    },
+    controls: { disable: false, include: ['ratio'] }
+  },
+  argTypes: {
+    ratio: { control: { type: 'number', min: 0.5, step: 0.1 } }
+  },
   args: { ratio: 16 / 9 },
   render: (args) => (
     <div {...stylex.props(styles.frame)}>
@@ -63,34 +66,40 @@ export const Playground: Story = {
   )
 }
 
-export const Square: Story = {
-  args: { ratio: 1 / 1 },
-  render: (args) => (
-    <div {...stylex.props(styles.smallFrame)}>
-      <AspectRatio {...args} data-testid='ratio-frame'>
-        <div {...stylex.props(styles.placeholder)} />
-      </AspectRatio>
-    </div>
-  ),
-  // The container keeps a square box regardless of content height. The box is laid out after the
-  // first paint under load, so wait for it instead of reading it once.
-  play: async ({ canvas }) => {
-    const frame = canvas.getByTestId('ratio-frame')
-    await waitFor(async () => {
-      const { width, height } = frame.getBoundingClientRect()
-      await expect(width).toBeGreaterThan(0)
-      await expect(Math.abs(width - height)).toBeLessThan(1)
-    })
-  }
-}
+const ratios = { '16:9': 16 / 9, '1:1': 1, '9:16': 9 / 16 } as const
 
-export const Portrait: Story = {
-  args: { ratio: 9 / 16 },
-  render: (args) => (
-    <div {...stylex.props(styles.smallFrame)}>
-      <AspectRatio {...args}>
-        <div {...stylex.props(styles.placeholder)} />
-      </AspectRatio>
-    </div>
-  )
+export const Ratios: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AspectRatio ratio={9 / 16}>
+  <div>…</div>
+</AspectRatio>`
+      }
+    }
+  },
+  args: { ratio: 1 },
+  render: () => (
+    <Axis axis='ratio' rows={['16:9', '1:1', '9:16'] as const}>
+      {(ratio) => (
+        <div {...stylex.props(styles.smallFrame)}>
+          <AspectRatio ratio={ratios[ratio]} data-testid={`ratio-${ratio}`}>
+            <div {...stylex.props(styles.placeholder)} />
+          </AspectRatio>
+        </div>
+      )}
+    </Axis>
+  ),
+  // The box keeps its ratio whatever the content height. It is laid out after the first paint
+  // under load, so wait for it instead of reading it once.
+  play: async ({ canvas }) => {
+    for (const [ratio, value] of Object.entries(ratios)) {
+      const frame = canvas.getByTestId(`ratio-${ratio}`)
+      await waitFor(async () => {
+        const { width, height } = frame.getBoundingClientRect()
+        await expect(width).toBeGreaterThan(0)
+        await expect(Math.abs(width / height - value)).toBeLessThan(0.02)
+      })
+    }
+  }
 }

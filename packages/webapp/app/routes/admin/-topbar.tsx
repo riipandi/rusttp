@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { Button } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { NavSheet } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -9,7 +9,7 @@ import { styles } from '#/styles/pages/admin.stylex'
 import { groups } from './-nav'
 import { AdminUserMenu } from './-user-menu'
 
-// The small-screen counterpart of the sidebar: it only shows below the compact breakpoint. The
+// The small-screen counterpart of the sidebar: it only renders below the compact breakpoint. The
 // drawer carries the sidebar's own account menu at its bottom.
 export function AdminTopBar() {
   const m = useMessages()
@@ -34,7 +34,7 @@ export function AdminTopBar() {
       </span>
       <NotificationsPopover
         to='/admin/notifications'
-        trigger={<Button variant='ghost' size='icon-md' style={styles.notify} />}
+        trigger={<Button variant='ghost' style={[buttonSquare.medium, styles.notify]} />}
       />
     </header>
   )

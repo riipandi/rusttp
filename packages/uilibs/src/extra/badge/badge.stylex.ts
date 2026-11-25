@@ -10,21 +10,62 @@ export const badgeStyles = stylex.create({
     borderRadius: radius.full,
     display: 'inline-flex',
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption1,
     fontWeight: fontWeight.medium,
     gap: unit.x1,
-    lineHeight: fontLineHeight.caption1,
     outlineOffset: stroke.ring2,
-    paddingBlock: unit.x1,
-    paddingInline: unit.x3,
     whiteSpace: 'nowrap'
+  },
+  squared: { borderRadius: radius.small },
+  highlighted: { opacity: 0.8 },
+  dismiss: {
+    alignItems: 'center',
+    appearance: 'none',
+    backgroundColor: 'transparent',
+    borderRadius: radius.full,
+    borderStyle: 'none',
+    color: 'inherit',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    justifyContent: 'center',
+    marginInlineEnd: `calc(-1 * ${unit.x1})`,
+    padding: 0,
+    // The dismiss target is a 24px square (WCAG 2.5.8) around the glyph, at every badge size,
+    // without growing the badge: `50%` is half the glyph, so the box is centered on it.
+    position: 'relative',
+    '::after': {
+      content: '""',
+      inset: `calc(50% - ${unit.x3})`,
+      position: 'absolute'
+    }
   }
 })
 
-// The shape of each variant; its colors come from the tone maps below.
+// `medium` is the badge as it was before sizes existed.
+export const badgeSizes = stylex.create({
+  small: {
+    fontSize: fontSize.caption2,
+    lineHeight: fontLineHeight.caption2,
+    paddingBlock: unit.x0_5,
+    paddingInline: unit.x2
+  },
+  medium: {
+    fontSize: fontSize.caption1,
+    lineHeight: fontLineHeight.caption1,
+    paddingBlock: unit.x1,
+    paddingInline: unit.x3
+  },
+  large: {
+    fontSize: fontSize.body2,
+    lineHeight: fontLineHeight.body2,
+    paddingBlock: unit.x1_5,
+    paddingInline: unit.x4
+  }
+})
+
+// The shape of each variant; its colors come from the color maps below.
 export const badgeVariants = stylex.create({
-  primary: {},
-  secondary: {},
+  solid: {},
+  faded: {},
   outline: {
     borderStyle: 'solid',
     borderWidth: stroke.ring1
@@ -34,10 +75,10 @@ export const badgeVariants = stylex.create({
   }
 })
 
-// `primary` is a solid fill, `secondary` a faded one, `outline` an edge, `ghost` text only.
-export const badgeSolidTones = stylex.create({
+// `solid` is a solid fill, `faded` a soft tint, `outline` an edge, `ghost` text only.
+export const badgeSolidColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBrand },
+  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
   positive: {
     backgroundColor: colors.backgroundPositive,
     color: colors.onBackgroundPositive
@@ -52,7 +93,7 @@ export const badgeSolidTones = stylex.create({
   }
 })
 
-export const badgeFadedTones = stylex.create({
+export const badgeFadedColors = stylex.create({
   neutral: { backgroundColor: colors.backgroundNeutral, color: colors.foregroundNeutral },
   primary: { backgroundColor: colors.backgroundPrimaryFaded, color: colors.foregroundPrimary },
   positive: { backgroundColor: colors.backgroundPositiveFaded, color: colors.foregroundPositive },
@@ -60,7 +101,7 @@ export const badgeFadedTones = stylex.create({
   critical: { backgroundColor: colors.backgroundCriticalFaded, color: colors.foregroundCritical }
 })
 
-export const badgeOutlineTones = stylex.create({
+export const badgeOutlineColors = stylex.create({
   neutral: { borderColor: colors.borderNeutralFaded, color: colors.foregroundNeutral },
   primary: { borderColor: colors.borderPrimary, color: colors.foregroundPrimary },
   positive: { borderColor: colors.borderPositive, color: colors.foregroundPositive },
@@ -68,7 +109,7 @@ export const badgeOutlineTones = stylex.create({
   critical: { borderColor: colors.borderCritical, color: colors.foregroundCritical }
 })
 
-export const badgeGhostTones = stylex.create({
+export const badgeGhostColors = stylex.create({
   neutral: { color: colors.foregroundNeutral },
   primary: { color: colors.foregroundPrimary },
   positive: { color: colors.foregroundPositive },

@@ -1,34 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent } from 'storybook/test'
+import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Button } from '../button'
 import { Progress, ProgressLabel, ProgressValue } from './progress.component'
+import { progressColors, progressSizes } from './progress.stylex'
 const meta = {
   title: 'Base Components/Progress',
   component: Progress,
-  parameters: { layout: 'centered' },
-  argTypes: {
-    value: { control: 'number' }
-  },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Progress>
 
 type Story = StoryObj<typeof meta>
@@ -52,25 +34,34 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  args: { value: 13 },
-  render: () => {
-    const [value, setValue] = React.useState(13)
-
-    React.useEffect(() => {
-      const timer = setTimeout(() => setValue(66), 500)
-      return () => clearTimeout(timer)
-    }, [])
-
-    return (
-      <Progress value={value} locale='en-US' style={styles.root}>
-        <ProgressLabel>Brewing Polyjuice Potion…</ProgressLabel>
-        <ProgressValue />
-      </Progress>
-    )
-  }
+  parameters: { controls: { disable: false, include: ['value', 'min', 'max', 'color', 'size'] } },
+  argTypes: {
+    value: { control: 'number' },
+    min: { control: 'number' },
+    max: { control: 'number' },
+    color: { control: 'select', options: Object.keys(progressColors) },
+    size: { control: 'radio', options: Object.keys(progressSizes) }
+  },
+  args: { value: 66, min: 0, max: 100, color: 'primary', size: 'medium' },
+  render: (args) => (
+    <Progress {...args} locale='en-US' style={styles.root}>
+      <ProgressLabel>Brewing Polyjuice Potion…</ProgressLabel>
+      <ProgressValue />
+    </Progress>
+  )
 }
 
 export const Label: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={72}>
+  <ProgressLabel>Gringotts vault capacity used</ProgressLabel>
+  <ProgressValue />
+</Progress>`
+      }
+    }
+  },
   args: { value: 72, locale: 'en-US' },
   render: (args) => (
     <Progress {...args} style={styles.root}>
@@ -97,7 +88,7 @@ export const Controlled: Story = {
         </Progress>
         <Button
           variant='outline'
-          size='sm'
+          size='small'
           onClick={() => setValue((current) => Math.min(current + 20, 100))}
           style={styles.button}
         >
@@ -114,5 +105,64 @@ export const Controlled: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Decrypt next ring' }))
     await userEvent.click(canvas.getByRole('button', { name: 'Decrypt next ring' }))
     await expect(bar).toHaveAttribute('aria-valuenow', '60')
+  }
+}
+
+const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
+
+const barParts = (canvasElement: HTMLElement, selector: string) => {
+  const root = canvasElement.querySelector(selector)
+  const track = root?.firstElementChild
+  const indicator = track?.firstElementChild
+  if (!track || !indicator) throw new Error(`No progress bar for ${selector}`)
+  return { track: getComputedStyle(track), indicator: getComputedStyle(indicator) }
+}
+
+export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={60} color='positive' aria-label='Brewing positive' />
+<Progress value={60} color='warning' aria-label='Brewing warning' />
+<Progress value={60} color='critical' aria-label='Brewing critical' />`
+      }
+    }
+  },
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='color' rows={colorNames}>
+      {(color) => <Progress value={60} color={color} aria-label={`Brewing ${color}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const fills = colorNames.map(
+      (color) =>
+        barParts(canvasElement, `[data-color="${color}"] [role="progressbar"]`).indicator
+          .backgroundColor
+    )
+    await expect(new Set(fills).size).toBe(5)
+  }
+}
+
+export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Progress value={60} size='small' aria-label='Brewing small' />
+<Progress value={60} size='medium' aria-label='Brewing medium' />`
+      }
+    }
+  },
+  args: { value: 60 },
+  render: () => (
+    <Axis axis='size' rows={['small', 'medium'] as const}>
+      {(size) => <Progress value={60} size={size} aria-label={`Brewing ${size}`} />}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const height = (size: string) =>
+      barParts(canvasElement, `[data-size="${size}"] [role="progressbar"]`).track.height
+    await expect(height('small')).toBe('2px')
+    await expect(height('medium')).toBe('4px')
   }
 }

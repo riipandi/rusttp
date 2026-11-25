@@ -5,19 +5,17 @@ import * as stylex from '@stylexjs/stylex'
  * dark mode with a single `stylex.createTheme`; components never branch on
  * the color scheme.
  *
- * Colors that are identical in both themes (black, white, brand ramp) stay
- * here as plain constants.
+ * Colors that are identical in both themes (black, white, the on-background
+ * text colors) stay here as plain constants.
  */
 export const colors = stylex.defineVars({
   // Colors that available on light and dark mode
   black: 'oklch(0 0 0)',
   white: 'oklch(1 0 0)',
-  brand: 'oklch(0.55 0.135 39.4)',
   onBackgroundCritical: 'oklch(1 0 0)',
   onBackgroundPositive: 'oklch(1 0 0)',
   onBackgroundPrimary: 'oklch(1 0 0)',
   onBackgroundWarning: 'oklch(0 0 0)',
-  onBrand: 'oklch(1 0 0)',
 
   // Themed color variables (light values; dark values live in themes.ts)
   backgroundCriticalFaded: 'oklch(0.98 0.02 20.28)',
@@ -40,12 +38,13 @@ export const colors = stylex.defineVars({
   backgroundPrimaryHighlightedFaded: 'oklch(0.55 0.135 39.4 / 0.06)',
   backgroundPrimaryHighlighted: 'oklch(0.495 0.12 39.4)',
   backgroundPrimary: 'oklch(0.55 0.135 39.4)',
+  backgroundTrack: 'oklch(0.94 0 89.88)',
   backgroundWarningFaded: 'oklch(0.98 0.04 80)',
   backgroundWarningHighlightedFaded: 'oklch(0.82 0.22 80 / 0.06)',
   backgroundWarningHighlighted: 'oklch(0.738 0.22 80)',
   backgroundWarning: 'oklch(0.82 0.22 80)',
   borderCriticalFaded: 'oklch(0.94 0.02 20.28)',
-  borderControl: 'oklch(0.64 0 89.88)',
+  borderControl: 'oklch(0.58 0 89.88)',
   borderCritical: 'oklch(0.55 0.205 20.28)',
   borderDisabled: 'oklch(0 0 89.88 / 0.06)',
   borderNeutralFaded: 'oklch(0 0 89.88 / 0.08)',
@@ -63,7 +62,19 @@ export const colors = stylex.defineVars({
   foregroundPositive: 'oklch(0.5 0.13 151.8)',
   foregroundPrimary: 'oklch(0.52 0.128 39.4)',
   foregroundWarning: 'oklch(0.52 0.22 80)',
-  onBackgroundNeutral: 'oklch(0 0 0)'
+  scrim: 'oklch(0 0 0 / 0.5)',
+
+  // Categorical series colors for charts, in the order a chart assigns them: blue and orange first (the
+  // pair that survives the common color-vision deficiencies), then hues spread around the wheel. Each
+  // holds 3:1 against the page in both themes (`contrast.test.ts`).
+  chart1: 'oklch(0.52 0.15 255)',
+  chart2: 'oklch(0.58 0.16 45)',
+  chart3: 'oklch(0.55 0.08 195)',
+  chart4: 'oklch(0.52 0.18 350)',
+  chart5: 'oklch(0.62 0.11 92)',
+  chart6: 'oklch(0.50 0.16 305)',
+  chart7: 'oklch(0.55 0.13 150)',
+  chart8: 'oklch(0.50 0 89.88)'
 })
 
 // -----------------------------------------------------------------------------

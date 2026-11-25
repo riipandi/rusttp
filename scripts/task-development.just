@@ -49,7 +49,7 @@ email-dev:
 email-build *args:
     @pnpm --silent -C packages/emails build {{ args }}
 
-[doc('Check email client support, e.g. `just email-check password-reset`')]
+[doc('Check email rendering, e.g. `just email-check test-email`')]
 [group('email')]
 [no-exit-message]
 [positional-arguments]
@@ -70,7 +70,7 @@ storybook:
 storybook-build:
     @pnpm --silent --filter uilibs storybook:build
 
-[doc('Serve the built Storybook on :6006 (run `storybook-build` first)')]
+[doc('Serve the built Storybook on port 6006')]
 [group('storybook')]
 [no-exit-message]
 storybook-start:

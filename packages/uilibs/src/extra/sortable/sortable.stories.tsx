@@ -3,21 +3,31 @@ import { ChevronRight, FileText, GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/collapsible'
 import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
+import { cellOf } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
 import { colors, shadow } from '../../styles/colors.stylex'
-import { stroke, unit, duration, easing, radius, zIndex } from '../../styles/tokens.stylex'
+import {
+  breakpoints,
+  stroke,
+  unit,
+  duration,
+  easing,
+  radius,
+  zIndex
+} from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
 import { Badge } from '../badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '../card'
-import { Sortable, SortableItem, SortableItemHandle } from './'
-import type { SortableCommitMeta } from './'
+import { Sortable, SortableItem, SortableItemHandle, SortableOverlay } from './'
+import type { SortableCommitMeta, SortableRootProps } from './'
 
 const meta = {
   title: 'Extra Components/Sortable',
-  parameters: { layout: 'padded' },
   tags: [] // ['autodocs']
 } satisfies Meta
 
@@ -133,7 +143,7 @@ const styles = stylex.create({
   featuredCell: {
     gridColumn: {
       default: 'span 2',
-      '@media (min-width: 660px)': 'span 2'
+      [breakpoints.medium]: 'span 2'
     },
     gridRow: 'span 2'
   },
@@ -283,7 +293,7 @@ const styles = stylex.create({
 
 function Handle({ style }: { style?: stylex.StyleXStyles }) {
   return (
-    <SortableItemHandle aria-label='Drag to reorder' style={style}>
+    <SortableItemHandle style={style}>
       <GripVertical size={16} />
     </SortableItemHandle>
   )
@@ -347,39 +357,158 @@ function FileTypeIcon({ type }: { type: FileEntry['type'] }) {
   )
 }
 
-export const BasicList: Story = {
-  name: 'List of items',
-  render: () => {
-    const [items, setItems] = useState(defaultFiles)
+function ListOfItems() {
+  const [items, setItems] = useState(defaultFiles)
 
-    return (
-      <div {...stylex.props(styles.page)}>
-        <Sortable
-          value={items}
-          onValueChange={setItems}
-          getItemValue={(item) => item.id}
-          style={styles.list}
-        >
-          {items.map((item) => (
-            <SortableItem key={item.id} value={item.id}>
-              <div {...stylex.props(styles.row)}>
-                <Handle />
-                <FileTypeIcon type={item.type} />
-                <div {...stylex.props(styles.rowBody)}>
-                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
-                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
-                </div>
-                <div {...stylex.props(styles.metaRow)}>
-                  <Badge variant='secondary'>{item.type}</Badge>
-                  <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
-                </div>
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        getItemValue={(item) => item.id}
+        style={styles.list}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div {...stylex.props(styles.row)}>
+              <Handle />
+              <FileTypeIcon type={item.type} />
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
               </div>
-            </SortableItem>
-          ))}
-        </Sortable>
-      </div>
-    )
+              <div {...stylex.props(styles.metaRow)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+      </Sortable>
+    </div>
+  )
+}
+
+const playgroundFiles: FileEntry[] = [
+  {
+    id: '1',
+    title: 'Marauder’s Map',
+    description: 'Every corridor of Hogwarts',
+    type: 'document',
+    size: '1.2 MB'
+  },
+  {
+    id: '2',
+    title: 'Pensieve Memory',
+    description: 'Dumbledore’s memory of Tom Riddle',
+    type: 'video',
+    size: '15.7 MB'
+  },
+  {
+    id: '3',
+    title: 'Cryptex Blueprint',
+    description: 'Da Vinci’s five-dial design',
+    type: 'image',
+    size: '3.1 MB'
+  },
+  {
+    id: '4',
+    title: 'Hedwig’s Song',
+    description: 'Recorded in the Owlery',
+    type: 'audio',
+    size: '8.3 MB'
+  },
+  {
+    id: '5',
+    title: 'Mona Lisa Scan',
+    description: 'Louvre, Salle des États',
+    type: 'image',
+    size: '2.4 MB'
+  },
+  {
+    id: '6',
+    title: 'Hogwarts Letter',
+    description: 'Addressed to the cupboard under the stairs',
+    type: 'document',
+    size: '0.4 MB'
   }
+]
+
+// `strategy` is the root's; the other three choose what the story composes around it.
+type PlaygroundArgs = Pick<SortableRootProps<FileEntry>, 'strategy' | 'onValueCommit'> & {
+  layout: 'list' | 'grid'
+  handle: boolean
+  overlay: boolean
+}
+
+const strategies: NonNullable<SortableRootProps<FileEntry>['strategy']>[] = [
+  'vertical',
+  'horizontal',
+  'grid'
+]
+
+function SortablePlayground({ strategy, onValueCommit, layout, handle, overlay }: PlaygroundArgs) {
+  const [items, setItems] = useState(playgroundFiles)
+  const grid = layout === 'grid'
+
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        onValueCommit={onValueCommit}
+        getItemValue={(item) => item.id}
+        strategy={strategy}
+        style={grid ? styles.grid : styles.list}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div {...stylex.props(styles.row, grid && styles.gridCell)}>
+              {handle && <Handle style={grid ? styles.gridHandle : undefined} />}
+              {!grid && <FileTypeIcon type={item.type} />}
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
+              </div>
+              <div {...stylex.props(grid ? styles.gridFooter : styles.metaRow)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+        {overlay && (
+          <SortableOverlay>
+            {({ value }) => (
+              <div {...stylex.props(styles.row, styles.rowMuted)}>
+                {items.find((item) => item.id === value)?.title}
+              </div>
+            )}
+          </SortableOverlay>
+        )}
+      </Sortable>
+    </div>
+  )
+}
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: { disable: false, include: ['strategy', 'layout', 'handle', 'overlay'] }
+  },
+  argTypes: {
+    strategy: { control: 'radio', options: strategies },
+    layout: { control: 'radio', options: ['list', 'grid'] },
+    handle: { control: 'boolean' },
+    overlay: { control: 'boolean' }
+  },
+  args: {
+    strategy: 'vertical',
+    layout: 'list',
+    handle: true,
+    overlay: false,
+    onValueCommit: fn()
+  },
+  render: (args) => <SortablePlayground {...args} />
 }
 
 // -- c-sortable-2: grid layout ----------------------------------------------
@@ -452,47 +581,84 @@ const defaultGridItems: GridEntry[] = [
   }
 ]
 
-export const GridLayout: Story = {
-  name: 'Grid layout',
-  render: () => {
-    const [items, setItems] = useState(defaultGridItems)
+function GridOfItems() {
+  const [items, setItems] = useState(defaultGridItems)
 
-    return (
-      <div {...stylex.props(styles.page)}>
-        <Sortable
-          value={items}
-          onValueChange={setItems}
-          getItemValue={(item) => item.id}
-          strategy='grid'
-          style={styles.grid}
-        >
-          {items.map((item) => (
-            <SortableItem key={item.id} value={item.id}>
-              <div
-                {...stylex.props(
-                  styles.row,
-                  styles.gridCell,
-                  item.type === 'featured' && styles.rowMuted,
-                  item.type === 'featured' && styles.featuredCell
-                )}
-              >
-                <Handle style={styles.gridHandle} />
-                <div {...stylex.props(styles.rowBody)}>
-                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
-                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
-                </div>
-                <div {...stylex.props(styles.gridFooter)}>
-                  <Badge variant='secondary'>{item.type}</Badge>
-                  {item.type !== 'featured' && (
-                    <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
-                  )}
-                </div>
+  return (
+    <div {...stylex.props(styles.page)}>
+      <Sortable
+        value={items}
+        onValueChange={setItems}
+        getItemValue={(item) => item.id}
+        strategy='grid'
+        style={styles.grid}
+      >
+        {items.map((item) => (
+          <SortableItem key={item.id} value={item.id}>
+            <div
+              {...stylex.props(
+                styles.row,
+                styles.gridCell,
+                item.type === 'featured' && styles.rowMuted,
+                item.type === 'featured' && styles.featuredCell
+              )}
+            >
+              <Handle style={styles.gridHandle} />
+              <div {...stylex.props(styles.rowBody)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
               </div>
-            </SortableItem>
-          ))}
-        </Sortable>
-      </div>
-    )
+              <div {...stylex.props(styles.gridFooter)}>
+                <Badge variant='faded'>{item.type}</Badge>
+                {item.type !== 'featured' && (
+                  <span {...stylex.props(styles.rowMeta)}>{item.size}</span>
+                )}
+              </div>
+            </div>
+          </SortableItem>
+        ))}
+      </Sortable>
+    </div>
+  )
+}
+
+/** The `strategy` of the list: items stacked in a column, or laid out on a grid. */
+export const Layouts: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable
+  value={items}
+  onValueChange={setItems}
+  getItemValue={(item) => item.id}
+  strategy='grid'
+>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id}>
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='layout' rows={['vertical', 'grid'] as const} wide>
+      {(layout) => (layout === 'vertical' ? <ListOfItems /> : <GridOfItems />)}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = (layout: string) =>
+      Array.from(
+        cellOf(canvasElement, 'layout', layout).querySelectorAll('[data-slot="sortable-item"]')
+      ).map((el) => el.getBoundingClientRect())
+    const [v1, v2] = items('vertical')
+    const [g1, g2] = items('grid')
+    if (!v1 || !v2 || !g1 || !g2) throw new Error('Sortable items not found')
+    // A list stacks its items; a grid puts neighbours on one row.
+    await expect(v2.top).toBeGreaterThan(v1.top)
+    await expect(g2.top).toBe(g1.top)
+    await expect(g2.left).toBeGreaterThan(g1.left)
   }
 }
 
@@ -562,7 +728,7 @@ export const NestedGroups: Story = {
         >
           {optionGroups.map((group) => (
             <SortableItem key={group.id} value={group.id}>
-              <div style={styles.groupContainer}>
+              <div {...stylex.props(styles.groupContainer)}>
                 <Collapsible defaultOpen={group.id === '1'}>
                   {/* The handle sits beside the trigger: a button cannot hold another control. */}
                   <div {...stylex.props(styles.groupRow)}>
@@ -695,7 +861,7 @@ export const Playlist: Story = {
               <CardTitle>Queue</CardTitle>
               <CardDescription>{tracks.length} tracks</CardDescription>
             </div>
-            <Badge variant='primary'>Playlist</Badge>
+            <Badge variant='solid'>Playlist</Badge>
           </CardHeader>
           <div {...stylex.props(styles.cardBody)}>
             <Sortable
@@ -712,7 +878,7 @@ export const Playlist: Story = {
                     <div {...stylex.props(styles.rowBody)}>
                       <div {...stylex.props(styles.metaRow)}>
                         <span {...stylex.props(styles.rowTitle)}>{track.title}</span>
-                        {track.active && <Badge variant='primary'>Playing</Badge>}
+                        {track.active && <Badge variant='solid'>Playing</Badge>}
                       </div>
                       <span {...stylex.props(styles.rowMeta)}>
                         {track.artist} · {track.album}
@@ -904,7 +1070,7 @@ const mediaStyles = stylex.create({
     opacity: 1,
     width: '100%',
     touchAction: 'none',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   imageHandleIcon: {
     position: 'absolute',
@@ -1026,6 +1192,25 @@ function persistOrder(): Promise<void> {
 }
 
 export const PersistedOrder: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable
+  value={items}
+  onValueChange={setItems}
+  onValueCommit={(next, { previousValue, overIndex }) => save(next).catch(() => setItems(previousValue))}
+  getItemValue={(item) => item.id}
+>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id}>
+      <SortableItemHandle />
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
   name: 'Persisted order',
   render: () => {
     const [items, setItems] = useState(defaultTasks)
@@ -1074,6 +1259,7 @@ export const PersistedOrder: Story = {
 }
 
 const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
+const lifted = () => document.querySelector('[data-dragging="true"]') !== null
 
 /** A keyboard drag is announced by the item's name, in the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1118,5 +1304,127 @@ export const KeyboardAnnouncements: Story = {
     await waitFor(() => expect(document.querySelector('[data-dragging="true"]')).toBeNull())
     await new Promise((resolve) => setTimeout(resolve, 400))
     await expect(live()).not.toMatch(/\b[0-9]+\b/)
+  }
+}
+
+/** Each handle is named after its item, so a list of controls tells the rows apart. */
+export const HandleNames: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sortable value={items} onValueChange={setItems} getItemValue={(item) => item.id}>
+  {items.map((item) => (
+    <SortableItem key={item.id} value={item.id} aria-label={item.title}>
+      <SortableItemHandle />
+      {item.title}
+    </SortableItem>
+  ))}
+</Sortable>`
+      }
+    }
+  },
+  render: () => {
+    const [items, setItems] = useState(defaultFiles.slice(0, 3))
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Sortable
+          value={items}
+          onValueChange={setItems}
+          getItemValue={(item) => item.id}
+          style={styles.list}
+        >
+          {items.map((item) => (
+            // The row also holds a description and a size; the item's own name is its title.
+            <SortableItem key={item.id} value={item.id} aria-label={item.title}>
+              <div {...stylex.props(styles.row)}>
+                <Handle />
+                <div {...stylex.props(styles.rowBody)}>
+                  <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+                  <span {...stylex.props(styles.rowMeta)}>{item.description}</span>
+                </div>
+              </div>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const handles = canvas.getAllByRole('button', { name: /^Reorder / })
+    const names = handles.map((handle) => handle.getAttribute('aria-label'))
+    await expect(names).toEqual([
+      'Reorder Product Demo',
+      'Reorder Product Specification',
+      'Reorder Product Demo Video'
+    ])
+    await expect(new Set(names).size).toBe(names.length)
+  }
+}
+
+/** An item is one Tab stop: Space lifts it, the arrows move it, Space drops it and Escape puts it back. */
+export const Keyboard: Story = {
+  render: () => {
+    const [items, setItems] = useState(defaultFiles.slice(0, 3))
+    return (
+      <div {...stylex.props(styles.page)}>
+        <Sortable
+          value={items}
+          onValueChange={setItems}
+          getItemValue={(item) => item.id}
+          style={styles.list}
+        >
+          {items.map((item) => (
+            <SortableItem key={item.id} value={item.id}>
+              <div {...stylex.props(styles.row)}>
+                <span {...stylex.props(styles.rowTitle)}>{item.title}</span>
+              </div>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const order = () =>
+      Array.from(canvasElement.querySelectorAll('[data-slot="sortable-item"]')).map(
+        (item) => item.textContent
+      )
+    const demo = () => canvas.getByText('Product Demo').closest<HTMLElement>('[role="button"]')
+    const start = ['Product Demo', 'Product Specification', 'Product Demo Video']
+    await expect(order()).toEqual(start)
+
+    // Tab reaches the first item, and only the items are stops.
+    await userEvent.tab()
+    await waitFor(() => expect(demo()).toHaveFocus())
+
+    // Lift, step down, drop: the order changes and focus stays on the moved item.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil(
+      '{ArrowDown}',
+      () => expect(live()).toBe('Product Demo moved over Product Specification.'),
+      {
+        when: () => lifted() && !live().includes('moved over')
+      }
+    )
+    await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
+    await waitFor(() =>
+      expect(order()).toEqual(['Product Specification', 'Product Demo', 'Product Demo Video'])
+    )
+    await waitFor(() => expect(demo()).toHaveFocus())
+
+    // Lift again and cancel: Escape drops nothing.
+    await pressUntil(' ', () => expect(lifted()).toBe(true), { when: () => !lifted() })
+    await pressUntil(
+      '{ArrowDown}',
+      () => expect(live()).toBe('Product Demo moved over Product Demo Video.'),
+      {
+        when: () => lifted() && !live().includes('Product Demo Video.')
+      }
+    )
+    await pressUntil('{Escape}', () => expect(lifted()).toBe(false))
+    await waitFor(() =>
+      expect(order()).toEqual(['Product Specification', 'Product Demo', 'Product Demo Video'])
+    )
+    await new Promise((resolve) => setTimeout(resolve, 400))
   }
 }

@@ -1,9 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
+import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '../../base/dialog'
 import { Input } from '../../base/input'
+import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
+import { pressUntil } from '../../contracts/keyboard'
+import { Axis } from '../../contracts/story-axes'
+import { useIsMobile } from '../../hooks/use-media-query'
 import { Label } from '../label'
 import {
   Sheet,
@@ -20,23 +32,7 @@ import {
 const meta = {
   title: 'Extra Components/Sheet',
   component: Sheet,
-  parameters: { layout: 'centered' },
-  tags: [], // ['autodocs']
-  decorators: [
-    (Story) => (
-      <div
-        {...stylex.props(
-          atoms.display.flex,
-          atoms.justifyContent.center,
-          atoms.padding['20px'],
-          atoms.minWidth['448px'],
-          atoms.width['100%']
-        )}
-      >
-        <Story />
-      </div>
-    )
-  ]
+  tags: [] // ['autodocs']
 } satisfies Meta<typeof Sheet>
 
 type Story = StoryObj<typeof meta>
@@ -49,21 +45,54 @@ const styles = stylex.create({
     flexDirection: 'column',
     gap: 16,
     paddingInline: 16
-  },
-  row: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8
   }
 })
 
 export default meta
 
-export const Playground: Story = {
-  render: () => (
-    <Sheet>
+// The look lives on `SheetContent`, so its props reach the story as args beside the root's.
+type PlaygroundArgs = ComponentProps<typeof Sheet> &
+  Pick<ComponentProps<typeof SheetContent>, 'side' | 'blurredOverlay' | 'showCloseButton'>
+
+export const Playground: StoryObj<PlaygroundArgs> = {
+  parameters: {
+    controls: {
+      disable: false,
+      include: ['side', 'blurredOverlay', 'showCloseButton', 'modal', 'disablePointerDismissal']
+    },
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>Alohomora</SheetTrigger>
+  <SheetContent side='right'>
+    <SheetHeader>
+      <SheetTitle>Edit vault record</SheetTitle>
+      <SheetDescription>Make changes to the vault holder here.</SheetDescription>
+    </SheetHeader>
+    <Label>
+      Account holder <Input defaultValue='Luna Lovegood' />
+    </Label>
+    <SheetFooter>
+      <SheetClose render={<Button />}>Save vault record</SheetClose>
+      <SheetClose render={<Button variant='outline' />}>Close</SheetClose>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
+  argTypes: {
+    side: { control: 'radio', options: ['top', 'right', 'bottom', 'left'] },
+    blurredOverlay: { control: 'boolean' },
+    showCloseButton: { control: 'boolean' },
+    modal: { control: 'radio', options: [true, false, 'trap-focus'] },
+    disablePointerDismissal: { control: 'boolean' }
+  },
+  args: { side: 'right', blurredOverlay: false, showCloseButton: true },
+  render: ({ side, blurredOverlay, showCloseButton, ...root }) => (
+    <Sheet {...root}>
       <SheetTrigger render={<Button variant='outline' />}>Alohomora</SheetTrigger>
-      <SheetContent>
+      <SheetContent side={side} blurredOverlay={blurredOverlay} showCloseButton={showCloseButton}>
         <SheetHeader>
           <SheetTitle>Edit vault record</SheetTitle>
           <SheetDescription>
@@ -91,6 +120,7 @@ export const Playground: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Alohomora' }))
     const sheet = await body.findByRole('dialog')
     await expect(body.getByRole('heading', { name: 'Edit vault record' })).toBeInTheDocument()
+    await expectTypeRole(body.getByRole('heading', { name: 'Edit vault record' }), 'body1')
     await expect(within(sheet).getByDisplayValue('Luna Lovegood')).toBeInTheDocument()
 
     // Footer close action dismisses the sheet.
@@ -100,6 +130,21 @@ export const Playground: Story = {
 }
 
 export const CloseButton: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>Open the ledger</SheetTrigger>
+  <SheetContent labels={{ close: 'Shut the ledger' }}>
+    <SheetHeader>
+      <SheetTitle>Vault ledger</SheetTitle>
+      <SheetDescription>Every withdrawal since 1991.</SheetDescription>
+    </SheetHeader>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
   name: 'Close button',
   render: () => (
     <Sheet>
@@ -121,10 +166,25 @@ export const CloseButton: Story = {
 }
 
 export const Sides: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>left</SheetTrigger>
+  <SheetContent side='left'>
+    <SheetHeader>
+      <SheetTitle>Entrance on the left</SheetTitle>
+      <SheetDescription>A hidden passage opens on the left side of the castle.</SheetDescription>
+    </SheetHeader>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
   render: () => (
-    <div {...stylex.props(styles.row)}>
-      {sides.map((side) => (
-        <Sheet key={side}>
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <Sheet>
           <SheetTrigger render={<Button variant='outline' />}>{side}</SheetTrigger>
           <SheetContent side={side}>
             <SheetHeader>
@@ -135,12 +195,44 @@ export const Sides: Story = {
             </SheetHeader>
           </SheetContent>
         </Sheet>
-      ))}
-    </div>
-  )
+      )}
+    </Axis>
+  ),
+  // Docked popups do not flip: each sheet sits flush against its own edge.
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    for (const side of sides) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
+      )
+      const dialog = await body.findByRole('dialog')
+      await expectDockedTo(dialog, side)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+  }
 }
 
 export const NoCloseButton: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>Alohomora</SheetTrigger>
+  <SheetContent showCloseButton={false}>
+    <SheetHeader>
+      <SheetTitle>Publish in the Daily Prophet</SheetTitle>
+      <SheetDescription>Review the article, then publish or discard it below.</SheetDescription>
+    </SheetHeader>
+    <SheetFooter>
+      <SheetClose render={<Button />}>Print edition</SheetClose>
+      <SheetClose render={<Button variant='outline' />}>Discard draft</SheetClose>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
   name: 'No close button',
   render: () => (
     <Sheet>
@@ -157,4 +249,207 @@ export const NoCloseButton: Story = {
       </SheetContent>
     </Sheet>
   )
+}
+
+const overlays = ['plain', 'blurred'] as const
+
+/** `blurredOverlay` blurs the page behind the backdrop by one unit step. */
+export const Overlays: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>Open blurred</SheetTrigger>
+  <SheetContent blurredOverlay>
+    <SheetHeader>
+      <SheetTitle>Overlay blurred</SheetTitle>
+      <SheetDescription>The castle fades behind the passage.</SheetDescription>
+    </SheetHeader>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='overlay' rows={overlays}>
+      {(overlay) => (
+        <Sheet>
+          <SheetTrigger render={<Button variant='outline' />}>{`Open ${overlay}`}</SheetTrigger>
+          <SheetContent blurredOverlay={overlay === 'blurred'}>
+            <SheetHeader>
+              <SheetTitle>{`Overlay ${overlay}`}</SheetTitle>
+              <SheetDescription>The castle fades behind the passage.</SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    const filters: string[] = []
+    for (const overlay of overlays) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'overlay', overlay)).getByRole('button', {
+          name: `Open ${overlay}`
+        })
+      )
+      const sheet = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      filters.push(getComputedStyle(backdropOf(sheet)).backdropFilter)
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+    await expect(filters).toEqual(['none', 'blur(4px)'])
+  }
+}
+
+/** One modal for both screens: a Sheet from the bottom edge on a phone, a centered Dialog on a desktop. */
+function ResponsiveModal() {
+  const isMobile = useIsMobile()
+  const title = 'The Pensieve'
+  const description = 'Lift a memory from your mind and examine it.'
+  return isMobile ? (
+    <Sheet>
+      <SheetTrigger render={<Button variant='outline' />}>Open the Pensieve</SheetTrigger>
+      <SheetContent side='bottom'>
+        <SheetHeader>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>{description}</SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Open the Pensieve</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/**
+ * `useIsMobile()` picks the modal, so the page ships one trigger. The test browser is a phone-sized
+ * window, so this play asserts the Sheet there; the Dialog branch is the same code on a wider window.
+ */
+export const ResponsiveModalRecipe: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `function ResponsiveModal() {
+  const isMobile = useIsMobile()
+  return isMobile ? (
+    <Sheet>
+      <SheetTrigger render={<Button variant='outline' />}>Open the Pensieve</SheetTrigger>
+      <SheetContent side='bottom'>
+        <SheetHeader>
+          <SheetTitle>The Pensieve</SheetTitle>
+          <SheetDescription>Lift a memory from your mind and examine it.</SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Open the Pensieve</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>The Pensieve</DialogTitle>
+          <DialogDescription>Lift a memory from your mind and examine it.</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}`
+      }
+    }
+  },
+  name: 'Sheet on phones, Dialog on desktop',
+  render: () => <ResponsiveModal />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const phone = window.matchMedia('(max-width: 659px)').matches
+    await userEvent.click(canvas.getByRole('button', { name: 'Open the Pensieve' }))
+    const dialog = await body.findByRole('dialog', { name: 'The Pensieve' })
+    if (phone) {
+      await expectDockedTo(dialog, 'bottom')
+    } else {
+      // A Dialog floats in the middle of the window, flush with no edge.
+      const { top, bottom, left, right } = dialog.getBoundingClientRect()
+      await expect(top).toBeGreaterThan(0)
+      await expect(bottom).toBeLessThan(window.innerHeight)
+      await expect(Math.abs((left + right) / 2 - window.innerWidth / 2)).toBeLessThan(2)
+    }
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+  }
+}
+
+function Ledger({ defaultOpen }: { defaultOpen?: boolean }) {
+  return (
+    <Sheet defaultOpen={defaultOpen}>
+      <SheetTrigger render={<Button variant='outline' />}>Open the ledger</SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Vault ledger</SheetTitle>
+          <SheetDescription>Every withdrawal since 1991.</SheetDescription>
+        </SheetHeader>
+        <SheetFooter>
+          <SheetClose render={<Button />}>Sign it</SheetClose>
+          <SheetClose render={<Button variant='outline' />}>Walk away</SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+// The a11y gate runs after `play`, when a sheet a play opened has closed again: this story keeps
+// the popup, its backdrop, and its close button open so the gate checks them.
+export const Open: Story = {
+  render: () => <Ledger defaultOpen />,
+  play: async () => {
+    const sheet = await within(document.body).findByRole('dialog', { name: 'Vault ledger' })
+    await waitFor(() => expect(sheet).toBeVisible())
+    await expect(sheet).toHaveAccessibleDescription('Every withdrawal since 1991.')
+  }
+}
+
+/** Enter or Space opens the sheet, Tab stays inside it, and Escape closes it and returns focus. */
+export const Keyboard: Story = {
+  render: () => <Ledger />,
+  play: async ({ canvas }) => {
+    const body = within(document.body)
+    const trigger = canvas.getByRole('button', { name: 'Open the ledger' })
+    const opened = () => body.getByRole('dialog', { name: 'Vault ledger' })
+
+    await userEvent.tab()
+    await expect(trigger).toHaveFocus()
+    await pressUntil('{Enter}', opened, { when: () => !body.queryByRole('dialog') })
+    const sheet = opened()
+
+    // Focus moves into the popup, and Tab keeps it there (five presses outrun its three buttons).
+    await waitFor(() => expect(sheet.contains(document.activeElement)).toBe(true))
+    for (let step = 0; step < 5; step += 1) {
+      await userEvent.tab()
+      // Past the last control, focus lands on Base UI's focus guard first and is handed back.
+      await waitFor(() => expect(sheet.contains(document.activeElement)).toBe(true))
+    }
+    // The page behind is inert while the sheet is open.
+    await expect(body.queryByRole('button', { name: 'Open the ledger' })).toBeNull()
+
+    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(trigger).toHaveFocus())
+
+    // Space opens it too; focus lands on the first button, and Enter on it closes the sheet.
+    await pressUntil(' ', opened, { when: () => !body.queryByRole('dialog') })
+    await waitFor(() => expect(body.getByRole('button', { name: 'Sign it' })).toHaveFocus())
+    // One press: the control that takes it already holds focus (asserted above), and a second press
+    // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
+    // page for its exit animation, so the wait is longer on a loaded runner.
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull(), { timeout: 10000 })
+    await waitFor(() => expect(trigger).toHaveFocus())
+  }
 }

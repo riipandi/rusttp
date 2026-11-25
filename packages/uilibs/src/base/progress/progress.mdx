@@ -1,0 +1,78 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './progress.stories'
+
+<Meta of={Stories} />
+
+# Progress
+
+The status of a task that takes a long time. Use Meter instead for a value within a known range that is not a task.
+
+## Import
+
+```jsx
+import { Progress, ProgressLabel, ProgressValue } from 'uilibs/base/progress'
+```
+
+Built on Base UI [Progress](https://base-ui.com/react/components/progress). Props not listed here pass through.
+
+## Anatomy
+
+- **Progress:** the root. It takes `value` (`null` is indeterminate) and renders the track and the indicator itself, after its children.
+- **ProgressLabel:** the text that names the bar.
+- **ProgressValue:** the formatted value. A function child formats it yourself.
+- **ProgressTrack:** the groove behind the fill. `Progress` renders it, so you do not place it.
+- **ProgressIndicator:** the fill. `Progress` renders it inside the track, so you do not place it.
+
+```jsx
+<Progress value={72}>
+  <ProgressLabel />
+  <ProgressValue />
+</Progress>
+```
+
+## Examples
+
+### With a label and value
+
+<Canvas of={Stories.Label} />
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+## Accessibility
+
+The root is a `progressbar` named by `ProgressLabel`, or by `aria-label` when there is no label, and it reports `aria-valuenow`, `aria-valuemin` and `aria-valuemax`. It is not interactive and answers no keys. The `Label` and `Controlled` stories assert the role, the name and the value as it changes; `Colors` and `Sizes` name each bar with `aria-label`, and the a11y check runs on both.
+
+- Without a `ProgressLabel`, set `aria-label`.
+- Color alone carries no meaning, so pair a non-neutral `color` with a label.
+- See the Base UI [Progress](https://base-ui.com/react/components/progress) page for the rest.
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Progress
+
+| Prop    | Description                                                                                             |
+| ------- | ------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The role of the fill. Default `primary`. |
+| `size`  | `small`, `medium` <br /> Bar thickness: `small` is 2px, `medium` is 4px. Default `medium`.              |
+
+The same three attributes are set on `Progress`, `ProgressTrack`, `ProgressIndicator`, `ProgressLabel`, and `ProgressValue`:
+
+| Data attribute       | Description                            |
+| -------------------- | -------------------------------------- |
+| `data-progressing`   | Present while the task is in progress. |
+| `data-complete`      | Present when the task has completed.   |
+| `data-indeterminate` | Present when `value` is `null`.        |
+
+## Caveats
+
+- Without a `ProgressLabel`, give the bar an `aria-label`; the Colors and Sizes stories do.
+- Pair a non-neutral `color` with a label, because color alone carries no meaning.
+- `color` and `size` are read from `Progress` by the track and the indicator through context, so they are not props of those parts.
