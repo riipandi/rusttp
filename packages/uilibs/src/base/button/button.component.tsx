@@ -8,6 +8,8 @@
  */
 
 import { Button as BaseButton } from '@base-ui/react/button'
+import { mergeProps } from '@base-ui/react/merge-props'
+import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
@@ -49,8 +51,15 @@ function buttonHighlight(variant: ButtonVariant, color?: ButtonColor) {
 
 export interface ButtonProps extends Omit<
   React.ComponentProps<typeof BaseButton>,
-  'className' | 'style' | 'color'
+  'className' | 'style' | 'color' | 'render' | 'nativeButton'
 > {
+  /**
+   * Makes the button a link: the element, such as `<a href='…' />` or a router link, is rendered
+   * with the button's look and keeps its own role, so it is announced as a link. Mark the link of
+   * the open page with `aria-current='page'` (a router link does). `disabled`, `loading`, and
+   * `focusableWhenDisabled` do not apply to a link.
+   */
+  render?: React.ReactElement<React.ComponentProps<'a'>>
   /**
    * The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). Inside a
    * `ButtonGroup` it takes the group's `variant`, else `solid`.
@@ -98,8 +107,11 @@ export function Button({
   highlighted = false,
   icon: Icon,
   endIcon: EndIcon,
-  loading = false,
+  loading: loadingProp = false,
   disabled,
+  focusableWhenDisabled,
+  render,
+  ref,
   children,
   style,
   ...props
@@ -107,6 +119,7 @@ export function Button({
   const group = useButtonGroup()
   const variant = variantProp ?? group?.variant ?? 'solid'
   const size = sizeProp ?? group?.size ?? 'medium'
+  const loading = loadingProp && !render
   const iconOnly = React.Children.toArray(children).length === 0
   const glyph = glyphSize[size]
   const content = (
@@ -116,30 +129,39 @@ export function Button({
       {EndIcon ? <EndIcon size={glyph} aria-hidden /> : null}
     </>
   )
+  const appearance = stylex.props(
+    controlPress.root,
+    buttonStyles.root,
+    buttonFill(variant, color),
+    highlighted && !disabled && !loading && buttonHighlight(variant, color),
+    size !== 'xsmall' && controlSizes[size],
+    buttonSizes[size],
+    iconOnly && buttonSquare[size],
+    rounded && buttonModifiers.rounded,
+    fullWidth && buttonModifiers.fullWidth,
+    raised && buttonModifiers.raised,
+    loading && buttonStyles.loading,
+    buttonGroupMember(group, variant === 'solid' || variant === 'faded'),
+    style
+  )
+  if (render) {
+    return (
+      <ButtonLink render={render} ref={ref} props={{ ...props, ...appearance }}>
+        {content}
+      </ButtonLink>
+    )
+  }
   return (
     <BaseButton
       {...props}
+      ref={ref}
       // Disabled but focusable: a loading button blocks presses (and a form submit) without
       // dropping out of the tab order mid-action.
       disabled={disabled || loading}
-      focusableWhenDisabled={loading || props.focusableWhenDisabled}
+      focusableWhenDisabled={loading || focusableWhenDisabled}
       aria-busy={loading || undefined}
       data-loading={loading ? '' : undefined}
-      {...stylex.props(
-        controlPress.root,
-        buttonStyles.root,
-        buttonFill(variant, color),
-        highlighted && !disabled && !loading && buttonHighlight(variant, color),
-        size !== 'xsmall' && controlSizes[size],
-        buttonSizes[size],
-        iconOnly && buttonSquare[size],
-        rounded && buttonModifiers.rounded,
-        fullWidth && buttonModifiers.fullWidth,
-        raised && buttonModifiers.raised,
-        loading && buttonStyles.loading,
-        buttonGroupMember(group, variant === 'solid' || variant === 'faded'),
-        style
-      )}
+      {...appearance}
     >
       <LabelledControlContext.Provider value>
         {loading ? (
@@ -159,27 +181,27 @@ export function Button({
   )
 }
 
-export interface LinkButtonProps extends Omit<ButtonProps, 'render' | 'nativeButton' | 'loading'> {
-  /** The link element: `<a href='…' />`, or a router link such as `<Link to='…' />`. */
-  render: React.ReactElement<React.ComponentProps<'a'>>
-  /** Marks the link of the page the user is on. */
-  current?: boolean
-}
-
 /**
- * A button that navigates. Base UI gives a non-native button `role="button"`, which would announce
- * a link as a button, so the role goes back to `link` on the rendered element.
+ * The element of a button that navigates. Base UI's non-native button would give it
+ * `role="button"`, so it renders through `useRender` instead: an `a` keeps its native role, press
+ * model, and keyboard behavior. `ref` goes through `useRender`, because `mergeProps` does not merge refs.
  */
-export function LinkButton({ render, current, ...props }: LinkButtonProps) {
-  return (
-    <Button
-      {...props}
-      nativeButton={false}
-      render={React.cloneElement(render, {
-        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- deliberate: the element is the link, Base UI only overrides its role
-        role: 'link',
-        'aria-current': current ? 'page' : undefined
-      })}
-    />
-  )
+function ButtonLink({
+  render,
+  ref,
+  props,
+  children
+}: {
+  render: React.ReactElement<React.ComponentProps<'a'>>
+  ref: React.Ref<HTMLElement> | undefined
+  /** Typed as the button props `Button` receives; the rendered element takes them as they are. */
+  props: React.ComponentProps<'button'>
+  children: React.ReactNode
+}) {
+  return useRender({
+    defaultTagName: 'a',
+    render,
+    ref,
+    props: mergeProps<'button'>(props, { children })
+  })
 }

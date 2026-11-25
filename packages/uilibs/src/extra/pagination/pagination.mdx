@@ -21,14 +21,14 @@ import {
 } from 'uilibs/extra/pagination'
 ```
 
-Built on plain `nav`, `ul`, and `li` elements, with `LinkButton` for the links. Props not listed here pass through.
+Built on plain `nav`, `ul`, and `li` elements, with `Button` rendered as an `a` for the links. Props not listed here pass through.
 
 ## Anatomy
 
 - **Pagination:** the `nav` landmark.
 - **PaginationContent:** the `ul` that holds the items.
 - **PaginationItem:** an `li`. Each link and the ellipsis sits in its own item, a direct child of the content.
-- **PaginationLink:** a page link, an `a` rendered through `LinkButton`.
+- **PaginationLink:** a page link, an `a` rendered through `Button`'s `render`.
 - **PaginationPrevious:** a link to the previous page. It renders its own chevron and text.
 - **PaginationNext:** a link to the next page. It renders its own text and chevron.
 - **PaginationEllipsis:** a mark for skipped pages. It renders its own text for assistive technology.

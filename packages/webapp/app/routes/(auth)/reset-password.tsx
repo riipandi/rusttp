@@ -2,7 +2,7 @@ import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, useNavigate, Link as RouterLink } from '@tanstack/react-router'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
 import { Link } from 'uilibs/extra/link'
@@ -89,9 +89,9 @@ function InvalidLink() {
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 
-      <LinkButton render={<RouterLink to='/forgot-password' />} size='large'>
+      <Button render={<RouterLink to='/forgot-password' />} size='large'>
         {m.auth_reset_invalid_action()}
-      </LinkButton>
+      </Button>
 
       <Link
         render={<RouterLink to='/login' />}

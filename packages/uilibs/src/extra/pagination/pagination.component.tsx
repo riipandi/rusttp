@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { buttonSquare, LinkButton } from '../../base/button'
+import { Button, buttonSquare } from '../../base/button'
 import { glyphSize } from '../../styles/glyph'
 import type { DenseControlSize, StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
@@ -83,15 +83,15 @@ function PageLink({
 }: PaginationLinkProps & { square: boolean }) {
   // The text goes to the button, not the `a`: a button with no children reads as icon-only.
   return (
-    <LinkButton
+    <Button
       variant={current ? 'outline' : 'ghost'}
       size={size}
-      current={current}
+      aria-current={current ? 'page' : undefined}
       render={<a {...props} />}
       style={[square && buttonSquare[size], style]}
     >
       {children}
-    </LinkButton>
+    </Button>
   )
 }
 

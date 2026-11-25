@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
-import { LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import {
   Select,
   SelectContent,
@@ -21,15 +21,15 @@ import { groups as navGroups, pages as navPages, type Page } from './-nav'
 function AsideEntry({ page }: { page: Page }) {
   const current = useIsCurrent(page)
   return (
-    <LinkButton
+    <Button
       render={<Link to={page.to} />}
-      current={current}
+      aria-current={current ? 'page' : undefined}
       variant='ghost'
       size='small'
       style={[sidebar.item, current ? sidebar.itemCurrent : sidebar.itemIdle]}
     >
       {page.label}
-    </LinkButton>
+    </Button>
   )
 }
 

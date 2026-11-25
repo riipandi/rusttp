@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps, useRouterState } from '@tanstack/react-router'
 import * as React from 'react'
 import { Avatar, AvatarFallback } from 'uilibs/base/avatar'
-import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import { CloseButton } from 'uilibs/base/dialog/close-button'
 import { Separator } from 'uilibs/base/separator'
 import { Icon } from 'uilibs/extra/icon'
@@ -70,16 +70,16 @@ function SheetEntry({
 
   if (item.to) {
     return (
-      <LinkButton
+      <Button
         render={<Link to={item.to} />}
-        current={current}
+        aria-current={current ? 'page' : undefined}
         variant='ghost'
         size='large'
         style={style}
         onClick={onNavigate}
       >
         {content}
-      </LinkButton>
+      </Button>
     )
   }
 

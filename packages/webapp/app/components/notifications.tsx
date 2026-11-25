@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link, type LinkProps } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -217,7 +217,7 @@ export function NotificationsPopover({
         )}
 
         <div {...stylex.props(styles.footer)}>
-          <LinkButton
+          <Button
             render={<Link to={to} onClick={() => setOpen(false)} />}
             variant='ghost'
             size='small'
@@ -225,7 +225,7 @@ export function NotificationsPopover({
           >
             {m.notifications_view_all()}
             <Icon svg={ArrowRight} size={14} />
-          </LinkButton>
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

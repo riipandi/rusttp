@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from 'uilibs/extra/description-list'
 import { Logo } from '#/components/logo'
 import { PageTitle } from '#/components/page-title'
@@ -32,9 +32,9 @@ function RouteComponent() {
         <section {...stylex.props(styles.hero)}>
           <PageTitle>{m.home_title()}</PageTitle>
           <p {...stylex.props(styles.lead)}>{m.home_lead()}</p>
-          <LinkButton render={<Link to='/login' />} size='large'>
+          <Button render={<Link to='/login' />} size='large'>
             {m.home_sign_in()}
-          </LinkButton>
+          </Button>
         </section>
 
         <section>

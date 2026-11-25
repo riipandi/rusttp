@@ -1,7 +1,7 @@
 import { Mail } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link as RouterLink } from '@tanstack/react-router'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { Link } from 'uilibs/extra/link'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { PageTitle } from '#/components/page-title'
@@ -35,9 +35,9 @@ function RouteComponent() {
 
       <div {...stylex.props(styles.actions)}>
         {/* Demo only: there is no mailer yet, so this stands in for opening the link. */}
-        <LinkButton render={<RouterLink to='/email-verified' />} size='large'>
+        <Button render={<RouterLink to='/email-verified' />} size='large'>
           {m.auth_verify_done()}
-        </LinkButton>
+        </Button>
         {/* Placeholder: resending needs the mailer. */}
         <Button variant='outline' size='large' onClick={notWired('Resend the verification email')}>
           {m.auth_verify_resend()}

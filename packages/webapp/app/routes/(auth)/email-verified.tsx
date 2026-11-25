@@ -1,7 +1,7 @@
 import { CircleCheck } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { createFileRoute, Link as RouterLink } from '@tanstack/react-router'
-import { LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
 import { getMessages, useMessages } from '#/libraries/messages'
@@ -22,9 +22,9 @@ function RouteComponent() {
         <p {...stylex.props(styles.subtitle)}>{m.auth_verified_subtitle()}</p>
       </div>
 
-      <LinkButton render={<RouterLink to='/login' />} size='large'>
+      <Button render={<RouterLink to='/login' />} size='large'>
         {m.auth_verified_action()}
-      </LinkButton>
+      </Button>
     </>
   )
 }

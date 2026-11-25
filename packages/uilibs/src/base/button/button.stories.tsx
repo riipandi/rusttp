@@ -15,7 +15,7 @@ import {
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
-import { Button, LinkButton } from './button.component'
+import { Button } from './button.component'
 import { buttonFills, buttonSizes, buttonSquare } from './button.stylex'
 
 const meta = {
@@ -42,6 +42,9 @@ const styles = stylex.create({
   // `inherit` takes the parent's text color; a parent with its own color shows that it does.
   parent: { color: colors.foregroundPrimary },
   wide: { paddingInline: 48 },
+  paragraph: { margin: 0, marginBlockEnd: unit.x1 },
+  // `medium` pads each side by `unit.x4`, so the margin is its negative.
+  aligned: { marginInlineStart: `calc(-1 * ${unit.x4})` },
   wideBox: { width: 320 }
 })
 
@@ -345,33 +348,77 @@ export const Raised: Story = {
   }
 }
 
+const onLinkClick = fn()
+const onLinkRef = fn()
+
 export const AsLink: Story = {
   name: 'as link',
   render: () => (
-    <LinkButton variant='outline' render={<a href='#docs' />}>
-      Read the Daily Prophet
-    </LinkButton>
+    <div {...stylex.props(styles.row)}>
+      <Button
+        variant='outline'
+        ref={(node) => onLinkRef(node?.tagName)}
+        onClick={(event) => {
+          event.preventDefault()
+          onLinkClick()
+        }}
+        render={<a href='#docs' />}
+      >
+        Read the Daily Prophet
+      </Button>
+      <Button variant='ghost' size='small' aria-current='page' render={<a href='#overview' />}>
+        Overview
+      </Button>
+      <Button icon={ArrowRight} aria-label='Next page' render={<a href='#next' />} />
+    </div>
   ),
   play: async ({ canvas }) => {
-    // Base UI gives a non-native button role="button"; a link button is announced as a link.
+    // The element keeps its own role: an `a` with an `href` is a link with no `role` attribute,
+    // and Base UI's `role="button"` is not added.
     const link = canvas.getByRole('link', { name: 'Read the Daily Prophet' })
     await expect(link).toHaveAttribute('href', '#docs')
+    await expect(link).not.toHaveAttribute('role')
     await expect(canvas.queryByRole('button', { name: 'Read the Daily Prophet' })).toBeNull()
-  }
-}
 
-export const CurrentLink: Story = {
-  name: 'as current link',
-  render: () => (
-    <LinkButton variant='ghost' size='small' current render={<a href='#overview' />}>
-      Overview
-    </LinkButton>
-  ),
-  play: async ({ canvas }) => {
+    // The button's handler and `ref` reach the anchor.
+    await userEvent.click(link)
+    await expect(onLinkClick).toHaveBeenCalledTimes(1)
+    await expect(onLinkRef).toHaveBeenCalledWith('A')
+
     await expect(canvas.getByRole('link', { name: 'Overview' })).toHaveAttribute(
       'aria-current',
       'page'
     )
+
+    // Children make the button a rectangle; with none (an icon only) it is the square of its size.
+    const wide = link.getBoundingClientRect()
+    await expect(wide.width).toBeGreaterThan(wide.height)
+    const square = canvas.getByRole('link', { name: 'Next page' }).getBoundingClientRect()
+    await expect(square.width).toBe(square.height)
+  }
+}
+
+const textLeft = (element: Element) => {
+  const range = document.createRange()
+  range.selectNodeContents(element)
+  return range.getBoundingClientRect().left
+}
+
+// A ghost button's padding indents its label from the content edge; a negative margin of the same
+// size lines the label up with the text above it (the recipe `button.mdx` documents).
+export const Aligned: Story = {
+  render: () => (
+    <div>
+      <p {...stylex.props(styles.paragraph)}>Cast the charm at the edge of the line.</p>
+      <Button variant='ghost' style={styles.aligned}>
+        Cancel
+      </Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const paragraph = canvas.getByText('Cast the charm at the edge of the line.')
+    const button = canvas.getByRole('button', { name: 'Cancel' })
+    await expect(Math.round(textLeft(button))).toBe(Math.round(textLeft(paragraph)))
   }
 }
 

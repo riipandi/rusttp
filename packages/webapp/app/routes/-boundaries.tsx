@@ -2,7 +2,7 @@ import { CircleAlert, SearchX } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link, type ErrorComponentProps, useRouter } from '@tanstack/react-router'
 import type * as React from 'react'
-import { Button, LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { Icon } from 'uilibs/extra/icon'
 import { Text } from 'uilibs/extra/text'
 import { ThemeProvider } from 'uilibs/theme'
@@ -55,7 +55,7 @@ export function GlobalNotFound() {
       title={m.boundary_not_found_title()}
       description={m.boundary_not_found_description()}
     >
-      <LinkButton render={<Link to='/' />}>{m.boundary_back_home()}</LinkButton>
+      <Button render={<Link to='/' />}>{m.boundary_back_home()}</Button>
       <Button variant='faded' color='neutral' onClick={() => router.history.back()}>
         {m.boundary_go_back()}
       </Button>
@@ -74,9 +74,9 @@ export function GlobalError({ error, reset }: ErrorComponentProps) {
       detail={import.meta.env.DEV && error instanceof Error ? error.message : undefined}
     >
       <Button onClick={reset}>{m.boundary_try_again()}</Button>
-      <LinkButton render={<Link to='/' />} variant='faded' color='neutral'>
+      <Button render={<Link to='/' />} variant='faded' color='neutral'>
         {m.boundary_back_home()}
-      </LinkButton>
+      </Button>
     </Boundary>
   )
 }

@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import type * as React from 'react'
-import { LinkButton } from 'uilibs/base/button'
+import { Button } from 'uilibs/base/button'
 import { useMessages } from '#/libraries/messages'
 import { barColors, styles } from '#/styles/element/announcement-bar.stylex'
 
@@ -36,9 +36,9 @@ export function AnnouncementBar({
     >
       <p {...stylex.props(styles.message)}>{children}</p>
       {action && (
-        <LinkButton render={action.render} variant='ghost' size='xsmall' style={styles.action}>
+        <Button render={action.render} variant='ghost' size='xsmall' style={styles.action}>
           {action.label}
-        </LinkButton>
+        </Button>
       )}
     </aside>
   )

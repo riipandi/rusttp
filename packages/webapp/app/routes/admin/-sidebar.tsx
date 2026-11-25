@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import * as React from 'react'
-import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'uilibs/base/tooltip'
 import { Icon } from 'uilibs/extra/icon'
 import { Logo } from '#/components/logo'
@@ -31,9 +31,9 @@ function NavEntry({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   )
   // Collapsed, the label is gone from the row: it becomes the accessible name and a tooltip.
   const trigger = to ? (
-    <LinkButton
+    <Button
       render={<Link to={to} />}
-      current={current}
+      aria-current={current ? 'page' : undefined}
       variant='ghost'
       size='small'
       aria-label={collapsed ? label : undefined}

@@ -9,7 +9,7 @@ import {
 } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
-import { Button, buttonSquare, LinkButton } from 'uilibs/base/button'
+import { Button, buttonSquare } from 'uilibs/base/button'
 import { Logo } from '#/components/logo'
 import { type NavItem, NavSheet, useIsCurrent } from '#/components/nav-sheet'
 import { NotificationsPopover } from '#/components/notifications'
@@ -42,15 +42,15 @@ function NavEntry({ item }: { item: NavItem }) {
 
   if (item.to) {
     return (
-      <LinkButton
+      <Button
         render={<Link to={item.to} />}
-        current={current}
+        aria-current={current ? 'page' : undefined}
         variant='ghost'
         size='small'
         style={style}
       >
         {item.label}
-      </LinkButton>
+      </Button>
     )
   }
 
