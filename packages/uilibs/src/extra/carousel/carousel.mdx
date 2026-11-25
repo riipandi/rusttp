@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './carousel.stories'
+
+<Meta of={Stories} />
+
+# Carousel
+
+A strip of slides that scrolls and snaps, with previous and next buttons. Pick it to page through a few cards or images in a fixed width; a list the user compares at a glance belongs in a [Table](?path=/docs/extra-components-table--docs) or a plain list.
+
+## Import
+
+```jsx
+import { Carousel } from 'uilibs/extra/carousel'
+```
+
+Built on a native scroll container with CSS scroll snap, so it adds no dependency, and on the [WAI-ARIA carousel pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/). Props not listed here pass through to the `section`.
+
+## Anatomy
+
+- **Carousel:** the named `carousel` region. Each child is one slide.
+- **Strip:** the scrolling `group` named "Slides". It is a Tab stop and takes the arrow keys.
+- **Slide:** a `group` named by its position ("2 of 6"), rendered for each child.
+- **Controls:** the Previous and Next buttons, shown under the strip.
+- **Status:** a visually hidden `role="status"` line that names the visible slides after they change.
+
+```jsx
+<Carousel aria-label='Spells'>
+  <Card>…</Card>
+  <Card>…</Card>
+</Carousel>
+```
+
+## Examples
+
+### Previous and next
+
+The buttons move by one page of `visibleItems` slides. At either end the button is `aria-disabled` but stays in the tab order, so pressing it on the last page never drops focus.
+
+<Canvas of={Stories.Buttons} />
+
+### Visible slides
+
+`visibleItems` sets how many slides fit the strip; each is `1 / visibleItems` of its width less the gaps.
+
+<Canvas of={Stories.Visible} />
+
+### Keyboard
+
+Tab reaches the strip, then the buttons. Once the strip has focus, the arrow keys move one page, Home and End go to the first and last page, and the keys flip in a right-to-left layout.
+
+<Canvas of={Stories.Keyboard} />
+
+### Interactive slides
+
+A control inside a slide keeps its own keys, and focusing one in a slide that is out of view scrolls the slide in.
+
+<Canvas of={Stories.InteractiveSlides} />
+
+### Reading the position
+
+`onChange` reports the index of the first visible slide, whether it came from a button, a key, a swipe, or a scroll. Use it to drive a row of dots or a counter outside the carousel.
+
+<Canvas of={Stories.OnChange} />
+
+### Without controls
+
+`showControls={false}` leaves the strip, the keys, and touch scrolling.
+
+<Canvas of={Stories.States} />
+
+### Right to left
+
+The strip, the keys, the icons, and the button order follow the direction of the page.
+
+<Canvas of={Stories.RightToLeft} />
+
+## API reference
+
+The carousel also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Carousel
+
+| Prop           | Description                                                                                                                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `visibleItems` | `number` <br /> How many slides fit the strip at once, and how far the buttons and arrow keys move. Default `1`.                                                                               |
+| `gap`          | `UnitStep`, `string` <br /> The space between slides: a count of `unit` steps (`3` is 12px) or a CSS length. Default `3`.                                                                      |
+| `showControls` | `boolean` <br /> Shows the Previous and Next buttons. Default `true`.                                                                                                                          |
+| `onChange`     | `(index: number) => void` <br /> Called with the index of the first visible slide whenever it changes.                                                                                         |
+| `labels`       | `Partial<CarouselLabels>` <br /> `name`, `roleDescription`, `slideRoleDescription`, `slides`, `slide(index, total)`, `previous`, `next`, and `status(first, last, total)`. English by default. |
+
+## Caveats
+
+- Name each carousel with `aria-label` or `aria-labelledby`. It is a region landmark, so two carousels on one page need different names; without either, the name is `labels.name` ("Carousel").
+- A child is one slide; a fragment counts as one. Give every slide the same intrinsic width: the slide width comes from `visibleItems`, not from the content.
+- The strip scrolls, so it is the page's only horizontal overflow: set a width on the container and the carousel fills it.
+- Smooth scrolling is off when the user asks for reduced motion (`prefers-reduced-motion`); the strip then jumps to the slide.
+- There is no autoplay, loop, or drag-to-scroll beyond the browser's own touch and trackpad scrolling.
