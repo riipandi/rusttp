@@ -192,6 +192,27 @@ export const WithoutCountry: Story = {
   }
 }
 
+/** The country button is named for the country it shows, and its flag carries the full name. */
+export const CountryNames: Story = {
+  name: 'Country names',
+  render: () => (
+    <div {...stylex.props(styles.field)}>
+      <InputPhone aria-label='Phone number' defaultCountry='US' />
+      <InputPhone
+        aria-label='Nomor telepon'
+        defaultCountry='ID'
+        labels={{ selectCountry: (country) => `Pilih negara, ${country}` }}
+      />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const us = canvas.getByRole('combobox', { name: 'Select country, United States' })
+    await expect(us.querySelector('svg title')).toHaveTextContent('United States')
+    const id = canvas.getByRole('combobox', { name: 'Pilih negara, Indonesia' })
+    await expect(id.querySelector('svg title')).toHaveTextContent('Indonesia')
+  }
+}
+
 export const Interaction: Story = {
   render: () => (
     <div {...stylex.props(styles.wrap)}>

@@ -7,7 +7,7 @@
  * <InputGroup>
  *   <InputGroupInput type="password|text" />
  *   <InputGroupAddon align="inline-end">
- *     <InputGroupButton aria-pressed={visible} aria-label=…>
+ *     <InputGroupButton aria-pressed={visible} aria-label="Show password">
  *       {visible ? hideIcon : showIcon}
  *     </InputGroupButton>
  *   </InputGroupAddon>
@@ -29,13 +29,15 @@ import {
 } from '../input-group'
 
 export interface InputPasswordLabels {
-  /** Name of the toggle while the password is hidden. Defaults to `Show password`. */
-  show: string
-  /** Name of the toggle while the password is visible. Defaults to `Hide password`. */
-  hide: string
+  /**
+   * Name of the toggle. It stays the same in both states, and `aria-pressed` says which one it is
+   * in, so a screen reader reads "Show password, pressed" and never "Hide password, pressed".
+   * Defaults to `Show password`.
+   */
+  toggle: string
 }
 
-const defaultLabels: InputPasswordLabels = { show: 'Show password', hide: 'Hide password' }
+const defaultLabels: InputPasswordLabels = { toggle: 'Show password' }
 
 export interface InputPasswordProps extends Omit<
   React.ComponentProps<typeof InputGroupInput>,
@@ -52,7 +54,7 @@ export interface InputPasswordProps extends Omit<
   showIcon?: React.ReactNode
   /** Icon shown when the password is visible (pressing it hides the value). Defaults to a slashed eye. */
   hideIcon?: React.ReactNode
-  /** Accessible names of the toggle; English by default. */
+  /** Accessible name of the toggle; English by default. */
   labels?: Partial<InputPasswordLabels>
   /** Toggle button variant. Defaults to `ghost`. */
   toggleVariant?: ButtonVariant
@@ -116,7 +118,7 @@ export function InputPassword({
           variant={toggleVariant}
           size={toggleSize}
           aria-pressed={visible}
-          aria-label={visible ? names.hide : names.show}
+          aria-label={names.toggle}
           onClick={toggle}
         >
           {visible ? hideIconNode : showIconNode}

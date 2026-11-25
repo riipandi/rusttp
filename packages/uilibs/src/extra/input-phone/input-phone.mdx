@@ -47,21 +47,21 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### InputPhone
 
-| Prop                     | Description                                                                                                                                                                              |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`                  | E.164 string, such as `+12135551234` <br /> Use it for a controlled field.                                                                                                               |
-| `onChange`               | `(value) => void` <br /> Called with the E.164 value, or `''` when cleared.                                                                                                              |
-| `defaultCountry`         | country code <br /> The country shown first. Default `US`.                                                                                                                               |
-| `countries`              | country codes <br /> Limits the country list. Default all countries.                                                                                                                     |
-| `onCountryChange`        | `(country) => void` <br /> Called when the selected country changes.                                                                                                                     |
-| `addInternationalOption` | `boolean` <br /> Shows the "International" entry in the list. Default `true`.                                                                                                            |
-| `withCountrySelect`      | `boolean` <br /> Set `false` for a digits-only field. Default `true`.                                                                                                                    |
-| `size`                   | `sm`, `md`, `lg` <br /> Control height and type. Default `md`.                                                                                                                           |
-| `variant`                | `outline`, `faded`, `ghost`, `headless` <br /> The box. Default `outline`.                                                                                                               |
-| `labels`                 | `{ selectCountry, searchCountry, noCountry }` <br /> Names of the country button, the search, and the empty result. Default `Select country`, `Search country…`, and `No country found.` |
-| `invalid`                | `boolean` <br /> Marks the field as invalid. Default `false`.                                                                                                                            |
-| `disabled`               | `boolean` <br /> Disables the input and the country selector.                                                                                                                            |
-| `readOnly`               | `boolean` <br /> Makes the field read-only.                                                                                                                                              |
+| Prop                     | Description                                                                                                                                                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`                  | E.164 string, such as `+12135551234` <br /> Use it for a controlled field.                                                                                                                                                                                                                         |
+| `onChange`               | `(value) => void` <br /> Called with the E.164 value, or `''` when cleared.                                                                                                                                                                                                                        |
+| `defaultCountry`         | country code <br /> The country shown first. Default `US`.                                                                                                                                                                                                                                         |
+| `countries`              | country codes <br /> Limits the country list. Default all countries.                                                                                                                                                                                                                               |
+| `onCountryChange`        | `(country) => void` <br /> Called when the selected country changes.                                                                                                                                                                                                                               |
+| `addInternationalOption` | `boolean` <br /> Shows the "International" entry in the list. Default `true`.                                                                                                                                                                                                                      |
+| `withCountrySelect`      | `boolean` <br /> Set `false` for a digits-only field. Default `true`.                                                                                                                                                                                                                              |
+| `size`                   | `sm`, `md`, `lg` <br /> Control height and type. Default `md`.                                                                                                                                                                                                                                     |
+| `variant`                | `outline`, `faded`, `ghost`, `headless` <br /> The box. Default `outline`.                                                                                                                                                                                                                         |
+| `labels`                 | `{ selectCountry, searchCountry, noCountry }` <br /> `selectCountry` is a function of the selected country's name that returns the country button's name; the others are strings for the search and the empty result. Default `Select country, <name>`, `Search country…`, and `No country found.` |
+| `invalid`                | `boolean` <br /> Marks the field as invalid. Default `false`.                                                                                                                                                                                                                                      |
+| `disabled`               | `boolean` <br /> Disables the input and the country selector.                                                                                                                                                                                                                                      |
+| `readOnly`               | `boolean` <br /> Makes the field read-only.                                                                                                                                                                                                                                                        |
 
 | Data attribute | Description                                                       |
 | -------------- | ----------------------------------------------------------------- |
@@ -69,7 +69,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
-- Name the digits field with a `Field` label or an `aria-label`; `labels.selectCountry` names only the country button.
+- Name the digits field with a `Field` label or an `aria-label`; `labels.selectCountry` names only the country button, and it includes the selected country's full name (`International` when none is).
 - `readOnly` also disables the country button, so the country cannot change.
 - `onChange` receives `''`, not `undefined`, when the field is cleared.
 - The flag images ship with the package; the component makes no external requests for them.

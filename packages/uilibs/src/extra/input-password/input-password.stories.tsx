@@ -174,22 +174,27 @@ export const Interaction: Story = {
     await userEvent.type(el, 'alohomora')
     await expect(el).toHaveAttribute('type', 'password')
     await expect(el).toHaveValue('alohomora')
-    const toggle = canvas.getByRole('button', { name: 'Show password' })
+    // One name for both states: `aria-pressed` carries the state, never "Hide password, pressed".
+    const toggle = canvas.getByRole('button', { name: 'Show password', pressed: false })
     await userEvent.click(toggle)
     await expect(el).toHaveAttribute('type', 'text')
-    await expect(canvas.getByRole('button', { name: 'Hide password' })).toBeInTheDocument()
+    await expect(toggle).toHaveAccessibleName('Show password')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await expect(canvas.queryByRole('button', { name: /hide/i })).toBeNull()
     await userEvent.click(toggle)
     await expect(el).toHaveAttribute('type', 'password')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
   }
 }
 
 export const Translated: Story = {
   render: () => (
-    <InputPassword aria-label='Kata sandi' labels={{ show: 'Tampilkan', hide: 'Sembunyikan' }} />
+    <InputPassword aria-label='Kata sandi' labels={{ toggle: 'Tampilkan kata sandi' }} />
   ),
   play: async ({ canvas }) => {
-    const toggle = canvas.getByRole('button', { name: 'Tampilkan' })
+    const toggle = canvas.getByRole('button', { name: 'Tampilkan kata sandi' })
     await userEvent.click(toggle)
-    await expect(canvas.getByRole('button', { name: 'Sembunyikan' })).toBeInTheDocument()
+    await expect(toggle).toHaveAccessibleName('Tampilkan kata sandi')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
   }
 }
