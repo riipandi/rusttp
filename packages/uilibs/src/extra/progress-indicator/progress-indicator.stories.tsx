@@ -11,7 +11,7 @@ import { Carousel } from '../carousel'
 import { ProgressIndicator } from './progress-indicator.component'
 
 const meta = {
-  title: 'Extra Components/Progress Indicator',
+  title: 'Extra Components/ProgressIndicator',
   component: ProgressIndicator,
   tags: [] // ['autodocs']
 } satisfies Meta<typeof ProgressIndicator>
