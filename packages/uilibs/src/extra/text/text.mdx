@@ -35,7 +35,7 @@ Built on Base UI [useRender](https://base-ui.com/react/utils/use-render). Props 
 
 ### Responsive values
 
-Pass an object keyed `s`, `m`, `l`, and `xl`, mobile first.
+Pass an object keyed `s`, `m`, `l`, and `xl`, mobile first: `s` is the base, and `m`, `l`, and `xl` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one.
 
 <Canvas of={Stories.Responsive} />
 

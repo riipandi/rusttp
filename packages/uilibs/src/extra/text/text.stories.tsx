@@ -161,6 +161,9 @@ export const Responsive: Story = {
       <Text variant={{ s: 'body-2', m: 'featured-4' }}>Responsive variant</Text>
       <Text weight={{ s: 'regular', m: 'bold' }}>Responsive weight</Text>
       <Text align={{ s: 'center', m: 'start' }}>Responsive alignment</Text>
+      <Text variant={{ s: 'caption-1', m: 'body-1', l: 'featured-5', xl: 'body-1' }}>
+        Steps up at each breakpoint, then back down
+      </Text>
     </div>
   )
 }

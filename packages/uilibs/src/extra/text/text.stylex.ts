@@ -3,13 +3,13 @@ import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontFamilyVar } from '../../styles/tokens.stylex'
 import { fontWeight, fontWeightVar, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
-// Mirror of `breakpoints` from `styles/tokens.stylex.ts` (medium/large/
-// xlarge). @stylexjs/babel-plugin 0.19 only inlines `defineConsts` media keys
-// declared in the SAME file, so these cannot be imported cross-file yet —
-// keep the values in sync.
+// Mirror of `breakpoints` from `styles/tokens.stylex.ts`: mobile-first min-width queries, so a wider
+// breakpoint stacks over the narrower ones (see `resolveResponsive`). @stylexjs/babel-plugin 0.19 only
+// inlines `defineConsts` media keys declared in the SAME file, so these cannot be imported
+// cross-file yet — keep the values in sync.
 export const breakpoints = stylex.defineConsts({
-  medium: '@media (min-width: 660px) and (max-width: 899px)',
-  large: '@media (min-width: 900px) and (max-width: 1279px)',
+  medium: '@media (min-width: 660px)',
+  large: '@media (min-width: 900px)',
   xlarge: '@media (min-width: 1280px)'
 })
 

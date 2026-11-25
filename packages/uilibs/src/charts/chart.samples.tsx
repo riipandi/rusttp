@@ -322,7 +322,7 @@ export const spellingTotal = spellingDays.reduce((sum, d) => sum + d.chapters, 0
 
 // ---------------------------------------------------------------------------
 // Story decorator — centers every visualization on a roomy canvas. The 448px
-// floor (`container.xlarge`) only applies from the medium breakpoint up, so
+// floor (`container.xlarge`) only applies from the xlarge breakpoint up, so
 // stories shrink freely on mobile viewports.
 // ---------------------------------------------------------------------------
 

@@ -172,16 +172,23 @@ export const zIndex = stylex.defineConsts({
   fixed: 200
 })
 
+/**
+ * The widths the breakpoints start at, in px. `useMediaQuery` restates them: a hook runs at runtime
+ * and cannot import compiled StyleX constants.
+ */
 export const viewport = stylex.defineConsts({
   medium: 660,
   large: 900,
   xlarge: 1280
 })
 
+/**
+ * Mobile-first: each query applies from its width up, so a wider one stacks over the narrower ones.
+ * The base style is the small one, so there is no `small` query; write the narrow case as `default`.
+ */
 export const breakpoints = stylex.defineConsts({
-  small: '@media (max-width: 659px)',
-  medium: '@media (min-width: 660px) and (max-width: 899px)',
-  large: '@media (min-width: 900px) and (max-width: 1279px)',
+  medium: '@media (min-width: 660px)',
+  large: '@media (min-width: 900px)',
   xlarge: '@media (min-width: 1280px)'
 })
 

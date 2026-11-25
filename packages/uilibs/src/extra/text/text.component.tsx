@@ -60,7 +60,7 @@ export type Responsive<T> = T | { s?: T; m?: T; l?: T; xl?: T }
 // media-query variants that plain `StyleXStyles` rejects.
 type BreakpointStyles<T extends string> = Record<T, stylex.CompiledStyles>
 
-interface ResponsiveSpec<T extends string> {
+export interface ResponsiveSpec<T extends string> {
   base: BreakpointStyles<T>
   m: BreakpointStyles<T>
   l: BreakpointStyles<T>
@@ -99,12 +99,12 @@ const TAG_MAP: Partial<Record<TextVariant, 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h
 }
 
 /**
- * Resolves a mobile-first responsive value into one style per breakpoint.
- * `s` becomes the base style (all viewports); each wider breakpoint gets its
- * own media style only when its effective value (own value or inherited from
- * the nearest smaller breakpoint) differs from the base.
+ * Resolves a mobile-first responsive value into a cascade of styles. `s` is the base style (all
+ * viewports); `m`, `l`, and `xl` each apply from their width up, so a breakpoint emits a style only
+ * when its value differs from the one below it (an omitted key inherits the nearest smaller one).
+ * Going back to an earlier value counts as a change: `{ s: 'a', m: 'b', l: 'a' }` emits at `l` too.
  */
-function resolveResponsive<T extends string>(
+export function resolveResponsive<T extends string>(
   value: Responsive<T> | undefined,
   spec: ResponsiveSpec<T>
 ): stylex.CompiledStyles[] {
@@ -112,15 +112,15 @@ function resolveResponsive<T extends string>(
   if (typeof value === 'string') return [spec.base[value]]
 
   const out: stylex.CompiledStyles[] = []
-  const base = value.s
-  if (base !== undefined) out.push(spec.base[base])
+  let current = value.s
+  if (current !== undefined) out.push(spec.base[current])
 
-  const m = value.m ?? base
-  if (m !== undefined && m !== base) out.push(spec.m[m])
-  const l = value.l ?? m
-  if (l !== undefined && l !== base) out.push(spec.l[l])
-  const xl = value.xl ?? l
-  if (xl !== undefined && xl !== base) out.push(spec.xl[xl])
+  for (const key of ['m', 'l', 'xl'] as const) {
+    const next = value[key]
+    if (next === undefined || next === current) continue
+    out.push(spec[key][next])
+    current = next
+  }
   return out
 }
 
