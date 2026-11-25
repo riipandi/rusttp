@@ -141,29 +141,30 @@ export const styles = stylex.create({
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.medium
   },
-  // Navigation links: quiet until hovered, then the text darkens and the underline draws in.
+  // Navigation links (`Link`, `color='neutral'`): quiet until hovered, then the text darkens.
   link: {
     color: {
       default: colors.foregroundNeutralFaded,
       ':hover': colors.foregroundNeutral
-    },
-    textDecorationLine: 'underline',
-    textDecorationColor: {
-      default: 'currentColor',
-      ':hover': 'currentColor'
-    },
-    textDecorationThickness: { default: '1px', ':hover': '2px' },
-    textUnderlineOffset: '0.25em',
-    transitionDuration: duration.fast,
-    transitionProperty: 'color, text-decoration-thickness'
+    }
   },
   // A button that reads as one of the page's links (a placeholder action, not a navigation).
   linkButton: {
     padding: 0,
     borderStyle: 'none',
     backgroundColor: 'transparent',
+    color: {
+      default: colors.foregroundNeutralFaded,
+      ':hover': colors.foregroundNeutral
+    },
     cursor: 'pointer',
-    font: 'inherit'
+    font: 'inherit',
+    textDecorationLine: 'underline',
+    textDecorationColor: 'currentColor',
+    textDecorationThickness: { default: '1px', ':hover': '2px' },
+    textUnderlineOffset: '0.25em',
+    transitionDuration: duration.fast,
+    transitionProperty: 'color, text-decoration-thickness'
   },
   // "Already have an account? Sign in": one centered line, the link a step stronger than the text.
   switch: {
@@ -173,14 +174,7 @@ export const styles = stylex.create({
     fontSize: fontSize.body2
   },
   linkStrong: {
-    color: colors.foregroundNeutral,
-    fontWeight: fontWeight.medium,
-    textDecorationLine: 'underline',
-    textDecorationColor: 'currentColor',
-    textDecorationThickness: { default: '1px', ':hover': '2px' },
-    textUnderlineOffset: '0.25em',
-    transitionDuration: duration.fast,
-    transitionProperty: 'text-decoration-thickness'
+    fontWeight: fontWeight.medium
   },
   backLink: {
     display: 'inline-flex',

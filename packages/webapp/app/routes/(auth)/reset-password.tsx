@@ -1,10 +1,11 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft, CircleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, Link as RouterLink } from '@tanstack/react-router'
 import { Button, LinkButton } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
+import { Link } from 'uilibs/extra/link'
 import { PasswordField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { StatusIcon } from '#/components/status-icon'
@@ -88,11 +89,15 @@ function InvalidLink() {
         <p {...stylex.props(styles.subtitle)}>{m.auth_reset_invalid_description()}</p>
       </div>
 
-      <LinkButton render={<Link to='/forgot-password' />} size='large'>
+      <LinkButton render={<RouterLink to='/forgot-password' />} size='large'>
         {m.auth_reset_invalid_action()}
       </LinkButton>
 
-      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+      <Link
+        render={<RouterLink to='/login' />}
+        color='neutral'
+        style={[styles.link, styles.backLink, stylex.defaultMarker()]}
+      >
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>

@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './link.stories'
+
+<Meta of={Stories} />
+
+# Link
+
+A text link: for a navigation inside a sentence, a footer, or a form. A link that looks like a button is a `Button` with `render`.
+
+## Import
+
+```jsx
+import { Link } from 'uilibs/extra/link'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render) and [mergeProps](https://base-ui.com/react/utils/merge-props): `Link` renders an `a`, and `render` swaps the element, such as a router link. Props not listed here pass through.
+
+## Anatomy
+
+- **Link:** the whole link. The glyphs come from `icon` and `endIcon`, not from child parts.
+
+```jsx
+<Link href='…' icon={…} endIcon={…} />
+```
+
+## Examples
+
+### Colors
+
+<Canvas of={Stories.Colors} />
+
+### Variants
+
+`underline` is drawn at rest and thickens on hover. `plain` is drawn on hover only, for a place where the position already says it is a link, such as a menu or a footer.
+
+<Canvas of={Stories.Variants} />
+
+### Icon and end icon
+
+<Canvas of={Stories.Glyphs} />
+
+### In text
+
+<Canvas of={Stories.InText} />
+
+### With a router link
+
+`render` takes the router's own element, so `to`, `params`, and `search` keep their types. The class, the handlers, and the `ref` merge onto it, and the router's `aria-current` marks the link of the open page.
+
+```jsx
+import { Link as RouterLink } from '@tanstack/react-router'
+import { Link } from 'uilibs/extra/link'
+
+;<Link render={<RouterLink to='/login' />}>Sign in</Link>
+```
+
+The story builds its element from the router's `useLinkProps`, because Storybook's TanStack framework replaces the router's `Link` component with a mock that logs a `navigate` action and never changes the route. The app's own routes use the real `Link`.
+
+<Canvas of={Stories.WithRouterLink} />
+
+### Handlers and ref
+
+<Canvas of={Stories.Handlers} />
+
+## API reference
+
+`Link` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Link
+
+| Prop      | Description                                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `color`   | `primary`, `neutral`, `critical`, `positive`, `warning`, `inherit` <br /> The role; `inherit` takes the text color around the link. Default `primary`. |
+| `variant` | `underline`, `plain` <br /> Default `underline`.                                                                                                       |
+| `icon`    | glyph component <br /> A glyph before the text.                                                                                                        |
+| `endIcon` | glyph component <br /> A glyph after the text.                                                                                                         |
+| `render`  | `ReactElement` or function <br /> The element to render instead of the `a`, such as a router link.                                                     |
+
+### Data attributes
+
+| Attribute      | Description                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| `aria-current` | `page` draws the underline at its thicker weight. A router link sets it on the open page. |
+
+## Caveats
+
+- A link has no `disabled`: a disabled link is not a link. Render a `span`, or leave it out.
+- A link with `icon` or `endIcon` is `inline-flex`, so it no longer wraps with the text around it. Keep glyphs for stand-alone links.
+- Use the `underline` variant inside running text: color alone does not mark a link there (WCAG 1.4.1).
+- `ref` reaches the rendered element, also through `render`.
+- A render element keeps its own `children` when it has any; the `Link` children fill an element that has none.

@@ -1,10 +1,11 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import { ArrowLeft } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
 import { Icon } from 'uilibs/extra/icon'
+import { Link } from 'uilibs/extra/link'
 import { TextField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { getMessages, useMessages } from '#/libraries/messages'
@@ -59,7 +60,11 @@ function RouteComponent() {
         </Button>
       </Form>
 
-      <Link to='/login' {...stylex.props(styles.link, styles.backLink, stylex.defaultMarker())}>
+      <Link
+        render={<RouterLink to='/login' />}
+        color='neutral'
+        style={[styles.link, styles.backLink, stylex.defaultMarker()]}
+      >
         <span {...stylex.props(styles.backIcon)}>
           <Icon svg={ArrowLeft} size={14} />
         </span>

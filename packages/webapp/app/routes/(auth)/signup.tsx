@@ -1,8 +1,9 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Link } from 'uilibs/extra/link'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { MessageSlot, slotMarker } from '#/components/message-slot'
 import { PageTitle } from '#/components/page-title'
@@ -99,7 +100,7 @@ function RouteComponent() {
 
       <p {...stylex.props(styles.switch)}>
         <MessageSlot message={m.auth_signup_have_account({ link: slotMarker('link') })} name='link'>
-          <Link to='/login' {...stylex.props(styles.linkStrong)}>
+          <Link render={<RouterLink to='/login' />} color='neutral' style={styles.linkStrong}>
             {m.auth_signup_sign_in()}
           </Link>
         </MessageSlot>

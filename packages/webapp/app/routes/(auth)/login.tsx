@@ -1,8 +1,9 @@
 import { Field, handleSubmit, useForm } from '@formisch/react'
 import * as stylex from '@stylexjs/stylex'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link as RouterLink, useNavigate } from '@tanstack/react-router'
 import { Button } from 'uilibs/base/button'
 import { Form } from 'uilibs/base/form'
+import { Link } from 'uilibs/extra/link'
 import { CaptchaField, PasswordField, TextField } from '#/components/form-fields'
 import { PageTitle } from '#/components/page-title'
 import { SocialButtons } from '#/components/social-buttons'
@@ -76,10 +77,10 @@ function RouteComponent() {
       </Form>
 
       <div {...stylex.props(styles.links)}>
-        <Link to='/signup' {...stylex.props(styles.link)}>
+        <Link render={<RouterLink to='/signup' />} color='neutral' style={styles.link}>
           {m.auth_login_create_account()}
         </Link>
-        <Link to='/forgot-password' {...stylex.props(styles.link)}>
+        <Link render={<RouterLink to='/forgot-password' />} color='neutral' style={styles.link}>
           {m.auth_login_forgot()}
         </Link>
       </div>
