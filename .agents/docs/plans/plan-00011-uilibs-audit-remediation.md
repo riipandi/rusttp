@@ -1,40 +1,40 @@
 ---
-status: awaiting-approval
+status: in-progress
 created: 2026-11-25T03:49:19+07:00
-updated: 2026-11-25T03:49:19+07:00
+updated: 2026-11-25T05:20:00+07:00
 phases:
-    - { id: 1, title: "W1 Gate recipe and honest gate comments", status: pending, note: — }
-    - { id: 2, title: "W1 Deterministic flaky plays", status: pending, note: — }
-    - { id: 3, title: "W1 Unit-test project, theme storage, token contrast", status: pending, note: — }
-    - { id: 4, title: "W1 CI workflow", status: pending, note: — }
-    - { id: 5, title: "W1 Ledger sync and the Command input decision", status: pending, note: — }
-    - { id: 6, title: "W2 Mobile-first breakpoint tokens", status: pending, note: — }
-    - { id: 7, title: "W2 Raw width media queries to tokens", status: pending, note: — }
-    - { id: 8, title: "W2 Stacking layers and loop durations", status: pending, note: — }
-    - { id: 9, title: "W2 Scrim and track tokens, color token cleanup", status: pending, note: — }
-    - { id: 10, title: "W2 Visible highlighted option and menu item", status: pending, note: — }
-    - { id: 11, title: "W2 One disabled model", status: pending, note: — }
-    - { id: 12, title: "W2 Shared ColorRole, StyleProp, ControlSize", status: pending, note: — }
-    - { id: 13, title: "W2 Typography role recipes", status: pending, note: — }
-    - { id: 14, title: "W2 One Glyph type and glyph size map", status: pending, note: — }
-    - { id: 15, title: "W2 Categorical chart palette", status: pending, note: — }
-    - { id: 16, title: "W2 Light color theme, color-scheme default, globals.css", status: pending, note: — }
-    - { id: 17, title: "W3-A Field external error linked to its input", status: pending, note: — }
-    - { id: 18, title: "W3-A FileUpload focus ring and edge", status: pending, note: — }
-    - { id: 19, title: "W3-A InputPassword and InputPhone names", status: pending, note: — }
-    - { id: 20, title: "W3-A Label composes FieldLabel", status: pending, note: — }
-    - { id: 21, title: "W3-B ButtonGroup keys and context", status: pending, note: — }
-    - { id: 22, title: "W3-B Button size is size only", status: pending, note: — }
-    - { id: 23, title: "W3-C Item sizes and roles", status: pending, note: — }
-    - { id: 24, title: "W3-C LoaderText and Skeleton announcements", status: pending, note: — }
-    - { id: 25, title: "W3-C Breadcrumb page and Alert role", status: pending, note: — }
-    - { id: 26, title: "W3-C Table region only when it scrolls", status: pending, note: — }
-    - { id: 27, title: "W3-D Charts accessibility, docs page, dead code", status: pending, note: — }
-    - { id: 28, title: "W3-E Calendar CustomDays, ring, styling contract", status: pending, note: — }
-    - { id: 29, title: "W3-F Kanban and Sortable names and board region", status: pending, note: — }
-    - { id: 30, title: "W3-G Touch targets of 24 px", status: pending, note: — }
-    - { id: 31, title: "W3-G Progress and Meter share one stylesheet", status: pending, note: — }
-    - { id: 32, title: "W3-G Command shadow and inline edge", status: pending, note: — }
+    - { id: 1, title: "W1 Gate recipe and honest gate comments", status: committed, note: "d7a77fa: `just test-ui` added; 956 of 956; no 'CI keeps' left until phase 4 restored it" }
+    - { id: 2, title: "W1 Deterministic flaky plays", status: committed, note: "4951f2b: cause: a play could run before the StyleX dev stylesheet (150 ms poll) reached the page, so it measured an unstyled page (26 vs 32 px); the preview's `beforeEach` now waits for the stylesheet and fonts; the `waitFor` patches in Table and Alert are gone; 20 of 20 isolated reruns and 5 of 5 full runs green" }
+    - { id: 3, title: "W1 Unit-test project, theme storage, token contrast", status: committed, note: "3b1bbc3: `unit` project (Chromium); cookie key escaped (two new tests fail without the fix); X-01 (both themes) and X-04 (dark) are `it.fails` for phases 9 and 10 to flip; gate 1002 plus 3 expected fails" }
+    - { id: 4, title: "W1 CI workflow", status: committed, note: "81a4f29: `uilibs.yml`: Chromium on push and PR, Firefox and WebKit nightly; `skip-webkit` tag on the Menubar Playground (F-12); also fixed `spinner > Sizes`, which WebKit failed (it measured a rotating svg's box); Chromium 1002, Firefox 956, WebKit 954 plus 2 skipped; actionlint and `storybook:build` clean; first remote run waits for a push" }
+    - { id: 5, title: "W1 Ledger sync and the Command input decision", status: committed, note: "ffe6025: audit-00002 now 16 findings (8 fixed, 6 open, 1 deferred, 1 wont_fix); F-11 closed as wont_fix and recorded in `architecture.md`; handover-00013 notes issue-00005 and issue-00006 closed" }
+    - { id: 6, title: "W2 Mobile-first breakpoint tokens", status: committed, note: "caf1724: breakpoints are min-width `medium`/`large`/`xlarge` (names kept `small`-family per the owner; `small` is the base, no query); Text emits a cascade; Text keeps its own `breakpoints` mirror because StyleX 0.19 resolves a media const used as a top-level `create` key only from the same file (drift test); chart canvas padding fixed" }
+    - { id: 7, title: "W2 Raw width media queries to tokens", status: committed, note: "f903b4c: every raw width query in kanban, data grid, description list, alert dialog, calendar, pagination, and two stories now uses `breakpoints.*`; Kanban's max-width rules flipped to mobile-first; 220 computed-style fingerprints compared before and after at 4 widths, only Text and the intended chart padding differ" }
+    - { id: 8, title: "W2 Stacking layers and loop durations", status: committed, note: "67690c1: named zIndex scale (base to dragOverlay); `motionLoop` consts; popover opened inside a modal and a toast above a modal verified by probe; DragOverlays use `dragOverlay`" }
+    - { id: 9, title: "W2 Scrim and track tokens, color token cleanup", status: committed, note: "7be7f50: `scrim` and `backgroundTrack` tokens, `popupFx.scrim`/`scrimBlurred` recipes; AlertDialog and Drawer gain `blurredOverlay`; removed `brand`, `onBrand`, `onBackgroundNeutral`, `backgroundPageFaded` (Reshaped web check not possible: web access out of credits, local docs only); X-04 contrast test is now a plain `it`" }
+    - { id: 10, title: "W2 Visible highlighted option and menu item", status: committed, note: "74632c1: one `highlightedItem` recipe (neutral fill plus a 2px primary start bar) on Select, Combobox, Autocomplete, the menus, and Command; critical items draw the bar in critical; X-01 contrast test is now a plain `it`; Menubar and ContextMenu plays use hover (the arrows are covered in DropdownMenu `Keyboard`)" }
+    - { id: 11, title: "W2 One disabled model", status: committed, note: "edc6617: disabled drawn with `foregroundDisabled`/`borderDisabled`/`backgroundNeutral`, no opacity; a state that competes with disabled uses `:not([data-disabled])`; a loading Button carries `data-loading`; new Field `Disabled` play proves a disabled input in a disabled Field equals one alone" }
+    - { id: 12, title: "W2 Shared ColorRole, StyleProp, ControlSize", status: committed, note: "9dab1b4: `styles/types.ts` holds ColorRole, ControlSize, DenseControlSize, StyleProp; 39 per-file StyleProp interfaces removed; per-component color and size unions derive from them" }
+    - { id: 13, title: "W2 Typography role recipes", status: committed, note: "bdcf577: `styles/type.stylex.ts` exports `type.<role>`; dialog, alert dialog, sheet, drawer, card titles, field label and title, label, table head compose them; `fontLetterSpacing` kept per Q16 (headlines -0.02 to -0.03em) and now read by Text; `expectTypeRole` play helper" }
+    - { id: 14, title: "W2 One Glyph type and glyph size map", status: committed, note: "0b7e126: `Glyph` type and `glyphSize`/`markSize` in `styles/`; hard-coded glyph sizes gone from components; Select and Button `Sizes` assert glyph size per size" }
+    - { id: 15, title: "W2 Categorical chart palette", status: committed, note: "dd22dad: `chart1` to `chart8` tokens (light and dark, 3:1 against the page, tested); `ChartConfigItem.color` is a palette name resolved by the legend; samples and stories use the names" }
+    - { id: 16, title: "W2 Light color theme, color-scheme default, globals.css", status: committed, note: "8f03ea5: `lightColors`/`lightShadows`/`lightThemeClass` restate the light theme (drift-tested); html defaults to `color-scheme: light`; `.debug` removed; smooth scroll only without reduced motion; DEVIATION: the body font stays in globals.css because a StyleX var's custom property name is hashed, so CSS cannot read `fontFamily.body`" }
+    - { id: 17, title: "W3-A Field external error linked to its input", status: committed, note: "11fca55: external `errors` render through `BaseField.Error match`, so `aria-describedby` includes the error id; new `ExternalErrors` play fails on the old code" }
+    - { id: 18, title: "W3-A FileUpload focus ring and edge", status: committed, note: "ccd748b: the old ring was a 1 px `shadow.outline`; the drop zone now draws a 2 px primary outline on `:has(:focus-visible)` and a `borderControl` dashed edge; `className` omitted from props" }
+    - { id: 19, title: "W3-A InputPassword and InputPhone names", status: committed, note: "5de9878: password toggle keeps one name with `aria-pressed`; DEVIATION: `InputPassword` `labels` is `{ toggle }` and `InputPhone` `labels.selectCountry` is a function of the country name (no backward compatibility); `form_password_hide` removed from the locales" }
+    - { id: 20, title: "W3-A Label composes FieldLabel", status: committed, note: "10d6046: `fieldLabelStyles.base`/`.invalid` shared by `FieldLabel` and `Label`; DEVIATION: `Label` now shrinks to its text; `label.stylex.ts` stays as one `fit-content` rule until phase 33 deletes it with its `index.ts` export" }
+    - { id: 21, title: "W3-B ButtonGroup keys and context", status: committed, note: "902a554: ButtonGroup composes through a context (size and variant defaults) and no longer clones children, which fixes duplicate keys; the context lives in `base/button/` because `base` may not import `extra`; phase 33 decides whether `ButtonGroupContext`, `useButtonGroup`, `buttonGroupMember` are exported or stay a deep import" }
+    - { id: 22, title: "W3-B Button size is size only", status: committed, note: "cea9cfe: Button `size` is a size only; the icon-only square is derived from a no-children Button (Q19 option A, no `square` prop); `buttonSquare[size]` exported for custom children; `InputGroupButtonSize` is `xs | sm`; DEVIATION: `InputPassword` `showIcon`/`hideIcon` are `Glyph`; webapp glyph sizes moved to `glyphSize`" }
+    - { id: 23, title: "W3-C Item sizes and roles", status: committed, note: "92b1e07: `Item` `md` uses `unit.x4`; inside `ItemGroup` the `listitem` role sits on a wrapper `div` so a rendered link keeps its `link` role" }
+    - { id: 24, title: "W3-C LoaderText and Skeleton announcements", status: committed, note: "f0a47a6: `LoaderText` hides the inactive text and wraps the pair in one `role='status'` region when `completedText` is set; Skeleton `Busy` story documents `aria-busy`" }
+    - { id: 25, title: "W3-C Breadcrumb page and Alert role", status: committed, note: "9ed1a1f: `BreadcrumbPage` is a plain span with `aria-current='page'`; `Alert` has no role by default and an `announce` prop opts into `role='status'`; the webapp uses no uilibs `Alert`" }
+    - { id: 26, title: "W3-C Table region only when it scrolls", status: committed, note: "8878a6b: `Table` is `role='region'` with `tabIndex=0` only while it overflows (`ResizeObserver`), named by `labels.region`, else the caption, else `Table`; DEVIATION: the `Borders` story finds its wrappers through the table" }
+    - { id: 27, title: "W3-D Charts accessibility, docs page, dead code", status: committed, note: "116d4f5: `ChartContainer` takes `description` (svg `<desc>`); a chart is a Tab stop only with a `tooltip` and draws the focus ring on the host; `charts.mdx` and an accessibility stories file added; `useChartConfig`, `readingWeeks`, `spellingWeeks` removed; `chart.samples.tsx` moved to `charts/stories/`; the `?path=` Table link and the docs page build are checked at the wave 3 gate" }
+    - { id: 28, title: "W3-E Calendar CustomDays, ring, styling contract", status: committed, note: "96e8778: `CustomDays` story fixed (the `{...dayBtnProps}` spread replaced the StyleX `className`; also fixed its axe contrast); day focus ring fixed; `className` removed from `CalendarProps` (local `DistributiveOmit`)" }
+    - { id: 29, title: "W3-F Kanban and Sortable names and board region", status: committed, note: "9f2f498: `labels.handle` (Sortable) and `labels.columnHandle` (Kanban) are functions of the item or column name; `KanbanBoard` is a `role='region'` named by `labels.board`, no tab stop" }
+    - { id: 30, title: "W3-G Touch targets of 24 px", status: committed, note: "feeaa4f: NumberField stacked steppers, `xs` pill Tabs, and the Badge dismiss reach 24 px through `::after` hit areas; `contracts/hit-area.ts` (`hitSize`, `expectHitArea`); DEVIATION: the stacked NumberField column drops `overflow: hidden` and each button rounds its own corner" }
+    - { id: 31, title: "W3-G Progress and Meter share one stylesheet", status: committed, note: "44fbef5: Progress and Meter share `progress.stylex.ts`; computed styles of all 9 stories in both themes identical before and after; `meter.stylex.ts` is a thin alias until phase 33 deletes it and its `index.ts` export" }
+    - { id: 32, title: "W3-G Command shadow and inline edge", status: committed, note: "a04230a: `CommandDialog` drops its custom shadow stack for the dialog ring and `shadow.overlay`; the inline palette gets a 1 px `borderNeutral` edge outside a dialog; the dark dialog shadow is faint because `shadow.overlay` is faint in dark (token left alone)" }
     - { id: 33, title: "W4 Public stylex exports narrowed", status: pending, note: — }
     - { id: 34, title: "W4-A render on static surfaces", status: pending, note: — }
     - { id: 35, title: "W4-A Prop renames", status: pending, note: — }
@@ -122,7 +122,7 @@ The owner (2026-11-24) asked to carry out every recommendation from the uilibs a
 - **Nothing runs before the owner's go-ahead.** The go-ahead also lands this plan as `docs(plans): add plan-00011 for the uilibs audit remediation` (this file and the `index.md` row). Pacing follows Q06: by default, the coordinator stops after each wave and asks to continue.
 - **Branch (Q05).** By default, `git switch -c uilibs-remediation` from `ui-polish` before phase 1. Never push; never rewrite history; no `git stash`, `reset`, `checkout .`, `clean`, or `--no-verify`.
 - **Threads.** The thread the owner names runs as the **coordinator**. It runs every serial phase itself and starts one thread per track with `create_thread` on the local runner (`executor: runner`, the runner's `working_directory` set to this checkout, no `worktree`), never an orb. At most **4 track threads run at once** (several Chromium test runs at once are the machine's limit). Each track thread runs only its listed phases, in order, and reports each commit hash to the coordinator with `send_thread_message`.
-- **Only the coordinator edits this plan, `index.md`, and the shared files** in the ownership table. It updates phase statuses at wave close and keeps them uncommitted until phase 58's closing commit.
+- **Only the coordinator edits this plan, `index.md`, and the shared files** in the ownership table. It records each phase's status and note in the same commit as the phase (owner, 2026-11-25: the plan file is committed along with the work it records, not held back until phase 58).
 - **Commit protocol in a shared working tree (every thread, every phase):**
   1. Before the first edit, record `git status --porcelain`. Files modified then belong to someone else.
   2. Edit only the phase's file set. A file outside it, such as a webapp route, may be edited only if `git status --porcelain -- <file>` shows it clean; if another thread has it modified, wait for that thread's commit, then continue.
