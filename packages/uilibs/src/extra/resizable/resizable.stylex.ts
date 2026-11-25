@@ -63,7 +63,7 @@ export const resizableStyles = stylex.create({
   handleHitArea: {
     backgroundColor: 'transparent',
     position: 'absolute',
-    zIndex: zIndex.relative
+    zIndex: zIndex.raised
   },
   handleHitAreaHorizontalGroup: {
     bottom: 0,
@@ -101,7 +101,7 @@ export const resizableStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'background-color'
     },
     transitionTimingFunction: easing.standard,
-    zIndex: zIndex.relative
+    zIndex: zIndex.raised
   },
   pillHorizontalGroup: {
     height: {

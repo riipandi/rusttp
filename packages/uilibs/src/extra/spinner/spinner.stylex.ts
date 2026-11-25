@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
+import { motionLoop } from '../../styles/tokens.stylex'
 
 export const spinnerSpin = stylex.keyframes({
   from: { transform: 'rotate(0deg)' },
@@ -9,7 +10,10 @@ export const spinnerSpin = stylex.keyframes({
 export const spinnerStyles = stylex.create({
   root: {
     // Slowed, not stopped: a stopped spinner reads as a frozen page.
-    animationDuration: { default: '1s', '@media (prefers-reduced-motion: reduce)': '3s' },
+    animationDuration: {
+      default: motionLoop.spin,
+      '@media (prefers-reduced-motion: reduce)': motionLoop.spinSlow
+    },
     animationIterationCount: 'infinite',
     animationName: spinnerSpin,
     animationTimingFunction: 'linear',

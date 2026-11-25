@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { container, unit } from 'uilibs/styles/tokens.stylex'
+import { container, unit, zIndex } from 'uilibs/styles/tokens.stylex'
 import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
 // The page's inset, shared by the page and the small-screen top bar so the bar's menu and bell
@@ -30,7 +30,7 @@ export const styles = stylex.create({
   banner: {
     position: 'sticky',
     top: { default: 0, [breakpoints.compact]: unit.x14 },
-    zIndex: 10
+    zIndex: zIndex.sticky
   },
   // Below the compact breakpoint the sidebar is not rendered and this bar stands in: the menu trigger, the
   // brand centered, and the notification trigger, in three equal-weight zones.
@@ -41,7 +41,7 @@ export const styles = stylex.create({
     gap: unit.x2,
     position: 'sticky',
     top: 0,
-    zIndex: 10,
+    zIndex: zIndex.sticky,
     boxSizing: 'border-box',
     height: unit.x14,
     paddingInline: inset,

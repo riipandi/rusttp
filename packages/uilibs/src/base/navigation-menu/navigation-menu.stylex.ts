@@ -99,7 +99,7 @@ export const navigationMenuStyles = stylex.create({
     // surface during the trigger-to-trigger morph.
     transitionTimingFunction: easing.decelerate,
     width: 'var(--positioner-width)',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.dropdown
   },
   popup: {
     backgroundColor: colors.backgroundElevationOverlay,

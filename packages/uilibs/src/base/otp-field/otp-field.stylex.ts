@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
+import { stroke, zIndex } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily } from '../../styles/tokens.stylex'
 
@@ -41,7 +41,7 @@ export const otpFieldStyles = stylex.create({
     padding: 0,
     position: 'relative',
     textAlign: 'center',
-    zIndex: { default: 0, ':focus': 1 }
+    zIndex: { default: zIndex.base, ':focus': zIndex.raised }
   },
   // Names the field for its first slot without taking space in the row.
   hiddenLabel: {

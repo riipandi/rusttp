@@ -18,7 +18,7 @@ export const dialogStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   // `blurredOverlay`: the page behind the backdrop is blurred by one unit step.
   overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
@@ -52,7 +52,7 @@ export const dialogStyles = stylex.create({
     },
     transitionTimingFunction: easing.decelerate,
     width: container.xxlarge,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   // `size='sm'`: a narrower dialog; `md` is the base width.
   contentSmall: { width: container.large },

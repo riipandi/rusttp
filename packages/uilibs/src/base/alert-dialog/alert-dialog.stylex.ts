@@ -18,7 +18,7 @@ export const alertDialogStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
@@ -49,7 +49,7 @@ export const alertDialogStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   header: {
     alignItems: {

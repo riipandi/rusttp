@@ -66,7 +66,7 @@ export const kanbanStyles = stylex.create({
   },
   columnDragging: {
     opacity: 0.5,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   columnOver: {
     backgroundColor: 'transparent',
@@ -166,7 +166,7 @@ export const kanbanStyles = stylex.create({
   },
   itemDragging: {
     opacity: 0.5,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   itemOver: {
     backgroundColor: 'transparent',

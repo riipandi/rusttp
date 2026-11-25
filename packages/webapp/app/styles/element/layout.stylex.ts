@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from 'uilibs/styles/colors.stylex'
-import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
+import { fontSize, fontWeight, unit, zIndex } from 'uilibs/styles/tokens.stylex'
 import { layoutSize } from '#/styles/constants.stylex'
 
 // The shell every route shares. `container` is the one content width (header, page, footer line up);
@@ -23,7 +23,7 @@ export const styles = stylex.create({
   header: {
     position: 'sticky',
     top: 0,
-    zIndex: 10,
+    zIndex: zIndex.sticky,
     backgroundColor: colors.backgroundPage,
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',

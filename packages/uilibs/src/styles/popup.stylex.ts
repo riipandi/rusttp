@@ -24,7 +24,7 @@ export const popupFx = stylex.create({
   /** Base UI `Positioner` reset: kill focus outline, sit above page content. */
   positioner: {
     outline: 'none',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.popover
   },
   /** Closed-pose nudge direction from Base UI's `data-side` attribute. */
   shift: {

@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { breakpoints, radius, unit, stroke } from '../../styles/tokens.stylex'
+import { breakpoints, radius, unit, stroke, zIndex } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
 
 export const calendarConsts = stylex.defineConsts({
@@ -76,13 +76,13 @@ export const calendarStyles = stylex.create({
     minWidth: calendarConsts.cellSize,
     position: 'relative',
     width: '100%',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   dayBtnFocused: {
     outline: `${stroke.ring1} solid ${colors.foregroundPrimary}`,
     outlineOffset: stroke.ring1,
     position: 'relative',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   dayBtnRangeEnd: {
     backgroundColor: {
@@ -169,7 +169,7 @@ export const calendarStyles = stylex.create({
     justifyContent: 'center',
     position: 'relative',
     width: 'fit-content',
-    zIndex: 10
+    zIndex: zIndex.raised
   },
   hidden: {
     visibility: 'hidden'
@@ -213,7 +213,7 @@ export const calendarStyles = stylex.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    zIndex: 1
+    zIndex: zIndex.base
   },
   outside: {
     color: colors.foregroundNeutralFaded
@@ -233,7 +233,7 @@ export const calendarStyles = stylex.create({
     borderTopRightRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
-    zIndex: 0
+    zIndex: zIndex.base
   },
   rangeMiddle: {
     borderRadius: 0
@@ -253,7 +253,7 @@ export const calendarStyles = stylex.create({
     borderTopLeftRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
-    zIndex: 0
+    zIndex: zIndex.base
   },
   root: {
     backgroundColor: colors.backgroundElevationBase,

@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { stroke, container } from '../../styles/tokens.stylex'
-import { unit, radius } from '../../styles/tokens.stylex'
+import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 export const selectStyles = stylex.create({
@@ -82,7 +82,7 @@ export const selectStyles = stylex.create({
     justifyContent: 'center',
     position: 'sticky',
     width: '100%',
-    zIndex: 1
+    zIndex: zIndex.sticky
   },
   scrollArrowUp: {
     top: 0

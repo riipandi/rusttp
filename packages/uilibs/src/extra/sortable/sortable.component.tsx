@@ -64,6 +64,7 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { zIndex } from '../../styles/tokens.stylex'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -349,7 +350,9 @@ function Sortable<T>({
         </SortableContext>
         {mounted &&
           createPortal(
-            <DragOverlay dropAnimation={dropAnimationConfig}>{overlayContent}</DragOverlay>,
+            <DragOverlay dropAnimation={dropAnimationConfig} zIndex={zIndex.dragOverlay}>
+              {overlayContent}
+            </DragOverlay>,
             document.body
           )}
       </DndContext>
@@ -538,7 +541,12 @@ function SortableOverlay({ children, ...props }: SortableOverlayProps) {
   if (!mounted) return null
 
   return createPortal(
-    <DragOverlay dropAnimation={dropAnimationConfig} modifiers={modifiers} {...props}>
+    <DragOverlay
+      dropAnimation={dropAnimationConfig}
+      modifiers={modifiers}
+      zIndex={zIndex.dragOverlay}
+      {...props}
+    >
       <IsOverlayContext.Provider value={true}>{content}</IsOverlayContext.Provider>
     </DragOverlay>,
     document.body

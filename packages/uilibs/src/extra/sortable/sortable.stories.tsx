@@ -1051,7 +1051,7 @@ const mediaStyles = stylex.create({
     opacity: 1,
     width: '100%',
     touchAction: 'none',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   imageHandleIcon: {
     position: 'absolute',

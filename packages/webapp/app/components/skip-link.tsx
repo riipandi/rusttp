@@ -12,7 +12,7 @@ const styles = stylex.create({
     position: 'fixed',
     insetBlockStart: unit.x2,
     insetInlineStart: unit.x2,
-    zIndex: zIndex.fixed,
+    zIndex: zIndex.overlay,
     paddingBlock: unit.x2,
     paddingInline: unit.x4,
     borderRadius: radius.medium,

@@ -18,7 +18,7 @@ export const sheetStyles = stylex.create({
     transitionDuration: duration.medium,
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   // `blurredOverlay`: the page behind the backdrop is blurred by one unit step.
   overlayBlurred: { backdropFilter: `blur(${unit.x1})` },
@@ -44,7 +44,7 @@ export const sheetStyles = stylex.create({
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
     transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   // Position only: the look is `CloseButton`.
   close: {

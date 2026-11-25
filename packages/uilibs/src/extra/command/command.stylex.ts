@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
-import { stroke, container, duration, easing } from '../../styles/tokens.stylex'
+import { stroke, container, duration, easing, motionLoop } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 
 export const commandStyles = stylex.create({
@@ -61,7 +61,7 @@ export const commandStyles = stylex.create({
       [stylex.when.ancestor('[data-ending-style]')]: '0 -2px'
     },
     transitionDelay: {
-      default: '40ms',
+      default: motionLoop.stagger,
       [stylex.when.ancestor('[data-ending-style]')]: '0ms',
       '@media (prefers-reduced-motion: reduce)': '0ms'
     },

@@ -11,7 +11,7 @@ export const toastStyles = stylex.create({
     position: 'fixed',
     right: unit.x4,
     width: container.medium,
-    zIndex: zIndex.fixed
+    zIndex: zIndex.toast
   },
   root: {
     // Behind toasts peek out above the frontmost one, shrunk slightly; swipe
@@ -65,7 +65,7 @@ export const toastStyles = stylex.create({
     },
     transitionTimingFunction: easing.decelerate,
     width: '100%',
-    zIndex: `calc(${zIndex.fixed} - var(--toast-index))`
+    zIndex: `calc(${zIndex.toast} - var(--toast-index))`
   },
   content: {
     alignItems: 'flex-start',

@@ -45,6 +45,7 @@ import {
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../base/button'
+import { zIndex } from '../styles/tokens.stylex'
 import { useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'
@@ -904,7 +905,7 @@ function DataGridTableDndRows<TData extends object>({
           so DndContext still reaches it. */}
       {portalTarget
         ? createPortal(
-            <DragOverlay dropAnimation={null}>
+            <DragOverlay dropAnimation={null} zIndex={zIndex.dragOverlay}>
               {carried && carriedRow ? (
                 <table
                   aria-hidden='true'

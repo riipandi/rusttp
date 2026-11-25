@@ -57,6 +57,7 @@ import {
   useSyncExternalStore
 } from 'react'
 import { createPortal } from 'react-dom'
+import { zIndex } from '../../styles/tokens.stylex'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -884,7 +885,12 @@ function KanbanOverlay({ children, style, ...props }: KanbanOverlayProps) {
     : undefined
 
   return createPortal(
-    <DragOverlay dropAnimation={dropAnimationConfig} modifiers={modifiers} {...props}>
+    <DragOverlay
+      dropAnimation={dropAnimationConfig}
+      modifiers={modifiers}
+      zIndex={zIndex.dragOverlay}
+      {...props}
+    >
       <IsOverlayContext.Provider value={true}>
         <div {...ghostProps} style={{ ...ghostProps.style, ...ghostSize }}>
           {content}

@@ -36,7 +36,7 @@ export const sortableStyles = stylex.create({
   },
   itemDragging: {
     opacity: 1,
-    zIndex: zIndex.absolute
+    zIndex: zIndex.raised
   },
   itemOver: {
     backgroundColor: colors.backgroundPrimaryFaded,

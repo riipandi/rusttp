@@ -21,14 +21,14 @@ export const drawerStyles = stylex.create({
     transitionProperty: 'opacity',
     transitionTimingFunction: easing.decelerate,
     userSelect: 'none',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.overlay
   },
   viewport: {
     inset: 0,
     pointerEvents: 'none',
     position: 'fixed',
     userSelect: 'none',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   viewportModal: {
     pointerEvents: 'auto'
@@ -55,7 +55,7 @@ export const drawerStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     userSelect: 'none',
     willChange: 'transform',
-    zIndex: zIndex.absolute
+    zIndex: zIndex.modal
   },
   content: {
     borderRadius: 'inherit',
@@ -79,7 +79,7 @@ export const drawerStyles = stylex.create({
       display: 'block',
       flexShrink: 0
     },
-    zIndex: 1
+    zIndex: zIndex.raised
   },
   header: {
     display: 'flex',

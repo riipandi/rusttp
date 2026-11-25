@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { duration, easing } from '../../styles/tokens.stylex'
+import { duration, easing, motionLoop } from '../../styles/tokens.stylex'
 
 const shimmer = stylex.keyframes({
   '0%': { backgroundPosition: '150% 0' },
@@ -37,7 +37,7 @@ export const loaderTextStyles = stylex.create({
     WebkitTextFillColor: 'transparent'
   },
   textShimmer: {
-    animationDuration: '2.5s',
+    animationDuration: motionLoop.shimmer,
     animationIterationCount: 'infinite',
     animationName: { default: shimmer, '@media (prefers-reduced-motion: reduce)': null },
     animationTimingFunction: 'linear'

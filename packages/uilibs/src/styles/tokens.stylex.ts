@@ -166,10 +166,22 @@ export const radius = stylex.defineVars({
   none: '0px'
 })
 
+/**
+ * The stacking layers, low to high. Each is one decision, made here: a popover opened from a modal
+ * sits above it, a toast above both, and a dragged item above everything. A component names its
+ * layer and never writes a number. `popover` covers every positioned popup (menus, select, combobox,
+ * tooltip) because any of them can open from inside a modal.
+ */
 export const zIndex = stylex.defineConsts({
-  relative: 10,
-  absolute: 100,
-  fixed: 200
+  base: 0,
+  raised: 10,
+  sticky: 50,
+  dropdown: 100,
+  overlay: 200,
+  modal: 210,
+  popover: 300,
+  toast: 400,
+  dragOverlay: 500
 })
 
 /**
@@ -207,4 +219,13 @@ export const easing = stylex.defineVars({
   standard: 'cubic-bezier(0.2, 0, 0, 1)',
   accelerate: 'cubic-bezier(0.4, 0, 1, 1)',
   decelerate: 'cubic-bezier(0, 0, 0.2, 1)'
+})
+
+/** Durations that are not themed: the loops (spinner, skeleton, loader text) and Command's entrance stagger. */
+export const motionLoop = stylex.defineConsts({
+  spin: '1s',
+  spinSlow: '3s',
+  pulse: '2s',
+  shimmer: '2.5s',
+  stagger: '40ms'
 })
