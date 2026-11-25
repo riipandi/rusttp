@@ -1046,12 +1046,8 @@ function DataGridCellSelection<TData extends object>({
     }
 
     const previousTabIndex = focusTarget.getAttribute('tabindex')
-    const previousOutline = focusTarget.style.outline
     if (keyboard) {
       focusTarget.tabIndex = 0
-      // The focused CELL ring is the indicator; the browser's outline around
-      // the whole grid on focus() would double it.
-      focusTarget.style.outline = 'none'
       viewport.addEventListener('keydown', handleKeyDown)
     }
     if (clipboard) {
@@ -1101,7 +1097,6 @@ function DataGridCellSelection<TData extends object>({
       if (keyboard) {
         if (previousTabIndex === null) focusTarget.removeAttribute('tabindex')
         else focusTarget.setAttribute('tabindex', previousTabIndex)
-        focusTarget.style.outline = previousOutline
         focusTarget.removeAttribute('aria-activedescendant')
         viewport.removeEventListener('keydown', handleKeyDown)
       }
