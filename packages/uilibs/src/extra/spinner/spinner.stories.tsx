@@ -63,6 +63,9 @@ export const Playground: Story = {
 }
 
 export const Alone: Story = {
+  parameters: {
+    docs: { source: { code: `<Spinner labels={{ loading: 'Consulting the Marauder’s Map' }} />` } }
+  },
   render: () => <Spinner labels={{ loading: 'Consulting the Marauder’s Map' }} />,
   // On its own it is a polite live region with the given name.
   play: async ({ canvas }) => {
@@ -73,6 +76,9 @@ export const Alone: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<Spinner size='large' labels={{ loading: 'Loading large' }} />` } }
+  },
   render: () => (
     <Axis axis='size' rows={['small', 'medium', 'large'] as const}>
       {(size) => <Spinner size={size} labels={{ loading: `Loading ${size}` }} />}
@@ -90,6 +96,11 @@ export const Sizes: Story = {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Spinner color='primary' labels={{ loading: 'Loading primary' }} />` }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={['inherit', 'primary', 'positive', 'warning', 'critical'] as const}>
       {(color) => <Spinner color={color} labels={{ loading: `Loading ${color}` }} />}

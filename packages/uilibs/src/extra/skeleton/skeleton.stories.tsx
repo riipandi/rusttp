@@ -117,6 +117,17 @@ export const Playground: Story = {
 }
 
 export const Card: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div>
+  <Skeleton style={…} />
+  <Skeleton style={…} />
+  <Skeleton style={…} />
+</div>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.cardRoot)}>
       <Skeleton style={styles.image} />
@@ -127,6 +138,21 @@ export const Card: Story = {
 }
 
 export const List: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `{rows.map((row) => (
+  <div key={row.id}>
+    <Skeleton style={…} />
+    <div>
+      <Skeleton style={…} />
+      <Skeleton style={…} />
+    </div>
+  </div>
+))}`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.listRoot)}>
       {Array.from({ length: 3 }, (_, index) => (
@@ -147,6 +173,23 @@ export const List: Story = {
  * `aria-busy` on a `status` region, and a visually hidden word for what is loading.
  */
 export const Busy: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div role='status' aria-busy={loading}>
+  {loading ? (
+    <>
+      <span style={visuallyHidden}>Loading the owl post</span>
+      <Skeleton style={…} />
+      <Skeleton style={…} />
+    </>
+  ) : (
+    <span>Hedwig has delivered 3 letters.</span>
+  )}
+</div>`
+      }
+    }
+  },
   render: () => {
     const [loading, setLoading] = React.useState(true)
     return (
@@ -190,6 +233,17 @@ const shapes = {
 
 /** Size and corner by prop: a count of `unit` steps (`12` is 48px) or a CSS length, and a radius token. */
 export const Shapes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Skeleton width={12} height={12} borderRadius='full' />
+
+<Skeleton width='60%' height={4} borderRadius='small' />
+
+<Skeleton width={20} height={10} borderRadius='large' />`
+      }
+    }
+  },
   render: () => (
     <Axis axis='shape' rows={['avatar', 'line', 'block'] as const}>
       {(shape) => <Skeleton {...shapes[shape]} />}
@@ -225,6 +279,9 @@ export const Shapes: Story = {
 
 /** `render` swaps the `div` for another element, such as a `span` inside running text. */
 export const AsElement: Story = {
+  parameters: {
+    docs: { source: { code: `<Skeleton render={<span />} width={20} height={4} />` } }
+  },
   name: 'As another element',
   render: () => <Skeleton render={<span data-testid='ghost' />} width={20} height={4} />,
   play: async ({ canvas }) => {

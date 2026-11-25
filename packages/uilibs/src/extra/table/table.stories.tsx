@@ -222,6 +222,22 @@ const timetable = (
  * or by its caption when there is no label.
  */
 export const ScrollRegion: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Table labels={{ region: 'Hogwarts timetable' }}>
+  <TableHeader>…</TableHeader>
+  <TableBody>…</TableBody>
+</Table>
+
+<Table>
+  <TableCaption>Beauxbatons timetable</TableCaption>
+  <TableHeader>…</TableHeader>
+  <TableBody>…</TableBody>
+</Table>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.stack)}>
       <div style={{ width: 240 }}>
@@ -251,6 +267,16 @@ export const ScrollRegion: Story = {
 
 /** A table that fits its column adds no Tab stop and no region landmark. */
 export const FitsColumn: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Table labels={{ region: 'Hogwarts timetable' }}>
+  <TableHeader>…</TableHeader>
+  <TableBody>…</TableBody>
+</Table>`
+      }
+    }
+  },
   name: 'Fits its column',
   render: () => (
     <div {...stylex.props(styles.root)}>
@@ -273,6 +299,29 @@ const edges = ['none', 'border', 'columnBorder', 'both'] as const
 
 /** An edge around the table, between its columns, or both. */
 export const Borders: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Table border columnBorder>
+  <TableCaption>Ledger, both</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Ledger no.</TableHead>
+      <TableHead>Method</TableHead>
+      <TableHead>Amount</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>GRN001</TableCell>
+      <TableCell>Owl post</TableCell>
+      <TableCell>$150.00</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='edge' rows={edges} wide>
       {(edge) => (
@@ -324,6 +373,20 @@ export const Borders: Story = {
 
 /** A highlighted row holds a tint, so a selected row reads apart from a hovered one. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Table labels={{ region: 'Scholars, highlighted' }}>
+  <TableBody>
+    <TableRow highlighted>
+      <TableCell>Hermione Granger</TableCell>
+      <TableCell>Arithmancy</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'highlighted'] as const} wide>
       {(state) => (
@@ -352,6 +415,27 @@ const aligns = ['start', 'center', 'end'] as const
 
 /** Content alignment of a cell on both axes, and a cell's width as a count of `unit` steps or a CSS length. */
 export const Alignment: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead align='end'>Vault</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell align='end'>713</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+<TableCell verticalAlign='end'>end</TableCell>
+<TableCell minWidth='10rem'>Narrow</TableCell>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.stack)}>
       <Axis axis='align' rows={aligns} wide>

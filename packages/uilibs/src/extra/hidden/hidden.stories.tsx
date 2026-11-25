@@ -48,6 +48,23 @@ export const Playground: Story = {
 
 /** Each frame is a viewport of its own width, so its media queries see that width. */
 export const Responsive: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Hidden hide={{ medium: true }}>
+  <div>Phone</div>
+</Hidden>
+
+<Hidden hide={{ small: true, medium: false, large: true }}>
+  <div>Tablet</div>
+</Hidden>
+
+<Hidden hide={{ small: true, large: false }}>
+  <div>Desktop</div>
+</Hidden>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       {[390, 700, 1000, 1300].map((width) => (
@@ -89,6 +106,19 @@ export const Responsive: Story = {
 
 /** A hidden block leaves the accessibility tree too, so it is never announced twice. */
 export const Hiding: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Hidden hide>
+  <div>Never visible</div>
+</Hidden>
+
+<Hidden>
+  <div>Always visible</div>
+</Hidden>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Hidden hide>
@@ -107,6 +137,15 @@ export const Hiding: Story = {
 
 /** `render` swaps the element, such as a navigation landmark that shows on desktop only. */
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Hidden render={<nav aria-label='Houses' />} hide={{ small: false, xlarge: true }}>
+  <div>Gryffindor, Slytherin</div>
+</Hidden>`
+      }
+    }
+  },
   render: () => (
     <Hidden render={<nav aria-label='Houses' />} hide={{ small: false, xlarge: true }}>
       <div {...stylex.props(styles.tile)}>Gryffindor, Slytherin</div>

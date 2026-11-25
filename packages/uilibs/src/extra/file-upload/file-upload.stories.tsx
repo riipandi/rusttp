@@ -67,13 +67,16 @@ const styles = stylex.create({
 })
 
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['variant', 'inline', 'disabled'] } },
+  parameters: {
+    controls: { disable: false, include: ['variant', 'inline', 'disabled', 'height'] }
+  },
   argTypes: {
     variant: { control: 'radio', options: ['outline', 'headless'] },
     inline: { control: 'boolean' },
-    disabled: { control: 'boolean' }
+    disabled: { control: 'boolean' },
+    height: { control: { type: 'range', min: 80, max: 320, step: 20 } }
   },
-  args: { name: 'file', variant: 'outline', inline: false, disabled: false },
+  args: { name: 'file', variant: 'outline', inline: false, disabled: false, height: 160 },
   render: function PlaygroundRender(args) {
     const [files, setFiles] = React.useState<File[]>([])
 
@@ -103,6 +106,22 @@ export const Playground: Story = {
 }
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file-outline' variant='outline'>
+  <div>
+    <Mic />
+    Drop wand permits here
+  </div>
+</FileUpload>
+
+<FileUpload name='file-headless' variant='headless'>
+  <Button variant='outline'>Upload wand permit</Button>
+</FileUpload>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <Axis axis='variant' rows={['outline', 'headless'] as const}>
@@ -134,6 +153,23 @@ export const Variants: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='wand-disabled' disabled>
+  <div>Drop wand permits here</div>
+</FileUpload>
+
+<Field invalid>
+  <FieldLabel>Owl license</FieldLabel>
+  <FileUpload name='owl-license' inputAttributes={{ accept: 'image/*' }}>
+    Drop the license here
+  </FileUpload>
+  <FieldError match>The Owl Office needs a photo of the license.</FieldError>
+</Field>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
@@ -203,6 +239,20 @@ export const Focus: Story = {
 }
 
 export const Trigger: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file'>
+  <div>
+    Drop wand permits here, or{' '}
+    <FileUploadTrigger>
+      <span>browse Honeydukes</span>
+    </FileUploadTrigger>
+  </div>
+</FileUpload>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <div {...stylex.props(styles.width)}>
@@ -220,6 +270,25 @@ export const Trigger: Story = {
 
 /** The headless composition: the picker wraps any trigger, inline or block. */
 export const Headless: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<FileUpload name='file' inline onChange={…}>
+  <div>Owl order</div>
+</FileUpload>
+
+<FileUpload name='file-2' variant='headless' onChange={…}>
+  <Button variant='outline'>Upload wand permit</Button>
+</FileUpload>
+
+<FileUpload name='file-4' variant='headless' inline onChange={…}>
+  {(props) => (
+    <Button variant={props.highlighted ? 'solid' : 'faded'}>Upload potion license</Button>
+  )}
+</FileUpload>`
+      }
+    }
+  },
   args: { name: 'file' },
   render: () => (
     <div {...stylex.props(styles.stack)}>

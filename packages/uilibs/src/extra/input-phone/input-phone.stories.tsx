@@ -41,7 +41,15 @@ export const Playground: Story = {
   parameters: {
     controls: {
       disable: false,
-      include: ['size', 'variant', 'disabled', 'invalid', 'readOnly', 'withCountrySelect']
+      include: [
+        'size',
+        'variant',
+        'disabled',
+        'invalid',
+        'readOnly',
+        'withCountrySelect',
+        'addInternationalOption'
+      ]
     }
   },
   argTypes: {
@@ -50,7 +58,8 @@ export const Playground: Story = {
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
     readOnly: { control: 'boolean' },
-    withCountrySelect: { control: 'boolean' }
+    withCountrySelect: { control: 'boolean' },
+    addInternationalOption: { control: 'boolean' }
   },
   args: {
     size: 'medium',
@@ -58,7 +67,8 @@ export const Playground: Story = {
     disabled: false,
     invalid: false,
     readOnly: false,
-    withCountrySelect: true
+    withCountrySelect: true,
+    addInternationalOption: true
   },
   render: (args) => (
     <div {...stylex.props(styles.wrap)}>
@@ -69,6 +79,9 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPhone variant='faded' aria-label='Phone faded' />` } }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => <InputPhone variant={variant} aria-label={`Phone ${variant}`} />}
@@ -78,6 +91,9 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<InputPhone size='large' aria-label='Phone large' />` } }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => <InputPhone size={size} aria-label={`Phone ${size}`} />}
@@ -87,6 +103,21 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputPhone aria-label='Owl line disabled' defaultCountry='US' placeholder='(555) 013-1692' disabled />
+
+<InputPhone aria-label='Owl line readOnly' defaultCountry='US' value='+12135551234' readOnly />
+
+<Field invalid>
+  <FieldLabel htmlFor='phone-invalid'>Emergency contact</FieldLabel>
+  <InputPhone id='phone-invalid' defaultCountry='US' placeholder='(555) 000-0000' invalid />
+  <FieldError>Enter a valid phone number.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'readOnly', 'invalid'] as const}>
       {(state) =>
@@ -157,6 +188,13 @@ export const International: Story = {
 }
 
 export const RestrictedCountries: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputPhone countries={['ID', 'SG', 'MY']} defaultCountry='ID' placeholder='812 3456 7890' />`
+      }
+    }
+  },
   name: 'Restricted countries',
   render: () => (
     <div {...stylex.props(styles.wrap)}>

@@ -57,6 +57,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
+- LoaderText is a line of text for one step of a running task. For a bare busy mark with no text, use [Spinner](?path=/docs/extra-components-spinner--docs).
 - Without `completedText`, `completed` only stops the shimmer; nothing replaces the text.
 - Both texts stay mounted for the cross-fade. Only the current one is visible, and the other has `aria-hidden`, so assistive technology reads one text at a time.
 - With `completedText`, the texts sit in a `role="status"` live region: a screen reader announces the completed text when `completed` becomes `true`. Without it, nothing announces, because nothing changes.

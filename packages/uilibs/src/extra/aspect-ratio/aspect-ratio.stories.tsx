@@ -39,7 +39,16 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['ratio'] } },
+  parameters: {
+    docs: {
+      source: {
+        code: `<AspectRatio ratio={16 / 9}>
+  <img src='…' alt='The Mona Lisa in the Louvre' />
+</AspectRatio>`
+      }
+    },
+    controls: { disable: false, include: ['ratio'] }
+  },
   argTypes: {
     ratio: { control: { type: 'number', min: 0.5, step: 0.1 } }
   },
@@ -60,6 +69,15 @@ export const Playground: Story = {
 const ratios = { '16:9': 16 / 9, '1:1': 1, '9:16': 9 / 16 } as const
 
 export const Ratios: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AspectRatio ratio={9 / 16}>
+  <div>…</div>
+</AspectRatio>`
+      }
+    }
+  },
   args: { ratio: 1 },
   render: () => (
     <Axis axis='ratio' rows={['16:9', '1:1', '9:16'] as const}>

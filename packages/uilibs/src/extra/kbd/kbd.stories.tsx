@@ -39,6 +39,16 @@ export const Playground: Story = {
 }
 
 export const Group: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<KbdGroup>
+  <Kbd>⌘</Kbd>
+  <Kbd>K</Kbd>
+</KbdGroup>`
+      }
+    }
+  },
   render: () => (
     <KbdGroup>
       <Kbd>⌘</Kbd>
@@ -48,6 +58,20 @@ export const Group: Story = {
 }
 
 export const InTooltip: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant='outline' />}>Alohomora</TooltipTrigger>
+    <TooltipContent style={…}>
+      Alohomora <Kbd>⌘S</Kbd>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>`
+      }
+    }
+  },
   name: 'In a tooltip',
   render: () => (
     <TooltipProvider>
@@ -67,6 +91,19 @@ export const InTooltip: Story = {
 }
 
 export const InButton: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant='outline'>
+  Lumos
+  <KbdGroup>
+    <Kbd>⌘</Kbd>
+    <Kbd>S</Kbd>
+  </KbdGroup>
+</Button>`
+      }
+    }
+  },
   name: 'In a button',
   render: () => (
     <Button variant='outline'>
@@ -81,6 +118,7 @@ export const InButton: Story = {
 
 /** `render` swaps the `kbd` for a link, so a shortcut hint can point at its help page. */
 export const AsElement: Story = {
+  parameters: { docs: { source: { code: `<Kbd render={<a href='#shortcuts' />}>⌘K</Kbd>` } } },
   name: 'As another element',
   render: () => (
     <>

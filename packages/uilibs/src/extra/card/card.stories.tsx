@@ -85,6 +85,24 @@ export const Playground: Story = {
 }
 
 export const Action: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card>
+  <CardHeader>
+    <CardTitle>Howlers</CardTitle>
+    <CardDescription>You have 3 unread howlers.</CardDescription>
+    <CardAction>
+      <Button size='small' variant='ghost'>Burn all howlers</Button>
+    </CardAction>
+  </CardHeader>
+  <CardContent>
+    <p>A red letter is smoking on the kitchen table.</p>
+  </CardContent>
+</Card>`
+      }
+    }
+  },
   args: { size: 'medium' },
   render: (args) => (
     <Card {...args} style={styles.card}>
@@ -105,6 +123,21 @@ export const Action: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card size='small'>
+  <CardHeader>
+    <CardTitle>Chocolate Frog card</CardTitle>
+    <CardDescription>Padding follows the card size.</CardDescription>
+  </CardHeader>
+  <CardFooter>
+    <Button size='small'>Collect</Button>
+  </CardFooter>
+</Card>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={['medium', 'small'] as const}>
       {(size) => (
@@ -131,6 +164,19 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card raised>
+  <CardContent>raised</CardContent>
+</Card>
+
+<Card selected>
+  <CardContent>selected</CardContent>
+</Card>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'raised', 'selected'] as const}>
       {(state) => (
@@ -157,6 +203,18 @@ export const States: Story = {
 
 /** `render` swaps the `div` for another element; the card keeps its look and its `data-selected`. */
 export const AsElement: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card render={<article />} selected>
+  <CardHeader>
+    <CardTitle>Marauder's Map</CardTitle>
+  </CardHeader>
+  <CardContent>Every corridor of Hogwarts, live on parchment.</CardContent>
+</Card>`
+      }
+    }
+  },
   name: 'As another element',
   render: () => (
     <Card render={<article />} selected style={styles.card}>
@@ -184,6 +242,25 @@ const onSave = fn()
 
 /** The title's link covers the whole card; a control inside keeps its own press by sitting above it. */
 export const StretchedLink: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card style={…}>
+  <CardHeader>
+    <CardTitle>
+      <Link href='#diagon-alley' color='inherit' variant='plain' style={…}>
+        Diagon Alley
+      </Link>
+    </CardTitle>
+    <CardDescription>Wands, cauldrons, and a bank run by goblins.</CardDescription>
+  </CardHeader>
+  <CardFooter>
+    <Button variant='outline' size='small' style={…}>Save for later</Button>
+  </CardFooter>
+</Card>`
+      }
+    }
+  },
   name: 'Stretched link',
   render: () => (
     <Card style={[styles.card, styles.linked]}>

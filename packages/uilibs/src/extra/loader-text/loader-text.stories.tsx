@@ -54,6 +54,15 @@ export const Playground: Story = {
 
 /** Both texts stay mounted for the cross-fade; only the current one is visible and announced. */
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<LoaderText icon={Mic} completed completedText='Quill notes saved'>
+  Transcribing with the Quick-Quotes Quill
+</LoaderText>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['loading', 'completed'] as const}>
       {(state) => (
@@ -87,12 +96,24 @@ export const States: Story = {
 }
 
 export const WithoutIcon: Story = {
+  parameters: { docs: { source: { code: `<LoaderText>Deciphering the cryptex</LoaderText>` } } },
   name: 'Text only',
   args: { children: 'Deciphering the cryptex' },
   render: (args) => <LoaderText {...args} />
 }
 
 export const Completed: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<LoaderText completed>Deciphered 5 symbols</LoaderText>
+
+<LoaderText icon={Mic} completed={completed} completedText='Quill notes saved'>
+  Transcribing with the Quick-Quotes Quill
+</LoaderText>`
+      }
+    }
+  },
   render: () => {
     const [completed, setCompleted] = React.useState(false)
 

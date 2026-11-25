@@ -69,7 +69,19 @@ interface PlaygroundArgs {
 }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['pairs', 'term', 'details'] } },
+  parameters: {
+    docs: {
+      source: {
+        code: `<DescriptionList>
+  <DescriptionTerm>Order number</DescriptionTerm>
+  <DescriptionDetails>ORD-0071</DescriptionDetails>
+  <DescriptionTerm>Date</DescriptionTerm>
+  <DescriptionDetails>September 9, 2026</DescriptionDetails>
+</DescriptionList>`
+      }
+    },
+    controls: { disable: false, include: ['pairs', 'term', 'details'] }
+  },
   argTypes: {
     pairs: { control: { type: 'range', min: 1, max: pairs.length, step: 1 } },
     term: { control: 'text' },
@@ -116,6 +128,22 @@ export const LongValues: Story = {
 }
 
 export const WithBadges: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DescriptionList>
+  <DescriptionTerm>Payment status</DescriptionTerm>
+  <DescriptionDetails>
+    <Badge variant='faded'>Paid</Badge>
+  </DescriptionDetails>
+  <DescriptionTerm>Priority</DescriptionTerm>
+  <DescriptionDetails>
+    <Badge color='critical'>High</Badge>
+  </DescriptionDetails>
+</DescriptionList>`
+      }
+    }
+  },
   name: 'With badges',
   render: (args) => (
     <DescriptionList {...args} style={styles.frame}>
@@ -167,6 +195,26 @@ export const WithLinks: Story = {
 }
 
 export const InACard: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Card>
+  <CardHeader>
+    <CardTitle>Order details</CardTitle>
+    <CardDescription>Placed by Hermione Granger on September 9, 2026</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <DescriptionList>
+      <DescriptionTerm>Order number</DescriptionTerm>
+      <DescriptionDetails>ORD-0071</DescriptionDetails>
+      <DescriptionTerm>Email</DescriptionTerm>
+      <DescriptionDetails>hpotter@owlpost.magic</DescriptionDetails>
+    </DescriptionList>
+  </CardContent>
+</Card>`
+      }
+    }
+  },
   name: 'In a card',
   render: (args) => (
     <Card style={styles.frame}>

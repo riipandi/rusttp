@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, userEvent } from 'storybook/test'
 import { Checkbox } from '../../base/checkbox'
 import { Field, FieldLabel } from '../../base/field'
+import { Input } from '../../base/input'
 import { colors } from '../../styles/colors.stylex'
 import { Label } from './label.component'
 
@@ -25,7 +26,16 @@ const styles = stylex.create({
 type PlaygroundArgs = ComponentProps<typeof Label> & { label: string }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['label'] } },
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label>
+  <Checkbox aria-label='Accept the Hogwarts letter' /> Accept the Hogwarts letter and its terms
+</Label>`
+      }
+    },
+    controls: { disable: false, include: ['label'] }
+  },
   argTypes: {
     label: { control: 'text' }
   },
@@ -47,6 +57,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** A label outside a `Field` has the look of `FieldLabel`, and turns critical with `data-invalid`. */
 export const Invalid: StoryObj = {
+  parameters: {
+    docs: { source: { code: `<Label htmlFor='owl-name' data-invalid>Owl name, invalid</Label>` } }
+  },
   render: () => (
     <div>
       <span data-testid='critical' {...stylex.props(styles.criticalProbe)} />
@@ -79,6 +92,18 @@ export const Invalid: StoryObj = {
 
 /** `render` swaps the `label` for a `span` that names a group through `aria-labelledby`. */
 export const AsElement: StoryObj = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label render={<span id='house-label' />}>Houses</Label>
+
+<div role='group' aria-labelledby='house-label'>
+  <Checkbox aria-label='Gryffindor' />
+  <Checkbox aria-label='Ravenclaw' />
+</div>`
+      }
+    }
+  },
   name: 'As another element',
   render: () => (
     <div>
@@ -99,5 +124,30 @@ export const AsElement: StoryObj = {
     const plain = getComputedStyle(canvas.getByText('Plain'))
     await expect(getComputedStyle(label).fontSize).toBe(plain.fontSize)
     await expect(getComputedStyle(label).fontWeight).toBe(plain.fontWeight)
+  }
+}
+
+/** `htmlFor` names a control the label does not wrap, so a click on the text focuses it. */
+export const ForInput: StoryObj = {
+  name: 'Point at a control',
+  parameters: {
+    docs: {
+      source: {
+        code: `<Label htmlFor='owl-name'>Owl name</Label>
+<Input id='owl-name' placeholder='Hedwig' />`
+      }
+    }
+  },
+  render: () => (
+    <div>
+      <Label htmlFor='owl-name'>Owl name</Label>
+      <Input id='owl-name' placeholder='Hedwig' />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('Owl name')
+    await expect(input).toHaveAttribute('id', 'owl-name')
+    await userEvent.click(canvas.getByText('Owl name'))
+    await expect(input).toHaveFocus()
   }
 }

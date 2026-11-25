@@ -67,12 +67,13 @@ const styles = stylex.create({
 export default meta
 
 export const Playground: Story = {
-  parameters: { controls: { disable: false, include: ['size', 'color'] } },
+  parameters: { controls: { disable: false, include: ['size', 'color', 'autoWidth'] } },
   argTypes: {
     size: { control: { type: 'range', min: 12, max: 64, step: 4 } },
+    autoWidth: { control: 'boolean' },
     color: { control: 'select', options: Object.keys(iconColors) }
   },
-  args: { svg: Activity, size: 20 },
+  args: { svg: Activity, size: 20, autoWidth: false },
   render: (args) => (
     <div {...stylex.props(styles.row)}>
       <Icon {...args} svg={Activity} />
@@ -85,6 +86,7 @@ export const Playground: Story = {
 const sizeNames = ['12', '16', '20', '24', '32'] as const
 
 export const Sizes: Story = {
+  parameters: { docs: { source: { code: `<Icon svg={Activity} size={32} />` } } },
   args: { svg: Activity },
   render: () => (
     <Axis axis='size' rows={sizeNames}>
@@ -108,6 +110,19 @@ export const Sizes: Story = {
 
 /** Without a number, the icon follows the font size; a literal value fills the parent box. */
 export const FluidSize: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<span style={{ fontSize: 24 }}>
+  <Icon svg={Activity} />
+</span>
+
+<div style={{ width: 40, height: 40 }}>
+  <Icon svg={Activity} size='100%' />
+</div>`
+      }
+    }
+  },
   name: 'Fluid size',
   args: { svg: Activity },
   render: () => (
@@ -139,6 +154,7 @@ const colorNames = [
 ] as const
 
 export const Colors: Story = {
+  parameters: { docs: { source: { code: `<Icon svg={Zap} color='critical' size={20} />` } } },
   args: { svg: Zap },
   render: () => (
     <Axis axis='color' rows={colorNames}>
@@ -206,6 +222,17 @@ export const Attributes: Story = {
 }
 
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Icon
+  render={<a href='https://reshaped.so' target='_blank' rel='noreferrer' aria-label='Reshaped' />}
+  svg={Zap}
+  size={20}
+/>`
+      }
+    }
+  },
   name: 'render',
   args: { svg: Zap },
   render: () => (

@@ -90,6 +90,21 @@ export const Playground: Story = {
 
 /** A column by default; `direction` sets the main axis. */
 export const Direction: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Stack gap={2}>
+  <div>Gryffindor</div>
+  <div>Hufflepuff</div>
+</Stack>
+
+<Stack direction='row' gap={2} wrap>
+  <div>Ravenclaw</div>
+  <div>Slytherin</div>
+</Stack>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Stack data-testid='column' gap={2}>
@@ -110,6 +125,18 @@ export const Direction: Story = {
 
 /** The gap counts `unit` steps: `3` is 12px, as in Reshaped. */
 export const Gap: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Stack direction='row' gap={6} wrap>
+  <div>Gryffindor</div>
+  <div>Hufflepuff</div>
+  <div>Ravenclaw</div>
+  <div>Slytherin</div>
+</Stack>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       {([0, 1, 3, 6] as const).map((gap) => (
@@ -133,6 +160,16 @@ export const Gap: Story = {
 
 /** `align` is the cross axis and `justify` the main axis. */
 export const Alignment: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Stack direction='row' align='center' justify='space-between' style={…}>
+  <div>Gryffindor</div>
+  <div>Hufflepuff</div>
+</Stack>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       {(['start', 'center', 'end'] as const).map((align) => (
@@ -165,6 +202,19 @@ export const Alignment: Story = {
  * reached `medium`, 1000 px `large`, and 1300 px `xlarge`.
  */
 export const Responsive: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Stack
+  direction={{ small: 'column', medium: 'row' }}
+  align={{ small: 'stretch', medium: 'center' }}
+>
+  <div>Gryffindor</div>
+  <div>Hufflepuff</div>
+</Stack>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       {[390, 700, 1000, 1300].map((width) => (
@@ -207,6 +257,16 @@ export const Responsive: Story = {
 
 /** `render` swaps the element, such as a list that lays out like any other Stack. */
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Stack render={<ul aria-label='Houses' />} direction='row' gap={2} wrap>
+  <li>Gryffindor</li>
+  <li>Hufflepuff</li>
+</Stack>`
+      }
+    }
+  },
   render: () => (
     <Stack render={<ul aria-label='Houses' />} data-testid='list' direction='row' gap={2} wrap>
       {houses.map((house) => (

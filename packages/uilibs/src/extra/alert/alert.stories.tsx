@@ -47,23 +47,45 @@ export default meta
 type PlaygroundArgs = ComponentProps<typeof Alert> & { title: string }
 
 export const Playground: StoryObj<PlaygroundArgs> = {
-  parameters: { controls: { disable: false, include: ['title', 'color'] } },
+  parameters: { controls: { disable: false, include: ['title', 'color', 'announce', 'inline'] } },
   argTypes: {
     title: { control: 'text' },
-    color: { control: 'select', options: Object.keys(alertColors) }
+    color: { control: 'select', options: Object.keys(alertColors) },
+    announce: { control: 'boolean' },
+    inline: { control: 'boolean' }
   },
-  args: { title: 'Lumos!', color: 'neutral' },
+  args: { title: 'Lumos!', color: 'neutral', announce: false, inline: false },
   render: ({ title, ...args }) => (
     <Alert {...args} style={styles.alert}>
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>
         Point your wand and speak the incantation to light the darkest corridor.
       </AlertDescription>
+      <AlertAction>
+        <Button size='xsmall' variant='outline'>
+          Nox
+        </Button>
+      </AlertAction>
     </Alert>
   )
 }
 
 export const Action: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Alert>
+  <AlertTitle>Spell recorded</AlertTitle>
+  <AlertDescription>
+    Expecto Patronum cast successfully. Your patronus is on file with the Ministry.
+  </AlertDescription>
+  <AlertAction>
+    <Button size='xsmall' variant='outline'>Reversal</Button>
+  </AlertAction>
+</Alert>`
+      }
+    }
+  },
   args: { color: 'neutral' },
   render: (args) => (
     <Alert {...args} style={styles.alert}>
@@ -89,6 +111,16 @@ export const Action: Story = {
 const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Alert color='critical'>
+  <AlertTitle>Owl post: critical</AlertTitle>
+  <AlertDescription>A message from the Owl Office, in critical.</AlertDescription>
+</Alert>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='color' rows={colorNames}>
       {(color) => (
@@ -114,6 +146,23 @@ export const Colors: Story = {
 }
 
 export const Roles: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Alert announce>
+  <AlertTitle>Polite on request</AlertTitle>
+</Alert>
+
+<Alert role='alert' color='critical'>
+  <AlertTitle>Assertive on request</AlertTitle>
+</Alert>
+
+<Alert>
+  <AlertTitle level={2}>Not announced</AlertTitle>
+</Alert>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.stack)}>
       <Alert announce style={styles.alert}>
@@ -142,6 +191,29 @@ export const Roles: Story = {
 
 /** A glyph before the text, the action beside it, and the notice running out of its parent. */
 export const Layouts: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Alert icon={Info} color='primary'>
+  <AlertTitle>Floo powder</AlertTitle>
+  <AlertDescription>Say your destination clearly before you step in.</AlertDescription>
+</Alert>
+
+<Alert inline>
+  <AlertTitle>Owl delivered</AlertTitle>
+  <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
+  <AlertAction>
+    <Button size='xsmall' variant='outline'>Open</Button>
+  </AlertAction>
+</Alert>
+
+<Alert bleed={4} color='warning'>
+  <AlertTitle>Restricted Section</AlertTitle>
+  <AlertDescription>Readers need a signed note from a professor.</AlertDescription>
+</Alert>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='layout' rows={['icon', 'inline', 'bleed'] as const} wide>
       {(layout) => {
@@ -216,6 +288,16 @@ export const Layouts: Story = {
 
 /** `render` swaps the `div`; the icon, the text, and `announce` still apply. */
 export const AsElement: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Alert render={<section aria-label='Owl post' />} icon={Info} announce>
+  <AlertTitle>Owl post</AlertTitle>
+  <AlertDescription>Your letter from Hogwarts has arrived.</AlertDescription>
+</Alert>`
+      }
+    }
+  },
   name: 'As another element',
   render: () => (
     <Alert render={<section aria-label='Owl post' />} icon={Info} announce style={styles.alert}>

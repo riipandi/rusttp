@@ -64,6 +64,13 @@ export const Playground: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ProgressIndicator total={5} activeIndex={1} size='small' aria-label='small' />`
+      }
+    }
+  },
   args: { total: 5 },
   render: () => (
     <Axis axis='size' rows={['small', 'medium'] as const}>
@@ -85,6 +92,13 @@ export const Sizes: Story = {
 }
 
 export const Colors: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ProgressIndicator total={4} activeIndex={1} color='positive' aria-label='positive' />`
+      }
+    }
+  },
   args: { total: 5 },
   render: () => (
     <Axis axis='color' rows={['neutral', 'primary', 'positive', 'warning', 'critical'] as const}>
@@ -106,6 +120,13 @@ export const Colors: Story = {
 }
 
 export const Media: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ProgressIndicator total={4} activeIndex={1} color='media' aria-label='On a dark surface' />`
+      }
+    }
+  },
   args: { total: 5 },
   render: () => (
     <div {...stylex.props(styles.backdrop)}>
@@ -123,6 +144,13 @@ export const Media: Story = {
 }
 
 export const Windowed: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<ProgressIndicator total={20} activeIndex={index} aria-label='Horcruxes found' />`
+      }
+    }
+  },
   args: { total: 5 },
   render: () => {
     const [index, setIndex] = React.useState(0)
@@ -175,6 +203,20 @@ export const Windowed: Story = {
 }
 
 export const WithCarousel: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [index, setIndex] = useState(0)
+
+<Carousel aria-label='Spells' onChange={setIndex}>
+  {spells.map((name) => (
+    <div key={name}>{name}</div>
+  ))}
+</Carousel>
+<ProgressIndicator total={spells.length} activeIndex={index} aria-label='Spell position' />`
+      }
+    }
+  },
   args: { total: 5 },
   render: () => {
     const [index, setIndex] = React.useState(0)

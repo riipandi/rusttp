@@ -92,6 +92,9 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: { source: { code: `<Textarea variant='faded' rows={1} aria-label='Prophecy faded' />` } }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => <Textarea variant={variant} rows={1} aria-label={`Prophecy ${variant}`} />}
@@ -101,6 +104,9 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: { source: { code: `<Textarea size='large' rows={1} aria-label='Prophecy large' />` } }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => <Textarea size={size} rows={1} aria-label={`Prophecy ${size}`} />}
@@ -112,6 +118,19 @@ export const Sizes: Story = {
 }
 
 export const States: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Textarea aria-label='Decree disabled' placeholder='Locked by Ministry decree' disabled />
+
+<Field invalid>
+  <FieldLabel>Symbologist bio</FieldLabel>
+  <Textarea defaultValue='Dear Editor,' />
+  <FieldError match>Your letter must be at least 10 characters.</FieldError>
+</Field>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
       {(state) =>
@@ -161,6 +180,23 @@ export const WithField: Story = {
 const MAX_CHARS = 280
 
 export const AutoResize: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Field>
+  <FieldLabel htmlFor='textarea-auto-resize'>Bio</FieldLabel>
+  <Textarea
+    id='textarea-auto-resize'
+    autoResize
+    value={value}
+    onChange={(event) => setValue(event.target.value)}
+    placeholder='Tell us about yourself...'
+    rows={2}
+  />
+</Field>`
+      }
+    }
+  },
   name: 'Auto Resize',
   render: () => {
     const [value, setValue] = React.useState('')

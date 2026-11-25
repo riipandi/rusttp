@@ -1,5 +1,6 @@
 import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import * as Stories from './icon.stories'
+import * as BrandStories from '../../icons/icons.stories'
 
 <Meta of={Stories} />
 
@@ -42,6 +43,20 @@ With the default size of `1em`, the icon scales with the surrounding text.
 ### Swap the element
 
 <Canvas of={Stories.Render} />
+
+## Brand icons
+
+`uilibs/icons` ships eight brand marks as ready SVG components: `FacebookIcon`, `GitHubIcon`, `GoogleIcon`, `InstagramIcon`, `LinkedInIcon`, `TelegramIcon`, `WhatsAppIcon`, and `XIcon`. They are not built on `Icon`: each takes `size` (a number of px, default `24`) and any SVG prop, fills with `currentColor`, and is an image named for the brand (`role='img'`, `aria-label='GitHub'`).
+
+```jsx
+import { GitHubIcon, GoogleIcon } from 'uilibs/icons'
+```
+
+<Canvas of={BrandStories.Gallery} />
+
+Beside a visible label the icon is decoration, so pass `aria-hidden='true'` and let the text name the control. On its own, such as in an icon-only button or a footer link, keep the brand name.
+
+<Canvas of={BrandStories.InButton} />
 
 ## API reference
 

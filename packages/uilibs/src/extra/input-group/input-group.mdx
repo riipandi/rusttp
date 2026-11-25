@@ -112,6 +112,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
+- The group is a `group` and names nothing: name the input inside it with an `aria-label` or a `Field` label, as the stories do (`aria-label='Owl faded'`).
 - Use one `InputGroupInput` or `InputGroupTextarea` per group: clicking an addon focuses the first one.
 - Clicking a button inside an addon does not move focus to the field.
 - `align` places an addon with CSS `order`, so the DOM and focus order stay as written.

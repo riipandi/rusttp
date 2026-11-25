@@ -89,6 +89,13 @@ export const Playground: Story = {
 
 /** `cover` crops the picture to fill the box; `contain` fits all of it, with bars at the sides. */
 export const DisplayModes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Image src={banner} alt='The banners, contain' aspectRatio={1} displayMode='contain' />`
+      }
+    }
+  },
   args: { src: banner, alt: '' },
   render: () => (
     <Axis axis='mode' rows={displayModeNames}>
@@ -118,6 +125,13 @@ export const DisplayModes: Story = {
 }
 
 export const BorderRadii: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Image src={banner} alt='The banners, large corners' aspectRatio={1} borderRadius='large' />`
+      }
+    }
+  },
   args: { src: banner, alt: '' },
   render: () => (
     <Axis axis='radius' rows={radiusNames}>
@@ -148,6 +162,18 @@ export const BorderRadii: Story = {
 
 /** A source that fails keeps the box and its ratio, and `fallback` fills it. */
 export const Fallback: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Image
+  src={src}
+  alt='The Marauder’s Map'
+  aspectRatio={16 / 9}
+  fallback={<ImageIcon size={24} aria-hidden />}
+/>`
+      }
+    }
+  },
   args: { src: broken, alt: '' },
   render: () => (
     <div {...stylex.props(styles.stack)}>
@@ -183,6 +209,13 @@ export const Fallback: Story = {
 
 /** A new `src` after a failure gets a new try. */
 export const Recovery: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Image src={src} alt='The Room of Requirement' aspectRatio={2} fallback='Not found' />`
+      }
+    }
+  },
   args: { src: broken, alt: '' },
   render: () => {
     const [src, setSrc] = React.useState(broken)
@@ -208,6 +241,15 @@ export const Recovery: Story = {
 
 /** A picture that only decorates takes `alt=''`; a fallback for it is hidden from assistive technology too. */
 export const Decorative: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Image src={banner} alt='' aspectRatio={2} />
+
+<Image src={src} alt='' aspectRatio={2} fallback='Decoration' />`
+      }
+    }
+  },
   args: { src: banner, alt: '' },
   render: () => (
     <div {...stylex.props(styles.stack)}>
@@ -234,6 +276,9 @@ export const Decorative: Story = {
 
 /** Without a ratio the box takes the picture's own height. */
 export const NaturalHeight: Story = {
+  parameters: {
+    docs: { source: { code: `<Image src={banner} alt='The banners, at their own height' />` } }
+  },
   args: { src: banner, alt: '' },
   render: () => (
     <div {...stylex.props(styles.small)}>

@@ -65,6 +65,20 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 /** The media is a bare slot (`default`) or a tinted icon tile (`icon`). */
 export const Kinds: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Empty>
+  <EmptyHeader>
+    <EmptyMedia kind='icon'>
+      <Package />
+    </EmptyMedia>
+    <EmptyTitle>No potions brewed</EmptyTitle>
+  </EmptyHeader>
+</Empty>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='kind' rows={['default', 'icon'] as const}>
       {(kind) => (
@@ -88,6 +102,24 @@ export const Kinds: Story = {
 }
 
 export const Outline: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Empty style={…}>
+  <EmptyHeader>
+    <EmptyMedia kind='icon'>
+      <FileText />
+    </EmptyMedia>
+    <EmptyTitle>No owls today</EmptyTitle>
+    <EmptyDescription>No letters from Hogwarts. New post will show up here.</EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent>
+    <Button variant='outline' size='small'>Check the owlery</Button>
+  </EmptyContent>
+</Empty>`
+      }
+    }
+  },
   render: () => (
     <Empty style={styles.solidBorder}>
       <EmptyHeader>
@@ -107,6 +139,27 @@ export const Outline: Story = {
 }
 
 export const WithAvatar: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Empty>
+  <EmptyHeader>
+    <EmptyMedia>
+      <Avatar size='large'>
+        <AvatarImage src='…' alt='Luna Lovegood' />
+        <AvatarFallback>LL</AvatarFallback>
+      </Avatar>
+    </EmptyMedia>
+    <EmptyTitle>No aurors found</EmptyTitle>
+    <EmptyDescription>Recruit members for the Order of the Phoenix.</EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent>
+    <Button size='small'>Send an owl</Button>
+  </EmptyContent>
+</Empty>`
+      }
+    }
+  },
   name: 'Avatar',
   render: () => (
     <Empty>
@@ -157,6 +210,18 @@ export const WithInputGroup: Story = {
 
 /** `render` swaps the `div` for a `section`, named by its title. */
 export const AsElement: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Empty render={<section aria-labelledby='empty-title' />}>
+  <EmptyHeader>
+    <EmptyTitle id='empty-title'>No owls today</EmptyTitle>
+    <EmptyDescription>The Owlery is quiet.</EmptyDescription>
+  </EmptyHeader>
+</Empty>`
+      }
+    }
+  },
   name: 'As another element',
   render: () => (
     <Empty render={<section aria-labelledby='empty-title' />}>

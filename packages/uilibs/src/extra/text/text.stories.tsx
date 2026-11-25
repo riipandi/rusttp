@@ -106,6 +106,7 @@ const roleOf: Record<(typeof variantNames)[number], keyof typeof type> = {
 }
 
 export const Variants: Story = {
+  parameters: { docs: { source: { code: `<Text variant='featured-3'>Lumos</Text>` } } },
   render: () => (
     <Axis axis='variant' rows={variantNames}>
       {(variant) => <Text variant={variant}>Lumos</Text>}
@@ -160,6 +161,7 @@ const colorNames = [
 ] as const
 
 export const Colors: Story = {
+  parameters: { docs: { source: { code: `<Text color='critical'>critical</Text>` } } },
   render: () => (
     <Axis axis='color' rows={colorNames}>
       {(color) => (
@@ -181,6 +183,19 @@ export const Colors: Story = {
 
 /** A prop takes a per-breakpoint object as well as a single value. */
 export const Responsive: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
+
+<Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
+
+<Text variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}>
+  Steps up at each breakpoint, then back down
+</Text>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
@@ -251,6 +266,15 @@ export const Align: Story = {
 }
 
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Text render={<h1 />}>The Da Vinci Code</Text>
+
+<Text variant='featured-2'>Chapter 1: The Louvre</Text>`
+      }
+    }
+  },
   name: 'as',
   render: () => (
     <div {...stylex.props(styles.col)}>

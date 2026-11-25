@@ -56,6 +56,15 @@ export const Playground: Story = {
 
 /** The tokens are 10rem to 32rem, and the container centers in its parent. */
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Container size='medium'>
+  <div>medium</div>
+</Container>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.col)}>
       {Object.keys(containerSizes).map((size) => (
@@ -90,6 +99,15 @@ export const Sizes: Story = {
 
 /** A size beyond the tokens is a CSS length. */
 export const Length: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Container size='60ch'>
+  <div>Any length works: a reading column of 60ch.</div>
+</Container>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.page)}>
       <Container size='60ch' data-testid='container'>
@@ -106,6 +124,15 @@ export const Length: Story = {
 
 /** `padding` counts `unit` steps, like Stack's `gap`. */
 export const Padding: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Container size='medium' padding={4}>
+  <div>16px on every side</div>
+</Container>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.page)}>
       <Container size='medium' padding={4} data-testid='container'>
@@ -120,6 +147,15 @@ export const Padding: Story = {
 
 /** `render` swaps the element, such as the page's `main`. */
 export const Render: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Container render={<section aria-label='Reading column' />} size='medium'>
+  <div>A section that is a centered column</div>
+</Container>`
+      }
+    }
+  },
   render: () => (
     <div {...stylex.props(styles.page)}>
       <Container render={<section aria-label='Reading column' />} size='medium'>

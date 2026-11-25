@@ -73,6 +73,21 @@ export const Playground: Story = {
 
 /** Every fill of the control; each has the focus ring, only `outline` has the 3:1 edge at rest. */
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputGroup variant='faded'>
+  <InputGroupAddon>
+    <InputGroupText>@</InputGroupText>
+  </InputGroupAddon>
+  <InputGroupInput aria-label='Owl faded' placeholder='Owl' />
+  <InputGroupAddon align='inline-end'>
+    <InputGroupButton variant='outline'>Send</InputGroupButton>
+  </InputGroupAddon>
+</InputGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='variant' rows={controlVariantNames}>
       {(variant) => (
@@ -92,6 +107,21 @@ export const Variants: Story = {
 }
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputGroup size='large'>
+  <InputGroupAddon>
+    <InputGroupText>@</InputGroupText>
+  </InputGroupAddon>
+  <InputGroupInput aria-label='Owl large' placeholder='Owl' />
+  <InputGroupAddon align='inline-end'>
+    <InputGroupButton variant='outline'>Send</InputGroupButton>
+  </InputGroupAddon>
+</InputGroup>`
+      }
+    }
+  },
   render: () => (
     <Axis axis='size' rows={controlSizeNames}>
       {(size) => (
@@ -151,6 +181,22 @@ export const Icon: Story = {
 }
 
 export const Button: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputGroup>
+  <InputGroupInput
+    aria-label='Howler address'
+    readOnly
+    defaultValue='https://dailyprophet.co.uk/howlers'
+  />
+  <InputGroupAddon align='inline-end'>
+    <InputGroupButton icon={Copy} aria-label='Copy howler address' />
+  </InputGroupAddon>
+</InputGroup>`
+      }
+    }
+  },
   render: () => (
     <InputGroup style={styles.group}>
       <InputGroupInput
@@ -190,6 +236,18 @@ export const WithSpinner: Story = {
 }
 
 export const Textarea: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<InputGroup>
+  <InputGroupTextarea placeholder='Write to Sirius…' rows={3} />
+  <InputGroupAddon align='block-end'>
+    <InputGroupButton variant='outline' size='xsmall'>Send owl</InputGroupButton>
+  </InputGroupAddon>
+</InputGroup>`
+      }
+    }
+  },
   render: () => (
     <InputGroup style={styles.group}>
       <InputGroupTextarea placeholder='Write to Sirius…' rows={3} />
