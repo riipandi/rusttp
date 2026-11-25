@@ -5,7 +5,7 @@ import * as Stories from './stories/data-grid-basics.stories'
 
 # Data Grid
 
-A table for large, interactive data: sorting, filtering, paging, pinning, resizing, row and cell selection, spreadsheet editing, and drag reordering.
+A table for large, interactive data: sorting, filtering, paging, pinning, resizing, row and cell selection, spreadsheet editing, and drag reordering. For a static table of a few rows, use [Table](?path=/docs/extra-components-table--docs).
 
 ## Import
 
@@ -72,6 +72,23 @@ Create `table` with `useTable` and `dataGridFeatures`, and give every part that 
 `tableLayout.dense` tightens the cell padding.
 
 <Canvas of={Stories.DenseLayout} />
+
+## Accessibility
+
+With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab stop: the grid itself holds DOM focus and `aria-activedescendant` names the focused cell, so a screen reader follows it. The `Keyboard` story in the Editing group walks these keys.
+
+| Key                                        | Action                                                                     |
+| ------------------------------------------ | -------------------------------------------------------------------------- |
+| Arrow keys                                 | Move the focused cell one step. At an edge the focus stays put.            |
+| `Home`, `End`                              | Jump to the first or last cell of the row.                                 |
+| `Control + ArrowUp`, `Control + ArrowDown` | Jump to the first or last row of the column.                               |
+| `Tab` and `Shift + Tab`                    | Move to the next or previous cell, instead of leaving the grid.            |
+| `Shift + Arrow keys`                       | Grow the selection from the focused cell.                                  |
+| `Escape`                                   | Clears the selection. In the editor it closes the editor.                  |
+| `Enter`                                    | Opens the editor on the focused cell, when the column has `meta.cellEdit`. |
+| `Delete`                                   | Clears the focused cell through `onCellsChange`.                           |
+
+- The cell editor is a text field that takes focus when it opens.
 
 ## API reference
 

@@ -100,6 +100,30 @@ const balanceCell = (info: { getValue: () => unknown }) => (
 
 /** Pagination. */
 export const Pagination: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const table = useTable({
+  features: dataGridFeatures,
+  columns,
+  data,
+  getRowId: (row) => row.id,
+  state: { pagination, sorting },
+  onPaginationChange: setPagination,
+  onSortingChange: setSorting
+})
+
+<DataGrid table={table} recordCount={data.length}>
+  <DataGridContainer>
+    <DataGridScrollArea table={table}>
+      <DataGridTable table={table} />
+    </DataGridScrollArea>
+  </DataGridContainer>
+  <DataGridPagination table={table} />
+</DataGrid>`
+      }
+    }
+  },
   name: 'Pagination',
   render: () => {
     const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(
@@ -229,6 +253,20 @@ export const CellBorder: Story = {
 
 /** Dense layout. */
 export const DenseLayout: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<DataGrid table={table} recordCount={data.length} tableLayout={{ dense: true }}>
+  <DataGridContainer>
+    <DataGridScrollArea table={table}>
+      <DataGridTable table={table} />
+    </DataGridScrollArea>
+  </DataGridContainer>
+  <DataGridPagination table={table} />
+</DataGrid>`
+      }
+    }
+  },
   name: 'Dense layout',
   render: () => {
     const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(

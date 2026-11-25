@@ -5,6 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { ColumnDef, PaginationState, SortingState } from '@tanstack/react-table'
 import { useMemo, useRef, useState } from 'react'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   DataGrid,
   DataGridCellSelection,
@@ -19,6 +20,7 @@ import {
   type DataGridRowStatus
 } from '../'
 import { Button } from '../../base/button'
+import { pressUntil } from '../../contracts/keyboard'
 import { Badge } from '../../extra/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../extra/card'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../extra/input-group'
@@ -477,5 +479,123 @@ export const SpreadsheetEditing: Story = {
         </Card>
       </DataGrid>
     )
+  }
+}
+
+/** Arrow keys move the focused cell; Home, End, and the Ctrl or Cmd arrows jump; Enter edits; Delete clears. */
+export const Keyboard: Story = {
+  render: () => {
+    const [data, setData] = useState(productData.slice(0, 5))
+    const columns = useMemo<ColumnDef<DataGridFeatures, IProduct>[]>(
+      () => [
+        { accessorKey: 'id', header: 'SKU', size: 120, meta: { cellEdit: { control: 'text' } } },
+        {
+          accessorKey: 'name',
+          header: 'Product',
+          size: 200,
+          meta: { cellEdit: { control: 'text' } }
+        },
+        {
+          accessorKey: 'category',
+          header: 'Category',
+          size: 180,
+          meta: { cellEdit: { control: 'text' } }
+        }
+      ],
+      []
+    )
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data,
+      getRowId: (row: IProduct) => row.id
+    })
+    const handleCellsChange = (details: DataGridCellsChangeDetails<IProduct>) =>
+      setData((old) =>
+        old.map((row) => {
+          const changes = details.changes.filter((change) => change.rowId === row.id)
+          return changes.length
+            ? { ...row, ...Object.fromEntries(changes.map((c) => [c.columnId, c.value])) }
+            : row
+        })
+      )
+    return (
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        onCellsChange={handleCellsChange}
+        tableLayout={{ cellSelection: true }}
+      >
+        <DataGridCellSelection table={table} />
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvasElement, canvas }) => {
+    const grid = canvas.getByRole('grid')
+    const cells = (row: number) =>
+      Array.from(canvasElement.querySelectorAll<HTMLElement>('tbody tr')[row]?.children ?? [])
+    const focused = () => canvasElement.querySelector('td[data-cell-focused]')
+    const at = (row: number, column: number) => {
+      const cell = cells(row)[column]
+      if (!cell) throw new Error(`No cell at ${row}, ${column}`)
+      return cell
+    }
+    const expectFocus = (row: number, column: number) =>
+      waitFor(() => expect(focused()).toBe(at(row, column)))
+
+    // A click puts the grid's one Tab stop on that cell; the grid itself holds DOM focus.
+    await userEvent.click(at(0, 0))
+    await expectFocus(0, 0)
+    await waitFor(() => expect(grid).toHaveFocus())
+    await waitFor(() => expect(grid).toHaveAttribute('aria-activedescendant', at(0, 0).id))
+
+    // Arrows step one cell, and stay put at an edge.
+    await pressUntil('{ArrowRight}', () => expectFocus(0, 1), {
+      when: () => focused() === at(0, 0)
+    })
+    await pressUntil('{ArrowDown}', () => expectFocus(1, 1), { when: () => focused() === at(0, 1) })
+    await pressUntil('{ArrowLeft}', () => expectFocus(1, 0), { when: () => focused() === at(1, 1) })
+    await userEvent.keyboard('{ArrowLeft}')
+    await expectFocus(1, 0)
+
+    // End and Home jump along the row; Ctrl+Arrow jumps along the column.
+    await pressUntil('{End}', () => expectFocus(1, 2))
+    await pressUntil('{Home}', () => expectFocus(1, 0))
+    await pressUntil('{Control>}{ArrowDown}{/Control}', () => expectFocus(4, 0))
+    await pressUntil('{Control>}{ArrowUp}{/Control}', () => expectFocus(0, 0))
+
+    // Tab moves to the next cell, and Shift+Tab back, rather than leaving the grid.
+    await pressUntil('{Tab}', () => expectFocus(0, 1), { when: () => focused() === at(0, 0) })
+    await pressUntil('{Shift>}{Tab}{/Shift}', () => expectFocus(0, 0), {
+      when: () => focused() === at(0, 1)
+    })
+
+    // Shift+Arrow grows a selection from the focused cell; Escape clears it.
+    await pressUntil('{Shift>}{ArrowRight}{/Shift}', () =>
+      expect(canvasElement.querySelectorAll('td[data-cell-selected]').length).toBeGreaterThan(1)
+    )
+    await pressUntil('{Escape}', () =>
+      expect(canvasElement.querySelectorAll('td[data-cell-selected]')).toHaveLength(0)
+    )
+
+    // Enter opens the editor on the focused cell; Escape closes it, and Enter then edits and commits.
+    await userEvent.click(at(2, 1))
+    await expectFocus(2, 1)
+    await userEvent.keyboard('{Enter}')
+    const editor = await within(document.body).findByRole('textbox')
+    await expect(editor).toHaveFocus()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(within(document.body).queryByRole('textbox')).toBeNull())
+
+    // Delete clears the focused cell through `onCellsChange`.
+    await userEvent.click(at(3, 2))
+    await expectFocus(3, 2)
+    await userEvent.keyboard('{Delete}')
+    await waitFor(() => expect(at(3, 2).textContent).toBe(''))
   }
 }

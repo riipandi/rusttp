@@ -50,6 +50,7 @@ interface PlaygroundArgs {
   rowBorder: boolean
   stripped: boolean
   headerBackground: boolean
+  headerBorder: boolean
   headerSticky: boolean
   width: 'auto' | 'fixed'
   columnsResizable: boolean
@@ -72,6 +73,7 @@ function PlaygroundGrid({
   rowBorder,
   stripped,
   headerBackground,
+  headerBorder,
   headerSticky,
   width,
   columnsResizable,
@@ -185,6 +187,7 @@ function PlaygroundGrid({
         rowBorder,
         stripped,
         headerBackground,
+        headerBorder,
         headerSticky,
         width,
         columnsResizable,
@@ -224,6 +227,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
         'rowBorder',
         'stripped',
         'headerBackground',
+        'headerBorder',
         'headerSticky',
         'width',
         'columnsResizable',
@@ -247,6 +251,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     rowBorder: boolean('Layout'),
     stripped: boolean('Layout'),
     headerBackground: boolean('Layout'),
+    headerBorder: boolean('Layout'),
     headerSticky: boolean('Layout'),
     width: { control: 'radio', options: ['auto', 'fixed'], table: { category: 'Layout' } },
     columnsResizable: boolean('Columns'),
@@ -276,6 +281,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     rowBorder: true,
     stripped: false,
     headerBackground: false,
+    headerBorder: true,
     headerSticky: false,
     width: 'fixed',
     columnsResizable: false,
