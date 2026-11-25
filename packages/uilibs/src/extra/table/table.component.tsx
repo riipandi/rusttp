@@ -6,11 +6,14 @@ import { focusRing, unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { tableAlign, tableCellSize, tableStyles as s, tableVerticalAlign } from './table.stylex'
 
 export interface TableLabels {
-  /** Name of the scrollable region around a wide table. Defaults to `Table`. */
+  /** Name of the scrollable region around a wide table. Defaults to the caption, else `Table`. */
   region: string
 }
 
-const defaultLabels: TableLabels = { region: 'Table' }
+const defaultRegionLabel = 'Table'
+
+/** Lets a `TableCaption` give the `Table` its id, which names the scroll region. */
+const CaptionContext = React.createContext<((id: string | undefined) => void) | null>(null)
 
 const ColumnBorderContext = React.createContext(false)
 
@@ -35,9 +38,9 @@ function cellStyles({ align, verticalAlign, width, minWidth }: CellProps, column
 }
 
 /**
- * The wrapper scrolls sideways when the table is wider than its column, so it is a focusable,
- * named region: a keyboard user can scroll it, and it is announced. Give the table a
- * `<caption>` or pass `labels.region` to say which table it is.
+ * The wrapper is a plain `div` while the table fits its column. Once the table is wider, the wrapper
+ * scrolls sideways, so it becomes a focusable, named region: a keyboard user can scroll it and a
+ * screen reader announces it. The name is `labels.region`, else the `TableCaption`, else `Table`.
  */
 export function Table({
   border = false,
@@ -51,22 +54,47 @@ export function Table({
     border?: boolean
     /** Draws an edge between the columns. */
     columnBorder?: boolean
-    /** Name of the scroll region; English by default. */
+    /** Name of the scroll region; the caption by default. */
     labels?: Partial<TableLabels>
   }) {
-  const region = { ...defaultLabels, ...labels }.region
+  const wrapper = React.useRef<HTMLDivElement>(null)
+  const [scrolls, setScrolls] = React.useState(false)
+  const [captionId, setCaptionId] = React.useState<string>()
+
+  // The wrapper's own width and the table's content width both decide whether it scrolls.
+  React.useLayoutEffect(() => {
+    const element = wrapper.current
+    if (!element) return undefined
+    const measure = () => setScrolls(element.scrollWidth > element.clientWidth)
+    measure()
+    if (typeof ResizeObserver === 'undefined') return undefined
+    const observer = new ResizeObserver(measure)
+    observer.observe(element)
+    if (element.firstElementChild) observer.observe(element.firstElementChild)
+    return () => observer.disconnect()
+  }, [])
+
+  const regionName = labels?.region
+  const region = scrolls
+    ? {
+        role: 'region',
+        'aria-label': regionName ?? (captionId ? undefined : defaultRegionLabel),
+        'aria-labelledby': regionName === undefined ? captionId : undefined,
+        // Only a scrolling region needs a Tab stop (axe: scrollable-region-focusable).
+        tabIndex: 0
+      }
+    : {}
   return (
     <div
-      role='region'
-      aria-label={region}
-      // A scrollable region must be focusable for keyboard users (axe: scrollable-region-focusable).
-      // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
+      ref={wrapper}
+      {...region}
       {...stylex.props(focusRing.root, s.container, border && s.bordered)}
     >
-      <ColumnBorderContext.Provider value={columnBorder}>
-        <table {...props} {...stylex.props(s.table, style)} />
-      </ColumnBorderContext.Provider>
+      <CaptionContext.Provider value={setCaptionId}>
+        <ColumnBorderContext.Provider value={columnBorder}>
+          <table {...props} {...stylex.props(s.table, style)} />
+        </ColumnBorderContext.Provider>
+      </CaptionContext.Provider>
     </div>
   )
 }
@@ -152,8 +180,16 @@ export function TableCell({
 }
 
 export function TableCaption({
+  id,
   style,
   ...props
 }: Omit<React.ComponentProps<'caption'>, 'className' | 'style'> & StyleProp) {
-  return <caption {...props} {...stylex.props(s.caption, style)} />
+  const setCaptionId = React.useContext(CaptionContext)
+  const generatedId = React.useId()
+  const captionId = id ?? generatedId
+  React.useLayoutEffect(() => {
+    setCaptionId?.(captionId)
+    return () => setCaptionId?.(undefined)
+  }, [setCaptionId, captionId])
+  return <caption id={captionId} {...props} {...stylex.props(s.caption, style)} />
 }
