@@ -71,6 +71,20 @@ Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props no
 
 <Canvas of={Stories.NoCloseButton} />
 
+## Accessibility
+
+The popup is a `dialog` named by `DialogTitle` and described by `DialogDescription`. Always render a `DialogTitle`: without it the dialog has no name. While it is open, the page behind it is inert, Tab stays inside the popup, and Escape closes it. The `Keyboard` story walks this path, and the `Open` story keeps the popup open so the accessibility check reads it.
+
+| Key                     | Action                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `Enter` or `Space`      | On `DialogTrigger`: opens the dialog. On `DialogClose`: closes it.                      |
+| `Tab` and `Shift + Tab` | Moves focus between the controls inside the popup. It wraps and never leaves the popup. |
+| `Escape`                | Closes the dialog and returns focus to the trigger.                                     |
+
+- Focus moves to the first focusable control in the popup, in document order (a footer button when the header holds none), not to the built-in close button, which renders last. Pass `initialFocus` to `DialogContent` to pick another control.
+- The built-in close button is named by `labels.close`. A `DialogClose` you render yourself needs visible text or an `aria-label`.
+- Keyboard behavior is Base UI's; see the Base UI [Dialog](https://base-ui.com/react/components/dialog) page for focus options such as `initialFocus` and `finalFocus`.
+
 ## API reference
 
 Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DialogContent` it styles the popup.
