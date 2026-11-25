@@ -95,9 +95,9 @@ export const itemSizes = stylex.create({
     paddingInline: unit.x3
   },
   md: {
-    gap: unit.x3,
-    paddingBlock: unit.x3,
-    paddingInline: unit.x3
+    gap: unit.x4,
+    paddingBlock: unit.x4,
+    paddingInline: unit.x4
   }
 })
 

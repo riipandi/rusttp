@@ -2,7 +2,7 @@ import { Home, Info } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarImage } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { Switch } from '../../base/switch'
@@ -134,9 +134,7 @@ export const Sizes: Story = {
         cellOf(canvasElement, 'size', size).firstElementChild ?? canvasElement
       ).getBoundingClientRect().height
     await expect(height('xs')).toBeLessThan(height('sm'))
-    // audit-00002 F-15: `sm` and `md` share one padding and gap, so they are the same height.
-    // Tighten this to `sm < md` when the sizes are told apart.
-    await expect(height('sm')).toBeLessThanOrEqual(height('md'))
+    await expect(height('sm')).toBeLessThan(height('md'))
   }
 }
 
@@ -195,5 +193,36 @@ export const Link: Story = {
   play: async ({ canvas }) => {
     const link = canvas.getByRole('link', { name: /marauder's map/i })
     await expect(link).toHaveAttribute('href', '#dashboard')
+  }
+}
+
+const destinations = [
+  { name: "Marauder's Map", href: '#map' },
+  { name: 'Room of Requirement', href: '#room' },
+  { name: 'Pensieve', href: '#pensieve' }
+]
+
+/** In a group, `listitem` sits on a wrapper, so each rendered link keeps its `link` role. */
+export const LinkGroup: Story = {
+  name: 'Link group',
+  render: () => (
+    <ItemGroup style={styles.group}>
+      {destinations.map((destination) => (
+        <Item key={destination.href} variant='outline' render={<a href={destination.href} />}>
+          <ItemContent>
+            <ItemTitle>{destination.name}</ItemTitle>
+          </ItemContent>
+        </Item>
+      ))}
+    </ItemGroup>
+  ),
+  play: async ({ canvas }) => {
+    const rows = canvas.getAllByRole('listitem')
+    await expect(rows.length).toBe(destinations.length)
+    for (const [index, row] of rows.entries()) {
+      const link = within(row).getByRole('link', { name: destinations[index]?.name })
+      await expect(link).toHaveAttribute('href', destinations[index]?.href)
+      await expect(link).not.toHaveAttribute('role')
+    }
   }
 }

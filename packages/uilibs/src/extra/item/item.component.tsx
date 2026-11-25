@@ -45,15 +45,16 @@ export interface ItemProps
 
 export function Item({ variant = 'ghost', size = 'md', style, render, ...props }: ItemProps) {
   const inGroup = React.useContext(ItemGroupContext)
-  return useRender({
+  const item = useRender({
     defaultTagName: 'div',
     props: mergeProps<'div'>(
-      inGroup ? { role: 'listitem' } : {},
       stylex.props(focusRing.root, s.root, itemVariants[variant], itemSizes[size], style),
       props
     ),
     render
   })
+  // The `listitem` role sits on a wrapper, not on the item: a rendered link keeps its own role.
+  return inGroup ? <div role='listitem'>{item}</div> : item
 }
 
 export type ItemMediaVariant = 'default' | 'icon' | 'image'
