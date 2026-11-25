@@ -4,10 +4,9 @@ import type { StyleXStyles } from '@stylexjs/stylex'
 import * as React from 'react'
 import { DateLib, DayPicker, getDefaultClassNames, labelDayButton } from 'react-day-picker'
 import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-picker'
-import { buttonFill, buttonStyles, type ButtonVariant } from '../../base/button'
+import { buttonAppearance, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
-import { controlPress } from '../../styles/control.stylex'
 import { calendarStyles } from './calendar.stylex'
 
 type CalendarDayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'> & {
@@ -230,12 +229,7 @@ export function Calendar({
   const rootStyleProps = stylex.props(calendarStyles.root, style)
 
   // The previous and next buttons are Buttons by style: the press and focus model once, then the fill.
-  const navBtnProps = stylex.props(
-    controlPress.root,
-    buttonStyles.root,
-    buttonFill(buttonVariant),
-    calendarStyles.buttonNav
-  )
+  const navBtnProps = stylex.props(buttonAppearance(buttonVariant), calendarStyles.buttonNav)
 
   return (
     <DayPicker

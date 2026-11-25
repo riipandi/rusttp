@@ -17,7 +17,13 @@ import { Meter as BaseMeter } from '@base-ui/react/meter'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { ColorRole, StyleProp } from '../../styles/types'
-import { meterColors, meterSizes, meterStyles as s } from './meter.stylex'
+// Meter draws the same label, track, and fill as Progress, so it reuses that stylesheet. The two
+// differ only in role (`meter`, `progressbar`) and in the Base UI parts they wrap.
+import {
+  progressColors as meterColors,
+  progressSizes as meterSizes,
+  progressStyles as s
+} from '../progress/progress.stylex'
 
 export type MeterColor = ColorRole
 export type MeterSize = 'small' | 'medium'

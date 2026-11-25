@@ -1,2 +1,2 @@
 export * from './button.component'
-export * from './button.stylex'
+export { buttonSquare } from './button.stylex'

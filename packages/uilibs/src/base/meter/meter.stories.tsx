@@ -3,8 +3,11 @@ import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
+import {
+  progressColors as meterColors,
+  progressSizes as meterSizes
+} from '../progress/progress.stylex'
 import { Meter, MeterLabel, MeterValue } from './meter.component'
-import { meterColors, meterSizes } from './meter.stylex'
 
 const meta = {
   title: 'Base Components/Meter',

@@ -29,8 +29,17 @@ export type ButtonVariant = keyof typeof buttonFills
 export type ButtonColor = ColorRole | 'media' | 'inherit'
 
 /** The style of a fill in a color; the color is `primary` for `solid` and `neutral` for the other fills unless given. */
-export function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
+function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
   return buttonFills[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')]
+}
+
+/**
+ * A Button's press model, box, and fill, for an element that has to look like a Button without being
+ * one (the Calendar's month arrows). Compose it through `style`-like props, then add the element's
+ * own size.
+ */
+export function buttonAppearance(variant: ButtonVariant, color?: ButtonColor) {
+  return [controlPress.root, buttonStyles.root, buttonFill(variant, color)]
 }
 
 /** The hover fill of a fill in a color, held at rest. */
