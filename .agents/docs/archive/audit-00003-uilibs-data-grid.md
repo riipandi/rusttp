@@ -1,9 +1,9 @@
 ---
 title: "Audit: packages/uilibs data grid (src/data-grid)"
-status: in_review
+status: completed
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-26T00:35:32+07:00
-completed_at: null
+updated_at: 2026-11-26T00:48:24+07:00
+completed_at: 2026-11-26T00:48:24+07:00
 scope:
     type: feature
     feature: "uilibs data grid"
@@ -35,7 +35,7 @@ findings:
     unverified: 5
 cleanup_candidates: 0
 optimization_opportunities: 0
-open_questions: 2
+open_questions: 0
 tests_added: 55
 standards: [WCAG 2.2 AA (1.3.1, 2.1.1, 2.3.3, 4.1.3), WAI-ARIA 1.2 (grid, table)]
 generated_by: ui-audit
@@ -43,7 +43,7 @@ generated_by: ui-audit
 
 # Audit: the uilibs data grid
 
-Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `packages/uilibs/src/data-grid`, 16 files and 11,215 lines, with eight story files and a Playground. Its details are in the audit-00002 exclusion "data grid internals beyond axe, probe and one focus check"; this audit lifts it.
+Written as a report only (plan-00011 phase 56, Q64); plan-00012 then fixed every finding (14 fixed, F-14 a false positive; each finding's status line names the commit). The grid is `packages/uilibs/src/data-grid`, 16 files and 11,215 lines, with eight story files and a Playground. Its details are in the audit-00002 exclusion "data grid internals beyond axe, probe and one focus check"; this audit lifts it.
 
 ## Method
 
@@ -190,8 +190,10 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 
 ## Open questions
 
-1. Should the row labels (F-04) be functions of the row, as Kanban's are? It needs a way to name a row (a `getRowLabel` prop or `meta.rowTitle`).
-2. Should the grid take an `aria-label` prop (F-03), or a `labels.table` entry, or both?
+Both were settled by the owner on 2026-11-25 (plan-00012 questionnaire, every recommendation accepted):
+
+1. Row labels (F-04): yes, functions of the row. `getRowLabel(row)` on `DataGrid` names a row, `labels.rowNumber(position)` is the fallback, and the six row labels became functions of that name (Q27 A, Q28 A).
+2. Table name (F-03): props, not `labels`. `aria-label` or `aria-labelledby` on the part that renders the `<table>`, required by type (Q24 A, Q25 A, Q26 A).
 
 ## Coverage and limitations
 
