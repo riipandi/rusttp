@@ -298,6 +298,18 @@ export const DraggableColumns: Story = {
         </div>
       </DataGrid>
     )
+  },
+  // Each header's grip is named after its column, not four identical "Drag to reorder". These
+  // headers are components, so the name falls back to the column id (`meta.headerTitle` sets it).
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const names = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('[aria-label^="Drag to reorder "]')
+    ).map((el) => el.getAttribute('aria-label') ?? '')
+    await expect(names.length).toBeGreaterThan(1)
+    await expect(new Set(names).size).toBe(names.length)
+    await expect(names.every((name) => name.endsWith(' column'))).toBe(true)
+    await expect(canvas.getByRole('button', { name: 'Drag to reorder title column' })).toBeVisible()
   }
 }
 

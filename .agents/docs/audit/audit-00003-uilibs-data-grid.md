@@ -2,7 +2,7 @@
 title: "Audit: packages/uilibs data grid (src/data-grid)"
 status: in_review
 created_at: 2026-11-25T18:30:00+07:00
-updated_at: 2026-11-25T23:58:12+07:00
+updated_at: 2026-11-26T00:04:20+07:00
 completed_at: null
 scope:
     type: feature
@@ -30,7 +30,7 @@ baseline:
 findings:
     total: 15
     by_severity: { critical: 0, high: 0, medium: 2, low: 12, info: 1 }
-    by_status: { open: 6, fixed: 8, deferred: 0, wont_fix: 0, false_positive: 1 }
+    by_status: { open: 5, fixed: 9, deferred: 0, wont_fix: 0, false_positive: 1 }
     verified: 10
     unverified: 5
 cleanup_candidates: 0
@@ -58,7 +58,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 | F-01 | medium | a11y (2.1.1) | `data-grid-table-head.tsx:505-510` | Column resizing is pointer only | verified | open |
 | F-02 | medium | a11y (2.1.1) | `data-grid-table-body.tsx:245` | `onRowClick` rows have no keyboard path | verified | open |
 | F-03 | low | a11y (1.3.1) | `data-grid-table.tsx:143` | The table has no accessible name | verified | fixed |
-| F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | open |
+| F-04 | low | a11y | `data-grid-labels.tsx:25-32`, `data-grid-table-body.tsx:799,860,924` | Every row control has the same name | verified | fixed |
 | F-05 | low | a11y (4.1.3) | `data-grid-table-body.tsx:754-762,1003-1013` | Loading is not announced | verified | open |
 | F-06 | low | a11y | `data-grid-column.tsx:454,487` | A header button is disabled, not focusable, while loading | unverified | fixed |
 | F-07 | low | defect | `data-grid-column.tsx:240-248,481-492` | A non-sortable resizable column header may sort | unverified | fixed |
@@ -101,7 +101,7 @@ Report only (plan-00011 phase 56, Q64): nothing here changes code. The grid is `
 - **Problem**: ten rows give ten checkboxes named "Select row". `unpinColumn` is already a function of the column title (`:21`), so the pattern exists.
 - **Impact**: a screen reader's control list cannot tell the rows apart. Kanban and Sortable took this fix in phase 29 (`labels.handle` is a function of the item name).
 - **Smallest fix**: make the four labels functions of the row (a `getRowLabel(row)` prop or a `meta.rowTitle`), as Kanban does; open question 1.
-- **Confidence**: high. **Status**: open.
+- **Confidence**: high. **Status**: fixed. **Resolution**: `getRowLabel` on `DataGrid`; `pinRow`, `unpinRow`, `selectRow`, `expandRow`, `collapseRow`, and `dragToReorderRow` are functions of the row name, `rowNumber` is the fallback, and column grips use `dragToReorderColumn(title)`; mutation checked. Audit question 1 answered: a `getRowLabel` prop (Q27 A).
 
 ### F-05 Loading is not announced
 

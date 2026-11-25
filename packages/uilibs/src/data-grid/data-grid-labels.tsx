@@ -22,14 +22,17 @@ export interface DataGridLabels {
   toggleColumns: string
   /* Row and cell affordances. */
   rowCreate: string
-  pinRow: string
-  unpinRow: string
-  selectRow: string
+  /* A row control names its row, so ten rows give ten different names. */
+  pinRow: (name: string) => string
+  unpinRow: (name: string) => string
+  selectRow: (name: string) => string
   selectAll: string
-  expandRow: string
-  collapseRow: string
-  dragToReorder: string
-  dragToReorderRow: string
+  expandRow: (name: string) => string
+  collapseRow: (name: string) => string
+  dragToReorderRow: (name: string) => string
+  dragToReorderColumn: (title: string) => string
+  /** A row's name when `getRowLabel` is absent; `position` is 1-based in the data. */
+  rowNumber: (position: number) => string
   reorderingUnavailable: string
   /* Grid states. */
   loading: string
@@ -59,14 +62,15 @@ const DEFAULT_DATA_GRID_LABELS: DataGridLabels = {
   unpinColumn: (title) => `Unpin ${title} column`,
   toggleColumns: 'Toggle Columns',
   rowCreate: 'Add row',
-  pinRow: 'Pin row',
-  unpinRow: 'Unpin row',
-  selectRow: 'Select row',
+  pinRow: (name) => `Pin ${name}`,
+  unpinRow: (name) => `Unpin ${name}`,
+  selectRow: (name) => `Select ${name}`,
   selectAll: 'Select all',
-  expandRow: 'Expand row',
-  collapseRow: 'Collapse row',
-  dragToReorder: 'Drag to reorder',
-  dragToReorderRow: 'Drag to reorder row',
+  expandRow: (name) => `Expand ${name}`,
+  collapseRow: (name) => `Collapse ${name}`,
+  dragToReorderRow: (name) => `Drag to reorder ${name}`,
+  dragToReorderColumn: (title) => `Drag to reorder ${title} column`,
+  rowNumber: (position) => `Row ${position}`,
   reorderingUnavailable: 'Reordering unavailable',
   loading: 'Loading...',
   empty: 'No data available',

@@ -142,6 +142,13 @@ function selectionColumns(
   ]
 }
 
+/** The `aria-label` of every control whose label starts with `prefix`, in document order. */
+function labelsStartingWith(root: HTMLElement, prefix: string) {
+  return Array.from(root.querySelectorAll<HTMLElement>(`[aria-label^="${prefix}"]`)).map(
+    (el) => el.getAttribute('aria-label') ?? ''
+  )
+}
+
 export const RowSelection: Story = {
   name: 'Row selection',
   render: () => {
@@ -177,7 +184,7 @@ export const RowSelection: Story = {
     tableHolder.current = table
 
     return (
-      <DataGrid table={table} recordCount={demoData.length}>
+      <DataGrid table={table} recordCount={demoData.length} getRowLabel={(row) => row.title}>
         <div {...stylex.props(s.stack)}>
           <span {...stylex.props(s.muted)}>
             {selectedCount} of {demoData.length} selected
@@ -191,6 +198,18 @@ export const RowSelection: Story = {
         </div>
       </DataGrid>
     )
+  },
+  // Ten identical "Select row" checkboxes were the defect: each one is named after its row now.
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const names = labelsStartingWith(canvasElement, 'Select ').filter(
+      (name) => name !== 'Select all'
+    )
+    await expect(names).toHaveLength(5)
+    await expect(new Set(names).size).toBe(5)
+    const titles = new Set(demoData.map((book) => `Select ${book.title}`))
+    await expect(names.every((name) => titles.has(name))).toBe(true)
+    await expect(canvas.getByRole('checkbox', { name: names[0] })).toBeVisible()
   }
 }
 
@@ -228,7 +247,7 @@ function ExpandableColumns(): ColumnDef<DataGridFeatures, IDetail>[] {
             variant='ghost'
             style={[buttonSquare.medium, statusStyles.expanderButton]}
             onClick={row.getToggleExpandedHandler()}
-            aria-label={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+            aria-label={`${row.getIsExpanded() ? 'Collapse' : 'Expand'} ${row.original.title}`}
           >
             {row.getIsExpanded() ? (
               <ChevronUp aria-hidden='true' {...stylex.props(statusStyles.expanderIcon)} />
@@ -302,6 +321,15 @@ export const ExpandableRows: Story = {
         </DataGridContainer>
       </DataGrid>
     )
+  },
+  // The story's own expander names its row too, so five rows are five different buttons.
+  play: async ({ canvas }) => {
+    const first = detailData[0]!.title
+    const second = detailData[1]!.title
+    await expect(await canvas.findByRole('button', { name: `Expand ${first}` })).toBeVisible()
+    await userEvent.click(canvas.getByRole('button', { name: `Expand ${second}` }))
+    await expect(await canvas.findByRole('button', { name: `Collapse ${second}` })).toBeVisible()
+    await expect(canvas.getByRole('button', { name: `Expand ${first}` })).toBeVisible()
   }
 }
 
@@ -521,7 +549,7 @@ export const DraggableRows: Story = {
     }
 
     return (
-      <DataGrid table={table} recordCount={rows.length}>
+      <DataGrid table={table} recordCount={rows.length} getRowLabel={(row) => row.title}>
         <div {...stylex.props(s.stack)}>
           <DataGridContainer>
             <DataGridScrollArea table={table}>
@@ -537,6 +565,14 @@ export const DraggableRows: Story = {
         </div>
       </DataGrid>
     )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    const names = labelsStartingWith(canvasElement, 'Drag to reorder ')
+    await expect(names.length).toBeGreaterThan(1)
+    await expect(new Set(names).size).toBe(names.length)
+    const titles = new Set(demoData.map((book) => `Drag to reorder ${book.title}`))
+    await expect(names.every((name) => titles.has(name))).toBe(true)
   }
 }
 
@@ -642,6 +678,24 @@ export const RowPinningSupport: Story = {
         </Card>
       </DataGrid>
     )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole('table', { name: 'Novels' })
+    // No `getRowLabel` here, so a row is named by its position in the data (`Row 1`, `Row 2`).
+    // The row pinned at the start reads "Unpin Row 1"; the others read "Pin Row N".
+    const pins = labelsStartingWith(canvasElement, 'Pin ')
+    const unpins = labelsStartingWith(canvasElement, 'Unpin ')
+    await expect(unpins).toHaveLength(1)
+    await expect(pins.length).toBeGreaterThan(0)
+    await expect(new Set([...pins, ...unpins]).size).toBe(pins.length + unpins.length)
+    await expect(pins.every((name) => /^Pin Row \d+$/.test(name))).toBe(true)
+    await expect(unpins).toEqual(['Unpin Row 1'])
+    // Pinning a row renames its own button only.
+    const target = pins[0]!
+    await userEvent.click(canvas.getByRole('button', { name: target }))
+    await expect(
+      await canvas.findByRole('button', { name: target.replace('Pin ', 'Unpin ') })
+    ).toBeVisible()
   }
 }
 
@@ -809,6 +863,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
     <DataGrid
       table={table}
       recordCount={treeData.length}
+      getRowLabel={(node) => node.name}
       tableLayout={{
         columnsResizable: true,
         columnsMovable: true,
@@ -848,14 +903,14 @@ export const RightToLeft: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const chevron = (
-      await canvas.findAllByRole('button', { name: 'Expand row' })
-    )[0]!.querySelector('svg')!
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
     await waitFor(() => expect(turn(chevron).b).toBeCloseTo(1))
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
-    const open = (await canvas.findAllByRole('button', { name: 'Collapse row' }))[0]!.querySelector(
+    const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
       'svg'
     )!
     await waitFor(() => expect(turn(open).b).toBeCloseTo(0))
@@ -891,9 +946,9 @@ function reducedMotionRules(element: Element) {
 export const Motion: Story = {
   render: () => <TreeGrid pageSize={1} />,
   play: async ({ canvas }) => {
-    const chevron = (
-      await canvas.findAllByRole('button', { name: 'Expand row' })
-    )[0]!.querySelector('svg')!
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
     const style = getComputedStyle(chevron)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')

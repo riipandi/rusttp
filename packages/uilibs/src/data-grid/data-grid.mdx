@@ -89,6 +89,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `Delete`                                   | Clears the focused cell through `onCellsChange`.                           |
 
 - Every table is named: `DataGridTable`, `DataGridTableVirtual`, `DataGridTableDnd`, `DataGridTableDndRows`, `DataGridTableHeader`, and `DataGridTableBase` require `aria-label` or `aria-labelledby`, so two grids on a page are told apart (the `Basics` stories prove it by role and name). A name belongs to one grid, so it is a prop and not a `labels` entry.
+- Row and column controls name what they act on, so a screen reader's control list tells them apart: the select, pin, expand, and drag buttons of a row use `getRowLabel` (or `Row 3` when it is absent) and the drag grip of a column uses its title (`meta.headerTitle`, a string `header`, else the column id). The `Row selection`, `Row pinning`, `Draggable rows`, and `Draggable columns` stories prove it.
 - The cell editor is a text field that takes focus when it opens.
 
 ## API reference
@@ -115,6 +116,7 @@ With `tableLayout.cellSelection` on, the table is a `role='grid'` with one Tab s
 | `rowCreateLabel`        | `ReactNode` <br /> Label of that button. Default from `labels`.                                                                                                                                                                       |
 | `appendRow`             | `ReactNode` <br /> A `tr` rendered after the data rows, such as a draft row.                                                                                                                                                          |
 | `getRowStatus`          | `(row) => 'new' \| 'dirty' \| 'deleted' \| undefined` <br /> Tints or strikes a row.                                                                                                                                                  |
+| `getRowLabel`           | `(row) => string` <br /> The name of a row. Its select, pin, expand, and drag controls are named after it (`Select Origin`). Default `labels.rowNumber`, `Row 3`.                                                                     |
 | `getCellStatus`         | `(row, columnId) => 'dirty' \| 'invalid' \| undefined` <br /> Marks a cell corner.                                                                                                                                                    |
 | `onCellsChange`         | `(details) => void` <br /> Receives each paste, cut, clear, fill, or edit batch. Without it writes do nothing.                                                                                                                        |
 | `onCellEditRequest`     | `(request) => void` <br /> Asks you to open an editor for the focused cell.                                                                                                                                                           |

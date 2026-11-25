@@ -10,7 +10,12 @@ import { Checkbox } from '../base/checkbox'
 import { Spinner } from '../extra/spinner'
 import { glyphSize } from '../styles/glyph'
 import { focusRing } from '../styles/utils.stylex'
-import { getDataGridCellSelectionCellAttrs, toDataGridDomId, useDataGrid } from './data-grid'
+import {
+  getDataGridCellSelectionCellAttrs,
+  toDataGridDomId,
+  getDataGridRowLabel,
+  useDataGrid
+} from './data-grid'
 import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from './data-grid'
 import {
   cellSelectionChromeProps,
@@ -781,7 +786,9 @@ function DataGridTableRowPin<TData extends object>({
   row: Row<DataGridFeatures, TData>
   table: DataGridTableInstance<TData>
 }) {
-  const { labels } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
 
   // `table` arrives through the caller's threaded prop; the row itself always
   // knows its table, so a call site that has not threaded the prop yet (or a
@@ -797,7 +804,7 @@ function DataGridTableRowPin<TData extends object>({
         return (
           <button
             type='button'
-            aria-label={isPinned ? labels.unpinRow : labels.pinRow}
+            aria-label={isPinned ? labels.unpinRow(rowLabel) : labels.pinRow(rowLabel)}
             data-pinned={isPinned ? 'true' : undefined}
             onClick={(event) => {
               // Pinning must not bubble into the row's onRowClick handler.
@@ -845,7 +852,9 @@ function DataGridTableRowSelect<TData extends object>({
 }: {
   row: Row<DataGridFeatures, TData>
 }) {
-  const { labels } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
   return (
     <Subscribe source={row.table.atoms.rowSelection}>
       {() => (
@@ -858,7 +867,7 @@ function DataGridTableRowSelect<TData extends object>({
               // Selection must not bubble into the row's onRowClick handler.
               event.stopPropagation()
             }}
-            aria-label={labels.selectRow}
+            aria-label={labels.selectRow(rowLabel)}
           />
         </>
       )}
@@ -909,7 +918,9 @@ function DataGridTableRowExpand<TData extends object>({
   /** Custom toggle icon; replaces the default chevron. */
   children?: ReactNode
 }) {
-  const { labels, props } = useDataGrid()
+  const grid = useDataGrid<TData>()
+  const { labels, props } = grid
+  const rowLabel = getDataGridRowLabel(row, grid)
   const isExpanded = row.getIsExpanded()
 
   return (
@@ -922,7 +933,7 @@ function DataGridTableRowExpand<TData extends object>({
         <button
           type='button'
           aria-expanded={isExpanded}
-          aria-label={isExpanded ? labels.collapseRow : labels.expandRow}
+          aria-label={isExpanded ? labels.collapseRow(rowLabel) : labels.expandRow(rowLabel)}
           data-dense={props.tableLayout?.dense ? '' : undefined}
           onClick={(event) => {
             // Expansion must not bubble into the row's onRowClick handler.

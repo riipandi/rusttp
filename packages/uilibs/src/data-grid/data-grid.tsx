@@ -287,6 +287,7 @@ export interface DataGridContextLayoutProps<
   onCellsChange?(details: DataGridCellsChangeDetails<TData>): void
   onCellEditRequest?(request: DataGridCellEditRequest<TData>): void
   getRowStatus?(row: TData): DataGridRowStatus | undefined
+  getRowLabel?(row: TData): string
   getCellStatus?(row: TData, columnId: string): DataGridCellStatus | undefined
 }
 
@@ -679,6 +680,12 @@ export interface DataGridProps<TData extends object> {
    */
   getRowStatus?: (row: TData) => DataGridRowStatus | undefined
   /**
+   * The name a screen reader hears for a row: its select, pin, expand, and
+   * drag controls are named after it (`Select Origin`), so ten rows are not
+   * ten identical "Select row". Absent: `labels.rowNumber`, "Row 3".
+   */
+  getRowLabel?: (row: TData) => string
+  /**
    * Optional CRUD indication per cell: the classic corner mark on cells the
    * consumer tracks as edited or invalid.
    */
@@ -769,6 +776,14 @@ function useDataGrid<
     throw new Error('useDataGrid must be used within a DataGridProvider')
   }
   return context
+}
+
+/** The name of a row for its controls: `getRowLabel`, else `labels.rowNumber(position)`. */
+function getDataGridRowLabel<TData extends object>(
+  row: { index: number; original: TData },
+  { labels, props }: Pick<DataGridContextProps<TData>, 'labels' | 'props'>
+): string {
+  return props.getRowLabel?.(row.original) ?? labels.rowNumber(row.index + 1)
 }
 
 function DataGridProvider<TData extends object>({
@@ -1004,4 +1019,4 @@ function DataGridContainer({
   )
 }
 
-export { useDataGrid, DataGridProvider, DataGrid, DataGridContainer }
+export { useDataGrid, getDataGridRowLabel, DataGridProvider, DataGrid, DataGridContainer }
