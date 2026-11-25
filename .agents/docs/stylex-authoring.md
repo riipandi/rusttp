@@ -295,6 +295,8 @@ const styles = stylex.create({
 });
 ```
 
+**Trap (a plain CSS file cannot read a var):** a `defineVars` custom property name is a hash, so `assets/*.css` cannot name it. A key that starts with `--` sets the name itself (`defineVars({ '--font-body': fontFamily.body })` gives `var(--font-body)`, declared on `:root`): `fontFamilyName` in `styles/tokens.stylex.ts` is the one use, and `assets/globals.css` sets the body font from it. It costs one CSS rule and no JavaScript, so it does not move the webapp entry budget; a font set from `ThemeProvider` would.
+
 **IMPORTANT: For `defineConsts` and `defineVars`:**
 
 - Must be in `.stylex.ts` or `.stylex.js` files

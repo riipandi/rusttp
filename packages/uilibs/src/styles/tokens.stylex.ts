@@ -24,6 +24,13 @@ export const fontFamily = stylex.defineVars({
   monospace: '"JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
 })
 
+// The one custom property a plain CSS file can read: a `defineVars` name is hashed, unless its key
+// starts with `--`. `assets/globals.css` sets the page font from it, so the body follows
+// `fontFamily.body` instead of repeating the stack.
+export const fontFamilyName = stylex.defineVars({
+  '--font-body': fontFamily.body
+})
+
 export const fontWeight = stylex.defineConsts({
   light: 300,
   regular: 400,
