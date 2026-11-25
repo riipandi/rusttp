@@ -45,8 +45,8 @@ export const sheetStyles = stylex.create({
   },
   // Position only: the look is `CloseButton`.
   close: {
+    insetInlineEnd: unit.x3,
     position: 'absolute',
-    right: unit.x3,
     top: unit.x3
   },
   header: {

@@ -66,11 +66,11 @@ export const dropdownMenuStyles = stylex.create({
     }
   },
   itemInset: {
-    paddingLeft: unit.x7
+    paddingInlineStart: unit.x7
   },
-  // Reserve room for the trailing check indicator (absolute, right-aligned).
+  // Reserve room for the trailing check indicator (absolute, at the inline end).
   indicatorItem: {
-    paddingRight: unit.x8,
+    paddingInlineEnd: unit.x8,
     position: 'relative'
   },
   // The glyph takes the item's text color and never shrinks.
@@ -82,7 +82,7 @@ export const dropdownMenuStyles = stylex.create({
     justifyContent: 'center',
     pointerEvents: 'none',
     position: 'absolute',
-    right: unit.x2,
+    insetInlineEnd: unit.x2,
     width: unit.x4
   },
   itemCritical: {
@@ -111,13 +111,13 @@ export const dropdownMenuStyles = stylex.create({
   subTriggerChevron: {
     color: colors.foregroundNeutralFaded,
     flexShrink: 0,
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   },
   shortcut: {
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     letterSpacing: '0.1em',
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   },
   separator: {
     backgroundColor: colors.borderNeutralFaded,

@@ -87,8 +87,8 @@ export const comboboxStyles = stylex.create({
     gap: unit.x1,
     lineHeight: fontLineHeight.caption1,
     paddingBlock: unit.x1,
-    paddingLeft: unit.x2,
-    paddingRight: unit.x1
+    paddingInlineEnd: unit.x1,
+    paddingInlineStart: unit.x2
   },
   chipRemove: {
     alignItems: 'center',
@@ -167,8 +167,8 @@ export const comboboxStyles = stylex.create({
     marginInline: unit.x1,
     outline: 'none',
     paddingBlock: unit.x1_5,
-    paddingLeft: unit.x2,
-    paddingRight: unit.x8,
+    paddingInlineEnd: unit.x8,
+    paddingInlineStart: unit.x2,
     position: 'relative',
     userSelect: 'none'
   },
@@ -179,7 +179,7 @@ export const comboboxStyles = stylex.create({
     justifyContent: 'center',
     pointerEvents: 'none',
     position: 'absolute',
-    right: unit.x2,
+    insetInlineEnd: unit.x2,
     width: unit.x4
   },
   label: {

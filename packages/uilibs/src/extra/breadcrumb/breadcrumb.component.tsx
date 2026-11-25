@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
 import type { ColorRole, StyleProp } from '../../styles/types'
-import { visuallyHidden } from '../../styles/utils.stylex'
+import { mirrorInRtl, visuallyHidden } from '../../styles/utils.stylex'
 import { breadcrumbStyles as s } from './breadcrumb.stylex'
 
 /** Built-in words of the breadcrumb parts; each part reads the keys it shows. */
@@ -83,7 +83,14 @@ export function BreadcrumbSeparator({
 }: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
-      {children ?? <ChevronRight size={glyphSize.xsmall} strokeWidth={1.5} aria-hidden />}
+      {children ?? (
+        <ChevronRight
+          size={glyphSize.xsmall}
+          strokeWidth={1.5}
+          aria-hidden
+          {...stylex.props(mirrorInRtl.root)}
+        />
+      )}
     </li>
   )
 }

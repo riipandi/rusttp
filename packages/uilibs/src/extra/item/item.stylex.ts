@@ -54,7 +54,7 @@ export const itemStyles = stylex.create({
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     margin: 0,
-    textAlign: 'left'
+    textAlign: 'start'
   },
   actions: {
     alignItems: 'center',

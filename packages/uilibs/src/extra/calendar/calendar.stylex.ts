@@ -85,10 +85,10 @@ export const calendarStyles = stylex.create({
       ':hover': colors.backgroundPrimary,
       default: colors.backgroundPrimary
     },
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    borderBottomRightRadius: radius.medium,
-    borderTopRightRadius: radius.medium,
+    borderEndStartRadius: 0,
+    borderStartStartRadius: 0,
+    borderEndEndRadius: radius.medium,
+    borderStartEndRadius: radius.medium,
     color: {
       ':hover': colors.onBackgroundPrimary,
       default: colors.onBackgroundPrimary
@@ -110,10 +110,10 @@ export const calendarStyles = stylex.create({
       ':hover': colors.backgroundPrimary,
       default: colors.backgroundPrimary
     },
-    borderBottomLeftRadius: radius.medium,
-    borderBottomRightRadius: 0,
-    borderTopLeftRadius: radius.medium,
-    borderTopRightRadius: 0,
+    borderEndStartRadius: radius.medium,
+    borderEndEndRadius: 0,
+    borderStartStartRadius: radius.medium,
+    borderStartEndRadius: 0,
     color: {
       ':hover': colors.onBackgroundPrimary,
       default: colors.onBackgroundPrimary
@@ -218,14 +218,14 @@ export const calendarStyles = stylex.create({
       backgroundColor: colors.backgroundNeutralFaded,
       bottom: 0,
       content: '""',
-      left: 0,
+      insetInlineStart: 0,
       position: 'absolute',
       top: 0,
       width: '1rem'
     },
     backgroundColor: colors.backgroundNeutralFaded,
-    borderBottomRightRadius: radius.medium,
-    borderTopRightRadius: radius.medium,
+    borderEndEndRadius: radius.medium,
+    borderStartEndRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
     zIndex: zIndex.base
@@ -239,13 +239,13 @@ export const calendarStyles = stylex.create({
       bottom: 0,
       content: '""',
       position: 'absolute',
-      right: 0,
+      insetInlineEnd: 0,
       top: 0,
       width: '1rem'
     },
     backgroundColor: colors.backgroundNeutralFaded,
-    borderBottomLeftRadius: radius.medium,
-    borderTopLeftRadius: radius.medium,
+    borderEndStartRadius: radius.medium,
+    borderStartStartRadius: radius.medium,
     isolation: 'isolate',
     position: 'relative',
     zIndex: zIndex.base

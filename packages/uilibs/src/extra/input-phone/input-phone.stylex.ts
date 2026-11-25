@@ -74,8 +74,8 @@ export const inputPhoneStyles = stylex.create({
       backgroundColor: colors.borderNeutralFaded,
       content: '""',
       height: unit.x5,
+      insetInlineEnd: 0,
       position: 'absolute',
-      right: 0,
       width: stroke.ring1
     }
   },

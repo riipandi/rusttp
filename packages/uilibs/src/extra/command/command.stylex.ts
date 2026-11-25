@@ -169,6 +169,6 @@ export const commandStyles = stylex.create({
     color: colors.foregroundNeutralFaded,
     fontSize: fontSize.caption1,
     letterSpacing: '0.1em',
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   }
 })

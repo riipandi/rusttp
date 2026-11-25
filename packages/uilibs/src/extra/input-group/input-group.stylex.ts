@@ -63,12 +63,12 @@ export const inputGroupAddonAligns = stylex.create({
   'inline-start': {
     order: -1,
     paddingBlock: 0,
-    paddingLeft: unit.x2
+    paddingInlineStart: unit.x2
   },
   'inline-end': {
     order: 9,
     paddingBlock: 0,
-    paddingRight: unit.x2
+    paddingInlineEnd: unit.x2
   },
   'block-start': {
     justifyContent: 'flex-start',

@@ -8,26 +8,26 @@ import { radius } from '../../styles/tokens.stylex'
 // Corners only: which edge is shared is `buttonGroupSharedEdges` or `buttonGroupDividerEdges`.
 export const buttonGroupJoined = stylex.create({
   'horizontal-first': {
-    borderBottomRightRadius: 0,
-    borderTopRightRadius: 0
+    borderEndEndRadius: 0,
+    borderStartEndRadius: 0
   },
   'horizontal-middle': {
     borderRadius: radius.none
   },
   'horizontal-last': {
-    borderBottomLeftRadius: radius.none,
-    borderTopLeftRadius: radius.none
+    borderEndStartRadius: radius.none,
+    borderStartStartRadius: radius.none
   },
   'vertical-first': {
-    borderBottomLeftRadius: radius.none,
-    borderBottomRightRadius: radius.none
+    borderEndStartRadius: radius.none,
+    borderEndEndRadius: radius.none
   },
   'vertical-middle': {
     borderRadius: radius.none
   },
   'vertical-last': {
-    borderTopLeftRadius: radius.none,
-    borderTopRightRadius: radius.none
+    borderStartStartRadius: radius.none,
+    borderStartEndRadius: radius.none
   }
 })
 
@@ -37,15 +37,15 @@ export const buttonGroupJoined = stylex.create({
 const dividerColor = 'color-mix(in srgb, currentColor 30%, transparent)'
 
 export const buttonGroupSharedEdges = stylex.create({
-  horizontal: { borderLeftWidth: 0 },
+  horizontal: { borderInlineStartWidth: 0 },
   vertical: { borderTopWidth: 0 }
 })
 
 export const buttonGroupDividerEdges = stylex.create({
   horizontal: {
-    borderLeftColor: dividerColor,
-    borderLeftStyle: 'solid',
-    borderLeftWidth: stroke.ring1
+    borderInlineStartColor: dividerColor,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: stroke.ring1
   },
   vertical: {
     borderTopColor: dividerColor,

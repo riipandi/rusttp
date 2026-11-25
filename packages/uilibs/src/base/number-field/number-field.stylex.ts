@@ -60,18 +60,18 @@ export const numberFieldStyles = stylex.create({
     transitionProperty: 'background-color, color'
   },
   decrement: {
-    borderBottomLeftRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderRightColor: colors.borderNeutralFaded,
-    borderRightStyle: 'solid',
-    borderRightWidth: stroke.ring1,
-    borderTopLeftRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderEndStartRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineEndColor: colors.borderNeutralFaded,
+    borderInlineEndStyle: 'solid',
+    borderInlineEndWidth: stroke.ring1,
+    borderStartStartRadius: `calc(${radius.medium} - ${stroke.ring1})`
   },
   increment: {
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderLeftColor: colors.borderNeutralFaded,
-    borderLeftStyle: 'solid',
-    borderLeftWidth: stroke.ring1,
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineStartColor: colors.borderNeutralFaded,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: stroke.ring1,
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`
   },
   // Stacked controls: a narrow column pinned to the end edge with two
   // half-height buttons on top of each other (chevron up / chevron down).
@@ -79,11 +79,11 @@ export const numberFieldStyles = stylex.create({
   // the input instead of covering it.
   controls: {
     alignItems: 'stretch',
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
-    borderLeftColor: colors.borderNeutralFaded,
-    borderLeftStyle: 'solid',
-    borderLeftWidth: stroke.ring1,
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderInlineStartColor: colors.borderNeutralFaded,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: stroke.ring1,
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     display: 'flex',
     flexDirection: 'column',
     flexShrink: 0
@@ -95,7 +95,7 @@ export const numberFieldStyles = stylex.create({
   // area grows 24px away from the other button, past the field's edge, so the two never overlap.
   // The column does not clip (no `overflow`): each button rounds its own corner instead.
   controlStackedFirst: {
-    borderTopRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderStartEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     '::after': {
       bottom: 0,
       content: '""',
@@ -105,7 +105,7 @@ export const numberFieldStyles = stylex.create({
     }
   },
   controlStackedLast: {
-    borderBottomRightRadius: `calc(${radius.medium} - ${stroke.ring1})`,
+    borderEndEndRadius: `calc(${radius.medium} - ${stroke.ring1})`,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,

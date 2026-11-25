@@ -67,7 +67,10 @@ export const switchThumbSizes = stylex.create({
     height: unit.x4,
     transform: {
       default: 'translateX(0)',
-      '[data-checked]': `translateX(${unit.x4})`
+      '[data-checked]': {
+        default: `translateX(${unit.x4})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x4}))`
+      }
     },
     width: unit.x4
   },
@@ -75,7 +78,10 @@ export const switchThumbSizes = stylex.create({
     height: unit.x3,
     transform: {
       default: 'translateX(0)',
-      '[data-checked]': `translateX(${unit.x3})`
+      '[data-checked]': {
+        default: `translateX(${unit.x3})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x3}))`
+      }
     },
     width: unit.x3
   },
@@ -83,7 +89,10 @@ export const switchThumbSizes = stylex.create({
     height: unit.x5,
     transform: {
       default: 'translateX(0)',
-      '[data-checked]': `translateX(${unit.x6})`
+      '[data-checked]': {
+        default: `translateX(${unit.x6})`,
+        ':dir(rtl)': `translateX(calc(-1 * ${unit.x6}))`
+      }
     },
     width: unit.x5
   }

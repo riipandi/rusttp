@@ -65,6 +65,17 @@ export const unitLength = (value: UnitStep | (string & {})) =>
   typeof value === 'number' ? `calc(${value} * ${unit.x1})` : value
 
 /**
+ * A glyph that points along the reading direction (a chevron or an arrow) mirrors in a
+ * right-to-left context. A transform has no logical form, so it follows `dir` through
+ * `:dir(rtl)`; position and spacing use logical properties instead.
+ *
+ *   <ChevronRight {...stylex.props(mirrorInRtl.root)} />
+ */
+export const mirrorInRtl = stylex.create({
+  root: { transform: { default: null, ':dir(rtl)': 'scaleX(-1)' } }
+})
+
+/**
  * Text for assistive technology only: out of sight and out of the layout, still read. Name an
  * icon-only control or an empty table header with it:
  *

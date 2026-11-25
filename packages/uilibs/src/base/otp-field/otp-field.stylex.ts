@@ -31,10 +31,10 @@ export const otpFieldStyles = stylex.create({
   // on the first slot, and end radii — joined-slot look. The box and state
   // model come from `controlBase`; a focused slot draws above its neighbors.
   slot: {
-    borderBottomLeftRadius: { default: 0, ':first-child': radius.large },
-    borderBottomRightRadius: { default: 0, ':last-child': radius.large },
-    borderTopLeftRadius: { default: 0, ':first-child': radius.large },
-    borderTopRightRadius: { default: 0, ':last-child': radius.large },
+    borderEndStartRadius: { default: 0, ':first-child': radius.large },
+    borderEndEndRadius: { default: 0, ':last-child': radius.large },
+    borderStartStartRadius: { default: 0, ':first-child': radius.large },
+    borderStartEndRadius: { default: 0, ':last-child': radius.large },
     marginInlineStart: { default: `calc(-1 * ${stroke.ring1})`, ':first-child': 0 },
     flexShrink: 1,
     minWidth: 0,

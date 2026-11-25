@@ -44,7 +44,7 @@ export const tableStyles = stylex.create({
     fontWeight: fontWeight.medium,
     height: unit.x10,
     paddingInline: unit.x2,
-    textAlign: 'left',
+    textAlign: 'start',
     verticalAlign: 'middle',
     whiteSpace: 'nowrap'
   },

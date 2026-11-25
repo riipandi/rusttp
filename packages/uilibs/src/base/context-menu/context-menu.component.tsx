@@ -123,7 +123,7 @@ export function ContextMenuSubContent({
 }: ContextMenuContentProps) {
   return (
     <ContextMenuContent
-      side='right'
+      side='inline-end'
       sideOffset={sideOffset}
       alignOffset={alignOffset}
       {...props}

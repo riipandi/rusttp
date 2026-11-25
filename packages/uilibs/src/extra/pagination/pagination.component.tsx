@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Button, buttonSquare } from '../../base/button'
 import { glyphSize } from '../../styles/glyph'
 import type { DenseControlSize, StyleProp } from '../../styles/types'
-import { visuallyHidden } from '../../styles/utils.stylex'
+import { mirrorInRtl, visuallyHidden } from '../../styles/utils.stylex'
 import { paginationStyles as s } from './pagination.stylex'
 
 /** Built-in words of the pagination parts; each part reads the keys it shows. */
@@ -156,8 +156,18 @@ export function PaginationEllipsis({
 
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
   return direction === 'left' ? (
-    <ChevronLeft size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
+    <ChevronLeft
+      size={glyphSize.medium}
+      strokeWidth={1.5}
+      aria-hidden
+      {...stylex.props(mirrorInRtl.root)}
+    />
   ) : (
-    <ChevronRight size={glyphSize.medium} strokeWidth={1.5} aria-hidden />
+    <ChevronRight
+      size={glyphSize.medium}
+      strokeWidth={1.5}
+      aria-hidden
+      {...stylex.props(mirrorInRtl.root)}
+    />
   )
 }

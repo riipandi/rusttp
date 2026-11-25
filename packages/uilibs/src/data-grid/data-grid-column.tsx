@@ -401,7 +401,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
             <Settings {...stylex.props(sHeader.menuIcon)} />
             <span>{labels.columnsMenu}</span>
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent side='right'>
+          <DropdownMenuSubContent>
             {table
               .getAllColumns()
               .filter((col) => col.getCanHide())

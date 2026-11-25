@@ -19,10 +19,10 @@ export const paginationStyles = stylex.create({
     padding: 0
   },
   previous: {
-    paddingLeft: unit.x1_5
+    paddingInlineStart: unit.x1_5
   },
   next: {
-    paddingRight: unit.x1_5
+    paddingInlineEnd: unit.x1_5
   },
   linkText: {
     display: {

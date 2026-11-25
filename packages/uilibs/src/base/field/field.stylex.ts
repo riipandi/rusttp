@@ -54,7 +54,7 @@ export const fieldStyles = stylex.create({
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.body2,
     margin: 0,
-    textAlign: 'left'
+    textAlign: 'start'
   },
   separator: {
     lineHeight: fontLineHeight.body2,
@@ -89,7 +89,7 @@ export const fieldStyles = stylex.create({
     gap: unit.x1,
     listStyle: 'disc',
     margin: 0,
-    paddingLeft: unit.x4
+    paddingInlineStart: unit.x4
   }
 })
 

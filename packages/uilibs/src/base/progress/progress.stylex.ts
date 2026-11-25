@@ -42,7 +42,7 @@ export const progressStyles = stylex.create({
     fontSize: fontSize.body2,
     fontVariantNumeric: 'tabular-nums',
     lineHeight: fontLineHeight.body2,
-    marginLeft: 'auto'
+    marginInlineStart: 'auto'
   }
 })
 

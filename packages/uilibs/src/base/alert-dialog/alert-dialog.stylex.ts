@@ -60,7 +60,7 @@ export const alertDialogStyles = stylex.create({
     gap: unit.x1_5,
     textAlign: {
       default: 'center',
-      [breakpoints.medium]: 'left'
+      [breakpoints.medium]: 'start'
     }
   },
   media: {
@@ -75,8 +75,8 @@ export const alertDialogStyles = stylex.create({
   },
   footer: {
     backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`,
-    borderBottomLeftRadius: radius.xxlarge,
-    borderBottomRightRadius: radius.xxlarge,
+    borderEndEndRadius: radius.xxlarge,
+    borderEndStartRadius: radius.xxlarge,
     borderTopColor: colors.borderNeutralFaded,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,

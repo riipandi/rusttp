@@ -50,18 +50,18 @@ export const accordionStyles = stylex.create({
     },
     paddingBlock: unit.x2,
     paddingInline: 0,
-    textAlign: 'left',
+    textAlign: 'start',
     transitionDuration: duration.fast,
     transitionProperty: 'background-color, color'
   },
   // `iconPosition='start'`: the chevron moves before the label through flex `order`, so the DOM
   // and the focus order stay as they are; the label then sits next to it, not at the far edge.
   triggerIconStart: { justifyContent: 'flex-start' },
-  chevronStart: { marginLeft: 0, order: -1 },
+  chevronStart: { marginInlineStart: 0, order: -1 },
   chevron: {
     color: colors.foregroundNeutralFaded,
     flexShrink: 0,
-    marginLeft: 'auto',
+    marginInlineStart: 'auto',
     marginTop: unit.x0_5,
     pointerEvents: 'none',
     transform: 'rotate(var(--accordion-trigger-rotation, 0deg))',

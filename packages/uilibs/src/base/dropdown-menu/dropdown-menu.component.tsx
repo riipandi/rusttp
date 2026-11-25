@@ -37,7 +37,7 @@ import { shadow } from '../../styles/colors.stylex'
 import { glyphSize } from '../../styles/glyph'
 import { highlightedItem, popupFx } from '../../styles/popup.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
-import { ring } from '../../styles/utils.stylex'
+import { mirrorInRtl, ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
@@ -189,7 +189,7 @@ export function DropdownMenuSubTrigger({
         size={glyphSize.medium}
         strokeWidth={1.5}
         aria-hidden
-        {...stylex.props(s.subTriggerChevron)}
+        {...stylex.props(s.subTriggerChevron, mirrorInRtl.root)}
       />
     </BaseMenu.SubmenuTrigger>
   )
@@ -203,7 +203,7 @@ export function DropdownMenuSubContent({
 }: DropdownMenuContentProps) {
   return (
     <DropdownMenuContent
-      side='right'
+      side='inline-end'
       sideOffset={sideOffset}
       alignOffset={alignOffset}
       {...props}
