@@ -4,7 +4,7 @@ import { areaY, defineChart, lineY } from '@tanstack/charts'
 import { focusGroupX } from '@tanstack/charts/focus'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { portal } from '@tanstack/charts/tooltip/portal'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   Table,
@@ -133,6 +133,11 @@ export const TabOrder: Story = {
 
     await userEvent.tab()
     await expect(canvas.getByRole('button', { name: 'After the charts' })).toHaveFocus()
+    // The tooltip fades out after the chart loses focus, and axe runs when the play ends: wait
+    // until it is hidden, or axe measures its half-faded text (WebKit is slow enough to show it).
+    await waitFor(() =>
+      expect(document.querySelector('.ts-chart-tooltip')).toHaveAttribute('hidden')
+    )
   }
 }
 
