@@ -1,6 +1,7 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
+import type { Responsive } from '../../hooks/use-responsive-value'
 import {
   textAlignStyles,
   textAlignStylesLarge,
@@ -53,8 +54,7 @@ export type TextWeight =
 
 export type TextAlign = 'start' | 'center' | 'end'
 
-/** Mobile-first responsive value: string applies to all viewports, object per breakpoint. */
-export type Responsive<T> = T | { small?: T; medium?: T; large?: T; xlarge?: T }
+export type { Responsive }
 
 // `CompiledStyles` accepts every `stylex.create()` output, including the
 // media-query variants that plain `StyleXStyles` rejects.

@@ -1,0 +1,64 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './container.stories'
+
+<Meta of={Stories} />
+
+# Container
+
+A block that is at most a given width and centered in its parent: the column a page, a form, or a section of text is laid out in.
+
+## Import
+
+```jsx
+import { Container } from 'uilibs/extra/container'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Container` renders a `div` and `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **Container:** the column. It fills its parent up to `size` and centers with equal margins.
+
+```jsx
+<Container size='xlarge' padding={4}>
+  {content}
+</Container>
+```
+
+## Examples
+
+### Sizes
+
+`size` takes a `container` token: `xxsmall` is 10rem and `xxlarge` is 32rem.
+
+<Canvas of={Stories.Sizes} />
+
+### A length
+
+Past the tokens, `size` is any CSS length. Pass a theme width through it for a page layout.
+
+<Canvas of={Stories.Length} />
+
+### Padding
+
+<Canvas of={Stories.Padding} />
+
+### Another element
+
+<Canvas of={Stories.Render} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Container
+
+| Prop      | Description                                                                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `size`    | `xxsmall` to `xxlarge`, or a CSS length <br /> The widest the container grows. Unset fills the parent.                                       |
+| `padding` | `UnitStep`, `string` <br /> Padding on every side: a count of `unit` steps (`4` is 16px) or a CSS length such as `'clamp(1rem, 4vw, 3rem)'`. |
+
+## Caveats
+
+- The container has `box-sizing: border-box`, so `padding` is inside `size`.
+- The `container` tokens stop at 32rem, the width of a popup. A page column wider than that passes its own length.

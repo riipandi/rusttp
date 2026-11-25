@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as Stories from './stack.stories'
+
+<Meta of={Stories} />
+
+# Stack
+
+A flex container that lays children out in a row or a column with a gap. Use it for page and section layout; a single control's own flex rule stays in its stylesheet.
+
+## Import
+
+```jsx
+import { Stack } from 'uilibs/extra/stack'
+```
+
+Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Stack` renders a `div` and `render` swaps the element. Props not listed here pass through.
+
+## Anatomy
+
+- **Stack:** the flex container. Its children are the items.
+
+```jsx
+<Stack direction={{ small: 'column', medium: 'row' }} gap={4}>
+  {items}
+</Stack>
+```
+
+## Examples
+
+### Direction
+
+<Canvas of={Stories.Direction} />
+
+### Gap
+
+<Canvas of={Stories.Gap} />
+
+### Alignment
+
+<Canvas of={Stories.Alignment} />
+
+### Responsive values
+
+`direction`, `gap`, `align`, and `justify` take one value, or an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one. The values compile to static media styles, so the layout is right on the first paint. Each frame below is a viewport of its own width.
+
+<Canvas of={Stories.Responsive} />
+
+### Another element
+
+<Canvas of={Stories.Render} />
+
+## API reference
+
+Every part also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs).
+
+### Stack
+
+| Prop        | Description                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `direction` | `row`, `column`, `row-reverse`, `column-reverse` <br /> The main axis. Responsive. Default `column`.                                          |
+| `gap`       | `UnitStep` <br /> The space between children: a count of `unit` steps, so `3` is 12px. Responsive. Default none.                              |
+| `align`     | `start`, `center`, `end`, `stretch`, `baseline` <br /> Alignment on the cross axis. Responsive. Unset leaves the CSS default, `stretch`.      |
+| `justify`   | `start`, `center`, `end`, `space-between`, `space-around`, `space-evenly` <br /> Distribution on the main axis. Responsive. Unset is `start`. |
+| `wrap`      | `boolean` <br /> Lets children flow onto another line when they do not fit. Default `false`.                                                  |
+
+## Caveats
+
+- A responsive value styles the viewport, not the container: a Stack in a narrow sidebar on a wide screen still gets its `large` values.
+- `gap` is the flex `gap`, so it appears only between children. Margins on children add to it.
+- With `render` set to a list element, name the list (`aria-label`) and render `li` children; the Stack adds no roles.
