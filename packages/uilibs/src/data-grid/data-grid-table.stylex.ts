@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../styles/colors.stylex'
 import {
   breakpoints,
+  container,
   duration,
   fontFamily,
   fontSize,
@@ -56,7 +57,7 @@ export const dataGridTableStyles = stylex.create({
   // Source headerSticky default slot: sticky top-0 z-40 bg-background/90
   // backdrop-blur-xs. z-40 keeps it above pinned body cells (zIndex 30).
   headerSticky: {
-    backdropFilter: 'blur(2px)',
+    backdropFilter: `blur(${unit.x0_5})`,
     backgroundColor: `color-mix(in srgb, ${colors.backgroundPage} 90%, transparent)`,
     position: 'sticky',
     top: 0,
@@ -559,7 +560,7 @@ export const dataGridTableStyles = stylex.create({
     position: 'absolute',
     top: 0,
     transform: 'translateX(-50%)',
-    width: 5
+    width: `calc(${unit.x1} + ${stroke.ring1})`
   },
   // Body / foot sections.
   footRowBackground: {
@@ -873,8 +874,8 @@ export const dataGridPaginationStyles = stylex.create({
     transform: { default: null, ':dir(rtl)': 'rotate(180deg)' }
   },
   arrowIcon: { height: unit.x4, width: unit.x4 },
-  sizesSkeleton: { height: unit.x8, width: 176 },
-  infoSkeleton: { height: unit.x8, width: 240 }
+  sizesSkeleton: { height: unit.x8, width: container.xxsmall },
+  infoSkeleton: { height: unit.x8, width: container.xsmall }
 })
 
 /** Virtual table chrome: placeholder cells, spacers, status rows. */

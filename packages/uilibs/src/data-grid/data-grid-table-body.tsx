@@ -8,6 +8,7 @@ import { Fragment, memo, useMemo, useRef } from 'react'
 import type { ReactNode, Ref } from 'react'
 import { Checkbox } from '../base/checkbox'
 import { Spinner } from '../extra/spinner'
+import { glyphSize } from '../styles/glyph'
 import { focusRing } from '../styles/utils.stylex'
 import { getDataGridCellSelectionCellAttrs, toDataGridDomId, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from './data-grid'
@@ -811,9 +812,9 @@ function DataGridTableRowPin<TData extends object>({
             {...stylex.props(focusRing.root, s.rowPinButton)}
           >
             {isPinned ? (
-              <PinFilled size={16} aria-hidden />
+              <PinFilled size={glyphSize.small} aria-hidden />
             ) : (
-              <Pin size={16} strokeWidth={2} aria-hidden />
+              <Pin size={glyphSize.small} strokeWidth={2} aria-hidden />
             )}
           </button>
         )
@@ -932,7 +933,7 @@ function DataGridTableRowExpand<TData extends object>({
         >
           {children ?? (
             <ChevronDown
-              size={16}
+              size={glyphSize.small}
               strokeWidth={2}
               aria-hidden
               {...stylex.props(s.rowExpandChevron, !isExpanded && s.rowExpandChevronCollapsed)}
