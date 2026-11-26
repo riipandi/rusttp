@@ -70,7 +70,7 @@ mod tests {
 
     #[tokio::test]
     async fn a_page_renders_the_server_document() {
-        let res = crate::transport::router()
+        let res = crate::transport::router(crate::config::AppMode::Production)
             .unwrap()
             .oneshot(Request::get("/").body(Body::empty()).unwrap())
             .await

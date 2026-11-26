@@ -44,7 +44,7 @@ mod tests {
 
     #[tokio::test]
     async fn unknown_api_route_is_problem_json() {
-        let res = crate::transport::router()
+        let res = crate::transport::router(crate::config::AppMode::Production)
             .unwrap()
             .oneshot(Request::get("/api/v1/hogwarts/houses").body(Body::empty()).unwrap())
             .await
