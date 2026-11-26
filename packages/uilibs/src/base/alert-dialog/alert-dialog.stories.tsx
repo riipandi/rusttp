@@ -62,6 +62,16 @@ function ActionDialog({
   )
 }
 
+/**
+ * Waits for the alert dialog to leave the page. It stays for its exit transition (`data-ending-style`),
+ * which a loaded WebKit runner stretches past `waitFor`'s 1 s default.
+ */
+function untilClosed() {
+  return waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull(), {
+    timeout: 10000
+  })
+}
+
 /** Opens the dialog in `cell`, reads the look of its action, and closes it again. */
 async function actionLook(cell: HTMLElement, label: string) {
   const body = within(document.body)
@@ -72,7 +82,7 @@ async function actionLook(cell: HTMLElement, label: string) {
   const style = getComputedStyle(action)
   const look = [style.backgroundColor, style.borderTopWidth, style.borderTopColor, style.color]
   await userEvent.keyboard('{Escape}')
-  await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+  await untilClosed()
   return look.join('|')
 }
 
@@ -144,13 +154,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
     // Cancel dismisses the dialog.
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull())
+    await untilClosed()
 
     // Destructive confirm also dismisses.
     await userEvent.click(canvas.getByRole('button', { name: 'Seal the cryptex' }))
     const reopened = within(document.body).getByRole('alertdialog')
     await userEvent.click(within(reopened).getByRole('button', { name: 'Seal' }))
-    await waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull())
+    await untilClosed()
   }
 }
 
@@ -206,7 +216,7 @@ export const Sizes: Story = {
       const dialog = await body.findByRole('alertdialog')
       const { width: boxWidth } = dialog.getBoundingClientRect()
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+      await untilClosed()
       return boxWidth
     }
     const small = await width('small')
@@ -399,9 +409,7 @@ const [deleting, setDeleting] = useState(false)
     await expect(within(document.body).getByRole('button', { name: 'Cancel' })).toBeDisabled()
 
     // Resolving the action closes the dialog.
-    await waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull(), {
-      timeout: 4000
-    })
+    await untilClosed()
   }
 }
 
@@ -459,7 +467,7 @@ export const Overlays: Story = {
       const dialog = await body.findByRole('alertdialog', { name: `Overlay ${overlay}` })
       filters.push(getComputedStyle(backdropOf(dialog)).backdropFilter)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+      await untilClosed()
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
   }
@@ -531,7 +539,7 @@ export const Keyboard: Story = {
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull(), { timeout: 10000 })
+    await untilClosed()
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

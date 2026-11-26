@@ -45,7 +45,7 @@ async fn index(State(assets): State<Router>, mut req: Request) -> Response {
 
 #[cfg(test)]
 mod tests {
-    use axum::body::Body;
+    use axum::body::{Body, Bytes, to_bytes};
     use axum::http::{Request, StatusCode, header};
     use tower::ServiceExt;
 
@@ -64,22 +64,29 @@ mod tests {
             .unwrap()
     }
 
+    /// Status, content type, and body of a path, to compare one answer with another.
+    async fn answer(mode: AppMode, path: &str) -> (StatusCode, Option<String>, Bytes) {
+        let res = get(mode, path).await;
+        let status = res.status();
+        let kind = res
+            .headers()
+            .get(header::CONTENT_TYPE)
+            .map(|v| v.to_str().unwrap().to_owned());
+        (status, kind, to_bytes(res.into_body(), usize::MAX).await.unwrap())
+    }
+
+    // A build without the SPA has no route table, so an unknown path answers 200 there and 404 in
+    // a built one. Either way a Storybook path must be answered exactly like any unknown path.
     #[tokio::test]
-    async fn production_answers_the_spa_404_on_every_storybook_path() {
+    async fn production_answers_every_storybook_path_like_an_unknown_one() {
+        let unknown = answer(AppMode::Production, "/no-such-page").await;
         for path in [
             "/storybook",
             "/storybook/",
             "/storybook/index.html",
             "/storybook/iframe.html",
         ] {
-            let res = get(AppMode::Production, path).await;
-            assert_eq!(res.status(), StatusCode::NOT_FOUND, "{path}");
-            assert!(
-                res.headers()[header::CONTENT_TYPE]
-                    .to_str()
-                    .unwrap()
-                    .starts_with("text/html")
-            );
+            assert_eq!(answer(AppMode::Production, path).await, unknown, "{path}");
         }
     }
 
@@ -103,8 +110,11 @@ mod tests {
             let res = get(mode, "/storybook/index.html").await;
             assert_eq!(res.status(), StatusCode::OK);
 
-            let res = get(mode, "/storybook/missing.html").await;
-            assert_eq!(res.status(), StatusCode::NOT_FOUND);
+            // Storybook's own 404 is the app's: a missing file is not served as its index.
+            assert_eq!(
+                answer(mode, "/storybook/missing.html").await,
+                answer(mode, "/no-such-page").await
+            );
         }
     }
 }

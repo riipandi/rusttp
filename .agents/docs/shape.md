@@ -35,11 +35,11 @@ Start a profile with `docker compose -f container/compose.yaml --profile <name> 
 - Workspace lints (`Cargo.toml:17-20`): `missing_docs = "warn"`, `unreachable_pub = "deny"`, `private_interfaces = "deny"`. Each crate opts in with `[lints] workspace = true`.
 - Build flags (`.cargo/config.toml`): `target-cpu=native`; `lld` on the musl and aarch64-gnu targets.
 - Frontend: pnpm `12.21.0` (`package.json`).
-- Developer tools: `just`, `cargo-nextest`, `rumdl`, `hurl`; optional: `cargo-hack` (feature combinations), `cargo-deny`, `sqlx-cli`. Check that a tool is installed before relying on it; do not install one unasked.
+- Developer tools: `just`, `cargo-nextest`, `rumdl`, `hurl`; optional: `kache` (compiler cache), `cargo-hack` (feature combinations), `cargo-deny`, `sqlx-cli`. Check that a tool is installed before relying on it; do not install one unasked.
 
 ## Commands
 
-Run every gate through `just` (`justfile` imports `scripts/task-*.just`; `just` alone lists the recipes).
+Run every gate through `just` (`justfile` imports `scripts/task-*.just`; `just` alone lists the recipes). When `kache` is on `PATH`, `justfile` exports `RUSTC_WRAPPER=kache`; `KACHE=false just <recipe>` sets `KACHE_DISABLED=1`, which passes compiles through while keeping the wrapper, so Cargo's fingerprints and the `target` directory stay valid. CI runs the cargo half of `verify` (fmt, check, clippy, test) in `.github/workflows/rust.yml` with `kunobi-ninja/kache-action`, whose store persists in the GitHub Actions cache.
 
 | Gate                 | Recipe                              | Runs                                                                                                             |
 | -------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
