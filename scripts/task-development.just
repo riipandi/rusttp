@@ -16,9 +16,10 @@ run *args:
 
 # ---- Build -------------------------------------------------------------------
 
-[doc('Build the SPA, then the release binary that embeds it')]
+[doc('Build the SPA and Storybook, then the release binary that embeds them (`STORYBOOK=false` skips Storybook)')]
 [group('development')]
 build *args: email-build
+    @[ "${STORYBOOK:-true}" = false ] || {{ just_executable() }} storybook-build
     @pnpm --silent --filter webapp build
     @cargo build --release {{ args }}
     @ls -lh target/release/{{ app_bin }} | awk '{printf "{{ BOLD + GREEN }}    %s{{ NORMAL }} %s (%s)\n", "Output", $5, $NF}'
@@ -64,7 +65,7 @@ email-check template *args:
 storybook:
     @pnpm --silent --filter uilibs storybook
 
-[doc('Build Storybook into packages/uilibs/.output/storybook')]
+[doc('Build Storybook into apps/server/storybook (embedded by the server)')]
 [group('storybook')]
 [no-exit-message]
 storybook-build:

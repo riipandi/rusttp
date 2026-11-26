@@ -124,7 +124,7 @@ Decision (2026-11-19, owner): one axum router in `apps/server/src/transport/` se
 Consequences:
 
 - (positive) one origin in development and production, so session cookies stay first-party and no CORS is needed; one binary to deploy; Connect speaks JSON as well as protobuf, so a browser or `curl` can call it.
-- (negative) a release build embeds whatever `apps/server/frontend` holds at compile time: build the SPA first, or the binary ships the stub page `build.rs` writes; connectrpc is pre-1.0, so a minor bump may change its API.
+- (negative) a release build embeds whatever `apps/server/frontend` holds at compile time: build the SPA first, or the binary ships the stub page `build.rs` writes; the same holds for `apps/server/storybook`, which every release binary now carries (about 19 MB raw, compressed in the binary) although `APP_MODE=production` never serves it (2026-11-26, owner: always embed, guard at runtime; a Cargo feature that drops it from production images was offered and declined; the owner then added a build-time switch instead: `STORYBOOK=false` skips the Storybook build and the embed, default `true`); connectrpc is pre-1.0, so a minor bump may change its API.
 
 Alternatives considered:
 

@@ -2,9 +2,11 @@ use std::io;
 
 use tokio::net::TcpListener;
 
-/// Builds the app, binds `addr`, and serves until Ctrl-C.
-pub(crate) async fn serve(addr: &str) -> io::Result<()> {
-    let app = super::router().map_err(io::Error::other)?;
+use crate::config::AppMode;
+
+/// Builds the app for `mode`, binds `addr`, and serves until Ctrl-C.
+pub(crate) async fn serve(addr: &str, mode: AppMode) -> io::Result<()> {
+    let app = super::router(mode).map_err(io::Error::other)?;
     let listener = bind(addr).await?;
     tracing::info!(addr = %listener.local_addr()?, "listening");
     axum::serve(listener, app)

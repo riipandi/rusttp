@@ -16,8 +16,8 @@
     },
     "scripts": {
         "storybook": "NODE_OPTIONS=--disable-warning=DEP0205 storybook dev -p 6006 --no-open",
-        "storybook:build": "NODE_OPTIONS=--disable-warning=DEP0205 storybook build -o .output/storybook",
-        "storybook:start": "vite preview --outDir .output/storybook --port 6006 --host 0.0.0.0 --strictPort",
+        "storybook:build": "NODE_OPTIONS=--disable-warning=DEP0205 storybook build -o ../../apps/server/storybook",
+        "storybook:start": "vite preview --outDir ../../apps/server/storybook --port 6006 --host 0.0.0.0 --strictPort",
         "test": "vitest run",
         "check:docs": "node scripts/check-docs.ts",
         "rebrand": "node scripts/rebrand.ts",

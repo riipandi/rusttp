@@ -46,7 +46,7 @@ RUN set -eux; \
 WORKDIR /usr/src
 
 # ------------------------------------------------------------------------------
-# Install dependencies, build the SPA, then the server that embeds it.
+# Install dependencies, build the SPA and Storybook, then the server that embeds them.
 # ------------------------------------------------------------------------------
 FROM base AS builder
 
@@ -64,8 +64,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts 
 
 COPY --link . .
 
-# Emails and the SPA first: the server reads apps/server/emails and embeds apps/server/frontend.
+# Emails, Storybook, and the SPA first: the server reads apps/server/emails and embeds
+# apps/server/frontend and apps/server/storybook. `--build-arg STORYBOOK=false` skips Storybook
+# here and in the server build below (an ARG is visible to every RUN, and to build.rs).
+ARG STORYBOOK=true
 RUN NODE_ENV=production pnpm --filter emails build \
+    && { [ "$STORYBOOK" = false ] || NODE_ENV=production pnpm --filter uilibs storybook:build; } \
     && NODE_ENV=production pnpm --filter webapp build
 
 RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
@@ -94,9 +98,9 @@ LABEL org.opencontainers.image.licenses="Apache-2.0 OR MIT"
 COPY --from=base --chown=root:root --chmod=0755 /usr/bin/tini /usr/bin/tini
 COPY --from=pruner --chown=nonroot:nonroot /srv /srv
 
-ARG BIND_ADDR=0.0.0.0:3000 LOG_LEVEL=info TZ=UTC
-ENV BIND_ADDR=$BIND_ADDR LOG_LEVEL=$LOG_LEVEL TZ=$TZ TINI_SUBREAPER=true
-ENV PATH="/srv:/usr/bin:/busybox:$PATH"
+ARG BIND_ADDR=0.0.0.0:3000 LOG_LEVEL=info APP_MODE=production TZ=UTC
+ENV BIND_ADDR=$BIND_ADDR LOG_LEVEL=$LOG_LEVEL APP_MODE=$APP_MODE TZ=$TZ
+ENV PATH="/srv:/usr/bin:/busybox:$PATH" TINI_SUBREAPER=true
 
 WORKDIR /srv
 VOLUME /srv/storage

@@ -77,5 +77,6 @@ terraform.tfvars*
 # Application
 apps/server/emails/*
 apps/server/frontend/
+apps/server/storybook/
 packages/webapp/app/paraglide/
 **/project.inlang/cache/
