@@ -1303,12 +1303,15 @@ export const KeyboardAnnouncements: Story = {
     // The dropped item keeps dnd-kit's drop-animation opacity for ~250 ms and every item then fades
     // back in over `duration.medium`, so a fixed sleep is shorter than the settle on a slow runner.
     // Leave once every item is opaque, so the a11y gate does not read one mid-fade as faded text.
-    await waitFor(async () => {
-      await expect(lifted()).toBe(false)
-      for (const item of document.querySelectorAll('[data-slot="sortable-item"]')) {
-        await expect(getComputedStyle(item).opacity).toBe('1')
-      }
-    })
+    await waitFor(
+      async () => {
+        await expect(lifted()).toBe(false)
+        for (const item of document.querySelectorAll('[data-slot="sortable-item"]')) {
+          await expect(getComputedStyle(item).opacity).toBe('1')
+        }
+      },
+      { timeout: 10000 }
+    )
     await expect(live()).not.toMatch(/\b[0-9]+\b/)
   }
 }
