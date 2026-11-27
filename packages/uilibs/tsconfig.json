@@ -21,8 +21,7 @@
         "target": "esnext",
         "types": ["vite/client", "node"],
         "useDefineForClassFields": true,
-        "verbatimModuleSyntax": true,
-        "paths": { "#/*": ["./src/*"] }
+        "verbatimModuleSyntax": true
     },
     "include": ["**/*.ts", "**/*.tsx"],
     "exclude": [".output", "node_modules"]

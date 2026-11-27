@@ -47,7 +47,6 @@ export default defineConfig(({ mode }) => ({
     stylexVitestCleanup(),
     react(),
     stylexPlugin({
-      aliases: { '#/*': resolve(import.meta.dirname, 'src/*') },
       enableDevClassNames: mode === 'development',
       test: Boolean(process.env.VITEST)
     })
@@ -91,6 +90,5 @@ export default defineConfig(({ mode }) => ({
         }
       }
     ]
-  },
-  resolve: { tsconfigPaths: true }
+  }
 }))

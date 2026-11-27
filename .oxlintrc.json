@@ -52,6 +52,17 @@
                 "jsx-a11y/label-has-associated-control": "off",
                 "jsx-a11y/no-noninteractive-element-interactions": "off",
                 "jsx-a11y/prefer-tag-over-role": "off",
+                "no-restricted-imports": [
+                    "error",
+                    {
+                        "patterns": [
+                            {
+                                "group": ["#/**"],
+                                "message": "uilibs has no #/ alias: import with a relative path."
+                            }
+                        ]
+                    }
+                ],
                 "react-hooks/exhaustive-deps": "off",
                 "react/exhaustive-effect-dependencies": "off",
                 "react/immutability": "off",

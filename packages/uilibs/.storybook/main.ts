@@ -1,5 +1,4 @@
 import type { StorybookConfig } from '@storybook/tanstack-react'
-import { resolve } from 'node:path'
 import { stylexPlugin } from 'plugins/stylex'
 import remarkGfm from 'remark-gfm'
 import { mergeConfig } from 'vite'
@@ -33,7 +32,6 @@ export default {
   features: { backgrounds: false, componentsManifest: process.env.STORYBOOK_BUILD !== '1' },
   async viteFinal(viteConfig) {
     return mergeConfig(viteConfig, {
-      resolve: { tsconfigPaths: true },
       build: {
         chunkSizeWarningLimit: 1024 * 4,
         rolldownOptions: {
@@ -42,11 +40,7 @@ export default {
           }
         }
       },
-      plugins: [
-        stylexPlugin({
-          aliases: { '#/*': resolve(import.meta.dirname, '../src/*') }
-        })
-      ]
+      plugins: [stylexPlugin({})]
     })
   }
 } satisfies StorybookConfig
