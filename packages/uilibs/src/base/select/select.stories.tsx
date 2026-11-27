@@ -12,6 +12,7 @@ import {
   expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { gone, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
 import { Field, FieldError, FieldLabel } from '../field'
@@ -500,7 +501,7 @@ export const Keyboard: Story = {
       body.queryAllByRole('option').find((option) => option.hasAttribute('data-highlighted'))
         ?.textContent ?? null
     const visible = () => expect(body.getByRole('listbox')).toBeVisible()
-    const closed = () => expect(body.queryByRole('listbox')).toBeNull()
+    const popup = () => body.queryByRole('listbox')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
@@ -508,7 +509,7 @@ export const Keyboard: Story = {
     // Each key opens the list only while it is closed, and Escape closes it and returns focus.
     for (const key of ['{Enter}', ' ', '{ArrowDown}']) {
       await pressUntil(key, visible, { when: () => !body.queryByRole('listbox') })
-      await pressUntil('{Escape}', closed)
+      await pressUntil('{Escape}', gone(popup))
       await waitFor(() => expect(trigger).toHaveFocus())
     }
 
@@ -536,7 +537,7 @@ export const Keyboard: Story = {
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(closed)
+    await untilGone(popup)
     await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }

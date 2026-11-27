@@ -9,6 +9,7 @@ import { Meter } from '../../base/meter'
 import { Progress } from '../../base/progress'
 import { toast } from '../../base/toast'
 import { pressUntil } from '../../contracts/keyboard'
+import { lifted, live, untilOpaque } from '../../contracts/overlay'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { radius, stroke, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
@@ -1280,8 +1281,8 @@ export const PersistedToBackend: Story = {
   }
 }
 
-const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
-const lifted = () => document.querySelector('[data-dragging="true"]') !== null
+// Items and columns the a11y gate must not read mid-fade after a drag or a cancel.
+const SETTLED = '[data-slot="kanban-item"], [data-slot="kanban-column"]'
 
 /** A keyboard drag names the task, not its id, and speaks the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1333,7 +1334,7 @@ export const KeyboardAnnouncements: Story = {
     await expect(live()).not.toContain('task-')
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(live()).toContain('Dragging cancelled. Research competitors'))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await untilOpaque(SETTLED)
   }
 }
 
@@ -1504,6 +1505,6 @@ export const Keyboard: Story = {
     })
     await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
     await waitFor(() => expect(columns()).toEqual(['done', 'todo']))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await untilOpaque(SETTLED)
   }
 }

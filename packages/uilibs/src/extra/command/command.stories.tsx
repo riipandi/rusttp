@@ -6,6 +6,7 @@ import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { expectHighlightedItem } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { gone } from '../../contracts/overlay'
 import { shadow } from '../../styles/colors.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { Kbd, KbdGroup } from '../kbd'
@@ -419,7 +420,6 @@ export const Keyboard: Story = {
     const body = within(document.body)
     const options = () => body.queryAllByRole('option')
     const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
-    const closed = () => expect(body.queryByRole('dialog')).toBeNull()
 
     // The palette opens with focus in the input. Nothing is highlighted until the arrows or typing set it.
     await body.findByRole('dialog')
@@ -465,7 +465,7 @@ export const Keyboard: Story = {
           new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true })
         )
       }
-      return closed()
+      return gone(() => body.queryByRole('dialog'))()
     })
   }
 }

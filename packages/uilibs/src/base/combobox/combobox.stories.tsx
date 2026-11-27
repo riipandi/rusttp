@@ -12,6 +12,7 @@ import {
   expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { gone, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { controlSizes, controlVariants } from '../../styles/control.stylex'
@@ -548,7 +549,7 @@ export const Keyboard: Story = {
     const options = () => body.queryAllByRole('option')
     const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
     const visible = () => expect(body.getByRole('listbox')).toBeVisible()
-    const closed = () => expect(body.queryByRole('listbox')).toBeNull()
+    const popup = () => body.queryByRole('listbox')
     // `aria-expanded` follows the open state at once; the listbox stays in the page while it fades
     // out, and a key sent then would reach a closed combobox (Escape there clears the input).
     const expanded = () => input.getAttribute('aria-expanded') === 'true'
@@ -580,13 +581,13 @@ export const Keyboard: Story = {
     await pressUntil('{Enter}', () => expect(input).toHaveValue(label), {
       when: expanded
     })
-    await waitFor(closed)
+    await untilGone(popup)
     await expect(input).toHaveFocus()
 
     // Escape closes a reopened list and keeps the value.
     await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
     // Escape on a closed combobox clears the input, so it is sent only while the list is open.
-    await pressUntil('{Escape}', closed, { when: expanded })
+    await pressUntil('{Escape}', gone(popup), { when: expanded })
     await expect(input).toHaveValue(label)
     await expect(input).toHaveFocus()
   }

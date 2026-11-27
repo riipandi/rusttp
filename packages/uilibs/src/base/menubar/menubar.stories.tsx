@@ -7,6 +7,7 @@ import {
   expectHighlightedItem
 } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { gone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { controlSizes } from '../../styles/control.stylex'
 import {
@@ -384,7 +385,7 @@ export const Keyboard: Story = {
     const body = within(document.body)
     const grimoire = canvas.getByRole('menuitem', { name: 'Grimoire' })
     const cryptex = canvas.getByRole('menuitem', { name: 'Cryptex' })
-    const closed = () => expect(body.queryByRole('menu')).toBeNull()
+    const popup = () => body.queryByRole('menu')
 
     // Tab enters the bar on the first trigger.
     await userEvent.tab()
@@ -402,14 +403,14 @@ export const Keyboard: Story = {
     await pressUntil('{Enter}', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
     })
-    await pressUntil('{Escape}', closed)
+    await pressUntil('{Escape}', gone(popup))
     await waitFor(() => expect(grimoire).toHaveFocus())
 
     // Space and ArrowDown open it too.
     await pressUntil(' ', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
     })
-    await pressUntil('{Escape}', closed)
+    await pressUntil('{Escape}', gone(popup))
     await waitFor(() => expect(grimoire).toHaveFocus())
     await pressUntil('{ArrowDown}', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
@@ -425,7 +426,7 @@ export const Keyboard: Story = {
     })
 
     // Escape closes the menu and returns focus to its trigger.
-    await pressUntil('{Escape}', closed)
+    await pressUntil('{Escape}', gone(popup))
     await waitFor(() => expect(grimoire).toHaveFocus())
   }
 }

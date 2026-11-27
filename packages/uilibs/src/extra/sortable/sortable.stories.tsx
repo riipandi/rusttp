@@ -9,6 +9,7 @@ import { Switch } from '../../base/switch'
 import { toast } from '../../base/toast'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { lifted, live, untilOpaque } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { colors, shadow } from '../../styles/colors.stylex'
 import {
@@ -1258,9 +1259,6 @@ export const PersistedOrder: Story = {
   }
 }
 
-const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
-const lifted = () => document.querySelector('[data-dragging="true"]') !== null
-
 /** A keyboard drag is announced by the item's name, in the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
   render: () => {
@@ -1303,12 +1301,8 @@ export const KeyboardAnnouncements: Story = {
     // The dropped item keeps dnd-kit's drop-animation opacity for ~250 ms and every item then fades
     // back in over `duration.medium`, so a fixed sleep is shorter than the settle on a slow runner.
     // Leave once every item is opaque, so the a11y gate does not read one mid-fade as faded text.
-    await waitFor(async () => {
-      await expect(lifted()).toBe(false)
-      for (const item of document.querySelectorAll('[data-slot="sortable-item"]')) {
-        await expect(getComputedStyle(item).opacity).toBe('1')
-      }
-    })
+    await waitFor(() => expect(lifted()).toBe(false))
+    await untilOpaque('[data-slot="sortable-item"]')
     await expect(live()).not.toMatch(/\b[0-9]+\b/)
   }
 }
@@ -1431,6 +1425,6 @@ export const Keyboard: Story = {
     await waitFor(() =>
       expect(order()).toEqual(['Product Specification', 'Product Demo', 'Product Demo Video'])
     )
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await untilOpaque('[data-slot="sortable-item"]')
   }
 }

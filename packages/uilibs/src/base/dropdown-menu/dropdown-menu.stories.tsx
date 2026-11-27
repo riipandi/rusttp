@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { gone, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button'
 import {
@@ -459,7 +460,7 @@ export const Keyboard: Story = {
     const highlighted = () =>
       body.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
     const highlightedName = () => highlighted()?.textContent ?? null
-    const closed = () => expect(body.queryByRole('menu')).toBeNull()
+    const popup = () => body.queryByRole('menu')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
@@ -467,12 +468,12 @@ export const Keyboard: Story = {
     await pressUntil('{Enter}', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
     })
-    await pressUntil('{Escape}', closed)
+    await pressUntil('{Escape}', gone(popup))
     await waitFor(() => expect(trigger).toHaveFocus())
     await pressUntil(' ', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
     })
-    await pressUntil('{Escape}', closed)
+    await pressUntil('{Escape}', gone(popup))
     await waitFor(() => expect(trigger).toHaveFocus())
     await pressUntil('{ArrowDown}', () => expect(body.getByRole('menu')).toBeVisible(), {
       when: () => !body.queryByRole('menu')
@@ -519,7 +520,7 @@ export const Keyboard: Story = {
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(closed)
+    await untilGone(popup)
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

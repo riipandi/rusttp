@@ -4,6 +4,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
@@ -62,13 +63,8 @@ function ActionDialog({
   )
 }
 
-/**
- * Waits for the alert dialog to leave the page. It stays for its exit transition (`data-ending-style`),
- * which a loaded WebKit runner stretches past a short wait.
- */
-function untilClosed() {
-  return waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull())
-}
+/** Waits for the alert dialog to leave the page: it stays for its exit transition (`data-ending-style`). */
+const untilClosed = () => untilGone(() => within(document.body).queryByRole('alertdialog'))
 
 /** Opens the dialog in `cell`, reads the look of its action, and closes it again. */
 async function actionLook(cell: HTMLElement, label: string) {
