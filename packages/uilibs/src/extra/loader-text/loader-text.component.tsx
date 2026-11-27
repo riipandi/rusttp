@@ -4,14 +4,13 @@ import type { Glyph } from '../../styles/types'
 import { Text, type TextProps } from '../text'
 import { loaderTextStyles as styles } from './loader-text.stylex'
 
-export interface LoaderTextProps extends Omit<TextProps, 'style'> {
+export interface LoaderTextProps extends TextProps {
   /** Leading icon, sized relative to the text. */
   icon?: Glyph
   /** Text that cross-fades with the children once `completed` becomes true. */
   completedText?: React.ReactNode
   /** Mark the loader as completed, stopping the shimmer. */
   completed?: boolean
-  style?: stylex.StyleXStyles
 }
 
 /**

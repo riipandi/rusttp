@@ -2,6 +2,7 @@ import type { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../styles/popup.stylex'
+import type { StyleProp } from '../styles/types'
 import { ring } from '../styles/utils.stylex'
 import { usePortalContainer } from '../theme/theme-scope.context'
 
@@ -24,7 +25,8 @@ interface PopupParts {
   Popup: React.ElementType
 }
 
-export interface PopupShellProps {
+/** `style` is the caller's: it replaces the shared and the component's own values. */
+export interface PopupShellProps extends StyleProp {
   /** The Base UI namespace the popup is built on, e.g. `Popover`. */
   parts: PopupParts
   positioner: PositionerProps & {
@@ -37,8 +39,6 @@ export interface PopupShellProps {
   elevation?: 'outline' | 'raised' | 'overlay'
   /** The closed pose: the fade in and out, the scale, and the nudge. `false` leaves a popup whose own recipe fades it (an aligned `Select`). */
   pose?: boolean
-  /** The caller's `style`; it replaces the shared and the component's own values. */
-  style?: stylex.StyleXStyles
   children?: React.ReactNode
 }
 

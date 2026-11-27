@@ -26,7 +26,6 @@ import { sliderTrackOrientations as trackOrientations } from './slider.stylex'
 import { sliderRangeOrientations as rangeOrientations } from './slider.stylex'
 
 export interface SliderProps extends PartProps<React.ComponentProps<typeof BaseSlider.Root>> {
-  style?: stylex.StyleXStyles
   /**
    * Accessible name of each thumb, in order (`['Minimum', 'Maximum']` for a range). A slider with
    * one thumb takes its `aria-label` when this is not given.

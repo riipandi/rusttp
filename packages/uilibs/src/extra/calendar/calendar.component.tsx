@@ -1,21 +1,20 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import * as React from 'react'
 import { DateLib, DayPicker, getDefaultClassNames, labelDayButton } from 'react-day-picker'
 import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-picker'
 import { buttonAppearance, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
-import type { PartProps } from '../../styles/types'
+import type { PartProps, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { calendarStyles } from './calendar.stylex'
 
-type CalendarDayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'> & {
-  locale?: Partial<Locale>
-  className?: string
-  style?: StyleXStyles
-}
+type CalendarDayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'> &
+  StyleProp & {
+    locale?: Partial<Locale>
+    className?: string
+  }
 
 const CalendarDayButton = ({
   className,
@@ -206,7 +205,6 @@ type DistributivePartProps<T> = T extends unknown ? PartProps<T> : never
 type CalendarProps = DistributivePartProps<React.ComponentProps<typeof DayPicker>> & {
   /** The fill of the previous and next buttons. */
   buttonVariant?: ButtonVariant
-  style?: StyleXStyles
 }
 
 export function Calendar({

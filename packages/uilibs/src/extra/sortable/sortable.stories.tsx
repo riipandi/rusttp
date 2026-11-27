@@ -22,6 +22,7 @@ import {
   zIndex
 } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
+import type { StyleProp } from '../../styles/types'
 import { Badge } from '../badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '../card'
 import { Sortable, SortableItem, SortableItemHandle, SortableOverlay } from './'
@@ -292,7 +293,7 @@ const styles = stylex.create({
   }
 })
 
-function Handle({ style }: { style?: stylex.StyleXStyles }) {
+function Handle({ style }: StyleProp) {
   return (
     <SortableItemHandle style={style}>
       <GripVertical size={16} />

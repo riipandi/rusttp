@@ -11,7 +11,6 @@ export interface TextareaProps extends PartProps<React.ComponentProps<'textarea'
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
-  style?: stylex.StyleXStyles
   /** Grow the textarea with its content instead of a fixed height. */
   autoResize?: boolean
 }

@@ -12,7 +12,6 @@ export interface SkeletonProps extends PartProps<useRender.ComponentProps<'div'>
   height?: UnitStep | (string & {})
   /** A corner radius token; `medium` by default, `full` for an avatar. */
   borderRadius?: keyof typeof skeletonRadius
-  style?: stylex.StyleXStyles
 }
 
 /** Renders a `div`; `render` swaps it for another element. */

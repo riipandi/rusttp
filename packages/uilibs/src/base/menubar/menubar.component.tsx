@@ -35,7 +35,6 @@ import { menubarStyles as s } from './menubar.stylex'
 export interface MenubarProps extends PartProps<React.ComponentProps<typeof BaseMenubar>> {
   /** Bar height and type, as the control scale; `medium` is 36px. */
   size?: ControlSize
-  style?: stylex.StyleXStyles
 }
 
 export function Menubar({ size = 'medium', style, ...props }: MenubarProps) {
@@ -58,9 +57,7 @@ export const MenubarSubContent = DropdownMenuSubContent
 export function MenubarTrigger({
   style,
   ...props
-}: PartProps<React.ComponentProps<typeof DropdownMenuTrigger>> & {
-  style?: stylex.StyleXStyles
-}) {
+}: PartProps<React.ComponentProps<typeof DropdownMenuTrigger>>) {
   return <DropdownMenuTrigger {...props} {...stylex.props(focusRing.root, s.trigger, style)} />
 }
 

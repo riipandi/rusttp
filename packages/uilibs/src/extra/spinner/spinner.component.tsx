@@ -35,7 +35,6 @@ export interface SpinnerProps extends PartProps<React.ComponentProps<'svg'>, 'co
   color?: SpinnerColor
   /** Accessible name of the standing-alone spinner; English by default. */
   labels?: Partial<SpinnerLabels>
-  style?: stylex.StyleXStyles
 }
 
 /** A busy indicator. Alone it is a `status` live region named `labels.loading`; inside a Button it is hidden from assistive technology. */

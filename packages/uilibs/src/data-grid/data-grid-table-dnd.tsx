@@ -27,7 +27,6 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripHorizontal, GripVertical } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { flexRender } from '@tanstack/react-table'
 import type { Cell, Header, HeaderGroup, Row } from '@tanstack/react-table'
 import {
@@ -47,6 +46,7 @@ import { createPortal } from 'react-dom'
 import { Button, buttonSquare } from '../base/button'
 import { dragAccessibility } from '../extra/sortable/drag-announcements'
 import { zIndex } from '../styles/tokens.stylex'
+import type { StyleProp } from '../styles/types'
 import { getColumnHeaderLabel, getDataGridRowLabel, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { DataGridTableBase, DataGridTableViewport } from './data-grid-table'
@@ -441,8 +441,7 @@ function DataGridTableDndRowHandle({
   style,
   disabled,
   disabledLabel
-}: {
-  style?: StyleXStyles
+}: StyleProp & {
   /**
    * Renders the grip inert instead of withdrawing it. A grid that reorders on
    * one truth (manual order) and sorts on another cannot honour both at once,

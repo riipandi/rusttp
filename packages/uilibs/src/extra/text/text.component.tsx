@@ -115,7 +115,6 @@ export interface TextProps extends PartProps<useRender.ComponentProps<'div'>> {
   wrap?: 'balance' | 'nowrap'
   monospace?: boolean
   numeric?: boolean
-  style?: stylex.StyleXStyles
 }
 
 export function Text({

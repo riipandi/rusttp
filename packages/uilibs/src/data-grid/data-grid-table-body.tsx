@@ -9,6 +9,7 @@ import type { ReactNode, Ref } from 'react'
 import { Checkbox } from '../base/checkbox'
 import { Spinner } from '../extra/spinner'
 import { glyphSize } from '../styles/glyph'
+import type { StyleProp } from '../styles/types'
 import { focusRing } from '../styles/utils.stylex'
 import {
   getDataGridCellDomId,
@@ -89,10 +90,9 @@ function DataGridTableFootRowCell({
   children,
   colSpan,
   style
-}: {
+}: StyleProp & {
   children?: ReactNode
   colSpan?: number
-  style?: StyleXStyles
 }) {
   const { props } = useDataGrid()
   return (
@@ -116,12 +116,11 @@ function DataGridTableBodyRowSkeleton({
   wantsBorder,
   stripe,
   style
-}: {
+}: StyleProp & {
   children: ReactNode
   wantsBorder?: boolean
   /** Striping parity under `tableLayout.stripped` (see DataGridTableBodyRow). */
   stripe?: boolean
-  style?: StyleXStyles
 }) {
   const { props } = useDataGrid()
 
@@ -966,11 +965,10 @@ function DataGridTableRowExpand<TData extends object>({
   indent = 20,
   style,
   children
-}: {
+}: StyleProp & {
   row: Row<DataGridFeatures, TData>
   /** Horizontal offset in px applied per tree depth level. */
   indent?: number
-  style?: StyleXStyles
   /** Custom toggle icon; replaces the default chevron. */
   children?: ReactNode
 }) {

@@ -94,7 +94,6 @@ export interface ButtonProps extends PartProps<
    * width and its name, stays focusable, and reports `aria-busy` (a screen reader keeps the label).
    */
   loading?: boolean
-  style?: stylex.StyleXStyles
 }
 
 export function Button({

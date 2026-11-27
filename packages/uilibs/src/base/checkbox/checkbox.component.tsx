@@ -30,7 +30,6 @@ export type CheckboxSize = ControlSize
 export interface CheckboxProps extends PartProps<React.ComponentProps<typeof BaseCheckbox.Root>> {
   /** Box size: `small` 12px, `medium` 16px (default), `large` 20px. */
   size?: CheckboxSize
-  style?: stylex.StyleXStyles
 }
 
 export function Checkbox({ size = 'medium', style, ...props }: CheckboxProps) {
@@ -56,9 +55,7 @@ export function Checkbox({ size = 'medium', style, ...props }: CheckboxProps) {
 
 export interface CheckboxGroupProps extends PartProps<
   React.ComponentProps<typeof BaseCheckboxGroup>
-> {
-  style?: stylex.StyleXStyles
-}
+> {}
 
 /**
  * Shares checked state across Checkboxes: give each child Checkbox a `name`

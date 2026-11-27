@@ -15,10 +15,9 @@
  */
 
 import { Eye, EyeOff } from '@keyline-icons/react'
-import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import type { ButtonVariant } from '../../base/button'
-import type { Glyph } from '../../styles/types'
+import type { Glyph, PartProps } from '../../styles/types'
 import {
   InputGroup,
   InputGroupAddon,
@@ -38,11 +37,10 @@ export interface InputPasswordLabels {
 
 const defaultLabels: InputPasswordLabels = { toggle: 'Show password' }
 
-export interface InputPasswordProps extends Omit<
+export interface InputPasswordProps extends PartProps<
   React.ComponentProps<typeof InputGroupInput>,
-  'type' | 'style'
+  'type'
 > {
-  style?: stylex.StyleXStyles
   /** Controlled visibility state. When provided, the input becomes controlled. */
   visible?: boolean
   /** Initial visibility state when uncontrolled. Defaults to `false` (obscured). */

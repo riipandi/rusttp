@@ -9,7 +9,6 @@ import { hiddenLarge, hiddenMedium, hiddenRoot, hiddenSmall, hiddenXLarge } from
 export interface HiddenProps extends PartProps<useRender.ComponentProps<'div'>> {
   /** Hides the children: `true` for every viewport, or per breakpoint (`{ small: true, large: false }`). Unset shows them. */
   hide?: Responsive<boolean>
-  style?: stylex.StyleXStyles
 }
 
 type Visibility = 'hide' | 'show'

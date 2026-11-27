@@ -38,7 +38,7 @@ import { RendererChart as TanStackChart } from '@tanstack/charts/react/tooltip'
 import type { ChartTooltipBodyRenderContext } from '@tanstack/charts/react/tooltip'
 import type { RendererChartProps as TanStackRendererChartProps } from '@tanstack/charts/react/tooltip'
 import * as React from 'react'
-import type { PartProps } from '../styles/types'
+import type { PartProps, StyleProp } from '../styles/types'
 import { type ChartColorName, chartColors } from './chart-colors'
 import { chartStyles as s, chartSwatchColors as swatchColors } from './chart.stylex'
 
@@ -77,7 +77,6 @@ export interface ChartContainerProps extends PartProps<useRender.ComponentProps<
   config: ChartConfig
   /** What the chart shows, in a sentence or two: the trend, the range, the outlier. Every chart inside takes it as its accessible description. */
   description?: string
-  style?: stylex.StyleXStyles
 }
 
 export function ChartContainer({
@@ -99,8 +98,11 @@ export function ChartContainer({
   )
 }
 
-interface ChartOwnProps<TDatum, TXValue extends ChartValue, TYValue extends ChartValue> {
-  style?: stylex.StyleXStyles
+interface ChartOwnProps<
+  TDatum,
+  TXValue extends ChartValue,
+  TYValue extends ChartValue
+> extends StyleProp {
   renderTooltipBody?: (
     context: ChartTooltipBodyRenderContext<TDatum, TXValue, TYValue>
   ) => React.ReactNode
@@ -164,7 +166,6 @@ export interface ChartLegendProps extends PartProps<React.ComponentProps<'div'>>
   config?: ChartConfig
   /** Config keys to skip, e.g. series hidden by an application toggle. */
   hide?: readonly string[]
-  style?: stylex.StyleXStyles
 }
 
 /** Config-driven legend, rendered outside the chart surface. Returns null

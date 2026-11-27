@@ -43,7 +43,6 @@ export interface PopoverContentProps
   padding?: UnitStep
   /** Corner radius: `medium` (default) or `large`. */
   borderRadius?: 'medium' | 'large'
-  style?: stylex.StyleXStyles
 }
 
 export function PopoverContent({

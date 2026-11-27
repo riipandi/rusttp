@@ -23,8 +23,6 @@ export const CollapsibleTrigger = BaseCollapsible.Trigger
 export function CollapsibleContent({
   style,
   ...props
-}: PartProps<React.ComponentProps<typeof BaseCollapsible.Panel>> & {
-  style?: stylex.StyleXStyles
-}) {
+}: PartProps<React.ComponentProps<typeof BaseCollapsible.Panel>>) {
   return <BaseCollapsible.Panel {...props} {...stylex.props(s.panel, style)} />
 }

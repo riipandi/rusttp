@@ -31,8 +31,6 @@ export interface ToggleProps extends PartProps<React.ComponentProps<typeof BaseT
   /** The color of the pressed state; `neutral` by default. */
   selectedColor?: ToggleColor
   size?: ToggleSize
-
-  style?: stylex.StyleXStyles
 }
 
 export function Toggle({

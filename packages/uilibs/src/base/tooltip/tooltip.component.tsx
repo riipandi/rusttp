@@ -43,7 +43,6 @@ export interface TooltipContentProps
    * the page; `dark` is black with white text in both themes.
    */
   color?: 'neutral' | 'inverted' | 'dark'
-  style?: stylex.StyleXStyles
 }
 
 export function TooltipContent({

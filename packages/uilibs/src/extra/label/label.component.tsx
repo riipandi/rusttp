@@ -13,9 +13,7 @@ const s = stylex.create({
   }
 })
 
-export interface LabelProps extends PartProps<useRender.ComponentProps<'label'>> {
-  style?: stylex.StyleXStyles
-}
+export interface LabelProps extends PartProps<useRender.ComponentProps<'label'>> {}
 
 /** Renders a `label`; `render` swaps it for another element. */
 export function Label({ style, render, ...props }: LabelProps) {

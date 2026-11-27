@@ -45,7 +45,6 @@ export interface BadgeProps extends PartProps<useRender.ComponentProps<'span'>, 
   onDismiss?: () => void
   /** The dismiss button's name; English by default. */
   labels?: Partial<BadgeLabels>
-  style?: stylex.StyleXStyles
 }
 
 const colorStyles = {

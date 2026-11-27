@@ -1,7 +1,7 @@
 /** Shared mock dataset for the data-grid stories: novels by Dan Brown and J.K. Rowling. */
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { AU, CA, DE, ES, FR, GB, IT, JP, MY, US } from 'country-flag-icons/react/1x1'
+import type { StyleProp } from '../../styles/types'
 
 export interface IBook {
   id: string
@@ -165,10 +165,9 @@ export const demoData: IBook[] = [
 /** Named flag components for the mock dataset (no barrel namespace import). */
 const FLAGS = { US, GB, CA, AU, DE, MY, ES, JP, FR, IT } as const
 
-interface CountryFlagProps {
+interface CountryFlagProps extends StyleProp {
   code: string
   title: string
-  style?: StyleXStyles
 }
 
 /** Circular 16px country flag rendered inline from the ISO code (no CDN). */

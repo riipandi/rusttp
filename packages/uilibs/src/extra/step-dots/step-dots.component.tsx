@@ -36,7 +36,6 @@ export interface StepDotsProps extends PartProps<useRender.ComponentProps<'div'>
   /** Dot size: `small` 6px, `medium` 8px (default). */
   size?: StepDotsSize
   labels?: Partial<StepDotsLabels>
-  style?: stylex.StyleXStyles
 }
 
 /**

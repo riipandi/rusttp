@@ -25,7 +25,6 @@ export interface InputProps extends PartProps<React.ComponentProps<typeof BaseIn
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
-  style?: stylex.StyleXStyles
 }
 
 export function Input({ size, variant = 'outline', style, ...props }: InputProps) {

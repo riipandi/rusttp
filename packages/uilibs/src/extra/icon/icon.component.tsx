@@ -44,7 +44,6 @@ export interface IconProps extends PartProps<useRender.ComponentProps<'span'>, '
   color?: IconColor
   /** Use the width of the svg asset instead of a square bounding box. */
   autoWidth?: boolean
-  style?: stylex.StyleXStyles
 }
 
 /**

@@ -22,7 +22,6 @@ export type SwitchSize = ControlSize
 
 export interface SwitchProps extends PartProps<React.ComponentProps<typeof BaseSwitch.Root>> {
   size?: SwitchSize
-  style?: stylex.StyleXStyles
 }
 
 export function Switch({ size = 'medium', style, ...props }: SwitchProps) {

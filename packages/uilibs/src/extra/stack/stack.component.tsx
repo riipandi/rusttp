@@ -40,7 +40,6 @@ export interface StackProps extends PartProps<useRender.ComponentProps<'div'>> {
   justify?: StackJustify
   /** Lets children flow onto another line when they do not fit. */
   wrap?: boolean
-  style?: stylex.StyleXStyles
 }
 
 const DIRECTION_SPEC: ResponsiveSpec<StackDirection> = {

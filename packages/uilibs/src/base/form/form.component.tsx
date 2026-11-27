@@ -10,9 +10,7 @@ import * as React from 'react'
 import type { PartProps } from '../../styles/types'
 import { formStyles as s } from './form.stylex'
 
-export interface FormProps extends PartProps<React.ComponentProps<typeof BaseForm>> {
-  style?: stylex.StyleXStyles
-}
+export interface FormProps extends PartProps<React.ComponentProps<typeof BaseForm>> {}
 
 /**
  * Built on Base UI Form: validates the Fields inside it (`validationMode`),

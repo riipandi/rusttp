@@ -79,9 +79,8 @@ import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
 type DivRenderProps = PartProps<useRender.ComponentProps<'div'>>
 
 /** Props a sortable child exposes for overlay cloning (`value` + optional `style`). */
-interface SortableChildProps {
+interface SortableChildProps extends StyleProp {
   value?: string
-  style?: stylex.StyleXStyles
 }
 
 function isSortableChild(node: ReactNode): node is ReactElement<SortableChildProps> {

@@ -5,7 +5,6 @@ import { aspectRatioStyles as s, aspectRatioRatios as ratios } from './aspect-ra
 
 export interface AspectRatioProps extends PartProps<React.ComponentProps<'div'>> {
   ratio: number
-  style?: stylex.StyleXStyles
 }
 
 export function AspectRatio({ ratio, style, ...props }: AspectRatioProps) {

@@ -44,8 +44,6 @@ export interface ToggleGroupProps extends PartProps<React.ComponentProps<typeof 
   size?: ToggleSize
   /** Item gap. `joined` fuses the items into one segmented control. */
   spacing?: 'gap' | 'joined'
-
-  style?: stylex.StyleXStyles
 }
 
 export function ToggleGroup({

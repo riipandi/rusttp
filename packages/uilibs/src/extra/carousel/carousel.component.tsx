@@ -48,7 +48,6 @@ export interface CarouselProps extends PartProps<React.ComponentProps<'section'>
   /** Called with the index of the first visible slide whenever it changes, from a button, a key, a swipe, or a scroll. */
   onChange?: (index: number) => void
   labels?: Partial<CarouselLabels>
-  style?: stylex.StyleXStyles
 }
 
 interface Position {

@@ -10,7 +10,6 @@ import {
   Settings
 } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { Subscribe } from '@tanstack/react-table'
 import type { Column, Table } from '@tanstack/react-table'
 import { memo, useMemo, useState } from 'react'
@@ -202,7 +201,6 @@ interface DataGridColumnHeaderProps<TData extends object, TValue> extends PartPr
   icon?: ReactNode
   filter?: ReactNode
   visibility?: boolean
-  style?: StyleXStyles
 }
 
 function DataGridColumnHeaderInner<TData extends object, TValue>({

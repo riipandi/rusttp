@@ -1,14 +1,13 @@
 import { ScrollArea as BaseScrollArea } from '@base-ui/react/scroll-area'
 import { ChevronLeft, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { useEffect, useRef, useState } from 'react'
 import type { JSX, ReactNode } from 'react'
 import { Button, buttonSquare } from '../base/button'
 import { SelectContent, SelectTrigger, SelectValue } from '../base/select'
 import { Select, SelectItem } from '../base/select'
 import { Skeleton } from '../extra/skeleton'
-import type { PartProps } from '../styles/types'
+import type { PartProps, StyleProp } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 import { useDataGrid, type DataGridTableInstance } from './data-grid'
 import { dataGridPaginationStyles } from './data-grid-table.stylex'
@@ -18,7 +17,6 @@ type DataGridScrollAreaOrientation = 'horizontal' | 'vertical' | 'both'
 
 type DataGridScrollAreaProps = PartProps<BaseScrollArea.Root.Props, 'children'> & {
   children: ReactNode
-  style?: StyleXStyles
   orientation?: DataGridScrollAreaOrientation
 }
 
@@ -31,13 +29,12 @@ const scrollbarInset = stylex.create({
   top: (offset: number) => ({ marginTop: `${offset}px` })
 })
 
-interface DataGridPaginationProps {
+interface DataGridPaginationProps extends StyleProp {
   sizes?: number[]
   sizesSkeleton?: ReactNode
   moreLimit?: number
   info?: string
   infoSkeleton?: ReactNode
-  style?: StyleXStyles
   rowsPerPageLabel?: string
   previousPageLabel?: string
   nextPageLabel?: string

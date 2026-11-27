@@ -38,7 +38,7 @@ import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { ColorRole } from '../../styles/types'
+import type { ColorRole, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
@@ -135,13 +135,12 @@ function ToastList({
   ))
 }
 
-export interface ToasterProps {
+/** `style` is the viewport's StyleX style, merged last. */
+export interface ToasterProps extends StyleProp {
   /** Direction(s) a toast can be swiped to dismiss. */
   swipeDirection?: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
   /** Accessible names of the close button and of a toast without a title; English by default. */
   labels?: Partial<ToasterLabels>
-  /** StyleX styles for the viewport, merged last. */
-  style?: stylex.StyleXStyles
 }
 
 /**

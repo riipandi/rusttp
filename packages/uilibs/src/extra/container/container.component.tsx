@@ -14,7 +14,6 @@ export interface ContainerProps extends PartProps<useRender.ComponentProps<'div'
   size?: ContainerSize | (string & {})
   /** Padding on every side: a count of `unit` steps (`4` is 16px) or a CSS length. Default none. */
   padding?: UnitStep | (string & {})
-  style?: stylex.StyleXStyles
 }
 
 /**

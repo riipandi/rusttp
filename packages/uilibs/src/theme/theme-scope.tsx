@@ -17,7 +17,6 @@ export interface ThemeScopeProps extends PartProps<useRender.ComponentProps<'div
    * of the surrounding mode (the page's, or the enclosing scope's).
    */
   colorMode: ThemeScopeColorMode
-  style?: stylex.StyleXStyles
 }
 
 const themes = {

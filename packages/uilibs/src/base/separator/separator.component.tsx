@@ -23,7 +23,6 @@ export interface SeparatorProps extends PartProps<
   color?: 'neutral-faded' | 'neutral'
   /** Stops short of the container's edges. */
   inset?: boolean
-  style?: stylex.StyleXStyles
 }
 
 export function Separator({

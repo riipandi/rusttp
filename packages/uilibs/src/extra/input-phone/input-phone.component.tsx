@@ -27,7 +27,6 @@ import { inputPhoneStyles as s } from './input-phone.stylex'
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
 
 export interface InputPhoneProps extends PartProps<LibraryPhoneInputProps, 'onChange' | 'value'> {
-  style?: stylex.StyleXStyles
   /** E.164 phone value, e.g. `+12135551234`. Use for a controlled field. */
   value?: Value
   /** Called with the E.164 value (or `''` when cleared). */
@@ -196,12 +195,7 @@ function NoCountrySelect() {
   return null
 }
 
-function PhoneInputContainer({
-  style,
-  ...props
-}: PartProps<React.ComponentProps<'div'>> & {
-  style?: stylex.StyleXStyles
-}) {
+function PhoneInputContainer({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   const phone = React.useContext(PhoneContext)
   return (
     <div
@@ -220,12 +214,7 @@ function PhoneInputContainer({
   )
 }
 
-function PhoneInput({
-  style,
-  ...props
-}: PartProps<React.ComponentPropsWithRef<typeof BaseInput>> & {
-  style?: stylex.StyleXStyles
-}) {
+function PhoneInput({ style, ...props }: PartProps<React.ComponentPropsWithRef<typeof BaseInput>>) {
   const phone = React.useContext(PhoneContext)
   return (
     <BaseInput

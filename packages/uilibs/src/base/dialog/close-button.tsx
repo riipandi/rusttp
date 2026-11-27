@@ -23,7 +23,6 @@ export function CloseButton({
   ...props
 }: PartProps<React.ComponentProps<'button'>> & {
   labels?: Partial<CloseLabels>
-  style?: stylex.StyleXStyles
 }) {
   return (
     <button

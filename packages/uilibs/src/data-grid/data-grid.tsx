@@ -40,6 +40,7 @@ import type {
 } from '@tanstack/react-table'
 import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import type { StyleProp } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 import { mergeDataGridLabels } from './data-grid-labels'
 import type { DataGridLabels } from './data-grid-labels'
@@ -696,8 +697,7 @@ export interface DataGridTableStyleSlots {
   cellFillHandle?: StyleXStyles
 }
 
-export interface DataGridProps<TData extends object> {
-  style?: StyleXStyles
+export interface DataGridProps<TData extends object> extends StyleProp {
   table?: DataGridTableInstance<TData>
   recordCount: number
   children?: ReactNode
@@ -1108,9 +1108,8 @@ function DataGridContainer({
   children,
   style,
   border = false
-}: {
+}: StyleProp & {
   children: ReactNode
-  style?: StyleXStyles
   /** Draws an edge around the grid, with rounded corners. */
   border?: boolean
 }) {
