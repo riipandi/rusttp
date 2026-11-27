@@ -25,6 +25,8 @@ const stylex = (mode: string) =>
 
 export default defineConfig(({ mode }) => ({
   plugins: [
+    // First, so it sees the source before any other transform rewrites it (`data-tsd-source`).
+    devtools({ logging: false }),
     vixum({ routeTree: resolve('app/routes.gen.ts'), plugins: () => [stylex(mode)] }),
     // Builds and runs the Rust server in `vite dev`, rebuilding on change.
     rustServer({
@@ -32,13 +34,12 @@ export default defineConfig(({ mode }) => ({
       pkg: 'rusttp-server',
       args: ['serve'],
       watch: ['apps', 'crates', 'Cargo.toml'],
-      ignore: ['apps/server/frontend'],
+      ignore: ['apps/server/frontend', 'apps/server/storybook'],
       extensions: ['rs', 'toml', 'html', 'js', 'sql'],
       readyTarget: 'rusttp_server::transport::server'
     }),
     paraglideVitePlugin({ project: './project.inlang' }),
     devtoolsJson(),
-    devtools({ logging: false }),
     tanstackRouter({
       routesDirectory: resolve('./app/routes'),
       generatedRouteTree: resolve('./app/routes.gen.ts'),
@@ -65,6 +66,9 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1024 * 2,
     rolldownOptions: {
       input: resolve('app/main.tsx'),
+      // The build is dominated by the React Compiler's per-module transform and the route scan, which
+      // is known and not actionable here; the notice only repeats it.
+      checks: { bundlerTimings: false },
       // The React Compiler has already read 'use no memo' by bundling time; dropping it is harmless.
       onwarn(warning, warn) {
         if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes('use no memo'))
@@ -78,6 +82,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     ...vite,
     strictPort: true,
+    // Build outputs the Rust server embeds: Vite must not watch or reload for them.
+    watch: { ignored: ['**/apps/server/frontend/**', '**/apps/server/storybook/**'] },
     hmr: { host: vite.host, clientPort: vite.port }
   }
 }))

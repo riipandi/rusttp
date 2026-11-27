@@ -25,6 +25,9 @@ export interface RustServerOptions {
 const tag = '\x1b[33m[rust]\x1b[0m'
 const log = (msg: string) => console.info(`${tag} ${msg}`)
 
+/** `file` is `dir` or lives under it; a sibling that merely shares the prefix (`frontend-old`) is not. */
+const isWithin = (file: string, dir: string) => file === dir || file.startsWith(dir + path.sep)
+
 /** Ctrl-C semantics, so in-flight requests finish; forced after 5 s. Resolves once it exits. */
 const retire = (proc: ChildProcess | null) =>
   new Promise<void>((resolve) => {
@@ -148,8 +151,8 @@ export function rustServer(opts: RustServerOptions): Plugin {
       server.watcher.add(watched)
       const onChange = (file: string) => {
         if (!extensions.has(path.extname(file))) return
-        if (ignored.some((dir) => file.startsWith(dir))) return
-        if (!watched.some((dir) => file.startsWith(dir))) return
+        if (ignored.some((dir) => isWithin(file, dir))) return
+        if (!watched.some((dir) => isWithin(file, dir))) return
         clearTimeout(timer)
         timer = setTimeout(() => {
           log(`${path.relative(opts.root, file)} changed`)
