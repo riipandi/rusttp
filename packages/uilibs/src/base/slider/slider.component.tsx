@@ -18,17 +18,14 @@
 import { Slider as BaseSlider } from '@base-ui/react/slider'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { sliderStyles as s } from './slider.stylex'
 import { sliderRootOrientations as rootOrientations } from './slider.stylex'
 import { sliderControlOrientations as controlOrientations } from './slider.stylex'
 import { sliderTrackOrientations as trackOrientations } from './slider.stylex'
 import { sliderRangeOrientations as rangeOrientations } from './slider.stylex'
 
-export interface SliderProps extends Omit<
-  React.ComponentProps<typeof BaseSlider.Root>,
-  'className' | 'style'
-> {
-  style?: stylex.StyleXStyles
+export interface SliderProps extends PartProps<React.ComponentProps<typeof BaseSlider.Root>> {
   /**
    * Accessible name of each thumb, in order (`['Minimum', 'Maximum']` for a range). A slider with
    * one thumb takes its `aria-label` when this is not given.
@@ -71,6 +68,7 @@ export function Slider({
         {Array.from({ length: thumbCount }, (_, index) => (
           <BaseSlider.Thumb
             key={index}
+            index={index}
             aria-label={
               thumbLabels?.[index] ?? (thumbCount === 1 ? props['aria-label'] : undefined)
             }

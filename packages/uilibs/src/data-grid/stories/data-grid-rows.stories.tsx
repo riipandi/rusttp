@@ -44,7 +44,6 @@ import { stackStyles as s } from './_mocks.stylex'
 const meta = {
   title: 'Data Grid/Rows',
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [
     (Story) => (
       <div {...stylex.props(atoms.padding['20px'], atoms.width['100%'])}>
@@ -729,6 +728,110 @@ export const DraggableRows: Story = {
   }
 }
 
+const borderColumns: ColumnDef<DataGridFeatures, IBook>[] = [
+  { id: 'drag', size: 40, header: () => 'Reorder', cell: () => <DataGridTableDndRowHandle /> },
+  { accessorKey: 'title', header: 'Title', size: 240 }
+]
+
+function BorderGrid({ label, rowBorder }: { label: string; rowBorder?: boolean }) {
+  const data = demoData.slice(0, 3)
+  const table = useTable({
+    features: dataGridFeatures,
+    columns: borderColumns,
+    data,
+    getRowId: (row: IBook) => row.id
+  })
+  const dataIds = useMemo<UniqueIdentifier[]>(() => data.map((row) => row.id), [data])
+  return (
+    <DataGrid
+      table={table}
+      recordCount={data.length}
+      getRowLabel={(row) => row.title}
+      tableLayout={rowBorder === undefined ? undefined : { rowBorder }}
+    >
+      <DataGridContainer>
+        <DataGridScrollArea table={table}>
+          <DataGridTableDndRows
+            aria-label={label}
+            table={table}
+            handleDragEnd={() => {}}
+            dataIds={dataIds}
+          />
+        </DataGridScrollArea>
+      </DataGridContainer>
+    </DataGrid>
+  )
+}
+
+/**
+ * `tableLayout.rowBorder` is on by default: draggable rows draw a separator under every row but
+ * the last, like any other row, and `rowBorder: false` removes them.
+ */
+export const DraggableRowBorders: Story = {
+  name: 'Draggable rows, borders',
+  render: () => (
+    <div {...stylex.props(s.stack)}>
+      <BorderGrid label='Default borders' />
+      <BorderGrid label='No borders' rowBorder={false} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const separators = async (name: string) => {
+      const grid = await canvas.findByRole('table', { name })
+      return Array.from(grid.querySelectorAll('tbody tr[data-row-id]')).map((row) => {
+        const cell = row.querySelector('td')
+        return cell ? getComputedStyle(cell).borderBottomWidth : 'no cell'
+      })
+    }
+    await expect(await separators('Default borders')).toEqual(['1px', '1px', '0px'])
+    await expect(await separators('No borders')).toEqual(['0px', '0px', '0px'])
+  }
+}
+
+/** A column pinned to the end keeps its width in a grid with draggable rows. */
+export const DraggableRowsEndPinned: Story = {
+  name: 'Draggable rows, end pinned column',
+  render: () => {
+    const data = demoData.slice(0, 3)
+    const table = useTable({
+      features: dataGridFeatures,
+      columns: borderColumns,
+      data,
+      getRowId: (row: IBook) => row.id,
+      initialState: { columnPinning: { start: [], end: ['title'] } }
+    })
+    const dataIds = useMemo<UniqueIdentifier[]>(() => data.map((row) => row.id), [data])
+    return (
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        getRowLabel={(row) => row.title}
+        tableLayout={{ columnsPinnable: true, columnsResizable: true }}
+      >
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTableDndRows
+              aria-label='Pinned end'
+              table={table}
+              handleDragEnd={() => {}}
+              dataIds={dataIds}
+            />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const grid = await canvas.findByRole('table', { name: 'Pinned end' })
+    const width = Number.parseFloat(grid.style.getPropertyValue('--col-title-size'))
+    for (const selector of ['thead th', 'tbody tr td']) {
+      const cell = grid.querySelector(`${selector}[data-col-id="title"]`)
+      if (!(cell instanceof HTMLElement)) throw new Error(`No ${selector} title cell`)
+      await expect(cell.getBoundingClientRect().width).toBeCloseTo(width, 0)
+    }
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Row pinning */
 /* ------------------------------------------------------------------ */
@@ -997,7 +1100,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
         size: 130
       }
     ],
-    []
+    [tableHolder]
   )
   const table = useTable({
     features: dataGridFeatures,
@@ -1056,34 +1159,27 @@ export const RightToLeft: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
-    const chevron = (
-      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
-    )[0]!.querySelector('svg')!
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
     // `rotate(90deg)` in RTL; `rotate(-90deg)` in LTR.
-    // The end state of a 200 ms transition; the wait is sized for a loaded runner (issue-00009).
-    await waitFor(
-      async () => {
-        await expect(chevron.getAnimations()).toHaveLength(0)
-        await expect(turn(chevron).b).toBeCloseTo(1)
-      },
-      { timeout: 10_000 }
-    )
+    // The end state of a 200 ms transition (the default 10 s wait covers a loaded runner, issue-00009).
+    await waitFor(async () => {
+      await expect(chevron.getAnimations()).toHaveLength(0)
+      await expect(turn(chevron).b).toBeCloseTo(1)
+    })
     // An expanded row points down in both directions.
     await userEvent.click(chevron.closest('button')!)
-    const open = (
-      await canvas.findAllByRole('button', { name: /^Collapse / }, { timeout: 10_000 })
-    )[0]!.querySelector('svg')!
+    const open = (await canvas.findAllByRole('button', { name: /^Collapse / }))[0]!.querySelector(
+      'svg'
+    )!
     // `rotate(0deg)` once the transition has ended; both matrix terms are read in one wait so a
     // reading taken mid-transition cannot pass on one and fail on the other (WebKit, under load).
-    await waitFor(
-      async () => {
-        await expect(open.getAnimations()).toHaveLength(0)
-        await expect(turn(open).b).toBeCloseTo(0)
-        await expect(turn(open).a).toBeCloseTo(1)
-      },
-      { timeout: 10_000 }
-    )
+    await waitFor(async () => {
+      await expect(open.getAnimations()).toHaveLength(0)
+      await expect(turn(open).b).toBeCloseTo(0)
+      await expect(turn(open).a).toBeCloseTo(1)
+    })
     // `rotate(180deg)`: previous and next swap sides of the arrow glyphs.
     for (const name of [/go to previous page/i, /go to next page/i]) {
       const arrow = turn(canvas.getByRole('button', { name }))
@@ -1115,10 +1211,9 @@ function reducedMotionRules(element: Element) {
 export const Motion: Story = {
   render: () => <TreeGrid pageSize={1} />,
   play: async ({ canvas }) => {
-    // The finds wait as long as the transitions below: a loaded runner can pass the 1 s default.
-    const chevron = (
-      await canvas.findAllByRole('button', { name: /^Expand / }, { timeout: 10_000 })
-    )[0]!.querySelector('svg')!
+    const chevron = (await canvas.findAllByRole('button', { name: /^Expand / }))[0]!.querySelector(
+      'svg'
+    )!
     const style = getComputedStyle(chevron)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     await expect(style.transitionProperty).toBe(reduce ? 'none' : 'transform')

@@ -17,56 +17,43 @@
  */
 
 import { PreviewCard as BasePreviewCard } from '@base-ui/react/preview-card'
-import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
-import { popupFx } from '../../styles/popup.stylex'
-import { ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import type { PartProps } from '../../styles/types'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { previewCardStyles as s } from './preview-card.stylex'
 
 export const PreviewCard = BasePreviewCard.Root
 export const PreviewCardTrigger = BasePreviewCard.Trigger
 
 export interface PreviewCardContentProps
-  extends
-    Omit<React.ComponentProps<typeof BasePreviewCard.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BasePreviewCard.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset'
-    > {
-  style?: stylex.StyleXStyles
-}
+  extends PartProps<React.ComponentProps<typeof BasePreviewCard.Popup>>, PositionerProps {}
 
 export function PreviewCardContent({
   style,
   side = 'bottom',
   sideOffset = 4,
   align = 'center',
-  alignOffset = 4,
+  alignOffset = 0,
+  collisionAvoidance,
+  collisionPadding,
+  anchor,
   ...props
 }: PreviewCardContentProps) {
   return (
-    <BasePreviewCard.Portal container={usePortalContainer()}>
-      <BasePreviewCard.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BasePreviewCard.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BasePreviewCard.Positioner>
-    </BasePreviewCard.Portal>
+    <PopupShell
+      parts={BasePreviewCard}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }

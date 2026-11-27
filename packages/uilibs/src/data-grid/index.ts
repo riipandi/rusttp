@@ -79,7 +79,7 @@ export {
   getDataGridTableMergedHeaderGroups,
   getDataGridTableResolvedRows,
   getDataGridTableRowSections,
-  getDataGridTreeIndentStyle,
+  getDataGridTreeIndent,
   getPinningStyles,
   hasDataGridTableRightPinnedColumns
 } from './data-grid-table-utils'

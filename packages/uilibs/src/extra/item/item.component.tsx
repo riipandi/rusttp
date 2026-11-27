@@ -3,12 +3,12 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Separator } from '../../base/separator'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { itemStyles as s, itemVariants, itemSizes } from './item.stylex'
 import { itemMediaKinds as mediaKinds } from './item.stylex'
 
-type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = PartProps<React.ComponentProps<'div'>>
 
 /** True inside an `ItemGroup`, whose `list` role needs `listitem` children. */
 const ItemGroupContext = React.createContext(false)
@@ -37,8 +37,7 @@ export function ItemSeparator({ ...props }: React.ComponentProps<typeof Separato
 export type ItemVariant = 'ghost' | 'outline' | 'faded'
 export type ItemSize = 'xsmall' | 'small' | 'medium'
 
-export interface ItemProps
-  extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
+export interface ItemProps extends PartProps<useRender.ComponentProps<'div'>> {
   variant?: ItemVariant
   size?: ItemSize
 }
@@ -75,10 +74,7 @@ export function ItemTitle({ style, ...props }: DivProps) {
   return <div {...props} {...stylex.props(s.title, style)} />
 }
 
-export function ItemDescription({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'p'>, 'className' | 'style'> & StyleProp) {
+export function ItemDescription({ style, ...props }: PartProps<React.ComponentProps<'p'>>) {
   return <p {...props} {...stylex.props(s.description, style)} />
 }
 

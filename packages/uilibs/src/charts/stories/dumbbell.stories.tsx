@@ -11,7 +11,6 @@ import { canvasDecorator, chartTheme, seriesColors, seriesNames } from './chart.
 const meta = {
   title: 'Visualizations/Dumbbell',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

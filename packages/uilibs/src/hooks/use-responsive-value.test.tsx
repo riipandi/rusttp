@@ -1,12 +1,40 @@
 import { createRoot } from 'react-dom/client'
 import { describe, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
-import { resolveResponsiveValue, useResponsiveValue, type Responsive } from './use-responsive-value'
+import { viewport } from '../styles/tokens.stylex'
+import {
+  mapResponsive,
+  resolveResponsiveValue,
+  useResponsiveValue,
+  type Responsive
+} from './use-responsive-value'
 
 const reached = (width: number) => ({
-  medium: width >= 660,
-  large: width >= 900,
-  xlarge: width >= 1280
+  medium: width >= viewport.medium,
+  large: width >= viewport.large,
+  xlarge: width >= viewport.xlarge
+})
+
+const double = (value: number) => value * 2
+
+describe('mapResponsive', () => {
+  it('keeps a plain value plain and an unset value unset', () => {
+    expect(mapResponsive(3, double)).toBe(6)
+    expect(mapResponsive(0, double)).toBe(0)
+    expect(mapResponsive(undefined, double)).toBeUndefined()
+  })
+
+  it('maps each breakpoint of a map and keeps the keys that were set', () => {
+    expect(mapResponsive({ small: 1, large: 3 }, double)).toStrictEqual({ small: 2, large: 6 })
+    expect(mapResponsive({ medium: 0, xlarge: 5 }, double)).toEqual({ medium: 0, xlarge: 10 })
+  })
+
+  it('drops a key whose value is undefined and does not call the mapper for it', () => {
+    const seen: number[] = []
+    const out = mapResponsive({ small: 1, medium: undefined }, (value) => seen.push(value))
+    expect(out).toStrictEqual({ small: 1 })
+    expect(seen).toEqual([1])
+  })
 })
 
 describe('resolveResponsiveValue', () => {
@@ -42,22 +70,27 @@ function Probe({ value }: { value: Responsive<string> }) {
 }
 
 describe('useResponsiveValue', () => {
-  it('follows the viewport as it changes', async () => {
+  it('follows the viewport across both sides of every breakpoint', async () => {
     const host = document.body.appendChild(document.createElement('div'))
     const root = createRoot(host)
-    const value = { small: 'phone', medium: 'tablet', xlarge: 'desktop' }
+    const value = { small: 'phone', medium: 'tablet', large: 'laptop', xlarge: 'desktop' }
+    const { innerWidth, innerHeight } = window
     try {
       for (const [width, expected] of [
-        [390, 'phone'],
-        [1000, 'tablet'],
-        [1400, 'desktop'],
-        [390, 'phone']
+        [viewport.medium - 1, 'phone'],
+        [viewport.medium, 'tablet'],
+        [viewport.large - 1, 'tablet'],
+        [viewport.large, 'laptop'],
+        [viewport.xlarge - 1, 'laptop'],
+        [viewport.xlarge, 'desktop'],
+        [viewport.medium - 1, 'phone']
       ] as const) {
         await page.viewport(width, 800)
         root.render(<Probe value={value} />)
         await expect.poll(() => host.textContent).toBe(expected)
       }
     } finally {
+      await page.viewport(innerWidth, innerHeight)
       root.unmount()
       host.remove()
     }

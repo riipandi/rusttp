@@ -8,8 +8,7 @@ import { containerSizes } from './container.stylex'
 
 const meta = {
   title: 'Extra Components/Container',
-  component: Container,
-  tags: [] // ['autodocs']
+  component: Container
 } satisfies Meta<typeof Container>
 
 type Story = StoryObj<typeof meta>

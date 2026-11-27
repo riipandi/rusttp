@@ -17,13 +17,13 @@ import { RadioGroup as BaseRadioGroup } from '@base-ui/react/radio-group'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
-import type { ControlSize, StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { radioIndicatorSizes, radioSizes, radioStyles as s } from './radio.stylex'
 
 export function RadioGroup({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseRadioGroup>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseRadioGroup>>) {
   return <BaseRadioGroup {...props} {...stylex.props(s.group, style)} />
 }
 
@@ -33,11 +33,10 @@ export function RadioGroupItem({
   size = 'medium',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof Radio.Root>, 'className' | 'style'> &
-  StyleProp & {
-    /** Circle size: `small` 12px, `medium` 16px (default), `large` 20px. */
-    size?: RadioSize
-  }) {
+}: PartProps<React.ComponentProps<typeof Radio.Root>> & {
+  /** Circle size: `small` 12px, `medium` 16px (default), `large` 20px. */
+  size?: RadioSize
+}) {
   return (
     <Radio.Root {...props} {...stylex.props(controlPress.root, s.item, radioSizes[size], style)}>
       <Radio.Indicator {...stylex.props(s.indicator, radioIndicatorSizes[size])} />

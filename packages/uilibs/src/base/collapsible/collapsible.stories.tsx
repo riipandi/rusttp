@@ -13,8 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsib
 
 const meta = {
   title: 'Base Components/Collapsible',
-  component: Collapsible,
-  tags: [] // ['autodocs']
+  component: Collapsible
 } satisfies Meta<typeof Collapsible>
 
 type Story = StoryObj<typeof meta>

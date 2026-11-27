@@ -26,13 +26,6 @@ export const alertStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     margin: 0
   },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    marginTop: unit.x1,
-    margin: 0
-  },
   action: {
     insetBlockStart: unit.x4,
     insetInlineEnd: unit.x4,

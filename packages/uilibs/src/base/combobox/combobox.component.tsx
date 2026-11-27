@@ -32,7 +32,6 @@ import {
 import { Check, ChevronDown, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import {
   type ControlVariant,
   controlBase,
@@ -41,12 +40,10 @@ import {
   controlVariantsWithin
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
-import { ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
 
 export const Combobox = BaseCombobox.Root
@@ -69,16 +66,15 @@ export function ComboboxTrigger({
   children,
   showIcon = true,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Trigger>, 'className' | 'style'> &
-  StyleProp & {
-    /** Control height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
-     * InputPhone country flag). Defaults to `true`. */
-    showIcon?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Trigger>> & {
+  /** Control height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** Render the chevron icon. Set `false` for icon-only triggers (e.g. the
+   * InputPhone country flag). Defaults to `true`. */
+  showIcon?: boolean
+}) {
   return (
     <BaseCombobox.Trigger
       {...props}
@@ -120,25 +116,24 @@ export function ComboboxInput({
   showClear = false,
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style' | 'size'> &
-  StyleProp & {
-    /** Control height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** Accessible names of the built-in buttons. */
-    labels?: Partial<ComboboxInputLabels>
-    /** Style applied directly to the inner input element. */
-    inputStyle?: stylex.StyleXStyles
-    /** Render the built-in dropdown trigger button. Set `false` when the
-     * input is placed inside `ComboboxContent` and a `ComboboxTrigger`
-     * elsewhere anchors the popup. */
-    showTrigger?: boolean
-    /** Render a clear button (`BaseCombobox.Clear`) before the trigger. */
-    showClear?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Input>, 'size'> & {
+  /** Control height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** Accessible names of the built-in buttons. */
+  labels?: Partial<ComboboxInputLabels>
+  /** Style applied directly to the inner input element. */
+  inputStyle?: stylex.StyleXStyles
+  /** Render the built-in dropdown trigger button. Set `false` when the
+   * input is placed inside `ComboboxContent` and a `ComboboxTrigger`
+   * elsewhere anchors the popup. */
+  showTrigger?: boolean
+  /** Render a clear button (`BaseCombobox.Clear`) before the trigger. */
+  showClear?: boolean
+}) {
   return (
-    <div {...stylex.props(s.inputWrap, style)}>
+    <BaseCombobox.InputGroup {...stylex.props(s.inputWrap, style)}>
       <BaseCombobox.Input
         {...props}
         {...stylex.props(
@@ -155,7 +150,6 @@ export function ComboboxInput({
       {showClear && (
         <BaseCombobox.Clear
           aria-label={labels?.clear ?? 'Clear value'}
-          tabIndex={-1}
           {...stylex.props(
             focusRing.root,
             s.iconButton,
@@ -168,32 +162,31 @@ export function ComboboxInput({
       {showTrigger && (
         <BaseCombobox.Trigger
           aria-label={labels?.open ?? 'Open list'}
-          tabIndex={-1}
           {...stylex.props(focusRing.root, s.iconButton, s.inputTrigger)}
         >
           <TriggerChevron />
         </BaseCombobox.Trigger>
       )}
-    </div>
+    </BaseCombobox.InputGroup>
   )
 }
 
-// Container for chips in a multi-select combobox — also serves as the popup
-// anchor (pass a ref to `ComboboxContent`'s `anchor`), so it forwards `ref`.
+// Container for chips in a multi-select combobox. It is also Base UI's input group, so the popup
+// anchors to the whole box and not to the small inline input inside it.
 export function ComboboxChips({
   size = 'medium',
   variant = 'outline',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Chips>, 'className' | 'style'> &
-  StyleProp & {
-    /** Minimum height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Chips>> & {
+  /** Minimum height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+}) {
   return (
     <BaseCombobox.Chips
+      render={<BaseCombobox.InputGroup />}
       {...props}
       {...stylex.props(
         controlBase.root,
@@ -221,11 +214,10 @@ export function ComboboxChip({
   children,
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Chip>, 'className' | 'style'> &
-  StyleProp & {
-    /** Accessible name of the remove button; English by default. */
-    labels?: Partial<ComboboxChipLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Chip>> & {
+  /** Accessible name of the remove button; English by default. */
+  labels?: Partial<ComboboxChipLabels>
+}) {
   return (
     <BaseCombobox.Chip {...props} {...stylex.props(s.chip, style)}>
       {children}
@@ -246,18 +238,12 @@ export function ComboboxChip({
 export function ComboboxChipsInput({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Input>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Input>>) {
   return <BaseCombobox.Input {...props} {...stylex.props(s.chipsInput, style)} />
 }
 
 export interface ComboboxContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseCombobox.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseCombobox.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset' | 'anchor' | 'collisionAvoidance'
-    >,
-    StyleProp {}
+  extends PartProps<React.ComponentProps<typeof BaseCombobox.Popup>>, PositionerProps {}
 
 export function ComboboxContent({
   style,
@@ -265,41 +251,34 @@ export function ComboboxContent({
   sideOffset = 6,
   align = 'start',
   alignOffset = 0,
-  anchor,
   collisionAvoidance,
+  collisionPadding,
+  anchor,
   ...props
 }: ComboboxContentProps) {
   return (
-    <BaseCombobox.Portal container={usePortalContainer()}>
-      <BaseCombobox.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        anchor={anchor}
-        collisionAvoidance={collisionAvoidance}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseCombobox.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BaseCombobox.Positioner>
-    </BaseCombobox.Portal>
+    <PopupShell
+      parts={BaseCombobox}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }
 
 export function ComboboxList({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.List>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.List>>) {
   return <BaseCombobox.List {...props} {...stylex.props(s.list, style)} />
 }
 
@@ -307,7 +286,7 @@ export function ComboboxItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Item>>) {
   return (
     <BaseCombobox.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       {children}
@@ -321,27 +300,27 @@ export function ComboboxItem({
 export function ComboboxGroup({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Group>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Group>>) {
   return <BaseCombobox.Group {...props} {...stylex.props(style)} />
 }
 
 export function ComboboxLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.GroupLabel>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.GroupLabel {...props} {...stylex.props(s.label, style)} />
+}: PartProps<React.ComponentProps<typeof BaseCombobox.GroupLabel>>) {
+  return <BaseCombobox.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function ComboboxEmpty({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Empty>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.Empty {...props} {...stylex.props(s.empty, style)} />
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Empty>>) {
+  return <BaseCombobox.Empty {...props} {...stylex.props(popupList.empty, style)} />
 }
 
 export function ComboboxSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCombobox.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.Separator {...props} {...stylex.props(s.separator, style)} />
+}: PartProps<React.ComponentProps<typeof BaseCombobox.Separator>>) {
+  return <BaseCombobox.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

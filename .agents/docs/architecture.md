@@ -366,7 +366,7 @@ Decision (D1 to D9 of the plan, with the answers that changed a recommendation):
 Consequences:
 
 - (positive) a regression in the a11y, focus, contrast, overflow, or docs contract fails a run; one scale of tokens and shared types replaces per-file restatements; every component has a docs page with keyboard behavior proved by a play.
-- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors, each with a unit test) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; the data grid has an open audit (`audit-00003`).
+- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors and the numbers in `hooks/use-media-query.ts`, one test since plan 00014) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; the data grid has an open audit (`audit-00003`).
 
 Alternatives considered:
 
@@ -430,3 +430,57 @@ Consequences:
 Alternatives considered:
 
 - A grid role for clickable rows — rejected: it makes every cell a focus target and changes the whole keyboard model (parked, RI-5).
+
+### The uilibs implementation audit remediation, wave 1: waits as configuration, one StyleX plugin default, and CI that keeps its evidence
+
+Context (2026-11-27): the `uilibs implementation audit` (commit `05ccbe1`, 81 findings, merged into 26 recommendations) found that the 10 s wait rule of `frontend.md` was a convention that 40 waits and about 10 `pressUntil` calls did not follow, that "Invalid empty selector" was the dev-time media-const race and not a Storybook-plus-Vitest clash, and that CI kept no failure evidence. The owner approved `plan-00014-uilibs-implementation-audit-remediation` with every recommended decision; wave 1 is phases 1 to 16 (tracks A, B, C).
+
+Decision (D1 to D5, D15 of the plan):
+
+- D1: a defect found only by reading starts with a failing test; a test that cannot fail closes its finding as a false positive.
+- D2: the story wait is `configure({ asyncUtilTimeout: 10_000 })` in the preview's `beforeAll`; a probe showed it reaches the instrumented `waitFor` and `findBy*` (red at the default, green after), so the wrapper fallback was not needed. Rejected: per-call literals (22 existed, 40 waits were missed) and a lint rule (with the default a missing timeout is safe).
+- D3: `pressUntil` defaults to 10 s and the story projects' `testTimeout` is 30 s, because Vitest's browser default of 15 s cut a play with two failing waits into "Test timed out" (reproduced).
+- D4: the shared `stylexPlugin` sets `errorRecovery` outside production and `minify` in production, once for every package; the webapp's own branch is gone. The cold-server script was the red evidence (the first CSS collect threw); a cold Vitest story run never reproduced it in four tries, and five story runs beside a live `storybook dev` showed none, so the advice not to run both together is dropped. The webapp CSS fell from 92.3 KB to 69.3 KB (gzip 19.7 to 18.3 KB), `:dir()` kept, and `just size` now counts the entry CSS.
+- D5: no `retry` in the nightly engines: with 10 s waits and uploaded failure screenshots, a red nightly is read and not rerun. Trigger to revisit: a second nightly failure the screenshots do not explain.
+- D15: `actions/upload-artifact` and `actions/cache`, first-party and pinned by SHA, are approved; `include-hidden-files` is needed because `.vitest` is a dot directory.
+- Also in the wave: the per-story stylesheet fetch is replaced by a once-per-page match (measured 19% of story time over three files, above the plan's 10% bar); the static Storybook build leaves out the component manifests (18 MB to 16 MB, no builder paths in the binary), while `storybook dev` keeps serving `/mcp`; `expectDisabledLook` names the marks it checks; the viewport frame follows the dev sheet; story latency and failure rates are args.
+
+Consequences:
+
+- (positive) a slow WebKit runner no longer turns a settling popup into a flake by default, a CI failure leaves screenshots, the dev media-const error is gone for `uilibs`, and the CSS is no longer the one render-blocking asset the budget ignores.
+- (negative) a story that really fails takes up to 10 s to say so; the CI check names changed (`Checks`, `Tests (storybook)`, `Tests (storybook-dark)`, `Tests (unit)`), so required checks in GitHub must be re-pointed, and `Stories (webkit)` from the pull request workflow must not be required.
+
+Alternatives considered:
+
+- A second, `uilibs`-only recovery option — rejected: a copy of the shared default.
+- Excluding `uilibs` from the React Compiler — not part of this wave; plan D8 keeps it on.
+
+### The uilibs implementation audit remediation, wave 2: tested data grid, one popup shell, a responsive cut, and fixed colors
+
+Context (2026-11-27): wave 2 of `plan-00014` (phases 17 to 52, tracks D to G) fixed the data grid, Base UI, breakpoint, and token findings of the audit. Decisions (the plan's numbering):
+
+- D7: `Text` `weight` and `align` and `Stack` `align` and `justify` take plain values; only `Text` `variant`, `Stack` `direction` and `gap`, and `Hidden` stay responsive. Nothing in the webapp passed a responsive object. A shared `styles/responsive.stylex.ts` (phase 45) was reverted: bisecting the webapp entry showed it added 3.1 KB raw and 0.9 KB gzip of JS (472.3 / 150.7 after the cut, 475.4 / 151.6 with it) because Stack's and Hidden's sets rode along with every importer of Text, and the entry budget (152 KB gzip) is the scarcer resource than a mirror's upkeep. The three mirrors stay, with one test. The entry CSS limit is 68.9 KB raw and 18.6 KB gzip (measured 65.6 and 17.7, plus about 5%).
+- D9: `backgroundPageFaded` is removed; `black`, `white`, and the four `onBackground*` colors are `fixedColors` constants. No generator for `lightColors`: the drift test guards it.
+- D17: data grid geometry is dynamic styles in the same `stylex.props` call. D18: the column drag keeps its animation (`transition: style.transition`). D19: the `*Portal` aliases are deleted, and `PopupShell` owns the portal container. D20: `PreviewCard` centers by default. D24: the Base UI scrollbar replaced the 250-line overlay; `data-overflow-vertical` is gone (Base UI's `data-has-overflow-y` is the hook), and the overlay's 6 px thumb and the plain scrollbar's 2 px thumb stay two looks (unifying them is a design call).
+- D1 found more than the audit listed, each fixed with a red test first: the auto-size floor never applied (TanStack resolves every `minSize` to 20), draggable-row and draggable-column grids drew no row separators (a visible change), an end-pinned column got width 0 in drag grids, and a disabled `data-invalid` Switch and the quiet-edge variants painted the critical edge. The audit's native-input case did not reproduce (`:disabled` outranks the attribute) and stays as a regression row; the row half of X-01 (the border variable) was the missing separator rule, not a lost style.
+- Left open at the wave 2 close and fixed in wave 3 (phases 61b and 61c, each with a failing test first): `isBreakpoint` accepted `'toString'` (`value in BREAKPOINTS`), and `autoResize` left a bordered Textarea 2 px short of its content; both are resolved in `issue-00010`.
+
+Consequences:
+
+- (positive) the data grid's write path, ids, and auto size are tested on a real table, a tall dialog scrolls, one place owns popup portals and Positioner props.
+- (negative) `getDataGridTreeIndentStyle` is now `getDataGridTreeIndent` (a px number), `getPinningStyles` returns nulls, `columns` and the `*Portal` names changed (no backward compatibility); draggable grids look different (separators).
+
+### The uilibs implementation audit remediation, wave 3: static recipes, shared part types, and a leaner Storybook config
+
+Context (2026-11-27): wave 3 of `plan-00014` (phases 54 to 69, tracks H and I) cleaned the style recipes, the part types, the stories, and the Storybook and Vite configuration. Decisions:
+
+- `ring` is a static recipe per elevation (`ring.outline|raised|overlay|page`), not a function with an inline `--x-boxShadow`; `PopupShell` indexes it by elevation. Shared recipes replaced the copies: `popupFx.presence`, `popupFx.scrim`, `popupList`, `descriptionText`, and the chart legend swatch is a static map. The plan expected fewer rules; the compile counted 1710 to 1718 (one dynamic rule became three or eight static ones), and the gain is no inline style and no `@property`. The webapp sheet moved 65614 to 65719 B at phase 54 and ended at 63.8 KB.
+- The scroll area fade keeps an ltr and an rtl rule (four 4-stop layers) rather than one custom property, because StyleX emits a conditional custom property's default rule unlayered.
+- `PartProps` and `WithoutStyling` (`styles/types.ts`) replace 219 repeated `Omit` forms; `StyleProp` replaces every spelled-out `style?: StyleXStyles`; a guard test fails on either. Types are unchanged (mutual-assignability check on 386 exported props).
+- Stories use `screen`; the Storybook theme key is one file; the `#/` alias, the color matcher, two default settings, `addon-links`, the performance panel addon, and the static preview script are removed; one `browserProject` helper in `plugins/vitest` replaces four copies of the Playwright block (`plugins` lists `@vitest/browser-playwright` as a devDependency through the existing catalog entry).
+- The React Compiler leg is opt-in (`STORYBOOK_COMPILER=1`) and nightly only: it makes the compiler report what it skips, fails only on a failing story, and found one story bug (`TreeGrid`'s memo missed its table holder).
+
+Consequences:
+
+- (positive) a popup edge no longer writes an inline style, part types are one definition with a guard, the Storybook dev load has no deprecation, color-control, or loaded-twice warnings, and the compiler's skips are listed each night.
+- (negative) more static rules than before; `plugins` gained a dev dependency edge; the compiler leg lists seven skipped files (`toggle`, `data-grid`, `data-grid-cell-editor`, `data-grid-table-pager`, `data-grid-table-virtual`, `button-group`, `carousel`) that are not fixed.

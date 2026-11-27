@@ -81,7 +81,6 @@ export const tabsStyles = stylex.create({
     color: {
       default: colors.foregroundNeutralFaded,
       '[data-active]:not([data-disabled])': colors.foregroundNeutral,
-      ':disabled': colors.foregroundDisabled,
       '[data-disabled]': colors.foregroundDisabled
     },
     display: 'inline-flex',

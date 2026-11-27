@@ -37,7 +37,7 @@ Built on Base UI [Combobox](https://base-ui.com/react/components/combobox). `Com
 - **ComboboxInput:** the search input. It renders the dropdown button and, with `showClear`, a clear button.
 - **ComboboxTrigger:** a select-like button that shows the value. It renders its chevron itself. Use it instead of the input to open the popup.
 - **ComboboxValue:** renders the current value, inside a trigger or chips.
-- **ComboboxChips:** the box that holds the chips and their input when `multiple`. It is also the popup anchor.
+- **ComboboxChips:** the box that holds the chips and their input when `multiple`. The popup is as wide as this box and lines up with it.
 - **ComboboxChip:** one chosen value. It renders its remove button itself.
 - **ComboboxChipsInput:** the inline input inside the chips box. It has no box of its own.
 - **ComboboxContent:** the popup. It renders the portal and the positioner itself.
@@ -77,7 +77,7 @@ Built on Base UI [Combobox](https://base-ui.com/react/components/combobox). `Com
       </ComboboxValue>
       <ComboboxChipsInput />
     </ComboboxChips>
-    <ComboboxContent anchor={…} />
+    <ComboboxContent />
   </Combobox>
 
   {/* One value, searched inside the popup */}
@@ -105,7 +105,7 @@ Built on Base UI [Combobox](https://base-ui.com/react/components/combobox). `Com
 
 ### Several values
 
-Set `multiple` on `Combobox` and pass a ref of `ComboboxChips` as `anchor` of `ComboboxContent`.
+Set `multiple` on `Combobox`. The popup anchors to the whole `ComboboxChips` box.
 
 <Canvas of={Stories.Multiple} />
 
@@ -191,6 +191,7 @@ Every part except `Combobox`, `ComboboxValue` and `ComboboxCollection` also take
 | `alignOffset`        | `number` or an offset function <br /> Offset along the alignment axis, in px. Default `0`.                                          |
 | `anchor`             | element, ref, virtual element or a function returning one <br /> What the popup positions against.                                  |
 | `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own.                                       |
+| `collisionPadding`   | Base UI positioner value <br /> Space kept from the viewport edge.                                                                  |
 
 | Data attribute        | Description                                      |
 | --------------------- | ------------------------------------------------ |
@@ -227,7 +228,7 @@ Every part except `Combobox`, `ComboboxValue` and `ComboboxCollection` also take
 ## Caveats
 
 - Name a standalone `ComboboxInput`, `ComboboxTrigger` or `ComboboxChipsInput` with `aria-label`; inside a `Field` the `FieldLabel` names it. A placeholder is not a name.
-- `ComboboxChips` is the popup's anchor. Pass a `ref` to it and give the same ref to `anchor` on `ComboboxContent`.
+- The popup anchors to the input row (`ComboboxInput`) or to `ComboboxChips`, both Base UI's input group; set `anchor` on `ComboboxContent` only to position it against another element.
 - The remove button of a chip is named from its children only when they are a string; otherwise it is named `Remove` unless you set `labels.remove`.
 - The dropdown and clear buttons inside `ComboboxInput` have `tabIndex={-1}`, so they are skipped by Tab.
 - The CSS variables are set on the positioner that `ComboboxContent` renders, so the popup and its children inherit them.

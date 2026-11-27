@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-26T04:25:00+07:00
+updated: 2026-11-27T14:25:00+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -46,11 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-| File | Status | Subject |
-| --- | --- | --- |
-| (none live) | | Every plan is archived. |
+No live plan.
 
-Archived: `plan-00013-uilibs-grid-and-gate-leftovers.md` (done 2026-11-26), `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
+Archived: `plan-00014-uilibs-implementation-audit-remediation.md` (done 2026-11-27), `plan-00013-uilibs-grid-and-gate-leftovers.md` (done 2026-11-26), `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
 ## Issues (`.agents/docs/issues/`)
 
@@ -66,7 +64,7 @@ Parked improvements with a named unlock.
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `roadmap-00001-parked-verifications.md` | living | Manual checks no code can replace (real screen reader, forced-colors OS mode, physical device), the data grid keyboard differences from the APG (RI-5), and the community/enterprise edition idea. |
+| `roadmap-00001-parked-verifications.md` | living | Manual checks no code can replace (real screen reader, forced-colors OS mode, physical device), the data grid keyboard differences from the APG (RI-5), the parked items of the uilibs implementation audit (RI-6), and the community/enterprise edition idea. |
 
 ## Handovers (`.agents/docs/handover/`)
 
@@ -74,7 +72,7 @@ Session compactions, `handover-<nnnnn>-<topic>.md`, titled `# Handover: <summary
 
 | File | Status | Subject |
 | --- | --- | --- |
-| `handover-00016-uilibs-leftovers.md` | done | Plan 00013 closed: six UI leftovers resolved in 11 phases on `fix/uilibs-leftovers` (story viewport global with a guard, `StepDots`, the `--font-body` token, a grid focus ring, a valid resize separator, row `PageUp` and `PageDown`, resize direction from `dir`); `issue-00009` archived; RI-5 parked. |
+| `handover-00017-uilibs-implementation-audit.md` | done | Plan 00014 closed: 76 of 81 uilibs audit findings fixed in 89 commits on `fix/uilibs-audit-remediation` (not pushed); `issue-00010` archived; RI-6 parked; the required CI checks must be re-pointed after the push. |
 
 ## Audits (`.agents/docs/audit/`)
 
@@ -82,4 +80,4 @@ Point-in-time reviews written by the `deep-audit` or `ui-audit` skill. No live a
 
 ## Archive (`.agents/docs/archive/`)
 
-Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `plan-00009-uilibs-reshaped-props-docs.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `handover-00011-uilibs-stories-by-prop.md`, `handover-00012-uilibs-reshaped-props-docs.md`, `plan-00010-uilibs-playground-controls.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22), `issue-00004-data-grid-unread-props.md` (resolved 2026-11-24), `issue-00005-data-grid-unread-layout-flags.md` (resolved 2026-11-24), `issue-00006-description-list-no-controls.md` (resolved 2026-11-24), `issue-00007-stylex-dir-rtl-matches-lang.md` (resolved 2026-11-25), `issue-00008-command-dialog-escape-act-webkit.md` (resolved 2026-11-25), `plan-00011-uilibs-audit-remediation.md` (done 2026-11-25), `audit-00002-ui-uilibs.md` (completed 2026-11-25), `handover-00013-uilibs-playground-controls.md`., `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `audit-00003-uilibs-data-grid.md` (completed 2026-11-26), `handover-00014-uilibs-audit-remediation.md`, `plan-00013-uilibs-grid-and-gate-leftovers.md` (done 2026-11-26), `issue-00009-uilibs-story-gate-leftovers.md` (resolved 2026-11-26), `handover-00015-uilibs-data-grid-audit.md`.
+Completed ledger files, moved unchanged (handover titles were rewritten to `# Handover: <summary>` on 2026-11-22): `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md`, `plan-00003-admin-sidebar-followups.md`, `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md`, `plan-00009-uilibs-reshaped-props-docs.md`, `audit-00001-uilibs.md`, `handover-00001-cli-transport-vixum.md`, `handover-00002-uilibs-audit-plan.md`, `handover-00003-uilibs-improvement.md`, `handover-00004-webapp-forms-formisch.md`, `handover-00005-webapp-nav-container-demo.md`, `handover-00006-admin-sidebar-followups.md`, `handover-00007-ui-audit-remediation.md`, `handover-00008-ui-leftovers-remediation.md`, `handover-00009-webapp-unit-tests.md`, `handover-00010-agent-docs-restructure.md`, `handover-00011-uilibs-stories-by-prop.md`, `handover-00012-uilibs-reshaped-props-docs.md`, `plan-00010-uilibs-playground-controls.md`, `issue-00002-stale-e2e-specs.md` (resolved 2026-11-21), `issue-00003-ui-audit-leftovers.md` (resolved 2026-11-22), `issue-00004-data-grid-unread-props.md` (resolved 2026-11-24), `issue-00005-data-grid-unread-layout-flags.md` (resolved 2026-11-24), `issue-00006-description-list-no-controls.md` (resolved 2026-11-24), `issue-00007-stylex-dir-rtl-matches-lang.md` (resolved 2026-11-25), `issue-00008-command-dialog-escape-act-webkit.md` (resolved 2026-11-25), `plan-00011-uilibs-audit-remediation.md` (done 2026-11-25), `audit-00002-ui-uilibs.md` (completed 2026-11-25), `handover-00013-uilibs-playground-controls.md`., `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `audit-00003-uilibs-data-grid.md` (completed 2026-11-26), `handover-00014-uilibs-audit-remediation.md`, `plan-00013-uilibs-grid-and-gate-leftovers.md` (done 2026-11-26), `issue-00009-uilibs-story-gate-leftovers.md` (resolved 2026-11-26), `handover-00015-uilibs-data-grid-audit.md`, `plan-00014-uilibs-implementation-audit-remediation.md` (done 2026-11-27), `issue-00010-uilibs-audit-remediation-findings.md` (resolved 2026-11-27), `handover-00016-uilibs-leftovers.md`.

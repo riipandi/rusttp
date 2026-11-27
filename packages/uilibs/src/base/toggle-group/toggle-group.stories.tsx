@@ -16,8 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
 const meta = {
   title: 'Base Components/ToggleGroup',
-  component: ToggleGroup,
-  tags: [] // ['autodocs']
+  component: ToggleGroup
 } satisfies Meta<typeof ToggleGroup>
 
 type Story = StoryObj<typeof meta>
@@ -325,12 +324,13 @@ export const States: Story = {
   play: async ({ canvasElement }) => {
     const disabled = items(cellOf(canvasElement, 'state', 'disabled'))
     await expect(disabled).toHaveLength(2)
-    for (const item of disabled) {
-      await expect(item).toBeDisabled()
-      await expectDisabledLook(item)
-    }
     const [charm, hex] = disabled
     if (!charm || !hex) throw new Error('Disabled items not found')
+    // Only the pressed item (`charm`) keeps a fill; the unpressed one is text and edge.
+    await expect(charm).toBeDisabled()
+    await expectDisabledLook(charm, { text: true, edge: true, fill: true })
+    await expect(hex).toBeDisabled()
+    await expectDisabledLook(hex, { text: true, edge: true })
     await userEvent.click(hex)
     await expect(hex).not.toHaveAttribute('data-pressed')
     await expect(charm).toHaveAttribute('data-pressed')

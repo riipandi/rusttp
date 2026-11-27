@@ -38,6 +38,11 @@ test *args:
 test-ui *args:
     @pnpm --silent --filter uilibs test {{ args }}
 
+[doc('Run the uilibs gates with a v8 coverage report (gap finder, no threshold)')]
+[group('quality')]
+test-ui-coverage *args:
+    @pnpm --silent --filter uilibs test:coverage {{ args }}
+
 [doc('Check the uilibs docs pages and Playground controls against the code')]
 [group('quality')]
 check-ui-docs:

@@ -12,8 +12,7 @@ import { LoaderText } from './loader-text.component'
 
 const meta = {
   title: 'Extra Components/LoaderText',
-  component: LoaderText,
-  tags: [] // ['autodocs']
+  component: LoaderText
 } satisfies Meta<typeof LoaderText>
 
 type Story = StoryObj<typeof meta>

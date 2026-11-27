@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
@@ -13,8 +13,7 @@ import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from './preview-c
 
 const meta = {
   title: 'Base Components/PreviewCard',
-  component: PreviewCard,
-  tags: [] // ['autodocs']
+  component: PreviewCard
 } satisfies Meta<typeof PreviewCard>
 
 type Story = StoryObj<typeof meta>
@@ -25,6 +24,10 @@ const styles = stylex.create({
   row: {
     display: 'flex',
     gap: 12
+  },
+  middle: {
+    display: 'flex',
+    justifyContent: 'center'
   },
   info: {
     display: 'flex',
@@ -41,6 +44,12 @@ const styles = stylex.create({
 })
 
 export default meta
+
+/** The horizontal middle of an element. */
+function middle(element: HTMLElement) {
+  const { left, width } = element.getBoundingClientRect()
+  return left + width / 2
+}
 
 type PlaygroundArgs = ComponentProps<typeof PreviewCard> &
   Pick<ComponentProps<typeof PreviewCardContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
@@ -70,7 +79,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     align: { control: 'radio', options: ['start', 'center', 'end'] },
     alignOffset: { control: 'number' }
   },
-  args: { side: 'bottom', sideOffset: 4, align: 'center', alignOffset: 4 },
+  args: { side: 'bottom', sideOffset: 4, align: 'center', alignOffset: 0 },
   render: ({ side, sideOffset, align, alignOffset, ...args }) => (
     <PreviewCard {...args}>
       <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
@@ -97,15 +106,48 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </PreviewCard>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     // Hovering the trigger reveals the preview card.
     await userEvent.hover(canvas.getByRole('button', { name: '@dumbledore' }))
-    await body.findByText('Joined September 1892')
+    await screen.findByText('Joined September 1892')
 
     // Hovering away dismisses it.
     await userEvent.unhover(canvas.getByRole('button', { name: '@dumbledore' }))
-    await waitFor(() => expect(body.queryByText('Joined September 1892')).toBeNull())
+    await waitFor(() => expect(screen.queryByText('Joined September 1892')).toBeNull())
+  }
+}
+
+/** With no offset given, the card is centered on its trigger: nothing shifts it along the edge. */
+export const Centered: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<PreviewCard>
+  <PreviewCardTrigger render={<Button variant='outline' />}>@hermione</PreviewCardTrigger>
+  <PreviewCardContent>Prefect, and the brightest witch of her age.</PreviewCardContent>
+</PreviewCard>`
+      }
+    }
+  },
+  render: () => (
+    <div {...stylex.props(styles.middle)}>
+      <PreviewCard>
+        <PreviewCardTrigger render={<Button variant='outline' />}>@hermione</PreviewCardTrigger>
+        <PreviewCardContent data-testid='card'>
+          Prefect, and the brightest witch of her age.
+        </PreviewCardContent>
+      </PreviewCard>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('button', { name: '@hermione' })
+    await userEvent.hover(trigger)
+    const card = await screen.findByTestId('card')
+    // The card scales in from its edge, so its middle settles once the transition ends.
+    await waitFor(async () => {
+      await expect(Math.abs(middle(card) - middle(trigger))).toBeLessThanOrEqual(1)
+    })
+    await userEvent.unhover(trigger)
+    await waitFor(() => expect(screen.queryByTestId('card')).toBeNull())
   }
 }
 
@@ -132,15 +174,14 @@ export const Sides: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     for (const side of sides) {
       const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
         name: side
       })
       await userEvent.hover(trigger)
-      await body.findByText(`Preview floats to the ${side}`)
+      await screen.findByText(`Preview floats to the ${side}`)
       await userEvent.unhover(trigger)
-      await waitFor(() => expect(body.queryByText(`Preview floats to the ${side}`)).toBeNull())
+      await waitFor(() => expect(screen.queryByText(`Preview floats to the ${side}`)).toBeNull())
     }
   }
 }
@@ -164,24 +205,24 @@ function Profile({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Profile defaultOpen />,
   play: async () => {
-    const card = await within(document.body).findByText('Transfiguration professor at Hogwarts.')
+    const card = await screen.findByText('Transfiguration professor at Hogwarts.')
     await waitFor(() => expect(card).toBeVisible())
   }
 }
+
+const cardInKeyboard = () => screen.queryByText('Transfiguration professor at Hogwarts.')
 
 /** Focusing the trigger opens the card, and Escape closes it. */
 export const Keyboard: Story = {
   render: () => <Profile />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: '@dumbledore' })
-    const card = () => body.queryByText('Transfiguration professor at Hogwarts.')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await waitFor(() => expect(card()).toBeVisible())
+    await waitFor(() => expect(cardInKeyboard()).toBeVisible())
 
-    await pressUntil('{Escape}', () => expect(card()).toBeNull())
+    await pressUntil('{Escape}', () => expect(cardInKeyboard()).toBeNull())
     await expect(trigger).toHaveFocus()
   }
 }

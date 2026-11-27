@@ -1,38 +1,34 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from './colors.stylex'
+import { colors, shadow } from './colors.stylex'
 import { stroke, unit } from './tokens.stylex'
 
 /**
- * `ring` — the Tailwind `ring-*` equivalent, defined once as a StyleX dynamic
- * style. Draws the edge as a box-shadow instead of a border and composes like
+ * `ring` — the Tailwind `ring-*` equivalent, a static recipe per elevation. Draws the edge as a
+ * box-shadow instead of a border, with that elevation's `shadow` layered under it, and composes like
  * any style:
  *
- *   {...stylex.props(styles.popup, ring({ shadow: shadow.raised }), style)}
- *   {...stylex.props(styles.card, ring({ width: stroke.ring2, color: colors.foregroundPrimary }))}
+ *   {...stylex.props(styles.popup, ring.raised, style)}
+ *   {...stylex.props(popupFx.pose, ring[elevation])}
  *
- * Use it on popups instead of a border: Base UI's align-item-with-trigger
- * math ignores borders (a border shifts the aligned text by its width), and a
- * ring paints outside the box, overlapping the trigger's border for a single
- * crisp edge.
+ * Use it on popups instead of a border: Base UI's align-item-with-trigger math ignores borders (a
+ * border shifts the aligned text by its width), and a ring paints outside the box, overlapping the
+ * trigger's border for a single crisp edge. `page` is the 2px page-colored separator of an
+ * overlapping group (`AvatarGroup`), with no shadow.
  */
-const recipes = stylex.create({
-  boxShadow: (value: string) => ({ boxShadow: value })
+export const ring = stylex.create({
+  outline: {
+    boxShadow: `0 0 0 ${stroke.ring1} ${colors.borderNeutralFaded}, ${shadow.outline}`
+  },
+  raised: {
+    boxShadow: `0 0 0 ${stroke.ring1} ${colors.borderNeutralFaded}, ${shadow.raised}`
+  },
+  overlay: {
+    boxShadow: `0 0 0 ${stroke.ring1} ${colors.borderNeutralFaded}, ${shadow.overlay}`
+  },
+  page: {
+    boxShadow: `0 0 0 ${stroke.ring2} ${colors.backgroundPage}`
+  }
 })
-
-export interface RingOptions {
-  /** Ring thickness. Default: `stroke.ring1` (1px). */
-  width?: string
-  /** Ring color. Default: `colors.borderNeutralFaded`. */
-  color?: string
-  /** Extra drop shadow layered under the ring (e.g. `shadow.raised`). Default: none. */
-  shadow?: string | null
-}
-
-export const ring = ({
-  width = stroke.ring1,
-  color = colors.borderNeutralFaded,
-  shadow: drop = null
-}: RingOptions = {}) => recipes.boxShadow(`0 0 0 ${width} ${color}${drop ? `, ${drop}` : ''}`)
 
 /** A count of `unit` steps (one step is `unit.x1`, 4px): the keys of `unit`, as numbers. */
 export type UnitStep =

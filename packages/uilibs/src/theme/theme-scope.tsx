@@ -4,22 +4,19 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { darkColors, darkShadows, lightColors, lightShadows } from '../styles/themes'
+import type { PartProps } from '../styles/types'
 import { useTheme } from './theme'
 import { ThemeScopeContext, type ThemeMode } from './theme-scope.context'
 import { themeScopeSchemes, themeScopeStyles as s } from './theme-scope.stylex'
 
 export type ThemeScopeColorMode = ThemeMode | 'inverted'
 
-export interface ThemeScopeProps extends Omit<
-  useRender.ComponentProps<'div'>,
-  'className' | 'style'
-> {
+export interface ThemeScopeProps extends PartProps<useRender.ComponentProps<'div'>> {
   /**
    * The mode of the subtree: `dark` or `light`, whatever the page is, or `inverted`, the opposite
    * of the surrounding mode (the page's, or the enclosing scope's).
    */
   colorMode: ThemeScopeColorMode
-  style?: stylex.StyleXStyles
 }
 
 const themes = {

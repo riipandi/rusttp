@@ -15,21 +15,18 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 // and the HMR socket connects to it directly so a server restart never drops it.
 const vite = { host: '127.0.0.1', port: 5173 }
 
-// In dev the CSS is collected on every request while modules are still being compiled one by one. A
-// `defineConsts` media key (app/styles/constants.stylex.ts) stays an unresolved `var(--x…)` until the
-// file that defines it has compiled, and lightningcss rejects that rule ("Invalid empty selector").
-// Error recovery drops the rule for that one response; the next HMR update serves the whole CSS.
-// The build keeps lightningcss strict.
+// The shared plugin pins the CSS layers and recovers from the dev media-const race (see
+// `plugins/stylex`).
 const stylex = (mode: string) =>
   stylexPlugin({
     aliases: { '#/*': resolve('app/*') },
-    enableDevClassNames: mode === 'development',
-    lightningcssOptions: mode === 'development' ? { errorRecovery: true } : undefined,
-    useCSSLayers: { before: ['reset'], prefix: 'stylex' }
+    enableDevClassNames: mode === 'development'
   })
 
 export default defineConfig(({ mode }) => ({
   plugins: [
+    // First, so it sees the source before any other transform rewrites it (`data-tsd-source`).
+    devtools({ logging: false }),
     vixum({ routeTree: resolve('app/routes.gen.ts'), plugins: () => [stylex(mode)] }),
     // Builds and runs the Rust server in `vite dev`, rebuilding on change.
     rustServer({
@@ -37,13 +34,12 @@ export default defineConfig(({ mode }) => ({
       pkg: 'rusttp-server',
       args: ['serve'],
       watch: ['apps', 'crates', 'Cargo.toml'],
-      ignore: ['apps/server/frontend'],
+      ignore: ['apps/server/frontend', 'apps/server/storybook'],
       extensions: ['rs', 'toml', 'html', 'js', 'sql'],
       readyTarget: 'rusttp_server::transport::server'
     }),
     paraglideVitePlugin({ project: './project.inlang' }),
     devtoolsJson(),
-    devtools({ logging: false }),
     tanstackRouter({
       routesDirectory: resolve('./app/routes'),
       generatedRouteTree: resolve('./app/routes.gen.ts'),
@@ -70,6 +66,9 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1024 * 2,
     rolldownOptions: {
       input: resolve('app/main.tsx'),
+      // The build is dominated by the React Compiler's per-module transform and the route scan, which
+      // is known and not actionable here; the notice only repeats it.
+      checks: { bundlerTimings: false },
       // The React Compiler has already read 'use no memo' by bundling time; dropping it is harmless.
       onwarn(warning, warn) {
         if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes('use no memo'))
@@ -83,6 +82,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     ...vite,
     strictPort: true,
+    // Build outputs the Rust server embeds: Vite must not watch or reload for them.
+    watch: { ignored: ['**/apps/server/frontend/**', '**/apps/server/storybook/**'] },
     hmr: { host: vite.host, clientPort: vite.port }
   }
 }))

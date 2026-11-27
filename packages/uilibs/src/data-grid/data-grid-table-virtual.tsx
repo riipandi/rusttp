@@ -33,7 +33,10 @@ import {
   hasDataGridTableRightPinnedColumns
 } from './data-grid-table-utils'
 import type { DataGridTablePinnedBoundary } from './data-grid-table-utils'
-import { dataGridTableVirtualStyles as s3 } from './data-grid-table.stylex'
+import {
+  dataGridTableStyles as s,
+  dataGridTableVirtualStyles as s3
+} from './data-grid-table.stylex'
 
 interface DataGridTableVirtualScrollElements {
   containerElement: HTMLDivElement | null
@@ -326,12 +329,6 @@ function DataGridTableVirtualPinnedPlaceholderCell<TData extends object>({
   return (
     <td
       aria-hidden='true'
-      style={{
-        ...(props.tableLayout?.columnsPinnable && column.getCanPin() && getPinningStyles(column)),
-        ...(props.tableLayout?.columnsResizable && {
-          width: `calc(var(--col-${column.id}-size) * 1px)`
-        })
-      }}
       data-pinned={isPinned || undefined}
       data-last-col={isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined}
       {...stylex.props(
@@ -347,7 +344,12 @@ function DataGridTableVirtualPinnedPlaceholderCell<TData extends object>({
           column.getCanPin() &&
           isPinned === 'end' &&
           isFirstEndPinned &&
-          s3.pinnedDividerEnd
+          s3.pinnedDividerEnd,
+        props.tableLayout?.columnsPinnable &&
+          column.getCanPin() &&
+          s.pinning(getPinningStyles(column)),
+        props.tableLayout?.columnsResizable &&
+          s.colWidth(`calc(var(--col-${column.id}-size) * 1px)`)
       )}
     />
   )
@@ -1178,7 +1180,7 @@ function DataGridTableVirtual<TData extends object>({
   )
 }
 
-export { DataGridTableVirtual }
+export { DataGridTableVirtual, getDataGridTableScrollTarget }
 export type {
   DataGridTableVirtualScrollAlignment,
   DataGridTableVirtualProps,

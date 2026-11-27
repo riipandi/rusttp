@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
@@ -44,7 +44,7 @@ export const avatarStyles = stylex.create({
     borderRadius: radius.full,
     borderStyle: 'solid',
     borderWidth: stroke.ring2,
-    color: colors.onBackgroundPrimary,
+    color: fixedColors.onBackgroundPrimary,
     display: 'flex',
     insetInlineEnd: 0,
     insetBlockEnd: 0,
@@ -91,10 +91,16 @@ export const avatarFills = {
   }),
   solid: stylex.create({
     neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-    primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
-    positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },
-    warning: { backgroundColor: colors.backgroundWarning, color: colors.onBackgroundWarning },
-    critical: { backgroundColor: colors.backgroundCritical, color: colors.onBackgroundCritical }
+    primary: { backgroundColor: colors.backgroundPrimary, color: fixedColors.onBackgroundPrimary },
+    positive: {
+      backgroundColor: colors.backgroundPositive,
+      color: fixedColors.onBackgroundPositive
+    },
+    warning: { backgroundColor: colors.backgroundWarning, color: fixedColors.onBackgroundWarning },
+    critical: {
+      backgroundColor: colors.backgroundCritical,
+      color: fixedColors.onBackgroundCritical
+    }
   })
 }
 

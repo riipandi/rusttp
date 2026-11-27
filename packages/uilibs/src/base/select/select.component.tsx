@@ -36,7 +36,6 @@ import { Select as BaseSelect } from '@base-ui/react/select'
 import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import {
   type ControlVariant,
   controlBase,
@@ -44,12 +43,10 @@ import {
   controlVariants
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
-import type { ControlSize, Glyph } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
-import { ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
+import type { ControlSize, Glyph, PartProps } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { selectStyles as s } from './select.stylex'
 
 export const Select = BaseSelect.Root
@@ -67,15 +64,14 @@ export function SelectTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
-  StyleProp & {
-    /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** A glyph before the value; it is decoration, so the name still comes from the label. */
-    icon?: Glyph
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.Trigger>> & {
+  /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** A glyph before the value; it is decoration, so the name still comes from the label. */
+  icon?: Glyph
+}) {
   const group = useButtonGroup()
   const size = sizeProp ?? group?.size ?? 'medium'
   return (
@@ -121,13 +117,10 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
 }
 
 export interface SelectContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseSelect.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseSelect.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset' | 'alignItemWithTrigger'
-    >,
-    StyleProp {}
+  extends PartProps<React.ComponentProps<typeof BaseSelect.Popup>>, PositionerProps {
+  /** Lays the open list over its trigger so the selected item sits on the value. */
+  alignItemWithTrigger?: boolean
+}
 
 export function SelectContent({
   style,
@@ -136,42 +129,38 @@ export function SelectContent({
   sideOffset = 4,
   align = 'center',
   alignOffset = 0,
+  collisionAvoidance,
+  collisionPadding,
+  anchor,
   alignItemWithTrigger = false,
   ...props
 }: SelectContentProps) {
   return (
-    <BaseSelect.Portal container={usePortalContainer()}>
-      <BaseSelect.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        alignItemWithTrigger={alignItemWithTrigger}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseSelect.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            s.popup,
-            // Edge as a ring, not a border: Base UI's align-item-with-trigger
-            // math ignores borders and would shift the aligned text.
-            ring({ shadow: shadow.raised }),
-            // The align-with-trigger overlay repositions on open; a scale-in
-            // animation fights that, so it only fades out. Anchored mode gets
-            // the full closed pose on entry and exit.
-            !alignItemWithTrigger && popupFx.pose,
-            !alignItemWithTrigger && s.popupAnchored,
-            style
-          )}
-        >
-          <ScrollArrow direction='up' />
-          <BaseSelect.List {...stylex.props(s.list)}>{children}</BaseSelect.List>
-          <ScrollArrow direction='down' />
-        </BaseSelect.Popup>
-      </BaseSelect.Positioner>
-    </BaseSelect.Portal>
+    <PopupShell
+      parts={BaseSelect}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor,
+        alignItemWithTrigger
+      }}
+      // The align-with-trigger overlay repositions on open; a scale-in animation fights that, so it
+      // only fades out. Anchored mode gets the full closed pose on entry and exit.
+      pose={!alignItemWithTrigger}
+      // The edge is a ring, not a border: Base UI's align-item-with-trigger math ignores borders
+      // and would shift the aligned text.
+      popupStyle={[s.popup, alignItemWithTrigger ? s.popupAligned : s.popupAnchored]}
+      style={style}
+      {...props}
+    >
+      <ScrollArrow direction='up' />
+      <BaseSelect.List {...stylex.props(s.list)}>{children}</BaseSelect.List>
+      <ScrollArrow direction='down' />
+    </PopupShell>
   )
 }
 
@@ -179,7 +168,7 @@ export function SelectItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.Item>>) {
   return (
     <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
@@ -193,13 +182,13 @@ export function SelectItem({
 export function SelectLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.GroupLabel>, 'className' | 'style'> & StyleProp) {
-  return <BaseSelect.GroupLabel {...props} {...stylex.props(s.label, style)} />
+}: PartProps<React.ComponentProps<typeof BaseSelect.GroupLabel>>) {
+  return <BaseSelect.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function SelectSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseSelect.Separator {...props} {...stylex.props(s.separator, style)} />
+}: PartProps<React.ComponentProps<typeof BaseSelect.Separator>>) {
+  return <BaseSelect.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

@@ -17,7 +17,6 @@ import {
   ContextMenuGroup,
   ContextMenuItem,
   ContextMenuLabel,
-  ContextMenuPortal,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
   ContextMenuSeparator,
@@ -47,7 +46,6 @@ Built on Base UI [Context Menu](https://base-ui.com/react/components/context-men
 - **ContextMenuSub:** the root of a submenu.
 - **ContextMenuSubTrigger:** the item that opens the submenu. It renders the chevron itself.
 - **ContextMenuSubContent:** the submenu popup.
-- **ContextMenuPortal:** exported only for custom compositions. `ContextMenuContent` already includes it.
 
 ```jsx
 <ContextMenu>
@@ -111,7 +109,7 @@ The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` ite
 
 ## API reference
 
-Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `ContextMenuSub`, and `ContextMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ContextMenuContent` and `ContextMenuSubContent` it styles the popup.
+Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuSub`, and `ContextMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `ContextMenuContent` and `ContextMenuSubContent` it styles the popup.
 
 `ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuSubTrigger`, `ContextMenuShortcut`, `ContextMenuSeparator`, and `ContextMenuLabel` are the Dropdown Menu parts under another name. Their props and data attributes (`color`, `icon`, `inset`, `data-highlighted`, `data-checked`, and the rest) are listed on the Dropdown Menu page.
 
@@ -124,12 +122,15 @@ Every part except `ContextMenu`, `ContextMenuGroup`, `ContextMenuPortal`, `Conte
 
 ### ContextMenuContent
 
-| Prop          | Description                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `right`. |
-| `sideOffset`  | `number` or a function <br /> Distance from the anchor, in pixels. Default `0`.                                                    |
-| `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                  |
-| `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `4`.                                             |
+| Prop                 | Description                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `side`               | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `right`. |
+| `sideOffset`         | `number` or a function <br /> Distance from the anchor, in pixels. Default `0`.                                                    |
+| `align`              | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                  |
+| `alignOffset`        | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `4`.                                             |
+| `anchor`             | element, ref, virtual element or a function returning one <br /> What the popup positions against.                                 |
+| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own.                                      |
+| `collisionPadding`   | Base UI positioner value <br /> Space kept from the viewport edge.                                                                 |
 
 | Data attribute        | Description                                                                                  |
 | --------------------- | -------------------------------------------------------------------------------------------- |
@@ -155,4 +156,4 @@ It takes the `ContextMenuContent` props and data attributes, with other defaults
 
 - `ContextMenuTrigger` sets `user-select: none`, so text inside it cannot be selected.
 - `ContextMenuLabel` throws unless it sits inside a `ContextMenuGroup` or `ContextMenuRadioGroup`.
-- `ContextMenuContent` already wraps itself in a portal and positioner. Do not add `ContextMenuPortal` around it.
+- `ContextMenuContent` already wraps itself in a portal and positioner. Do not wrap it in a portal.

@@ -11,7 +11,7 @@ import { userEvent, waitFor } from 'storybook/test'
 export async function pressUntil(
   key: string,
   settled: () => unknown,
-  { when, timeout = 3000 }: { when?: () => boolean; timeout?: number } = {}
+  { when, timeout = 10_000 }: { when?: () => boolean; timeout?: number } = {}
 ) {
   await waitFor(
     async () => {

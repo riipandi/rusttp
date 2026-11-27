@@ -1,10 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { Subscribe } from '@tanstack/react-table'
 import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../base/button'
+import type { StyleProp } from '../styles/types'
 import type { DataGridTableInstance } from './data-grid'
 import type { DataGridEditorAdvance, DataGridEditorSession } from './data-grid-cell-ops'
 import { dataGridCellEditorStyles, dataGridSelectionBarStyles } from './data-grid.stylex'
@@ -196,9 +196,8 @@ function DataGridSelectionBar<TData extends object>({
   clearLabel = 'Clear',
   onClear,
   table
-}: {
+}: StyleProp & {
   children?: ReactNode
-  style?: StyleXStyles
   label?: (count: number) => ReactNode
   clearLabel?: ReactNode
   onClear?: () => void

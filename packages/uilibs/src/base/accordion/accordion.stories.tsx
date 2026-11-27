@@ -8,8 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 
 const meta = {
   title: 'Base Components/Accordion',
-  component: Accordion,
-  tags: [] // ['autodocs']
+  component: Accordion
 } satisfies Meta<typeof Accordion>
 
 type Story = StoryObj<typeof meta>
@@ -23,18 +22,16 @@ type PlaygroundArgs = ComponentProps<typeof Accordion> &
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['multiple', 'disabled', 'loopFocus', 'iconPosition'] }
+    controls: { disable: false, include: ['multiple', 'disabled', 'iconPosition'] }
   },
   argTypes: {
     multiple: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    loopFocus: { control: 'boolean' },
     iconPosition: { control: 'radio', options: ['end', 'start'] }
   },
   args: {
     multiple: false,
     disabled: false,
-    loopFocus: true,
     iconPosition: 'end',
     defaultValue: ['item-1']
   },

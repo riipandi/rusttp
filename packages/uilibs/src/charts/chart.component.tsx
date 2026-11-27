@@ -38,8 +38,9 @@ import { RendererChart as TanStackChart } from '@tanstack/charts/react/tooltip'
 import type { ChartTooltipBodyRenderContext } from '@tanstack/charts/react/tooltip'
 import type { RendererChartProps as TanStackRendererChartProps } from '@tanstack/charts/react/tooltip'
 import * as React from 'react'
+import type { PartProps, StyleProp } from '../styles/types'
 import { type ChartColorName, chartColors } from './chart-colors'
-import { chartStyles as s } from './chart.stylex'
+import { chartStyles as s, chartSwatchColors as swatchColors } from './chart.stylex'
 
 export interface ChartConfigItem {
   label?: React.ReactNode
@@ -72,14 +73,10 @@ interface ChartContextValue {
 
 const ChartContext = React.createContext<ChartContextValue | null>(null)
 
-export interface ChartContainerProps extends Omit<
-  useRender.ComponentProps<'div'>,
-  'className' | 'style'
-> {
+export interface ChartContainerProps extends PartProps<useRender.ComponentProps<'div'>> {
   config: ChartConfig
   /** What the chart shows, in a sentence or two: the trend, the range, the outlier. Every chart inside takes it as its accessible description. */
   description?: string
-  style?: stylex.StyleXStyles
 }
 
 export function ChartContainer({
@@ -101,8 +98,11 @@ export function ChartContainer({
   )
 }
 
-interface ChartOwnProps<TDatum, TXValue extends ChartValue, TYValue extends ChartValue> {
-  style?: stylex.StyleXStyles
+interface ChartOwnProps<
+  TDatum,
+  TXValue extends ChartValue,
+  TYValue extends ChartValue
+> extends StyleProp {
   renderTooltipBody?: (
     context: ChartTooltipBodyRenderContext<TDatum, TXValue, TYValue>
   ) => React.ReactNode
@@ -112,9 +112,9 @@ export type ChartProps<
   TDatum = unknown,
   TXValue extends ChartValue = ChartValue,
   TYValue extends ChartValue = ChartValue
-> = Omit<
+> = PartProps<
   TanStackRendererChartProps<TDatum, TXValue, TYValue>,
-  'renderTooltipBody' | 'style' | 'renderer' | 'className'
+  'renderTooltipBody' | 'renderer'
 > &
   ChartOwnProps<TDatum, TXValue, TYValue>
 
@@ -162,11 +162,10 @@ export function Chart<
   )
 }
 
-export interface ChartLegendProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
+export interface ChartLegendProps extends PartProps<React.ComponentProps<'div'>> {
   config?: ChartConfig
   /** Config keys to skip, e.g. series hidden by an application toggle. */
   hide?: readonly string[]
-  style?: stylex.StyleXStyles
 }
 
 /** Config-driven legend, rendered outside the chart surface. Returns null
@@ -194,11 +193,7 @@ export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps)
             {Icon ? (
               <Icon height={12} width={12} color={item.color && chartColors[item.color]} />
             ) : (
-              <span
-                {...stylex.props(
-                  s.legendSwatch(item.color ? chartColors[item.color] : 'currentColor')
-                )}
-              />
+              <span {...stylex.props(s.legendSwatch, item.color && swatchColors[item.color])} />
             )}
             {item.label ?? key}
           </div>

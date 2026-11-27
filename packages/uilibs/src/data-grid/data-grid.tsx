@@ -40,6 +40,7 @@ import type {
 } from '@tanstack/react-table'
 import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import type { StyleProp } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 import { mergeDataGridLabels } from './data-grid-labels'
 import type { DataGridLabels } from './data-grid-labels'
@@ -312,17 +313,30 @@ export interface DataGridContextProps<TData extends object> {
 }
 
 /**
- * Row and column ids are consumer strings; DOM ids cannot carry spaces or
- * quotes. One shared sanitizer so `aria-activedescendant` writers and the id
- * renderers always agree on the same encoding.
+ * Row and column ids are consumer strings; DOM ids cannot carry spaces or quotes. One shared
+ * encoder so `aria-activedescendant` writers and the id renderers always agree.
+ *
+ * It is injective: every character outside A-Z, a-z, and 0-9 becomes `_` and its code in hex (two
+ * digits up to U+00FF, `__` and four digits above, per UTF-16 code unit), so `a b` and `a_b` stay
+ * apart, and the output holds no hyphen, which makes `-` a safe joiner for the id builders below.
  */
 export function toDataGridDomId(value: string): string {
-  return value.replace(/[^\w-]/g, '_')
+  return value.replace(/[^A-Za-z0-9]/g, (char) => {
+    const code = char.charCodeAt(0)
+    return code <= 0xff
+      ? `_${code.toString(16).padStart(2, '0')}`
+      : `__${code.toString(16).padStart(4, '0')}`
+  })
 }
 
 /** The id of a column header cell, which its resize separator names in `aria-controls`. */
 export function getDataGridHeaderDomId(gridId: string, headerId: string): string {
   return `${gridId}h-${toDataGridDomId(headerId)}`
+}
+
+/** The id of a body cell, which `aria-activedescendant` names while the cell is active. */
+export function getDataGridCellDomId(gridId: string, rowId: string, columnId: string): string {
+  return `${gridId}c-${toDataGridDomId(rowId)}-${toDataGridDomId(columnId)}`
 }
 
 export interface DataGridAutoSizeController {
@@ -333,7 +347,7 @@ export interface DataGridAutoSizeController {
    * free space into its width; after that, every measurement REFLOWS the
    * same growth - a wider window widens the column, a narrower one gives
    * the space back down to the column's `minSize` (or its starting width
-   * when none is set) - so the grid tracks its container live. Commits
+   * when the consumer set none) - so the grid tracks its container live. Commits
    * are coalesced for performance: sub-pixel deltas are dropped, a
    * streaming resize gets one leading commit plus one trailing commit at
    * settle, and a width the user dragged is never touched. Safe to call
@@ -375,7 +389,47 @@ function getDataGridAutoSizeState(store: object): DataGridAutoSizeReflowState {
   return state
 }
 
-function createDataGridAutoSizeController<TData extends object>(
+/**
+ * The column definition `options.columns` holds for an id, at any depth. A resolved column does
+ * not keep its own definition, and mirrors TanStack's id rule: `id`, else the accessor key with
+ * dots as underscores, else a string header.
+ */
+function findDataGridColumnDef<TData extends object>(
+  defs: DataGridTableInstance<TData>['options']['columns'],
+  id: string
+): DataGridTableInstance<TData>['options']['columns'][number] | undefined {
+  for (const def of defs) {
+    const derived =
+      def.id ??
+      ('accessorKey' in def && def.accessorKey !== undefined
+        ? String(def.accessorKey).replaceAll('.', '_')
+        : typeof def.header === 'string'
+          ? def.header
+          : undefined)
+    if (derived === id) return def
+    const nested =
+      'columns' in def && def.columns ? findDataGridColumnDef(def.columns, id) : undefined
+    if (nested) return nested
+  }
+  return undefined
+}
+
+/**
+ * The `minSize` the consumer set for a column, on its definition or on `defaultColumn`, and
+ * undefined when it left it alone. The resolved `columnDef.minSize` cannot say: TanStack fills in
+ * 20 for every column, so an unset minimum would read as an explicit 20 px floor.
+ */
+function getDataGridExplicitMinSize<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  column: { id: string }
+): number | undefined {
+  return (
+    findDataGridColumnDef(table.options.columns, column.id)?.minSize ??
+    table.options.defaultColumn?.minSize
+  )
+}
+
+export function createDataGridAutoSizeController<TData extends object>(
   /**
    * A getter, not the table itself.
    *
@@ -420,7 +474,7 @@ function createDataGridAutoSizeController<TData extends object>(
     // window hands space back without ever crushing the column (no
     // explicit minSize floors at the starting width instead).
     const freeAtBase = freeSpace + (state.applied.grown - state.applied.base)
-    const floor = autoSizeColumn.columnDef.minSize ?? state.applied.base
+    const floor = getDataGridExplicitMinSize(table, autoSizeColumn) ?? state.applied.base
     const target = Math.max(floor, state.applied.base + freeAtBase)
     if (Math.abs(target - state.applied.grown) < 1) return false
     state.applied = { ...state.applied, grown: target }
@@ -643,8 +697,7 @@ export interface DataGridTableStyleSlots {
   cellFillHandle?: StyleXStyles
 }
 
-export interface DataGridProps<TData extends object> {
-  style?: StyleXStyles
+export interface DataGridProps<TData extends object> extends StyleProp {
   table?: DataGridTableInstance<TData>
   recordCount: number
   children?: ReactNode
@@ -1055,9 +1108,8 @@ function DataGridContainer({
   children,
   style,
   border = false
-}: {
+}: StyleProp & {
   children: ReactNode
-  style?: StyleXStyles
   /** Draws an edge around the grid, with rounded corners. */
   border?: boolean
 }) {

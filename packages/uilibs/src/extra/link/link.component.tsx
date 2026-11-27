@@ -3,7 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import type * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
-import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
+import type { ColorRole, Glyph, PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { linkColors, linkStyles as s, linkVariants } from './link.stylex'
 
@@ -11,8 +11,7 @@ export type LinkColor = ColorRole | 'inherit'
 /** `underline` is always drawn; `plain` draws it only on hover. */
 export type LinkVariant = 'underline' | 'plain'
 
-export interface LinkProps
-  extends Omit<useRender.ComponentProps<'a'>, 'className' | 'style' | 'color'>, StyleProp {
+export interface LinkProps extends PartProps<useRender.ComponentProps<'a'>, 'color'> {
   /** The role; `inherit` takes the text color around it. Default `primary`. */
   color?: LinkColor
   /** Default `underline`: color alone does not mark a link inside running text. */

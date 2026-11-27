@@ -32,8 +32,7 @@ import {
   controlVariantsWithin
 } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { numberFieldButtonSizes, numberFieldStyles as s } from './number-field.stylex'
 
 /** Button placement style of the default group. */
@@ -51,13 +50,12 @@ export function NumberField({
   variant = 'outline',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNumberField.Root>, 'className' | 'style' | 'size'> &
-  StyleProp & {
-    /** Control height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseNumberField.Root>, 'size'> & {
+  /** Control height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+}) {
   return (
     <NumberFieldSizeContext.Provider value={size}>
       <NumberFieldVariantContext.Provider value={variant}>
@@ -80,12 +78,11 @@ export function NumberFieldGroup({
   controls = 'stacked',
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNumberField.Group>, 'className' | 'style'> &
-  StyleProp & {
-    controls?: NumberFieldControls
-    /** Accessible names of the built-in steppers. */
-    labels?: Partial<NumberFieldLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseNumberField.Group>> & {
+  controls?: NumberFieldControls
+  /** Accessible names of the built-in steppers. */
+  labels?: Partial<NumberFieldLabels>
+}) {
   const size = React.useContext(NumberFieldSizeContext)
   const variant = React.useContext(NumberFieldVariantContext)
   const increase = labels?.increase ?? 'Increase'
@@ -129,7 +126,7 @@ export function NumberFieldGroup({
 export function NumberFieldInput({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNumberField.Input>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNumberField.Input>>) {
   return <BaseNumberField.Input {...props} {...stylex.props(s.input, style)} />
 }
 
@@ -139,11 +136,10 @@ export function NumberFieldDecrement({
   icon,
   controls = 'sides',
   ...props
-}: Omit<React.ComponentProps<typeof BaseNumberField.Decrement>, 'className' | 'style'> &
-  StyleProp & {
-    icon?: 'chevron-down' | 'minus'
-    controls?: NumberFieldControls
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseNumberField.Decrement>> & {
+  icon?: 'chevron-down' | 'minus'
+  controls?: NumberFieldControls
+}) {
   const size = React.useContext(NumberFieldSizeContext)
   const stacked = controls === 'stacked'
   const preset = icon ?? (stacked ? 'chevron-down' : 'minus')
@@ -170,11 +166,10 @@ export function NumberFieldIncrement({
   icon,
   controls = 'sides',
   ...props
-}: Omit<React.ComponentProps<typeof BaseNumberField.Increment>, 'className' | 'style'> &
-  StyleProp & {
-    icon?: 'chevron-up' | 'plus'
-    controls?: NumberFieldControls
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseNumberField.Increment>> & {
+  icon?: 'chevron-up' | 'plus'
+  controls?: NumberFieldControls
+}) {
   const size = React.useContext(NumberFieldSizeContext)
   const stacked = controls === 'stacked'
   const preset = icon ?? (stacked ? 'chevron-up' : 'plus')

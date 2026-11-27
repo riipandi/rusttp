@@ -1,15 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { pressUntil } from '../../contracts/keyboard'
 import { Button } from '../button'
 import { toast, ToastProvider, Toaster, useToast, type ToastColor } from './toast.component'
 
 const meta = {
   title: 'Base Components/Toast',
-  component: ToastProvider,
-  tags: [] // ['autodocs']
+  component: ToastProvider
 } satisfies Meta<typeof ToastProvider>
 
 type Story = StoryObj<typeof meta>
@@ -28,8 +27,8 @@ const styles = stylex.create({
   }
 })
 
-function save() {
-  return new Promise<void>((resolve) => setTimeout(resolve, 2000))
+function save(latency: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, latency))
 }
 
 function DurationButton() {
@@ -94,21 +93,20 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   ),
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Show Ministry notice' }))
-    await waitFor(() =>
-      expect(within(document.body).getByText('Scheduled: Hogsmeade trip')).toBeInTheDocument()
-    )
-    await expect(within(document.body).getByText(/departure from platform 9¾/i)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Scheduled: Hogsmeade trip')).toBeInTheDocument())
+    await expect(screen.getByText(/departure from platform 9¾/i)).toBeInTheDocument()
   }
 }
 
-export const ToastPromise: Story = {
+export const ToastPromise: StoryObj<{ latency: number }> = {
+  args: { latency: 2000 },
   name: 'Promise',
-  render: () => (
+  render: ({ latency }) => (
     <ToastProvider>
       <Button
         variant='outline'
         onClick={() => {
-          void toast.promise(save(), {
+          void toast.promise(save(latency), {
             loading: 'Sealing the cryptex…',
             success: 'Cryptex sealed',
             error: 'The cryptex jammed'
@@ -121,13 +119,11 @@ export const ToastPromise: Story = {
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Seal the cryptex' }))
-    await body.findByText('Sealing the cryptex…')
+    await screen.findByText('Sealing the cryptex…')
 
     // The promise resolves into the success toast.
-    await waitFor(() => expect(body.getByText('Cryptex sealed')).toBeInTheDocument(), {
+    await waitFor(() => expect(screen.getByText('Cryptex sealed')).toBeInTheDocument(), {
       timeout: 4000
     })
   }
@@ -274,15 +270,14 @@ export const Colors: Story = {
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const edge = async (color: (typeof colorNames)[number]) => {
       await userEvent.click(canvas.getByRole('button', { name: color }))
-      const title = await body.findByText(`Owl post: ${color}`)
+      const title = await screen.findByText(`Owl post: ${color}`)
       const root = title.closest('[role="dialog"]')
       if (!root) throw new Error('Toast root not found')
       const edgeColor = getComputedStyle(root).borderTopColor
       toast.close()
-      await waitFor(() => expect(body.queryByText(`Owl post: ${color}`)).toBeNull())
+      await waitFor(() => expect(screen.queryByText(`Owl post: ${color}`)).toBeNull())
       return edgeColor
     }
     // A colored toast has its own accent; the neutral one keeps the quiet edge.
@@ -305,8 +300,7 @@ export const CloseLabel: Story = {
   ),
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Silence' }))
-    const body = within(document.body)
-    const toastRoot = (await body.findByText('Howler silenced')).closest('[role="dialog"]')
+    const toastRoot = (await screen.findByText('Howler silenced')).closest('[role="dialog"]')
     // Base UI keeps the close button out of the accessibility tree until the stack is focused,
     // so it is found by its attribute, not by role.
     await expect(toastRoot?.querySelector('button')).toHaveAttribute('aria-label', 'Dismiss')
@@ -333,28 +327,25 @@ export const Open: Story = {
   render: () => <Notice />,
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Send an owl' }))
-    const toastRoot = (await within(document.body).findByText('Owl delivered')).closest(
-      '[role="dialog"]'
-    )
+    const toastRoot = (await screen.findByText('Owl delivered')).closest('[role="dialog"]')
     await waitFor(() => expect(toastRoot).toBeVisible())
     await expect(toastRoot).toHaveAccessibleName('Owl delivered')
   }
 }
 
+const titleInKeyboard = () => screen.queryByText('Owl delivered')
+const region = () => screen.getByRole('region', { name: 'Notifications' })
+
 /** F6 moves focus to the toasts, Tab reaches a toast, and Escape closes the focused toast. */
 export const Keyboard: Story = {
   render: () => <Notice />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Send an owl' })
-    const title = () => body.queryByText('Owl delivered')
 
     await userEvent.click(trigger)
-    await waitFor(() => expect(title()).toBeVisible())
-    const toastRoot = title()?.closest('[role="dialog"]')
+    await waitFor(() => expect(titleInKeyboard()).toBeVisible())
+    const toastRoot = titleInKeyboard()?.closest('[role="dialog"]')
     if (!(toastRoot instanceof HTMLElement)) throw new Error('Toast root not found')
-
-    const region = () => body.getByRole('region', { name: 'Notifications' })
 
     // F6 moves focus from anywhere to the toast region.
     await pressUntil('{F6}', () => expect(region()).toHaveFocus())
@@ -368,7 +359,9 @@ export const Keyboard: Story = {
     })
 
     // Escape closes the toast that holds focus, and focus returns to where it was.
-    await pressUntil('{Escape}', () => expect(title()).toBeNull(), { when: () => !!title() })
+    await pressUntil('{Escape}', () => expect(titleInKeyboard()).toBeNull(), {
+      when: () => !!titleInKeyboard()
+    })
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

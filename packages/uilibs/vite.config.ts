@@ -1,12 +1,12 @@
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import react from '@vitejs/plugin-react'
-import { playwright } from '@vitest/browser-playwright'
 import { resolve } from 'node:path'
 import { stylexPlugin, stylexVitestCleanup } from 'plugins/stylex'
+import { browserProject } from 'plugins/vitest'
 import { defineConfig } from 'vitest/config'
 
-// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories in another engine: CI does it
-// nightly, and it is the local check too (the default run is Chromium, and so is the CI push gate).
+// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories and unit tests in another engine: CI
+// does it nightly, and it is the local check too (the default run is Chromium, and so is the CI push gate).
 const browser: 'chromium' | 'firefox' | 'webkit' =
   process.env.STORYBOOK_TEST_BROWSER === 'firefox' ||
   process.env.STORYBOOK_TEST_BROWSER === 'webkit'
@@ -28,12 +28,10 @@ const storybookDark = await storybookTest({ configDir, tags })
 // project runs every story and its axe check in one theme.
 const storybookInstance = (colorScheme: 'light' | 'dark') => ({
   exclude: ['./**/*.{test,spec}.{ts,tsx}', '**/node_modules/**'],
-  browser: {
-    enabled: true,
-    headless: true,
-    provider: playwright({ contextOptions: { colorScheme } }),
-    instances: [{ browser }]
-  }
+  // Vitest's browser default (15 s) is shorter than a play with two failing 10 s waits, and it
+  // reports "Test timed out" instead of the assertion that failed.
+  testTimeout: 30_000,
+  browser: browserProject({ browser, colorScheme })
 })
 
 // The library's pipeline: StyleX compiles in place (source-sharing)
@@ -44,13 +42,21 @@ export default defineConfig(({ mode }) => ({
     stylexVitestCleanup(),
     react(),
     stylexPlugin({
-      aliases: { '#/*': resolve(import.meta.dirname, 'src/*') },
       enableDevClassNames: mode === 'development',
       test: Boolean(process.env.VITEST)
     })
   ],
   envPrefix: ['VITE_', 'PUBLIC_'],
   test: {
+    // A gap finder over all three projects, with no threshold: `just test-ui-coverage` lists which
+    // files no story and no unit test reaches (v8 coverage needs Chromium, the default engine).
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.{test,stories}.{ts,tsx}', 'src/**/*.stylex.ts'],
+      reportsDirectory: '.vitest/coverage',
+      reporter: ['text', 'html']
+    },
     projects: [
       {
         extends: false,
@@ -65,19 +71,17 @@ export default defineConfig(({ mode }) => ({
       {
         // Logic that no story exercises (storage adapters, announcements, token contrast), in a real
         // browser like the webapp's tests: `document.cookie` and `localStorage` are the thing under test.
+        // `VITEST_HEADED=1` opens the window, to watch or debug one of them.
+        // `extends: true` inherits the root `stylexPlugin`, whose options carry `test: true`
+        // (stable `file__key` class names); the story projects above use `extends: false` and
+        // compile through Storybook's `viteFinal`, where the StyleX options have no `test`.
         extends: true,
         test: {
           name: 'unit',
           include: ['src/**/*.test.{ts,tsx}'],
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            instances: [{ browser: 'chromium' }]
-          }
+          browser: browserProject({ browser, headless: !process.env.VITEST_HEADED })
         }
       }
     ]
-  },
-  resolve: { tsconfigPaths: true }
+  }
 }))

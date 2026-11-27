@@ -12,9 +12,13 @@ import {
 
 // A disabled control is drawn with the disabled color tokens, never with `opacity`: opacity stacks
 // (a disabled control inside a disabled field dropped to a quarter), and a color token does not.
-// `:disabled` is a native control, `[data-disabled]` a Base UI part (Field passes it down too).
-// List `off(...)` after the other conditions so a disabled invalid control still reads as disabled.
-const off = (value: string) => ({ ':disabled': value, '[data-disabled]': value }) as const
+// Base UI sets `data-disabled` on every part that can be disabled, native input or not (a Field
+// passes it down too), so it is the one key. An invalid key excludes it (`invalid`), so a disabled
+// invalid control reads as disabled whatever order the rules are emitted in.
+const off = (value: string) => ({ '[data-disabled]': value }) as const
+
+const invalid = '[data-invalid]:not([data-disabled]):not(:disabled)' as const
+const invalidWithin = ':has([data-invalid]:not([data-disabled]):not(:disabled))' as const
 
 // The same for a wrapper that holds the real input: it is disabled by its own `data-disabled` or by
 // the input inside it (a disabled stepper or addon button alone does not disable the field).
@@ -65,7 +69,7 @@ export const controlBase = stylex.create({
     borderColor: {
       default: colors.borderControl,
       ':focus-visible': colors.foregroundPrimary,
-      '[data-invalid]': colors.borderCritical,
+      [invalid]: colors.borderCritical,
       ...off(colors.borderDisabled)
     },
     borderRadius: radius.medium,
@@ -93,8 +97,8 @@ export const controlBase = stylex.create({
     borderColor: {
       default: colors.borderControl,
       ':has(:focus-visible)': colors.foregroundPrimary,
-      '[data-invalid]': colors.borderCritical,
-      ':has([data-invalid])': colors.borderCritical,
+      [invalid]: colors.borderCritical,
+      [invalidWithin]: colors.borderCritical,
       ...offWithin(colors.borderDisabled)
     },
     color: { default: colors.foregroundNeutral, ...offWithin(colors.foregroundDisabled) },
@@ -111,14 +115,14 @@ export type ControlVariant = 'outline' | 'faded' | 'ghost' | 'headless'
 const quietEdge = {
   default: 'transparent',
   ':focus-visible': colors.foregroundPrimary,
-  '[data-invalid]': colors.borderCritical
+  [invalid]: colors.borderCritical
 } as const
 
 const quietEdgeWithin = {
   default: 'transparent',
   ':has(:focus-visible)': colors.foregroundPrimary,
-  '[data-invalid]': colors.borderCritical,
-  ':has([data-invalid])': colors.borderCritical
+  [invalid]: colors.borderCritical,
+  [invalidWithin]: colors.borderCritical
 } as const
 
 /**

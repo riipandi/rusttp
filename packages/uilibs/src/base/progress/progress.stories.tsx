@@ -9,8 +9,7 @@ import { Progress, ProgressLabel, ProgressValue } from './progress.component'
 import { progressColors, progressSizes } from './progress.stylex'
 const meta = {
   title: 'Base Components/Progress',
-  component: Progress,
-  tags: [] // ['autodocs']
+  component: Progress
 } satisfies Meta<typeof Progress>
 
 type Story = StoryObj<typeof meta>

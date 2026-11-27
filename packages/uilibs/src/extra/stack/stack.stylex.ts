@@ -18,7 +18,7 @@ export const stackStyles = stylex.create({
   wrap: { flexWrap: 'wrap' }
 })
 
-// One style set per responsive prop and breakpoint. `small` is the base style; each wider set adds a
+// One style set per responsive prop (direction and gap) and breakpoint. `small` is the base style; each wider set adds a
 // rule from its width up, over the narrower ones. A `stylex.create` can only hold literal keys, so
 // the sets are written out in full.
 
@@ -142,30 +142,6 @@ export const stackAlign = stylex.create({
   baseline: { alignItems: 'baseline' }
 })
 
-export const stackAlignMedium = stylex.create({
-  start: { [breakpoints.medium]: { alignItems: 'flex-start' } },
-  center: { [breakpoints.medium]: { alignItems: 'center' } },
-  end: { [breakpoints.medium]: { alignItems: 'flex-end' } },
-  stretch: { [breakpoints.medium]: { alignItems: 'stretch' } },
-  baseline: { [breakpoints.medium]: { alignItems: 'baseline' } }
-})
-
-export const stackAlignLarge = stylex.create({
-  start: { [breakpoints.large]: { alignItems: 'flex-start' } },
-  center: { [breakpoints.large]: { alignItems: 'center' } },
-  end: { [breakpoints.large]: { alignItems: 'flex-end' } },
-  stretch: { [breakpoints.large]: { alignItems: 'stretch' } },
-  baseline: { [breakpoints.large]: { alignItems: 'baseline' } }
-})
-
-export const stackAlignXLarge = stylex.create({
-  start: { [breakpoints.xlarge]: { alignItems: 'flex-start' } },
-  center: { [breakpoints.xlarge]: { alignItems: 'center' } },
-  end: { [breakpoints.xlarge]: { alignItems: 'flex-end' } },
-  stretch: { [breakpoints.xlarge]: { alignItems: 'stretch' } },
-  baseline: { [breakpoints.xlarge]: { alignItems: 'baseline' } }
-})
-
 export const stackJustify = stylex.create({
   start: { justifyContent: 'flex-start' },
   center: { justifyContent: 'center' },
@@ -173,31 +149,4 @@ export const stackJustify = stylex.create({
   'space-between': { justifyContent: 'space-between' },
   'space-around': { justifyContent: 'space-around' },
   'space-evenly': { justifyContent: 'space-evenly' }
-})
-
-export const stackJustifyMedium = stylex.create({
-  start: { [breakpoints.medium]: { justifyContent: 'flex-start' } },
-  center: { [breakpoints.medium]: { justifyContent: 'center' } },
-  end: { [breakpoints.medium]: { justifyContent: 'flex-end' } },
-  'space-between': { [breakpoints.medium]: { justifyContent: 'space-between' } },
-  'space-around': { [breakpoints.medium]: { justifyContent: 'space-around' } },
-  'space-evenly': { [breakpoints.medium]: { justifyContent: 'space-evenly' } }
-})
-
-export const stackJustifyLarge = stylex.create({
-  start: { [breakpoints.large]: { justifyContent: 'flex-start' } },
-  center: { [breakpoints.large]: { justifyContent: 'center' } },
-  end: { [breakpoints.large]: { justifyContent: 'flex-end' } },
-  'space-between': { [breakpoints.large]: { justifyContent: 'space-between' } },
-  'space-around': { [breakpoints.large]: { justifyContent: 'space-around' } },
-  'space-evenly': { [breakpoints.large]: { justifyContent: 'space-evenly' } }
-})
-
-export const stackJustifyXLarge = stylex.create({
-  start: { [breakpoints.xlarge]: { justifyContent: 'flex-start' } },
-  center: { [breakpoints.xlarge]: { justifyContent: 'center' } },
-  end: { [breakpoints.xlarge]: { justifyContent: 'flex-end' } },
-  'space-between': { [breakpoints.xlarge]: { justifyContent: 'space-between' } },
-  'space-around': { [breakpoints.xlarge]: { justifyContent: 'space-around' } },
-  'space-evenly': { [breakpoints.xlarge]: { justifyContent: 'space-evenly' } }
 })

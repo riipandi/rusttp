@@ -17,8 +17,7 @@ import { Badge } from './badge.component'
 
 const meta = {
   title: 'Extra Components/BadgeAnchor',
-  component: BadgeAnchor,
-  tags: [] // ['autodocs']
+  component: BadgeAnchor
 } satisfies Meta<typeof BadgeAnchor>
 
 type Story = StoryObj<typeof meta>

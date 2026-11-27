@@ -20,7 +20,6 @@ import { stackStyles as s } from './_mocks.stylex'
 const meta = {
   title: 'Data Grid/Infinite',
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [
     (Story) => (
       <div {...stylex.props(atoms.padding['20px'], atoms.width['100%'])}>
@@ -29,6 +28,11 @@ const meta = {
     )
   ]
 } satisfies Meta
+
+/** The args of a story that simulates a backend: how long a page takes to arrive, in ms. */
+interface LatencyArgs {
+  latency: number
+}
 
 type Story = StoryObj<typeof meta>
 export default meta
@@ -104,7 +108,8 @@ function simulateRow(index: number): IRow {
     title: TITLES[index % TITLES.length]!,
     author: AUTHORS[index % 2]!,
     status: (['In print', 'Out of print', 'Pre-order'] as const)[index % 3]!,
-    price: Math.round((Math.random() * 10 + 8) * 100) / 100
+    // A fixed spread over 8.00 to 17.99, so every run draws the same grid.
+    price: 8 + ((index * 7919) % 1000) / 100
   }
 }
 
@@ -199,9 +204,10 @@ function useColumns(getReactTable: () => DataGridTableInstance<IRow>) {
 const LOCAL_TOTAL = 200
 const localAllData = generateData(LOCAL_TOTAL)
 
-export const LocalInfiniteScroll: Story = {
+export const LocalInfiniteScroll: StoryObj<LatencyArgs> = {
+  args: { latency: 600 },
   name: 'Local infinite scroll',
-  render: () => {
+  render: ({ latency }) => {
     const tableHolder: { current?: DataGridTableInstance<IRow> } = {}
     const columns = useColumns(() => {
       if (!tableHolder.current) throw new Error('table not ready')
@@ -217,8 +223,8 @@ export const LocalInfiniteScroll: Story = {
       window.setTimeout(() => {
         setLimit((old) => Math.min(old + 30, LOCAL_TOTAL))
         setIsFetching(false)
-      }, 600)
-    }, [])
+      }, latency)
+    }, [latency])
 
     const table = useTable({
       features: dataGridFeatures,
@@ -359,9 +365,10 @@ export const RowClickVirtualized: Story = {
 const REMOTE_TOTAL = 200
 const REMOTE_PAGE = 20
 
-export const RemoteInfiniteScroll: Story = {
+export const RemoteInfiniteScroll: StoryObj<LatencyArgs> = {
+  args: { latency: 700 },
   name: 'Remote infinite scroll',
-  render: () => {
+  render: ({ latency }) => {
     const tableHolder: { current?: DataGridTableInstance<IRow> } = {}
     const columns = useColumns(() => {
       if (!tableHolder.current) throw new Error('table not ready')
@@ -391,8 +398,8 @@ export const RemoteInfiniteScroll: Story = {
           return [...old, ...next]
         })
         setIsFetching(false)
-      }, 700)
-    }, [])
+      }, latency)
+    }, [latency])
 
     const table = useTable({
       features: dataGridFeatures,

@@ -10,8 +10,7 @@ import { Label } from './label.component'
 
 const meta = {
   title: 'Extra Components/Label',
-  component: Label,
-  tags: [] // ['autodocs']
+  component: Label
 } satisfies Meta<typeof Label>
 
 export default meta

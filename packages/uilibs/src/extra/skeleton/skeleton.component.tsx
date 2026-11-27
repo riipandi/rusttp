@@ -1,20 +1,17 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
+import type { PartProps } from '../../styles/types'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { skeletonRadius, skeletonStyles as s } from './skeleton.stylex'
 
-export interface SkeletonProps extends Omit<
-  useRender.ComponentProps<'div'>,
-  'className' | 'style'
-> {
+export interface SkeletonProps extends PartProps<useRender.ComponentProps<'div'>> {
   /** A count of `unit` steps (`12` is 48px) or a CSS length (`'60%'`); unset leaves the width to the layout. */
   width?: UnitStep | (string & {})
   /** A count of `unit` steps or a CSS length; unset leaves the height to the layout. */
   height?: UnitStep | (string & {})
   /** A corner radius token; `medium` by default, `full` for an avatar. */
   borderRadius?: keyof typeof skeletonRadius
-  style?: stylex.StyleXStyles
 }
 
 /** Renders a `div`; `render` swaps it for another element. */

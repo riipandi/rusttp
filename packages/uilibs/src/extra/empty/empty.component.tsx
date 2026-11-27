@@ -2,17 +2,13 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { emptyStyles as s, emptyMediaKinds as mediaKinds } from './empty.stylex'
 
-type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = PartProps<React.ComponentProps<'div'>>
 
 /** Renders a `div`; `render` swaps it for another element, such as a `section`. */
-export function Empty({
-  style,
-  render,
-  ...props
-}: Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function Empty({ style, render, ...props }: PartProps<useRender.ComponentProps<'div'>>) {
   return useRender({
     defaultTagName: 'div',
     props: mergeProps<'div'>(stylex.props(s.root, style), props),

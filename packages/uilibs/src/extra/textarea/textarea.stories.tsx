@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
+import { Button } from '../../base/button'
 import { Field, FieldDescription, FieldError, FieldLabel } from '../../base/field'
 import {
   controlSizeNames,
@@ -19,8 +20,7 @@ import { Textarea } from './textarea.component'
 
 const meta = {
   title: 'Extra Components/Textarea',
-  component: Textarea,
-  tags: [] // ['autodocs']
+  component: Textarea
 } satisfies Meta<typeof Textarea>
 
 type Story = StoryObj<typeof meta>
@@ -153,7 +153,7 @@ export const States: Story = {
   play: async ({ canvas }) => {
     const disabled = canvas.getByRole('textbox', { name: 'Decree disabled' })
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true, edge: true })
     await userEvent.type(disabled, 'alohomora')
     await expect(disabled).toHaveValue('')
 
@@ -242,5 +242,55 @@ export const AutoResize: Story = {
     // The counter flips to the warning tone near the limit.
     await userEvent.type(el, 'a'.repeat(20))
     await expect(canvas.getByText('28/280')).toBeInTheDocument()
+
+    // Growing past the minimum height clips no line: the border is part of the box, not of the content.
+    await userEvent.type(el, '{Enter}'.repeat(6))
+    await expect(el.scrollHeight).toBeLessThanOrEqual(el.clientHeight)
+  }
+}
+
+const letter =
+  'Dear Mr. Potter, we are pleased to inform you that you have been accepted at Hogwarts School of Witchcraft and Wizardry. Please find enclosed a list of all necessary books and equipment. Term begins on 1 September. We await your owl by no later than 31 July.'
+
+/** A `value` set from outside resizes the textarea: no keystroke is needed. */
+export const ControlledResize: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Textarea autoResize value={value} onChange={(event) => setValue(event.target.value)} rows={2} />
+<Button onClick={() => setValue(letter)}>Fill the letter</Button>`
+      }
+    }
+  },
+  name: 'Controlled resize',
+  render: () => {
+    const [value, setValue] = React.useState('')
+
+    return (
+      <div {...stylex.props(styles.wrap)}>
+        <Field style={styles.fill}>
+          <FieldLabel htmlFor='textarea-controlled-resize'>Acceptance letter</FieldLabel>
+          <Textarea
+            id='textarea-controlled-resize'
+            autoResize
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            rows={2}
+          />
+        </Field>
+        <Button onClick={() => setValue(letter)}>Fill the letter</Button>
+      </div>
+    )
+  },
+  play: async ({ canvas }) => {
+    const el = canvas.getByRole('textbox', { name: 'Acceptance letter' })
+    const before = el.getBoundingClientRect().height
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Fill the letter' }))
+
+    await expect(el).toHaveValue(letter)
+    await waitFor(() => expect(el.getBoundingClientRect().height).toBeGreaterThan(before + 20))
+    // The box shows the whole letter: nothing scrolls inside it, and no last line is cut off.
+    await expect(el.scrollHeight).toBeLessThanOrEqual(el.clientHeight)
   }
 }

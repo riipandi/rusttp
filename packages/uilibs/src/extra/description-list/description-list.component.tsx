@@ -17,14 +17,10 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
+import type { PartProps } from '../../styles/types'
 import { descriptionListStyles as s } from './description-list.stylex'
 
-export interface DescriptionListProps extends Omit<
-  useRender.ComponentProps<'dl'>,
-  'className' | 'style'
-> {
-  style?: stylex.StyleXStyles
-}
+export interface DescriptionListProps extends PartProps<useRender.ComponentProps<'dl'>> {}
 
 export function DescriptionList({ style, render, ...props }: DescriptionListProps) {
   return useRender({
@@ -34,12 +30,7 @@ export function DescriptionList({ style, render, ...props }: DescriptionListProp
   })
 }
 
-export interface DescriptionTermProps extends Omit<
-  useRender.ComponentProps<'dt'>,
-  'className' | 'style'
-> {
-  style?: stylex.StyleXStyles
-}
+export interface DescriptionTermProps extends PartProps<useRender.ComponentProps<'dt'>> {}
 
 export function DescriptionTerm({ style, render, ...props }: DescriptionTermProps) {
   return useRender({
@@ -49,12 +40,7 @@ export function DescriptionTerm({ style, render, ...props }: DescriptionTermProp
   })
 }
 
-export interface DescriptionDetailsProps extends Omit<
-  useRender.ComponentProps<'dd'>,
-  'className' | 'style'
-> {
-  style?: stylex.StyleXStyles
-}
+export interface DescriptionDetailsProps extends PartProps<useRender.ComponentProps<'dd'>> {}
 
 export function DescriptionDetails({ style, render, ...props }: DescriptionDetailsProps) {
   return useRender({

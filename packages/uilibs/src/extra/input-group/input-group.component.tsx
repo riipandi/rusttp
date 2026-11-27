@@ -12,8 +12,7 @@ import {
   controlBase,
   controlVariantsWithin
 } from '../../styles/control.stylex'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { Textarea } from '../textarea'
 import { inputGroupStyles as s } from './input-group.stylex'
 import { inputGroupAddonAligns as addonAligns } from './input-group.stylex'
@@ -29,13 +28,12 @@ export function InputGroup({
   variant = 'outline',
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
-  StyleProp & {
-    /** Height and type of the input; the `ButtonGroup`'s size, else `medium` (36px). */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-  }) {
+}: PartProps<React.ComponentProps<'div'>> & {
+  /** Height and type of the input; the `ButtonGroup`'s size, else `medium` (36px). */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+}) {
   const group = useButtonGroup()
   const size = sizeProp ?? group?.size ?? 'medium'
   return (
@@ -65,8 +63,7 @@ export function InputGroupAddon({
   align = 'inline-start',
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> &
-  StyleProp & { align?: InputGroupAddonAlign }) {
+}: PartProps<React.ComponentProps<'div'>> & { align?: InputGroupAddonAlign }) {
   return (
     <div
       role='group'
@@ -104,10 +101,7 @@ export function InputGroupButton({
   )
 }
 
-export function InputGroupText({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+export function InputGroupText({ style, ...props }: PartProps<React.ComponentProps<'span'>>) {
   return <span {...props} {...stylex.props(s.text, style)} />
 }
 

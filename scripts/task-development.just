@@ -70,9 +70,3 @@ storybook:
 [no-exit-message]
 storybook-build:
     @pnpm --silent --filter uilibs storybook:build
-
-[doc('Serve the built Storybook on port 6006')]
-[group('storybook')]
-[no-exit-message]
-storybook-start:
-    @pnpm --silent --filter uilibs storybook:start

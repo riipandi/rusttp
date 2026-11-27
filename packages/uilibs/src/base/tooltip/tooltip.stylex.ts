@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -15,11 +15,6 @@ export const tooltipStyles = stylex.create({
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.caption1,
     maxWidth: container.small,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     paddingBlock: unit.x1_5,
     paddingInline: unit.x3
   },
@@ -27,7 +22,7 @@ export const tooltipStyles = stylex.create({
   popupInverted: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
   // `dark`: the constant black and white, so the surface is the same in both themes (a tooltip on a
   // photo or a dark canvas).
-  popupDark: { backgroundColor: colors.black, color: colors.white },
+  popupDark: { backgroundColor: fixedColors.black, color: fixedColors.white },
   // The arrow is a 12x6 SVG that points up for a tooltip below its anchor and is turned for the other
   // sides, so it can carry the popup's ring on its two slanted edges (a filled square cannot: its ring
   // would show inside the popup). Its base sits on the popup's edge; the fill covers the ring between
@@ -66,8 +61,8 @@ export const tooltipStyles = stylex.create({
   },
   arrowFillInverted: { fill: colors.foregroundNeutral },
   arrowStrokeInverted: { stroke: colors.foregroundNeutral },
-  arrowFillDark: { fill: colors.black },
-  arrowStrokeDark: { stroke: colors.black },
+  arrowFillDark: { fill: fixedColors.black },
+  arrowStrokeDark: { stroke: fixedColors.black },
   arrowStroke: {
     fill: 'none',
     stroke: colors.borderNeutralFaded,

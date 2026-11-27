@@ -16,19 +16,15 @@ import {
   controlVariants,
   type ControlVariant
 } from '../../styles/control.stylex'
-import type { ControlSize } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
 import { inputStyles as s } from './input.stylex'
 
-export interface InputProps extends Omit<
-  React.ComponentProps<typeof BaseInput>,
-  'className' | 'style' | 'size'
-> {
+export interface InputProps extends PartProps<React.ComponentProps<typeof BaseInput>, 'size'> {
   /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
-  style?: stylex.StyleXStyles
 }
 
 export function Input({ size, variant = 'outline', style, ...props }: InputProps) {

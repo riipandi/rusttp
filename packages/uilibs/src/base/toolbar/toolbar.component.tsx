@@ -16,7 +16,7 @@
 import { Toolbar as BaseToolbar } from '@base-ui/react/toolbar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { toolbarStyles as s } from './toolbar.stylex'
 
 // Buttons, links, toggles, and inputs inside a toolbar keep their own
@@ -30,20 +30,20 @@ export const ToolbarInput = BaseToolbar.Input
 export function Toolbar({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseToolbar.Root>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseToolbar.Root>>) {
   return <BaseToolbar.Root {...props} {...stylex.props(s.root, style)} />
 }
 
 export function ToolbarGroup({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseToolbar.Group>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseToolbar.Group>>) {
   return <BaseToolbar.Group {...props} {...stylex.props(s.group, style)} />
 }
 
 export function ToolbarSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseToolbar.Separator>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseToolbar.Separator>>) {
   return <BaseToolbar.Separator {...props} {...stylex.props(s.separator, style)} />
 }

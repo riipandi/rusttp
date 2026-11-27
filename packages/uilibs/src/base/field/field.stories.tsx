@@ -19,8 +19,7 @@ import {
 
 const meta = {
   title: 'Base Components/Field',
-  component: Field,
-  tags: [] // ['autodocs']
+  component: Field
 } satisfies Meta<typeof Field>
 
 type Story = StoryObj<typeof meta>
@@ -226,8 +225,8 @@ export const Disabled: Story = {
   play: async ({ canvas }) => {
     const alone = canvas.getByRole('textbox', { name: 'Alone' })
     const within = canvas.getByRole('textbox', { name: 'Within a field' })
-    await expectDisabledLook(alone)
-    await expectDisabledLook(within)
+    await expectDisabledLook(alone, { text: true, edge: true })
+    await expectDisabledLook(within, { text: true, edge: true })
     await expect(looks(within)).toEqual(looks(alone))
   }
 }

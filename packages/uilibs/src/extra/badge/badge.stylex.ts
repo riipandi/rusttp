@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
@@ -78,18 +78,18 @@ export const badgeVariants = stylex.create({
 // `solid` is a solid fill, `faded` a soft tint, `outline` an edge, `ghost` text only.
 export const badgeSolidColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
+  primary: { backgroundColor: colors.backgroundPrimary, color: fixedColors.onBackgroundPrimary },
   positive: {
     backgroundColor: colors.backgroundPositive,
-    color: colors.onBackgroundPositive
+    color: fixedColors.onBackgroundPositive
   },
   warning: {
     backgroundColor: colors.backgroundWarning,
-    color: colors.onBackgroundWarning
+    color: fixedColors.onBackgroundWarning
   },
   critical: {
     backgroundColor: colors.backgroundCritical,
-    color: colors.onBackgroundCritical
+    color: fixedColors.onBackgroundCritical
   }
 })
 

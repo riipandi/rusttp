@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { expectScrollsIntoView, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { container, fontSize, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
@@ -21,8 +22,7 @@ import {
 
 const meta = {
   title: 'Base Components/Dialog',
-  component: Dialog,
-  tags: [] // ['autodocs']
+  component: Dialog
 } satisfies Meta<typeof Dialog>
 
 type Story = StoryObj<typeof meta>
@@ -86,22 +86,20 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Dialog>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Open the cryptex' }))
-    await body.findByRole('dialog')
-    await expect(body.getByRole('heading', { name: 'Erase the map?' })).toBeInTheDocument()
-    await expectTypeRole(body.getByRole('heading', { name: 'Erase the map?' }), 'body1')
+    await screen.findByRole('dialog')
+    await expect(screen.getByRole('heading', { name: 'Erase the map?' })).toBeInTheDocument()
+    await expectTypeRole(screen.getByRole('heading', { name: 'Erase the map?' }), 'body1')
 
     // Escape dismisses the dialog.
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 
     // Reopen and confirm with the destructive action.
     await userEvent.click(canvas.getByRole('button', { name: 'Open the cryptex' }))
-    await body.findByRole('dialog')
-    await userEvent.click(body.getByRole('button', { name: 'Erase' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await screen.findByRole('dialog')
+    await userEvent.click(screen.getByRole('button', { name: 'Erase' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -120,10 +118,9 @@ export const CloseButton: Story = {
   ),
   // The built-in close button is named by `labels` and dismisses the dialog.
   play: async ({ canvas }) => {
-    const body = within(document.body)
     await userEvent.click(canvas.getByRole('button', { name: 'Open the vault' }))
-    await userEvent.click(await body.findByRole('button', { name: 'Seal the vault' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await userEvent.click(await screen.findByRole('button', { name: 'Seal the vault' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -218,6 +215,66 @@ export const Scrollable: Story = {
   )
 }
 
+const owlRules = [
+  'Owls deliver post to the address on the envelope and to no other.',
+  'A letter for the Headmaster is carried to the Great Hall at breakfast.',
+  'Packages heavier than a Quaffle travel by a barn owl in pairs.',
+  'An owl that returns with an unopened letter is fed before it is asked anything.',
+  'Howlers are delivered at the table where the reader sits.',
+  'Replies to the Ministry are written in black ink on one side of the parchment.'
+]
+
+/** In a window shorter than the dialog, the dialog scrolls as a whole: its title and its footer can both be reached. */
+export const ShortWindow: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Dialog>
+  <DialogTrigger render={<Button variant='outline' />}>Read the owl rules</DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Owl post rules</DialogTitle>
+    </DialogHeader>
+    {rules.map((rule) => <p key={rule}>{rule}</p>)}
+    <DialogFooter>
+      <DialogClose render={<Button />}>Understood</DialogClose>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`
+      }
+    }
+  },
+  name: 'Short window',
+  globals: { viewport: { value: 'short', isRotated: false } },
+  render: () => (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Read the owl rules</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Owl post rules</DialogTitle>
+        </DialogHeader>
+        {owlRules.map((rule) => (
+          <p key={rule}>{rule}</p>
+        ))}
+        <DialogFooter>
+          <DialogClose render={<Button />}>Understood</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(window.innerHeight).toBe(320)
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Read the owl rules' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Owl post rules' })
+    // The window is shorter than the dialog, or the check below proves nothing.
+    await expect(dialog.getBoundingClientRect().height).toBeGreaterThan(window.innerHeight)
+    await expectScrollsIntoView(screen.getByRole('button', { name: 'Understood' }), 'end')
+    await expectScrollsIntoView(screen.getByText('Owl post rules'), 'start')
+    await userEvent.keyboard('{Escape}')
+    await untilGone(() => screen.queryByRole('dialog'))
+  }
+}
+
 export const NoCloseButton: Story = {
   parameters: {
     docs: {
@@ -295,18 +352,17 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const widths: number[] = []
     for (const size of sizes) {
       await userEvent.click(
         within(cellOf(canvasElement, 'size', size)).getByRole('button', { name: `Open ${size}` })
       )
-      const dialog = await body.findByRole('dialog', { name: `Dialog ${size}` })
+      const dialog = await screen.findByRole('dialog', { name: `Dialog ${size}` })
       // The popup scales in from 0.97, so wait for the full width before reading it.
       await waitFor(() => expect(dialog.getBoundingClientRect().width).toBeGreaterThan(0))
       widths.push(Math.round(parseFloat(getComputedStyle(dialog).width)))
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
     // The popup keeps 16px of room on each side of a narrow viewport.
     const room = window.innerWidth - 32
@@ -349,7 +405,6 @@ export const Overlays: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const filters: string[] = []
     for (const overlay of overlays) {
       await userEvent.click(
@@ -357,10 +412,10 @@ export const Overlays: Story = {
           name: `Open ${overlay}`
         })
       )
-      const dialog = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      const dialog = await screen.findByRole('dialog', { name: `Overlay ${overlay}` })
       filters.push(getComputedStyle(backdropOf(dialog)).backdropFilter)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
   }
@@ -389,7 +444,7 @@ function Cryptex({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Cryptex defaultOpen />,
   play: async () => {
-    const dialog = await within(document.body).findByRole('dialog', {
+    const dialog = await screen.findByRole('dialog', {
       name: 'Enter the passphrase'
     })
     await waitFor(() => expect(dialog).toBeVisible())
@@ -401,17 +456,20 @@ export const Open: Story = {
 export const Keyboard: Story = {
   render: () => <Cryptex />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Open the cryptex' })
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
     // Enter opens it only while it is closed: once open, focus is inside and Enter would press
     // the focused button.
-    await pressUntil('{Enter}', () => body.getByRole('dialog', { name: 'Enter the passphrase' }), {
-      when: () => !body.queryByRole('dialog')
-    })
-    const dialog = body.getByRole('dialog')
+    await pressUntil(
+      '{Enter}',
+      () => screen.getByRole('dialog', { name: 'Enter the passphrase' }),
+      {
+        when: () => !screen.queryByRole('dialog')
+      }
+    )
+    const dialog = screen.getByRole('dialog')
 
     // Focus moves into the popup, and Tab keeps it there (five presses outrun the three controls, so it wraps).
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true))
@@ -423,20 +481,20 @@ export const Keyboard: Story = {
     }
 
     // The page behind is inert: its trigger is out of the accessibility tree while the popup is open.
-    await expect(body.queryByRole('button', { name: 'Open the cryptex' })).toBeNull()
+    await expect(screen.queryByRole('button', { name: 'Open the cryptex' })).toBeNull()
 
-    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
 
     // Space opens it too. Focus lands on the first button, `DialogClose`, and Enter on it closes
     // the dialog; the press repeats only while the dialog is still open, because once it is gone
     // focus is back on the trigger and Enter would reopen it.
-    await pressUntil(' ', () => body.getByRole('dialog', { name: 'Enter the passphrase' }), {
-      when: () => !body.queryByRole('dialog')
+    await pressUntil(' ', () => screen.getByRole('dialog', { name: 'Enter the passphrase' }), {
+      when: () => !screen.queryByRole('dialog')
     })
-    await waitFor(() => expect(body.getByRole('button', { name: 'Walk away' })).toHaveFocus())
-    await pressUntil('{Enter}', () => expect(body.queryByRole('dialog')).toBeNull(), {
-      when: () => !!body.queryByRole('dialog')
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Walk away' })).toHaveFocus())
+    await pressUntil('{Enter}', () => expect(screen.queryByRole('dialog')).toBeNull(), {
+      when: () => !!screen.queryByRole('dialog')
     })
     await waitFor(() => expect(trigger).toHaveFocus())
   }

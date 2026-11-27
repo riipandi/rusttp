@@ -2,21 +2,16 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import type { Responsive } from '../../hooks/use-responsive-value'
+import type { PartProps } from '../../styles/types'
 import {
   textAlignStyles,
-  textAlignStylesLarge,
-  textAlignStylesMedium,
-  textAlignStylesXLarge,
   textColorStyles,
   textStyles,
   textVariantStyles,
   textVariantStylesLarge,
   textVariantStylesMedium,
   textVariantStylesXLarge,
-  textWeightStyles,
-  textWeightStylesLarge,
-  textWeightStylesMedium,
-  textWeightStylesXLarge
+  textWeightStyles
 } from './text.stylex'
 
 export type TextVariant =
@@ -74,20 +69,6 @@ const VARIANT_SPEC: ResponsiveSpec<TextVariant> = {
   xlarge: textVariantStylesXLarge
 }
 
-const WEIGHT_SPEC: ResponsiveSpec<TextWeight> = {
-  small: textWeightStyles,
-  medium: textWeightStylesMedium,
-  large: textWeightStylesLarge,
-  xlarge: textWeightStylesXLarge
-}
-
-const ALIGN_SPEC: ResponsiveSpec<TextAlign> = {
-  small: textAlignStyles,
-  medium: textAlignStylesMedium,
-  large: textAlignStylesLarge,
-  xlarge: textAlignStylesXLarge
-}
-
 // Featured variants render as headings by default, like Reshaped.
 const TAG_MAP: Partial<Record<TextVariant, 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'>> = {
   'featured-1': 'h1',
@@ -124,17 +105,16 @@ export function resolveResponsive<T extends string>(
   return out
 }
 
-export interface TextProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
+export interface TextProps extends PartProps<useRender.ComponentProps<'div'>> {
   variant?: Responsive<TextVariant>
   color?: TextColor
-  weight?: Responsive<TextWeight>
-  align?: Responsive<TextAlign>
+  weight?: TextWeight
+  align?: TextAlign
   decoration?: 'underline' | 'line-through'
   maxLines?: number
   wrap?: 'balance' | 'nowrap'
   monospace?: boolean
   numeric?: boolean
-  style?: stylex.StyleXStyles
 }
 
 export function Text({
@@ -165,8 +145,8 @@ export function Text({
         // Variant first so weight/color overrides win the cascade.
         ...resolveResponsive(variant, VARIANT_SPEC),
         color && textColorStyles[color],
-        ...resolveResponsive(weight, WEIGHT_SPEC),
-        ...resolveResponsive(align, ALIGN_SPEC),
+        weight && textWeightStyles[weight],
+        align && textAlignStyles[align],
         decoration === 'underline' && textStyles.decorationUnderline,
         decoration === 'line-through' && textStyles.decorationLineThrough,
         wrap === 'balance' && textStyles.wrapBalance,

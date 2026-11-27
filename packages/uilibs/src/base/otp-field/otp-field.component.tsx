@@ -21,8 +21,7 @@ import {
   controlVariants
 } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { otpFieldSlotSizes, otpFieldStyles as s } from './otp-field.stylex'
 
 export interface OTPFieldLabels {
@@ -67,15 +66,14 @@ export function OTPField({
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   ...props
-}: Omit<React.ComponentProps<typeof BaseOTPField.Root>, 'className' | 'style' | 'size'> &
-  StyleProp & {
-    /** Slot height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** Accessible names of the slots; English by default. */
-    labels?: Partial<OTPFieldLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseOTPField.Root>, 'size'> & {
+  /** Slot height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** Accessible names of the slots; English by default. */
+  labels?: Partial<OTPFieldLabels>
+}) {
   const generatedId = React.useId()
   const labelId = ariaLabel != null && ariaLabelledBy == null ? generatedId : ariaLabelledBy
   const context = React.useMemo(
@@ -102,52 +100,34 @@ export function OTPField({
   )
 }
 
-export function OTPFieldGroup({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function OTPFieldGroup({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.group, style)} />
 }
 
 export function OTPFieldSlot({
   style,
-  ref,
   ...props
-}: Omit<React.ComponentProps<typeof BaseOTPField.Input>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseOTPField.Input>, 'render'>) {
   const { size, variant, length, labelId, labels } = React.useContext(OTPFieldContext)
-  const slotRef = React.useRef<HTMLInputElement | null>(null)
-  // Base UI numbers the slots by registration order, which is their order in the document.
-  const [position, setPosition] = React.useState(0)
-
-  React.useLayoutEffect(() => {
-    const slot = slotRef.current
-    const slots = slot
-      ?.closest('[role="group"]')
-      ?.querySelectorAll('input:not([aria-hidden="true"])')
-    setPosition(slot && slots ? Array.from(slots).indexOf(slot) + 1 : 0)
-  })
-
-  const setRef = React.useCallback(
-    (element: HTMLInputElement | null) => {
-      slotRef.current = element
-      if (typeof ref === 'function') return ref(element)
-      if (ref) ref.current = element
-    },
-    [ref]
-  )
-
-  const naming =
-    position === 1
-      ? { 'aria-labelledby': props['aria-labelledby'] ?? labelId }
-      : position > 1
-        ? { 'aria-label': props['aria-label'] ?? labels.slot(position, length) }
-        : undefined
 
   return (
     <BaseOTPField.Input
-      ref={setRef}
       {...props}
-      {...naming}
+      // Base UI numbers the slots by their place in the document, on the server too.
+      render={(inputProps, { index }) => (
+        <input
+          {...inputProps}
+          {...(index === 0
+            ? {
+                'aria-labelledby':
+                  props['aria-labelledby'] ?? labelId ?? inputProps['aria-labelledby']
+              }
+            : {
+                'aria-label': props['aria-label'] ?? labels.slot(index + 1, length),
+                'aria-labelledby': undefined
+              })}
+        />
+      )}
       {...stylex.props(
         controlBase.root,
         controlSizes[size],
@@ -160,10 +140,7 @@ export function OTPFieldSlot({
   )
 }
 
-export function OTPFieldSeparator({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function OTPFieldSeparator({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
       <Minus size={glyphSize.medium} strokeWidth={1.5} aria-hidden />

@@ -8,6 +8,12 @@ import type { Plugin, ViteDevServer } from 'vite'
  * packages compile in place, so the plugin must appear in each consumer's
  * vite config with that package's own alias map (`#/*` → its src). CSS layers
  * are pinned here so every consumer emits identically ordered styles.
+ *
+ * In dev the CSS is collected on every request while modules are still being compiled one by one. A
+ * `defineConsts` media key stays an unresolved `var(--x…)` until the file that defines it has
+ * compiled, and lightningcss rejects that rule ("Invalid empty selector"). Outside production,
+ * error recovery drops the rule for that one response; the next HMR update serves the whole CSS.
+ * The build (`NODE_ENV=production`) keeps lightningcss strict.
  */
 export function stylexPlugin(options: StylexPluginOptions): Plugin {
   const { lightningcssOptions, ...rest } = options
@@ -15,6 +21,8 @@ export function stylexPlugin(options: StylexPluginOptions): Plugin {
     useCSSLayers: { before: ['reset'], prefix: 'stylex' },
     ...rest,
     lightningcssOptions: {
+      errorRecovery: process.env['NODE_ENV'] !== 'production',
+      minify: process.env['NODE_ENV'] === 'production',
       ...lightningcssOptions,
       exclude: (lightningcssOptions?.exclude ?? 0) | LIGHTNINGCSS_DIR_SELECTOR
     }

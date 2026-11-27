@@ -19,8 +19,6 @@ import {
 // surface as toast: overlay elevation + thin dimmed border, radius.medium),
 // applied by redirecting the native surface's `--ts-chart-tooltip-*`
 // variables. The native tooltip body provides its own internal layout.
-// `chartPalette` is exported so standalone visualizations (bar list, tracker)
-// can opt into the same categorical palette outside the chart host.
 
 const chartPaletteOverrides = {
   '--ts-chart-1': colors.foregroundPrimary,
@@ -44,7 +42,6 @@ const chartTooltipOverrides = {
 }
 
 export const chartStyles = stylex.create({
-  palette: chartPaletteOverrides,
   root: {
     alignItems: 'stretch',
     color: colors.foregroundNeutral,
@@ -77,12 +74,23 @@ export const chartStyles = stylex.create({
     display: 'flex',
     gap: unit.x1_5
   },
-  legendSwatch: (value: string) => ({
-    backgroundColor: value,
+  legendSwatch: {
     borderRadius: radius.xsmall,
     display: 'block',
     flexShrink: 0,
     height: unit.x2,
     width: unit.x2
-  })
+  }
+})
+
+/** The legend swatch fill per series color: one static rule for each name in `chartColors`. */
+export const chartSwatchColors = stylex.create({
+  chart1: { backgroundColor: colors.chart1 },
+  chart2: { backgroundColor: colors.chart2 },
+  chart3: { backgroundColor: colors.chart3 },
+  chart4: { backgroundColor: colors.chart4 },
+  chart5: { backgroundColor: colors.chart5 },
+  chart6: { backgroundColor: colors.chart6 },
+  chart7: { backgroundColor: colors.chart7 },
+  chart8: { backgroundColor: colors.chart8 }
 })

@@ -2,7 +2,7 @@ import { ChevronRight, MoreHorizontal } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import type { ColorRole, PartProps } from '../../styles/types'
 import { mirrorInRtl, visuallyHidden } from '../../styles/utils.stylex'
 import { breadcrumbStyles as s } from './breadcrumb.stylex'
 
@@ -30,8 +30,7 @@ export function Breadcrumb({
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style' | 'color'> &
-  StyleProp &
+}: PartProps<React.ComponentProps<'nav'>, 'color'> &
   LabelsProps & {
     /** The role of the links; `neutral` (default) or `primary`. */
     color?: BreadcrumbColor
@@ -47,32 +46,20 @@ export function Breadcrumb({
   )
 }
 
-export function BreadcrumbList({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'ol'>, 'className' | 'style'> & StyleProp) {
+export function BreadcrumbList({ style, ...props }: PartProps<React.ComponentProps<'ol'>>) {
   return <ol {...props} {...stylex.props(s.list, style)} />
 }
 
-export function BreadcrumbItem({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
+export function BreadcrumbItem({ style, ...props }: PartProps<React.ComponentProps<'li'>>) {
   return <li {...props} {...stylex.props(s.item, style)} />
 }
 
-export function BreadcrumbLink({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'a'>, 'className' | 'style'> & StyleProp) {
+export function BreadcrumbLink({ style, ...props }: PartProps<React.ComponentProps<'a'>>) {
   const color = React.useContext(BreadcrumbColorContext)
   return <a {...props} {...stylex.props(s.link, color === 'primary' && s.linkPrimary, style)} />
 }
 
-export function BreadcrumbPage({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+export function BreadcrumbPage({ style, ...props }: PartProps<React.ComponentProps<'span'>>) {
   return <span aria-current='page' {...props} {...stylex.props(s.page, style)} />
 }
 
@@ -80,7 +67,7 @@ export function BreadcrumbSeparator({
   children,
   style,
   ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<'li'>>) {
   return (
     <li role='presentation' aria-hidden {...props} {...stylex.props(s.separator, style)}>
       {children ?? (
@@ -99,7 +86,7 @@ export function BreadcrumbEllipsis({
   labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
+}: PartProps<React.ComponentProps<'span'>> & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={glyphSize.medium} strokeWidth={2} aria-hidden />

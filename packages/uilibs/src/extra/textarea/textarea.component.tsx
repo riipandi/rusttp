@@ -3,20 +3,24 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
 import { type ControlVariant, controlBase, controlVariants } from '../../styles/control.stylex'
-import type { ControlSize } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { textareaSizes, textareaStyles as s } from './textarea.stylex'
 
-export interface TextareaProps extends Omit<
-  React.ComponentProps<'textarea'>,
-  'className' | 'style'
-> {
+export interface TextareaProps extends PartProps<React.ComponentProps<'textarea'>> {
   /** Minimum height and type; `medium` (64px) by default. */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
   variant?: ControlVariant
-  style?: stylex.StyleXStyles
   /** Grow the textarea with its content instead of a fixed height. */
   autoResize?: boolean
+}
+
+function resizeToContent(element: HTMLTextAreaElement | null) {
+  if (!element) return
+  element.style.height = 'auto'
+  // `scrollHeight` leaves out the border, and the box is `border-box`: without it the last line is cut.
+  const border = element.offsetHeight - element.clientHeight
+  element.style.height = `${element.scrollHeight + border}px`
 }
 
 /** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */
@@ -35,27 +39,28 @@ export function Textarea({
   autoFocus,
   ...props
 }: TextareaProps) {
-  const resize = useCallback((element: HTMLTextAreaElement | null) => {
-    if (!element) return
-    element.style.height = 'auto'
-    element.style.height = `${element.scrollHeight}px`
-  }, [])
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
 
   const setRef = useCallback(
     (element: HTMLElement | null) => {
       const textarea = element instanceof HTMLTextAreaElement ? element : null
-      if (autoResize) resize(textarea)
+      textareaRef.current = textarea
       if (typeof ref === 'function') return ref(textarea)
       if (ref) ref.current = textarea
     },
-    [autoResize, ref, resize]
+    [ref]
   )
+
+  // Measure on mount and whenever a controlled `value` changes, however it changed.
+  React.useLayoutEffect(() => {
+    if (autoResize) resizeToContent(textareaRef.current)
+  }, [autoResize, value])
 
   // What the Field control owns: its id, name, value, disabled and autofocus state.
   const fieldProps = { id, name, value, defaultValue, disabled, autoFocus }
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (autoResize) resize(event.currentTarget)
+    if (autoResize) resizeToContent(event.currentTarget)
     onChange?.(event)
   }
 

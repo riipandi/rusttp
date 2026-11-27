@@ -15,8 +15,7 @@ export const radioStyles = stylex.create({
     borderColor: {
       default: colors.borderControl,
       '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
-      '[data-invalid]': colors.borderCritical,
-      ':disabled': colors.borderDisabled,
+      '[data-invalid]:not([data-disabled])': colors.borderCritical,
       '[data-disabled]': colors.borderDisabled
     },
     borderRadius: radius.full,

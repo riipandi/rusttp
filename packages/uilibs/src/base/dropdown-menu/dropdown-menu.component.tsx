@@ -33,29 +33,21 @@ import { Menu as BaseMenu } from '@base-ui/react/menu'
 import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { glyphSize } from '../../styles/glyph'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
-import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
-import { mirrorInRtl, ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
+import type { ColorRole, Glyph, PartProps } from '../../styles/types'
+import { mirrorInRtl } from '../../styles/utils.stylex'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
 export const DropdownMenu = BaseMenu.Root
 export const DropdownMenuTrigger = BaseMenu.Trigger
 export const DropdownMenuGroup = BaseMenu.Group
-export const DropdownMenuPortal = BaseMenu.Portal
 export const DropdownMenuSub = BaseMenu.SubmenuRoot
 export const DropdownMenuRadioGroup = BaseMenu.RadioGroup
 
 export interface DropdownMenuContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseMenu.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseMenu.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset'
-    >,
-    StyleProp {}
+  extends PartProps<React.ComponentProps<typeof BaseMenu.Popup>>, PositionerProps {}
 
 export function DropdownMenuContent({
   style,
@@ -63,37 +55,34 @@ export function DropdownMenuContent({
   sideOffset = 4,
   align = 'start',
   alignOffset = 0,
+  collisionAvoidance,
+  collisionPadding,
+  anchor,
   ...props
 }: DropdownMenuContentProps) {
   return (
-    <BaseMenu.Portal container={usePortalContainer()}>
-      <BaseMenu.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseMenu.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BaseMenu.Positioner>
-    </BaseMenu.Portal>
+    <PopupShell
+      parts={BaseMenu}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }
 
-export interface DropdownMenuItemProps
-  extends
-    Omit<React.ComponentProps<typeof BaseMenu.Item>, 'className' | 'style' | 'color'>,
-    StyleProp {
+export interface DropdownMenuItemProps extends PartProps<
+  React.ComponentProps<typeof BaseMenu.Item>,
+  'color'
+> {
   /** `critical` marks a destructive or irreversible item; `primary` a recommended one. */
   color?: Extract<ColorRole, 'neutral' | 'critical' | 'primary'>
   /** A glyph before the label; it is decoration, so the item's name is still its label. */
@@ -136,7 +125,7 @@ export function DropdownMenuCheckboxItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMenu.CheckboxItem>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMenu.CheckboxItem>>) {
   return (
     <BaseMenu.CheckboxItem
       {...props}
@@ -156,7 +145,7 @@ export function DropdownMenuRadioItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMenu.RadioItem>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMenu.RadioItem>>) {
   return (
     <BaseMenu.RadioItem
       {...props}
@@ -177,8 +166,7 @@ export function DropdownMenuSubTrigger({
   inset,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMenu.SubmenuTrigger>, 'className' | 'style'> &
-  StyleProp & { inset?: boolean }) {
+}: PartProps<React.ComponentProps<typeof BaseMenu.SubmenuTrigger>> & { inset?: boolean }) {
   return (
     <BaseMenu.SubmenuTrigger
       {...props}
@@ -212,25 +200,26 @@ export function DropdownMenuSubContent({
   )
 }
 
-export function DropdownMenuShortcut({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+export function DropdownMenuShortcut({ style, ...props }: PartProps<React.ComponentProps<'span'>>) {
   return <span {...props} {...stylex.props(s.shortcut, style)} />
 }
 
 export function DropdownMenuSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMenu.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseMenu.Separator {...props} {...stylex.props(s.separator, style)} />
+}: PartProps<React.ComponentProps<typeof BaseMenu.Separator>>) {
+  return <BaseMenu.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }
 
 export function DropdownMenuLabel({
   style,
   inset,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMenu.GroupLabel>, 'className' | 'style'> &
-  StyleProp & { inset?: boolean }) {
-  return <BaseMenu.GroupLabel {...props} {...stylex.props(s.label, inset && s.itemInset, style)} />
+}: PartProps<React.ComponentProps<typeof BaseMenu.GroupLabel>> & { inset?: boolean }) {
+  return (
+    <BaseMenu.GroupLabel
+      {...props}
+      {...stylex.props(popupList.label, inset && s.itemInset, style)}
+    />
+  )
 }

@@ -3,6 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { fieldLabelStyles } from '../../base/field/field.stylex'
 import { type } from '../../styles/type.stylex'
+import type { PartProps } from '../../styles/types'
 
 const s = stylex.create({
   // The label is a flex box: without this it spans the row, and the empty space beside the text
@@ -12,9 +13,7 @@ const s = stylex.create({
   }
 })
 
-export interface LabelProps extends Omit<useRender.ComponentProps<'label'>, 'className' | 'style'> {
-  style?: stylex.StyleXStyles
-}
+export interface LabelProps extends PartProps<useRender.ComponentProps<'label'>> {}
 
 /** Renders a `label`; `render` swaps it for another element. */
 export function Label({ style, render, ...props }: LabelProps) {

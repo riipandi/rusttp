@@ -16,11 +16,6 @@ export const previewCardStyles = stylex.create({
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     outline: 'none',
     padding: unit.x3,
     width: container.xsmall

@@ -9,6 +9,7 @@ import { Meter } from '../../base/meter'
 import { Progress } from '../../base/progress'
 import { toast } from '../../base/toast'
 import { pressUntil } from '../../contracts/keyboard'
+import { lifted, live, untilOpaque } from '../../contracts/overlay'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { radius, stroke, unit } from '../../styles/tokens.stylex'
 import { fontFamily, fontSize, fontLineHeight, fontWeight } from '../../styles/tokens.stylex'
@@ -18,8 +19,7 @@ import { KanbanColumn, KanbanColumnContent, KanbanColumnHandle } from './'
 import type { KanbanRootProps } from './'
 
 const meta = {
-  title: 'Extra Components/Kanban',
-  tags: [] // ['autodocs']
+  title: 'Extra Components/Kanban'
 } satisfies Meta<typeof Kanban>
 
 export default meta
@@ -437,8 +437,8 @@ function commitTaskMoved() {
 }
 
 /** Story 6 fake persistence: latency + log + toast, no component state. */
-function fakePersistToBackend(value: Record<string, BackendTask[]>) {
-  return new Promise<void>((resolve) => setTimeout(resolve, 500)).then(() => {
+function fakePersistToBackend(value: Record<string, BackendTask[]>, latency: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, latency)).then(() => {
     console.log('Persisted to backend:', value)
     toast.success('Changes saved')
   })
@@ -1167,7 +1167,8 @@ export const FeatureRoadmap: Story = {
 // Story 6: Kanban board persisted to a backend
 // ---------------------------------------------------------------------------
 
-export const PersistedToBackend: Story = {
+export const PersistedToBackend: StoryObj<{ latency: number }> = {
+  args: { latency: 500 },
   parameters: {
     docs: {
       source: {
@@ -1182,7 +1183,7 @@ export const PersistedToBackend: Story = {
       }
     }
   },
-  render: () => {
+  render: ({ latency }) => {
     const initialBackendColumns: Record<string, BackendTask[]> = {
       todo: [
         { id: 'b-1', title: 'Design mockups', status: 'todo' },
@@ -1201,7 +1202,7 @@ export const PersistedToBackend: Story = {
 
     const handleValueCommit = (value: Record<string, BackendTask[]>) => {
       setIsSaving(true)
-      void fakePersistToBackend(value).then(() => setIsSaving(false))
+      void fakePersistToBackend(value, latency).then(() => setIsSaving(false))
     }
 
     return (
@@ -1280,8 +1281,8 @@ export const PersistedToBackend: Story = {
   }
 }
 
-const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
-const lifted = () => document.querySelector('[data-dragging="true"]') !== null
+// Items and columns the a11y gate must not read mid-fade after a drag or a cancel.
+const SETTLED = '[data-slot="kanban-item"], [data-slot="kanban-column"]'
 
 /** A keyboard drag names the task, not its id, and speaks the language `labels` give. */
 export const KeyboardAnnouncements: Story = {
@@ -1333,7 +1334,7 @@ export const KeyboardAnnouncements: Story = {
     await expect(live()).not.toContain('task-')
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(live()).toContain('Dragging cancelled. Research competitors'))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await untilOpaque(SETTLED)
   }
 }
 
@@ -1504,6 +1505,6 @@ export const Keyboard: Story = {
     })
     await pressUntil(' ', () => expect(lifted()).toBe(false), { when: () => lifted() })
     await waitFor(() => expect(columns()).toEqual(['done', 'todo']))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    await untilOpaque(SETTLED)
   }
 }

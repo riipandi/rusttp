@@ -25,11 +25,10 @@
 import { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
-import { popupFx } from '../../styles/popup.stylex'
-import type { StyleProp } from '../../styles/types'
-import { ring, type UnitStep } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { type, descriptionText } from '../../styles/type.stylex'
+import type { PartProps } from '../../styles/types'
+import type { UnitStep } from '../../styles/utils.stylex'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
 
 export const Popover = BasePopover.Root
@@ -37,19 +36,13 @@ export const PopoverTrigger = BasePopover.Trigger
 export const PopoverClose = BasePopover.Close
 
 export interface PopoverContentProps
-  extends
-    Omit<React.ComponentProps<typeof BasePopover.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BasePopover.Positioner>,
-      'align' | 'alignOffset' | 'collisionAvoidance' | 'collisionPadding' | 'side' | 'sideOffset'
-    > {
+  extends PartProps<React.ComponentProps<typeof BasePopover.Popup>>, PositionerProps {
   /** The `shadow` token the popup draws: `outline`, `raised` (default), or the deepest `overlay`. */
   elevation?: 'outline' | 'raised' | 'overlay'
   /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
   padding?: UnitStep
   /** Corner radius: `medium` (default) or `large`. */
   borderRadius?: 'medium' | 'large'
-  style?: stylex.StyleXStyles
 }
 
 export function PopoverContent({
@@ -63,55 +56,49 @@ export function PopoverContent({
   alignOffset = 0,
   collisionAvoidance,
   collisionPadding,
+  anchor,
   ...props
 }: PopoverContentProps) {
   return (
-    <BasePopover.Portal container={usePortalContainer()}>
-      <BasePopover.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        collisionAvoidance={collisionAvoidance}
-        collisionPadding={collisionPadding}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BasePopover.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            popoverPadding[padding],
-            popoverRadii[borderRadius],
-            ring({ shadow: shadow[elevation] }),
-            style
-          )}
-        />
-      </BasePopover.Positioner>
-    </BasePopover.Portal>
+    <PopupShell
+      parts={BasePopover}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={[s.popup, popoverPadding[padding], popoverRadii[borderRadius]]}
+      elevation={elevation}
+      style={style}
+      {...props}
+    />
   )
 }
 
 /** Layout wrapper for `PopoverTitle` + `PopoverDescription` inside `PopoverContent`. */
-export function PopoverHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function PopoverHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function PopoverTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BasePopover.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BasePopover.Title>>) {
   return <BasePopover.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function PopoverDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BasePopover.Description>, 'className' | 'style'> & StyleProp) {
-  return <BasePopover.Description {...props} {...stylex.props(s.description, style)} />
+}: PartProps<React.ComponentProps<typeof BasePopover.Description>>) {
+  return (
+    <BasePopover.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, style)}
+    />
+  )
 }

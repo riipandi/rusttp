@@ -3,14 +3,14 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
-import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
+import { type, descriptionText } from '../../styles/type.stylex'
+import type { ColorRole, Glyph, PartProps } from '../../styles/types'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { alertStyles as s, alertColors as colors } from './alert.stylex'
 
 export type AlertColor = ColorRole
 
-export interface AlertProps
-  extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style' | 'color'>, StyleProp {
+export interface AlertProps extends PartProps<useRender.ComponentProps<'div'>, 'color'> {
   /** The color role of the notice; `neutral` by default. */
   color?: AlertColor
   /** A glyph before the text, in the role's color. */
@@ -98,27 +98,25 @@ export function AlertTitle({
   level = 5,
   style,
   ...props
-}: Omit<React.ComponentProps<'h5'>, 'className' | 'style'> &
-  StyleProp & { level?: AlertTitleLevel }) {
+}: PartProps<React.ComponentProps<'h5'>> & { level?: AlertTitleLevel }) {
   const Heading = `h${level}` as const
   return <Heading {...props} {...stylex.props(s.title, style)} />
 }
 
-export function AlertDescription({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
-  return <div {...props} {...stylex.props(s.description, style)} />
+export function AlertDescription({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
+  return (
+    <div
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }
 
 /**
  * Slot pinned to the top-right corner of an `Alert`, for a dismiss or undo action; on an `inline`
  * alert it sits on the row with the text. It must be a direct child of the `Alert`.
  */
-export function AlertAction({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function AlertAction({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   const inline = React.useContext(InlineContext)
   return <div {...props} {...stylex.props(s.action, inline && s.actionInline, style)} />
 }

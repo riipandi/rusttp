@@ -8,7 +8,6 @@ import { canvasDecorator, hpBooks } from './chart.samples'
 const meta = {
   title: 'Visualizations/BarList',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

@@ -3,16 +3,14 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type } from '../../styles/type.stylex'
+import type { PartProps } from '../../styles/types'
 import { cardStates, cardStyles as s, cardSizes as sizes } from './card.stylex'
 
-interface DivProps extends Omit<React.ComponentProps<'div'>, 'className' | 'style'> {
-  style?: stylex.StyleXStyles
-}
+interface DivProps extends PartProps<React.ComponentProps<'div'>> {}
 
 export type CardSize = 'small' | 'medium'
 
-export interface CardProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
-  style?: stylex.StyleXStyles
+export interface CardProps extends PartProps<useRender.ComponentProps<'div'>> {
   size?: CardSize
   /** Marks the card as chosen: a primary edge and `data-selected`. Name the choice for assistive technology yourself (a `role` and `aria-selected`, or a control inside). */
   selected?: boolean
@@ -52,21 +50,11 @@ export function CardHeader({ style, ...props }: DivProps) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
-export function CardTitle({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'h3'>, 'className' | 'style'> & {
-  style?: stylex.StyleXStyles
-}) {
+export function CardTitle({ style, ...props }: PartProps<React.ComponentProps<'h3'>>) {
   return <h3 {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
-export function CardDescription({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'p'>, 'className' | 'style'> & {
-  style?: stylex.StyleXStyles
-}) {
+export function CardDescription({ style, ...props }: PartProps<React.ComponentProps<'p'>>) {
   return <p {...props} {...stylex.props(s.description, style)} />
 }
 

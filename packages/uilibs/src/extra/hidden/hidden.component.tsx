@@ -2,13 +2,13 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { mapResponsive, type Responsive } from '../../hooks/use-responsive-value'
+import type { PartProps } from '../../styles/types'
 import { resolveResponsive, type ResponsiveSpec } from '../text/text.component'
 import { hiddenLarge, hiddenMedium, hiddenRoot, hiddenSmall, hiddenXLarge } from './hidden.stylex'
 
-export interface HiddenProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
+export interface HiddenProps extends PartProps<useRender.ComponentProps<'div'>> {
   /** Hides the children: `true` for every viewport, or per breakpoint (`{ small: true, large: false }`). Unset shows them. */
   hide?: Responsive<boolean>
-  style?: stylex.StyleXStyles
 }
 
 type Visibility = 'hide' | 'show'

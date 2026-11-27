@@ -8,16 +8,21 @@ import { duration, easing } from '../../styles/tokens.stylex'
 export const sheetStyles = stylex.create({
   overlay: {
     inset: 0,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     position: 'fixed',
-    transitionDuration: duration.medium,
-    transitionProperty: 'opacity',
-    transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.overlay
+  },
+  // The scrolling outer box: a sheet taller than the window scrolls as a whole and is never cut
+  // off. Each side docks the popup with flex alignment and auto margins (`sheetSides`), which
+  // collapse to zero when the popup overflows; a side sheet is as tall as its content, and at
+  // least as tall as the window. A sheet slides in from beyond the edge, so the
+  // sideways overflow is hidden.
+  viewport: {
+    display: 'flex',
+    inset: 0,
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    position: 'fixed',
+    zIndex: zIndex.modal
   },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
@@ -29,19 +34,13 @@ export const sheetStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x4,
     lineHeight: fontLineHeight.body2,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
-    position: 'fixed',
+    position: 'relative',
     transitionDuration: duration.medium,
     transitionProperty: {
       default: 'opacity, transform',
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
-    transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.modal
+    transitionTimingFunction: easing.decelerate
   },
   // Position only: the look is `CloseButton`.
   close: {
@@ -66,13 +65,6 @@ export const sheetStyles = stylex.create({
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.semibold,
     margin: 0
-  },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    marginTop: unit.x1,
-    margin: 0
   }
 })
 
@@ -88,10 +80,10 @@ export const sheetSides = stylex.create({
     borderLeftColor: colors.borderNeutralFaded,
     borderLeftStyle: 'solid',
     borderLeftWidth: stroke.ring1,
-    bottom: 0,
+    alignSelf: 'flex-start',
+    marginInlineStart: 'auto',
     maxWidth: container.large,
-    right: 0,
-    top: 0,
+    minHeight: '100%',
     width: '75%'
   },
   left: {
@@ -105,10 +97,10 @@ export const sheetSides = stylex.create({
     borderRightColor: colors.borderNeutralFaded,
     borderRightStyle: 'solid',
     borderRightWidth: stroke.ring1,
-    bottom: 0,
-    left: 0,
+    alignSelf: 'flex-start',
+    marginInlineEnd: 'auto',
     maxWidth: container.large,
-    top: 0,
+    minHeight: '100%',
     width: '75%'
   },
   top: {
@@ -122,9 +114,8 @@ export const sheetSides = stylex.create({
     borderBottomRightRadius: radius.xxlarge,
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring1,
-    left: 0,
-    right: 0,
-    top: 0
+    alignSelf: 'flex-start',
+    width: '100%'
   },
   bottom: {
     transform: {
@@ -138,8 +129,7 @@ export const sheetSides = stylex.create({
     borderTopRightRadius: radius.xxlarge,
     borderTopStyle: 'solid',
     borderTopWidth: stroke.ring1,
-    bottom: 0,
-    left: 0,
-    right: 0
+    marginBlockStart: 'auto',
+    width: '100%'
   }
 })

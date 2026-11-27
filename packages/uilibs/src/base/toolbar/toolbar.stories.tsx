@@ -10,8 +10,7 @@ import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator } from './toolba
 
 const meta = {
   title: 'Base Components/Toolbar',
-  component: Toolbar,
-  tags: [] // ['autodocs']
+  component: Toolbar
 } satisfies Meta<typeof Toolbar>
 
 type Story = StoryObj<typeof meta>

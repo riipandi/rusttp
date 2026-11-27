@@ -1,8 +1,10 @@
 import type { Preview } from '@storybook/tanstack-react'
 import { FORCE_REMOUNT } from 'storybook/internal/core-events'
 import { addons } from 'storybook/preview-api'
-import { GlobalDecorator, STORYBOOK_THEME_GLOBAL } from './decorator'
+import { configure } from 'storybook/test'
+import { GlobalDecorator } from './decorator'
 import { ThemedDocsContainer } from './docs-container'
+import { STORYBOOK_THEME_GLOBAL } from './theme-global'
 import '../src/assets/globals.css'
 
 // `console.error` is where React reports a duplicate key, an invalid style property, or a DOM
@@ -49,19 +51,30 @@ function setAutoplay(storyId: string, play: boolean) {
 //   server's CSS version changes (a 150 ms poll), so a story that rendered right after its modules
 //   compiled could be measured unstyled (an input group 26 px high instead of 32);
 // - the web fonts, whose `swap` re-measures text mid-play.
-// The story's modules are compiled by `beforeEach`, so the server's CSS is complete there.
+// A test file's modules, and so its CSS, are all compiled when the file loads: the first story
+// compares the page's sheet with the server's (a fetch, ~10 ms) and the next ones only check that
+// the page's sheet is still the text it matched, which costs no request. A sheet that changed (the
+// runtime applied a newer version) is compared with the server again.
 const STYLEX_STYLE_ID = '__stylex_virtual__'
 const STYLEX_CSS_PATH = '/virtual:stylex.css'
 const SETTLE_TIMEOUT_MS = 10_000
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
+let matchedLength = -1
+
 async function stylesheetCaughtUp() {
-  if (!document.getElementById(STYLEX_STYLE_ID)) return
+  const style = document.getElementById(STYLEX_STYLE_ID)
+  if (!style) return
+  if (style.textContent?.length === matchedLength) return
   const deadline = Date.now() + SETTLE_TIMEOUT_MS
   for (;;) {
     const served = await (await fetch(STYLEX_CSS_PATH, { cache: 'no-store' })).text()
-    if (document.getElementById(STYLEX_STYLE_ID)?.textContent === served) return
+    const sheet = document.getElementById(STYLEX_STYLE_ID)
+    if (sheet?.textContent === served) {
+      matchedLength = served.length
+      return
+    }
     if (Date.now() > deadline)
       throw new Error('The StyleX stylesheet never caught up with the dev server.')
     await sleep(25)
@@ -146,7 +159,9 @@ const preview: Preview = {
     viewport: {
       options: {
         phone: { name: 'Phone', styles: { width: '390px', height: '844px' }, type: 'mobile' },
-        desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' }
+        desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' },
+        // A phone turned on its side with the keyboard up: a tall popup must scroll in it.
+        short: { name: 'Short', styles: { width: '390px', height: '320px' }, type: 'mobile' }
       }
     },
     options: {
@@ -167,13 +182,7 @@ const preview: Preview = {
     },
     // Controls show only on a component's `Playground`, which turns them back on with
     // `controls: { disable: false, include: [...] }`; every other story shows none.
-    controls: {
-      disable: true,
-      matchers: {
-        color: /color$/i,
-        date: /Date$/i
-      }
-    },
+    controls: { disable: true },
     docs: { container: ThemedDocsContainer },
     a11y: {
       // 'error' - fail on a11y violations (the default)
@@ -221,6 +230,12 @@ const preview: Preview = {
     viewport: Reflect.get(globalThis, '__vitest_browser__')
       ? { value: 'phone', isRotated: false }
       : undefined
+  },
+  // Every `waitFor` and `findBy*` waits up to 10 s (testing-library's default is 1 s), so a loaded
+  // runner or a slower engine does not turn a settling popup into a flake. A wait that needs more
+  // says so with its own `timeout`. `pressUntil` and the story projects' `testTimeout` follow it.
+  beforeAll: () => {
+    configure({ asyncUtilTimeout: 10_000 })
   },
   beforeEach: async ({ id, globals }) => {
     setAutoplay(id, globals[INTERACTIONS_GLOBAL] === 'on')

@@ -11,8 +11,7 @@ import { Image, type ImageBorderRadius, type ImageDisplayMode } from './image.co
 
 const meta = {
   title: 'Extra Components/Image',
-  component: Image,
-  tags: [] // ['autodocs']
+  component: Image
 } satisfies Meta<typeof Image>
 
 type Story = StoryObj<typeof meta>

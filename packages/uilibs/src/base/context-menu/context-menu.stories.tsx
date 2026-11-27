@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook, expectHighlightedItem } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
@@ -26,8 +26,7 @@ import {
 
 const meta = {
   title: 'Base Components/ContextMenu',
-  component: ContextMenu,
-  tags: [] // ['autodocs']
+  component: ContextMenu
 } satisfies Meta<typeof ContextMenu>
 
 type Story = StoryObj<typeof meta>
@@ -111,19 +110,18 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </ContextMenu>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByText('Right-click the map')
 
     // Right-click opens the menu with all item groups.
     await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
-    await body.findByRole('menu')
-    await expect(body.getByRole('menuitem', { name: /retrace steps/i })).toBeInTheDocument()
+    await screen.findByRole('menu')
+    await expect(screen.getByRole('menuitem', { name: /retrace steps/i })).toBeInTheDocument()
 
     // A highlighted item draws its state. Hover and the arrows both set it, but WebKit does not
     // highlight on a simulated hover over a context menu, so the key is the portable way in. Focus
     // reaches the menu a frame after it opens, and a key sent earlier is lost on a loaded runner,
     // so Home repeats until it lands (it is idempotent).
-    const retrace = await body.findByRole('menuitem', { name: /retrace steps/i })
+    const retrace = await screen.findByRole('menuitem', { name: /retrace steps/i })
     await waitFor(async () => {
       await userEvent.keyboard('{Home}')
       await expect(retrace).toHaveAttribute('data-highlighted')
@@ -131,19 +129,19 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     await expectHighlightedItem(retrace)
 
     // Disabled items render disabled.
-    await expect(body.getByRole('menuitem', { name: /follow the dot/i })).toHaveAttribute(
+    await expect(screen.getByRole('menuitem', { name: /follow the dot/i })).toHaveAttribute(
       'data-disabled'
     )
 
     // Checkbox items toggle without closing the menu.
-    const showRealNames = body.getByRole('menuitemcheckbox', { name: 'Show real names' })
+    const showRealNames = screen.getByRole('menuitemcheckbox', { name: 'Show real names' })
     await expect(showRealNames).toHaveAttribute('aria-checked', 'false')
     await userEvent.click(showRealNames)
     await expect(showRealNames).toHaveAttribute('aria-checked', 'true')
 
     // Selecting a regular item closes the menu.
-    await userEvent.click(body.getByRole('menuitem', { name: /retrace steps/i }))
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await userEvent.click(screen.getByRole('menuitem', { name: /retrace steps/i }))
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
   }
 }
 
@@ -178,25 +176,26 @@ export const States: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
-
     const item = within(cellOf(canvasElement, 'disabled', 'item')).getByText('Right-click the item')
     await userEvent.pointer({ keys: '[MouseRight]', target: item })
-    await body.findByRole('menu')
-    const follow = body.getByRole('menuitem', { name: 'Follow the dot' })
+    await screen.findByRole('menu')
+    const follow = screen.getByRole('menuitem', { name: 'Follow the dot' })
     await expect(follow).toHaveAttribute('data-disabled')
     // Menu rows dim but keep the default cursor, unlike a form control.
-    await expectDisabledLook(follow, { cursor: false })
+    await expectDisabledLook(follow, { text: true, cursor: false })
     await userEvent.click(follow)
-    await expect(body.getByRole('menu')).toBeInTheDocument()
+    await expect(screen.getByRole('menu')).toBeInTheDocument()
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
 
     const menu = within(cellOf(canvasElement, 'disabled', 'menu')).getByText('Right-click the menu')
     await userEvent.pointer({ keys: '[MouseRight]', target: menu })
-    await expect(body.queryByRole('menu')).toBeNull()
+    await expect(screen.queryByRole('menu')).toBeNull()
   }
 }
+
+const colorInColors = (name: string) =>
+  getComputedStyle(screen.getByRole('menuitem', { name })).color
 
 /** The item `color`: `primary` marks the recommended item, `critical` the one that destroys something. */
 export const Colors: Story = {
@@ -227,16 +226,17 @@ export const Colors: Story = {
     </ContextMenu>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     await userEvent.pointer({
       keys: '[MouseRight]',
       target: canvas.getByText('Right-click the map')
     })
-    await body.findByRole('menu')
-    const color = (name: string) => getComputedStyle(body.getByRole('menuitem', { name })).color
+    await screen.findByRole('menu')
     await expect(
-      new Set([color('Re-ink the map'), color('Duplicate parchment'), color('Mischief managed')])
-        .size
+      new Set([
+        colorInColors('Re-ink the map'),
+        colorInColors('Duplicate parchment'),
+        colorInColors('Mischief managed')
+      ]).size
     ).toBe(3)
   }
 }
@@ -359,7 +359,7 @@ function Parchment({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Parchment defaultOpen />,
   play: async () => {
-    const menu = await within(document.body).findByRole('menu')
+    const menu = await screen.findByRole('menu')
     await waitFor(() => expect(menu).toBeVisible())
     await expect(within(menu).getByRole('menuitem', { name: 'Re-ink the map' })).toBeVisible()
   }
@@ -369,31 +369,30 @@ export const Open: Story = {
 // animation, so the submenu keys are guarded on it.
 const focused = () => document.activeElement?.textContent ?? ''
 
+const highlightedInKeyboard = () =>
+  screen.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
+
+const highlightedName = () => highlightedInKeyboard()?.textContent ?? null
+
 /** Arrows, Home, and End move the highlight; Enter picks an item; ArrowRight opens a submenu; Escape closes. */
 export const Keyboard: Story = {
   render: () => <Parchment />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByText('Right-click the parchment')
-    const highlighted = () =>
-      body.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
-    const highlightedName = () => highlighted()?.textContent ?? null
 
     // The pointer opens the menu: a context menu has no key that opens it.
     await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
-    await body.findByRole('menu')
+    await screen.findByRole('menu')
 
     // Home pins the start, so each arrow's step is the same in every engine. A disabled item stays
     // in the arrow order, and Enter on it does nothing. Focus reaches a menu opened by the pointer
-    // late on a loaded runner, so this first key waits longer than the rest.
-    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'), {
-      timeout: 10000
-    })
+    // late on a loaded runner, which the 10 s default of `pressUntil` covers.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'))
     await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Follow the dot'), {
       when: () => highlightedName() === 'Re-ink the map'
     })
     await userEvent.keyboard('{Enter}')
-    await expect(body.getByRole('menu')).toBeInTheDocument()
+    await expect(screen.getByRole('menu')).toBeInTheDocument()
     await expect(highlightedName()).toBe('Follow the dot')
     await pressUntil('{ArrowUp}', () => expect(highlightedName()).toBe('Re-ink the map'), {
       when: () => highlightedName() === 'Follow the dot'
@@ -411,28 +410,28 @@ export const Keyboard: Story = {
     await pressUntil(
       '{ArrowDown}',
       () =>
-        expect(body.getByRole('menuitem', { name: 'More enchantments' })).toHaveAttribute(
+        expect(screen.getByRole('menuitem', { name: 'More enchantments' })).toHaveAttribute(
           'data-highlighted'
         ),
       { when: () => highlightedName() === 'Chart a passage' }
     )
     // A second ArrowLeft on the root menu would close it, so each key is guarded on where focus is.
-    await pressUntil('{ArrowRight}', () => expect(body.getAllByRole('menu')).toHaveLength(2), {
+    await pressUntil('{ArrowRight}', () => expect(screen.getAllByRole('menu')).toHaveLength(2), {
       when: () => focused() === 'More enchantments'
     })
-    await pressUntil('{ArrowLeft}', () => expect(body.getAllByRole('menu')).toHaveLength(1), {
+    await pressUntil('{ArrowLeft}', () => expect(screen.getAllByRole('menu')).toHaveLength(1), {
       when: () => ['Wipe the map', 'Add a secret passage'].includes(focused())
     })
 
     // Enter picks the highlighted item and closes the menu.
     await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'))
-    await pressUntil('{Enter}', () => expect(body.queryByRole('menu')).toBeNull(), {
-      when: () => !!body.queryByRole('menu')
+    await pressUntil('{Enter}', () => expect(screen.queryByRole('menu')).toBeNull(), {
+      when: () => !!screen.queryByRole('menu')
     })
 
     // Escape closes a reopened menu.
     await userEvent.pointer({ keys: '[MouseRight]', target: trigger })
-    await body.findByRole('menu')
-    await pressUntil('{Escape}', () => expect(body.queryByRole('menu')).toBeNull())
+    await screen.findByRole('menu')
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('menu')).toBeNull())
   }
 }

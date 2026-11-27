@@ -2,6 +2,7 @@ import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
+import type { PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { closeButtonStyles as s } from './close-button.stylex'
 
@@ -20,9 +21,8 @@ export function CloseButton({
   labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'button'>, 'className' | 'style'> & {
+}: PartProps<React.ComponentProps<'button'>> & {
   labels?: Partial<CloseLabels>
-  style?: stylex.StyleXStyles
 }) {
   return (
     <button

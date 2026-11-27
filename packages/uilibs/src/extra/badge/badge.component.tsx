@@ -3,7 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import { X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import { markSize } from '../../styles/glyph'
-import type { ColorRole, ControlSize, Glyph } from '../../styles/types'
+import type { ColorRole, ControlSize, Glyph, PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   badgeFadedColors,
@@ -24,10 +24,7 @@ export interface BadgeLabels {
   dismiss: string
 }
 
-export interface BadgeProps extends Omit<
-  useRender.ComponentProps<'span'>,
-  'className' | 'style' | 'color'
-> {
+export interface BadgeProps extends PartProps<useRender.ComponentProps<'span'>, 'color'> {
   /** The fill: `solid`, `faded` (a soft tint), `outline` (an edge), or `ghost` (text only). */
   variant?: BadgeVariant
   /** The role. `primary` for `solid`, `neutral` for the other fills, by default. */
@@ -48,7 +45,6 @@ export interface BadgeProps extends Omit<
   onDismiss?: () => void
   /** The dismiss button's name; English by default. */
   labels?: Partial<BadgeLabels>
-  style?: stylex.StyleXStyles
 }
 
 const colorStyles = {

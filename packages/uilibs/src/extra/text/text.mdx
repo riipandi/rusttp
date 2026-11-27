@@ -35,7 +35,7 @@ Built on Base UI [useRender](https://base-ui.com/react/utils/use-render). Props 
 
 ### Responsive values
 
-Pass an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one.
+Pass `variant` an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one.
 
 <Canvas of={Stories.Responsive} />
 
@@ -49,14 +49,14 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### Text
 
-`variant`, `weight`, and `align` take one value for every viewport, or an object with the keys `small`, `medium`, `large`, and `xlarge`.
+`variant` takes one value for every viewport, or an object with the keys `small`, `medium`, `large`, and `xlarge`.
 
 | Prop         | Description                                                                                                                                                             |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `variant`    | `headline-1` to `headline-3`, `featured-1` to `featured-6`, `body-1`, `body-2`, `caption-1`, `caption-2` <br /> The size and line height. Responsive. Default `body-1`. |
 | `color`      | `neutral`, `neutral-faded`, `positive`, `warning`, `critical`, `primary`, `disabled` <br /> The text color. Unset inherits.                                             |
-| `weight`     | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black` <br /> Overrides the weight of the variant. Responsive.                                          |
-| `align`      | `start`, `center`, `end` <br /> The text alignment. Responsive.                                                                                                         |
+| `weight`     | `light`, `regular`, `medium`, `semibold`, `bold`, `extrabold`, `black` <br /> Overrides the weight of the variant.                                                      |
+| `align`      | `start`, `center`, `end` <br /> The text alignment.                                                                                                                     |
 | `decoration` | `underline`, `line-through` <br /> The text decoration.                                                                                                                 |
 | `maxLines`   | `number` <br /> Clamps the text to this many lines.                                                                                                                     |
 | `wrap`       | `balance`, `nowrap` <br /> Balances the lines, or keeps them on one line.                                                                                               |

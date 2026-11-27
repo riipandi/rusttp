@@ -1,14 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { AspectRatio } from '../aspect-ratio'
 import { imageDisplayModes, imageRadii, imageStyles as s } from './image.stylex'
 
 export type ImageDisplayMode = 'cover' | 'contain'
 export type ImageBorderRadius = 'none' | 'small' | 'medium' | 'large' | 'full'
 
-export interface ImageProps
-  extends Omit<React.ComponentProps<'img'>, 'className' | 'style' | 'alt' | 'src'>, StyleProp {
+export interface ImageProps extends PartProps<React.ComponentProps<'img'>, 'alt' | 'src'> {
   src: string
   /**
    * What the picture shows, for assistive technology. Required: an empty string `''` marks a

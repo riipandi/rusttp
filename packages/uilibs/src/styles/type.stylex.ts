@@ -1,5 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
+import { colors } from './colors.stylex'
 import {
+  unit,
   fontFamilyVar,
   fontLetterSpacing,
   fontLineHeight,
@@ -107,4 +109,16 @@ export const type = stylex.create({
     letterSpacing: fontLetterSpacing.caption2,
     lineHeight: fontLineHeight.caption2
   }
+})
+
+/**
+ * The supporting line under a title (a dialog's, a popover's, a toast's description): the muted
+ * foreground with no margin. Compose it after `type.body2` and before the part's own style; `spaced`
+ * adds the one-step gap under a title that a header stacks.
+ *
+ *   stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)
+ */
+export const descriptionText = stylex.create({
+  root: { color: colors.foregroundNeutralFaded, margin: 0 },
+  spaced: { marginTop: unit.x1 }
 })

@@ -13,8 +13,7 @@ import { radioSizes } from './radio.stylex'
 
 const meta = {
   title: 'Base Components/Radio',
-  component: RadioGroup,
-  tags: [] // ['autodocs']
+  component: RadioGroup
 } satisfies Meta<typeof RadioGroup>
 
 type Story = StoryObj<typeof meta>
@@ -153,7 +152,7 @@ export const States: Story = {
       Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[role="radio"]'))
     for (const item of items('disabled')) {
       await expect(item).toHaveAttribute('data-disabled')
-      await expectDisabledLook(item)
+      await expectDisabledLook(item, { text: true, edge: true })
     }
     const [first, second] = items('disabled')
     if (!first || !second) throw new Error('Disabled radios not found')

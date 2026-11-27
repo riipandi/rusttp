@@ -10,8 +10,7 @@ import { switchRootSizes } from './switch.stylex'
 
 const meta = {
   title: 'Base Components/Switch',
-  component: Switch,
-  tags: [] // ['autodocs']
+  component: Switch
 } satisfies Meta<typeof Switch>
 
 type Story = StoryObj<typeof meta>
@@ -121,7 +120,7 @@ export const Description: Story = {
   )
 }
 
-const states = ['off', 'on', 'disabled', 'invalid'] as const
+const states = ['off', 'on', 'disabled', 'invalid', 'disabled invalid'] as const
 
 export const States: Story = {
   parameters: {
@@ -161,7 +160,8 @@ export const States: Story = {
             <Switch
               aria-label={`Invisibility Cloak ${state}`}
               defaultChecked={state === 'on'}
-              disabled={state === 'disabled'}
+              disabled={state === 'disabled' || state === 'disabled invalid'}
+              data-invalid={state === 'disabled invalid' ? '' : undefined}
             />
             Invisibility Cloak {state}
           </Label>
@@ -180,11 +180,16 @@ export const States: Story = {
 
     const disabled = control('disabled')
     await expect(disabled).toHaveAttribute('data-disabled')
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { fill: true })
     await userEvent.click(disabled)
     await expect(disabled).toHaveAttribute('aria-checked', 'false')
 
     await expect(control('invalid')).toHaveAttribute('data-invalid')
+
+    // Disabled wins over invalid: the critical track does not show on a disabled switch.
+    const both = control('disabled invalid')
+    await expect(both).toHaveAttribute('data-invalid')
+    await expectDisabledLook(both, { fill: true })
   }
 }
 

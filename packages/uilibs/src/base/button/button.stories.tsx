@@ -13,7 +13,7 @@ import {
   expectGlyphSizes
 } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
 import { Button } from './button.component'
 import { buttonFills, buttonSizes, buttonSquare } from './button.stylex'
@@ -21,7 +21,6 @@ import { buttonFills, buttonSizes, buttonSquare } from './button.stylex'
 const meta = {
   title: 'Base Components/Button',
   component: Button,
-  tags: [], // ['autodocs']
   args: { onClick: fn() }
 } satisfies Meta<typeof Button>
 
@@ -38,7 +37,7 @@ const styles = stylex.create({
   pill: { borderRadius: radius.full },
   // `media` is for a photo or a dark surface, so its cells sit on black: the a11y gate then checks
   // white on black, which is what the color is for, not white on the page.
-  backdrop: { backgroundColor: colors.black, borderRadius: radius.medium, padding: unit.x2 },
+  backdrop: { backgroundColor: fixedColors.black, borderRadius: radius.medium, padding: unit.x2 },
   // `inherit` takes the parent's text color; a parent with its own color shows that it does.
   parent: { color: colors.foregroundPrimary },
   wide: { paddingInline: 48 },
@@ -319,7 +318,7 @@ export const States: Story = {
     const petrified = canvas.getByRole('button', { name: 'Petrified' })
     await expect(petrified).toBeDisabled()
     // A disabled look is the disabled tokens (not opacity, which stacks) and a not-allowed cursor.
-    await expectDisabledLook(petrified)
+    await expectDisabledLook(petrified, { text: true, fill: true })
     await expect(getComputedStyle(petrified).color).not.toBe(
       getComputedStyle(canvas.getByRole('button', { name: 'Open the cryptex' })).color
     )

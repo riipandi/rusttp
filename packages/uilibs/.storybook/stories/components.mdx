@@ -11,7 +11,7 @@ The catalog of `packages/uilibs/src`. Check it before you write a component, and
 
 ## Conventions
 
-- **Imports.** `uilibs/<path under src>`: `uilibs/base/button`, `uilibs/extra/card`, `uilibs/styles/tokens.stylex`, `uilibs/theme`. Inside the package use the `#/*` alias or a relative path.
+- **Imports.** `uilibs/<path under src>`: `uilibs/base/button`, `uilibs/extra/card`, `uilibs/styles/tokens.stylex`, `uilibs/theme`. Inside the package use a relative path; there is no `#/` alias (lint rejects it).
 - **Layout.** A component is a folder: `<name>.component.tsx`, `<name>.stylex.ts`, `<name>.stories.tsx`, `<name>.mdx`, `index.ts`. A new, renamed, or removed component updates this page in the same change.
 - **Styling.** StyleX only, with tokens from `uilibs/styles/`. A component takes `style` and never `className`. See [Styling](?path=/docs/styling--docs) and [Theming](?path=/docs/theming--docs).
 - **Color and fill.** `color` is the role: `primary`, `neutral`, `positive`, `warning`, `critical`. `variant` is the fill: `solid`, `faded`, `outline`, `ghost`. Text-entry controls use `variant` for the box: `outline`, `faded`, `ghost`, `headless`.

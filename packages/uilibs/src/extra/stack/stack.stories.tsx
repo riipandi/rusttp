@@ -8,8 +8,7 @@ import { Stack } from './stack.component'
 
 const meta = {
   title: 'Extra Components/Stack',
-  component: Stack,
-  tags: [] // ['autodocs']
+  component: Stack
 } satisfies Meta<typeof Stack>
 
 type Story = StoryObj<typeof meta>
@@ -29,7 +28,6 @@ const styles = stylex.create({
   col: { display: 'flex', flexDirection: 'column', gap: unit.x4 }
 })
 
-const one = (value: unknown) => (typeof value === 'string' ? value : '')
 const flex = (value: string) => ({ start: 'flex-start', end: 'flex-end' })[value] ?? value
 
 const houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
@@ -83,8 +81,8 @@ export const Playground: Story = {
     await expect(stack.display).toBe('flex')
     await expect(stack.flexDirection).toBe(args.direction)
     await expect(stack.gap).toBe(`${(typeof args.gap === 'number' ? args.gap : 0) * 4}px`)
-    await expect(stack.alignItems).toBe(reported('alignItems', flex(one(args.align))))
-    await expect(stack.justifyContent).toBe(reported('justifyContent', flex(one(args.justify))))
+    await expect(stack.alignItems).toBe(reported('alignItems', flex(args.align ?? '')))
+    await expect(stack.justifyContent).toBe(reported('justifyContent', flex(args.justify ?? '')))
   }
 }
 
@@ -197,7 +195,7 @@ export const Alignment: Story = {
 }
 
 /**
- * Direction, gap, alignment, and justification take a value per breakpoint. Each frame is a
+ * Direction and gap take a value per breakpoint. Each frame is a
  * viewport of its own width, so its media queries see that width: 390 px is a phone, 700 px has
  * reached `medium`, 1000 px `large`, and 1300 px `xlarge`.
  */
@@ -207,7 +205,7 @@ export const Responsive: Story = {
       source: {
         code: `<Stack
   direction={{ small: 'column', medium: 'row' }}
-  align={{ small: 'stretch', medium: 'center' }}
+  gap={{ small: 2, large: 6 }}
 >
   <div>Gryffindor</div>
   <div>Hufflepuff</div>
@@ -228,7 +226,6 @@ export const Responsive: Story = {
             data-testid='stack'
             direction={{ small: 'column', medium: 'row' }}
             gap={{ small: 2, large: 6, xlarge: 2 }}
-            align={{ small: 'stretch', medium: 'center' }}
           >
             <Tiles />
           </Stack>
@@ -240,17 +237,16 @@ export const Responsive: Story = {
     // Each case is the breakpoint's own style over the narrower ones: `gap` is set at `small` and
     // `large`, so at 700 px it must still be the `small` one, not dropped for lack of a `medium`.
     const cases = [
-      { width: 390, direction: 'column', gap: '8px', alignItems: 'stretch' },
-      { width: 700, direction: 'row', gap: '8px', alignItems: 'center' },
-      { width: 1000, direction: 'row', gap: '24px', alignItems: 'center' },
-      { width: 1300, direction: 'row', gap: '8px', alignItems: 'center' }
+      { width: 390, direction: 'column', gap: '8px' },
+      { width: 700, direction: 'row', gap: '8px' },
+      { width: 1000, direction: 'row', gap: '24px' },
+      { width: 1300, direction: 'row', gap: '8px' }
     ]
-    for (const { width, direction, gap, alignItems } of cases) {
+    for (const { width, direction, gap } of cases) {
       const { doc, computed } = await frameOf(canvasElement, width)
       const stack = computed(doc.querySelector('[data-testid="stack"]')!)
       await expect(stack.flexDirection).toBe(direction)
       await expect(stack.gap).toBe(gap)
-      await expect(stack.alignItems).toBe(reported('alignItems', alignItems, doc))
     }
   }
 }

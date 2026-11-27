@@ -13,9 +13,7 @@
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
-import type { ColorRole, ControlSize, StyleProp } from '../../styles/types'
+import type { ColorRole, ControlSize, PartProps } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { avatarFills, avatarStyles as s, avatarSizes as sizes } from './avatar.stylex'
 
@@ -23,7 +21,7 @@ export type AvatarSize = ControlSize
 export type AvatarVariant = 'solid' | 'faded'
 export type AvatarColor = ColorRole
 
-type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = PartProps<React.ComponentProps<'div'>>
 
 export function Avatar({
   size = 'medium',
@@ -32,16 +30,15 @@ export function Avatar({
   squared = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAvatar.Root>, 'className' | 'style' | 'color'> &
-  StyleProp & {
-    size?: AvatarSize
-    /** The fallback's fill: `faded` (a soft tint, default) or `solid`. */
-    variant?: AvatarVariant
-    /** The fallback's role color; `neutral` by default. */
-    color?: AvatarColor
-    /** Rounded corners instead of a circle. */
-    squared?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAvatar.Root>, 'color'> & {
+  size?: AvatarSize
+  /** The fallback's fill: `faded` (a soft tint, default) or `solid`. */
+  variant?: AvatarVariant
+  /** The fallback's role color; `neutral` by default. */
+  color?: AvatarColor
+  /** Rounded corners instead of a circle. */
+  squared?: boolean
+}) {
   return (
     <BaseAvatar.Root
       {...props}
@@ -59,14 +56,14 @@ export function Avatar({
 export function AvatarImage({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAvatar.Image>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAvatar.Image>>) {
   return <BaseAvatar.Image {...props} {...stylex.props(s.image, style)} />
 }
 
 export function AvatarFallback({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAvatar.Fallback>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAvatar.Fallback>>) {
   return <BaseAvatar.Fallback {...props} {...stylex.props(s.fallback, style)} />
 }
 
@@ -92,7 +89,7 @@ export function AvatarGroup({ style, children, ...props }: DivProps) {
             s.groupItem,
             index > 0 && s.groupItemOverlap,
             s.groupItemStack(items.length - index),
-            ring({ width: stroke.ring2, color: colors.backgroundPage })
+            ring.page
           )}
         >
           {child}
@@ -107,6 +104,6 @@ export function AvatarGroupCount({
   size = 'medium',
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & { size?: AvatarSize }) {
+}: PartProps<React.ComponentProps<'span'>> & { size?: AvatarSize }) {
   return <span {...props} {...stylex.props(s.groupCount, sizes[size], style)} />
 }

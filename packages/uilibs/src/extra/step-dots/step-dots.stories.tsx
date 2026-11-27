@@ -5,15 +5,14 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
 import { Carousel } from '../carousel'
 import { StepDots } from './step-dots.component'
 
 const meta = {
   title: 'Extra Components/StepDots',
-  component: StepDots,
-  tags: [] // ['autodocs']
+  component: StepDots
 } satisfies Meta<typeof StepDots>
 
 type Story = StoryObj<typeof meta>
@@ -22,7 +21,7 @@ const styles = stylex.create({
   stack: { alignItems: 'flex-start', display: 'flex', flexDirection: 'column', gap: unit.x4 },
   row: { alignItems: 'center', display: 'flex', gap: unit.x2 },
   backdrop: {
-    backgroundColor: colors.black,
+    backgroundColor: fixedColors.black,
     borderRadius: radius.large,
     padding: unit.x4
   },
@@ -38,6 +37,9 @@ const styles = stylex.create({
 export default meta
 
 /** The dots of the bar, in order. */
+// The engine spells a translucent color `rgba(…, 0.5)` or `color(srgb … / 0.5)`: read the alpha.
+const alphaOf = (color: string) => Number(/[,/]\s*([\d.]+)\)$/.exec(color)?.[1] ?? 1)
+
 const dotsOf = (bar: Element) => Array.from(bar.firstElementChild?.children ?? [])
 
 const widthOf = (dot: Element) => dot.getBoundingClientRect().width
@@ -136,10 +138,8 @@ export const Media: Story = {
   // White on a dark surface: the active dot is opaque and the rest are half as strong.
   play: async ({ canvas }) => {
     const dots = dotsOf(canvas.getByRole('progressbar'))
-    const active = getComputedStyle(dots[1]!).backgroundColor
-    const idle = getComputedStyle(dots[0]!).backgroundColor
-    await expect(active).not.toContain('/')
-    await expect(idle).toContain('/ 0.5')
+    await expect(alphaOf(getComputedStyle(dots[1]!).backgroundColor)).toBe(1)
+    await expect(alphaOf(getComputedStyle(dots[0]!).backgroundColor)).toBe(0.5)
   }
 }
 

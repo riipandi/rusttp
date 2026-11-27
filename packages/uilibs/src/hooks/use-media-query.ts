@@ -8,7 +8,7 @@ import { browser } from 'react-dom'
  * below `medium`, so it is an upper bound only (`max-small` is `<660px`): as a lower bound it would
  * equal `medium`.
  */
-const BREAKPOINTS = {
+export const BREAKPOINTS = {
   small: 660,
   medium: 660,
   large: 900,
@@ -17,7 +17,7 @@ const BREAKPOINTS = {
 
 type Breakpoint = keyof typeof BREAKPOINTS
 
-const isBreakpoint = (value: string): value is Breakpoint => value in BREAKPOINTS
+const isBreakpoint = (value: string): value is Breakpoint => Object.hasOwn(BREAKPOINTS, value)
 
 /**
  - `"medium"`       → `(min-width: 660px)`
@@ -38,7 +38,7 @@ function resolveMax(value: Breakpoint | number): string {
   return `(max-width: ${px - 1}px)`
 }
 
-function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): string {
+export function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): string {
   if (typeof query !== 'string') {
     const parts: string[] = []
     if (query.min != null) parts.push(resolveMin(query.min))

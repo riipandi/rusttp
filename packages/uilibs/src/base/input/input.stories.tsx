@@ -18,8 +18,7 @@ import { Input } from './input.component'
 
 const meta = {
   title: 'Base Components/Input',
-  component: Input,
-  tags: [] // ['autodocs']
+  component: Input
 } satisfies Meta<typeof Input>
 
 type Story = StoryObj<typeof meta>
@@ -123,7 +122,7 @@ export const States: Story = {
     }
   },
   render: () => (
-    <Axis axis='state' rows={['default', 'disabled', 'invalid'] as const}>
+    <Axis axis='state' rows={['default', 'disabled', 'invalid', 'disabled invalid'] as const}>
       {(state) =>
         state === 'invalid' ? (
           <Field invalid>
@@ -135,7 +134,8 @@ export const States: Story = {
           <Input
             aria-label={`Seal ${state}`}
             placeholder='Sealed by the Ministry'
-            disabled={state === 'disabled'}
+            disabled={state === 'disabled' || state === 'disabled invalid'}
+            data-invalid={state === 'disabled invalid' ? '' : undefined}
           />
         )
       }
@@ -144,13 +144,19 @@ export const States: Story = {
   play: async ({ canvas }) => {
     const disabled = canvas.getByRole('textbox', { name: 'Seal disabled' })
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true, edge: true })
     await userEvent.type(disabled, 'alohomora')
     await expect(disabled).toHaveValue('')
 
     const invalid = canvas.getByRole('textbox', { name: 'Owl post address' })
     await expect(invalid).toHaveAttribute('aria-invalid', 'true')
     await expect(invalid).toHaveAttribute('data-invalid')
+
+    // Disabled wins over invalid: the critical edge does not show on a disabled control.
+    const both = canvas.getByRole('textbox', { name: 'Seal disabled invalid' })
+    await expect(both).toBeDisabled()
+    await expect(both).toHaveAttribute('data-invalid')
+    await expectDisabledLook(both, { text: true, edge: true })
   }
 }
 

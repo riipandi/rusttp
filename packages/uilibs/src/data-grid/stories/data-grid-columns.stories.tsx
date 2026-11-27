@@ -9,7 +9,8 @@ import type {
   ColumnDef,
   ColumnOrderState,
   PaginationState,
-  SortingState
+  SortingState,
+  TableState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
@@ -33,7 +34,6 @@ import { stackStyles as s } from './_mocks.stylex'
 const meta = {
   title: 'Data Grid/Columns',
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [
     (Story) => (
       <div {...stylex.props(atoms.padding['20px'], atoms.width['100%'])}>
@@ -52,7 +52,8 @@ const live = () => document.querySelector('[id^="DndLiveRegion"]')?.textContent 
 function useDemoTable(
   columns: ColumnDef<DataGridFeatures, IBook>[],
   pageSize = 5,
-  initialColumnOrder: string[] = []
+  initialColumnOrder: string[] = [],
+  initialState?: Partial<TableState<DataGridFeatures>>
 ) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -65,6 +66,7 @@ function useDemoTable(
     features: dataGridFeatures,
     columns,
     data: demoData,
+    initialState,
     pageCount: Math.ceil((demoData?.length || 0) / pageSize),
     getRowId: (row: IBook) => row.id,
     state: {
@@ -306,7 +308,11 @@ export const DraggableColumns: Story = {
   // Each header's grip is named after its column, not four identical "Drag to reorder". These
   // headers are components, so the name falls back to the column id (`meta.headerTitle` sets it).
   play: async ({ canvas, canvasElement }) => {
-    await canvas.findByRole('table', { name: 'Novels' })
+    const grid = await canvas.findByRole('table', { name: 'Novels' })
+    // `tableLayout.rowBorder` is on by default: the rows draw their separators here as well.
+    const cell = grid.querySelector('tbody tr[data-row-id] td')
+    if (!(cell instanceof HTMLElement)) throw new Error('No body cell')
+    await expect(getComputedStyle(cell).borderBottomWidth).toBe('1px')
     const names = Array.from(
       canvasElement.querySelectorAll<HTMLElement>('[aria-label^="Drag to reorder "]')
     ).map((el) => el.getAttribute('aria-label') ?? '')
@@ -324,6 +330,12 @@ export const DraggableColumns: Story = {
     await pressUntil('{ArrowRight}', () => expect(live()).toBe('title moved over author.'), {
       when: () => live() !== 'title moved over author.'
     })
+    // The column displaced by the drag settles with dnd-kit's transition: the sortable cell's
+    // `transition` is a full shorthand, which is not a valid `transition-property`.
+    const displaced = canvasElement.querySelector('th[data-col-id="author"]')
+    if (!(displaced instanceof HTMLElement)) throw new Error('No author header')
+    await waitFor(() => expect(getComputedStyle(displaced).transitionDuration).toBe('0.2s'))
+    await expect(getComputedStyle(displaced).transitionProperty).toBe('transform')
     await pressUntil(' ', () => expect(live()).toBe('title dropped over author.'), {
       when: () => live() !== 'title dropped over author.'
     })
@@ -335,6 +347,79 @@ export const DraggableColumns: Story = {
     await pressUntil('{Escape}', () =>
       expect(live()).toBe('Dragging cancelled. title returned to its place.')
     )
+  }
+}
+
+/**
+ * A draggable column keeps its pinned geometry: the sortable cell's drag style must not replace
+ * the offset and width the pinning gives it.
+ */
+export const DraggablePinnedColumns: Story = {
+  name: 'Draggable pinned columns',
+  render: () => {
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const columns = useMemo(
+      () =>
+        bookColumns(false, () => tableHolder.current!).map((column) => ({
+          ...column,
+          enableColumnOrdering: true
+        })),
+      [tableHolder]
+    )
+    const table = useDemoTable(
+      columns,
+      5,
+      columns.map((column) => column.id ?? ''),
+      { columnPinning: { start: ['title', 'author'], end: ['price'] } }
+    )
+    tableHolder.current = table
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData?.length || 0}
+        tableLayout={{ columnsDraggable: true, columnsPinnable: true, columnsResizable: true }}
+      >
+        <div {...stylex.props(s.stack)}>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTableDnd aria-label='Novels' table={table} handleDragEnd={() => {}} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+          <DataGridPagination table={table} />
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const grid = await canvas.findByRole('table', { name: 'Novels' })
+    const cells = (id: string, row: 'thead' | 'tbody') => {
+      const cell = grid.querySelector(
+        `${row} ${row === 'thead' ? 'th' : 'td'}[data-col-id="${id}"]`
+      )
+      if (!(cell instanceof HTMLElement)) throw new Error(`No ${row} cell ${id}`)
+      return cell
+    }
+    // The size variables a resize drag updates, which are the widths the cells take.
+    const size = (id: string) =>
+      Number.parseFloat(grid.style.getPropertyValue(`--header-${id}-size`))
+    for (const row of ['thead', 'tbody'] as const) {
+      const first = cells('title', row)
+      const second = cells('author', row)
+      await expect(getComputedStyle(first).position).toBe('sticky')
+      await expect(getComputedStyle(first).left).toBe('0px')
+      await expect(getComputedStyle(second).position).toBe('sticky')
+      // The second pinned column sticks after the first, by the first one's width.
+      await expect(Number.parseFloat(getComputedStyle(second).left)).toBeCloseTo(size('title'), 0)
+      await expect(first.getBoundingClientRect().width).toBeCloseTo(size('title'), 0)
+      await expect(second.getBoundingClientRect().width).toBeCloseTo(size('author'), 0)
+      // An end-pinned column keeps its width: the filler strip sits before it, as in its colgroup.
+      const last = cells('price', row)
+      await expect(getComputedStyle(last).position).toBe('sticky')
+      await expect(getComputedStyle(last).right).toBe('0px')
+      await expect(last.getBoundingClientRect().width).toBeCloseTo(size('price'), 0)
+    }
+    // An unpinned column stays in the flow.
+    await expect(getComputedStyle(cells('country', 'thead')).position).not.toBe('sticky')
   }
 }
 
@@ -676,6 +761,12 @@ export const PinnableColumns: Story = {
   }
 }
 
+/** The middle of an element, relative to its top-left corner. */
+const middle = (element: Element) => {
+  const rect = element.getBoundingClientRect()
+  return { x: rect.width / 2, y: rect.height / 2 }
+}
+
 /** Sticky header. */
 export const StickyHeader: Story = {
   name: 'Sticky header',
@@ -702,6 +793,55 @@ export const StickyHeader: Story = {
         </div>
       </DataGrid>
     )
+  },
+  // The vertical track starts under the sticky header, and both of its gestures scroll the body.
+  play: async ({ canvasElement }) => {
+    const viewport = canvasElement.querySelector('[data-slot="scroll-area-viewport"]')
+    const header = canvasElement.querySelector('[data-slot="data-grid-table"] thead')
+    if (!(viewport instanceof HTMLElement) || !(header instanceof HTMLElement)) {
+      throw new Error('No scroll area')
+    }
+    const track = await waitFor(() => {
+      const found = canvasElement.querySelector(
+        '[data-slot="data-grid-scrollbar"][data-orientation="vertical"]'
+      )
+      if (!(found instanceof HTMLElement)) throw new Error('No vertical scrollbar')
+      return found
+    })
+    await waitFor(() =>
+      expect(track.getBoundingClientRect().top).toBeCloseTo(
+        header.getBoundingClientRect().bottom,
+        0
+      )
+    )
+    const thumb = track.querySelector('[data-slot="data-grid-thumb"]')
+    if (!(thumb instanceof HTMLElement)) throw new Error('No thumb')
+
+    // Real pointer input: Base UI captures the pointer on a press, and a browser refuses to capture
+    // the synthetic pointer id of testing-library's `userEvent` (Firefox throws `NotFoundError`).
+    // Vitest's `userEvent` drives the browser's own mouse. It exists only under the test runner, so
+    // it loads here and not at the top of the file, which the Storybook UI also imports.
+    const { userEvent: pointer } = await import('vitest/browser')
+
+    // Dragging the thumb down scrolls the body down.
+    await expect(viewport.scrollTop).toBe(0)
+    // `force` skips Playwright's actionability waits: under a full parallel run they took 17 to 29 s
+    // and ran the story out of its 30 s budget, and the story asserts the result itself.
+    await pointer.dragAndDrop(thumb, track, {
+      force: true,
+      sourcePosition: middle(thumb),
+      targetPosition: middle(track)
+    })
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(0))
+    const dragged = viewport.scrollTop
+
+    // A press on the track below the thumb jumps the body further down.
+    const trackRect = track.getBoundingClientRect()
+    await pointer.click(track, {
+      force: true,
+      position: { x: trackRect.width / 2, y: trackRect.height - 4 }
+    })
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(dragged))
   }
 }
 

@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# WebKit stories on pull requests that touch stories, their contracts, or the Storybook config.
+# `uilibs.yml` runs Chromium on every library change and Firefox and WebKit nightly; a story
+# change is where an engine difference first shows (the 26 November WebKit failure merged before
+# the nightly run caught it). This is a second workflow because path filters apply per workflow,
+# so the extra minutes are paid only when these paths change.
+name: uilibs-webkit
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uilibs/**/*.stories.tsx'
+      - 'packages/uilibs/src/contracts/**'
+      - 'packages/uilibs/.storybook/**'
+      - '.github/workflows/uilibs-webkit.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uilibs-webkit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stories:
+    name: Stories (webkit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+
+      - run: pnpm install --frozen-lockfile
+
+      # Same browser cache as `uilibs.yml`: keyed by the Playwright version, with the system
+      # libraries installed on a hit too.
+      - id: playwright
+        run: echo "version=$(pnpm --filter uilibs exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-webkit
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm --filter uilibs exec playwright install --with-deps webkit
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: pnpm --filter uilibs exec playwright install-deps webkit
+
+      # Both story projects, light and dark. `webkit` skips the stories tagged `skip-webkit`
+      # (the Menubar `Playground`, F-12), see `vite.config.ts`.
+      - run: pnpm --filter uilibs exec vitest run --project storybook --project storybook-dark
+        env:
+          STORYBOOK_TEST_BROWSER: webkit
+      # `.vitest` is a hidden directory, so the action needs `include-hidden-files`; without it the upload is empty.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uilibs-failure-screenshots-webkit
+          path: packages/uilibs/.vitest/attachments
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7

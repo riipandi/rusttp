@@ -118,13 +118,15 @@ Every part except `Autocomplete`, `AutocompleteCollection` and `AutocompleteValu
 
 ### AutocompleteContent
 
-| Prop          | Description                                                                                                                         |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `side`        | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `bottom`. |
-| `sideOffset`  | `number` or an offset function <br /> Distance from the anchor, in px. Default `6`.                                                 |
-| `align`       | `start`, `center`, `end` <br /> Alignment along the anchor's edge. Default `start`.                                                 |
-| `alignOffset` | `number` or an offset function <br /> Offset along the alignment axis, in px. Default `0`.                                          |
-| `anchor`      | element, ref, virtual element or a function returning one <br /> What the popup positions against. Default the input.               |
+| Prop                 | Description                                                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `side`               | `top`, `right`, `bottom`, `left`, `inline-end`, `inline-start` <br /> Which side of the anchor the popup sits on. Default `bottom`. |
+| `sideOffset`         | `number` or an offset function <br /> Distance from the anchor, in px. Default `6`.                                                 |
+| `align`              | `start`, `center`, `end` <br /> Alignment along the anchor's edge. Default `start`.                                                 |
+| `alignOffset`        | `number` or an offset function <br /> Offset along the alignment axis, in px. Default `0`.                                          |
+| `anchor`             | element, ref, virtual element or a function returning one <br /> What the popup positions against. Default the input.               |
+| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own.                                       |
+| `collisionPadding`   | Base UI positioner value <br /> Space kept from the viewport edge.                                                                  |
 
 | Data attribute        | Description                                      |
 | --------------------- | ------------------------------------------------ |

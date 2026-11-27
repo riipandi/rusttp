@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../styles/colors.stylex'
+import { colors, fixedColors, shadow } from '../styles/colors.stylex'
 import {
   breakpoints,
   container,
@@ -15,9 +15,11 @@ import {
 
 /**
  * The grid's own stacking ladder, local to its stacking context (the tokens' `zIndex` ladder is for
- * the page): sticky chrome above the cells it scrolls over, from `raised` up to `overlay`.
+ * the page): a cell or row held by a drag above its siblings (`dragged`), then sticky chrome above
+ * the cells it scrolls over, from `raised` up to `overlay`.
  */
 export const gridLayer = stylex.defineConsts({
+  dragged: 1,
   raised: 10,
   scrollbar: 20,
   pinned: 30,
@@ -80,38 +82,16 @@ export const dataGridScrollAreaStyles = stylex.create({
     height: '100%',
     width: unit.x1_5
   },
+  // A sticky-header grid's track: it pads 2px each side of a 6px thumb. Its height is what
+  // Base UI's `top` and `bottom` leave, below the header and above the horizontal track.
+  scrollbarVerticalSticky: {
+    width: `calc(${unit.x1_5} + ${unit.x1})`
+  },
   thumb: {
     backgroundColor: colors.borderNeutralFaded,
     borderRadius: radius.full,
     flex: 1,
     position: 'relative'
-  },
-  // Overlay scrollbar for sticky-header grids; the metric custom properties
-  // (`--data-grid-scrollbar-*`) are written imperatively on this element.
-  overlay: {
-    insetInlineEnd: 0,
-    pointerEvents: 'none',
-    position: 'absolute',
-    top: 'var(--data-grid-scrollbar-header-height)',
-    zIndex: gridLayer.scrollbar,
-    height: 'var(--data-grid-scrollbar-track-height)'
-  },
-  overlayTrack: {
-    height: '100%',
-    padding: unit.x0_5,
-    pointerEvents: 'auto',
-    position: 'relative',
-    touchAction: 'none',
-    width: unit.x1_5
-  },
-  overlayThumb: {
-    backgroundColor: colors.borderNeutralFaded,
-    borderRadius: radius.full,
-    insetInlineEnd: unit.x0_5,
-    position: 'absolute',
-    top: 'var(--data-grid-scrollbar-thumb-top)',
-    width: unit.x1_5,
-    height: 'var(--data-grid-scrollbar-thumb-height)'
   }
 })
 
@@ -600,7 +580,7 @@ export const dataGridColumnFilterStyles = stylex.create({
   optionBoxSelected: {
     backgroundColor: colors.backgroundPrimary,
     borderColor: colors.backgroundPrimary,
-    color: colors.onBackgroundPrimary
+    color: fixedColors.onBackgroundPrimary
   },
   optionBoxUnchecked: { opacity: 0.5 },
   optionCheckIcon: { height: unit.x4, width: unit.x4 },

@@ -11,6 +11,18 @@ const styles = stylex.create({
 
 const BLANK = '<!doctype html><html><head></head><body style="margin:0"></body></html>'
 
+const COPY_MARK = 'data-viewport-copy'
+
+/** Replaces the frame's copy of the page's stylesheets with the page's current ones. */
+function copyStyles(frame: Document) {
+  for (const old of frame.head.querySelectorAll(`[${COPY_MARK}]`)) old.remove()
+  for (const sheet of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
+    const copy = frame.importNode(sheet, true)
+    copy.setAttribute(COPY_MARK, '')
+    frame.head.appendChild(copy)
+  }
+}
+
 /**
  * Renders its children in an `iframe` of a fixed width, so a media query sees that width and not the
  * canvas's: the way a story shows, and a `play` asserts, one layout per breakpoint (390 px a phone,
@@ -28,19 +40,28 @@ export function ViewportFrame({
   title: string
   children: React.ReactNode
 }) {
-  const [body, setBody] = React.useState<HTMLElement | null>(null)
+  const [frame, setFrame] = React.useState<Document | null>(null)
 
+  // The styles are copied before the children render, so a `play` that reads the frame the moment
+  // its content exists never measures an unstyled page (a copy made in an effect came a frame late).
   const onLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
     const doc = event.currentTarget.contentDocument
     if (!doc) return
-    for (const sheet of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
-      doc.head.append(sheet.cloneNode(true))
-    }
     for (const { name, value } of document.documentElement.attributes) {
       doc.documentElement.setAttribute(name, value)
     }
-    setBody(doc.body)
+    copyStyles(doc)
+    setFrame(doc)
   }
+
+  // The dev server rewrites the StyleX sheet's text when a module changes, so a copy taken once
+  // goes stale: copy again on every change to the page's styles.
+  React.useEffect(() => {
+    if (!frame) return undefined
+    const observer = new MutationObserver(() => copyStyles(frame))
+    observer.observe(document.head, { childList: true, characterData: true, subtree: true })
+    return () => observer.disconnect()
+  }, [frame])
 
   return (
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a box that scrolls must take focus, or a keyboard cannot reach the part off screen
@@ -55,7 +76,7 @@ export function ViewportFrame({
         title={title}
         width={width}
       >
-        {body && createPortal(children, body)}
+        {frame && createPortal(children, frame.body)}
       </iframe>
     </div>
   )
@@ -65,15 +86,13 @@ export function ViewportFrame({
 export async function frameOf(canvasElement: HTMLElement, width: number) {
   const iframe = canvasElement.querySelector<HTMLIFrameElement>(`iframe[data-viewport="${width}"]`)
   if (!iframe) throw new Error(`No ViewportFrame of width ${width}`)
-  // Four frames load one after another, and a full WebKit run can take longer than `waitFor`'s 1 s.
-  await waitFor(
-    () => {
-      if (!iframe.contentDocument?.body.firstElementChild)
-        throw new Error('The frame has not rendered')
-    },
-    { timeout: 5000 }
-  )
-  const doc = iframe.contentDocument!
-  const win = iframe.contentWindow!
+  // Four frames load one after another, and a full WebKit run can be slow: the 10 s default covers it.
+  await waitFor(() => {
+    if (!iframe.contentDocument?.body.firstElementChild)
+      throw new Error('The frame has not rendered')
+  })
+  const doc = iframe.contentDocument
+  const win = iframe.contentWindow
+  if (!doc || !win) throw new Error(`The ViewportFrame of width ${width} has no document`)
   return { doc, win, computed: (element: Element) => win.getComputedStyle(element) }
 }

@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../../styles/colors.stylex'
+import { colors, fixedColors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -66,7 +66,8 @@ const off = (value: string) =>
 // `solid` (`currentColor` is the button's own color, so a label cannot be cut out of its parent's):
 // `solid` is a stronger tint instead. The tints stay light so the parent's own text color keeps
 // its contrast on them.
-const white = (percent: number) => `color-mix(in srgb, ${colors.white} ${percent}%, transparent)`
+const white = (percent: number) =>
+  `color-mix(in srgb, ${fixedColors.white} ${percent}%, transparent)`
 const current = (percent: number) => `color-mix(in srgb, currentColor ${percent}%, transparent)`
 
 // The fill each color moves to on hover. `buttonHighlighted` repeats it as a rest state, so a
@@ -108,7 +109,7 @@ export const buttonSolid = stylex.create({
       [hover]: solidHover.primary,
       ...off(colors.backgroundNeutral)
     },
-    color: { default: colors.onBackgroundPrimary, ...off(colors.foregroundDisabled) }
+    color: { default: fixedColors.onBackgroundPrimary, ...off(colors.foregroundDisabled) }
   },
   neutral: {
     backgroundColor: {
@@ -124,7 +125,7 @@ export const buttonSolid = stylex.create({
       [hover]: solidHover.critical,
       ...off(colors.backgroundNeutral)
     },
-    color: { default: colors.onBackgroundCritical, ...off(colors.foregroundDisabled) }
+    color: { default: fixedColors.onBackgroundCritical, ...off(colors.foregroundDisabled) }
   },
   positive: {
     backgroundColor: {
@@ -132,7 +133,7 @@ export const buttonSolid = stylex.create({
       [hover]: solidHover.positive,
       ...off(colors.backgroundNeutral)
     },
-    color: { default: colors.onBackgroundPositive, ...off(colors.foregroundDisabled) }
+    color: { default: fixedColors.onBackgroundPositive, ...off(colors.foregroundDisabled) }
   },
   warning: {
     backgroundColor: {
@@ -140,11 +141,11 @@ export const buttonSolid = stylex.create({
       [hover]: solidHover.warning,
       ...off(colors.backgroundNeutral)
     },
-    color: { default: colors.onBackgroundWarning, ...off(colors.foregroundDisabled) }
+    color: { default: fixedColors.onBackgroundWarning, ...off(colors.foregroundDisabled) }
   },
   media: {
-    backgroundColor: { default: colors.white, [hover]: solidHover.media, ...off(white(10)) },
-    color: { default: colors.black, ...off(white(40)) }
+    backgroundColor: { default: fixedColors.white, [hover]: solidHover.media, ...off(white(10)) },
+    color: { default: fixedColors.black, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: current(16), [hover]: solidHover.inherit, ...off(current(8)) },
@@ -195,7 +196,7 @@ export const buttonFaded = stylex.create({
   },
   media: {
     backgroundColor: { default: white(20), [hover]: fadedHover.media, ...off(white(10)) },
-    color: { default: colors.white, ...off(white(40)) }
+    color: { default: fixedColors.white, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: current(10), [hover]: fadedHover.inherit, ...off(current(8)) },
@@ -241,10 +242,10 @@ export const buttonOutline = stylex.create({
   },
   media: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.media },
-    borderColor: { default: colors.white, ...off(white(20)) },
+    borderColor: { default: fixedColors.white, ...off(white(20)) },
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    color: { default: colors.white, ...off(white(40)) }
+    color: { default: fixedColors.white, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.inherit },
@@ -278,7 +279,7 @@ export const buttonGhost = stylex.create({
   },
   media: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.media },
-    color: { default: colors.white, ...off(white(40)) }
+    color: { default: fixedColors.white, ...off(white(40)) }
   },
   inherit: {
     backgroundColor: { default: 'transparent', [hover]: tintHover.inherit },

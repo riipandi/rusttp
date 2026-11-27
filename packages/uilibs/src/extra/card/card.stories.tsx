@@ -21,8 +21,7 @@ import { cardSizes } from './card.stylex'
 
 const meta = {
   title: 'Extra Components/Card',
-  component: Card,
-  tags: [] // ['autodocs']
+  component: Card
 } satisfies Meta<typeof Card>
 
 type Story = StoryObj<typeof meta>

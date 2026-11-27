@@ -32,13 +32,15 @@ export const commandStyles = stylex.create({
     borderRadius: radius.xxlarge,
     // The edge and shadow are the dialog's own: its 1px ring and `shadow.overlay`.
     gap: 0,
-    maxHeight: `calc(100dvh - ${unit.x16})`,
+    // Sits a sixth of the window below the top instead of at its centre, and still fits under it.
+    marginBlockEnd: 'auto',
+    marginBlockStart: '15dvh',
+    maxHeight: `calc(85dvh - ${unit.x8})`,
     overflow: 'hidden',
     padding: 0,
-    top: '15%',
-    // The box only fades, on the dialog's own timing (its centring never changes, so it cannot
-    // appear to swell); the motion is `inner`'s.
-    transform: 'translate(-50%, 0)',
+    // The box only fades, on the dialog's own timing (it does not scale in, so it cannot appear
+    // to swell); the motion is `inner`'s.
+    transform: 'none',
     width: container.xxlarge
   },
   // The content lifts a few pixels into place a beat after the box starts to fade in, so the frame

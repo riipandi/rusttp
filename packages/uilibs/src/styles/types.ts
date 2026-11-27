@@ -22,6 +22,23 @@ export interface StyleProp {
 }
 
 /**
+ * `T` without the styling props `className` and `style`; `Omitted` names more keys to drop. For a
+ * part that must not take a style at all (the Sortable overlay, whose `style` is Dnd Kit's own).
+ */
+export type WithoutStyling<T, Omitted extends PropertyKey = never> = Omit<
+  T,
+  'className' | 'style' | Omitted
+>
+
+/**
+ * The props of a part that wraps `T` (a Base UI part or an element): `T` without `className` and
+ * `style`, plus the StyleX `style` prop. `Omitted` names more keys the part redefines, such as
+ * `'color'` or `'size'`.
+ */
+export type PartProps<T, Omitted extends PropertyKey = never> = WithoutStyling<T, Omitted> &
+  StyleProp
+
+/**
  * An icon component, such as a Keyline icon, that a component sizes and hides from assistive
  * technology: `Button` `icon`, `Badge` `icon`, `Alert` `icon`, a menu item `icon`, and the rest take
  * this one type. The component picks the size from `styles/glyph.ts`.

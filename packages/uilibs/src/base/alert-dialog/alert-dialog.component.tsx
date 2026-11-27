@@ -22,10 +22,9 @@
 import { AlertDialog as BaseAlertDialog } from '@base-ui/react/alert-dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
-import { type } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import { type, descriptionText } from '../../styles/type.stylex'
+import type { PartProps } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { Button, type ButtonProps } from '../button'
@@ -33,17 +32,15 @@ import { alertDialogStyles as s, alertDialogSizes as sizes } from './alert-dialo
 
 export const AlertDialog = BaseAlertDialog.Root
 export const AlertDialogTrigger = BaseAlertDialog.Trigger
-export const AlertDialogPortal = BaseAlertDialog.Portal
 
 export function AlertDialogOverlay({
   blurredOverlay = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAlertDialog.Backdrop>, 'className' | 'style'> &
-  StyleProp & {
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAlertDialog.Backdrop>> & {
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+}) {
   return (
     <BaseAlertDialog.Backdrop
       {...props}
@@ -59,65 +56,60 @@ export function AlertDialogContent({
   size = 'medium',
   blurredOverlay = false,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAlertDialog.Popup>, 'className' | 'style'> &
-  StyleProp & {
-    size?: AlertDialogSize
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAlertDialog.Popup>> & {
+  size?: AlertDialogSize
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+}) {
   return (
     <BaseAlertDialog.Portal container={usePortalContainer()}>
       <AlertDialogOverlay blurredOverlay={blurredOverlay} />
-      <BaseAlertDialog.Popup
-        {...props}
-        {...stylex.props(s.content, sizes[size], ring({ shadow: shadow.overlay }), style)}
-      />
+      <BaseAlertDialog.Viewport {...stylex.props(s.viewport)}>
+        <BaseAlertDialog.Popup
+          {...props}
+          {...stylex.props(popupFx.presence, s.content, sizes[size], ring.overlay, style)}
+        />
+      </BaseAlertDialog.Viewport>
     </BaseAlertDialog.Portal>
   )
 }
 
-export function AlertDialogHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function AlertDialogHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
-export function AlertDialogMedia({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function AlertDialogMedia({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.media, style)} />
 }
 
-export function AlertDialogFooter({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function AlertDialogFooter({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function AlertDialogTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAlertDialog.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAlertDialog.Title>>) {
   return <BaseAlertDialog.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function AlertDialogDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAlertDialog.Description>, 'className' | 'style'> &
-  StyleProp) {
-  return <BaseAlertDialog.Description {...props} {...stylex.props(s.description, style)} />
+}: PartProps<React.ComponentProps<typeof BaseAlertDialog.Description>>) {
+  return (
+    <BaseAlertDialog.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }
 
-type AlertDialogButtonProps = Omit<
+type AlertDialogButtonProps = PartProps<
   React.ComponentProps<typeof BaseAlertDialog.Close>,
-  'className' | 'style' | 'color'
+  'color'
 > &
-  Pick<ButtonProps, 'variant' | 'color' | 'size' | 'loading'> &
-  StyleProp
+  Pick<ButtonProps, 'variant' | 'color' | 'size' | 'loading'>
 
 /**
  * The confirming button: it closes the dialog like `AlertDialogCancel`, after its `onClick` runs.

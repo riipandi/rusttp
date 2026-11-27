@@ -95,20 +95,20 @@ Import tokens from `uilibs/styles/`. Use a token instead of a literal value, so 
 | `unit`                                                          | Spacing in 4px steps, `x0_5` to `x20`. From `tokens.stylex`.                                                                                      |
 | `stroke`, `container`, `zIndex`, `breakpoints`                  | Ring widths, popup and panel widths, layers, and media queries. From `tokens.stylex`.                                                             |
 
-Tokens made with `defineVars` (`colors`, `shadow`, `radius`, the type scale, `duration`, `easing`) can be replaced by a theme. Tokens made with `defineConsts` (`unit`, `stroke`, `container`, `zIndex`, `breakpoints`, `fontWeight`) are fixed at build time.
+Tokens made with `defineVars` (`colors`, `shadow`, `radius`, the type scale, `duration`, `easing`) can be replaced by a theme. Tokens made with `defineConsts` (`unit`, `stroke`, `container`, `zIndex`, `breakpoints`, `fontWeight`, `fixedColors`) are fixed at build time.
 
 ### Color tokens
 
 A color token is a role plus a part: `backgroundPrimary`, `foregroundCritical`, `borderPositive`. Most come in modifiers.
 
-| Modifier           | Use                                                                                    |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| `Faded`            | A soft tint. Pair a `foreground` token with a `Faded` background for readable text.    |
-| `Highlighted`      | The hover and pressed state of a solid background.                                     |
-| `HighlightedFaded` | The hover state of a faded background.                                                 |
-| `onBackground*`    | The text color for a solid background of that role. Use it instead of picking a color. |
+| Modifier           | Use                                                                                                                                             |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Faded`            | A soft tint. Pair a `foreground` token with a `Faded` background for readable text.                                                             |
+| `Highlighted`      | The hover and pressed state of a solid background.                                                                                              |
+| `HighlightedFaded` | The hover state of a faded background.                                                                                                          |
+| `onBackground*`    | The text color for a solid background of that role. Use it instead of picking a color. It is a `fixedColors` constant: the same in both themes. |
 
-Also: `backgroundPage` for the page, `backgroundElevationBase` and `backgroundElevationOverlay` for raised surfaces, `backgroundTrack` for the track of Progress, Meter, and Slider (dark enough in both themes for the primary fill to read against it), `scrim` for the backdrop of a modal, `borderControl` for the edge of a form control, `borderDisabled` and `foregroundDisabled` for disabled parts, and the constants `black` and `white`, which are the same in both themes.
+Also: `backgroundPage` for the page, `backgroundElevationBase` and `backgroundElevationOverlay` for raised surfaces, `backgroundTrack` for the track of Progress, Meter, and Slider (dark enough in both themes for the primary fill to read against it), `scrim` for the backdrop of a modal, `borderControl` for the edge of a form control, `borderDisabled` and `foregroundDisabled` for disabled parts, and `fixedColors.black` and `fixedColors.white`, constants that are the same in both themes.
 
 ## Customizing
 

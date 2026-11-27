@@ -20,8 +20,7 @@ import { InputPassword } from './input-password.component'
 
 const meta = {
   title: 'Extra Components/InputPassword',
-  component: InputPassword,
-  tags: [] // ['autodocs']
+  component: InputPassword
 } satisfies Meta<typeof InputPassword>
 
 type Story = StoryObj<typeof meta>
@@ -151,7 +150,7 @@ export const States: Story = {
     await expect(disabled).toBeDisabled()
     const group = disabled.closest('[role="group"]')
     if (!group) throw new Error('No password group')
-    await expectDisabledLook(group, { cursor: false })
+    await expectDisabledLook(group, { text: true, edge: true, cursor: false })
 
     const invalid = canvas.getByLabelText('Vault passphrase')
     await expect(invalid).toHaveAttribute('data-invalid')

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, within } from 'storybook/test'
+import { expect, screen } from 'storybook/test'
 import { pressUntil } from '../contracts/keyboard'
 import { container } from '../styles/tokens.stylex'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from './field'
@@ -11,8 +11,7 @@ import { Slider } from './slider'
 
 const meta = {
   title: 'Base Components/UIProvider',
-  component: UIProvider,
-  tags: [] // ['autodocs']
+  component: UIProvider
 } satisfies Meta<typeof UIProvider>
 
 type Story = StoryObj<typeof meta>
@@ -124,12 +123,11 @@ export const RightToLeft: Story = {
     })
 
     // The select still opens from the keyboard and lists every house.
-    const body = within(document.body)
     select.focus()
-    await pressUntil('{Enter}', () => expect(body.getByRole('listbox')).toBeVisible(), {
-      when: () => !body.queryByRole('listbox')
+    await pressUntil('{Enter}', () => expect(screen.getByRole('listbox')).toBeVisible(), {
+      when: () => !screen.queryByRole('listbox')
     })
-    await expect(body.getAllByRole('option')).toHaveLength(houses.length)
-    await pressUntil('{Escape}', () => expect(body.queryByRole('listbox')).toBeNull())
+    await expect(screen.getAllByRole('option')).toHaveLength(houses.length)
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('listbox')).toBeNull())
   }
 }

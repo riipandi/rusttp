@@ -10,7 +10,6 @@ import {
   Settings
 } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
-import type { StyleXStyles } from '@stylexjs/stylex'
 import { Subscribe } from '@tanstack/react-table'
 import type { Column, Table } from '@tanstack/react-table'
 import { memo, useMemo, useState } from 'react'
@@ -34,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../base/popover'
 import { Separator } from '../base/separator'
 import { Badge } from '../extra/badge'
 import { glyphSize } from '../styles/glyph'
+import type { PartProps } from '../styles/types'
 import { focusRing } from '../styles/utils.stylex'
 import { getColumnHeaderLabel, rekey, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
@@ -191,9 +191,8 @@ function DataGridColumnFilter<TData extends object, TValue>({
 
 export { DataGridColumnFilter, type DataGridColumnFilterProps }
 
-interface DataGridColumnHeaderProps<TData extends object, TValue> extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  'className' | 'style'
+interface DataGridColumnHeaderProps<TData extends object, TValue> extends PartProps<
+  HTMLAttributes<HTMLDivElement>
 > {
   table: DataGridTableInstance<TData>
   column: Column<DataGridFeatures, TData, TValue>
@@ -202,7 +201,6 @@ interface DataGridColumnHeaderProps<TData extends object, TValue> extends Omit<
   icon?: ReactNode
   filter?: ReactNode
   visibility?: boolean
-  style?: StyleXStyles
 }
 
 function DataGridColumnHeaderInner<TData extends object, TValue>({

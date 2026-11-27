@@ -14,8 +14,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Text',
-  component: Text,
-  tags: [] // ['autodocs']
+  component: Text
 } satisfies Meta<typeof Text>
 
 type Story = StoryObj<typeof meta>
@@ -181,14 +180,12 @@ export const Colors: Story = {
   }
 }
 
-/** A prop takes a per-breakpoint object as well as a single value. */
+/** The variant takes a per-breakpoint object as well as a single value. */
 export const Responsive: Story = {
   parameters: {
     docs: {
       source: {
         code: `<Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
-
-<Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
 
 <Text variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}>
   Steps up at each breakpoint, then back down
@@ -199,8 +196,6 @@ export const Responsive: Story = {
   render: () => (
     <div {...stylex.props(styles.col)}>
       <Text variant={{ small: 'body-2', medium: 'featured-4' }}>Responsive variant</Text>
-      <Text weight={{ small: 'regular', medium: 'bold' }}>Responsive weight</Text>
-      <Text align={{ small: 'center', medium: 'start' }}>Responsive alignment</Text>
       <Text
         variant={{ small: 'caption-1', medium: 'body-1', large: 'featured-5', xlarge: 'body-1' }}
       >

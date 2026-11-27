@@ -17,8 +17,7 @@ import { Tabs as BaseTabs } from '@base-ui/react/tabs'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress } from '../../styles/control.stylex'
-import type { DenseControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { DenseControlSize, PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { tabsSizes, tabsStyles as s, tabsUnderlineSizes } from './tabs.stylex'
 
@@ -46,7 +45,7 @@ export function Tabs({
   style,
   orientation = 'horizontal',
   ...props
-}: Omit<React.ComponentProps<typeof BaseTabs.Root>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseTabs.Root>>) {
   return (
     <BaseTabs.Root
       orientation={orientation}
@@ -62,13 +61,12 @@ export function TabsList({
   size = 'medium',
   itemWidth,
   ...props
-}: Omit<React.ComponentProps<typeof BaseTabs.List>, 'className' | 'style'> &
-  StyleProp & {
-    variant?: TabsVariant
-    /** List height, as the control scale: `medium` is 36px. */
-    size?: TabsSize
-    itemWidth?: TabsItemWidth
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseTabs.List>> & {
+  variant?: TabsVariant
+  /** List height, as the control scale: `medium` is 36px. */
+  size?: TabsSize
+  itemWidth?: TabsItemWidth
+}) {
   const context = React.useMemo(() => ({ variant, size, itemWidth }), [variant, size, itemWidth])
   return (
     <TabsListContext.Provider value={context}>
@@ -90,7 +88,7 @@ export function TabsList({
 export function TabsTrigger({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseTabs.Tab>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseTabs.Tab>>) {
   const { variant, size, itemWidth } = React.useContext(TabsListContext)
   const underline = variant === 'bordered' || variant === 'borderless'
   return (
@@ -114,6 +112,6 @@ export function TabsTrigger({
 export function TabsContent({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseTabs.Panel>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseTabs.Panel>>) {
   return <BaseTabs.Panel {...props} {...stylex.props(focusRing.root, s.content, style)} />
 }

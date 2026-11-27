@@ -2,7 +2,7 @@ import { LoaderCircle } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize, markSize } from '../../styles/glyph'
-import type { ColorRole, ControlSize } from '../../styles/types'
+import type { ColorRole, ControlSize, PartProps } from '../../styles/types'
 import { spinnerColors, spinnerStyles as s } from './spinner.stylex'
 
 export type SpinnerSize = ControlSize
@@ -28,17 +28,13 @@ export interface SpinnerLabels {
 
 const defaultLabels: SpinnerLabels = { loading: 'Loading' }
 
-export interface SpinnerProps extends Omit<
-  React.ComponentProps<'svg'>,
-  'className' | 'style' | 'color'
-> {
+export interface SpinnerProps extends PartProps<React.ComponentProps<'svg'>, 'color'> {
   /** Glyph size: `small` 12px, `medium` 16px (default), `large` 20px. */
   size?: SpinnerSize
   /** The role color; `inherit` (default) draws in the surrounding text color. */
   color?: SpinnerColor
   /** Accessible name of the standing-alone spinner; English by default. */
   labels?: Partial<SpinnerLabels>
-  style?: stylex.StyleXStyles
 }
 
 /** A busy indicator. Alone it is a `status` live region named `labels.loading`; inside a Button it is hidden from assistive technology. */

@@ -1,18 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
-import { colors } from '../../styles/colors.stylex'
+import { fixedColors } from '../../styles/colors.stylex'
 import { Button } from '../button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip.component'
 
 const meta = {
   title: 'Base Components/Tooltip',
-  component: TooltipProvider,
-  tags: [] // ['autodocs']
+  component: TooltipProvider
 } satisfies Meta<typeof TooltipProvider>
 
 type Story = StoryObj<typeof meta>
@@ -20,7 +19,12 @@ type Story = StoryObj<typeof meta>
 const sides = ['top', 'right', 'bottom', 'left'] as const
 
 const styles = stylex.create({
-  blackSurface: { backgroundColor: colors.black, color: colors.white, height: 1, width: 1 },
+  blackSurface: {
+    backgroundColor: fixedColors.black,
+    color: fixedColors.white,
+    height: 1,
+    width: 1
+  },
   // Disabled native buttons don't fire pointer events, so the tooltip
   // trigger has to be the wrapping span instead of the button itself.
   trigger: {
@@ -91,16 +95,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </TooltipProvider>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Lumos' })
 
     // Hovering opens the tooltip (delay is 0 in this story).
     await userEvent.hover(trigger)
-    await waitFor(() => expect(body.getByText('Add to the Restricted Section')).toBeVisible())
+    await waitFor(() => expect(screen.getByText('Add to the Restricted Section')).toBeVisible())
 
     // Hovering away dismisses it.
     await userEvent.unhover(trigger)
-    await waitFor(() => expect(body.queryByText('Add to the Restricted Section')).toBeNull())
+    await waitFor(() => expect(screen.queryByText('Add to the Restricted Section')).toBeNull())
   }
 }
 
@@ -117,9 +120,7 @@ export const Open: Story = {
     </TooltipProvider>
   ),
   play: async () => {
-    await waitFor(() =>
-      expect(within(document.body).getByText('Extinguish the wand light')).toBeVisible()
-    )
+    await waitFor(() => expect(screen.getByText('Extinguish the wand light')).toBeVisible())
   }
 }
 
@@ -150,15 +151,14 @@ export const Sides: Story = {
     </TooltipProvider>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     for (const side of sides) {
       const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
         name: side
       })
       await userEvent.hover(trigger)
-      await waitFor(() => expect(body.getByText(`Reveals the ${side} of the map`)).toBeVisible())
+      await waitFor(() => expect(screen.getByText(`Reveals the ${side} of the map`)).toBeVisible())
       await userEvent.unhover(trigger)
-      await waitFor(() => expect(body.queryByText(`Reveals the ${side} of the map`)).toBeNull())
+      await waitFor(() => expect(screen.queryByText(`Reveals the ${side} of the map`)).toBeNull())
     }
   }
 }
@@ -196,17 +196,16 @@ export const States: Story = {
     </TooltipProvider>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const disabled = cellOf(canvasElement, 'state', 'disabled')
     const button = within(disabled).getByRole('button', { name: 'Alohomora' })
     await expect(button).toBeDisabled()
-    await expectDisabledLook(button)
+    await expectDisabledLook(button, { text: true, edge: true })
     // The wrapper still opens the tooltip for the disabled button.
     const wrapper = disabled.firstElementChild
     if (!wrapper) throw new Error('No tooltip trigger for the disabled state')
     await userEvent.hover(wrapper)
     await waitFor(() =>
-      expect(body.getByText('Speak the riddle to unlock the disabled door')).toBeVisible()
+      expect(screen.getByText('Speak the riddle to unlock the disabled door')).toBeVisible()
     )
     await userEvent.unhover(wrapper)
   }
@@ -247,11 +246,10 @@ export const Colors: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const black = getComputedStyle(canvas.getByTestId('black-surface'))
     const surfaces = new Map<string, CSSStyleDeclaration>()
     for (const color of colorNames) {
-      surfaces.set(color, getComputedStyle(await body.findByText(`Tooltip ${color}`)))
+      surfaces.set(color, getComputedStyle(await screen.findByText(`Tooltip ${color}`)))
     }
     const look = (color: string) => {
       const style = surfaces.get(color)
@@ -263,6 +261,8 @@ export const Colors: Story = {
     await expect(look('dark')).toBe(`${black.backgroundColor}|${black.color}`)
   }
 }
+
+const tip = () => screen.queryByText('Light the wand tip')
 
 /** Focusing the trigger opens the tooltip, Escape closes it, and blurring the trigger closes it too. */
 export const Keyboard: Story = {
@@ -276,9 +276,7 @@ export const Keyboard: Story = {
     </TooltipProvider>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Lumos' })
-    const tip = () => body.queryByText('Light the wand tip')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()

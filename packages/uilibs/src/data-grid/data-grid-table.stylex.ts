@@ -15,11 +15,28 @@ import {
 import { gridLayer } from './data-grid.stylex'
 
 /**
+ * What a pinnable cell takes from its column, as `getPinningStyles` computes it; `null` leaves the
+ * property to the cell's other styles.
+ */
+export interface DataGridPinningStyle {
+  insetInlineStart: string | null
+  insetInlineEnd: string | null
+  position: 'sticky' | null
+  transform: string | null
+  contain: string | null
+  width: number
+  zIndex: number | null
+  backgroundClip: string | null
+}
+
+/**
  * The data-grid table renderer chrome. State-driven styles are applied as
- * conditional stylex.props arguments computed in React; dynamic geometry
- * (column widths, pin offsets, tree indent) stays on inline styles / CSS
- * custom properties exactly like the source, because the browser applies
- * those without React re-renders.
+ * conditional stylex.props arguments computed in React. Geometry that is only known at run time
+ * (column widths, pin offsets, tree indent) is a dynamic style in the SAME `stylex.props` call as
+ * the element's other styles: a raw `style` beside it would be replaced by the `style` that
+ * `stylex.props` returns for a dynamic style (the drag styles are one), and with it the geometry.
+ * A column width is `calc(var(--col-X-size) * 1px)`, so a resize drag still moves it without a
+ * React render.
  *
  * Row separators are painted on the tds (border-separate). Whether a row
  * paints a bottom border depends on the ROW's position, so the row sets the
@@ -77,6 +94,25 @@ export const dataGridTableStyles = stylex.create({
     top: 0,
     zIndex: gridLayer.header
   },
+  // The row's separator: its cells paint `borderBottomWidth` from this custom property.
+  rowBorder: { '--dg-row-border-b': '1px' },
+  rowNoBorder: { '--dg-row-border-b': '0px' },
+  // A column's width, as a length or a number of px.
+  colWidth: (width: number | string) => ({ width }),
+  // The geometry of a pinned cell. Listed last, after the drag style: it replaces what used to be
+  // an inline style, which beat every class.
+  pinning: (pin: DataGridPinningStyle) => ({
+    backgroundClip: pin.backgroundClip,
+    contain: pin.contain,
+    insetInlineEnd: pin.insetInlineEnd,
+    insetInlineStart: pin.insetInlineStart,
+    position: pin.position,
+    transform: pin.transform,
+    width: pin.width,
+    zIndex: pin.zIndex
+  }),
+  // A pinned header cell also sticks to the top of a sticky header.
+  thPinnedStickyTop: { top: 0 },
   // Header cell.
   th: {
     color: colors.foregroundNeutral,
@@ -240,15 +276,8 @@ export const dataGridTableStyles = stylex.create({
       ':focus-visible': `calc(-1 * ${stroke.ring2})`
     }
   },
-  rowSelected: {
-    backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
-  },
-  // Pinned cells are OPAQUE (they hide scrolled content), so a hover must
-  // pre-mix the tint over the background instead of inheriting the
-  // translucent row fill.
-  pinnedCellHoverMix: {
-    backgroundColor: `color-mix(in oklab, ${colors.backgroundNeutral} 40%, ${colors.backgroundPage})`
-  },
+  // Pinned cells are OPAQUE (they hide scrolled content), so a selected row pre-mixes its tint over
+  // the background instead of inheriting the translucent row fill.
   pinnedCellSelectedMix: {
     backgroundColor: `color-mix(in oklab, ${colors.backgroundNeutral} 50%, ${colors.backgroundPage})`
   },
@@ -258,9 +287,6 @@ export const dataGridTableStyles = stylex.create({
       default: 'transparent',
       ':hover': 'transparent'
     }
-  },
-  cellStripedOdd: {
-    backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 90%, transparent)`
   },
   cellStripedOddHover: {
     backgroundColor: {
@@ -275,14 +301,6 @@ export const dataGridTableStyles = stylex.create({
       // hover:bg-muted/50
       ':hover': `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
     }
-  },
-  // Pinned-row boundary shadows: the separator shadow casts away from the
-  // scrolled content.
-  rowBoundaryTop: {
-    boxShadow: `0 2px 0 ${colors.backgroundNeutralFaded}`
-  },
-  rowBoundaryBottom: {
-    boxShadow: `0 -2px 0 ${colors.backgroundNeutralFaded}`
   },
   // CRUD row-status tints (defaults; yield to tableStyles overrides).
   rowStatusDeleted: {
@@ -439,10 +457,10 @@ export const dataGridTableStyles = stylex.create({
     alignItems: 'center',
     display: 'inline-flex',
     flexShrink: 0,
-    // ps-(--data-grid-tree-padding): the inline style sets the var.
-    paddingInlineStart: 'var(--data-grid-tree-padding)',
     verticalAlign: 'middle'
   },
+  // ps-(depth * step): a tree row's toggle is indented by its depth.
+  treeIndent: (padding: number) => ({ paddingInlineStart: padding }),
   rowExpandButton: {
     alignItems: 'center',
     borderRadius: radius.medium,
@@ -689,12 +707,18 @@ export const dataGridTableDndStyles = stylex.create({
     },
     width: unit.x4
   },
-  gripButton: (isDragging: boolean) => ({
-    cursor: isDragging ? 'grabbing' : 'grab',
+  gripIdle: {
+    cursor: 'grab',
     height: unit.x6,
     marginInlineStart: `calc(-1 * ${unit.x2})`,
     width: unit.x6
-  }),
+  },
+  gripDragging: {
+    cursor: 'grabbing',
+    height: unit.x6,
+    marginInlineStart: `calc(-1 * ${unit.x2})`,
+    width: unit.x6
+  },
   headerLabel: {
     flexGrow: 1
   },
@@ -709,12 +733,11 @@ export const dataGridTableDndStyles = stylex.create({
     opacity: style.opacity,
     position: 'relative',
     transform: style.transform,
-    transitionProperty: style.transition,
-    zIndex: style.isDragging ? 1 : 0
-  }),
-  viewportDragging: {
-    cursor: 'grabbing'
-  }
+    // dnd-kit hands over a full `transition` shorthand ("transform 200ms ease"), which is not a
+    // valid `transition-property`.
+    transition: style.transition,
+    zIndex: style.isDragging ? gridLayer.dragged : 0
+  })
 })
 
 /**
@@ -735,8 +758,8 @@ export function dndCellDragStyle(
 }
 
 export const dndGripCursorStyles = {
-  dragging: dataGridTableDndStyles.gripButton(true),
-  idle: dataGridTableDndStyles.gripButton(false)
+  dragging: dataGridTableDndStyles.gripDragging,
+  idle: dataGridTableDndStyles.gripIdle
 }
 
 /** Draggable-rows chrome. */
@@ -751,9 +774,6 @@ export const dataGridTableDndRowsStyles = stylex.create({
       ':hover': 1,
       ':active': 1
     }
-  },
-  gripButtonActive: {
-    cursor: 'grabbing'
   },
   gripDisabled: {
     cursor: 'not-allowed'
@@ -798,6 +818,11 @@ export const dataGridTableDndRowsStyles = stylex.create({
     padding: 0,
     verticalAlign: 'middle'
   },
+  // The clone has no row or table of its own to size it: the measured widths and the height of
+  // the source, in px (a zero height leaves the row to its content).
+  overlayTableSize: (width: number) => ({ tableLayout: 'fixed', width }),
+  overlayRowHeight: (height: number | null) => ({ height }),
+  overlayCellWidth: (width: number) => ({ width }),
   overlayCellInner: {
     overflow: 'hidden',
     paddingInline: unit.x3,
@@ -816,7 +841,7 @@ export const dataGridTableDndRowsStyles = stylex.create({
     outlineWidth: state.isDragging ? 1 : null,
     position: 'relative',
     transform: state.transform,
-    zIndex: state.isDragging ? 1 : 0
+    zIndex: state.isDragging ? gridLayer.dragged : 0
   })
 })
 
@@ -966,8 +991,5 @@ export const dataGridTableVirtualStyles = stylex.create({
     height: unit.x4,
     opacity: 0.6,
     width: unit.x4
-  },
-  viewportBlock: {
-    display: 'block'
   }
 })

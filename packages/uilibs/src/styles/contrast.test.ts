@@ -51,23 +51,37 @@ const ratioOf = (a: Rgb, b: Rgb) => {
 
 type Tokens = Record<string, string>
 
-/** The `name: 'value'` lines between `start` and the next `})`. */
-function readTokens(source: string, start: string): Tokens {
+/** The text between `start` and the next `})`. */
+function blockOf(source: string, start: string): string {
   const from = source.indexOf(start)
   if (from === -1) throw new Error(`No "${start}" block`)
-  const block = source.slice(from, source.indexOf('})', from))
+  return source.slice(from, source.indexOf('})', from))
+}
+
+/** The `name: 'value'` lines between `start` and the next `})`. */
+function readTokens(source: string, start: string): Tokens {
   return Object.fromEntries(
-    Array.from(block.matchAll(/^\s+(\w+):\s*'([^']+)'/gm), (m) => [m[1], m[2]])
+    Array.from(blockOf(source, start).matchAll(/^\s+(\w+):\s*'([^']+)'/gm), (m) => [m[1], m[2]])
   )
 }
 
-const light = readTokens(lightSource, 'export const colors = stylex.defineVars({')
-const dark = {
-  ...light,
-  ...readTokens(darkSource, 'const darkColors = stylex.createTheme(colors, {')
-}
-const lightRestated = readTokens(darkSource, 'const lightColors = stylex.createTheme(colors, {')
+const blocks = [
+  [lightSource, 'export const fixedColors = stylex.defineConsts({'],
+  [lightSource, 'export const colors = stylex.defineVars({'],
+  [darkSource, 'const darkColors = stylex.createTheme(colors, {'],
+  [darkSource, 'const lightColors = stylex.createTheme(colors, {']
+] as const
+
+// `fixedColors` are constants: the same in both themes, never overridden, so both themes read them.
+const fixed = readTokens(...blocks[0])
+const lightVars = readTokens(...blocks[1])
+const light = { ...fixed, ...lightVars }
+const dark = { ...light, ...readTokens(...blocks[2]) }
+const lightRestated = readTokens(...blocks[3])
 const themes = { light, dark } as const
+
+// Every token a pair below reads as its foreground: the last test checks that none is left out.
+const paired = new Set<string>()
 
 function paint(theme: Tokens, name: string, over: Rgb): Rgb {
   const value = theme[name]
@@ -79,12 +93,27 @@ function paint(theme: Tokens, name: string, over: Rgb): Rgb {
 
 /** Contrast of token `fg` drawn on token `bg`, itself drawn on the page (or on `surface`). */
 function contrast(theme: Tokens, fg: string, bg: string, surface = 'backgroundPage') {
+  paired.add(fg)
   const base = paint(theme, surface, [1, 1, 1])
   const back = paint(theme, bg, base)
   return ratioOf(paint(theme, fg, back), back)
 }
 
 const roles = ['Primary', 'Critical', 'Positive', 'Warning'] as const
+
+describe('the token reader', () => {
+  // A line the reader's regex skips (a double-quoted value, a template string, a computed value)
+  // would drop a token from every pair below and leave the test green, so every `name:` line of a
+  // block must be read.
+  it.each(blocks.map(([source, start]) => [start, source] as const))(
+    'reads every token line of %s',
+    (start, source) => {
+      const lines = blockOf(source, start).match(/^\s+\w+:/gm) ?? []
+      expect(lines.length).toBeGreaterThan(0)
+      expect(Object.keys(readTokens(source, start))).toHaveLength(lines.length)
+    }
+  )
+})
 
 describe('the contrast converter', () => {
   it('matches known colors', () => {
@@ -192,13 +221,23 @@ describe.each(Object.entries(themes))('%s theme, chart palette', (_name, theme) 
 describe('the restated light theme', () => {
   // `lightColors` repeats every default of `colors.stylex.ts` for a light subtree inside a dark page.
   it('repeats every light token with its light value', () => {
-    expect(lightRestated).toEqual(light)
+    expect(lightRestated).toEqual(lightVars)
   })
 
   it('leaves no token that the dark theme sets and the light theme does not', () => {
-    const darkOnly = Object.keys(
-      readTokens(darkSource, 'const darkColors = stylex.createTheme(colors, {')
-    )
+    const darkOnly = Object.keys(readTokens(...blocks[2]))
     expect(darkOnly.filter((name) => !(name in lightRestated))).toEqual([])
+  })
+})
+
+describe('the pairs', () => {
+  // Runs last: it reads what the pairs above recorded. A text token that no pair checks is a token
+  // whose contrast nothing guards. `foregroundDisabled` is exempt: WCAG 1.4.3 excludes inactive
+  // components.
+  it('check every foreground and on-background text token', () => {
+    const exempt = new Set(['foregroundDisabled'])
+    const text = Object.keys(light).filter((name) => /^(foreground|onBackground)/.test(name))
+    expect(text.length).toBeGreaterThan(0)
+    expect(text.filter((name) => !exempt.has(name) && !paired.has(name))).toEqual([])
   })
 })

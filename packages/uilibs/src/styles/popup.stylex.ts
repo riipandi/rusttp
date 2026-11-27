@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from './colors.stylex'
 import { radius, stroke, unit, zIndex } from './tokens.stylex'
 import { duration, easing } from './tokens.stylex'
+import { fontSize, fontWeight } from './tokens.stylex'
 
 /**
  * Shared anchored-popup recipe for Base UI Positioner/Popup pairs.
@@ -10,7 +11,7 @@ import { duration, easing } from './tokens.stylex'
  * Compose shared styles BEFORE the component's own popup style so local
  * values always win:
  *
- *   {...stylex.props(popupFx.shift, popupFx.fade, popupFx.pose, s.popup, ring({ ... }))}
+ *   {...stylex.props(popupFx.shift, popupFx.fade, popupFx.pose, s.popup, ring.raised)}
  *
  * On the Positioner element use only `positioner`. Components with custom
  * motion (dialog, drawer, sheet, toast, navigation-menu) keep their own
@@ -27,9 +28,25 @@ export const popupFx = stylex.create({
     outline: 'none',
     zIndex: zIndex.popover
   },
-  /** The backdrop of a modal (dialog, alert dialog, sheet, drawer): the themed `scrim` color. */
+  /** The backdrop of a modal (dialog, alert dialog, sheet, drawer): the themed `scrim` color, faded in and out on Base UI's frames. */
   scrim: {
-    backgroundColor: colors.scrim
+    backgroundColor: colors.scrim,
+    opacity: {
+      default: 1,
+      '[data-starting-style]': 0,
+      '[data-ending-style]': 0
+    },
+    transitionDuration: duration.medium,
+    transitionProperty: 'opacity',
+    transitionTimingFunction: easing.decelerate
+  },
+  /** Shown at rest, transparent on Base UI's starting and ending frames: the fade of every popup that also composes `fade` or its own transition. */
+  presence: {
+    opacity: {
+      default: 1,
+      '[data-starting-style]': 0,
+      '[data-ending-style]': 0
+    }
   },
   /** `blurredOverlay`: the page behind the backdrop is blurred by one unit step. */
   scrimBlurred: {
@@ -96,5 +113,33 @@ export const highlightedItem = stylex.create({
     },
     backgroundColor: { default: 'transparent', '[data-highlighted]': colors.backgroundNeutral },
     position: 'relative'
+  }
+})
+
+/**
+ * The parts every listbox popup shares (Select, Combobox, Autocomplete, the menus): a group label, the
+ * line between groups, and the empty message. Compose it before the part's own style.
+ */
+export const popupList = stylex.create({
+  label: {
+    color: colors.foregroundNeutralFaded,
+    fontSize: fontSize.caption1,
+    fontWeight: fontWeight.medium,
+    paddingBlock: unit.x1_5,
+    paddingInline: unit.x3
+  },
+  separator: {
+    backgroundColor: colors.borderNeutralFaded,
+    height: stroke.ring1,
+    marginBlock: unit.x1
+  },
+  empty: {
+    color: colors.foregroundNeutralFaded,
+    // Base UI renders the element with no children while results exist —
+    // hide it then so its padding doesn't reserve space.
+    display: { default: 'block', ':empty': 'none' },
+    fontSize: fontSize.body2,
+    paddingBlock: unit.x2,
+    textAlign: 'center'
   }
 })

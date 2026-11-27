@@ -58,7 +58,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { zIndex } from '../../styles/tokens.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -170,7 +170,7 @@ const collisionDetectionStrategy: CollisionDetection = (args) => {
   return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args)
 }
 
-type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivRenderProps = PartProps<useRender.ComponentProps<'div'>>
 
 export interface KanbanMoveEvent {
   event: DragEndEvent
@@ -862,11 +862,10 @@ function KanbanColumnContent({ value, style, render, ...props }: KanbanColumnCon
 // KanbanOverlay
 // ---------------------------------------------------------------------------
 
-export interface KanbanOverlayProps {
+export interface KanbanOverlayProps extends StyleProp {
   children?:
     | ReactNode
     | ((params: { value: UniqueIdentifier; variant: 'column' | 'item' }) => ReactNode)
-  style?: stylex.StyleXStyles
   render?: React.ComponentType<React.ComponentPropsWithRef<'div'>>
 }
 

@@ -19,8 +19,7 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-
 
 const meta = {
   title: 'Base Components/OTPField',
-  component: OTPField,
-  tags: [] // ['autodocs']
+  component: OTPField
 } satisfies Meta<typeof OTPField>
 
 type Story = StoryObj<typeof meta>
@@ -192,7 +191,7 @@ export const States: Story = {
     await expect(disabled).toHaveLength(4)
     for (const slot of disabled) {
       await expect(slot).toBeDisabled()
-      await expectDisabledLook(slot)
+      await expectDisabledLook(slot, { text: true, edge: true })
     }
     const first = disabled[0]
     if (!first) throw new Error('No OTP slots rendered')

@@ -20,7 +20,6 @@ const darkColors = stylex.createTheme(colors, {
   backgroundNeutralHighlightedFaded: 'oklch(1 0 0 / 0.05)',
   backgroundNeutralHighlighted: 'oklch(0.3608 0 89.88)',
   backgroundNeutral: 'oklch(0.32 0 89.88)',
-  backgroundPageFaded: 'oklch(0.18 0 89.88)',
   backgroundPage: 'oklch(0.16 0 89.88)',
   backgroundPositiveFaded: 'oklch(0.24 0.0106 151.8)',
   backgroundPositiveHighlightedFaded: 'oklch(0.527 0.104 151.8 / 0.08)',
@@ -71,12 +70,6 @@ const darkColors = stylex.createTheme(colors, {
  * fails if the two drift.
  */
 const lightColors = stylex.createTheme(colors, {
-  black: 'oklch(0 0 0)',
-  white: 'oklch(1 0 0)',
-  onBackgroundCritical: 'oklch(1 0 0)',
-  onBackgroundPositive: 'oklch(1 0 0)',
-  onBackgroundPrimary: 'oklch(1 0 0)',
-  onBackgroundWarning: 'oklch(0 0 0)',
   backgroundCriticalFaded: 'oklch(0.98 0.02 20.28)',
   backgroundCriticalHighlightedFaded: 'oklch(0.59 0.205 20.28 / 0.06)',
   backgroundCriticalHighlighted: 'oklch(0.531 0.205 20.28)',
@@ -87,7 +80,6 @@ const lightColors = stylex.createTheme(colors, {
   backgroundNeutralHighlightedFaded: 'oklch(0 0 0 / 0.03)',
   backgroundNeutralHighlighted: 'oklch(0.9118 0 89.88)',
   backgroundNeutral: 'oklch(0.94 0 89.88)',
-  backgroundPageFaded: 'oklch(0.98 0 89.88)',
   backgroundPage: 'oklch(1 0 89.88)',
   backgroundPositiveFaded: 'oklch(0.98 0.02 151.8)',
   backgroundPositiveHighlightedFaded: 'oklch(0.55 0.13 151.8 / 0.06)',

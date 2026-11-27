@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { pressUntil } from '../../contracts/keyboard'
 import { colors } from '../../styles/colors.stylex'
 import { container, fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
@@ -15,8 +15,7 @@ import {
 
 const meta = {
   title: 'Base Components/NavigationMenu',
-  component: NavigationMenu,
-  tags: [] // ['autodocs']
+  component: NavigationMenu
 } satisfies Meta<typeof NavigationMenu>
 
 type Story = StoryObj<typeof meta>
@@ -136,17 +135,16 @@ export const Playground: Story = {
     </NavigationMenu>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const firstTrigger = canvas.getByRole('button', { name: 'First year at Hogwarts' })
     const secondTrigger = canvas.getByRole('button', { name: 'Codebreaking' })
 
     // Hovering a trigger reveals its panel of links.
     await userEvent.hover(firstTrigger)
-    await body.findByRole('link', { name: /platform nine/i })
+    await screen.findByRole('link', { name: /platform nine/i })
 
     // Leave the first trigger so the next one becomes hoverable again.
     await userEvent.unhover(firstTrigger)
-    await waitFor(() => expect(body.queryByRole('link', { name: /platform nine/i })).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('link', { name: /platform nine/i })).toBeNull())
 
     // Base UI restores pointer-events on the bar after the panel closes.
     await waitFor(async () => {
@@ -155,10 +153,8 @@ export const Playground: Story = {
 
     // Hovering the second trigger opens its own panel.
     await userEvent.hover(secondTrigger)
-    await waitFor(() => expect(body.getByRole('link', { name: /cryptex/i })).toBeInTheDocument(), {
-      timeout: 3000
-    })
-    await expect(body.queryByRole('link', { name: /platform nine/i })).toBeNull()
+    await waitFor(() => expect(screen.getByRole('link', { name: /cryptex/i })).toBeInTheDocument())
+    await expect(screen.queryByRole('link', { name: /platform nine/i })).toBeNull()
   }
 }
 
@@ -230,38 +226,41 @@ function Gates({ defaultValue }: { defaultValue?: string }) {
 export const Open: Story = {
   render: () => <Gates defaultValue='school' />,
   play: async () => {
-    const link = await within(document.body).findByRole('link', {
+    const link = await screen.findByRole('link', {
       name: 'Platform Nine and Three-Quarters'
     })
     await waitFor(() => expect(link).toBeVisible())
   }
 }
 
+const platformInKeyboard = () =>
+  screen.queryByRole('link', { name: 'Platform Nine and Three-Quarters' })
+
 /** Enter or Space opens a panel from its trigger, Tab moves into its links, and Escape closes it and returns focus. */
 export const Keyboard: Story = {
   render: () => <Gates />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'First year at Hogwarts' })
-    const platform = () => body.queryByRole('link', { name: 'Platform Nine and Three-Quarters' })
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
 
     // Enter opens the panel only while it is closed.
-    await pressUntil('{Enter}', () => expect(platform()).toBeVisible(), {
-      when: () => !platform()
+    await pressUntil('{Enter}', () => expect(platformInKeyboard()).toBeVisible(), {
+      when: () => !platformInKeyboard()
     })
     await expect(trigger).toHaveAttribute('aria-expanded', 'true')
 
     // Escape closes it and focus stays on the trigger.
-    await pressUntil('{Escape}', () => expect(platform()).toBeNull())
+    await pressUntil('{Escape}', () => expect(platformInKeyboard()).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 
     // Space opens it too.
-    await pressUntil(' ', () => expect(platform()).toBeVisible(), { when: () => !platform() })
-    await pressUntil('{Escape}', () => expect(platform()).toBeNull())
+    await pressUntil(' ', () => expect(platformInKeyboard()).toBeVisible(), {
+      when: () => !platformInKeyboard()
+    })
+    await pressUntil('{Escape}', () => expect(platformInKeyboard()).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
@@ -81,28 +81,28 @@ const roles = {
     text: colors.foregroundPrimary,
     edge: colors.borderPrimary,
     fill: colors.backgroundPrimary,
-    onFill: colors.onBackgroundPrimary
+    onFill: fixedColors.onBackgroundPrimary
   },
   critical: {
     tint: colors.backgroundCriticalFaded,
     text: colors.foregroundCritical,
     edge: colors.borderCritical,
     fill: colors.backgroundCritical,
-    onFill: colors.onBackgroundCritical
+    onFill: fixedColors.onBackgroundCritical
   },
   positive: {
     tint: colors.backgroundPositiveFaded,
     text: colors.foregroundPositive,
     edge: colors.borderPositive,
     fill: colors.backgroundPositive,
-    onFill: colors.onBackgroundPositive
+    onFill: fixedColors.onBackgroundPositive
   },
   warning: {
     tint: colors.backgroundWarningFaded,
     text: colors.foregroundWarning,
     edge: colors.borderWarning,
     fill: colors.backgroundWarning,
-    onFill: colors.onBackgroundWarning
+    onFill: fixedColors.onBackgroundWarning
   }
 }
 
