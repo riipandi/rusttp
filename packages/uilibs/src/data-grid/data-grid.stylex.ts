@@ -15,9 +15,11 @@ import {
 
 /**
  * The grid's own stacking ladder, local to its stacking context (the tokens' `zIndex` ladder is for
- * the page): sticky chrome above the cells it scrolls over, from `raised` up to `overlay`.
+ * the page): a cell or row held by a drag above its siblings (`dragged`), then sticky chrome above
+ * the cells it scrolls over, from `raised` up to `overlay`.
  */
 export const gridLayer = stylex.defineConsts({
+  dragged: 1,
   raised: 10,
   scrollbar: 20,
   pinned: 30,

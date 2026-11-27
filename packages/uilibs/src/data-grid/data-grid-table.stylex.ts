@@ -276,15 +276,8 @@ export const dataGridTableStyles = stylex.create({
       ':focus-visible': `calc(-1 * ${stroke.ring2})`
     }
   },
-  rowSelected: {
-    backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
-  },
-  // Pinned cells are OPAQUE (they hide scrolled content), so a hover must
-  // pre-mix the tint over the background instead of inheriting the
-  // translucent row fill.
-  pinnedCellHoverMix: {
-    backgroundColor: `color-mix(in oklab, ${colors.backgroundNeutral} 40%, ${colors.backgroundPage})`
-  },
+  // Pinned cells are OPAQUE (they hide scrolled content), so a selected row pre-mixes its tint over
+  // the background instead of inheriting the translucent row fill.
   pinnedCellSelectedMix: {
     backgroundColor: `color-mix(in oklab, ${colors.backgroundNeutral} 50%, ${colors.backgroundPage})`
   },
@@ -294,9 +287,6 @@ export const dataGridTableStyles = stylex.create({
       default: 'transparent',
       ':hover': 'transparent'
     }
-  },
-  cellStripedOdd: {
-    backgroundColor: `color-mix(in srgb, ${colors.backgroundNeutral} 90%, transparent)`
   },
   cellStripedOddHover: {
     backgroundColor: {
@@ -311,14 +301,6 @@ export const dataGridTableStyles = stylex.create({
       // hover:bg-muted/50
       ':hover': `color-mix(in srgb, ${colors.backgroundNeutral} 50%, transparent)`
     }
-  },
-  // Pinned-row boundary shadows: the separator shadow casts away from the
-  // scrolled content.
-  rowBoundaryTop: {
-    boxShadow: `0 2px 0 ${colors.backgroundNeutralFaded}`
-  },
-  rowBoundaryBottom: {
-    boxShadow: `0 -2px 0 ${colors.backgroundNeutralFaded}`
   },
   // CRUD row-status tints (defaults; yield to tableStyles overrides).
   rowStatusDeleted: {
@@ -725,12 +707,18 @@ export const dataGridTableDndStyles = stylex.create({
     },
     width: unit.x4
   },
-  gripButton: (isDragging: boolean) => ({
-    cursor: isDragging ? 'grabbing' : 'grab',
+  gripIdle: {
+    cursor: 'grab',
     height: unit.x6,
     marginInlineStart: `calc(-1 * ${unit.x2})`,
     width: unit.x6
-  }),
+  },
+  gripDragging: {
+    cursor: 'grabbing',
+    height: unit.x6,
+    marginInlineStart: `calc(-1 * ${unit.x2})`,
+    width: unit.x6
+  },
   headerLabel: {
     flexGrow: 1
   },
@@ -748,11 +736,8 @@ export const dataGridTableDndStyles = stylex.create({
     // dnd-kit hands over a full `transition` shorthand ("transform 200ms ease"), which is not a
     // valid `transition-property`.
     transition: style.transition,
-    zIndex: style.isDragging ? 1 : 0
-  }),
-  viewportDragging: {
-    cursor: 'grabbing'
-  }
+    zIndex: style.isDragging ? gridLayer.dragged : 0
+  })
 })
 
 /**
@@ -773,8 +758,8 @@ export function dndCellDragStyle(
 }
 
 export const dndGripCursorStyles = {
-  dragging: dataGridTableDndStyles.gripButton(true),
-  idle: dataGridTableDndStyles.gripButton(false)
+  dragging: dataGridTableDndStyles.gripDragging,
+  idle: dataGridTableDndStyles.gripIdle
 }
 
 /** Draggable-rows chrome. */
@@ -789,9 +774,6 @@ export const dataGridTableDndRowsStyles = stylex.create({
       ':hover': 1,
       ':active': 1
     }
-  },
-  gripButtonActive: {
-    cursor: 'grabbing'
   },
   gripDisabled: {
     cursor: 'not-allowed'
@@ -859,7 +841,7 @@ export const dataGridTableDndRowsStyles = stylex.create({
     outlineWidth: state.isDragging ? 1 : null,
     position: 'relative',
     transform: state.transform,
-    zIndex: state.isDragging ? 1 : 0
+    zIndex: state.isDragging ? gridLayer.dragged : 0
   })
 })
 
@@ -1009,8 +991,5 @@ export const dataGridTableVirtualStyles = stylex.create({
     height: unit.x4,
     opacity: 0.6,
     width: unit.x4
-  },
-  viewportBlock: {
-    display: 'block'
   }
 })
