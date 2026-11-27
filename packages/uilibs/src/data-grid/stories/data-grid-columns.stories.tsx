@@ -826,7 +826,10 @@ export const StickyHeader: Story = {
 
     // Dragging the thumb down scrolls the body down.
     await expect(viewport.scrollTop).toBe(0)
+    // `force` skips Playwright's actionability waits: under a full parallel run they took 17 to 29 s
+    // and ran the story out of its 30 s budget, and the story asserts the result itself.
     await pointer.dragAndDrop(thumb, track, {
+      force: true,
       sourcePosition: middle(thumb),
       targetPosition: middle(track)
     })
@@ -835,7 +838,10 @@ export const StickyHeader: Story = {
 
     // A press on the track below the thumb jumps the body further down.
     const trackRect = track.getBoundingClientRect()
-    await pointer.click(track, { position: { x: trackRect.width / 2, y: trackRect.height - 4 } })
+    await pointer.click(track, {
+      force: true,
+      position: { x: trackRect.width / 2, y: trackRect.height - 4 }
+    })
     await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(dragged))
   }
 }
