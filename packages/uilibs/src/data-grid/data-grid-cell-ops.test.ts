@@ -8,7 +8,11 @@ import type {
 import {
   buildDataGridClearDetails,
   buildDataGridPasteDetails,
+  extendDataGridSelection,
+  getDataGridActiveRegionGrid,
+  getDataGridClipboardValue,
   getDataGridStepTarget,
+  getDataGridVisibleSelectedCellCount,
   getDataGridWritableCellEdit,
   invertDataGridCellsChange,
   parseDataGridClipboardText,
@@ -560,5 +564,315 @@ describe('buildDataGridClearDetails', () => {
     expect(clear('clear')).toBeNull()
     grid.select(['harry', 'wand'], ['hermione', 'wand'])
     expect(clear('clear')).toBeNull()
+  })
+})
+
+describe('getDataGridClipboardValue', () => {
+  it.each([
+    ['null', null, ''],
+    ['undefined', undefined, ''],
+    ['a string, unchanged', 'Hedwig', 'Hedwig'],
+    ['the empty string', '', ''],
+    // Falsy values that are data, not blanks.
+    ['zero', 0, '0'],
+    ['a negative float', -1.5, '-1.5'],
+    ['false', false, 'false'],
+    ['true', true, 'true'],
+    ['a bigint', 12n, '12'],
+    ['a symbol', Symbol('Horcrux'), 'Symbol(Horcrux)'],
+    [
+      'an object as JSON, not [object Object]',
+      { house: 'Gryffindor', year: 5 },
+      '{"house":"Gryffindor","year":5}'
+    ],
+    ['an array as JSON', ['Harry', 'Ron'], '["Harry","Ron"]']
+  ])('writes %s', (_name, value, expected) => {
+    expect(getDataGridClipboardValue(value)).toBe(expected)
+  })
+})
+
+// The grid's meta types a row as unknown, so the format narrows it itself.
+const firstName = (row: unknown) =>
+  typeof row === 'object' && row !== null && 'name' in row && typeof row.name === 'string'
+    ? row.name.split(' ')[0]
+    : ''
+const formatted: ColumnDef<DataGridFeatures, Student>[] = [
+  ...writableColumns.slice(0, 3),
+  {
+    id: 'year',
+    accessorKey: 'year',
+    meta: { cellEdit: { format: (value, row) => `${firstName(row)}:${String(value)}` } }
+  },
+  writableColumns[4]!
+]
+
+describe('getDataGridActiveRegionGrid', () => {
+  const grid = mountTestTable<Student>({
+    data: students,
+    columns: formatted,
+    getRowId: (student) => student.id
+  })
+  afterAll(grid.unmount)
+  const region = (viewport?: HTMLElement) => getDataGridActiveRegionGrid(grid.table(), viewport)
+
+  it('is null with nothing selected', () => {
+    grid.act((table) => table.setCellSelection([]))
+    expect(region()).toBeNull()
+  })
+
+  it('reads the region row-major as strings', () => {
+    grid.select(['hermione', 'name'], ['draco', 'house'])
+    expect(region()).toEqual([
+      ['Hermione Granger', 'Gryffindor'],
+      ['Draco Malfoy', 'Slytherin']
+    ])
+  })
+
+  it('compacts an opted-out column away and formats through the column format', () => {
+    grid.select(['luna', 'house'], ['cedric', 'year'])
+    // wards sits between house and year and is not in the grid; a number with no format is a
+    // string, and year has a format.
+    expect(region()).toEqual([
+      ['Ravenclaw', 'Luna:4'],
+      ['Hufflepuff', 'Cedric:6']
+    ])
+  })
+
+  it('reads a column without cellEdit through the plain value rules', () => {
+    grid.select(['harry', 'wand'], ['harry', 'wand'])
+    expect(region()).toEqual([['holly']])
+  })
+
+  it('is the region of the focused cell when there are several', () => {
+    grid.select(['harry', 'name'], ['harry', 'name'])
+    grid.act((table) =>
+      table.selectCellRange(
+        {
+          anchorRowId: 'luna',
+          anchorColumnId: 'house',
+          focusRowId: 'cedric',
+          focusColumnId: 'house'
+        },
+        { mode: 'include' }
+      )
+    )
+    expect(region()).toEqual([['Ravenclaw'], ['Hufflepuff']])
+  })
+
+  it('is the newest region even when another one lies further down and right', () => {
+    // getCellSelectionBounds sorts geometrically, so the bottom-right rectangle is last; the
+    // focused cell anchors the newest range, and that one is active.
+    grid.select(['luna', 'house'], ['cedric', 'house'])
+    grid.act((table) =>
+      table.selectCellRange(
+        {
+          anchorRowId: 'harry',
+          anchorColumnId: 'name',
+          focusRowId: 'hermione',
+          focusColumnId: 'name'
+        },
+        { mode: 'include' }
+      )
+    )
+    expect(region()).toEqual([['Harry Potter'], ['Hermione Granger']])
+  })
+
+  it('falls back to the bottom-right region when the focused cell is in none', () => {
+    grid.select(['harry', 'name'], ['harry', 'name'])
+    grid.act((table) =>
+      table.selectCellRange(
+        {
+          anchorRowId: 'luna',
+          anchorColumnId: 'house',
+          focusRowId: 'cedric',
+          focusColumnId: 'house'
+        },
+        { mode: 'include' }
+      )
+    )
+    // The newest range is an exclude anchored on a third cell that no region holds.
+    grid.act((table) =>
+      table.selectCellRange(
+        {
+          anchorRowId: 'draco',
+          anchorColumnId: 'year',
+          focusRowId: 'draco',
+          focusColumnId: 'year'
+        },
+        { mode: 'exclude' }
+      )
+    )
+    expect(grid.table().getCellSelectionBounds()).toHaveLength(2)
+    expect(region()).toEqual([['Ravenclaw'], ['Hufflepuff']])
+  })
+
+  it('is null when the region holds only opted-out columns', () => {
+    grid.select(['harry', 'wards'], ['hermione', 'wards'])
+    // Two rows, each with no cell: two empty lines are still not a grid worth copying.
+    expect(region()?.flat()).toEqual([])
+  })
+
+  it('skips rows the view cannot show when a viewport is given', () => {
+    const paged = mountTestTable<Student>({
+      data: students,
+      columns: formatted,
+      getRowId: (student) => student.id,
+      initialState: { pagination: { pageIndex: 0, pageSize: 2 } }
+    })
+    paged.select(['hermione', 'name'], ['luna', 'name'])
+    const table = paged.table()
+    expect(getDataGridActiveRegionGrid(table)).toEqual([
+      ['Hermione Granger'],
+      ['Draco Malfoy'],
+      ['Luna Lovegood']
+    ])
+    expect(getDataGridActiveRegionGrid(table, viewportWith())).toEqual([['Hermione Granger']])
+    expect(getDataGridActiveRegionGrid(table, viewportWith('luna'))).toEqual([
+      ['Hermione Granger'],
+      ['Luna Lovegood']
+    ])
+    paged.select(['luna', 'name'], ['cedric', 'name'])
+    expect(getDataGridActiveRegionGrid(paged.table(), viewportWith())).toBeNull()
+    paged.unmount()
+  })
+})
+
+describe('getDataGridVisibleSelectedCellCount', () => {
+  const grid = mountTestTable<Student>({
+    data: students,
+    columns: writableColumns,
+    getRowId: (student) => student.id
+  })
+  afterAll(grid.unmount)
+  const count = () => getDataGridVisibleSelectedCellCount(grid.table(), null)
+
+  it('is 0 with nothing selected', () => {
+    grid.act((table) => table.setCellSelection([]))
+    expect(count()).toBe(0)
+  })
+
+  it('counts rows times selectable columns, without the opted-out one', () => {
+    // name..year is 4 display columns, 3 of them selectable.
+    grid.select(['harry', 'name'], ['hermione', 'year'])
+    expect(count()).toBe(6)
+    grid.select(['harry', 'house'], ['harry', 'house'])
+    expect(count()).toBe(1)
+  })
+
+  it('is 0 for a region of opted-out columns only', () => {
+    grid.select(['harry', 'wards'], ['draco', 'wards'])
+    expect(count()).toBe(0)
+  })
+
+  it('adds the cells of every region', () => {
+    grid.select(['harry', 'name'], ['hermione', 'name'])
+    grid.act((table) =>
+      table.selectCellRange(
+        {
+          anchorRowId: 'luna',
+          anchorColumnId: 'house',
+          focusRowId: 'cedric',
+          focusColumnId: 'year'
+        },
+        { mode: 'include' }
+      )
+    )
+    // 2 x 1 and 2 x 2 (house and year; wards is not selectable).
+    expect(count()).toBe(2 + 4)
+  })
+
+  it('counts only the rows the view can show, with a viewport', () => {
+    const paged = mountTestTable<Student>({
+      data: students,
+      columns: writableColumns,
+      getRowId: (student) => student.id,
+      initialState: { pagination: { pageIndex: 0, pageSize: 2 } }
+    })
+    paged.select(['harry', 'name'], ['luna', 'house'])
+    const table = paged.table()
+    // Four display rows by two columns, against two page rows, then three with luna rendered.
+    expect(getDataGridVisibleSelectedCellCount(table, null)).toBe(8)
+    expect(getDataGridVisibleSelectedCellCount(table, viewportWith())).toBe(4)
+    expect(getDataGridVisibleSelectedCellCount(table, viewportWith('luna'))).toBe(6)
+    paged.unmount()
+  })
+})
+
+describe('extendDataGridSelection', () => {
+  const grid = mountTestTable<Student>({
+    data: students,
+    columns: writableColumns,
+    getRowId: (student) => student.id
+  })
+  afterAll(grid.unmount)
+  const all = viewportWith(...students.map((student) => student.id))
+  const boundOf = () => grid.table().getCellSelectionBounds()
+  const extend = (direction: 'up' | 'down' | 'left' | 'right') =>
+    extendDataGridSelection(grid.table(), all, direction)
+
+  it('grows the range from the anchor and returns the corner it grew to', () => {
+    grid.select(['hermione', 'house'], ['hermione', 'house'])
+    expect(extend('down')).toEqual({ rowId: 'draco', columnId: 'house' })
+    expect(boundOf()).toEqual([
+      { minRowIndex: 1, maxRowIndex: 2, minColumnIndex: 1, maxColumnIndex: 1 }
+    ])
+    expect(extend('right')).toEqual({ rowId: 'draco', columnId: 'year' })
+    expect(boundOf()).toEqual([
+      { minRowIndex: 1, maxRowIndex: 2, minColumnIndex: 1, maxColumnIndex: 3 }
+    ])
+  })
+
+  it('grows up and left from the anchor, and returns the corner it grew to', () => {
+    grid.select(['draco', 'house'], ['draco', 'house'])
+    expect(extend('up')).toEqual({ rowId: 'hermione', columnId: 'house' })
+    expect(extend('left')).toEqual({ rowId: 'hermione', columnId: 'name' })
+    expect(boundOf()).toEqual([
+      { minRowIndex: 1, maxRowIndex: 2, minColumnIndex: 0, maxColumnIndex: 1 }
+    ])
+  })
+
+  it('shrinks back toward the anchor', () => {
+    grid.select(['hermione', 'house'], ['draco', 'year'])
+    expect(extend('left')).toEqual({ rowId: 'draco', columnId: 'house' })
+    expect(extend('up')).toEqual({ rowId: 'hermione', columnId: 'house' })
+    expect(boundOf()).toEqual([
+      { minRowIndex: 1, maxRowIndex: 1, minColumnIndex: 1, maxColumnIndex: 1 }
+    ])
+  })
+
+  it('returns null at the first and last row', () => {
+    grid.select(['harry', 'name'], ['harry', 'name'])
+    expect(extend('up')).toBeNull()
+    expect(extend('left')).toBeNull()
+    grid.select(['cedric', 'name'], ['cedric', 'name'])
+    expect(extend('down')).toBeNull()
+    expect(boundOf()).toEqual([
+      { minRowIndex: 4, maxRowIndex: 4, minColumnIndex: 0, maxColumnIndex: 0 }
+    ])
+  })
+
+  it('steps onto a pinned row outside the page slice, which the feature cannot resolve', () => {
+    // Page of 2 rows (harry, hermione); cedric is pinned at the bottom and rendered after them.
+    const pinned = mountTestTable<Student>({
+      data: students,
+      columns: writableColumns,
+      getRowId: (student) => student.id,
+      keepPinnedRows: true,
+      initialState: {
+        pagination: { pageIndex: 0, pageSize: 2 },
+        rowPinning: { top: [], bottom: ['cedric'] }
+      }
+    })
+    pinned.select(['hermione', 'name'], ['hermione', 'name'])
+    const rendered = viewportWith('harry', 'hermione', 'cedric')
+    expect(extendDataGridSelection(pinned.table(), rendered, 'down')).toEqual({
+      rowId: 'cedric',
+      columnId: 'name'
+    })
+    // The range runs from hermione (display row 1) to cedric (display row 4).
+    expect(pinned.table().getCellSelectionBounds()).toEqual([
+      { minRowIndex: 1, maxRowIndex: 4, minColumnIndex: 0, maxColumnIndex: 0 }
+    ])
+    pinned.unmount()
   })
 })

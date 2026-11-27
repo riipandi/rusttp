@@ -987,6 +987,7 @@ export {
   extendDataGridSelection,
   getDataGridActiveBound,
   getDataGridActiveRegionGrid,
+  getDataGridClipboardValue,
   getDataGridDisplayOrderedColumns,
   getDataGridStepTarget,
   getDataGridVisibleSelectedCellCount,
