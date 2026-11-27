@@ -3,7 +3,8 @@
 # The uilibs gate: typecheck, the docs check and the Storybook build in one job, and the three
 # test projects (every story with its axe check in light and dark, and the unit project) in
 # parallel, one runner each. Pushes and pull requests run it in Chromium when the library
-# changes; a nightly run repeats the stories and the unit tests in Firefox and WebKit.
+# changes; a nightly run repeats the stories and the unit tests in Firefox and WebKit, and runs the
+# stories once more in Chromium through the React Compiler, as the webapp ships the library.
 name: uilibs
 
 on:
@@ -142,6 +143,49 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: uilibs-failure-screenshots-${{ matrix.browser }}
+          path: packages/uilibs/.vitest/attachments
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # `STORYBOOK_COMPILER=1` (`.storybook/main.ts`) compiles the library with the React Compiler and
+  # makes it report every component it skips. A skipped component is not a failure: the job fails
+  # only when a story does, and lists the skipped files in the run summary.
+  compiler:
+    name: Stories (React Compiler)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter uilibs exec playwright install --with-deps chromium
+      - run: |
+          set -o pipefail
+          pnpm --filter uilibs exec vitest run --project storybook --project storybook-dark 2>&1 | tee "$RUNNER_TEMP/compiler.log"
+        env:
+          STORYBOOK_COMPILER: '1'
+      - if: always()
+        run: |
+          {
+            echo '### Files the React Compiler skipped'
+            grep -h '^  File: ' "$RUNNER_TEMP/compiler.log" | sed 's|.*/packages/uilibs/||' | sort -u | sed 's/^/- `/; s/$/`/' || true
+          } >> "$GITHUB_STEP_SUMMARY"
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uilibs-failure-screenshots-compiler
           path: packages/uilibs/.vitest/attachments
           include-hidden-files: true
           if-no-files-found: ignore

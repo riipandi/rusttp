@@ -58,6 +58,7 @@
         "@vitest/browser-playwright": "catalog:",
         "@vitest/coverage-v8": "catalog:",
         "date-fns": "catalog:",
+        "oxc-transform-react": "catalog:",
         "playwright": "catalog:",
         "plugins": "workspace:*",
         "remark-gfm": "^4.0.1",
