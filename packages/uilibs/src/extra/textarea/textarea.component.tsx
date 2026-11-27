@@ -18,7 +18,9 @@ export interface TextareaProps extends PartProps<React.ComponentProps<'textarea'
 function resizeToContent(element: HTMLTextAreaElement | null) {
   if (!element) return
   element.style.height = 'auto'
-  element.style.height = `${element.scrollHeight}px`
+  // `scrollHeight` leaves out the border, and the box is `border-box`: without it the last line is cut.
+  const border = element.offsetHeight - element.clientHeight
+  element.style.height = `${element.scrollHeight + border}px`
 }
 
 /** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */

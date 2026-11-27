@@ -242,6 +242,10 @@ export const AutoResize: Story = {
     // The counter flips to the warning tone near the limit.
     await userEvent.type(el, 'a'.repeat(20))
     await expect(canvas.getByText('28/280')).toBeInTheDocument()
+
+    // Growing past the minimum height clips no line: the border is part of the box, not of the content.
+    await userEvent.type(el, '{Enter}'.repeat(6))
+    await expect(el.scrollHeight).toBeLessThanOrEqual(el.clientHeight)
   }
 }
 
@@ -286,7 +290,7 @@ export const ControlledResize: Story = {
 
     await expect(el).toHaveValue(letter)
     await waitFor(() => expect(el.getBoundingClientRect().height).toBeGreaterThan(before + 20))
-    // The box is as tall as the whole letter.
-    await expect(el.getBoundingClientRect().height).toBeGreaterThanOrEqual(el.scrollHeight)
+    // The box shows the whole letter: nothing scrolls inside it, and no last line is cut off.
+    await expect(el.scrollHeight).toBeLessThanOrEqual(el.clientHeight)
   }
 }
