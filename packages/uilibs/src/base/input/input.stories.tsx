@@ -144,7 +144,7 @@ export const States: Story = {
   play: async ({ canvas }) => {
     const disabled = canvas.getByRole('textbox', { name: 'Seal disabled' })
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true, edge: true })
     await userEvent.type(disabled, 'alohomora')
     await expect(disabled).toHaveValue('')
 

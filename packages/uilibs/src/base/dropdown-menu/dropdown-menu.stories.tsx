@@ -157,7 +157,7 @@ export const States: Story = {
     const archive = body.getByRole('menuitem', { name: 'Archive (Ministry pending)' })
     await expect(archive).toHaveAttribute('data-disabled')
     // Menu rows dim but keep the default cursor, unlike a form control.
-    await expectDisabledLook(archive, { cursor: false })
+    await expectDisabledLook(archive, { text: true, cursor: false })
     // Choosing it does nothing: the menu stays open.
     await userEvent.click(archive)
     await expect(body.getByRole('menu')).toBeInTheDocument()
@@ -168,7 +168,7 @@ export const States: Story = {
       name: 'Spells trigger'
     })
     await expect(trigger).toBeDisabled()
-    await expectDisabledLook(trigger)
+    await expectDisabledLook(trigger, { text: true })
   }
 }
 

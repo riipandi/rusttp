@@ -319,7 +319,7 @@ export const States: Story = {
     const petrified = canvas.getByRole('button', { name: 'Petrified' })
     await expect(petrified).toBeDisabled()
     // A disabled look is the disabled tokens (not opacity, which stacks) and a not-allowed cursor.
-    await expectDisabledLook(petrified)
+    await expectDisabledLook(petrified, { text: true, fill: true })
     await expect(getComputedStyle(petrified).color).not.toBe(
       getComputedStyle(canvas.getByRole('button', { name: 'Open the cryptex' })).color
     )

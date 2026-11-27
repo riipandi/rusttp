@@ -216,7 +216,7 @@ export const States: Story = {
     // The group dims; the cursor belongs to the input and the steppers inside it.
     const group = disabled.closest('[role="group"]')
     if (!group) throw new Error('No number group')
-    await expectDisabledLook(group, { cursor: false })
+    await expectDisabledLook(group, { text: true, edge: true, cursor: false })
     const [increase, decrease] = [
       canvas.getAllByRole('button', { name: 'Increase' })[1],
       canvas.getAllByRole('button', { name: 'Decrease' })[1]

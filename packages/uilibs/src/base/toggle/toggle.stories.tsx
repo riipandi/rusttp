@@ -200,7 +200,7 @@ export const States: Story = {
 
     const disabled = toggle('disabled')
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true })
     await userEvent.click(disabled)
     await expect(disabled).toHaveAttribute('aria-pressed', 'false')
   }

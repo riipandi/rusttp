@@ -156,7 +156,7 @@ export const States: Story = {
     await expect(disabled).toHaveValue('')
     const group = disabled.closest('[role="group"]')
     if (!group) throw new Error('No phone group')
-    await expectDisabledLook(group, { cursor: false })
+    await expectDisabledLook(group, { text: true, edge: true, cursor: false })
 
     const readOnly = input('readOnly')
     await expect(readOnly).toHaveAttribute('readonly')

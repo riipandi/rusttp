@@ -153,7 +153,7 @@ export const States: Story = {
       Array.from(cellOf(canvasElement, 'state', state).querySelectorAll('[role="radio"]'))
     for (const item of items('disabled')) {
       await expect(item).toHaveAttribute('data-disabled')
-      await expectDisabledLook(item)
+      await expectDisabledLook(item, { text: true, edge: true })
     }
     const [first, second] = items('disabled')
     if (!first || !second) throw new Error('Disabled radios not found')

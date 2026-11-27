@@ -368,7 +368,7 @@ export const States: Story = {
   play: async ({ canvas }) => {
     const disabled = canvas.getByRole('combobox', { name: 'Wand core disabled' })
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true, edge: true })
     // A disabled trigger is out of the tab order.
     await userEvent.tab()
     await expect(disabled).not.toHaveFocus()

@@ -297,7 +297,7 @@ export const States: Story = {
   play: async ({ canvas }) => {
     const disabled = canvas.getByRole('combobox', { name: 'School disabled' })
     await expect(disabled).toBeDisabled()
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { text: true, edge: true })
     await userEvent.click(disabled)
     await expect(within(document.body).queryByRole('option')).toBeNull()
 

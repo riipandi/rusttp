@@ -349,7 +349,7 @@ export const States: Story = {
 
     const disabled = box('disabled')
     await expect(disabled).toHaveAttribute('data-disabled')
-    await expectDisabledLook(disabled)
+    await expectDisabledLook(disabled, { edge: true, fill: true })
     await userEvent.click(disabled)
     await expect(disabled).toHaveAttribute('aria-checked', 'true')
 

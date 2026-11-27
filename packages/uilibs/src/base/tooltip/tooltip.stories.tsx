@@ -200,7 +200,7 @@ export const States: Story = {
     const disabled = cellOf(canvasElement, 'state', 'disabled')
     const button = within(disabled).getByRole('button', { name: 'Alohomora' })
     await expect(button).toBeDisabled()
-    await expectDisabledLook(button)
+    await expectDisabledLook(button, { text: true, edge: true })
     // The wrapper still opens the tooltip for the disabled button.
     const wrapper = disabled.firstElementChild
     if (!wrapper) throw new Error('No tooltip trigger for the disabled state')

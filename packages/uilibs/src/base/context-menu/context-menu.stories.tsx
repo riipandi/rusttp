@@ -186,7 +186,7 @@ export const States: Story = {
     const follow = body.getByRole('menuitem', { name: 'Follow the dot' })
     await expect(follow).toHaveAttribute('data-disabled')
     // Menu rows dim but keep the default cursor, unlike a form control.
-    await expectDisabledLook(follow, { cursor: false })
+    await expectDisabledLook(follow, { text: true, cursor: false })
     await userEvent.click(follow)
     await expect(body.getByRole('menu')).toBeInTheDocument()
     await userEvent.keyboard('{Escape}')

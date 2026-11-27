@@ -71,20 +71,35 @@ function resolvedColor(token: string, property: 'color' | 'borderTopColor' = 'co
 }
 
 /**
- * Asserts the disabled look of a control: it is drawn with the disabled tokens (`foregroundDisabled`
- * for its text, `borderDisabled` for its edge, or `backgroundNeutral` for its fill), never with
- * `opacity`, which stacks. For an element that takes the cursor itself (an input or a trigger), also
- * asserts `not-allowed`; a wrapper around an input passes `cursor: false`.
+ * The marks of a disabled look a control can carry. A control names the ones it paints, and each
+ * named mark is asserted: the text color is `foregroundDisabled`, the edge is `borderDisabled`,
+ * the fill is `backgroundNeutral`. A control that paints only a fill still fails when its text
+ * keeps full strength, so name every mark the control has.
  */
-export async function expectDisabledLook(element: Element, { cursor = true } = {}) {
+interface DisabledLook {
+  text?: true
+  edge?: true
+  fill?: true
+  /** Also asserts `not-allowed` (default); a wrapper around an input or a menu item passes `false`. */
+  cursor?: boolean
+}
+
+/**
+ * Asserts the disabled look of a control: it is drawn with the disabled tokens, never with
+ * `opacity`, which stacks. Each mark named in `look` must match its token; at least one is required.
+ */
+export async function expectDisabledLook(
+  element: Element,
+  { text, edge, fill, cursor = true }: DisabledLook
+) {
+  if (!text && !edge && !fill) throw new Error('Name the marks the disabled control paints')
   const style = getComputedStyle(element)
   await expect(style.opacity).toBe('1')
-  const marks = [
-    style.color === resolvedColor(colors.foregroundDisabled),
-    style.borderTopColor === resolvedColor(colors.borderDisabled, 'borderTopColor'),
-    style.backgroundColor === resolvedColor(colors.backgroundNeutral)
-  ]
-  await expect(marks.some(Boolean)).toBe(true)
+  if (text) await expect(style.color).toBe(resolvedColor(colors.foregroundDisabled))
+  if (edge) {
+    await expect(style.borderTopColor).toBe(resolvedColor(colors.borderDisabled, 'borderTopColor'))
+  }
+  if (fill) await expect(style.backgroundColor).toBe(resolvedColor(colors.backgroundNeutral))
   if (cursor) await expect(style.cursor).toBe('not-allowed')
 }
 
