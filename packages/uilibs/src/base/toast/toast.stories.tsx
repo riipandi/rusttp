@@ -28,8 +28,8 @@ const styles = stylex.create({
   }
 })
 
-function save() {
-  return new Promise<void>((resolve) => setTimeout(resolve, 2000))
+function save(latency: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, latency))
 }
 
 function DurationButton() {
@@ -101,14 +101,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   }
 }
 
-export const ToastPromise: Story = {
+export const ToastPromise: StoryObj<{ latency: number }> = {
+  args: { latency: 2000 },
   name: 'Promise',
-  render: () => (
+  render: ({ latency }) => (
     <ToastProvider>
       <Button
         variant='outline'
         onClick={() => {
-          void toast.promise(save(), {
+          void toast.promise(save(latency), {
             loading: 'Sealing the cryptex…',
             success: 'Cryptex sealed',
             error: 'The cryptex jammed'

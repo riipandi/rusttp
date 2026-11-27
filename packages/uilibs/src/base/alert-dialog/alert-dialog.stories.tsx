@@ -80,8 +80,8 @@ async function actionLook(cell: HTMLElement, label: string) {
   return look.join('|')
 }
 
-function deleteAccount() {
-  return new Promise<void>((resolve) => setTimeout(resolve, 1500))
+function deleteAccount(latency: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, latency))
 }
 
 export default meta
@@ -314,7 +314,8 @@ export const Media: Story = {
   )
 }
 
-export const Destructive: Story = {
+export const Destructive: StoryObj<{ latency: number }> = {
+  args: { latency: 1500 },
   parameters: {
     docs: {
       source: {
@@ -347,13 +348,13 @@ const [deleting, setDeleting] = useState(false)
       }
     }
   },
-  render: () => {
+  render: ({ latency }) => {
     const [open, setOpen] = React.useState(false)
     const [deleting, setDeleting] = React.useState(false)
 
     async function handleDelete() {
       setDeleting(true)
-      await deleteAccount()
+      await deleteAccount(latency)
       setDeleting(false)
       setOpen(false)
     }

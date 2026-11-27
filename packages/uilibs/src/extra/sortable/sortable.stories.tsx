@@ -2,7 +2,7 @@ import { Image, MusicNote, Film } from '@keyline-icons/react'
 import { ChevronRight, FileText, GripVertical } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../base/collapsible'
 import { Switch } from '../../base/switch'
@@ -1178,21 +1178,30 @@ const defaultTasks: Task[] = [
   { id: '5', title: 'Announce on the blog' }
 ]
 
-// Simulated backend. Swap for a tRPC mutation or fetch in your app. Rejects
-// roughly one in four calls so the optimistic rollback is easy to see.
-function persistOrder(): Promise<void> {
+/** The args of the stories that persist: the backend's latency and how often it rejects. */
+interface PersistArgs {
+  latency: number
+  failRate: number
+}
+
+// Simulated backend. Swap for a tRPC mutation or fetch in your app. It rejects `failRate` of the
+// calls, spread evenly (0.25 rejects every fourth), never at random, so a run is repeatable: set
+// `failRate` to 0.5 or more to see the optimistic rollback.
+function persistOrder({ latency, failRate }: PersistArgs, attempt: number): Promise<void> {
+  const fails = Math.floor(attempt * failRate) > Math.floor((attempt - 1) * failRate)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (Math.random() < 0.25) {
+      if (fails) {
         reject(new Error('Network error'))
       } else {
         resolve()
       }
-    }, 700)
+    }, latency)
   })
 }
 
-export const PersistedOrder: Story = {
+export const PersistedOrder: StoryObj<PersistArgs> = {
+  args: { latency: 700, failRate: 0 },
   parameters: {
     docs: {
       source: {
@@ -1213,8 +1222,9 @@ export const PersistedOrder: Story = {
     }
   },
   name: 'Persisted order',
-  render: () => {
+  render: ({ latency, failRate }) => {
     const [items, setItems] = useState(defaultTasks)
+    const attempts = useRef(0)
 
     // Sortable commits once, on drop. `onValueChange` has already applied the
     // new order optimistically; meta.previousValue is the order before the drag.
@@ -1222,7 +1232,8 @@ export const PersistedOrder: Story = {
       const previous = commit.previousValue
       const movedTitle = next[commit.overIndex]?.title ?? 'item'
 
-      void toast.promise(persistOrder(), {
+      attempts.current += 1
+      void toast.promise(persistOrder({ latency, failRate }, attempts.current), {
         loading: { title: 'Saving order...' },
         success: { title: `Saved "${movedTitle}" at position ${commit.overIndex + 1}` },
         // Roll back to the pre-drag order. In production prefer a refetch

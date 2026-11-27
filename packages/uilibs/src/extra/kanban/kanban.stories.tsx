@@ -438,8 +438,8 @@ function commitTaskMoved() {
 }
 
 /** Story 6 fake persistence: latency + log + toast, no component state. */
-function fakePersistToBackend(value: Record<string, BackendTask[]>) {
-  return new Promise<void>((resolve) => setTimeout(resolve, 500)).then(() => {
+function fakePersistToBackend(value: Record<string, BackendTask[]>, latency: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, latency)).then(() => {
     console.log('Persisted to backend:', value)
     toast.success('Changes saved')
   })
@@ -1168,7 +1168,8 @@ export const FeatureRoadmap: Story = {
 // Story 6: Kanban board persisted to a backend
 // ---------------------------------------------------------------------------
 
-export const PersistedToBackend: Story = {
+export const PersistedToBackend: StoryObj<{ latency: number }> = {
+  args: { latency: 500 },
   parameters: {
     docs: {
       source: {
@@ -1183,7 +1184,7 @@ export const PersistedToBackend: Story = {
       }
     }
   },
-  render: () => {
+  render: ({ latency }) => {
     const initialBackendColumns: Record<string, BackendTask[]> = {
       todo: [
         { id: 'b-1', title: 'Design mockups', status: 'todo' },
@@ -1202,7 +1203,7 @@ export const PersistedToBackend: Story = {
 
     const handleValueCommit = (value: Record<string, BackendTask[]>) => {
       setIsSaving(true)
-      void fakePersistToBackend(value).then(() => setIsSaving(false))
+      void fakePersistToBackend(value, latency).then(() => setIsSaving(false))
     }
 
     return (

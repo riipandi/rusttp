@@ -683,8 +683,9 @@ async function fetchServerPage(params: {
   sorting: SortingState
   search: string
   status: StatusFilter
+  latency: number
 }): Promise<{ rows: IBook[]; total: number }> {
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await new Promise((resolve) => setTimeout(resolve, params.latency))
 
   const search = params.search.toLowerCase()
   let rows = serverRecords
@@ -720,9 +721,10 @@ async function fetchServerPage(params: {
   }
 }
 
-export const ServerSidePagination: Story = {
+export const ServerSidePagination: StoryObj<{ latency: number }> = {
+  args: { latency: 500 },
   name: 'Server side pagination',
-  render: () => {
+  render: ({ latency }) => {
     const [query, setQuery] = useState('')
     const [status, setStatus] = useState<StatusFilter>('all')
     const [pagination, setPagination] = useState<PaginationState>({
@@ -743,7 +745,8 @@ export const ServerSidePagination: Story = {
         pageSize: pagination.pageSize,
         sorting,
         search: query,
-        status
+        status,
+        latency
       }).then((page) => {
         if (!alive) return
         setRows(page.rows)
@@ -753,7 +756,7 @@ export const ServerSidePagination: Story = {
       return () => {
         alive = false
       }
-    }, [pagination, sorting, query, status])
+    }, [pagination, sorting, query, status, latency])
 
     const columns = useMemo<ColumnDef<DataGridFeatures, IBook>[]>(
       () => [
