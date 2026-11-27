@@ -1,7 +1,7 @@
 ---
 status: in-progress
 created: 2026-11-27T14:20:00+07:00
-updated: 2026-11-27T15:24:36+07:00
+updated: 2026-11-27T17:30:10+07:00
 phases:
     - { id: 1, title: "W1-A Ten seconds is the default story wait (S-01)", status: committed, note: "`5388448`: probe red at the default 1 s for waitFor and findByText, green with configure in beforeAll (no D2 fallback); a play with two failing waits shows Test timed out in 15000ms at the Vitest default and the assertion at 30 s (D3); 13 literals removed; Chromium 1310 stories plus 147 unit green, contracts and base/dialog green in Firefox and WebKit" }
     - { id: 2, title: "W1-A Shared overlay helpers replace the 400 ms sleeps (S-02, S-06)", status: committed, note: "`ace5d1a`: overlay.ts; three 400 ms sleeps gone; closed/untilClosed copies replaced in six files; four opened getters kept (each names its own dialog); mutation under 4x CPU throttle: dropping untilOpaque fails the a11y gate (color-contrast 2.84)" }
@@ -19,43 +19,46 @@ phases:
     - { id: 14, title: "W1-C CI runs its legs in parallel and caches the browser (S-07)", status: committed, note: "`6afe9c5`: checks job plus a three-runner tests matrix, ms-playwright cached by version (actions/cache v6.1.0 pinned); check names changed; wall time unchecked until a push" }
     - { id: 15, title: "W1-C WebKit runs on pull requests that touch stories (S-08)", status: committed, note: "`8190e37`: uilibs-webkit.yml on pull requests for stories, contracts, .storybook; not a required check; runs unchecked until a push" }
     - { id: 16, title: "W1 Agent docs sync for wave 1 (S-18, V-06 doc side)", status: committed, note: "`3e292d0`: docs sync; the Storybook plus Vitest advice dropped after five story runs beside a live storybook dev showed no Invalid empty selector; wave 1 validation: Chromium 1459 of 1459, Firefox 1310 of 1310, WebKit 1306 passed and 4 skipped after fcb521e, typecheck, lint, format, check-ui-docs, storybook:build, webapp build, just size (473.5 KB and 151.0 KB gzip; CSS 69.3 and 18.4), just test-web 75 of 75" }
-    - { id: 17, title: "W2-D Data grid unit tests run on a real TanStack table (U-05)", status: pending, note: "—" }
-    - { id: 18, title: "W2-D Paste and clear are covered (U-01)", status: pending, note: "—" }
-    - { id: 19, title: "W2-D Selection, active region and clipboard value are covered (U-01)", status: pending, note: "—" }
-    - { id: 20, title: "W2-D The fill batch is extracted, tested, and dragged in a story (U-02)", status: pending, note: "—" }
-    - { id: 21, title: "W2-D The auto size controller is covered (U-03)", status: pending, note: "—" }
-    - { id: 22, title: "W2-D Row stops and the scroll target are covered (U-06)", status: pending, note: "—" }
-    - { id: 23, title: "W2-D Data grid DOM ids cannot collide (U-08)", status: pending, note: "—" }
-    - { id: 24, title: "W2-D Label merging and the header label are covered (U-07)", status: pending, note: "—" }
-    - { id: 25, title: "W2-D A drag style no longer replaces the row and cell geometry (X-01)", status: pending, note: "—" }
-    - { id: 26, title: "W2-D The column drag has a valid transition (X-02)", status: pending, note: "—" }
-    - { id: 27, title: "W2-D Dead and dynamic data grid styles are removed (X-04, X-08)", status: pending, note: "—" }
-    - { id: 28, title: "W2-D Try the Base UI scroll area for the grid scrollbar (B-15)", status: pending, note: "—" }
-    - { id: 29, title: "W2-E FileUpload runs consumer handlers once (B-01, B-17, U-07)", status: pending, note: "—" }
-    - { id: 30, title: "W2-E Range slider thumbs get an index (B-02)", status: pending, note: "—" }
-    - { id: 31, title: "W2-E The OTP slot takes its index from Base UI (B-08)", status: pending, note: "—" }
-    - { id: 32, title: "W2-E Base UI owns the Combobox tab stops (B-14)", status: pending, note: "—" }
-    - { id: 33, title: "W2-E The Combobox anchors to its input group (B-09)", status: pending, note: "—" }
-    - { id: 34, title: "W2-E Tall dialogs and alert dialogs scroll in short windows (B-04)", status: pending, note: "—" }
-    - { id: 35, title: "W2-E Tall sheets scroll in short windows (B-04)", status: pending, note: "—" }
-    - { id: 36, title: "W2-E One popup shell and one Positioner prop set (B-03, B-05, B-10)", status: pending, note: "—" }
-    - { id: 37, title: "W2-E The preview card popup is centered by default (B-05)", status: pending, note: "—" }
-    - { id: 38, title: "W2-E A controlled Textarea resizes when its value changes (B-16)", status: pending, note: "—" }
-    - { id: 39, title: "W2-E Accordion control and Field anatomy comment (B-11, B-13)", status: pending, note: "—" }
-    - { id: 40, title: "W2-E Disabled keys use data-disabled, and disabled beats invalid (B-12, X-09)", status: pending, note: "—" }
-    - { id: 41, title: "W2-F The token tests cannot pass vacuously (U-09)", status: pending, note: "—" }
-    - { id: 42, title: "W2-F One breakpoint test probes both sides of every boundary (U-04, U-11)", status: pending, note: "—" }
-    - { id: 43, title: "W2-F The media query grammar and mapResponsive are covered (U-07)", status: pending, note: "—" }
-    - { id: 44, title: "W2-F Text weight and align, and Stack align and justify, are no longer responsive (X-03)", status: pending, note: "—" }
-    - { id: 45, title: "W2-F The responsive style sets live in one file (X-06)", status: pending, note: "—" }
-    - { id: 46, title: "W2-F The entry CSS limit is tightened to the measured size (V-04)", status: pending, note: "—" }
-    - { id: 47, title: "W2-F backgroundPageFaded is removed and the invariant colors are constants (X-05, X-11)", status: pending, note: "—" }
-    - { id: 48, title: "W2-G The logical-properties test bans every physical side (U-10)", status: pending, note: "—" }
-    - { id: 49, title: "W2-G The theme storage test touches only its own keys (U-12)", status: pending, note: "—" }
-    - { id: 50, title: "W2-G The docs checker has a test (U-15)", status: pending, note: "—" }
-    - { id: 51, title: "W2-G A coverage run and a headed switch for the unit project (U-14)", status: pending, note: "—" }
-    - { id: 52, title: "W2-G The unit project runs in every engine the stories run in (U-14)", status: pending, note: "—" }
-    - { id: 53, title: "W2 Agent docs sync for wave 2 (F-15 note, X-12 ledger)", status: pending, note: "—" }
+    - { id: 17, title: "W2-D Data grid unit tests run on a real TanStack table (U-05)", status: committed, note: "`0f760ab`: fixture mounts useTable into a detached root (constructTable needs a reactivity binding uilibs does not depend on: deviation from the plan, same real table, no dependency); no oxlint-disable left; a call to a getter TanStack 9.3.1 lacks fails 3 fixture tests and passes the old stub copy" }
+    - { id: 18, title: "W2-D Paste and clear are covered (U-01)", status: committed, note: "`fdc4692`: paste and clear on the fixture; 7 mutations each fail a case; no defect found" }
+    - { id: 19, title: "W2-D Selection, active region and clipboard value are covered (U-01)", status: committed, note: "`6331f53`: selection and clipboard helpers; getDataGridClipboardValue exported; 8 mutations, 3 survived the first cases, cases added, all fail now; no defect" }
+    - { id: 20, title: "W2-D The fill batch is extracted, tested, and dragged in a story (U-02)", status: committed, note: "`52943ab`: red: the import failed (buildDataGridFillDetails did not exist); finish calls it, the preview shares getDataGridFillTargets; story Spreadsheet fill fails when finish is a no-op; 6 mutations killed" }
+    - { id: 21, title: "W2-D The auto size controller is covered (U-03)", status: committed, note: "`80bab3c`: controller exported, fake timers, 15 cases; 9 mutations each fail a case; found the auto-size floor defect (phase 21b)" }
+    - { id: 21b, title: "W2-D The auto-size floor reads the consumer's minSize (found by phase 21)", status: committed, note: "`a8b2ed8`: the floor is read from options.columns (through groups) and defaultColumn, because the resolved columnDef always carries TanStack's 20; an explicit minSize 20 is honored; issue-00010" }
+    - { id: 22, title: "W2-D Row stops and the scroll target are covered (U-06)", status: committed, note: "`a9b372a`: row stops tested on rows in a real attached table (detached elements have no document order: deviation); scroll target exported; 8 of 9 mutations fail, the survivor is the pending microtask guard, which is not observable" }
+    - { id: 23, title: "W2-D Data grid DOM ids cannot collide (U-08)", status: committed, note: "`12ac9de`: red: 13 of 18 cases (a b vs a_b, a-b+c vs a+b-c; an exhaustive check over 585 strings); toDataGridDomId injective, getDataGridCellDomId the one place; 5 mutations killed; follow-up b9ac22a removed two stale allowlist lines that phase 34 made obsolete" }
+    - { id: 24, title: "W2-D Label merging and the header label are covered (U-07)", status: committed, note: "`35194cc`: 14 cases for label merging and the header label; 7 mutations killed" }
+    - { id: 25, title: "W2-D A drag style no longer replaces the row and cell geometry (X-01)", status: committed, note: "`451bfb4`: red: story Draggable pinned columns (th position relative, expected sticky); geometry is dynamic styles last in the same stylex.props call; two recorded raw-style exceptions (DataGridTableViewport, drag-overlay td); the row half of X-01 was not a lost style but the missing row separators (phase 25b)" }
+    - { id: 26, title: "W2-D The column drag has a valid transition (X-02)", status: committed, note: "`ed8c9ba`: red: displaced header transition-duration 0s, expected 0.2s, both themes; sortableCell writes transition: style.transition" }
+    - { id: 25b, title: "W2-D Draggable grids draw row separators (found by phase 25)", status: committed, note: "`2ec59b8`: getDataGridRowWantsBorder is the one rule for every body; visible change: draggable grids now draw separators; issue-00010" }
+    - { id: 25c, title: "W2-D An end-pinned column keeps its width in draggable grids (found by phase 25)", status: committed, note: "`c954a93`: getDataGridFillIndex places the filler like the colgroup; the rows-drag table had the same bug; issue-00010" }
+    - { id: 27, title: "W2-D Dead and dynamic data grid styles are removed (X-04, X-08)", status: committed, note: "`2f664e1`: only 4 of the compiled rules dropped (atomic CSS: 434 to 430 unique over the 15 grid files), the rowSelected prop stays; gridLayer.dragged = 1" }
+    - { id: 28, title: "W2-D Try the Base UI scroll area for the grid scrollbar (B-15)", status: committed, note: "`1860e2a`, `c7653b6`: experiment succeeded: the 250-line overlay is gone (pager 630 to 336 lines), Base UI scrollbar offset by the header height, ScrollArea.Corner for both axes, data-overflow-vertical removed; follow-up c7653b6 drives the play with userEvent from vitest/browser because Firefox rejected setPointerCapture for synthetic pointer ids (found by the full Firefox run)" }
+    - { id: 29, title: "W2-E FileUpload runs consumer handlers once (B-01, B-17, U-07)", status: committed, note: "`c18a1d3`: red: onDrop 2x enabled, 1x disabled; consumer handlers go through mergeProps once and a disabled upload passes none; acceptsFile 5-case table; FileUploadTrigger StyleProp" }
+    - { id: 30, title: "W2-E Range slider thumbs get an index (B-02)", status: committed, note: "`42bc78f`: red: no data-index in renderToString; index={index}" }
+    - { id: 31, title: "W2-E The OTP slot takes its index from Base UI (B-08)", status: committed, note: "`ebc2989`: red: unnamed slots on the server; the slot names itself from state.index, render is omitted from its props" }
+    - { id: 32, title: "W2-E Base UI owns the Combobox tab stops (B-14)", status: committed, note: "`b7120ae`: Base UI 1.9.0 sets -1 on Clear always and on Trigger when the input is outside the popup, 0 when inside: the explicit prop only broke the in-popup case" }
+    - { id: 33, title: "W2-E The Combobox anchors to its input group (B-09)", status: committed, note: "`e910fc7`: red: anchor width 281 vs a 390 chips box; InputGroup and Chips render as InputGroup; deviation: InputPhone keeps its container anchor (its input is inside the popup)" }
+    - { id: 34, title: "W2-E Tall dialogs and alert dialogs scroll in short windows (B-04)", status: committed, note: "`54a8833`: red: new short viewport 390x320, footer at 390 and 339.5 px; Viewport is the scroll box; side effects: backdropOf, CommandDialog overrides, expectScrollsIntoView; Scrollable story kept" }
+    - { id: 35, title: "W2-E Tall sheets scroll in short windows (B-04)", status: committed, note: "`151a80e`: red: footer 460 px in 320; a second red (side sheets stretched, footer outside the sheet) asserts the sheet box contains its footer" }
+    - { id: 36, title: "W2-E One popup shell and one Positioner prop set (B-03, B-05, B-10)", status: committed, note: "`40643f5`, `bd83a90`: PopupShell and one PositionerProps for 8 popups, seven *Portal aliases deleted, Contracts/Popup portal story (mutation proof); follow-up bd83a90 reads the seven default-open popups before the right click, because a full WebKit run dismissed them while the context menu opened (dark, 17 s)" }
+    - { id: 37, title: "W2-E The preview card popup is centered by default (B-05)", status: committed, note: "`f10d5f9`: red: popup middle 4 px off; alignOffset 0" }
+    - { id: 38, title: "W2-E A controlled Textarea resizes when its value changes (B-16)", status: committed, note: "`ba5f14a`: red: height stayed 64 px; layout effect on [autoResize, value]; a bordered box stays 2 px short of its content (issue-00010)" }
+    - { id: 39, title: "W2-E Accordion control and Field anatomy comment (B-11, B-13)", status: committed, note: "`8335a42`: loopFocus is destructured and unused in Base UI 1.9.0: the control was dead" }
+    - { id: 40, title: "W2-E Disabled keys use data-disabled, and disabled beats invalid (B-12, X-09)", status: committed, note: "`f6b4bf9`: the plan's native-input red case did not reproduce (:disabled outranks the attribute) and stays as a regression row; the real defect: only the Switch painted critical when disabled and invalid, checkbox and radio passed on a selector tie, and the quiet-edge variants had no disabled key; off() keys on [data-disabled] only, every invalid key excludes it; Button untouched" }
+    - { id: 41, title: "W2-F The token tests cannot pass vacuously (U-09)", status: committed, note: "`980bd56`: token blocks counted; foregroundDisabled exempt from pair coverage (WCAG 1.4.3); a double-quoted dark value fails 3 tests" }
+    - { id: 42, title: "W2-F One breakpoint test probes both sides of every boundary (U-04, U-11)", status: committed, note: "`e19a6ee`: one breakpoints.test.ts over three mirrors, BREAKPOINTS (exported) and viewport; hook test probes X-1 and X; 660 to 700 fails only the new tests" }
+    - { id: 43, title: "W2-F The media query grammar and mapResponsive are covered (U-07)", status: committed, note: "`7fd01f0`: parseQuery exported; tables incl. max-foo and small as min; 2 mutations fail 6 tests; isBreakpoint accepts inherited keys (issue-00010)" }
+    - { id: 44, title: "W2-F Text weight and align, and Stack align and justify, are no longer responsive (X-03)", status: committed, note: "`df53b88`: plain values; webapp CSS 69,286 to 66,673 B raw (gzip 18,339 to 17,729); entry JS 475.3 to 472.3 KB raw, 151.6 to 150.7 KB gzip" }
+    - { id: 45, title: "W2-F The responsive style sets live in one file (X-06)", status: committed, note: "`b7555ef`, `reverted by c6899bb`: REVERTED: the entry JS grew to 475.4 KB raw and 151.6 KB gzip (bisected over the wave 2 commits: 472.3 / 150.7 before this phase), because Stack's and Hidden's sets rode along with every importer of Text; the three mirrors stay, with phase 42's one test" }
+    - { id: 46, title: "W2-F The entry CSS limit is tightened to the measured size (V-04)", status: committed, note: "`2f96f8b`, `c5f29d5`: limits 70.5 / 18.8, then retightened to 68.9 / 18.6 after the revert and phase 47 (measured 65.6 / 17.7)" }
+    - { id: 47, title: "W2-F backgroundPageFaded is removed and the invariant colors are constants (X-05, X-11)", status: committed, note: "`23b7591`: backgroundPageFaded removed; fixedColors (defineConsts) for black, white, four onBackground*; 51 usages in 16 files; step-dots Media play reads alpha because a literal color reports rgba(); CSS 65,726 B raw" }
+    - { id: 48, title: "W2-G The logical-properties test bans every physical side (U-10)", status: committed, note: "`560e1bc`: regex adds left/right, border shorthands, scrollMargin/Padding and float; exact file: line allowlist both ways; also fixed a path slice bug" }
+    - { id: 49, title: "W2-G The theme storage test touches only its own keys (U-12)", status: committed, note: "`19d5998`: tracks its own localStorage keys; red: a scratch test with an unrelated key failed under clear()" }
+    - { id: 50, title: "W2-G The docs checker has a test (U-15)", status: committed, note: "`1fedd30`: check-docs.test.ts (node --test) over a fixture, 8 finding kinds and a clean pass; check-docs.ts takes a directory; check:docs:test in the CI checks job; a no-op report fails it" }
+    - { id: 51, title: "W2-G A coverage run and a headed switch for the unit project (U-14)", status: committed, note: "`2bf7252`: @vitest/coverage-v8 (3 lockfile lines), test:coverage, just test-ui-coverage, VITEST_HEADED; headed mode not opened (no display)" }
+    - { id: 52, title: "W2-G The unit project runs in every engine the stories run in (U-14)", status: committed, note: "`70470c5`: unit instances follow STORYBOOK_TEST_BROWSER; nightly engines runs every project; unit passes in Firefox and WebKit" }
+    - { id: 53, title: "W2 Agent docs sync for wave 2 (F-15 note, X-12 ledger)", status: committed, note: "docs commit: frontend, stylex-authoring, architecture and the uilibs AGENTS.md match the final state (three mirrors kept, fixedColors, PopupShell, data grid rules, dialog viewport); issue-00010 filed" }
     - { id: 54, title: "W3-H Dead style keys and the dynamic ring are removed (X-04, X-07)", status: pending, note: "—" }
     - { id: 55, title: "W3-H Shared popup and description style recipes (X-10)", status: pending, note: "—" }
     - { id: 56, title: "W3-H The chart legend swatch is a static map (X-08)", status: pending, note: "—" }
@@ -319,6 +322,12 @@ Each phase lists its findings, the change, the red-first evidence where D1 appli
 71. **Docs sync (`docs/`).** `rg -i "uilibs|data grid|storybook" docs` was empty on 2026-11-26; re-run it, and if still empty record n/a with no commit. _Commit: none if n/a._
 72. **Ledger close, roadmap entries, handover.** `roadmap-00001` gains RI-6 with each parked item and its unlock: D13 (snippet check), D14 (browserslist, `issue-00007`), D21 (`FieldItem`), D22 (`renderStyled`), D23 (compiler `exclude`, node unit project, `exports` roots, `retry`, `lightColors` generator, grid focus-ring merge), and B-15 if phase 28 closed `wontfix`; `issue-00010` (if opened) resolved and archived; `handover-00017` written and `handover-00016` archived; this plan archived; `index.md` rows moved (plan, issues, handover); counts checked with `grep -c '^- status'`. _Commit: `docs: close plan 00014 and record the parked audit items`._
 73. **Final validation.** The matrix below over the final tree, including Firefox and WebKit; the result lands in phase 72's note before that commit. _Commit: none if green; `test(uilibs): record the final validation` only if a fix was needed._
+
+### Added during execution (waves 1 and 2)
+
+- **Wave 1:** `fcb521e` copies the viewport frame styles before the frame renders its children again (phase 5 moved the copy into an effect and one full WebKit run failed `Stack > Responsive`).
+- **Wave 2:** phases 21b, 25b, and 25c (the three fixes recorded in `issue-00010`), `b9ac22a` (two stale allowlist lines), `c7653b6` (the sticky-header drag play drives real pointer events: Firefox rejected synthetic pointer ids), `bd83a90` (the popup portal story reads the default-open popups before the right click), `44ceba4` (format of the Positioner prop rows), and `c6899bb` with `c5f29d5` (phase 45 reverted: it grew the entry by 0.9 KB gzip; the CSS limit retightened). Row separators in draggable grids are a visible change.
+- **The finding map is unchanged** except X-06 (**not doing** after the revert: the three mirrors stay, one test), X-01 (the row half was the missing row separators, 25b), and U-03 (21b).
 
 ## Finding map: every finding ID to a phase or a reason
 
