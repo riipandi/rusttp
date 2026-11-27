@@ -63,6 +63,10 @@ Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props no
 
 <Canvas of={Stories.Overlays} />
 
+### Short windows
+
+<Canvas of={Stories.ShortWindow} />
+
 ### Close button
 
 `labels.close` names the built-in close button.
@@ -179,5 +183,6 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 - `SheetContent` already renders `SheetPortal` and `SheetOverlay`; do not wrap it in them.
 - With `showCloseButton={false}`, give the sheet a `SheetClose`.
+- A sheet taller than the window scrolls as a whole with its backdrop, so its title and footer can always be reached; a side sheet is as tall as its content and at least as tall as the window.
 - `blurredOverlay` on `SheetContent` is forwarded to its overlay. Set it on `SheetOverlay` only in a custom composition.
 - `useIsMobile()` is `false` until the browser reports the viewport, so a server-rendered page first draws the Dialog branch. Resizing across 660px while a modal is open swaps the modal and closes it: keep the open state outside `ResponsiveModal` if that matters.

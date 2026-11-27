@@ -52,12 +52,14 @@ export function SheetContent({
   return (
     <BaseDialog.Portal container={usePortalContainer()}>
       <SheetOverlay blurredOverlay={blurredOverlay} />
-      <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
-        {children}
-        {showCloseButton && (
-          <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
-        )}
-      </BaseDialog.Popup>
+      <BaseDialog.Viewport {...stylex.props(s.viewport)}>
+        <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
+          {children}
+          {showCloseButton && (
+            <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
+          )}
+        </BaseDialog.Popup>
+      </BaseDialog.Viewport>
     </BaseDialog.Portal>
   )
 }

@@ -14,6 +14,7 @@ import {
 import { Input } from '../../base/input'
 import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { expectScrollsIntoView, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { useIsMobile } from '../../hooks/use-media-query'
 import { Label } from '../label'
@@ -209,6 +210,83 @@ export const Sides: Story = {
       await expectDockedTo(dialog, side)
       await userEvent.keyboard('{Escape}')
       await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    }
+  }
+}
+
+const passages = [
+  'The passage behind the tapestry on the fourth floor leads to Honeydukes.',
+  'The one-eyed witch opens with a tap of the wand and the word Dissendium.',
+  'The Whomping Willow has a knot that freezes its branches when pressed.',
+  'The Room of Requirement appears to those who walk past it three times.',
+  'The mirror on the seventh floor shows what the heart wants most.',
+  'The Chamber of Secrets opens behind a sink that carries a tiny snake.'
+]
+
+/** In a window shorter than the sheet, the sheet scrolls as a whole on every side: its title and its footer can both be reached. */
+export const ShortWindow: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Sheet>
+  <SheetTrigger render={<Button variant='outline' />}>bottom</SheetTrigger>
+  <SheetContent side='bottom'>
+    <SheetHeader>
+      <SheetTitle>Passages on the bottom</SheetTitle>
+    </SheetHeader>
+    {passages.map((passage) => <p key={passage}>{passage}</p>)}
+    <SheetFooter>
+      <SheetClose render={<Button />}>Done</SheetClose>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`
+      }
+    }
+  },
+  name: 'Short window',
+  globals: { viewport: { value: 'short', isRotated: false } },
+  render: () => (
+    <Axis axis='side' rows={sides}>
+      {(side) => (
+        <Sheet>
+          <SheetTrigger render={<Button variant='outline' />}>{side}</SheetTrigger>
+          <SheetContent side={side}>
+            <SheetHeader>
+              <SheetTitle>Passages on the {side}</SheetTitle>
+            </SheetHeader>
+            <div {...stylex.props(styles.fields)}>
+              {passages.map((passage) => (
+                <p key={passage}>{passage}</p>
+              ))}
+            </div>
+            <SheetFooter>
+              <SheetClose render={<Button />}>Done</SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    await expect(window.innerHeight).toBe(320)
+    for (const side of sides) {
+      await userEvent.click(
+        within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
+      )
+      const sheet = await body.findByRole('dialog', { name: `Passages on the ${side}` })
+      // The window is shorter than the sheet, or the check below proves nothing.
+      await waitFor(() => expect(sheet.scrollHeight).toBeGreaterThan(window.innerHeight))
+      const done = body.getByRole('button', { name: 'Done' })
+      await expectScrollsIntoView(done, 'end')
+      // The sheet's own box holds its footer: a stretched box would end at the window and leave
+      // the footer hanging over the page.
+      await expect(sheet.getBoundingClientRect().bottom).toBeGreaterThanOrEqual(
+        done.getBoundingClientRect().bottom
+      )
+      await expectScrollsIntoView(body.getByText(`Passages on the ${side}`), 'start')
+      await userEvent.keyboard('{Escape}')
+      await untilGone(() => body.queryByRole('dialog'))
     }
   }
 }
