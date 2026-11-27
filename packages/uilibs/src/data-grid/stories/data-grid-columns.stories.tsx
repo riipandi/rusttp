@@ -762,10 +762,10 @@ export const PinnableColumns: Story = {
   }
 }
 
-/** The point at `fraction` of an element's height, on its middle line. */
-const pointAt = (element: Element, fraction: number) => {
+/** The middle of an element, relative to its top-left corner. */
+const middle = (element: Element) => {
   const rect = element.getBoundingClientRect()
-  return { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height * fraction }
+  return { x: rect.width / 2, y: rect.height / 2 }
 }
 
 /** Sticky header. */
@@ -818,23 +818,24 @@ export const StickyHeader: Story = {
     const thumb = track.querySelector('[data-slot="data-grid-thumb"]')
     if (!(thumb instanceof HTMLElement)) throw new Error('No thumb')
 
+    // Real pointer input: Base UI captures the pointer on a press, and a browser refuses to capture
+    // the synthetic pointer id of testing-library's `userEvent` (Firefox throws `NotFoundError`).
+    // Vitest's `userEvent` drives the browser's own mouse. It exists only under the test runner, so
+    // it loads here and not at the top of the file, which the Storybook UI also imports.
+    const { userEvent: pointer } = await import('vitest/browser')
+
     // Dragging the thumb down scrolls the body down.
     await expect(viewport.scrollTop).toBe(0)
-    await userEvent.pointer([
-      { keys: '[MouseLeft>]', target: thumb, coords: pointAt(thumb, 0.5) },
-      // Pointer capture keeps the move and the release on the thumb, wherever the pointer is.
-      { target: thumb, coords: pointAt(track, 0.5) },
-      { keys: '[/MouseLeft]', target: thumb, coords: pointAt(track, 0.5) }
-    ])
+    await pointer.dragAndDrop(thumb, track, {
+      sourcePosition: middle(thumb),
+      targetPosition: middle(track)
+    })
     await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(0))
     const dragged = viewport.scrollTop
 
     // A press on the track below the thumb jumps the body further down.
-    await userEvent.pointer({
-      keys: '[MouseLeft]',
-      target: track,
-      coords: pointAt(track, 0.98)
-    })
+    const trackRect = track.getBoundingClientRect()
+    await pointer.click(track, { position: { x: trackRect.width / 2, y: trackRect.height - 4 } })
     await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(dragged))
   }
 }
