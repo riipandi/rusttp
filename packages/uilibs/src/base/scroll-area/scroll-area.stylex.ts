@@ -64,12 +64,23 @@ export const scrollAreaScrollbarOrientations = stylex.create({
 })
 
 /**
- * The fade mask: the block gradient plus the inline one. `--scroll-area-fade-inline-start` is the
- * fade at the scroll origin, which is the right edge in right-to-left, and a gradient has no
- * logical direction, so the rtl rule points it the other way.
+ * The fade mask: one layer per edge, intersected by `mask-composite`. A layer ramps from clear at
+ * its edge to opaque at `size` (the `--scroll-area-fade-*` length the scroll timeline animates), in
+ * four stops that follow a smoothstep (0, 26%, 74%, 100% at thirds of the length). The stops are mask
+ * alpha only: the color channels are never drawn. `--scroll-area-fade-inline-start` is the fade at
+ * the scroll origin, which is the right edge in right-to-left, and a gradient has no logical
+ * direction, so the rtl rule hands the two inline layers the other way round.
  */
-const fadeMask = (inline: 'left' | 'right') =>
-  `linear-gradient(to bottom, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-block-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-block-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-block-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-block-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-block-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-block-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-block-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-block-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-block-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-block-end) * 0.2), rgb(0 0 0 / 0%) 100%), linear-gradient(to ${inline}, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 10%) calc(var(--scroll-area-fade-inline-start) * 0.2), rgb(0 0 0 / 35%) calc(var(--scroll-area-fade-inline-start) * 0.4), rgb(0 0 0 / 65%) calc(var(--scroll-area-fade-inline-start) * 0.6), rgb(0 0 0 / 90%) calc(var(--scroll-area-fade-inline-start) * 0.8), rgb(0 0 0 / 100%) var(--scroll-area-fade-inline-start), rgb(0 0 0 / 100%) calc(100% - var(--scroll-area-fade-inline-end)), rgb(0 0 0 / 90%) calc(100% - var(--scroll-area-fade-inline-end) * 0.8), rgb(0 0 0 / 65%) calc(100% - var(--scroll-area-fade-inline-end) * 0.6), rgb(0 0 0 / 35%) calc(100% - var(--scroll-area-fade-inline-end) * 0.4), rgb(0 0 0 / 10%) calc(100% - var(--scroll-area-fade-inline-end) * 0.2), rgb(0 0 0 / 0%) 100%)`
+const fadeRamp = (to: 'top' | 'bottom' | 'left' | 'right', size: string) =>
+  `linear-gradient(to ${to}, rgb(0 0 0 / 0%) 0, rgb(0 0 0 / 26%) calc(${size} / 3), rgb(0 0 0 / 74%) calc(${size} * 2 / 3), rgb(0 0 0 / 100%) ${size})`
+
+const fadeMask = (inlineStart: 'left' | 'right', inlineEnd: 'left' | 'right') =>
+  [
+    fadeRamp('bottom', 'var(--scroll-area-fade-block-start)'),
+    fadeRamp('top', 'var(--scroll-area-fade-block-end)'),
+    fadeRamp(inlineStart, 'var(--scroll-area-fade-inline-start)'),
+    fadeRamp(inlineEnd, 'var(--scroll-area-fade-inline-end)')
+  ].join(', ')
 
 export const scrollAreaFadeStyles = stylex.create({
   fade: {
@@ -83,8 +94,8 @@ export const scrollAreaFadeStyles = stylex.create({
       animationTimingFunction: 'linear',
       maskComposite: 'intersect',
       maskImage: {
-        default: fadeMask('right'),
-        ':dir(rtl)': fadeMask('left')
+        default: fadeMask('right', 'left'),
+        ':dir(rtl)': fadeMask('left', 'right')
       }
     }
   }
