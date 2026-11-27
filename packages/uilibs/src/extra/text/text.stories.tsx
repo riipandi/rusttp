@@ -3,14 +3,10 @@ import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
 import { cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
+import { textVariantStyles } from '../../styles/responsive.stylex'
 import { type } from '../../styles/type.stylex'
 import { Text } from './text.component'
-import {
-  textAlignStyles,
-  textColorStyles,
-  textVariantStyles,
-  textWeightStyles
-} from './text.stylex'
+import { textAlignStyles, textColorStyles, textWeightStyles } from './text.stylex'
 
 const meta = {
   title: 'Extra Components/Text',
