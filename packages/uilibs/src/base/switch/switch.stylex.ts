@@ -9,8 +9,7 @@ export const switchStyles = stylex.create({
     backgroundColor: {
       default: colors.borderControl,
       '[data-checked]:not([data-disabled])': colors.backgroundPrimary,
-      '[data-invalid]': colors.backgroundCritical,
-      ':disabled': colors.backgroundNeutral,
+      '[data-invalid]:not([data-disabled])': colors.backgroundCritical,
       '[data-disabled]': colors.backgroundNeutral,
       // Forced colors: the track is an outlined box that fills with Highlight when on.
       '@media (forced-colors: active)': { default: 'Canvas', '[data-checked]': 'Highlight' }
