@@ -11,8 +11,8 @@ import { Spinner } from '../extra/spinner'
 import { glyphSize } from '../styles/glyph'
 import { focusRing } from '../styles/utils.stylex'
 import {
+  getDataGridCellDomId,
   getDataGridCellSelectionCellAttrs,
-  toDataGridDomId,
   getDataGridRowLabel,
   useDataGrid
 } from './data-grid'
@@ -464,11 +464,7 @@ function DataGridTableBodyRowCell<TData extends object>({
       // The id is what the controller's aria-activedescendant points at, so
       // a screen reader tracks the focused cell through the container-focus
       // model.
-      id={
-        cellSelectionOn
-          ? `${gridId}c-${toDataGridDomId(row.id)}-${toDataGridDomId(column.id)}`
-          : undefined
-      }
+      id={cellSelectionOn ? getDataGridCellDomId(gridId, row.id, column.id) : undefined}
       aria-colindex={cellSelectionOn ? column.getIndex() + 1 : undefined}
       data-col-id={column.id}
       data-dense={props.tableLayout?.dense ? '' : undefined}

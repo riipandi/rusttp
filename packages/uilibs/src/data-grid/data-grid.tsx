@@ -312,17 +312,30 @@ export interface DataGridContextProps<TData extends object> {
 }
 
 /**
- * Row and column ids are consumer strings; DOM ids cannot carry spaces or
- * quotes. One shared sanitizer so `aria-activedescendant` writers and the id
- * renderers always agree on the same encoding.
+ * Row and column ids are consumer strings; DOM ids cannot carry spaces or quotes. One shared
+ * encoder so `aria-activedescendant` writers and the id renderers always agree.
+ *
+ * It is injective: every character outside A-Z, a-z, and 0-9 becomes `_` and its code in hex (two
+ * digits up to U+00FF, `__` and four digits above, per UTF-16 code unit), so `a b` and `a_b` stay
+ * apart, and the output holds no hyphen, which makes `-` a safe joiner for the id builders below.
  */
 export function toDataGridDomId(value: string): string {
-  return value.replace(/[^\w-]/g, '_')
+  return value.replace(/[^A-Za-z0-9]/g, (char) => {
+    const code = char.charCodeAt(0)
+    return code <= 0xff
+      ? `_${code.toString(16).padStart(2, '0')}`
+      : `__${code.toString(16).padStart(4, '0')}`
+  })
 }
 
 /** The id of a column header cell, which its resize separator names in `aria-controls`. */
 export function getDataGridHeaderDomId(gridId: string, headerId: string): string {
   return `${gridId}h-${toDataGridDomId(headerId)}`
+}
+
+/** The id of a body cell, which `aria-activedescendant` names while the cell is active. */
+export function getDataGridCellDomId(gridId: string, rowId: string, columnId: string): string {
+  return `${gridId}c-${toDataGridDomId(rowId)}-${toDataGridDomId(columnId)}`
 }
 
 export interface DataGridAutoSizeController {
