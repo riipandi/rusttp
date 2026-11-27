@@ -3,12 +3,15 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import type { Responsive } from '../../hooks/use-responsive-value'
 import {
+  textAlignStyles,
+  textColorStyles,
+  textStyles,
   textVariantStyles,
   textVariantStylesLarge,
   textVariantStylesMedium,
-  textVariantStylesXLarge
-} from '../../styles/responsive.stylex'
-import { textAlignStyles, textColorStyles, textStyles, textWeightStyles } from './text.stylex'
+  textVariantStylesXLarge,
+  textWeightStyles
+} from './text.stylex'
 
 export type TextVariant =
   | 'headline-1'

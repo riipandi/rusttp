@@ -2,7 +2,10 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { mapResponsive, type Responsive } from '../../hooks/use-responsive-value'
+import type { UnitStep } from '../../styles/utils.stylex'
+import { resolveResponsive, type ResponsiveSpec } from '../text/text.component'
 import {
+  stackAlign,
   stackDirection,
   stackDirectionLarge,
   stackDirectionMedium,
@@ -10,11 +13,10 @@ import {
   stackGap,
   stackGapLarge,
   stackGapMedium,
-  stackGapXLarge
-} from '../../styles/responsive.stylex'
-import type { UnitStep } from '../../styles/utils.stylex'
-import { resolveResponsive, type ResponsiveSpec } from '../text/text.component'
-import { stackAlign, stackJustify, stackStyles as s } from './stack.stylex'
+  stackGapXLarge,
+  stackJustify,
+  stackStyles as s
+} from './stack.stylex'
 
 export type StackDirection = 'row' | 'column' | 'row-reverse' | 'column-reverse'
 export type StackAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'

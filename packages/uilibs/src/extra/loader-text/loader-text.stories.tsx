@@ -7,8 +7,7 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
 import { Axis } from '../../contracts/story-axes'
-import { textVariantStyles } from '../../styles/responsive.stylex'
-import { textColorStyles, textWeightStyles } from '../text/text.stylex'
+import { textColorStyles, textVariantStyles, textWeightStyles } from '../text/text.stylex'
 import { LoaderText } from './loader-text.component'
 
 const meta = {
