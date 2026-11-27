@@ -1,7 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 
-// App-wide breakpoints. Importing this file from a style is enough; `vite.config.ts` warms it up
-// (`server.warmup`) so `vite dev` has compiled it before the first CSS request. They sit beside the
+// App-wide breakpoints. Importing this file from a style is enough: on a cold `vite dev` the CSS can
+// be collected before this file has compiled, and the shared StyleX plugin (`plugins/stylex`) drops
+// that response's unresolved media rule and serves the whole CSS on the next update. They sit beside the
 // library's `breakpoints` (`uilibs/styles/tokens.stylex`): `medium` and `wide` restate its `medium`
 // and `large` (660 and 900), because a media constant inlines most reliably from the file that
 // defines it (`stylex-authoring.md`, "Defining constants"); `narrow` and `compact` are the app's own
