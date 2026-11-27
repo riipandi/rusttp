@@ -2,12 +2,39 @@ import { createRoot } from 'react-dom/client'
 import { describe, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
 import { viewport } from '../styles/tokens.stylex'
-import { resolveResponsiveValue, useResponsiveValue, type Responsive } from './use-responsive-value'
+import {
+  mapResponsive,
+  resolveResponsiveValue,
+  useResponsiveValue,
+  type Responsive
+} from './use-responsive-value'
 
 const reached = (width: number) => ({
   medium: width >= viewport.medium,
   large: width >= viewport.large,
   xlarge: width >= viewport.xlarge
+})
+
+const double = (value: number) => value * 2
+
+describe('mapResponsive', () => {
+  it('keeps a plain value plain and an unset value unset', () => {
+    expect(mapResponsive(3, double)).toBe(6)
+    expect(mapResponsive(0, double)).toBe(0)
+    expect(mapResponsive(undefined, double)).toBeUndefined()
+  })
+
+  it('maps each breakpoint of a map and keeps the keys that were set', () => {
+    expect(mapResponsive({ small: 1, large: 3 }, double)).toStrictEqual({ small: 2, large: 6 })
+    expect(mapResponsive({ medium: 0, xlarge: 5 }, double)).toEqual({ medium: 0, xlarge: 10 })
+  })
+
+  it('drops a key whose value is undefined and does not call the mapper for it', () => {
+    const seen: number[] = []
+    const out = mapResponsive({ small: 1, medium: undefined }, (value) => seen.push(value))
+    expect(out).toStrictEqual({ small: 1 })
+    expect(seen).toEqual([1])
+  })
 })
 
 describe('resolveResponsiveValue', () => {

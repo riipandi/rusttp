@@ -38,7 +38,7 @@ function resolveMax(value: Breakpoint | number): string {
   return `(max-width: ${px - 1}px)`
 }
 
-function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): string {
+export function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): string {
   if (typeof query !== 'string') {
     const parts: string[] = []
     if (query.min != null) parts.push(resolveMin(query.min))
