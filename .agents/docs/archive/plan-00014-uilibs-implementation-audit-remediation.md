@@ -1,7 +1,7 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-27T14:20:00+07:00
-updated: 2026-11-27T19:30:00+07:00
+updated: 2026-11-27T19:22:04+07:00
 phases:
     - { id: 1, title: "W1-A Ten seconds is the default story wait (S-01)", status: committed, note: "`5388448`: probe red at the default 1 s for waitFor and findByText, green with configure in beforeAll (no D2 fallback); a play with two failing waits shows Test timed out in 15000ms at the Vitest default and the assertion at 30 s (D3); 13 literals removed; Chromium 1310 stories plus 147 unit green, contracts and base/dialog green in Firefox and WebKit" }
     - { id: 2, title: "W1-A Shared overlay helpers replace the 400 ms sleeps (S-02, S-06)", status: committed, note: "`ace5d1a`: overlay.ts; three 400 ms sleeps gone; closed/untilClosed copies replaced in six files; four opened getters kept (each names its own dialog); mutation under 4x CPU throttle: dropping untilOpaque fails the a11y gate (color-contrast 2.84)" }
@@ -79,9 +79,9 @@ phases:
     - { id: 69, title: "W3-I An opt-in React Compiler leg for the story gate (V-03, V-05)", status: committed, note: "`344423e`: STORYBOOK_COMPILER=1 adds react({ compiler: { reportDiagnostics: true } }) in viteFinal; oxc-transform-react joins uilibs devDependencies (catalog); nightly compiler job in uilibs.yml; the full flagged run failed Right To Left in data-grid-rows (TreeGrid useMemo missed its table holder), fixed by 95257f3; seven skipped files (the plan named six, carousel is the seventh)" }
     - { id: 69b, title: "W3-H The TreeGrid story lists its table holder as a memo dependency (found by phase 69)", status: committed, note: "`95257f3`: with STORYBOOK_COMPILER=1 Right To Left failed in both themes; the one-line dependency fixes it; the scoped flagged run passes" }
     - { id: 70, title: "W3 Agent docs sync for wave 3 (X-12, X-13)", status: committed, note: "docs commit: frontend, stylex-authoring, shape, architecture (wave 3 record), styling.mdx and the uilibs AGENTS.md match the final state; issue-00010 resolved; wave 3 validation on HEAD 95257f3: typecheck, lint, format, check-ui-docs green; full vitest 1660 in Chromium and Firefox, 1656 plus 4 skipped in WebKit, 1332 in the compiler leg; Storybook and webapp builds, just test-web (75), nextest storybook (2) green; entry 472.5 KB / 150.8 KB gzip, CSS 63.8 KB / 17.6 KB gzip" }
-    - { id: 71, title: "W4 Docs sync (docs/)", status: pending, note: "—" }
-    - { id: 72, title: "W4 Ledger close, roadmap entries, handover", status: pending, note: "—" }
-    - { id: 73, title: "W4 Final validation", status: pending, note: "—" }
+    - { id: 71, title: "W4 Docs sync (docs/)", status: done, note: "n/a: `rg -i \"uilibs|data grid|storybook\" docs` is empty, so no human page needs a change; no commit" }
+    - { id: 72, title: "W4 Ledger close, roadmap entries, handover", status: committed, note: "`docs: close plan 00014 and record the parked audit items`: RI-6 in roadmap-00001 (D5, D13, D14, D21 to D23 with unlocks); B-15 closed by phase 28 (no wontfix); issue-00010, handover-00016 and this plan archived; handover-00017 written; index rows moved; issue-00010 count 5 matches its 5 status lines" }
+    - { id: 73, title: "W4 Final validation", status: done, note: "no fix needed, no commit. Full suites ran on 95257f3, which only docs commits follow: Chromium 1660, Firefox 1660, WebKit 1656 plus 4 skipped (skip-webkit), compiler leg 1332; typecheck, lint, format:check, check-ui-docs, check:docs:test, storybook:build, webapp build, just test-web (75), nextest storybook (2) green; entry JS 472.5 KB / 150.8 KB gzip, CSS 63.8 KB / 17.6 KB gzip; E2E `just e2e-test --project Chromium` 184 passed; docs gates rerun on the closing commit" }
 ---
 
 # Remediate the uilibs implementation audit — 81 findings, 73 phases, four waves
@@ -158,6 +158,7 @@ The owner asked for no questionnaire: each decision below is my recommendation, 
 - **D23: the compiler `exclude`, a node unit project (U-13), `exports` roots (V-11), `retry`, the `lightColors` generator, and the grid `rowFocusable` focus-ring merge are not done.** Reasons are in the finding map; each is parked in RI-6 with its trigger.
 - **D24: the data grid scrollbar overlay (B-15) is an experiment with a stated end.** Phase 28 replaces the overlay with `ScrollArea.Scrollbar` only if the data grid stories pass and the light and dark screenshots show the same track under the sticky header; otherwise the phase makes no commit and closes the finding as `wontfix` with the reason in `architecture.md`.
 - **D25: S-09 is measured before it is changed.** Phase 7 times three story files with the per-story stylesheet fetch and with a one-time wait; if the fetch is under 10% of the story time the finding closes with the numbers and no commit.
+- **D27 (2026-11-27, owner): `plugins` keeps `@vitest/browser-playwright` as a devDependency** through the existing catalog entry (lockfile +3 lines), because `plugins/vitest` (`browserProject`, phase 68) imports it and pnpm resolves it only from the package that lists it. Rejected: inlining the import back into each config — four copies of the Playwright block again.
 - **D26: no backward compatibility.** The four responsive forms (D7), the `*Portal` aliases (D19), `colors.black` and the five other invariants as variables (D9), `backgroundPageFaded`, and `storybook:start` are removed, not deprecated.
 
 ## Shape and enforcement points
