@@ -1178,7 +1178,7 @@ function DataGridTableVirtual<TData extends object>({
   )
 }
 
-export { DataGridTableVirtual }
+export { DataGridTableVirtual, getDataGridTableScrollTarget }
 export type {
   DataGridTableVirtualScrollAlignment,
   DataGridTableVirtualProps,
