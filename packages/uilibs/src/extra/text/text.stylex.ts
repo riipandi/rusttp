@@ -191,58 +191,10 @@ export const textWeightStyles = stylex.create({
   black: { fontWeight: fontWeight.black }
 })
 
-export const textWeightStylesMedium = stylex.create({
-  light: { [breakpoints.medium]: { fontWeight: fontWeight.light } },
-  regular: { [breakpoints.medium]: { fontWeight: fontWeight.regular } },
-  medium: { [breakpoints.medium]: { fontWeight: fontWeight.medium } },
-  semibold: { [breakpoints.medium]: { fontWeight: fontWeight.semibold } },
-  bold: { [breakpoints.medium]: { fontWeight: fontWeight.bold } },
-  extrabold: { [breakpoints.medium]: { fontWeight: fontWeight.extrabold } },
-  black: { [breakpoints.medium]: { fontWeight: fontWeight.black } }
-})
-
-export const textWeightStylesLarge = stylex.create({
-  light: { [breakpoints.large]: { fontWeight: fontWeight.light } },
-  regular: { [breakpoints.large]: { fontWeight: fontWeight.regular } },
-  medium: { [breakpoints.large]: { fontWeight: fontWeight.medium } },
-  semibold: { [breakpoints.large]: { fontWeight: fontWeight.semibold } },
-  bold: { [breakpoints.large]: { fontWeight: fontWeight.bold } },
-  extrabold: { [breakpoints.large]: { fontWeight: fontWeight.extrabold } },
-  black: { [breakpoints.large]: { fontWeight: fontWeight.black } }
-})
-
-export const textWeightStylesXLarge = stylex.create({
-  light: { [breakpoints.xlarge]: { fontWeight: fontWeight.light } },
-  regular: { [breakpoints.xlarge]: { fontWeight: fontWeight.regular } },
-  medium: { [breakpoints.xlarge]: { fontWeight: fontWeight.medium } },
-  semibold: { [breakpoints.xlarge]: { fontWeight: fontWeight.semibold } },
-  bold: { [breakpoints.xlarge]: { fontWeight: fontWeight.bold } },
-  extrabold: { [breakpoints.xlarge]: { fontWeight: fontWeight.extrabold } },
-  black: { [breakpoints.xlarge]: { fontWeight: fontWeight.black } }
-})
-
 export const textAlignStyles = stylex.create({
   start: { textAlign: 'start' },
   center: { textAlign: 'center' },
   end: { textAlign: 'end' }
-})
-
-export const textAlignStylesMedium = stylex.create({
-  start: { [breakpoints.medium]: { textAlign: 'start' } },
-  center: { [breakpoints.medium]: { textAlign: 'center' } },
-  end: { [breakpoints.medium]: { textAlign: 'end' } }
-})
-
-export const textAlignStylesLarge = stylex.create({
-  start: { [breakpoints.large]: { textAlign: 'start' } },
-  center: { [breakpoints.large]: { textAlign: 'center' } },
-  end: { [breakpoints.large]: { textAlign: 'end' } }
-})
-
-export const textAlignStylesXLarge = stylex.create({
-  start: { [breakpoints.xlarge]: { textAlign: 'start' } },
-  center: { [breakpoints.xlarge]: { textAlign: 'center' } },
-  end: { [breakpoints.xlarge]: { textAlign: 'end' } }
 })
 
 export const textStyles = stylex.create({

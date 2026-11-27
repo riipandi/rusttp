@@ -41,7 +41,7 @@ Built on Base UI [useRender](https://base-ui.com/react/utils/use-render): `Stack
 
 ### Responsive values
 
-`direction`, `gap`, `align`, and `justify` take one value, or an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one. The values compile to static media styles, so the layout is right on the first paint. Each frame below is a viewport of its own width.
+`direction` and `gap` take one value, or an object keyed `small`, `medium`, `large`, and `xlarge`, mobile first: `small` is the base, and `medium`, `large`, and `xlarge` apply from 660, 900, and 1280 px up. A key you leave out inherits the nearest smaller one. The values compile to static media styles, so the layout is right on the first paint. Each frame below is a viewport of its own width.
 
 <Canvas of={Stories.Responsive} />
 
@@ -55,13 +55,13 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### Stack
 
-| Prop        | Description                                                                                                                                   |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `direction` | `row`, `column`, `row-reverse`, `column-reverse` <br /> The main axis. Responsive. Default `column`.                                          |
-| `gap`       | `UnitStep` <br /> The space between children: a count of `unit` steps, so `3` is 12px. Responsive. Default none.                              |
-| `align`     | `start`, `center`, `end`, `stretch`, `baseline` <br /> Alignment on the cross axis. Responsive. Unset leaves the CSS default, `stretch`.      |
-| `justify`   | `start`, `center`, `end`, `space-between`, `space-around`, `space-evenly` <br /> Distribution on the main axis. Responsive. Unset is `start`. |
-| `wrap`      | `boolean` <br /> Lets children flow onto another line when they do not fit. Default `false`.                                                  |
+| Prop        | Description                                                                                                                       |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `direction` | `row`, `column`, `row-reverse`, `column-reverse` <br /> The main axis. Responsive. Default `column`.                              |
+| `gap`       | `UnitStep` <br /> The space between children: a count of `unit` steps, so `3` is 12px. Responsive. Default none.                  |
+| `align`     | `start`, `center`, `end`, `stretch`, `baseline` <br /> Alignment on the cross axis. Unset leaves the CSS default, `stretch`.      |
+| `justify`   | `start`, `center`, `end`, `space-between`, `space-around`, `space-evenly` <br /> Distribution on the main axis. Unset is `start`. |
+| `wrap`      | `boolean` <br /> Lets children flow onto another line when they do not fit. Default `false`.                                      |
 
 ## Caveats
 
