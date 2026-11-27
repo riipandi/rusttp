@@ -155,9 +155,7 @@ export const Playground: Story = {
 
     // Hovering the second trigger opens its own panel.
     await userEvent.hover(secondTrigger)
-    await waitFor(() => expect(body.getByRole('link', { name: /cryptex/i })).toBeInTheDocument(), {
-      timeout: 3000
-    })
+    await waitFor(() => expect(body.getByRole('link', { name: /cryptex/i })).toBeInTheDocument())
     await expect(body.queryByRole('link', { name: /platform nine/i })).toBeNull()
   }
 }

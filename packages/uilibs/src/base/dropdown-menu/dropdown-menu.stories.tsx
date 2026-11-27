@@ -519,7 +519,7 @@ export const Keyboard: Story = {
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(closed, { timeout: 10000 })
+    await waitFor(closed)
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

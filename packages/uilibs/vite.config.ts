@@ -28,6 +28,9 @@ const storybookDark = await storybookTest({ configDir, tags })
 // project runs every story and its axe check in one theme.
 const storybookInstance = (colorScheme: 'light' | 'dark') => ({
   exclude: ['./**/*.{test,spec}.{ts,tsx}', '**/node_modules/**'],
+  // Vitest's browser default (15 s) is shorter than a play with two failing 10 s waits, and it
+  // reports "Test timed out" instead of the assertion that failed.
+  testTimeout: 30_000,
   browser: {
     enabled: true,
     headless: true,

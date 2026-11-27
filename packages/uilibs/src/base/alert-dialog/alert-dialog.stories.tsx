@@ -64,12 +64,10 @@ function ActionDialog({
 
 /**
  * Waits for the alert dialog to leave the page. It stays for its exit transition (`data-ending-style`),
- * which a loaded WebKit runner stretches past `waitFor`'s 1 s default.
+ * which a loaded WebKit runner stretches past a short wait.
  */
 function untilClosed() {
-  return waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull(), {
-    timeout: 10000
-  })
+  return waitFor(() => expect(within(document.body).queryByRole('alertdialog')).toBeNull())
 }
 
 /** Opens the dialog in `cell`, reads the look of its action, and closes it again. */

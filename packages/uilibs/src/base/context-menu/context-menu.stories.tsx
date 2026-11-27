@@ -385,10 +385,8 @@ export const Keyboard: Story = {
 
     // Home pins the start, so each arrow's step is the same in every engine. A disabled item stays
     // in the arrow order, and Enter on it does nothing. Focus reaches a menu opened by the pointer
-    // late on a loaded runner, so this first key waits longer than the rest.
-    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'), {
-      timeout: 10000
-    })
+    // late on a loaded runner, which the 10 s default of `pressUntil` covers.
+    await pressUntil('{Home}', () => expect(highlightedName()).toBe('Re-ink the map'))
     await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Follow the dot'), {
       when: () => highlightedName() === 'Re-ink the map'
     })

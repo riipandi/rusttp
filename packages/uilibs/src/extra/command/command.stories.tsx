@@ -428,8 +428,7 @@ export const Keyboard: Story = {
 
     // ArrowDown highlights a command and then the next; ArrowUp goes back. The input keeps focus.
     await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
-      when: () => index() < 0,
-      timeout: 10000
+      when: () => index() < 0
     })
     const first = index()
     await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {

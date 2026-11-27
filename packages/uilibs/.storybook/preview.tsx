@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/tanstack-react'
 import { FORCE_REMOUNT } from 'storybook/internal/core-events'
 import { addons } from 'storybook/preview-api'
+import { configure } from 'storybook/test'
 import { GlobalDecorator, STORYBOOK_THEME_GLOBAL } from './decorator'
 import { ThemedDocsContainer } from './docs-container'
 import '../src/assets/globals.css'
@@ -221,6 +222,12 @@ const preview: Preview = {
     viewport: Reflect.get(globalThis, '__vitest_browser__')
       ? { value: 'phone', isRotated: false }
       : undefined
+  },
+  // Every `waitFor` and `findBy*` waits up to 10 s (testing-library's default is 1 s), so a loaded
+  // runner or a slower engine does not turn a settling popup into a flake. A wait that needs more
+  // says so with its own `timeout`. `pressUntil` and the story projects' `testTimeout` follow it.
+  beforeAll: () => {
+    configure({ asyncUtilTimeout: 10_000 })
   },
   beforeEach: async ({ id, globals }) => {
     setAutoplay(id, globals[INTERACTIONS_GLOBAL] === 'on')
