@@ -28,19 +28,34 @@ export function ViewportFrame({
   title: string
   children: React.ReactNode
 }) {
-  const [body, setBody] = React.useState<HTMLElement | null>(null)
+  const [frame, setFrame] = React.useState<Document | null>(null)
 
   const onLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
     const doc = event.currentTarget.contentDocument
     if (!doc) return
-    for (const sheet of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
-      doc.head.append(sheet.cloneNode(true))
-    }
     for (const { name, value } of document.documentElement.attributes) {
       doc.documentElement.setAttribute(name, value)
     }
-    setBody(doc.body)
+    setFrame(doc)
   }
+
+  // The dev server rewrites the StyleX sheet's text when a module changes, so a copy taken once
+  // goes stale: copy again on every change to the page's styles.
+  React.useEffect(() => {
+    if (!frame) return undefined
+    let copies: Node[] = []
+    const copy = () => {
+      for (const old of copies) old.parentNode?.removeChild(old)
+      copies = Array.from(
+        document.head.querySelectorAll('style, link[rel="stylesheet"]'),
+        (sheet) => frame.head.appendChild(sheet.cloneNode(true))
+      )
+    }
+    copy()
+    const observer = new MutationObserver(copy)
+    observer.observe(document.head, { childList: true, characterData: true, subtree: true })
+    return () => observer.disconnect()
+  }, [frame])
 
   return (
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a box that scrolls must take focus, or a keyboard cannot reach the part off screen
@@ -55,7 +70,7 @@ export function ViewportFrame({
         title={title}
         width={width}
       >
-        {body && createPortal(children, body)}
+        {frame && createPortal(children, frame.body)}
       </iframe>
     </div>
   )
@@ -70,7 +85,8 @@ export async function frameOf(canvasElement: HTMLElement, width: number) {
     if (!iframe.contentDocument?.body.firstElementChild)
       throw new Error('The frame has not rendered')
   })
-  const doc = iframe.contentDocument!
-  const win = iframe.contentWindow!
+  const doc = iframe.contentDocument
+  const win = iframe.contentWindow
+  if (!doc || !win) throw new Error(`The ViewportFrame of width ${width} has no document`)
   return { doc, win, computed: (element: Element) => win.getComputedStyle(element) }
 }
