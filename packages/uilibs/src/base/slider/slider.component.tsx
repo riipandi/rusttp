@@ -71,6 +71,7 @@ export function Slider({
         {Array.from({ length: thumbCount }, (_, index) => (
           <BaseSlider.Thumb
             key={index}
+            index={index}
             aria-label={
               thumbLabels?.[index] ?? (thumbCount === 1 ? props['aria-label'] : undefined)
             }
