@@ -2,16 +2,24 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cookieStorageAdapter, getStorageAdapter, localStorageAdapter } from './theme-storage'
 
 const cookieKeys = new Set<string>()
+const localKeys = new Set<string>()
 
 function setCookie(key: string, value: string) {
   cookieKeys.add(key)
   cookieStorageAdapter.setItem(key, value)
 }
 
+function setLocal(key: string, value: string) {
+  localKeys.add(key)
+  localStorageAdapter.setItem(key, value)
+}
+
+// Only the keys this file wrote are removed: a test file that shares the origin keeps its own.
 afterEach(() => {
   for (const key of cookieKeys) document.cookie = `${key}=;path=/;max-age=0`
   cookieKeys.clear()
-  localStorage.clear()
+  for (const key of localKeys) localStorage.removeItem(key)
+  localKeys.clear()
 })
 
 describe('cookieStorageAdapter', () => {
@@ -44,7 +52,7 @@ describe('cookieStorageAdapter', () => {
 
 describe('localStorageAdapter', () => {
   it('reads, writes, and removes', () => {
-    localStorageAdapter.setItem('theme', 'light')
+    setLocal('theme', 'light')
     expect(localStorageAdapter.getItem('theme')).toBe('light')
     localStorageAdapter.removeItem?.('theme')
     expect(localStorageAdapter.getItem('theme')).toBeNull()
