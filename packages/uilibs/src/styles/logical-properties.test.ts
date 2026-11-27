@@ -8,8 +8,6 @@ const physicalFiles = ['base/drawer/drawer', 'extra/sheet/sheet', 'data-grid/dat
 // fails the test until it is added with a reason; a line that no longer exists fails it too.
 const physicalLines = [
   // Centered with `translate(-50%)`, so `left` is the middle in both directions.
-  "base/alert-dialog/alert-dialog: left: '50%',",
-  "base/dialog/dialog: left: '50%',",
   "data-grid/data-grid-table: left: '50%',",
   "extra/resizable/resizable: left: '50%',",
   // Stretched to both edges, the same in both directions.
