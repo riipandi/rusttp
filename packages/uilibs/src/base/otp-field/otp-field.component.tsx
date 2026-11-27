@@ -111,43 +111,29 @@ export function OTPFieldGroup({
 
 export function OTPFieldSlot({
   style,
-  ref,
   ...props
-}: Omit<React.ComponentProps<typeof BaseOTPField.Input>, 'className' | 'style'> & StyleProp) {
+}: Omit<React.ComponentProps<typeof BaseOTPField.Input>, 'className' | 'style' | 'render'> &
+  StyleProp) {
   const { size, variant, length, labelId, labels } = React.useContext(OTPFieldContext)
-  const slotRef = React.useRef<HTMLInputElement | null>(null)
-  // Base UI numbers the slots by registration order, which is their order in the document.
-  const [position, setPosition] = React.useState(0)
-
-  React.useLayoutEffect(() => {
-    const slot = slotRef.current
-    const slots = slot
-      ?.closest('[role="group"]')
-      ?.querySelectorAll('input:not([aria-hidden="true"])')
-    setPosition(slot && slots ? Array.from(slots).indexOf(slot) + 1 : 0)
-  })
-
-  const setRef = React.useCallback(
-    (element: HTMLInputElement | null) => {
-      slotRef.current = element
-      if (typeof ref === 'function') return ref(element)
-      if (ref) ref.current = element
-    },
-    [ref]
-  )
-
-  const naming =
-    position === 1
-      ? { 'aria-labelledby': props['aria-labelledby'] ?? labelId }
-      : position > 1
-        ? { 'aria-label': props['aria-label'] ?? labels.slot(position, length) }
-        : undefined
 
   return (
     <BaseOTPField.Input
-      ref={setRef}
       {...props}
-      {...naming}
+      // Base UI numbers the slots by their place in the document, on the server too.
+      render={(inputProps, { index }) => (
+        <input
+          {...inputProps}
+          {...(index === 0
+            ? {
+                'aria-labelledby':
+                  props['aria-labelledby'] ?? labelId ?? inputProps['aria-labelledby']
+              }
+            : {
+                'aria-label': props['aria-label'] ?? labels.slot(index + 1, length),
+                'aria-labelledby': undefined
+              })}
+        />
+      )}
       {...stylex.props(
         controlBase.root,
         controlSizes[size],
