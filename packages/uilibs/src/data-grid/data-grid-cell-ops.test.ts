@@ -1,9 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import type {
-  DataGridCellsChangeDetails,
-  DataGridColumnCellEdit,
-  DataGridTableInstance
-} from './data-grid'
+import { afterAll, describe, expect, it } from 'vitest'
+import type { DataGridCellsChangeDetails, DataGridColumnCellEdit } from './data-grid'
 import {
   getDataGridStepTarget,
   getDataGridWritableCellEdit,
@@ -13,6 +9,7 @@ import {
   serializeDataGridClipboardText,
   tileDataGridClipboardBlock
 } from './data-grid-cell-ops'
+import { mountTestTable } from './test-table'
 
 describe('parseDataGridClipboardText', () => {
   it.each([
@@ -232,19 +229,21 @@ describe('getDataGridWritableCellEdit', () => {
   })
 })
 
-const col = (id: string, enableCellSelection?: boolean) => ({
-  id,
-  columnDef: { enableCellSelection }
-})
-
 describe('getDataGridStepTarget', () => {
-  // Display order is start, then center, then end: A, B, C (not selectable), D.
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- a stub of the three column getters the function reads
-  const table = {
-    getStartVisibleLeafColumns: () => [col('A')],
-    getCenterVisibleLeafColumns: () => [col('B'), col('C', false)],
-    getEndVisibleLeafColumns: () => [col('D')]
-  } as unknown as DataGridTableInstance<Row>
+  // Display order is start, then center, then end: A, B, C (not selectable), D. D and A are
+  // declared first and last, so only the pinning puts them at the edges.
+  const grid = mountTestTable<Row>({
+    data: [{ title: 'Origin' }],
+    columns: [
+      { id: 'D', accessorFn: (row) => row.title },
+      { id: 'B', accessorFn: (row) => row.title },
+      { id: 'C', accessorFn: (row) => row.title, enableCellSelection: false },
+      { id: 'A', accessorFn: (row) => row.title }
+    ],
+    initialState: { columnPinning: { start: ['A'], end: ['D'] } }
+  })
+  const table = grid.table()
+  afterAll(grid.unmount)
 
   const viewport = document.createElement('div')
   viewport.innerHTML =
