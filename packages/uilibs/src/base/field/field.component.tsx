@@ -9,7 +9,6 @@
  *   <Field.Label />
  *   <Field.Control />
  *   <Field.Description />
- *   <Field.Item />
  *   <Field.Error />
  *   <Field.Validity />
  * </Field.Root>

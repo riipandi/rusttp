@@ -23,18 +23,16 @@ type PlaygroundArgs = ComponentProps<typeof Accordion> &
 
 export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
-    controls: { disable: false, include: ['multiple', 'disabled', 'loopFocus', 'iconPosition'] }
+    controls: { disable: false, include: ['multiple', 'disabled', 'iconPosition'] }
   },
   argTypes: {
     multiple: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    loopFocus: { control: 'boolean' },
     iconPosition: { control: 'radio', options: ['end', 'start'] }
   },
   args: {
     multiple: false,
     disabled: false,
-    loopFocus: true,
     iconPosition: 'end',
     defaultValue: ['item-1']
   },
