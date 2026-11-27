@@ -6,8 +6,8 @@ import { themes } from 'storybook/theming'
 import { UIProvider } from '../src/base/provider'
 import { useMediaQuery } from '../src/hooks/use-media-query'
 import { ThemeProvider } from '../src/theme'
-import { canvasBackgroundCss, ephemeralStorage, isStorybookTheme } from './decorator'
-import { STORYBOOK_THEME_GLOBAL, type StorybookTheme } from './decorator'
+import { canvasBackgroundCss, ephemeralStorage } from './decorator'
+import { isStorybookTheme, STORYBOOK_THEME_GLOBAL, type StorybookTheme } from './theme-global'
 
 function themeFrom(globals: unknown): StorybookTheme | undefined {
   if (typeof globals !== 'object' || globals === null) return undefined

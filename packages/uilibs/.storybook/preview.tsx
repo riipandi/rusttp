@@ -2,8 +2,9 @@ import type { Preview } from '@storybook/tanstack-react'
 import { FORCE_REMOUNT } from 'storybook/internal/core-events'
 import { addons } from 'storybook/preview-api'
 import { configure } from 'storybook/test'
-import { GlobalDecorator, STORYBOOK_THEME_GLOBAL } from './decorator'
+import { GlobalDecorator } from './decorator'
 import { ThemedDocsContainer } from './docs-container'
+import { STORYBOOK_THEME_GLOBAL } from './theme-global'
 import '../src/assets/globals.css'
 
 // `console.error` is where React reports a duplicate key, an invalid style property, or a DOM

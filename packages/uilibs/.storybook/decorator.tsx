@@ -2,10 +2,8 @@ import type { StoryContext } from '@storybook/tanstack-react'
 import * as React from 'react'
 import { UIProvider } from '../src/base/provider'
 import { ThemeProvider, type ThemeStorage } from '../src/theme'
+import { isStorybookTheme, STORYBOOK_THEME_GLOBAL } from './theme-global'
 
-export const STORYBOOK_THEME_GLOBAL = 'theme' as const
-
-export type StorybookTheme = 'light' | 'dark' | 'system'
 type Direction = 'ltr' | 'rtl'
 
 interface GlobalDecoratorProps {
@@ -149,12 +147,6 @@ function CanvasControls({
       </button>
     </div>
   )
-}
-
-const STORYBOOK_THEMES = ['light', 'dark', 'system'] as const
-
-export function isStorybookTheme(value: unknown): value is StorybookTheme {
-  return typeof value === 'string' && (STORYBOOK_THEMES as readonly string[]).includes(value)
 }
 
 export function GlobalDecorator({ context, children }: GlobalDecoratorProps) {
