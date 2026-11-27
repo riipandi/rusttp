@@ -63,15 +63,15 @@ Only `PreviewCardContent` takes `style`: StyleX styles that replace `className` 
 
 The positioner props go to the positioner.
 
-| Prop          | Description                                                                                                                          |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `side`        | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` <br /> Which side of the trigger the card opens on. Default `bottom`. |
-| `sideOffset`  | `number` or a function <br /> Gap from the trigger, in pixels. Default `4`.                                                          |
-| `align`       | `start`, `center`, `end` <br /> Alignment along the side. Default `center`.                                                          |
-| `alignOffset` | `number` or a function <br /> Shift along the alignment axis, in pixels. Default `4`.                                                |
-| `anchor` | element, ref, virtual element or a function returning one <br /> What the popup positions against. |
-| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own. |
-| `collisionPadding` | Base UI positioner value <br /> Space kept from the viewport edge. |
+| Prop                 | Description                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `side`               | `top`, `bottom`, `left`, `right`, `inline-start`, `inline-end` <br /> Which side of the trigger the card opens on. Default `bottom`. |
+| `sideOffset`         | `number` or a function <br /> Gap from the trigger, in pixels. Default `4`.                                                          |
+| `align`              | `start`, `center`, `end` <br /> Alignment along the side. Default `center`.                                                          |
+| `alignOffset`        | `number` or a function <br /> Shift along the alignment axis, in pixels. Default `0`, so the card is centered on the trigger.        |
+| `anchor`             | element, ref, virtual element or a function returning one <br /> What the popup positions against.                                   |
+| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own.                                        |
+| `collisionPadding`   | Base UI positioner value <br /> Space kept from the viewport edge.                                                                   |
 
 | Data attribute        | Description                                                                                  |
 | --------------------- | -------------------------------------------------------------------------------------------- |

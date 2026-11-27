@@ -26,6 +26,10 @@ const styles = stylex.create({
     display: 'flex',
     gap: 12
   },
+  middle: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
   info: {
     display: 'flex',
     flexDirection: 'column',
@@ -41,6 +45,12 @@ const styles = stylex.create({
 })
 
 export default meta
+
+/** The horizontal middle of an element. */
+function middle(element: HTMLElement) {
+  const { left, width } = element.getBoundingClientRect()
+  return left + width / 2
+}
 
 type PlaygroundArgs = ComponentProps<typeof PreviewCard> &
   Pick<ComponentProps<typeof PreviewCardContent>, 'side' | 'sideOffset' | 'align' | 'alignOffset'>
@@ -70,7 +80,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     align: { control: 'radio', options: ['start', 'center', 'end'] },
     alignOffset: { control: 'number' }
   },
-  args: { side: 'bottom', sideOffset: 4, align: 'center', alignOffset: 4 },
+  args: { side: 'bottom', sideOffset: 4, align: 'center', alignOffset: 0 },
   render: ({ side, sideOffset, align, alignOffset, ...args }) => (
     <PreviewCard {...args}>
       <PreviewCardTrigger render={<Button variant='ghost' />}>@dumbledore</PreviewCardTrigger>
@@ -106,6 +116,41 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     // Hovering away dismisses it.
     await userEvent.unhover(canvas.getByRole('button', { name: '@dumbledore' }))
     await waitFor(() => expect(body.queryByText('Joined September 1892')).toBeNull())
+  }
+}
+
+/** With no offset given, the card is centered on its trigger: nothing shifts it along the edge. */
+export const Centered: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<PreviewCard>
+  <PreviewCardTrigger render={<Button variant='outline' />}>@hermione</PreviewCardTrigger>
+  <PreviewCardContent>Prefect, and the brightest witch of her age.</PreviewCardContent>
+</PreviewCard>`
+      }
+    }
+  },
+  render: () => (
+    <div {...stylex.props(styles.middle)}>
+      <PreviewCard>
+        <PreviewCardTrigger render={<Button variant='outline' />}>@hermione</PreviewCardTrigger>
+        <PreviewCardContent data-testid='card'>
+          Prefect, and the brightest witch of her age.
+        </PreviewCardContent>
+      </PreviewCard>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('button', { name: '@hermione' })
+    await userEvent.hover(trigger)
+    const card = await within(document.body).findByTestId('card')
+    // The card scales in from its edge, so its middle settles once the transition ends.
+    await waitFor(async () => {
+      await expect(Math.abs(middle(card) - middle(trigger))).toBeLessThanOrEqual(1)
+    })
+    await userEvent.unhover(trigger)
+    await waitFor(() => expect(within(document.body).queryByTestId('card')).toBeNull())
   }
 }
 

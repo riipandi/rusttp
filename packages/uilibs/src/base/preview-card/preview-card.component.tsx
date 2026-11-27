@@ -37,7 +37,7 @@ export function PreviewCardContent({
   side = 'bottom',
   sideOffset = 4,
   align = 'center',
-  alignOffset = 4,
+  alignOffset = 0,
   collisionAvoidance,
   collisionPadding,
   anchor,
