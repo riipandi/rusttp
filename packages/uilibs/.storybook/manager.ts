@@ -20,8 +20,7 @@ const syncManagerTheme = (mode: unknown) => {
 // The addon panel starts hidden (toggle it with `A`); only Base Components starts open; the other groups open on demand (a selected story still
 // expands its own group). These are the slugged ids of the top-level titles in `preview.tsx`.
 addons.setConfig({
-  showPanel: false,
-  panelPosition: 'right',
+  layout: { showPanel: false, panelPosition: 'right' },
   sidebar: { collapsedRoots: ['extra-components', 'data-grid', 'visualizations', 'contracts'] }
 })
 
