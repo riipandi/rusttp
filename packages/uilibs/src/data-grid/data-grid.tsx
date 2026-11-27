@@ -333,7 +333,7 @@ export interface DataGridAutoSizeController {
    * free space into its width; after that, every measurement REFLOWS the
    * same growth - a wider window widens the column, a narrower one gives
    * the space back down to the column's `minSize` (or its starting width
-   * when none is set) - so the grid tracks its container live. Commits
+   * when the consumer set none) - so the grid tracks its container live. Commits
    * are coalesced for performance: sub-pixel deltas are dropped, a
    * streaming resize gets one leading commit plus one trailing commit at
    * settle, and a width the user dragged is never touched. Safe to call
@@ -373,6 +373,46 @@ function getDataGridAutoSizeState(store: object): DataGridAutoSizeReflowState {
     dataGridAutoSizeStates.set(store, state)
   }
   return state
+}
+
+/**
+ * The column definition `options.columns` holds for an id, at any depth. A resolved column does
+ * not keep its own definition, and mirrors TanStack's id rule: `id`, else the accessor key with
+ * dots as underscores, else a string header.
+ */
+function findDataGridColumnDef<TData extends object>(
+  defs: DataGridTableInstance<TData>['options']['columns'],
+  id: string
+): DataGridTableInstance<TData>['options']['columns'][number] | undefined {
+  for (const def of defs) {
+    const derived =
+      def.id ??
+      ('accessorKey' in def && def.accessorKey !== undefined
+        ? String(def.accessorKey).replaceAll('.', '_')
+        : typeof def.header === 'string'
+          ? def.header
+          : undefined)
+    if (derived === id) return def
+    const nested =
+      'columns' in def && def.columns ? findDataGridColumnDef(def.columns, id) : undefined
+    if (nested) return nested
+  }
+  return undefined
+}
+
+/**
+ * The `minSize` the consumer set for a column, on its definition or on `defaultColumn`, and
+ * undefined when it left it alone. The resolved `columnDef.minSize` cannot say: TanStack fills in
+ * 20 for every column, so an unset minimum would read as an explicit 20 px floor.
+ */
+function getDataGridExplicitMinSize<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  column: { id: string }
+): number | undefined {
+  return (
+    findDataGridColumnDef(table.options.columns, column.id)?.minSize ??
+    table.options.defaultColumn?.minSize
+  )
 }
 
 export function createDataGridAutoSizeController<TData extends object>(
@@ -420,7 +460,7 @@ export function createDataGridAutoSizeController<TData extends object>(
     // window hands space back without ever crushing the column (no
     // explicit minSize floors at the starting width instead).
     const freeAtBase = freeSpace + (state.applied.grown - state.applied.base)
-    const floor = autoSizeColumn.columnDef.minSize ?? state.applied.base
+    const floor = getDataGridExplicitMinSize(table, autoSizeColumn) ?? state.applied.base
     const target = Math.max(floor, state.applied.base + freeAtBase)
     if (Math.abs(target - state.applied.grown) < 1) return false
     state.applied = { ...state.applied, grown: target }

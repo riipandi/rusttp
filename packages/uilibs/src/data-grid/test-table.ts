@@ -39,6 +39,7 @@ export interface TestTableOptions<TData extends object> {
   getSubRows?: (row: TData) => TData[] | undefined
   initialState?: Partial<TableState<DataGridFeatures>>
   keepPinnedRows?: boolean
+  defaultColumn?: Partial<ColumnDef<DataGridFeatures, TData>>
 }
 
 type CellAddress = [rowId: string, columnId: string]

@@ -15,8 +15,13 @@ const columns: ColumnDef<DataGridFeatures, Student>[] = [
 const SETTLE_MS = 150
 
 let grid: TestTable<Student>
-const mount = (cols = columns) => {
-  grid = mountTestTable<Student>({ data: students, columns: cols, getRowId: (s) => s.id })
+const mount = (cols = columns, defaultColumn?: Partial<ColumnDef<DataGridFeatures, Student>>) => {
+  grid = mountTestTable<Student>({
+    data: students,
+    columns: cols,
+    defaultColumn,
+    getRowId: (s) => s.id
+  })
   return createDataGridAutoSizeController(grid.table)
 }
 // The live sizing, as the controller reads it: the render snapshot lags until React commits.
@@ -82,11 +87,9 @@ describe('createDataGridAutoSizeController, reflow', () => {
     expect(sizing()).toEqual({ house: 150 })
   })
 
-  // Known defect (found by this test): the controller documents a floor at the starting width
-  // for a column with no minSize, but TanStack resolves `columnDef.minSize` to 20 for every
-  // column, so the `?? base` fallback never runs and the column can shrink to 20 px. Flip this
-  // to `it` when the floor is fixed.
-  it.fails('stops at the starting width when the column has no minSize', () => {
+  // TanStack resolves `columnDef.minSize` to 20 for every column, so the floor is read from the
+  // definitions the consumer passed, not from the resolved column.
+  it('stops at the starting width when the column has no minSize', () => {
     const controller = mount([
       { id: 'year', accessorKey: 'year', size: 120, meta: { autoSize: true } }
     ])
@@ -94,6 +97,45 @@ describe('createDataGridAutoSizeController, reflow', () => {
     settle()
     expect(controller.apply(-400)).toBe(true)
     expect(sizing()).toEqual({ year: 120 })
+  })
+
+  it('honors an explicit minSize of 20 like any other', () => {
+    const controller = mount([
+      { id: 'year', accessorKey: 'year', size: 120, minSize: 20, meta: { autoSize: true } }
+    ])
+    controller.apply(80)
+    settle()
+    expect(controller.apply(-400)).toBe(true)
+    expect(sizing()).toEqual({ year: 20 })
+  })
+
+  it('finds the minSize of a column inside a group, by its accessor key', () => {
+    const grouped: ColumnDef<DataGridFeatures, Student>[] = [
+      {
+        id: 'group',
+        header: 'Student',
+        columns: [
+          { id: 'name', accessorKey: 'name', size: 100 },
+          { accessorKey: 'house', size: 200, minSize: 160, meta: { autoSize: true } }
+        ]
+      }
+    ]
+    const controller = mount(grouped)
+    controller.apply(80)
+    settle()
+    expect(controller.apply(-400)).toBe(true)
+    expect(sizing()).toEqual({ house: 160 })
+  })
+
+  it('takes the minSize from defaultColumn when the column sets none', () => {
+    const controller = mount(
+      [{ id: 'year', accessorKey: 'year', size: 120, meta: { autoSize: true } }],
+      { minSize: 60 }
+    )
+    controller.apply(80)
+    settle()
+    expect(controller.apply(-400)).toBe(true)
+    expect(sizing()).toEqual({ year: 60 })
   })
 
   it('drops a change under one pixel and keeps one of a whole pixel', () => {
