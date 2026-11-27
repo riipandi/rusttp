@@ -762,6 +762,12 @@ export const PinnableColumns: Story = {
   }
 }
 
+/** The point at `fraction` of an element's height, on its middle line. */
+const pointAt = (element: Element, fraction: number) => {
+  const rect = element.getBoundingClientRect()
+  return { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height * fraction }
+}
+
 /** Sticky header. */
 export const StickyHeader: Story = {
   name: 'Sticky header',
@@ -788,6 +794,48 @@ export const StickyHeader: Story = {
         </div>
       </DataGrid>
     )
+  },
+  // The vertical track starts under the sticky header, and both of its gestures scroll the body.
+  play: async ({ canvasElement }) => {
+    const viewport = canvasElement.querySelector('[data-slot="scroll-area-viewport"]')
+    const header = canvasElement.querySelector('[data-slot="data-grid-table"] thead')
+    if (!(viewport instanceof HTMLElement) || !(header instanceof HTMLElement)) {
+      throw new Error('No scroll area')
+    }
+    const track = await waitFor(() => {
+      const found = canvasElement.querySelector(
+        '[data-slot="data-grid-scrollbar"][data-orientation="vertical"]'
+      )
+      if (!(found instanceof HTMLElement)) throw new Error('No vertical scrollbar')
+      return found
+    })
+    await waitFor(() =>
+      expect(track.getBoundingClientRect().top).toBeCloseTo(
+        header.getBoundingClientRect().bottom,
+        0
+      )
+    )
+    const thumb = track.querySelector('[data-slot="data-grid-thumb"]')
+    if (!(thumb instanceof HTMLElement)) throw new Error('No thumb')
+
+    // Dragging the thumb down scrolls the body down.
+    await expect(viewport.scrollTop).toBe(0)
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', target: thumb, coords: pointAt(thumb, 0.5) },
+      // Pointer capture keeps the move and the release on the thumb, wherever the pointer is.
+      { target: thumb, coords: pointAt(track, 0.5) },
+      { keys: '[/MouseLeft]', target: thumb, coords: pointAt(track, 0.5) }
+    ])
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(0))
+    const dragged = viewport.scrollTop
+
+    // A press on the track below the thumb jumps the body further down.
+    await userEvent.pointer({
+      keys: '[MouseLeft]',
+      target: track,
+      coords: pointAt(track, 0.98)
+    })
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(dragged))
   }
 }
 

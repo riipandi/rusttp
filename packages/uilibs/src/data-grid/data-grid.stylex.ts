@@ -82,38 +82,16 @@ export const dataGridScrollAreaStyles = stylex.create({
     height: '100%',
     width: unit.x1_5
   },
+  // A sticky-header grid's track: it pads 2px each side of a 6px thumb. Its height is what
+  // Base UI's `top` and `bottom` leave, below the header and above the horizontal track.
+  scrollbarVerticalSticky: {
+    width: `calc(${unit.x1_5} + ${unit.x1})`
+  },
   thumb: {
     backgroundColor: colors.borderNeutralFaded,
     borderRadius: radius.full,
     flex: 1,
     position: 'relative'
-  },
-  // Overlay scrollbar for sticky-header grids; the metric custom properties
-  // (`--data-grid-scrollbar-*`) are written imperatively on this element.
-  overlay: {
-    insetInlineEnd: 0,
-    pointerEvents: 'none',
-    position: 'absolute',
-    top: 'var(--data-grid-scrollbar-header-height)',
-    zIndex: gridLayer.scrollbar,
-    height: 'var(--data-grid-scrollbar-track-height)'
-  },
-  overlayTrack: {
-    height: '100%',
-    padding: unit.x0_5,
-    pointerEvents: 'auto',
-    position: 'relative',
-    touchAction: 'none',
-    width: unit.x1_5
-  },
-  overlayThumb: {
-    backgroundColor: colors.borderNeutralFaded,
-    borderRadius: radius.full,
-    insetInlineEnd: unit.x0_5,
-    position: 'absolute',
-    top: 'var(--data-grid-scrollbar-thumb-top)',
-    width: unit.x1_5,
-    height: 'var(--data-grid-scrollbar-thumb-height)'
   }
 })
 
