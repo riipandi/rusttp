@@ -20,7 +20,7 @@ import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from 
 import { moveRowFocus } from './data-grid-row-stops'
 import {
   cellSelectionChromeProps,
-  getDataGridTreeIndentStyle,
+  getDataGridTreeIndent,
   assignRef,
   getDataGridPageRowCount,
   getDataGridTableResolvedRows,
@@ -28,6 +28,7 @@ import {
   getDataGridTableOrderedVisibleCells,
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
+  getPinningStylesUncontained,
   DataGridTableFillBodyCell,
   DataGridTableFillFootCell
 } from './data-grid-table-utils'
@@ -125,10 +126,10 @@ function DataGridTableBodyRowSkeleton({
 
   return (
     <tr
-      style={{ '--dg-row-border-b': wantsBorder ? '1px' : '0px' }}
       data-dense={props.tableLayout?.dense ? '' : undefined}
       {...stylex.props(
         s.row,
+        wantsBorder ? s.rowBorder : s.rowNoBorder,
         props.onRowClick && s.rowHoverCursor,
         props.tableLayout?.cellBorder && s.cellBorder,
         props.tableLayout?.stripped && (stripe ? s.cellStripedOddHover : s.rowStriped),
@@ -154,11 +155,6 @@ function DataGridTableBodyRowSkeletonCell<TData extends object>({
 
   return (
     <td
-      style={
-        props.tableLayout?.columnsResizable
-          ? { width: `calc(var(--col-${column.id}-size) * 1px)` }
-          : undefined
-      }
       data-dense={props.tableLayout?.dense ? '' : undefined}
       data-pinned={column.getIsPinned() || undefined}
       {...stylex.props(
@@ -190,7 +186,9 @@ function DataGridTableBodyRowSkeletonCell<TData extends object>({
           s.tdPinnedDividerEnd,
         (column.getIndex() === 0 ||
           column.getIndex() === table.getVisibleLeafColumns().length - 1) &&
-          props.tableStyles?.edgeCell
+          props.tableStyles?.edgeCell,
+        props.tableLayout?.columnsResizable &&
+          s.colWidth(`calc(var(--col-${column.id}-size) * 1px)`)
       )}
     >
       {children}
@@ -252,9 +250,6 @@ function DataGridTableBodyRow<TData extends object>({
         assignRef(rowRef, node)
         assignRef(dndRef, node)
       }}
-      style={{
-        '--dg-row-border-b': wantsBorder ? '1px' : '0px'
-      }}
       data-state={table.options.enableRowSelection && row.getIsSelected() ? 'selected' : undefined}
       data-index={dataIndex}
       data-row-id={row.id}
@@ -311,6 +306,7 @@ function DataGridTableBodyRow<TData extends object>({
       }
       {...stylex.props(
         s.row,
+        wantsBorder ? s.rowBorder : s.rowNoBorder,
         props.onRowClick && s.rowHoverCursor,
         keyboardClickable && s.rowFocusable,
         // Optional CRUD indications, active only when getRowStatus is
@@ -472,15 +468,6 @@ function DataGridTableBodyRowCell<TData extends object>({
       data-last-col={isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined}
       data-cell-status={props.getCellStatus?.(row.original, column.id)}
       data-column-index={columnIndex}
-      style={{
-        ...(props.tableLayout?.columnsPinnable && column.getCanPin() && getPinningStyles(column)),
-        // Paint containment clips at the padding edge, which would erase
-        // the ::before selection chrome on pinned cells.
-        ...(cellSelectionOn ? { contain: undefined } : null),
-        ...(props.tableLayout?.columnsResizable && {
-          width: `calc(var(--col-${column.id}-size) * 1px)`
-        })
-      }}
       {...(selection ? selection : null)}
       onMouseDown={
         selection
@@ -578,7 +565,17 @@ function DataGridTableBodyRowCell<TData extends object>({
           prevPinned: !!prevPinned,
           nextIsFillCell: !!nextIsFillCell
         }),
-        dndStyle
+        // Geometry is dynamic styles in this one call, last (a raw `style` would be replaced by
+        // the drag style's). Paint containment clips at the padding edge, which would erase the
+        // ::before selection chrome on pinned cells, so a selection grid drops it.
+        dndStyle,
+        props.tableLayout?.columnsPinnable &&
+          column.getCanPin() &&
+          s.pinning(
+            cellSelectionOn ? getPinningStylesUncontained(column) : getPinningStyles(column)
+          ),
+        props.tableLayout?.columnsResizable &&
+          s.colWidth(`calc(var(--col-${column.id}-size) * 1px)`)
       )}
     >
       {/* With cell selection on, the td must not clip (its ::before paints
@@ -984,8 +981,7 @@ function DataGridTableRowExpand<TData extends object>({
   return (
     <span
       data-slot='data-grid-table-row-expand'
-      style={getDataGridTreeIndentStyle(row, indent)}
-      {...stylex.props(s.rowExpand, style)}
+      {...stylex.props(s.rowExpand, s.treeIndent(getDataGridTreeIndent(row, indent)), style)}
     >
       {row.getCanExpand() ? (
         <button

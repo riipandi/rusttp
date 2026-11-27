@@ -3,7 +3,7 @@ import {
   assignRef,
   getDataGridTableMergedHeaderGroups,
   getDataGridTableResolvedRows,
-  getDataGridTreeIndentStyle,
+  getDataGridTreeIndent,
   getPinningStyles,
   hasDataGridTableRightPinnedColumns,
   nextColumnSize
@@ -70,7 +70,7 @@ const depthOf = (indent?: number) => {
     getSubRows: (book) => book.children,
     initialState: { expanded: true }
   }).table()
-  return table.getRowModel().rows.map((row) => getDataGridTreeIndentStyle(row, indent))
+  return table.getRowModel().rows.map((row) => getDataGridTreeIndent(row, indent))
 }
 
 describe('getDataGridTableResolvedRows', () => {
@@ -187,7 +187,7 @@ describe('getPinningStyles', () => {
   it('sticks a start-pinned column after the start columns before it, in the pinned layer', () => {
     const styles = pinStyles('b')
     expect(styles.insetInlineStart).toBe('120px')
-    expect(styles.insetInlineEnd).toBeUndefined()
+    expect(styles.insetInlineEnd).toBeNull()
     expect(styles.position).toBe('sticky')
     expect(styles.zIndex).toBe(30)
     expect(styles.width).toBe(150)
@@ -197,7 +197,7 @@ describe('getPinningStyles', () => {
   it('sticks an end-pinned column before the end columns after it', () => {
     const styles = pinStyles('c')
     expect(styles.insetInlineEnd).toBe('48px')
-    expect(styles.insetInlineStart).toBeUndefined()
+    expect(styles.insetInlineStart).toBeNull()
     expect(styles.position).toBe('sticky')
     expect(styles.width).toBe(150)
     expect(pinStyles('d').insetInlineEnd).toBe('0px')
@@ -205,10 +205,10 @@ describe('getPinningStyles', () => {
 
   it('leaves an unpinned column in the flow with only its width', () => {
     const styles = pinStyles('free')
-    expect(styles.position).toBeUndefined()
-    expect(styles.insetInlineStart).toBeUndefined()
-    expect(styles.insetInlineEnd).toBeUndefined()
-    expect(styles.zIndex).toBeUndefined()
+    expect(styles.position).toBeNull()
+    expect(styles.insetInlineStart).toBeNull()
+    expect(styles.insetInlineEnd).toBeNull()
+    expect(styles.zIndex).toBeNull()
     expect(styles.width).toBe(90)
   })
 })
@@ -229,14 +229,10 @@ describe('hasDataGridTableRightPinnedColumns', () => {
   })
 })
 
-describe('getDataGridTreeIndentStyle', () => {
+describe('getDataGridTreeIndent', () => {
   it('indents by depth times the step, 20 px by default', () => {
-    expect(depthOf()).toEqual([
-      { '--data-grid-tree-padding': '0px' },
-      { '--data-grid-tree-padding': '20px' },
-      { '--data-grid-tree-padding': '40px' }
-    ])
-    expect(depthOf(16)[2]).toEqual({ '--data-grid-tree-padding': '32px' })
+    expect(depthOf()).toEqual([0, 20, 40])
+    expect(depthOf(16)[2]).toBe(32)
   })
 })
 

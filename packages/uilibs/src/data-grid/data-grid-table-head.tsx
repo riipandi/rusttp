@@ -362,24 +362,6 @@ function DataGridTableHeadRowCell<TData extends object>({
       data-pinned={isPinned || undefined}
       data-outer-pinned-col={isFirstStartPinned ? 'start' : isLastEndPinned ? 'end' : undefined}
       data-last-col={isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined}
-      style={{
-        // Width geometry stays imperative: resize drags update the CSS
-        // variables without React renders.
-        ...(props.tableLayout?.width === 'fixed' &&
-          !props.tableLayout?.columnsResizable && {
-            width: header.getSize()
-          }),
-        ...(props.tableLayout?.columnsPinnable && column.getCanPin() && getPinningStyles(column)),
-        // A sticky child does not ride a sticky ancestor: under a sticky
-        // header the pinned cell's own position:sticky (horizontal) opts it
-        // out of the thead's vertical stickiness, and the corner scrolls
-        // away while its non-positioned siblings stick. Pin both axes on
-        // the cell itself.
-        ...(props.tableLayout?.headerSticky && isPinned ? { top: 0 } : null),
-        ...(props.tableLayout?.columnsResizable && {
-          width: `calc(var(--header-${header.id}-size) * 1px)`
-        })
-      }}
       {...stylex.props(
         s.th,
         props.tableLayout?.headerBackground && s.thHeaderBackground,
@@ -415,7 +397,21 @@ function DataGridTableHeadRowCell<TData extends object>({
         // Edge detection spans the full visible leaf order; the header's own
         // group only covers one pinning bucket.
         (column.getIndex() === 0 || isLastVisibleColumn) && props.tableStyles?.edgeCell,
-        dndStyle
+        // Geometry is dynamic styles in this one call, last: a raw `style` would be replaced by
+        // the drag style's. Width rides the CSS variables a resize drag updates without a render.
+        dndStyle,
+        props.tableLayout?.width === 'fixed' &&
+          !props.tableLayout?.columnsResizable &&
+          s.colWidth(header.getSize()),
+        props.tableLayout?.columnsPinnable &&
+          column.getCanPin() &&
+          s.pinning(getPinningStyles(column)),
+        // A sticky child does not ride a sticky ancestor: under a sticky header the pinned cell's
+        // own position:sticky (horizontal) opts it out of the thead's vertical stickiness, and the
+        // corner scrolls away while its non-positioned siblings stick. Pin both axes on the cell.
+        props.tableLayout?.headerSticky && isPinned && s.thPinnedStickyTop,
+        props.tableLayout?.columnsResizable &&
+          s.colWidth(`calc(var(--header-${header.id}-size) * 1px)`)
       )}
     >
       {children}
@@ -728,7 +724,7 @@ function DataGridTableResizeIndicator<TData extends object>({
       {...stylex.props(s.resizeIndicator)}
     >
       <div {...stylex.props(s.resizeIndicatorBar)} />
-      <div ref={indicatorHeadRef} {...stylex.props(s.resizeIndicatorHead)} style={{ width: 5 }} />
+      <div ref={indicatorHeadRef} {...stylex.props(s.resizeIndicatorHead)} />
     </div>
   )
 }

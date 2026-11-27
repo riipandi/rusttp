@@ -940,11 +940,10 @@ function DataGridTableDndRows<TData extends object>({
               {carried && carriedRow ? (
                 <table
                   aria-hidden='true'
-                  style={{
-                    width: carried.width,
-                    tableLayout: 'fixed'
-                  }}
-                  {...stylex.props(rowStyles.overlayTable)}
+                  {...stylex.props(
+                    rowStyles.overlayTable,
+                    rowStyles.overlayTableSize(carried.width)
+                  )}
                 >
                   <tbody>
                     {/* Padding rides on the inner element, not the cell. A `td` can
@@ -954,8 +953,10 @@ function DataGridTableDndRows<TData extends object>({
                   from the measured source row for the same reason the widths
                   do: the clone has no row of its own to inherit it from. */}
                     <tr
-                      style={{ height: carried.height || undefined }}
-                      {...stylex.props(rowStyles.overlayCell)}
+                      {...stylex.props(
+                        rowStyles.overlayCell,
+                        rowStyles.overlayRowHeight(carried.height || null)
+                      )}
                     >
                       {carriedRow.getVisibleCells().map((cell, index: number) => (
                         <td

@@ -9,7 +9,8 @@ import type {
   ColumnDef,
   ColumnOrderState,
   PaginationState,
-  SortingState
+  SortingState,
+  TableState
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
@@ -52,7 +53,8 @@ const live = () => document.querySelector('[id^="DndLiveRegion"]')?.textContent 
 function useDemoTable(
   columns: ColumnDef<DataGridFeatures, IBook>[],
   pageSize = 5,
-  initialColumnOrder: string[] = []
+  initialColumnOrder: string[] = [],
+  initialState?: Partial<TableState<DataGridFeatures>>
 ) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -65,6 +67,7 @@ function useDemoTable(
     features: dataGridFeatures,
     columns,
     data: demoData,
+    initialState,
     pageCount: Math.ceil((demoData?.length || 0) / pageSize),
     getRowId: (row: IBook) => row.id,
     state: {
@@ -335,6 +338,75 @@ export const DraggableColumns: Story = {
     await pressUntil('{Escape}', () =>
       expect(live()).toBe('Dragging cancelled. title returned to its place.')
     )
+  }
+}
+
+/**
+ * A draggable column keeps its pinned geometry: the sortable cell's drag style must not replace
+ * the offset and width the pinning gives it. (Pinned to the end it is not shown: the draggable
+ * table orders its filler column after the end-pinned cells while its `colgroup` orders it before.)
+ */
+export const DraggablePinnedColumns: Story = {
+  name: 'Draggable pinned columns',
+  render: () => {
+    const tableHolder: { current?: DataGridTableInstance<IBook> } = {}
+    const columns = useMemo(
+      () =>
+        bookColumns(false, () => tableHolder.current!).map((column) => ({
+          ...column,
+          enableColumnOrdering: true
+        })),
+      [tableHolder]
+    )
+    const table = useDemoTable(
+      columns,
+      5,
+      columns.map((column) => column.id ?? ''),
+      { columnPinning: { start: ['title', 'author'], end: [] } }
+    )
+    tableHolder.current = table
+    return (
+      <DataGrid
+        table={table}
+        recordCount={demoData?.length || 0}
+        tableLayout={{ columnsDraggable: true, columnsPinnable: true, columnsResizable: true }}
+      >
+        <div {...stylex.props(s.stack)}>
+          <DataGridContainer>
+            <DataGridScrollArea table={table}>
+              <DataGridTableDnd aria-label='Novels' table={table} handleDragEnd={() => {}} />
+            </DataGridScrollArea>
+          </DataGridContainer>
+          <DataGridPagination table={table} />
+        </div>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const grid = await canvas.findByRole('table', { name: 'Novels' })
+    const cells = (id: string, row: 'thead' | 'tbody') => {
+      const cell = grid.querySelector(
+        `${row} ${row === 'thead' ? 'th' : 'td'}[data-col-id="${id}"]`
+      )
+      if (!(cell instanceof HTMLElement)) throw new Error(`No ${row} cell ${id}`)
+      return cell
+    }
+    // The size variables a resize drag updates, which are the widths the cells take.
+    const size = (id: string) =>
+      Number.parseFloat(grid.style.getPropertyValue(`--header-${id}-size`))
+    for (const row of ['thead', 'tbody'] as const) {
+      const first = cells('title', row)
+      const second = cells('author', row)
+      await expect(getComputedStyle(first).position).toBe('sticky')
+      await expect(getComputedStyle(first).left).toBe('0px')
+      await expect(getComputedStyle(second).position).toBe('sticky')
+      // The second pinned column sticks after the first, by the first one's width.
+      await expect(Number.parseFloat(getComputedStyle(second).left)).toBeCloseTo(size('title'), 0)
+      await expect(first.getBoundingClientRect().width).toBeCloseTo(size('title'), 0)
+      await expect(second.getBoundingClientRect().width).toBeCloseTo(size('author'), 0)
+    }
+    // An unpinned column stays in the flow.
+    await expect(getComputedStyle(cells('country', 'thead')).position).not.toBe('sticky')
   }
 }
 

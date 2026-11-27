@@ -4,6 +4,7 @@ import type { CSSProperties, Ref } from 'react'
 import { getDataGridCellSelectionCellAttrs, useDataGrid } from './data-grid'
 import type { DataGridFeatures, DataGridTableInstance } from './data-grid'
 import { dataGridTableStyles as s } from './data-grid-table.stylex'
+import type { DataGridPinningStyle } from './data-grid-table.stylex'
 import { dataGridCellSelectionStyles, gridLayer } from './data-grid.stylex'
 
 type DataGridCellSelectionAttrs = ReturnType<typeof getDataGridCellSelectionCellAttrs>
@@ -61,14 +62,12 @@ function cellSelectionChromeProps(
   ]
 }
 
-// Static spacing lookups replaced by the dense data attribute on the cell.
-function getDataGridTreeIndentStyle<TData extends object>(
+/** The inline padding of a tree row's toggle in px: its depth times the step. */
+function getDataGridTreeIndent<TData extends object>(
   row: Row<DataGridFeatures, TData>,
   indent: number = 20
-): CSSProperties {
-  return {
-    '--data-grid-tree-padding': `${row.depth * indent}px`
-  }
+): number {
+  return row.depth * indent
 }
 
 function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
@@ -212,22 +211,29 @@ function hasDataGridTableRightPinnedColumns<TData extends object>(
 
 function getPinningStyles<TData extends object>(
   column: Column<DataGridFeatures, TData>
-): CSSProperties {
+): DataGridPinningStyle {
   const isPinned = column.getIsPinned()
 
   return {
     // Logical offsets: TanStack's "left"/"right" buckets are start/end
     // semantics, so pinned columns stick to the correct edge in RTL too
     // (identical to left/right in LTR).
-    insetInlineStart: isPinned === 'start' ? `${column.getStart('start')}px` : undefined,
-    insetInlineEnd: isPinned === 'end' ? `${column.getAfter('end')}px` : undefined,
-    position: isPinned ? 'sticky' : undefined,
-    transform: isPinned ? 'translateZ(0)' : undefined,
-    contain: isPinned ? 'paint' : undefined,
+    insetInlineStart: isPinned === 'start' ? `${column.getStart('start')}px` : null,
+    insetInlineEnd: isPinned === 'end' ? `${column.getAfter('end')}px` : null,
+    position: isPinned ? 'sticky' : null,
+    transform: isPinned ? 'translateZ(0)' : null,
+    contain: isPinned ? 'paint' : null,
     width: column.getSize(),
-    zIndex: isPinned ? gridLayer.pinned : undefined,
-    backgroundClip: isPinned ? 'padding-box' : undefined
+    zIndex: isPinned ? gridLayer.pinned : null,
+    backgroundClip: isPinned ? 'padding-box' : null
   }
+}
+
+/** `getPinningStyles` without paint containment, for cells that draw selection chrome outside their box. */
+function getPinningStylesUncontained<TData extends object>(
+  column: Column<DataGridFeatures, TData>
+): DataGridPinningStyle {
+  return { ...getPinningStyles(column), contain: null }
 }
 
 // A meta.fillWidth column absorbs the free space itself, so the fill cells
@@ -383,7 +389,7 @@ function getDataGridPageRowCount(viewport: HTMLElement): number {
 
 export {
   cellSelectionChromeProps,
-  getDataGridTreeIndentStyle,
+  getDataGridTreeIndent,
   assignRef,
   getDataGridScrollAreaViewport,
   getDataGridTableRowSections,
@@ -393,6 +399,7 @@ export {
   getDataGridTableMergedHeaderGroups,
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
+  getPinningStylesUncontained,
   nextColumnSize,
   isColumnResizeMirrored,
   getDataGridPageRowCount,

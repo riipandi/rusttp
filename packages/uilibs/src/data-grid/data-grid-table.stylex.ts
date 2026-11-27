@@ -15,11 +15,28 @@ import {
 import { gridLayer } from './data-grid.stylex'
 
 /**
+ * What a pinnable cell takes from its column, as `getPinningStyles` computes it; `null` leaves the
+ * property to the cell's other styles.
+ */
+export interface DataGridPinningStyle {
+  insetInlineStart: string | null
+  insetInlineEnd: string | null
+  position: 'sticky' | null
+  transform: string | null
+  contain: string | null
+  width: number
+  zIndex: number | null
+  backgroundClip: string | null
+}
+
+/**
  * The data-grid table renderer chrome. State-driven styles are applied as
- * conditional stylex.props arguments computed in React; dynamic geometry
- * (column widths, pin offsets, tree indent) stays on inline styles / CSS
- * custom properties exactly like the source, because the browser applies
- * those without React re-renders.
+ * conditional stylex.props arguments computed in React. Geometry that is only known at run time
+ * (column widths, pin offsets, tree indent) is a dynamic style in the SAME `stylex.props` call as
+ * the element's other styles: a raw `style` beside it would be replaced by the `style` that
+ * `stylex.props` returns for a dynamic style (the drag styles are one), and with it the geometry.
+ * A column width is `calc(var(--col-X-size) * 1px)`, so a resize drag still moves it without a
+ * React render.
  *
  * Row separators are painted on the tds (border-separate). Whether a row
  * paints a bottom border depends on the ROW's position, so the row sets the
@@ -77,6 +94,25 @@ export const dataGridTableStyles = stylex.create({
     top: 0,
     zIndex: gridLayer.header
   },
+  // The row's separator: its cells paint `borderBottomWidth` from this custom property.
+  rowBorder: { '--dg-row-border-b': '1px' },
+  rowNoBorder: { '--dg-row-border-b': '0px' },
+  // A column's width, as a length or a number of px.
+  colWidth: (width: number | string) => ({ width }),
+  // The geometry of a pinned cell. Listed last, after the drag style: it replaces what used to be
+  // an inline style, which beat every class.
+  pinning: (pin: DataGridPinningStyle) => ({
+    backgroundClip: pin.backgroundClip,
+    contain: pin.contain,
+    insetInlineEnd: pin.insetInlineEnd,
+    insetInlineStart: pin.insetInlineStart,
+    position: pin.position,
+    transform: pin.transform,
+    width: pin.width,
+    zIndex: pin.zIndex
+  }),
+  // A pinned header cell also sticks to the top of a sticky header.
+  thPinnedStickyTop: { top: 0 },
   // Header cell.
   th: {
     color: colors.foregroundNeutral,
@@ -439,10 +475,10 @@ export const dataGridTableStyles = stylex.create({
     alignItems: 'center',
     display: 'inline-flex',
     flexShrink: 0,
-    // ps-(--data-grid-tree-padding): the inline style sets the var.
-    paddingInlineStart: 'var(--data-grid-tree-padding)',
     verticalAlign: 'middle'
   },
+  // ps-(depth * step): a tree row's toggle is indented by its depth.
+  treeIndent: (padding: number) => ({ paddingInlineStart: padding }),
   rowExpandButton: {
     alignItems: 'center',
     borderRadius: radius.medium,
@@ -798,6 +834,11 @@ export const dataGridTableDndRowsStyles = stylex.create({
     padding: 0,
     verticalAlign: 'middle'
   },
+  // The clone has no row or table of its own to size it: the measured widths and the height of
+  // the source, in px (a zero height leaves the row to its content).
+  overlayTableSize: (width: number) => ({ tableLayout: 'fixed', width }),
+  overlayRowHeight: (height: number | null) => ({ height }),
+  overlayCellWidth: (width: number) => ({ width }),
   overlayCellInner: {
     overflow: 'hidden',
     paddingInline: unit.x3,
