@@ -35,7 +35,7 @@ export interface FileUploadProps
 }
 
 /** Whether `file` matches an `accept` list the way the native picker reads it: `.ext`, `type/*`, `type/subtype`. */
-function acceptsFile(file: File, accept: string | undefined) {
+export function acceptsFile(file: File, accept: string | undefined) {
   const tokens = accept
     ?.split(',')
     .map((token) => token.trim().toLowerCase())
@@ -52,6 +52,8 @@ function acceptsFile(file: File, accept: string | undefined) {
   )
 }
 
+const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => event.preventDefault()
+
 /** A file input and drop area that is a `Field` control: inside a `Field` it takes the label, error, and invalid state. */
 export function FileUpload({
   name,
@@ -64,19 +66,17 @@ export function FileUpload({
   inputAttributes,
   style,
   render,
+  onDragOver,
+  onDragEnter,
+  onDragLeave,
+  onDrop,
   ...otherProps
 }: FileUploadProps) {
   const [highlighted, setHighlighted] = React.useState(false)
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    otherProps.onDragOver?.(event)
-  }
-
-  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnter = () => {
     if (disabled) return
     setHighlighted(true)
-    otherProps.onDragEnter?.(event)
   }
 
   const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
@@ -85,7 +85,6 @@ export function FileUpload({
       return
     }
     setHighlighted(false)
-    otherProps.onDragLeave?.(event)
   }
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -98,7 +97,6 @@ export function FileUpload({
     )
     const files = inputAttributes?.multiple ? dropped : dropped.slice(0, 1)
     if (files.length > 0) onChange?.({ name, value: files, event })
-    otherProps.onDrop?.(event)
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +152,9 @@ export function FileUpload({
           </label>
         )
       },
-      otherProps
+      otherProps,
+      // `mergeProps` runs these once, before the handlers above; a disabled upload reports no drag.
+      disabled ? undefined : { onDragOver, onDragEnter, onDragLeave, onDrop }
     )
   })
 }
@@ -164,9 +164,13 @@ export function FileUpload({
  * FileUpload area stays clickable through its label; this only keeps the
  * composition in the text flow.
  */
-export function FileUploadTrigger({ children, ...props }: React.ComponentProps<'span'>) {
+export function FileUploadTrigger({
+  children,
+  style,
+  ...props
+}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
   return (
-    <span {...props} {...stylex.props(styles.trigger)}>
+    <span {...props} {...stylex.props(styles.trigger, style)}>
       {children}
     </span>
   )

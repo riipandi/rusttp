@@ -387,3 +387,35 @@ export const DropRespectsAccept: Story = {
     )
   }
 }
+
+/** The consumer's drag handlers run once per event, and a disabled upload reports no drop. */
+export const ConsumerHandlers: StoryObj<{
+  onDrop: ReturnType<typeof fn>
+  onDropDisabled: ReturnType<typeof fn>
+}> = {
+  name: 'Consumer handlers',
+  args: { onDrop: fn(), onDropDisabled: fn() },
+  render: ({ onDrop, onDropDisabled }) => (
+    <div {...stylex.props(styles.stack, styles.width)}>
+      <FileUpload name='enabled' data-testid='enabled' onDrop={onDrop}>
+        Drop the wand permit here
+      </FileUpload>
+      <FileUpload name='disabled' data-testid='disabled' disabled onDrop={onDropDisabled}>
+        Locked
+      </FileUpload>
+    </div>
+  ),
+  play: async ({ args, canvas }) => {
+    const drop = (testId: string) => {
+      const dataTransfer = new DataTransfer()
+      dataTransfer.items.add(new File(['x'], 'permit.pdf', { type: 'application/pdf' }))
+      canvas
+        .getByTestId(testId)
+        .dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }))
+    }
+    drop('enabled')
+    await expect(args.onDrop).toHaveBeenCalledTimes(1)
+    drop('disabled')
+    await expect(args.onDropDisabled).not.toHaveBeenCalled()
+  }
+}
