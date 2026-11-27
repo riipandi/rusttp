@@ -181,13 +181,7 @@ const preview: Preview = {
     },
     // Controls show only on a component's `Playground`, which turns them back on with
     // `controls: { disable: false, include: [...] }`; every other story shows none.
-    controls: {
-      disable: true,
-      matchers: {
-        color: /color$/i,
-        date: /Date$/i
-      }
-    },
+    controls: { disable: true },
     docs: { container: ThemedDocsContainer },
     a11y: {
       // 'error' - fail on a11y violations (the default)

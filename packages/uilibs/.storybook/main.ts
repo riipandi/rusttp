@@ -18,7 +18,6 @@ export default {
         }
       }
     },
-    '@storybook/addon-links',
     '@storybook/addon-vitest',
     '@github-ui/storybook-addon-performance-panel',
     '@storybook/addon-mcp'
@@ -33,7 +32,6 @@ export default {
   // The component manifests feed the MCP server (`storybook dev`), not the static site: left in a
   // build they add 3.5 MB of JSON with the builder's absolute file paths.
   features: { backgrounds: false, componentsManifest: process.env.STORYBOOK_BUILD !== '1' },
-  typescript: { reactDocgen: 'react-docgen' },
   async viteFinal(viteConfig) {
     return mergeConfig(viteConfig, {
       resolve: { tsconfigPaths: true },
@@ -45,7 +43,6 @@ export default {
           }
         }
       },
-      server: undefined,
       plugins: [
         stylexPlugin({
           aliases: { '#/*': resolve(import.meta.dirname, '../src/*') }
