@@ -55,6 +55,8 @@ jobs:
       - run: pnpm --filter uilibs typecheck
       # Props tables and Playground controls against the code; reads source only, so no browser.
       - run: pnpm --filter uilibs check:docs
+      # The checker's own test: it must report a drifted fixture, so a silent checker fails here.
+      - run: pnpm --filter uilibs check:docs:test
       - run: pnpm --filter uilibs storybook:build
 
   tests:

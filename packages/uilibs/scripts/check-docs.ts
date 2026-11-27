@@ -24,7 +24,7 @@
  * fails the run, so the list cannot rot.
  */
 import { readdirSync, readFileSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 interface Known {
@@ -65,7 +65,12 @@ const known: Known[] = [
   }
 ]
 
-const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src')
+// `node scripts/check-docs.ts <dir>` checks another tree: `check-docs.test.ts` runs it on a fixture,
+// and `known` describes this library only, so it neither exempts nor goes stale there.
+const otherTree = process.argv[2]
+const srcDir = otherTree
+  ? resolve(otherTree)
+  : join(dirname(fileURLToPath(import.meta.url)), '..', 'src')
 
 // ---------------------------------------------------------------------------------------------
 // Source text helpers
@@ -460,10 +465,11 @@ for (const file of stories) {
   }
 }
 
+const exemptions = otherTree ? [] : known
 const open = findings.filter(
-  (entry) => !known.some((item) => item.file === entry.file && item.finding === entry.finding)
+  (entry) => !exemptions.some((item) => item.file === entry.file && item.finding === entry.finding)
 )
-const stale = known.filter(
+const stale = exemptions.filter(
   (item) => !findings.some((entry) => entry.file === item.file && entry.finding === item.finding)
 )
 
@@ -475,5 +481,5 @@ if (open.length > 0 || stale.length > 0) {
   process.exit(1)
 }
 console.log(
-  `Docs check: ${pages.length} pages, ${stories.length} story files, ${known.length} known exception(s), clean.`
+  `Docs check: ${pages.length} pages, ${stories.length} story files, ${exemptions.length} known exception(s), clean.`
 )
