@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
@@ -113,15 +113,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Popover>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Summon popover' }))
-    const popover = await body.findByRole('dialog')
+    const popover = await screen.findByRole('dialog')
     await expect(within(popover).getByPlaceholderText('First dial')).toHaveValue('100%')
 
     // Clicking outside dismisses the popover.
     await userEvent.click(document.body)
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -154,15 +152,14 @@ export const Placement: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     for (const side of sides) {
       await userEvent.click(
         within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
       )
-      const popover = await body.findByRole('dialog', { name: `Levitate ${side}` })
+      const popover = await screen.findByRole('dialog', { name: `Levitate ${side}` })
       await expect(popover).toHaveTextContent(`to the ${side} of the trigger`)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
   }
 }
@@ -280,12 +277,11 @@ export const Elevations: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const canvas = within(canvasElement)
     const seen = new Set<string>()
     for (const elevation of elevations) {
       const token = getComputedStyle(await canvas.findByTestId(`probe-${elevation}`)).boxShadow
-      const drawn = getComputedStyle(await body.findByText(`Elevation ${elevation}`)).boxShadow
+      const drawn = getComputedStyle(await screen.findByText(`Elevation ${elevation}`)).boxShadow
       // The popup layers its edge ring first and the token after it.
       await expect(drawn.endsWith(token)).toBe(true)
       seen.add(token)
@@ -296,6 +292,9 @@ export const Elevations: Story = {
 
 const steps = { '0': 0, '2': 2, '4': 4, '8': 8 } as const
 const paddings = ['0', '2', '4', '8'] as const
+
+const paddingOf = async (name: string) =>
+  getComputedStyle(await screen.findByRole('dialog', { name: `Padding ${name}` })).paddingTop
 
 /** Padding counts `unit` steps: `4` (16px) is the default, `0` leaves the content flush. All stay open for the a11y gate. */
 export const Paddings: Story = {
@@ -333,15 +332,16 @@ export const Paddings: Story = {
     </Axis>
   ),
   play: async () => {
-    const body = within(document.body)
-    const padding = async (name: string) =>
-      getComputedStyle(await body.findByRole('dialog', { name: `Padding ${name}` })).paddingTop
     // One step is 4px; the default is four steps.
-    for (const name of paddings) await expect(await padding(name)).toBe(`${steps[name] * 4}px`)
+    for (const name of paddings) await expect(await paddingOf(name)).toBe(`${steps[name] * 4}px`)
   }
 }
 
 const radii = ['medium', 'large'] as const
+
+const cornerOf = async (radius: string) =>
+  getComputedStyle(await screen.findByRole('dialog', { name: `Radius ${radius}` }))
+    .borderTopLeftRadius
 
 /** The corner radius of the popup; `medium` is the default. */
 export const Radii: Story = {
@@ -377,12 +377,8 @@ export const Radii: Story = {
     </Axis>
   ),
   play: async () => {
-    const body = within(document.body)
-    const corner = async (radius: string) =>
-      getComputedStyle(await body.findByRole('dialog', { name: `Radius ${radius}` }))
-        .borderTopLeftRadius
-    await expect(await corner('medium')).toBe('8px')
-    await expect(await corner('large')).toBe('10px')
+    await expect(await cornerOf('medium')).toBe('8px')
+    await expect(await cornerOf('large')).toBe('10px')
   }
 }
 
@@ -409,42 +405,42 @@ function Cryptex({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Cryptex defaultOpen />,
   play: async () => {
-    const popover = await within(document.body).findByRole('dialog', { name: 'Cryptex settings' })
+    const popover = await screen.findByRole('dialog', { name: 'Cryptex settings' })
     await waitFor(() => expect(popover).toBeVisible())
     await expect(popover).toHaveAccessibleDescription('Dial the letters to crack the vault seal.')
   }
 }
 
+const openedInKeyboard = () => screen.getByRole('dialog', { name: 'Cryptex settings' })
+
 /** Enter or Space opens the popover from its trigger, Tab moves between its controls, and Escape closes it and returns focus. */
 export const Keyboard: Story = {
   render: () => <Cryptex />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Open the cryptex' })
-    const opened = () => body.getByRole('dialog', { name: 'Cryptex settings' })
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
     // Enter opens it only while it is closed: once open, focus is inside.
-    await pressUntil('{Enter}', opened, { when: () => !body.queryByRole('dialog') })
+    await pressUntil('{Enter}', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
 
     // Focus moves to the first control, and Tab moves on to the next.
-    const first = body.getByRole('textbox', { name: 'First dial' })
-    const second = body.getByRole('textbox', { name: 'Second dial' })
+    const first = screen.getByRole('textbox', { name: 'First dial' })
+    const second = screen.getByRole('textbox', { name: 'Second dial' })
     await waitFor(() => expect(first).toHaveFocus())
     await pressUntil('{Tab}', () => expect(second).toHaveFocus(), {
       when: () => document.activeElement === first
     })
 
     // Escape closes it and returns focus to the trigger.
-    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
 
     // Space opens it too.
-    await pressUntil(' ', opened, { when: () => !body.queryByRole('dialog') })
+    await pressUntil(' ', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
     // The popup mounts again on each open, so its controls are read again.
-    await waitFor(() => expect(body.getByRole('textbox', { name: 'First dial' })).toHaveFocus())
-    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.getByRole('textbox', { name: 'First dial' })).toHaveFocus())
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

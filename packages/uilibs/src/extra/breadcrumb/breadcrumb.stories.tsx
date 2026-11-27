@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -173,14 +173,12 @@ export const Dropdown: Story = {
     </Breadcrumb>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Collapsed breadcrumb levels' }))
-    await body.findByRole('menu')
-    await expect(body.getByRole('menuitem', { name: "Marauder's Map" })).toBeInTheDocument()
+    await screen.findByRole('menu')
+    await expect(screen.getByRole('menuitem', { name: "Marauder's Map" })).toBeInTheDocument()
 
-    await userEvent.click(body.getByRole('menuitem', { name: 'Gringotts' }))
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Gringotts' }))
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
   }
 }
 
@@ -292,6 +290,9 @@ export const Colors: Story = {
   }
 }
 
+const menu = () => screen.queryByRole('menu')
+const item = (name: string) => screen.getByRole('menuitem', { name })
+
 /** Tab visits the links and the collapsed-levels button in order; the current page is not a stop. */
 export const Keyboard: Story = {
   render: () => (
@@ -328,12 +329,9 @@ export const Keyboard: Story = {
     </Breadcrumb>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const first = canvas.getByRole('link', { name: 'Hogwarts' })
     const trigger = canvas.getByRole('button', { name: 'Collapsed breadcrumb levels' })
     const last = canvas.getByRole('link', { name: 'Diagon Alley' })
-    const menu = () => body.queryByRole('menu')
-    const item = (name: string) => body.getByRole('menuitem', { name })
 
     // Tab order: link, the collapsed levels, link. The current page is text, not a stop.
     first.focus()

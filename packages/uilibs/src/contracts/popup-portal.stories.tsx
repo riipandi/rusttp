@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import {
   Autocomplete,
   AutocompleteContent,
@@ -124,11 +124,10 @@ export const PortalsIntoTheScope: Story = {
     </ThemeScope>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const page = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
     const inverted = page === 'dark' ? 'light' : 'dark'
     const inScope = async (id: string) => {
-      const popup = await body.findByTestId(id)
+      const popup = await screen.findByTestId(id)
       // Each popup sits outside the scope's own DOM, inside its themed portal element.
       await waitFor(async () => {
         await expect(canvas.getByTestId('scope').contains(popup)).toBe(false)

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlHeights,
   controlSizeNames,
@@ -173,12 +173,11 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Combobox>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const input = canvas.getByPlaceholderText('Search school…')
 
     // Typing opens the popup with filtered options.
     await userEvent.type(input, 'hog')
-    const options = await body.findAllByRole('option')
+    const options = await screen.findAllByRole('option')
     const target = options[0]
     if (!target) throw new Error('No filtered options found')
     await expect(options.length).toBe(1)
@@ -188,7 +187,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     // still closing (WebKit under load) is a listbox without a name, so wait for it to go.
     await userEvent.click(target)
     await waitFor(() => expect(input).toHaveValue('Hogwarts'))
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
   }
 }
 
@@ -299,7 +298,7 @@ export const States: Story = {
     await expect(disabled).toBeDisabled()
     await expectDisabledLook(disabled, { text: true, edge: true })
     await userEvent.click(disabled)
-    await expect(within(document.body).queryByRole('option')).toBeNull()
+    await expect(screen.queryByRole('option')).toBeNull()
 
     const invalid = canvas.getByRole('combobox', { name: 'School' })
     await expect(invalid).toHaveAttribute('aria-invalid', 'true')
@@ -362,8 +361,7 @@ export const Multiple: Story = {
     await userEvent.click(canvas.getByRole('combobox'))
     // The listbox sits in the popup, and the positioner above it names the anchor's box in
     // `--anchor-*`. (The popup's own edge is not compared: in a narrow window it is shifted in.)
-    const positioner = (await within(document.body).findByRole('listbox')).parentElement
-      ?.parentElement
+    const positioner = (await screen.findByRole('listbox')).parentElement?.parentElement
     if (!positioner) throw new Error('No popup rendered')
     await waitFor(async () => {
       const box = chips.getBoundingClientRect()
@@ -551,22 +549,23 @@ function Schools({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Schools defaultOpen />,
   play: async () => {
-    const list = await within(document.body).findByRole('listbox')
+    const list = await screen.findByRole('listbox')
     await waitFor(() => expect(list).toBeVisible())
     await expect(within(list).getAllByRole('option')).toHaveLength(frameworks.length)
   }
 }
 
+const optionsInKeyboard = () => screen.queryAllByRole('option')
+const visibleInKeyboard = () => expect(screen.getByRole('listbox')).toBeVisible()
+const popupInKeyboard = () => screen.queryByRole('listbox')
+
 /** ArrowDown opens the list and the arrows move a visible highlight through it, Enter picks, and Escape closes it. */
 export const Keyboard: Story = {
   render: () => <Schools />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const input = canvas.getByRole('combobox', { name: 'School' })
-    const options = () => body.queryAllByRole('option')
-    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
-    const visible = () => expect(body.getByRole('listbox')).toBeVisible()
-    const popup = () => body.queryByRole('listbox')
+    const index = () =>
+      optionsInKeyboard().findIndex((option) => option.hasAttribute('data-highlighted'))
     // `aria-expanded` follows the open state at once; the listbox stays in the page while it fades
     // out, and a key sent then would reach a closed combobox (Escape there clears the input).
     const expanded = () => input.getAttribute('aria-expanded') === 'true'
@@ -575,7 +574,7 @@ export const Keyboard: Story = {
     await expect(input).toHaveFocus()
 
     // ArrowDown opens the list; a further ArrowDown highlights the first option, then the next.
-    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    await pressUntil('{ArrowDown}', visibleInKeyboard, { when: () => !expanded() })
     await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
       when: () => index() < 0
     })
@@ -589,22 +588,22 @@ export const Keyboard: Story = {
     await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
       when: () => index() === first
     })
-    const picked = options()[first + 1]
+    const picked = optionsInKeyboard()[first + 1]
     if (!picked) throw new Error('No option to pick')
-    await expectHighlightedItem(picked, options()[first])
+    await expectHighlightedItem(picked, optionsInKeyboard()[first])
 
     // Enter fills the input with the highlighted option and closes the list; focus stays in the input.
     const label = picked.textContent ?? ''
     await pressUntil('{Enter}', () => expect(input).toHaveValue(label), {
       when: expanded
     })
-    await untilGone(popup)
+    await untilGone(popupInKeyboard)
     await expect(input).toHaveFocus()
 
     // Escape closes a reopened list and keeps the value.
-    await pressUntil('{ArrowDown}', visible, { when: () => !expanded() })
+    await pressUntil('{ArrowDown}', visibleInKeyboard, { when: () => !expanded() })
     // Escape on a closed combobox clears the input, so it is sent only while the list is open.
-    await pressUntil('{Escape}', gone(popup), { when: expanded })
+    await pressUntil('{Escape}', gone(popupInKeyboard), { when: expanded })
     await expect(input).toHaveValue(label)
     await expect(input).toHaveFocus()
   }

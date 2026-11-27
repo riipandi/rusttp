@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { duration, easing, fontSize, radius, unit } from '../../styles/tokens.stylex'
 import { canvasDecorator, shelfStatuses, statusColors, statusLabels } from './chart.samples'
@@ -134,9 +134,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     const firstSegment = document.querySelector('[data-status="low"]')
     if (firstSegment) {
       await userEvent.hover(firstSegment)
-      await waitFor(() =>
-        expect(within(document.body).getByText('Day 1: Last copies')).toBeVisible()
-      )
+      await waitFor(() => expect(screen.getByText('Day 1: Last copies')).toBeVisible())
     }
   }
 }

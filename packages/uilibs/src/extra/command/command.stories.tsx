@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { detectPlatform, formatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 import * as React from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import { expectHighlightedItem } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
@@ -158,7 +158,6 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Command>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const input = canvas.getByPlaceholderText('Cast a spell or search…')
 
     // On the page the palette draws its own 1px edge, since its fill is the page's. The root is
@@ -170,15 +169,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
     // Typing filters the command list.
     await userEvent.type(input, 'expecto')
-    await waitFor(() => expect(body.getByText('Expecto Patronum')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Expecto Patronum')).toBeInTheDocument())
 
     // The first match is highlighted (`autoHighlight`) and says so.
-    await expectHighlightedItem(body.getByRole('option', { name: /Expecto Patronum/ }))
+    await expectHighlightedItem(screen.getByRole('option', { name: /Expecto Patronum/ }))
 
     // No match shows the empty message.
     await userEvent.clear(input)
     await userEvent.type(input, 'aquamenti maxima')
-    await waitFor(() => expect(body.getByText('No spells found.')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('No spells found.')).toBeInTheDocument())
   }
 }
 
@@ -312,22 +311,21 @@ useHotkey('Mod+J', () => setOpen((prev) => !prev))
     )
   },
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const modKey = detectPlatform() === 'mac' ? 'Meta' : 'Control'
 
     // The Mod+J hotkey toggles the dialog.
     await userEvent.keyboard(`{${modKey}>}j{/${modKey}}`)
-    await body.findByRole('dialog')
+    await screen.findByRole('dialog')
     await userEvent.keyboard(`{${modKey}>}j{/${modKey}}`)
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 
     // Opening via the button mounts the command dialog.
     await userEvent.click(canvas.getByRole('button', { name: /marauder's map/i }))
-    await body.findByRole('dialog')
+    await screen.findByRole('dialog')
 
     // Selecting an item closes the dialog.
-    await userEvent.click(body.getByText('Potions'))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await userEvent.click(screen.getByText('Potions'))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -350,7 +348,7 @@ export const TranslatedDialog: Story = {
     </CommandDialog>
   ),
   play: async () => {
-    const dialog = await within(document.body).findByRole('dialog', { name: 'Palet perintah' })
+    const dialog = await screen.findByRole('dialog', { name: 'Palet perintah' })
     await expect(dialog).toHaveAccessibleDescription('Cari perintah untuk dijalankan')
 
     // The dialog's own ring is the edge: the palette inside draws none, and the dialog lifts with
@@ -403,7 +401,7 @@ function Palette({
 export const Open: Story = {
   render: () => <Palette />,
   play: async () => {
-    const dialog = await within(document.body).findByRole('dialog', { name: 'Command Palette' })
+    const dialog = await screen.findByRole('dialog', { name: 'Command Palette' })
     await waitFor(() => expect(dialog).toBeVisible())
     await expect(within(dialog).getAllByRole('option')).toHaveLength(commands.length)
   }
@@ -412,18 +410,19 @@ export const Open: Story = {
 // Records the commands the palette runs; the play resets it, so the light and dark runs do not share.
 const run = fn()
 
+const options = () => screen.queryAllByRole('option')
+
+const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
+
 /** The arrows move a visible highlight through the list, typing filters it, Enter runs the highlighted command, and Escape closes the palette. */
 export const Keyboard: Story = {
   render: () => <Palette onRun={run} />,
   play: async () => {
     run.mockClear()
-    const body = within(document.body)
-    const options = () => body.queryAllByRole('option')
-    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
 
     // The palette opens with focus in the input. Nothing is highlighted until the arrows or typing set it.
-    await body.findByRole('dialog')
-    const input = await body.findByRole('combobox')
+    await screen.findByRole('dialog')
+    const input = await screen.findByRole('combobox')
     await waitFor(() => expect(input).toHaveFocus())
 
     // ArrowDown highlights a command and then the next; ArrowUp goes back. The input keeps focus.
@@ -450,7 +449,7 @@ export const Keyboard: Story = {
     // the palette stays open, because closing is the page's choice: `Command` does not close itself.
     await userEvent.keyboard('{Enter}')
     await waitFor(() => expect(run).toHaveBeenCalledWith('Potions'))
-    await expect(body.getByRole('dialog')).toBeVisible()
+    await expect(screen.getByRole('dialog')).toBeVisible()
 
     // Escape closes the palette at once, and the query does not need clearing first. The key is
     // dispatched natively, not through `userEvent`: Storybook wraps `userEvent` in a React `act`
@@ -460,12 +459,12 @@ export const Keyboard: Story = {
     // until the dialog is gone, because WebKit can lose a key sent while the dialog settles.
     await expect(input).toHaveValue('potions')
     await waitFor(() => {
-      if (body.queryByRole('dialog')) {
+      if (screen.queryByRole('dialog')) {
         input.dispatchEvent(
           new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true })
         )
       }
-      return gone(() => body.queryByRole('dialog'))()
+      return gone(() => screen.queryByRole('dialog'))()
     })
   }
 }

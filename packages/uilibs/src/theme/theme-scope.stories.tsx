@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../base/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../base/popover'
 import { cellOf } from '../contracts/control-sizes'
@@ -155,12 +155,11 @@ export const Popups: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const surfaces: Record<string, number> = {}
     for (const mode of ['dark', 'light'] as const) {
       const scope = cellOf(canvasElement, 'mode', mode)
       await userEvent.click(within(scope).getByRole('button', { name: `Open ${mode}` }))
-      const popup = await body.findByRole('dialog', { name: `Popover in ${mode}` })
+      const popup = await screen.findByRole('dialog', { name: `Popover in ${mode}` })
       // The popup is outside the scope's DOM but inside its themed portal element.
       await expect(scope.contains(popup)).toBe(false)
       await expect(popup.closest('[data-theme-scope-portal]')).toHaveAttribute(
@@ -169,7 +168,7 @@ export const Popups: Story = {
       )
       surfaces[mode] = brightness(getComputedStyle(popup).backgroundColor)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
     await expect(surfaces.dark).toBeLessThan(80)
     await expect(surfaces.light).toBeGreaterThan(180)
@@ -197,7 +196,6 @@ export const Open: Story = {
     </Axis>
   ),
   play: async () => {
-    const body = within(document.body)
-    await waitFor(() => expect(body.getAllByRole('dialog')).toHaveLength(2))
+    await waitFor(() => expect(screen.getAllByRole('dialog')).toHaveLength(2))
   }
 }

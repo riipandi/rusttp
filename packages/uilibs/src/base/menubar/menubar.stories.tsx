@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
   expectControlHeights,
@@ -178,40 +178,38 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Menubar>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     // Clicking a trigger opens its dropdown. Menubar triggers render as
     // menuitem elements inside the menubar role.
     await userEvent.click(canvas.getByRole('menuitem', { name: 'Grimoire' }))
-    await body.findByRole('menu')
-    await expect(body.getByRole('menuitem', { name: /new scroll/i })).toBeInTheDocument()
+    await screen.findByRole('menu')
+    await expect(screen.getByRole('menuitem', { name: /new scroll/i })).toBeInTheDocument()
 
     // A highlighted item draws its state. The pointer sets it as the arrows do, and a test of the
     // arrows is in the DropdownMenu `Keyboard` story.
-    await userEvent.hover(body.getByRole('menuitem', { name: /new scroll/i }))
-    await expectHighlightedItem(body.getByRole('menuitem', { name: /new scroll/i }))
+    await userEvent.hover(screen.getByRole('menuitem', { name: /new scroll/i }))
+    await expectHighlightedItem(screen.getByRole('menuitem', { name: /new scroll/i }))
 
     // Submenus open from their trigger.
-    await userEvent.click(body.getByRole('menuitem', { name: /dispatch/i }))
+    await userEvent.click(screen.getByRole('menuitem', { name: /dispatch/i }))
     await waitFor(() =>
-      expect(body.getByRole('menuitem', { name: 'Send by owl' })).toBeInTheDocument()
+      expect(screen.getByRole('menuitem', { name: 'Send by owl' })).toBeInTheDocument()
     )
 
     // The first Escape closes the submenu, the second the root menu.
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menuitem', { name: 'Send by owl' })).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Send by owl' })).toBeNull())
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
 
     // The radio group switches exclusively inside the third dropdown.
     await userEvent.click(canvas.getByRole('menuitem', { name: 'Divination' }))
-    await body.findByRole('menu')
-    await userEvent.click(body.getByRole('menuitemradio', { name: 'Slytherin' }))
-    await expect(body.getByRole('menuitemradio', { name: 'Slytherin' })).toHaveAttribute(
+    await screen.findByRole('menu')
+    await userEvent.click(screen.getByRole('menuitemradio', { name: 'Slytherin' }))
+    await expect(screen.getByRole('menuitemradio', { name: 'Slytherin' })).toHaveAttribute(
       'aria-checked',
       'true'
     )
-    await expect(body.getByRole('menuitemradio', { name: 'Gryffindor' })).toHaveAttribute(
+    await expect(screen.getByRole('menuitemradio', { name: 'Gryffindor' })).toHaveAttribute(
       'aria-checked',
       'false'
     )
@@ -372,20 +370,23 @@ export const Open: Story = {
   tags: ['skip-webkit'],
   render: () => <Bar defaultOpen />,
   play: async () => {
-    const menu = await within(document.body).findByRole('menu')
+    const menu = await screen.findByRole('menu')
     await waitFor(() => expect(menu).toBeVisible())
     await expect(within(menu).getByRole('menuitem', { name: 'New scroll' })).toBeVisible()
   }
 }
 
+const popupInKeyboard = () => screen.queryByRole('menu')
+const highlightedName = () =>
+  screen.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
+    ?.textContent ?? null
+
 /** Tab enters the bar once, the arrows move between the triggers, and Enter, Space, or ArrowDown opens a menu. */
 export const Keyboard: Story = {
   render: () => <Bar />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const grimoire = canvas.getByRole('menuitem', { name: 'Grimoire' })
     const cryptex = canvas.getByRole('menuitem', { name: 'Cryptex' })
-    const popup = () => body.queryByRole('menu')
 
     // Tab enters the bar on the first trigger.
     await userEvent.tab()
@@ -400,33 +401,30 @@ export const Keyboard: Story = {
     })
 
     // Enter opens the focused trigger's menu, and Escape closes it and returns focus.
-    await pressUntil('{Enter}', () => expect(body.getByRole('menu')).toBeVisible(), {
-      when: () => !body.queryByRole('menu')
+    await pressUntil('{Enter}', () => expect(screen.getByRole('menu')).toBeVisible(), {
+      when: () => !screen.queryByRole('menu')
     })
-    await pressUntil('{Escape}', gone(popup))
+    await pressUntil('{Escape}', gone(popupInKeyboard))
     await waitFor(() => expect(grimoire).toHaveFocus())
 
     // Space and ArrowDown open it too.
-    await pressUntil(' ', () => expect(body.getByRole('menu')).toBeVisible(), {
-      when: () => !body.queryByRole('menu')
+    await pressUntil(' ', () => expect(screen.getByRole('menu')).toBeVisible(), {
+      when: () => !screen.queryByRole('menu')
     })
-    await pressUntil('{Escape}', gone(popup))
+    await pressUntil('{Escape}', gone(popupInKeyboard))
     await waitFor(() => expect(grimoire).toHaveFocus())
-    await pressUntil('{ArrowDown}', () => expect(body.getByRole('menu')).toBeVisible(), {
-      when: () => !body.queryByRole('menu')
+    await pressUntil('{ArrowDown}', () => expect(screen.getByRole('menu')).toBeVisible(), {
+      when: () => !screen.queryByRole('menu')
     })
 
     // Inside an open menu the arrows move the highlight: Home pins its start.
-    const highlightedName = () =>
-      body.queryAllByRole('menuitem').find((item) => item.hasAttribute('data-highlighted'))
-        ?.textContent ?? null
     await pressUntil('{Home}', () => expect(highlightedName()).toBe('New scroll'))
     await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('New parchment'), {
       when: () => highlightedName() === 'New scroll'
     })
 
     // Escape closes the menu and returns focus to its trigger.
-    await pressUntil('{Escape}', gone(popup))
+    await pressUntil('{Escape}', gone(popupInKeyboard))
     await waitFor(() => expect(grimoire).toHaveFocus())
   }
 }

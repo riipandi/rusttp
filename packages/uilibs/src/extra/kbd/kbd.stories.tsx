@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../base/tooltip'
 import { Kbd, KbdGroup } from './kbd.component'
@@ -84,9 +84,8 @@ export const InTooltip: Story = {
     </TooltipProvider>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     await userEvent.hover(canvas.getByRole('button', { name: 'Alohomora' }))
-    await waitFor(() => expect(body.getByText('⌘S')).toBeVisible())
+    await waitFor(() => expect(screen.getByText('⌘S')).toBeVisible())
   }
 }
 

@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { ColumnDef, PaginationState, SortingState } from '@tanstack/react-table'
 import { useMemo, useRef, useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import {
   DataGrid,
   DataGridCellSelection,
@@ -733,10 +733,10 @@ export const Keyboard: Story = {
     await userEvent.click(at(2, 1))
     await expectFocus(2, 1)
     await userEvent.keyboard('{Enter}')
-    const editor = await within(document.body).findByRole('textbox')
+    const editor = await screen.findByRole('textbox')
     await expect(editor).toHaveFocus()
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(within(document.body).queryByRole('textbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('textbox')).toBeNull())
 
     // Delete clears the focused cell through `onCellsChange`.
     await userEvent.click(at(3, 2))

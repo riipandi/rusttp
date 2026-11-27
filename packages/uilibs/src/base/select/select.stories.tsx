@@ -1,7 +1,7 @@
 import { Sparkles } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
   controlVariantNames,
@@ -170,24 +170,23 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Select>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByText('Select a wand core')
 
     // Opening lists every wand core.
     await userEvent.click(trigger)
-    const listbox = await body.findByRole('listbox')
-    await expect(body.getAllByRole('option').length).toBe(3)
+    const listbox = await screen.findByRole('listbox')
+    await expect(screen.getAllByRole('option').length).toBe(3)
 
     // Selecting updates the trigger and closes the popup.
     await userEvent.click(within(listbox).getByRole('option', { name: 'Dragon heartstring' }))
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     await expect(canvas.getByText('Dragon heartstring')).toBeInTheDocument()
 
     // Escape dismisses without changing the value.
     await userEvent.click(trigger)
-    await body.findByRole('listbox')
+    await screen.findByRole('listbox')
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     await expect(canvas.getByText('Dragon heartstring')).toBeInTheDocument()
   }
 }
@@ -287,9 +286,9 @@ export const Icons: Story = {
     // The glyph does not block opening: a press on it opens the list (the keyboard is covered by
     // the `Keyboard` story).
     await userEvent.click(glyph)
-    await within(document.body).findByRole('listbox')
+    await screen.findByRole('listbox')
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(within(document.body).queryByRole('listbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
   }
 }
 
@@ -485,44 +484,44 @@ function WandCores({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <WandCores defaultOpen />,
   play: async () => {
-    const list = await within(document.body).findByRole('listbox')
+    const list = await screen.findByRole('listbox')
     await waitFor(() => expect(list).toBeVisible())
     await expect(within(list).getAllByRole('option')).toHaveLength(fruits.length)
   }
 }
 
+const highlightedName = () =>
+  screen.queryAllByRole('option').find((option) => option.hasAttribute('data-highlighted'))
+    ?.textContent ?? null
+const visible = () => expect(screen.getByRole('listbox')).toBeVisible()
+const popupInKeyboard = () => screen.queryByRole('listbox')
+
 /** Enter, Space, or ArrowDown opens the list; the arrows, Home, End, and typeahead move the highlight; Enter picks and Escape closes. */
 export const Keyboard: Story = {
   render: () => <WandCores />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('combobox', { name: 'Wand core' })
-    const highlightedName = () =>
-      body.queryAllByRole('option').find((option) => option.hasAttribute('data-highlighted'))
-        ?.textContent ?? null
-    const visible = () => expect(body.getByRole('listbox')).toBeVisible()
-    const popup = () => body.queryByRole('listbox')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
 
     // Each key opens the list only while it is closed, and Escape closes it and returns focus.
     for (const key of ['{Enter}', ' ', '{ArrowDown}']) {
-      await pressUntil(key, visible, { when: () => !body.queryByRole('listbox') })
-      await pressUntil('{Escape}', gone(popup))
+      await pressUntil(key, visible, { when: () => !screen.queryByRole('listbox') })
+      await pressUntil('{Escape}', gone(popupInKeyboard))
       await waitFor(() => expect(trigger).toHaveFocus())
     }
 
     // Open it again. Where the highlight starts is not fixed under simulated events (WebKit
     // opens with nothing highlighted), so Home pins it and each arrow's step is the same everywhere.
-    await pressUntil('{Enter}', visible, { when: () => !body.queryByRole('listbox') })
+    await pressUntil('{Enter}', visible, { when: () => !screen.queryByRole('listbox') })
     await pressUntil('{Home}', () => expect(highlightedName()).toBe('Phoenix feather'))
     await pressUntil('{ArrowDown}', () => expect(highlightedName()).toBe('Dragon heartstring'), {
       when: () => highlightedName() === 'Phoenix feather'
     })
     await expectHighlightedItem(
-      body.getByRole('option', { name: 'Dragon heartstring' }),
-      body.getByRole('option', { name: 'Phoenix feather' })
+      screen.getByRole('option', { name: 'Dragon heartstring' }),
+      screen.getByRole('option', { name: 'Phoenix feather' })
     )
     await pressUntil('{ArrowUp}', () => expect(highlightedName()).toBe('Phoenix feather'), {
       when: () => highlightedName() === 'Dragon heartstring'
@@ -537,7 +536,7 @@ export const Keyboard: Story = {
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await untilGone(popup)
+    await untilGone(popupInKeyboard)
     await expect(trigger).toHaveTextContent('Dragon heartstring')
     await expect(trigger).toHaveFocus()
   }

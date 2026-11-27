@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, radius, unit } from '../../styles/tokens.stylex'
@@ -224,7 +224,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     const marker = document.querySelector('[data-marker]')
     if (marker) {
       await userEvent.hover(marker)
-      await waitFor(() => expect(within(document.body).getByText('664 points')).toBeVisible())
+      await waitFor(() => expect(screen.getByText('664 points')).toBeVisible())
     }
   }
 }

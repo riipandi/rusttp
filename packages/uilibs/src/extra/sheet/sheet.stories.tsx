@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   Dialog,
@@ -116,17 +116,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Sheet>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Alohomora' }))
-    const sheet = await body.findByRole('dialog')
-    await expect(body.getByRole('heading', { name: 'Edit vault record' })).toBeInTheDocument()
-    await expectTypeRole(body.getByRole('heading', { name: 'Edit vault record' }), 'body1')
+    const sheet = await screen.findByRole('dialog')
+    await expect(screen.getByRole('heading', { name: 'Edit vault record' })).toBeInTheDocument()
+    await expectTypeRole(screen.getByRole('heading', { name: 'Edit vault record' }), 'body1')
     await expect(within(sheet).getByDisplayValue('Luna Lovegood')).toBeInTheDocument()
 
     // Footer close action dismisses the sheet.
     await userEvent.click(within(sheet).getByRole('button', { name: 'Save vault record' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -159,10 +157,9 @@ export const CloseButton: Story = {
     </Sheet>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     await userEvent.click(canvas.getByRole('button', { name: 'Open the ledger' }))
-    await userEvent.click(await body.findByRole('button', { name: 'Shut the ledger' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await userEvent.click(await screen.findByRole('button', { name: 'Shut the ledger' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -201,15 +198,14 @@ export const Sides: Story = {
   ),
   // Docked popups do not flip: each sheet sits flush against its own edge.
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     for (const side of sides) {
       await userEvent.click(
         within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
       )
-      const dialog = await body.findByRole('dialog')
+      const dialog = await screen.findByRole('dialog')
       await expectDockedTo(dialog, side)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
   }
 }
@@ -268,25 +264,24 @@ export const ShortWindow: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     await expect(window.innerHeight).toBe(320)
     for (const side of sides) {
       await userEvent.click(
         within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
       )
-      const sheet = await body.findByRole('dialog', { name: `Passages on the ${side}` })
+      const sheet = await screen.findByRole('dialog', { name: `Passages on the ${side}` })
       // The window is shorter than the sheet, or the check below proves nothing.
       await waitFor(() => expect(sheet.scrollHeight).toBeGreaterThan(window.innerHeight))
-      const done = body.getByRole('button', { name: 'Done' })
+      const done = screen.getByRole('button', { name: 'Done' })
       await expectScrollsIntoView(done, 'end')
       // The sheet's own box holds its footer: a stretched box would end at the window and leave
       // the footer hanging over the page.
       await expect(sheet.getBoundingClientRect().bottom).toBeGreaterThanOrEqual(
         done.getBoundingClientRect().bottom
       )
-      await expectScrollsIntoView(body.getByText(`Passages on the ${side}`), 'start')
+      await expectScrollsIntoView(screen.getByText(`Passages on the ${side}`), 'start')
       await userEvent.keyboard('{Escape}')
-      await untilGone(() => body.queryByRole('dialog'))
+      await untilGone(() => screen.queryByRole('dialog'))
     }
   }
 }
@@ -364,7 +359,6 @@ export const Overlays: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const filters: string[] = []
     for (const overlay of overlays) {
       await userEvent.click(
@@ -372,10 +366,10 @@ export const Overlays: Story = {
           name: `Open ${overlay}`
         })
       )
-      const sheet = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      const sheet = await screen.findByRole('dialog', { name: `Overlay ${overlay}` })
       filters.push(getComputedStyle(backdropOf(sheet)).backdropFilter)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
   }
@@ -447,10 +441,9 @@ export const ResponsiveModalRecipe: Story = {
   name: 'Sheet on phones, Dialog on desktop',
   render: () => <ResponsiveModal />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const phone = window.matchMedia('(max-width: 659px)').matches
     await userEvent.click(canvas.getByRole('button', { name: 'Open the Pensieve' }))
-    const dialog = await body.findByRole('dialog', { name: 'The Pensieve' })
+    const dialog = await screen.findByRole('dialog', { name: 'The Pensieve' })
     if (phone) {
       await expectDockedTo(dialog, 'bottom')
     } else {
@@ -461,7 +454,7 @@ export const ResponsiveModalRecipe: Story = {
       await expect(Math.abs((left + right) / 2 - window.innerWidth / 2)).toBeLessThan(2)
     }
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -488,24 +481,24 @@ function Ledger({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Ledger defaultOpen />,
   play: async () => {
-    const sheet = await within(document.body).findByRole('dialog', { name: 'Vault ledger' })
+    const sheet = await screen.findByRole('dialog', { name: 'Vault ledger' })
     await waitFor(() => expect(sheet).toBeVisible())
     await expect(sheet).toHaveAccessibleDescription('Every withdrawal since 1991.')
   }
 }
 
+const openedInKeyboard = () => screen.getByRole('dialog', { name: 'Vault ledger' })
+
 /** Enter or Space opens the sheet, Tab stays inside it, and Escape closes it and returns focus. */
 export const Keyboard: Story = {
   render: () => <Ledger />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Open the ledger' })
-    const opened = () => body.getByRole('dialog', { name: 'Vault ledger' })
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await pressUntil('{Enter}', opened, { when: () => !body.queryByRole('dialog') })
-    const sheet = opened()
+    await pressUntil('{Enter}', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
+    const sheet = openedInKeyboard()
 
     // Focus moves into the popup, and Tab keeps it there (five presses outrun its three buttons).
     await waitFor(() => expect(sheet.contains(document.activeElement)).toBe(true))
@@ -515,19 +508,19 @@ export const Keyboard: Story = {
       await waitFor(() => expect(sheet.contains(document.activeElement)).toBe(true))
     }
     // The page behind is inert while the sheet is open.
-    await expect(body.queryByRole('button', { name: 'Open the ledger' })).toBeNull()
+    await expect(screen.queryByRole('button', { name: 'Open the ledger' })).toBeNull()
 
-    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
 
     // Space opens it too; focus lands on the first button, and Enter on it closes the sheet.
-    await pressUntil(' ', opened, { when: () => !body.queryByRole('dialog') })
-    await waitFor(() => expect(body.getByRole('button', { name: 'Sign it' })).toHaveFocus())
+    await pressUntil(' ', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Sign it' })).toHaveFocus())
     // One press: the control that takes it already holds focus (asserted above), and a second press
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

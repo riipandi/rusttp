@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
@@ -107,15 +107,13 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </PreviewCard>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     // Hovering the trigger reveals the preview card.
     await userEvent.hover(canvas.getByRole('button', { name: '@dumbledore' }))
-    await body.findByText('Joined September 1892')
+    await screen.findByText('Joined September 1892')
 
     // Hovering away dismisses it.
     await userEvent.unhover(canvas.getByRole('button', { name: '@dumbledore' }))
-    await waitFor(() => expect(body.queryByText('Joined September 1892')).toBeNull())
+    await waitFor(() => expect(screen.queryByText('Joined September 1892')).toBeNull())
   }
 }
 
@@ -144,13 +142,13 @@ export const Centered: Story = {
   play: async ({ canvas }) => {
     const trigger = canvas.getByRole('button', { name: '@hermione' })
     await userEvent.hover(trigger)
-    const card = await within(document.body).findByTestId('card')
+    const card = await screen.findByTestId('card')
     // The card scales in from its edge, so its middle settles once the transition ends.
     await waitFor(async () => {
       await expect(Math.abs(middle(card) - middle(trigger))).toBeLessThanOrEqual(1)
     })
     await userEvent.unhover(trigger)
-    await waitFor(() => expect(within(document.body).queryByTestId('card')).toBeNull())
+    await waitFor(() => expect(screen.queryByTestId('card')).toBeNull())
   }
 }
 
@@ -177,15 +175,14 @@ export const Sides: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     for (const side of sides) {
       const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
         name: side
       })
       await userEvent.hover(trigger)
-      await body.findByText(`Preview floats to the ${side}`)
+      await screen.findByText(`Preview floats to the ${side}`)
       await userEvent.unhover(trigger)
-      await waitFor(() => expect(body.queryByText(`Preview floats to the ${side}`)).toBeNull())
+      await waitFor(() => expect(screen.queryByText(`Preview floats to the ${side}`)).toBeNull())
     }
   }
 }
@@ -209,24 +206,24 @@ function Profile({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Profile defaultOpen />,
   play: async () => {
-    const card = await within(document.body).findByText('Transfiguration professor at Hogwarts.')
+    const card = await screen.findByText('Transfiguration professor at Hogwarts.')
     await waitFor(() => expect(card).toBeVisible())
   }
 }
+
+const cardInKeyboard = () => screen.queryByText('Transfiguration professor at Hogwarts.')
 
 /** Focusing the trigger opens the card, and Escape closes it. */
 export const Keyboard: Story = {
   render: () => <Profile />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: '@dumbledore' })
-    const card = () => body.queryByText('Transfiguration professor at Hogwarts.')
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await waitFor(() => expect(card()).toBeVisible())
+    await waitFor(() => expect(cardInKeyboard()).toBeVisible())
 
-    await pressUntil('{Escape}', () => expect(card()).toBeNull())
+    await pressUntil('{Escape}', () => expect(cardInKeyboard()).toBeNull())
     await expect(trigger).toHaveFocus()
   }
 }

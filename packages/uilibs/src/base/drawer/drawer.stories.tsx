@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
@@ -104,21 +104,19 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Drawer>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     await userEvent.click(canvas.getByRole('button', { name: 'Open the vault' }))
-    const dialog = await body.findByRole('dialog')
-    await expect(body.getByRole('heading', { name: 'Brew Polyjuice' })).toBeInTheDocument()
-    await expectTypeRole(body.getByRole('heading', { name: 'Brew Polyjuice' }), 'body1')
+    const dialog = await screen.findByRole('dialog')
+    await expect(screen.getByRole('heading', { name: 'Brew Polyjuice' })).toBeInTheDocument()
+    await expectTypeRole(screen.getByRole('heading', { name: 'Brew Polyjuice' }), 'body1')
 
     // Footer close buttons dismiss the drawer.
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 
     await userEvent.click(canvas.getByRole('button', { name: 'Open the vault' }))
-    await body.findByRole('dialog')
-    await userEvent.click(body.getByRole('button', { name: 'Begin brewing' }))
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await screen.findByRole('dialog')
+    await userEvent.click(screen.getByRole('button', { name: 'Begin brewing' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   }
 }
 
@@ -159,7 +157,6 @@ export const Directions: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const edges = { up: 'top', right: 'right', down: 'bottom', left: 'left' } as const
     for (const direction of directions) {
       await userEvent.click(
@@ -167,10 +164,10 @@ export const Directions: Story = {
           name: direction
         })
       )
-      const dialog = await body.findByRole('dialog')
+      const dialog = await screen.findByRole('dialog')
       await expectDockedTo(dialog, edges[direction])
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
   }
 }
@@ -210,7 +207,6 @@ export const Overlays: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => {
-    const body = within(document.body)
     const filters: string[] = []
     for (const overlay of overlays) {
       await userEvent.click(
@@ -218,11 +214,11 @@ export const Overlays: Story = {
           name: `Open ${overlay}`
         })
       )
-      const dialog = await body.findByRole('dialog', { name: `Overlay ${overlay}` })
+      const dialog = await screen.findByRole('dialog', { name: `Overlay ${overlay}` })
       // The popup sits in the viewport, which is the backdrop's sibling.
       filters.push(getComputedStyle(backdropOf(dialog.parentElement!)).backdropFilter)
       await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }
     await expect(filters).toEqual(['none', 'blur(4px)'])
   }
@@ -251,24 +247,25 @@ function Owlery({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Owlery defaultOpen />,
   play: async () => {
-    const dialog = await within(document.body).findByRole('dialog', { name: 'Send an owl' })
+    const dialog = await screen.findByRole('dialog', { name: 'Send an owl' })
     await waitFor(() => expect(dialog).toBeVisible())
     await expect(dialog).toHaveAccessibleDescription('The owl leaves at dawn.')
   }
 }
 
+const openedInKeyboard = () => screen.getByRole('dialog', { name: 'Send an owl' })
+const send = () => screen.getByRole('button', { name: 'Send it' })
+
 /** Enter or Space opens the drawer, Tab stays inside it, and Escape closes it and returns focus. */
 export const Keyboard: Story = {
   render: () => <Owlery />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const trigger = canvas.getByRole('button', { name: 'Open the owlery' })
-    const opened = () => body.getByRole('dialog', { name: 'Send an owl' })
 
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await pressUntil('{Enter}', opened, { when: () => !body.queryByRole('dialog') })
-    const dialog = opened()
+    await pressUntil('{Enter}', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
+    const dialog = openedInKeyboard()
 
     // Focus moves into the popup, and Tab keeps it there (five presses outrun its two buttons).
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true))
@@ -278,24 +275,23 @@ export const Keyboard: Story = {
       await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true))
     }
     // The page behind is inert while a modal drawer is open.
-    await expect(body.queryByRole('button', { name: 'Open the owlery' })).toBeNull()
+    await expect(screen.queryByRole('button', { name: 'Open the owlery' })).toBeNull()
 
-    await pressUntil('{Escape}', () => expect(body.queryByRole('dialog')).toBeNull())
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
 
     // Space opens it too; Enter on a footer button closes it and returns focus.
-    await pressUntil(' ', opened, { when: () => !body.queryByRole('dialog') })
+    await pressUntil(' ', openedInKeyboard, { when: () => !screen.queryByRole('dialog') })
     // Focus lands on the popup itself, and Tab moves on to its first button.
-    const send = () => body.getByRole('button', { name: 'Send it' })
-    await waitFor(() => expect(opened()).toHaveFocus())
+    await waitFor(() => expect(openedInKeyboard()).toHaveFocus())
     await pressUntil('{Tab}', () => expect(send()).toHaveFocus(), {
-      when: () => document.activeElement === opened()
+      when: () => document.activeElement === openedInKeyboard()
     })
     // One press: the control that takes it already holds focus (asserted above), and a second press
     // could land on the trigger as focus returns to it and reopen the popup. The popup stays in the
     // page for its exit animation, so the wait is longer on a loaded runner.
     await userEvent.keyboard('{Enter}')
-    await waitFor(() => expect(body.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(trigger).toHaveFocus())
   }
 }

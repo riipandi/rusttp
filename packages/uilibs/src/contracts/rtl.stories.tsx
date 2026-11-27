@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { useTable } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import { expect, waitFor, within } from 'storybook/test'
+import { expect, screen, waitFor, within } from 'storybook/test'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../base/accordion'
 import { Button } from '../base/button'
 import {
@@ -142,7 +142,7 @@ export const Menu: Story = {
   ),
   play: async () => {
     rtl()
-    const menu = await within(document.body).findByRole('menu')
+    const menu = await screen.findByRole('menu')
     await waitFor(() => expect(menu).toBeVisible())
     const check = within(menu).getByRole('menuitemcheckbox')
     // The trailing check is at the inline end, the left edge, and room is reserved on that side.
@@ -180,7 +180,7 @@ export const ComboboxPopup: Story = {
   ),
   play: async () => {
     rtl()
-    const list = await within(document.body).findByRole('listbox')
+    const list = await screen.findByRole('listbox')
     const selected = within(list).getByRole('option', { name: 'Gryffindor' })
     await waitFor(() => expect(selected).toBeVisible())
     await waitFor(() => expect(atLeft(selected.querySelector('svg')!, selected)).toBe(true))
@@ -438,7 +438,7 @@ export const DialogClose: Story = {
   ),
   play: async () => {
     rtl()
-    const dialog = await within(document.body).findByRole('dialog', {
+    const dialog = await screen.findByRole('dialog', {
       name: 'Enter the passphrase'
     })
     const close = within(dialog).getByRole('button', { name: 'Close' })
@@ -461,7 +461,7 @@ export const SheetClose: Story = {
   ),
   play: async () => {
     rtl()
-    const sheet = await within(document.body).findByRole('dialog', { name: 'Vault ledger' })
+    const sheet = await screen.findByRole('dialog', { name: 'Vault ledger' })
     const close = within(sheet).getByRole('button', { name: 'Close' })
     await waitFor(() => expect(atLeft(close, sheet)).toBe(true))
   }

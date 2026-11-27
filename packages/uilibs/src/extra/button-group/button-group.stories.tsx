@@ -1,6 +1,6 @@
 import { ChevronDown } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { Button } from '../../base/button'
 import {
   DropdownMenu,
@@ -118,8 +118,6 @@ export const Split: Story = {
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
-
     const trigger = canvas.getByRole('button', { name: 'More apparition options' })
     const style = getComputedStyle(trigger)
     await expect(style.borderTopLeftRadius).toBe('0px')
@@ -127,9 +125,9 @@ export const Split: Story = {
     await expect(style.borderTopRightRadius).not.toBe('0px')
 
     await userEvent.click(trigger)
-    await body.findByRole('menu')
-    await userEvent.click(body.getByRole('menuitem', { name: 'Apparate to Hogsmeade' }))
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await screen.findByRole('menu')
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Apparate to Hogsmeade' }))
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
   }
 }
 
@@ -266,6 +264,8 @@ export const Defaults: Story = {
 const onApparate = fn()
 const onDisapparate = fn()
 
+const menuInKeyboard = () => screen.queryByRole('menu')
+
 /** Tab visits each member in order; Enter and Space press a button; the split button's menu opens with Enter. */
 export const Keyboard: Story = {
   render: () => (
@@ -284,13 +284,11 @@ export const Keyboard: Story = {
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     onApparate.mockClear()
     onDisapparate.mockClear()
     const primary = canvas.getByRole('button', { name: 'Apparate' })
     const more = canvas.getByRole('button', { name: 'More apparition options' })
     const last = canvas.getByRole('button', { name: 'Disapparate' })
-    const menu = () => body.queryByRole('menu')
 
     await expect(canvas.getByRole('group', { name: 'Apparition' })).toBeInTheDocument()
     primary.focus()
@@ -311,8 +309,10 @@ export const Keyboard: Story = {
     // Enter on the menu button opens its menu; Escape closes it and focus returns to the button.
     await userEvent.tab()
     await waitFor(() => expect(more).toHaveFocus())
-    await pressUntil('{Enter}', () => expect(menu()).not.toBeNull(), { when: () => !menu() })
-    await pressUntil('{Escape}', () => expect(menu()).toBeNull())
+    await pressUntil('{Enter}', () => expect(menuInKeyboard()).not.toBeNull(), {
+      when: () => !menuInKeyboard()
+    })
+    await pressUntil('{Escape}', () => expect(menuInKeyboard()).toBeNull())
     await waitFor(() => expect(more).toHaveFocus())
     await expect(onDisapparate).not.toHaveBeenCalled()
   }

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../base/tooltip'
 import { colors } from '../../styles/colors.stylex'
 import { breakpoints, fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
@@ -150,7 +150,7 @@ async function expectHeatmapStory(
   const cell = denseDay ? document.querySelector('[data-level="4"]') : null
   if (denseDay && cell) {
     await userEvent.hover(cell)
-    await waitFor(() => expect(within(document.body).getByText(cellLabel(denseDay))).toBeVisible())
+    await waitFor(() => expect(screen.getByText(cellLabel(denseDay))).toBeVisible())
   }
 }
 

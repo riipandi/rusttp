@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   controlSizeNames,
   controlVariantNames,
@@ -117,21 +117,20 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     </Autocomplete>
   ),
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const input = canvas.getByPlaceholderText('Search spells…')
 
     // Typing filters the suggestion list.
     await userEvent.type(input, 'lumos')
-    await waitFor(() => expect(body.getByText('Lumos')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Lumos')).toBeInTheDocument())
 
     // Selecting a suggestion fills the free-text input.
-    await userEvent.click(body.getByText('Lumos'))
+    await userEvent.click(screen.getByText('Lumos'))
     await waitFor(() => expect(input).toHaveValue('Lumos'))
 
     // No match renders the empty message.
     await userEvent.clear(input)
     await userEvent.type(input, 'hocuspocus')
-    await waitFor(() => expect(body.getByText('No spells found.')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('No spells found.')).toBeInTheDocument())
   }
 }
 
@@ -313,28 +312,29 @@ function Spells({ defaultOpen }: { defaultOpen?: boolean }) {
 export const Open: Story = {
   render: () => <Spells defaultOpen />,
   play: async () => {
-    const list = await within(document.body).findByRole('listbox')
+    const list = await screen.findByRole('listbox')
     await waitFor(() => expect(list).toBeVisible())
     await expect(within(list).getAllByRole('option')).toHaveLength(tags.length)
   }
 }
 
+const optionsInKeyboard = () => screen.queryAllByRole('option')
+
 /** The arrows open the list and move a visible highlight through it, Enter picks, and Escape closes it. */
 export const Keyboard: Story = {
   render: () => <Spells />,
   play: async ({ canvas }) => {
-    const body = within(document.body)
     const input = canvas.getByRole('combobox', { name: 'Spell' })
-    const options = () => body.queryAllByRole('option')
     // `aria-expanded` follows the open state at once; the listbox stays in the page while it fades out.
     const expanded = () => input.getAttribute('aria-expanded') === 'true'
-    const index = () => options().findIndex((option) => option.hasAttribute('data-highlighted'))
+    const index = () =>
+      optionsInKeyboard().findIndex((option) => option.hasAttribute('data-highlighted'))
 
     await userEvent.tab()
     await expect(input).toHaveFocus()
 
     // ArrowDown opens the list; a further ArrowDown highlights the first option, then the next.
-    await pressUntil('{ArrowDown}', () => expect(body.getByRole('listbox')).toBeVisible(), {
+    await pressUntil('{ArrowDown}', () => expect(screen.getByRole('listbox')).toBeVisible(), {
       when: () => !expanded()
     })
     await pressUntil('{ArrowDown}', () => expect(index()).toBeGreaterThanOrEqual(0), {
@@ -351,22 +351,22 @@ export const Keyboard: Story = {
     await pressUntil('{ArrowDown}', () => expect(index()).toBe(first + 1), {
       when: () => index() === first
     })
-    const highlighted = options()[first + 1]!
-    await expectHighlightedItem(highlighted, options()[first])
+    const highlighted = optionsInKeyboard()[first + 1]!
+    await expectHighlightedItem(highlighted, optionsInKeyboard()[first])
 
     // Enter fills the input with the highlighted option and closes the list; focus stays in the input.
     const picked = highlighted.textContent ?? ''
     await pressUntil('{Enter}', () => expect(input).toHaveValue(picked), {
       when: expanded
     })
-    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     await expect(input).toHaveFocus()
 
     // Typing filters the list, and Escape closes it.
     await userEvent.clear(input)
     await userEvent.type(input, 'lum')
-    await waitFor(() => expect(options()).toHaveLength(1))
-    await pressUntil('{Escape}', () => expect(body.queryByRole('listbox')).toBeNull(), {
+    await waitFor(() => expect(optionsInKeyboard()).toHaveLength(1))
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('listbox')).toBeNull(), {
       when: expanded
     })
     await expect(input).toHaveFocus()
