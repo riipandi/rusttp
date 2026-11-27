@@ -1,8 +1,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-# The uilibs gate: typecheck, every story with its axe check in light and dark, the unit
-# project, and the Storybook build. Pushes and pull requests run it in Chromium when the
-# library changes; a nightly run repeats the stories in Firefox and WebKit.
+# The uilibs gate: typecheck, the docs check and the Storybook build in one job, and the three
+# test projects (every story with its axe check in light and dark, and the unit project) in
+# parallel, one runner each. Pushes and pull requests run it in Chromium when the library
+# changes; a nightly run repeats the stories in Firefox and WebKit.
 name: uilibs
 
 on:
@@ -32,11 +33,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gate:
-    name: Gate (Chromium)
+  checks:
+    name: Checks
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -51,21 +52,59 @@ jobs:
           node-version: 26
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter uilibs exec playwright install --with-deps chromium
       - run: pnpm --filter uilibs typecheck
       # Props tables and Playground controls against the code; reads source only, so no browser.
       - run: pnpm --filter uilibs check:docs
-      - run: pnpm --filter uilibs test
+      - run: pnpm --filter uilibs storybook:build
+
+  tests:
+    name: Tests (${{ matrix.project }})
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [storybook, storybook-dark, unit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+
+      - run: pnpm install --frozen-lockfile
+
+      # The browser download is cached by the Playwright version; the system libraries are not
+      # part of the cache, so a hit still installs them.
+      - id: playwright
+        run: echo "version=$(pnpm --filter uilibs exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm --filter uilibs exec playwright install --with-deps chromium
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: pnpm --filter uilibs exec playwright install-deps chromium
+
+      - run: pnpm --filter uilibs exec vitest run --project ${{ matrix.project }}
       # `.vitest` is a hidden directory, so the action needs `include-hidden-files`; without it the upload is empty.
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: uilibs-failure-screenshots
+          name: uilibs-failure-screenshots-${{ matrix.project }}
           path: packages/uilibs/.vitest/attachments
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
-      - run: pnpm --filter uilibs storybook:build
 
   engines:
     name: Stories (${{ matrix.browser }})
