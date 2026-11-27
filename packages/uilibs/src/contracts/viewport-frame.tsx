@@ -11,6 +11,18 @@ const styles = stylex.create({
 
 const BLANK = '<!doctype html><html><head></head><body style="margin:0"></body></html>'
 
+const COPY_MARK = 'data-viewport-copy'
+
+/** Replaces the frame's copy of the page's stylesheets with the page's current ones. */
+function copyStyles(frame: Document) {
+  for (const old of frame.head.querySelectorAll(`[${COPY_MARK}]`)) old.remove()
+  for (const sheet of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
+    const copy = frame.importNode(sheet, true)
+    copy.setAttribute(COPY_MARK, '')
+    frame.head.appendChild(copy)
+  }
+}
+
 /**
  * Renders its children in an `iframe` of a fixed width, so a media query sees that width and not the
  * canvas's: the way a story shows, and a `play` asserts, one layout per breakpoint (390 px a phone,
@@ -30,12 +42,15 @@ export function ViewportFrame({
 }) {
   const [frame, setFrame] = React.useState<Document | null>(null)
 
+  // The styles are copied before the children render, so a `play` that reads the frame the moment
+  // its content exists never measures an unstyled page (a copy made in an effect came a frame late).
   const onLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
     const doc = event.currentTarget.contentDocument
     if (!doc) return
     for (const { name, value } of document.documentElement.attributes) {
       doc.documentElement.setAttribute(name, value)
     }
+    copyStyles(doc)
     setFrame(doc)
   }
 
@@ -43,16 +58,7 @@ export function ViewportFrame({
   // goes stale: copy again on every change to the page's styles.
   React.useEffect(() => {
     if (!frame) return undefined
-    let copies: Node[] = []
-    const copy = () => {
-      for (const old of copies) old.parentNode?.removeChild(old)
-      copies = Array.from(
-        document.head.querySelectorAll('style, link[rel="stylesheet"]'),
-        (sheet) => frame.head.appendChild(sheet.cloneNode(true))
-      )
-    }
-    copy()
-    const observer = new MutationObserver(copy)
+    const observer = new MutationObserver(() => copyStyles(frame))
     observer.observe(document.head, { childList: true, characterData: true, subtree: true })
     return () => observer.disconnect()
   }, [frame])
