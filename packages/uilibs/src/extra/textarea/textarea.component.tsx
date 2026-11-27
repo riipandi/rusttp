@@ -19,6 +19,12 @@ export interface TextareaProps extends Omit<
   autoResize?: boolean
 }
 
+function resizeToContent(element: HTMLTextAreaElement | null) {
+  if (!element) return
+  element.style.height = 'auto'
+  element.style.height = `${element.scrollHeight}px`
+}
+
 /** A multiline `Field` control: inside a `Field` it takes the label, description, error, and invalid state. */
 export function Textarea({
   size = 'medium',
@@ -35,27 +41,28 @@ export function Textarea({
   autoFocus,
   ...props
 }: TextareaProps) {
-  const resize = useCallback((element: HTMLTextAreaElement | null) => {
-    if (!element) return
-    element.style.height = 'auto'
-    element.style.height = `${element.scrollHeight}px`
-  }, [])
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
 
   const setRef = useCallback(
     (element: HTMLElement | null) => {
       const textarea = element instanceof HTMLTextAreaElement ? element : null
-      if (autoResize) resize(textarea)
+      textareaRef.current = textarea
       if (typeof ref === 'function') return ref(textarea)
       if (ref) ref.current = textarea
     },
-    [autoResize, ref, resize]
+    [ref]
   )
+
+  // Measure on mount and whenever a controlled `value` changes, however it changed.
+  React.useLayoutEffect(() => {
+    if (autoResize) resizeToContent(textareaRef.current)
+  }, [autoResize, value])
 
   // What the Field control owns: its id, name, value, disabled and autofocus state.
   const fieldProps = { id, name, value, defaultValue, disabled, autoFocus }
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (autoResize) resize(event.currentTarget)
+    if (autoResize) resizeToContent(event.currentTarget)
     onChange?.(event)
   }
 

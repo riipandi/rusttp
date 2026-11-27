@@ -77,5 +77,5 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 - Outside a `Field`, name the textarea with `aria-label`.
 - `Textarea` has no `invalid` prop. Set `invalid` on the `Field`, or let its validation set it.
 - `autoResize` writes an inline `height` from the content, so a height in `style` does not apply.
-- `autoResize` measures on mount and on typing only. A `value` set from outside does not re-measure.
+- `autoResize` measures on mount, on typing, and whenever a controlled `value` changes, so a value set from outside also fits.
 - `faded`, `ghost`, and `headless` have no visible edge at rest, so give the textarea a visible label.
