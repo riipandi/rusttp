@@ -1100,7 +1100,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
         size: 130
       }
     ],
-    []
+    [tableHolder]
   )
   const table = useTable({
     features: dataGridFeatures,
