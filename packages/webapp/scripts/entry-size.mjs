@@ -9,9 +9,9 @@ import { fileURLToPath } from 'node:url'
 import { gzipSync } from 'node:zlib'
 
 // Measured after the tooltip left the root provider (plan 00005, phase 2): 458 KB raw, 146 KB gzip,
-// plus about 5%. The CSS limits are the minified production sheet (plan 00014, phase 10: 69.3 KB
-// raw, 18.4 KB gzip) plus about 5%.
-const limits = { rawKB: 480, gzipKB: 152, cssRawKB: 73, cssGzipKB: 19.3 }
+// plus about 5%. The CSS limits are the minified production sheet after the responsive cut and the
+// single responsive stylesheet (plan 00014, phase 46: 66.9 KB raw, 17.9 KB gzip) plus about 5%.
+const limits = { rawKB: 480, gzipKB: 152, cssRawKB: 70.5, cssGzipKB: 18.8 }
 
 const outDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../apps/server/frontend')
 const manifest = JSON.parse(readFileSync(resolve(outDir, '.vite/manifest.json'), 'utf8'))
