@@ -4,7 +4,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
-import { untilGone } from '../../contracts/overlay'
+import { expectScrollsIntoView, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { Icon } from '../../extra/icon'
 import { Button } from '../button'
@@ -492,6 +492,69 @@ function Seal({ defaultOpen }: { defaultOpen?: boolean }) {
 
 // The a11y gate runs after `play`, when a dialog a play opened has closed again: this story keeps
 // the popup and its backdrop open so the gate checks them.
+const warnings = [
+  'The Room of Requirement holds every object a student has ever hidden there.',
+  'Vanishing a cabinet does not return what was inside it.',
+  'The Ministry keeps no copy of what is vanished at Hogwarts.',
+  'A door that is vanished will not appear again for the same wizard.',
+  'Fiendfyre cannot be called off once the room is emptied.',
+  'Every cursed object kept there is released into the corridor at once.',
+  'Peeves will be told, and he will tell the whole school before supper.',
+  'The house-elves who tend the room are not asked whether they agree.',
+  'Nothing vanished here can be returned to its owner, whoever that was.'
+]
+
+/** In a window shorter than the alert dialog, it scrolls as a whole: its title and its actions can both be reached. */
+export const ShortWindow: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<AlertDialog>
+  <AlertDialogTrigger render={<Button variant='outline' />}>Vanish the room</AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Vanish the room?</AlertDialogTitle>
+      <AlertDialogDescription>…</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Keep it</AlertDialogCancel>
+      <AlertDialogAction color='critical'>Vanish</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>`
+      }
+    }
+  },
+  name: 'Short window',
+  globals: { viewport: { value: 'short', isRotated: false } },
+  render: () => (
+    <AlertDialog>
+      <AlertDialogTrigger render={<Button variant='outline' />}>Vanish the room</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Vanish the room?</AlertDialogTitle>
+          <AlertDialogDescription>{warnings.join(' ')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep it</AlertDialogCancel>
+          <AlertDialogAction color='critical'>Vanish</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    await expect(window.innerHeight).toBe(320)
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Vanish the room' }))
+    const dialog = await body.findByRole('alertdialog', { name: 'Vanish the room?' })
+    await expect(dialog.getBoundingClientRect().height).toBeGreaterThan(window.innerHeight)
+    await expectScrollsIntoView(body.getByRole('button', { name: 'Vanish' }), 'end')
+    await expectScrollsIntoView(body.getByText('Vanish the room?'), 'start')
+    await userEvent.keyboard('{Escape}')
+    await untilGone(() => body.queryByRole('alertdialog'))
+  }
+}
+
 export const Open: Story = {
   render: () => <Seal defaultOpen />,
   play: async () => {

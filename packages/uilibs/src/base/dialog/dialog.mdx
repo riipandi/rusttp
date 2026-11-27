@@ -67,6 +67,10 @@ Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props no
 
 <Canvas of={Stories.Scrollable} />
 
+### Short windows
+
+<Canvas of={Stories.ShortWindow} />
+
 ### Without the close button
 
 <Canvas of={Stories.NoCloseButton} />
@@ -142,4 +146,4 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 - `DialogContent` already renders `DialogPortal` and `DialogOverlay`; do not wrap it in them.
 - With `showCloseButton={false}`, give the dialog a `DialogClose`, or the pointer has no way to dismiss it.
 - `blurredOverlay` on `DialogContent` is forwarded to its overlay. Set it on `DialogOverlay` only in a custom composition.
-- The popup has no maximum height or scrolling of its own. For long content, set a max height in `style` and scroll an inner element, as in the Scrollable example.
+- A popup taller than the window scrolls as a whole with its backdrop, so the title and the footer can always be reached. To keep the header and footer in place and scroll only the body, set a max height in `style` and scroll an inner element, as in the Scrollable example.

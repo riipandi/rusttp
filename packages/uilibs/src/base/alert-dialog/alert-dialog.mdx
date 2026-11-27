@@ -79,6 +79,10 @@ The action and the cancel button take the Button `variant`.
 
 <Canvas of={Stories.Colors} />
 
+### Short windows
+
+<Canvas of={Stories.ShortWindow} />
+
 ### Keep it open while work runs
 
 <Canvas of={Stories.Destructive} />
@@ -163,4 +167,5 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 
 - `AlertDialogAction` and `AlertDialogCancel` both close the dialog. To keep it open while work runs, call `event.preventBaseUIHandler()` in the action's `onClick` and close through the dialog's `open` state later.
 - `AlertDialogContent` already wraps itself in a portal with an overlay. Do not add `AlertDialogPortal` around it.
+- A dialog taller than the window scrolls as a whole with its backdrop, so its title and actions can always be reached.
 - `medium` is wider than `small` only at 660px and up. Below that both sizes have the same width.

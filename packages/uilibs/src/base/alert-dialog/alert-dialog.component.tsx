@@ -68,10 +68,12 @@ export function AlertDialogContent({
   return (
     <BaseAlertDialog.Portal container={usePortalContainer()}>
       <AlertDialogOverlay blurredOverlay={blurredOverlay} />
-      <BaseAlertDialog.Popup
-        {...props}
-        {...stylex.props(s.content, sizes[size], ring({ shadow: shadow.overlay }), style)}
-      />
+      <BaseAlertDialog.Viewport {...stylex.props(s.viewport)}>
+        <BaseAlertDialog.Popup
+          {...props}
+          {...stylex.props(s.content, sizes[size], ring({ shadow: shadow.overlay }), style)}
+        />
+      </BaseAlertDialog.Viewport>
     </BaseAlertDialog.Portal>
   )
 }

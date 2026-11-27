@@ -32,6 +32,23 @@ export function untilOpaque(selector: string) {
   )
 }
 
+/**
+ * Asserts that `element` can be scrolled fully into the window. A tall popup in a short window must
+ * scroll as a whole: a fixed popup taller than the window is cut off and no scrolling reaches it.
+ * It scrolls again on every try, since a popup that is still scaling in moves under the scroll.
+ */
+export function expectScrollsIntoView(element: HTMLElement, block: 'start' | 'end') {
+  return waitFor(
+    async () => {
+      element.scrollIntoView({ block })
+      const { top, bottom } = element.getBoundingClientRect()
+      await expect(top).toBeGreaterThanOrEqual(-1)
+      await expect(bottom).toBeLessThanOrEqual(window.innerHeight + 1)
+    },
+    { timeout: OVERLAY_TIMEOUT }
+  )
+}
+
 /** The text of the screen-reader announcement a keyboard drag makes. */
 export const live = () => document.querySelector('[aria-live]')?.textContent ?? ''
 

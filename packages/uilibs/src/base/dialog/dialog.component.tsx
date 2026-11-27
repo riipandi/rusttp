@@ -74,21 +74,23 @@ export function DialogContent({
   return (
     <BaseDialog.Portal container={usePortalContainer()}>
       <DialogOverlay blurredOverlay={blurredOverlay} />
-      <BaseDialog.Popup
-        {...props}
-        {...stylex.props(
-          stylex.defaultMarker(),
-          s.content,
-          size === 'small' && s.contentSmall,
-          ring({ shadow: shadow.overlay }),
-          style
-        )}
-      >
-        {children}
-        {showCloseButton && (
-          <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
-        )}
-      </BaseDialog.Popup>
+      <BaseDialog.Viewport {...stylex.props(s.viewport)}>
+        <BaseDialog.Popup
+          {...props}
+          {...stylex.props(
+            stylex.defaultMarker(),
+            s.content,
+            size === 'small' && s.contentSmall,
+            ring({ shadow: shadow.overlay }),
+            style
+          )}
+        >
+          {children}
+          {showCloseButton && (
+            <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
+          )}
+        </BaseDialog.Popup>
+      </BaseDialog.Viewport>
     </BaseDialog.Portal>
   )
 }

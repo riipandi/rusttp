@@ -170,12 +170,17 @@ export function cellOf(root: HTMLElement, axis: string, value: string): HTMLElem
  * background. A focus guard sits between them, so it is not the popup's previous sibling.
  */
 export function backdropOf(popup: HTMLElement): HTMLElement {
-  const backdrop = Array.from(popup.parentElement?.children ?? []).find(
-    (el): el is HTMLElement =>
-      el instanceof HTMLElement && getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'
-  )
-  if (!backdrop) throw new Error('No backdrop beside the popup')
-  return backdrop
+  // The popup may sit in a scrolling viewport, so look beside it and beside each parent in turn.
+  for (let node = popup; node.parentElement && node !== document.body; node = node.parentElement) {
+    const backdrop = Array.from(node.parentElement.children).find(
+      (el): el is HTMLElement =>
+        el !== node &&
+        el instanceof HTMLElement &&
+        getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)'
+    )
+    if (backdrop) return backdrop
+  }
+  throw new Error('No backdrop beside the popup')
 }
 
 /**

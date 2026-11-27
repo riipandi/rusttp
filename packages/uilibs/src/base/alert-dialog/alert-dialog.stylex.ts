@@ -19,6 +19,16 @@ export const alertDialogStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.overlay
   },
+  // The scrolling outer box: a popup taller than the window scrolls as a whole, centered when it
+  // fits (`margin: auto` on the popup) and top-aligned, never cut off, when it does not.
+  viewport: {
+    display: 'flex',
+    inset: 0,
+    overflowY: 'auto',
+    paddingBlock: unit.x4,
+    position: 'fixed',
+    zIndex: zIndex.modal
+  },
   content: {
     backgroundColor: colors.backgroundElevationOverlay,
     borderRadius: radius.xxlarge,
@@ -27,7 +37,7 @@ export const alertDialogStyles = stylex.create({
     flexDirection: 'column',
     fontFamily: fontFamily.body,
     gap: unit.x4,
-    left: '50%',
+    margin: 'auto',
     maxWidth: `calc(100% - ${unit.x8})`,
     opacity: {
       default: 1,
@@ -35,20 +45,18 @@ export const alertDialogStyles = stylex.create({
       '[data-ending-style]': 0
     },
     padding: unit.x4,
-    position: 'fixed',
-    top: '50%',
+    position: 'relative',
     transform: {
-      default: 'translate(-50%, -50%) scale(1)',
-      '[data-starting-style]': 'translate(-50%, -50%) scale(0.97)',
-      '[data-ending-style]': 'translate(-50%, -50%) scale(0.97)'
+      default: 'scale(1)',
+      '[data-starting-style]': 'scale(0.97)',
+      '[data-ending-style]': 'scale(0.97)'
     },
     transitionDuration: duration.medium,
     transitionProperty: {
       default: 'opacity, transform',
       '@media (prefers-reduced-motion: reduce)': 'opacity'
     },
-    transitionTimingFunction: easing.decelerate,
-    zIndex: zIndex.modal
+    transitionTimingFunction: easing.decelerate
   },
   header: {
     alignItems: {

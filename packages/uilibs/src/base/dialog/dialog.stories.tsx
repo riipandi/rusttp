@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { backdropOf, cellOf, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { expectScrollsIntoView, untilGone } from '../../contracts/overlay'
 import { Axis } from '../../contracts/story-axes'
 import { container, fontSize, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
@@ -216,6 +217,67 @@ export const Scrollable: Story = {
       </DialogContent>
     </Dialog>
   )
+}
+
+const owlRules = [
+  'Owls deliver post to the address on the envelope and to no other.',
+  'A letter for the Headmaster is carried to the Great Hall at breakfast.',
+  'Packages heavier than a Quaffle travel by a barn owl in pairs.',
+  'An owl that returns with an unopened letter is fed before it is asked anything.',
+  'Howlers are delivered at the table where the reader sits.',
+  'Replies to the Ministry are written in black ink on one side of the parchment.'
+]
+
+/** In a window shorter than the dialog, the dialog scrolls as a whole: its title and its footer can both be reached. */
+export const ShortWindow: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Dialog>
+  <DialogTrigger render={<Button variant='outline' />}>Read the owl rules</DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Owl post rules</DialogTitle>
+    </DialogHeader>
+    {rules.map((rule) => <p key={rule}>{rule}</p>)}
+    <DialogFooter>
+      <DialogClose render={<Button />}>Understood</DialogClose>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`
+      }
+    }
+  },
+  name: 'Short window',
+  globals: { viewport: { value: 'short', isRotated: false } },
+  render: () => (
+    <Dialog>
+      <DialogTrigger render={<Button variant='outline' />}>Read the owl rules</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Owl post rules</DialogTitle>
+        </DialogHeader>
+        {owlRules.map((rule) => (
+          <p key={rule}>{rule}</p>
+        ))}
+        <DialogFooter>
+          <DialogClose render={<Button />}>Understood</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body)
+    await expect(window.innerHeight).toBe(320)
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Read the owl rules' }))
+    const dialog = await body.findByRole('dialog', { name: 'Owl post rules' })
+    // The window is shorter than the dialog, or the check below proves nothing.
+    await expect(dialog.getBoundingClientRect().height).toBeGreaterThan(window.innerHeight)
+    await expectScrollsIntoView(body.getByRole('button', { name: 'Understood' }), 'end')
+    await expectScrollsIntoView(body.getByText('Owl post rules'), 'start')
+    await userEvent.keyboard('{Escape}')
+    await untilGone(() => body.queryByRole('dialog'))
+  }
 }
 
 export const NoCloseButton: Story = {

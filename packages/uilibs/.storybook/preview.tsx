@@ -158,7 +158,9 @@ const preview: Preview = {
     viewport: {
       options: {
         phone: { name: 'Phone', styles: { width: '390px', height: '844px' }, type: 'mobile' },
-        desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' }
+        desktop: { name: 'Desktop', styles: { width: '1200px', height: '900px' }, type: 'desktop' },
+        // A phone turned on its side with the keyboard up: a tall popup must scroll in it.
+        short: { name: 'Short', styles: { width: '390px', height: '320px' }, type: 'mobile' }
       }
     },
     options: {
