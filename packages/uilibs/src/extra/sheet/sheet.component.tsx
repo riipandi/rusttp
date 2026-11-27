@@ -13,7 +13,6 @@ export type SheetSide = 'top' | 'right' | 'bottom' | 'left'
 export const Sheet = BaseDialog.Root
 export const SheetTrigger = BaseDialog.Trigger
 export const SheetClose = BaseDialog.Close
-export const SheetPortal = BaseDialog.Portal
 
 export function SheetOverlay({
   blurredOverlay = false,

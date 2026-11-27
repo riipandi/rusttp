@@ -18,7 +18,6 @@ import {
   MenubarItem,
   MenubarLabel,
   MenubarMenu,
-  MenubarPortal,
   MenubarRadioGroup,
   MenubarRadioItem,
   MenubarSeparator,
@@ -45,7 +44,6 @@ Built on Base UI [Menubar](https://base-ui.com/react/components/menubar). Props 
 - **MenubarRadioGroup**, **MenubarRadioItem:** a set of choices, of which one is chosen.
 - **MenubarSeparator:** a divider between items.
 - **MenubarSub**, **MenubarSubTrigger**, **MenubarSubContent:** a submenu. The trigger renders the chevron itself.
-- **MenubarPortal:** exported only for custom compositions. `MenubarContent` already includes it.
 
 ```jsx
 <Menubar>
@@ -104,7 +102,7 @@ The bar is a `menubar` whose triggers are `menuitem`s, and each popup is a `menu
 
 ## API reference
 
-Every part except `MenubarMenu`, `MenubarGroup`, `MenubarPortal`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `MenubarContent` and `MenubarSubContent` it styles the popup.
+Every part except `MenubarMenu`, `MenubarGroup`, `MenubarSub`, and `MenubarRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `MenubarContent` and `MenubarSubContent` it styles the popup.
 
 Every part other than `Menubar`, `MenubarTrigger`, and `MenubarContent` is the matching Dropdown Menu part under another name (`MenubarItem` is `DropdownMenuItem`). Their props and data attributes (`color`, `icon`, `inset`, `data-highlighted`, and the rest) are listed on the Dropdown Menu page.
 

@@ -33,28 +33,23 @@ import { Menu as BaseMenu } from '@base-ui/react/menu'
 import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { glyphSize } from '../../styles/glyph'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import { highlightedItem } from '../../styles/popup.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
-import { mirrorInRtl, ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { mirrorInRtl } from '../../styles/utils.stylex'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { dropdownMenuStyles as s } from './dropdown-menu.stylex'
 
 export const DropdownMenu = BaseMenu.Root
 export const DropdownMenuTrigger = BaseMenu.Trigger
 export const DropdownMenuGroup = BaseMenu.Group
-export const DropdownMenuPortal = BaseMenu.Portal
 export const DropdownMenuSub = BaseMenu.SubmenuRoot
 export const DropdownMenuRadioGroup = BaseMenu.RadioGroup
 
 export interface DropdownMenuContentProps
   extends
     Omit<React.ComponentProps<typeof BaseMenu.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseMenu.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset'
-    >,
+    PositionerProps,
     StyleProp {}
 
 export function DropdownMenuContent({
@@ -63,30 +58,27 @@ export function DropdownMenuContent({
   sideOffset = 4,
   align = 'start',
   alignOffset = 0,
+  collisionAvoidance,
+  collisionPadding,
+  anchor,
   ...props
 }: DropdownMenuContentProps) {
   return (
-    <BaseMenu.Portal container={usePortalContainer()}>
-      <BaseMenu.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseMenu.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BaseMenu.Positioner>
-    </BaseMenu.Portal>
+    <PopupShell
+      parts={BaseMenu}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }
 

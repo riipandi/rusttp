@@ -18,13 +18,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger
 } from 'uilibs/base/dialog'
 ```
 
-Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through. `Dialog`, `DialogTrigger`, `DialogPortal`, and `DialogClose` are the Base UI parts unchanged.
+Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props not listed here pass through. `Dialog`, `DialogTrigger`, and `DialogClose` are the Base UI parts unchanged.
 
 ## Anatomy
 
@@ -36,7 +35,7 @@ Built on Base UI [Dialog](https://base-ui.com/react/components/dialog). Props no
 - **DialogDescription:** a short description under the title.
 - **DialogFooter:** a container for the actions.
 - **DialogClose:** a button that closes the dialog.
-- **DialogPortal** and **DialogOverlay:** the portal and the backdrop. They are exported only for custom compositions.
+- **DialogOverlay:** the backdrop. It is exported only for custom compositions.
 
 ```jsx
 <Dialog>
@@ -143,7 +142,7 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ## Caveats
 
-- `DialogContent` already renders `DialogPortal` and `DialogOverlay`; do not wrap it in them.
+- `DialogContent` already renders its portal and `DialogOverlay`; do not wrap it in them.
 - With `showCloseButton={false}`, give the dialog a `DialogClose`, or the pointer has no way to dismiss it.
 - `blurredOverlay` on `DialogContent` is forwarded to its overlay. Set it on `DialogOverlay` only in a custom composition.
 - A popup taller than the window scrolls as a whole with its backdrop, so the title and the footer can always be reached. To keep the header and footer in place and scroll only the body, set a max height in `style` and scroll an inner element, as in the Scrollable example.

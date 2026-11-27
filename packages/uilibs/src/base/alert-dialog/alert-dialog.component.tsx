@@ -33,7 +33,6 @@ import { alertDialogStyles as s, alertDialogSizes as sizes } from './alert-dialo
 
 export const AlertDialog = BaseAlertDialog.Root
 export const AlertDialogTrigger = BaseAlertDialog.Trigger
-export const AlertDialogPortal = BaseAlertDialog.Portal
 
 export function AlertDialogOverlay({
   blurredOverlay = false,

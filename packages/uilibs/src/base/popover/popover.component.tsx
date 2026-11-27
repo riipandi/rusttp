@@ -25,11 +25,9 @@
 import { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
-import { popupFx } from '../../styles/popup.stylex'
 import type { StyleProp } from '../../styles/types'
-import { ring, type UnitStep } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import type { UnitStep } from '../../styles/utils.stylex'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
 
 export const Popover = BasePopover.Root
@@ -39,10 +37,7 @@ export const PopoverClose = BasePopover.Close
 export interface PopoverContentProps
   extends
     Omit<React.ComponentProps<typeof BasePopover.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BasePopover.Positioner>,
-      'align' | 'alignOffset' | 'collisionAvoidance' | 'collisionPadding' | 'side' | 'sideOffset'
-    > {
+    PositionerProps {
   /** The `shadow` token the popup draws: `outline`, `raised` (default), or the deepest `overlay`. */
   elevation?: 'outline' | 'raised' | 'overlay'
   /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
@@ -63,34 +58,26 @@ export function PopoverContent({
   alignOffset = 0,
   collisionAvoidance,
   collisionPadding,
+  anchor,
   ...props
 }: PopoverContentProps) {
   return (
-    <BasePopover.Portal container={usePortalContainer()}>
-      <BasePopover.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        collisionAvoidance={collisionAvoidance}
-        collisionPadding={collisionPadding}
-        side={side}
-        sideOffset={sideOffset}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BasePopover.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            popoverPadding[padding],
-            popoverRadii[borderRadius],
-            ring({ shadow: shadow[elevation] }),
-            style
-          )}
-        />
-      </BasePopover.Positioner>
-    </BasePopover.Portal>
+    <PopupShell
+      parts={BasePopover}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={[s.popup, popoverPadding[padding], popoverRadii[borderRadius]]}
+      elevation={elevation}
+      style={style}
+      {...props}
+    />
   )
 }
 

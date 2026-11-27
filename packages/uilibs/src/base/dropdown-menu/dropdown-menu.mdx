@@ -17,7 +17,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -47,7 +46,6 @@ Built on Base UI [Menu](https://base-ui.com/react/components/menu). Props not li
 - **DropdownMenuSub:** the root of a submenu.
 - **DropdownMenuSubTrigger:** the item that opens the submenu. It renders the chevron itself.
 - **DropdownMenuSubContent:** the submenu popup.
-- **DropdownMenuPortal:** exported only for custom compositions. `DropdownMenuContent` already includes it.
 
 ```jsx
 <DropdownMenu>
@@ -113,7 +111,7 @@ The popup is a `menu` of `menuitem`, `menuitemcheckbox`, and `menuitemradio` ite
 
 ## API reference
 
-Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuPortal`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DropdownMenuContent` and `DropdownMenuSubContent` it styles the popup.
+Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `DropdownMenuSub`, and `DropdownMenuRadioGroup` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `DropdownMenuContent` and `DropdownMenuSubContent` it styles the popup.
 
 ### DropdownMenuTrigger
 
@@ -131,6 +129,9 @@ Every part except `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuGroup`, `D
 | `sideOffset`  | `number` or a function <br /> Distance from the trigger, in pixels. Default `4`.                                                      |
 | `align`       | `start`, `center`, `end` <br /> Alignment along the chosen side. Default `start`.                                                     |
 | `alignOffset` | `number` or a function <br /> Offset along the alignment axis, in pixels. Default `0`.                                                |
+| `anchor` | element, ref, virtual element or a function returning one <br /> What the popup positions against. |
+| `collisionAvoidance` | Base UI collision settings <br /> How the popup moves to stay in view. Default Base UI's own. |
+| `collisionPadding` | Base UI positioner value <br /> Space kept from the viewport edge. |
 
 | Data attribute        | Description                                                                                  |
 | --------------------- | -------------------------------------------------------------------------------------------- |
@@ -212,6 +213,6 @@ It takes the `DropdownMenuContent` props and data attributes, with other default
 ## Caveats
 
 - `DropdownMenuLabel` throws unless it sits inside a `DropdownMenuGroup` or `DropdownMenuRadioGroup`.
-- `DropdownMenuContent` already wraps itself in a portal and positioner. Do not add `DropdownMenuPortal` around it.
+- `DropdownMenuContent` already wraps itself in a portal and positioner. Do not wrap it in a portal.
 - A disabled item dims but keeps the default cursor, unlike a form control.
 - `icon` is decoration: the item is still named by its label alone.

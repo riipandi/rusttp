@@ -66,7 +66,6 @@ export function Drawer({
 
 export const DrawerTrigger = BaseDrawer.Trigger
 export const DrawerClose = BaseDrawer.Close
-export const DrawerPortal = BaseDrawer.Portal
 
 export function DrawerOverlay({
   blurredOverlay = false,

@@ -33,7 +33,6 @@ import { dialogStyles as s } from './dialog.stylex'
 
 export const Dialog = BaseDialog.Root
 export const DialogTrigger = BaseDialog.Trigger
-export const DialogPortal = BaseDialog.Portal
 export const DialogClose = BaseDialog.Close
 
 export function DialogOverlay({

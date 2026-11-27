@@ -20,7 +20,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -48,7 +47,6 @@ export function Menubar({ size = 'medium', style, ...props }: MenubarProps) {
 
 export const MenubarMenu = DropdownMenu
 export const MenubarGroup = DropdownMenuGroup
-export const MenubarPortal = DropdownMenuPortal
 export const MenubarSub = DropdownMenuSub
 export const MenubarRadioGroup = DropdownMenuRadioGroup
 export const MenubarItem = DropdownMenuItem

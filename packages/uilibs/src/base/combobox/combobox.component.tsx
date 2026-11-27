@@ -32,7 +32,6 @@ import {
 import { Check, ChevronDown, X } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import {
   type ControlVariant,
   controlBase,
@@ -41,12 +40,11 @@ import {
   controlVariantsWithin
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import { highlightedItem } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
-import { ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { comboboxChipsSizes, comboboxStyles as s } from './combobox.stylex'
 
 export const Combobox = BaseCombobox.Root
@@ -252,10 +250,7 @@ export function ComboboxChipsInput({
 export interface ComboboxContentProps
   extends
     Omit<React.ComponentProps<typeof BaseCombobox.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseCombobox.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset' | 'anchor' | 'collisionAvoidance'
-    >,
+    PositionerProps,
     StyleProp {}
 
 export function ComboboxContent({
@@ -264,34 +259,27 @@ export function ComboboxContent({
   sideOffset = 6,
   align = 'start',
   alignOffset = 0,
-  anchor,
   collisionAvoidance,
+  collisionPadding,
+  anchor,
   ...props
 }: ComboboxContentProps) {
   return (
-    <BaseCombobox.Portal container={usePortalContainer()}>
-      <BaseCombobox.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        anchor={anchor}
-        collisionAvoidance={collisionAvoidance}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseCombobox.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BaseCombobox.Positioner>
-    </BaseCombobox.Portal>
+    <PopupShell
+      parts={BaseCombobox}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }
 

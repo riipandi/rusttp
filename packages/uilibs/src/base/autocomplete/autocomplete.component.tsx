@@ -36,18 +36,16 @@
 import { Autocomplete as BaseAutocomplete } from '@base-ui/react/autocomplete'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import {
   type ControlVariant,
   controlBase,
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
-import { highlightedItem, popupFx } from '../../styles/popup.stylex'
+import { highlightedItem } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
-import { ring } from '../../styles/utils.stylex'
-import { usePortalContainer } from '../../theme/theme-scope.context'
+import { PopupShell, type PositionerProps } from '../popup-shell'
 import { autocompleteStyles as s } from './autocomplete.stylex'
 
 /**
@@ -88,10 +86,7 @@ export function AutocompleteInput({
 export interface AutocompleteContentProps
   extends
     Omit<React.ComponentProps<typeof BaseAutocomplete.Popup>, 'className' | 'style'>,
-    Pick<
-      React.ComponentProps<typeof BaseAutocomplete.Positioner>,
-      'align' | 'alignOffset' | 'side' | 'sideOffset' | 'anchor'
-    >,
+    PositionerProps,
     StyleProp {}
 
 export function AutocompleteContent({
@@ -100,32 +95,27 @@ export function AutocompleteContent({
   sideOffset = 6,
   align = 'start',
   alignOffset = 0,
+  collisionAvoidance,
+  collisionPadding,
   anchor,
   ...props
 }: AutocompleteContentProps) {
   return (
-    <BaseAutocomplete.Portal container={usePortalContainer()}>
-      <BaseAutocomplete.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        anchor={anchor}
-        {...stylex.props(popupFx.positioner)}
-      >
-        <BaseAutocomplete.Popup
-          {...props}
-          {...stylex.props(
-            popupFx.shift,
-            popupFx.fade,
-            popupFx.pose,
-            s.popup,
-            ring({ shadow: shadow.raised }),
-            style
-          )}
-        />
-      </BaseAutocomplete.Positioner>
-    </BaseAutocomplete.Portal>
+    <PopupShell
+      parts={BaseAutocomplete}
+      positioner={{
+        side,
+        sideOffset,
+        align,
+        alignOffset,
+        collisionAvoidance,
+        collisionPadding,
+        anchor
+      }}
+      popupStyle={s.popup}
+      style={style}
+      {...props}
+    />
   )
 }
 

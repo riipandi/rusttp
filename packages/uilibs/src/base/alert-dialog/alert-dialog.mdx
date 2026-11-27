@@ -20,7 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogMedia,
   AlertDialogOverlay,
-  AlertDialogPortal,
   AlertDialogTitle,
   AlertDialogTrigger
 } from 'uilibs/base/alert-dialog'
@@ -40,7 +39,7 @@ Built on Base UI [Alert Dialog](https://base-ui.com/react/components/alert-dialo
 - **AlertDialogFooter:** holds the buttons.
 - **AlertDialogCancel:** a button that closes the dialog.
 - **AlertDialogAction:** the confirming button. It also closes the dialog.
-- **AlertDialogPortal**, **AlertDialogOverlay:** exported only for custom compositions. `AlertDialogContent` already includes both.
+- **AlertDialogOverlay:** exported only for custom compositions. `AlertDialogContent` already includes it.
 
 ```jsx
 <AlertDialog>
@@ -103,7 +102,7 @@ The popup is an `alertdialog` named by `AlertDialogTitle` and described by `Aler
 
 ## API reference
 
-Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `AlertDialogContent` it styles the popup; on `AlertDialogAction` and `AlertDialogCancel` it styles the button.
+Every part except `AlertDialog` and `AlertDialogTrigger` also takes `style`: StyleX styles that replace `className` and `style`. See [Styling](?path=/docs/styling--docs). On `AlertDialogContent` it styles the popup; on `AlertDialogAction` and `AlertDialogCancel` it styles the button.
 
 ### AlertDialogTrigger
 
@@ -166,6 +165,6 @@ Every part except `AlertDialog`, `AlertDialogTrigger`, and `AlertDialogPortal` a
 ## Caveats
 
 - `AlertDialogAction` and `AlertDialogCancel` both close the dialog. To keep it open while work runs, call `event.preventBaseUIHandler()` in the action's `onClick` and close through the dialog's `open` state later.
-- `AlertDialogContent` already wraps itself in a portal with an overlay. Do not add `AlertDialogPortal` around it.
+- `AlertDialogContent` already wraps itself in a portal with an overlay. Do not wrap it in a portal.
 - A dialog taller than the window scrolls as a whole with its backdrop, so its title and actions can always be reached.
 - `medium` is wider than `small` only at 660px and up. Below that both sizes have the same width.
