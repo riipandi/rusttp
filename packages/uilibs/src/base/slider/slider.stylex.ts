@@ -14,9 +14,6 @@ export const sliderStyles = stylex.create({
     touchAction: 'none',
     userSelect: 'none'
   },
-  controlDisabled: {
-    pointerEvents: 'none'
-  },
   track: {
     backgroundColor: colors.backgroundTrack,
     borderRadius: radius.full,

@@ -1,7 +1,6 @@
 import type { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../styles/colors.stylex'
 import { popupFx } from '../styles/popup.stylex'
 import { ring } from '../styles/utils.stylex'
 import { usePortalContainer } from '../theme/theme-scope.context'
@@ -68,7 +67,7 @@ export function PopupShell({
             popupFx.fade,
             pose && popupFx.pose,
             popupStyle,
-            ring({ shadow: shadow[elevation] }),
+            ring[elevation],
             style
           )}
         />

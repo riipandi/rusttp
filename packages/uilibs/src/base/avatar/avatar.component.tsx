@@ -13,8 +13,6 @@
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { colors } from '../../styles/colors.stylex'
-import { stroke } from '../../styles/tokens.stylex'
 import type { ColorRole, ControlSize, StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { avatarFills, avatarStyles as s, avatarSizes as sizes } from './avatar.stylex'
@@ -92,7 +90,7 @@ export function AvatarGroup({ style, children, ...props }: DivProps) {
             s.groupItem,
             index > 0 && s.groupItemOverlap,
             s.groupItemStack(items.length - index),
-            ring({ width: stroke.ring2, color: colors.backgroundPage })
+            ring.page
           )}
         >
           {child}

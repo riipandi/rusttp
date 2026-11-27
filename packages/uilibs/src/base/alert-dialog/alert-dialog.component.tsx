@@ -22,7 +22,6 @@
 import { AlertDialog as BaseAlertDialog } from '@base-ui/react/alert-dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
@@ -70,7 +69,7 @@ export function AlertDialogContent({
       <BaseAlertDialog.Viewport {...stylex.props(s.viewport)}>
         <BaseAlertDialog.Popup
           {...props}
-          {...stylex.props(s.content, sizes[size], ring({ shadow: shadow.overlay }), style)}
+          {...stylex.props(s.content, sizes[size], ring.overlay, style)}
         />
       </BaseAlertDialog.Viewport>
     </BaseAlertDialog.Portal>

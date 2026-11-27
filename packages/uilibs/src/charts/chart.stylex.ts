@@ -19,8 +19,6 @@ import {
 // surface as toast: overlay elevation + thin dimmed border, radius.medium),
 // applied by redirecting the native surface's `--ts-chart-tooltip-*`
 // variables. The native tooltip body provides its own internal layout.
-// `chartPalette` is exported so standalone visualizations (bar list, tracker)
-// can opt into the same categorical palette outside the chart host.
 
 const chartPaletteOverrides = {
   '--ts-chart-1': colors.foregroundPrimary,
@@ -44,7 +42,6 @@ const chartTooltipOverrides = {
 }
 
 export const chartStyles = stylex.create({
-  palette: chartPaletteOverrides,
   root: {
     alignItems: 'stretch',
     color: colors.foregroundNeutral,

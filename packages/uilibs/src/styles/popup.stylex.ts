@@ -10,7 +10,7 @@ import { duration, easing } from './tokens.stylex'
  * Compose shared styles BEFORE the component's own popup style so local
  * values always win:
  *
- *   {...stylex.props(popupFx.shift, popupFx.fade, popupFx.pose, s.popup, ring({ ... }))}
+ *   {...stylex.props(popupFx.shift, popupFx.fade, popupFx.pose, s.popup, ring.raised)}
  *
  * On the Positioner element use only `positioner`. Components with custom
  * motion (dialog, drawer, sheet, toast, navigation-menu) keep their own

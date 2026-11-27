@@ -31,7 +31,6 @@ import { NavigationMenu as BaseNavigationMenu } from '@base-ui/react/navigation-
 import { ChevronDown } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { markSize } from '../../styles/glyph'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
@@ -142,10 +141,7 @@ export function NavigationMenuPositioner({
         {...props}
         {...stylex.props(s.positioner, style)}
       >
-        <BaseNavigationMenu.Popup
-          aria-label={labels.popup}
-          {...stylex.props(s.popup, ring({ shadow: shadow.raised }))}
-        >
+        <BaseNavigationMenu.Popup aria-label={labels.popup} {...stylex.props(s.popup, ring.raised)}>
           <BaseNavigationMenu.Viewport {...stylex.props(s.viewport)} />
         </BaseNavigationMenu.Popup>
       </BaseNavigationMenu.Positioner>

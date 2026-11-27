@@ -22,7 +22,6 @@
 import { Dialog as BaseDialog } from '@base-ui/react/dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { shadow } from '../../styles/colors.stylex'
 import { popupFx } from '../../styles/popup.stylex'
 import { type } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
@@ -80,7 +79,7 @@ export function DialogContent({
             stylex.defaultMarker(),
             s.content,
             size === 'small' && s.contentSmall,
-            ring({ shadow: shadow.overlay }),
+            ring.overlay,
             style
           )}
         >
