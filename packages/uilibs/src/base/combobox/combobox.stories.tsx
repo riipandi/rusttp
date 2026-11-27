@@ -312,16 +312,14 @@ export const Multiple: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const anchorRef = useRef(null)
-
-<Combobox items={schools} multiple defaultValue={['Hogwarts']}>
-  <ComboboxChips ref={anchorRef}>
+        code: `<Combobox items={schools} multiple defaultValue={['Hogwarts']}>
+  <ComboboxChips>
     <ComboboxValue>
       {(selected) => selected.map((school) => <ComboboxChip key={school}>{school}</ComboboxChip>)}
     </ComboboxValue>
     <ComboboxChipsInput placeholder='Add school…' />
   </ComboboxChips>
-  <ComboboxContent anchor={anchorRef}>
+  <ComboboxContent>
     <ComboboxList>
       {(school) => <ComboboxItem key={school} value={school}>{school}</ComboboxItem>}
     </ComboboxList>
@@ -332,11 +330,10 @@ export const Multiple: Story = {
   },
   render: () => {
     const [value, setValue] = React.useState<string[]>(['Hogwarts'])
-    const anchorRef = React.useRef<HTMLDivElement>(null)
 
     return (
       <Combobox items={frameworks} multiple value={value} onValueChange={setValue}>
-        <ComboboxChips ref={anchorRef}>
+        <ComboboxChips>
           <ComboboxValue>
             {(items: string[]) =>
               items.map((item) => <ComboboxChip key={item}>{item}</ComboboxChip>)
@@ -344,7 +341,7 @@ export const Multiple: Story = {
           </ComboboxValue>
           <ComboboxChipsInput placeholder='Add school…' />
         </ComboboxChips>
-        <ComboboxContent anchor={anchorRef}>
+        <ComboboxContent>
           <ComboboxEmpty>No school found.</ComboboxEmpty>
           <ComboboxList>
             {(item) => (
@@ -357,9 +354,29 @@ export const Multiple: Story = {
       </Combobox>
     )
   },
-  // A chip's remove button names the chip it removes.
+  // A chip's remove button names the chip it removes, and the popup lines up with the whole chips
+  // box, not with the small inline input inside it.
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('button', { name: 'Remove Hogwarts' })).toBeInTheDocument()
+    const chips = canvas.getByRole('toolbar')
+    await userEvent.click(canvas.getByRole('combobox'))
+    // The listbox sits in the popup, and the positioner above it names the anchor's box in
+    // `--anchor-*`. (The popup's own edge is not compared: in a narrow window it is shifted in.)
+    const positioner = (await within(document.body).findByRole('listbox')).parentElement
+      ?.parentElement
+    if (!positioner) throw new Error('No popup rendered')
+    await waitFor(async () => {
+      const box = chips.getBoundingClientRect()
+      const { style } = positioner
+      await expect(Number.parseFloat(style.getPropertyValue('--anchor-width'))).toBeCloseTo(
+        box.width,
+        0
+      )
+      await expect(Number.parseFloat(style.getPropertyValue('--anchor-height'))).toBeCloseTo(
+        box.height,
+        0
+      )
+    })
   }
 }
 

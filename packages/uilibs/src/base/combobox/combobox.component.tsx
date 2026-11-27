@@ -138,7 +138,7 @@ export function ComboboxInput({
     showClear?: boolean
   }) {
   return (
-    <div {...stylex.props(s.inputWrap, style)}>
+    <BaseCombobox.InputGroup {...stylex.props(s.inputWrap, style)}>
       <BaseCombobox.Input
         {...props}
         {...stylex.props(
@@ -172,12 +172,12 @@ export function ComboboxInput({
           <TriggerChevron />
         </BaseCombobox.Trigger>
       )}
-    </div>
+    </BaseCombobox.InputGroup>
   )
 }
 
-// Container for chips in a multi-select combobox — also serves as the popup
-// anchor (pass a ref to `ComboboxContent`'s `anchor`), so it forwards `ref`.
+// Container for chips in a multi-select combobox. It is also Base UI's input group, so the popup
+// anchors to the whole box and not to the small inline input inside it.
 export function ComboboxChips({
   size = 'medium',
   variant = 'outline',
@@ -192,6 +192,7 @@ export function ComboboxChips({
   }) {
   return (
     <BaseCombobox.Chips
+      render={<BaseCombobox.InputGroup />}
       {...props}
       {...stylex.props(
         controlBase.root,
