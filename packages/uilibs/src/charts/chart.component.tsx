@@ -39,7 +39,7 @@ import type { ChartTooltipBodyRenderContext } from '@tanstack/charts/react/toolt
 import type { RendererChartProps as TanStackRendererChartProps } from '@tanstack/charts/react/tooltip'
 import * as React from 'react'
 import { type ChartColorName, chartColors } from './chart-colors'
-import { chartStyles as s } from './chart.stylex'
+import { chartStyles as s, chartSwatchColors as swatchColors } from './chart.stylex'
 
 export interface ChartConfigItem {
   label?: React.ReactNode
@@ -194,11 +194,7 @@ export function ChartLegend({ config, hide, style, ...props }: ChartLegendProps)
             {Icon ? (
               <Icon height={12} width={12} color={item.color && chartColors[item.color]} />
             ) : (
-              <span
-                {...stylex.props(
-                  s.legendSwatch(item.color ? chartColors[item.color] : 'currentColor')
-                )}
-              />
+              <span {...stylex.props(s.legendSwatch, item.color && swatchColors[item.color])} />
             )}
             {item.label ?? key}
           </div>
