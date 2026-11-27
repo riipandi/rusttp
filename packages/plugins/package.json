@@ -5,6 +5,7 @@
     "exports": {
         "./rust-server": "./src/rust-server.ts",
         "./stylex": "./src/stylex.ts",
+        "./vitest": "./src/vitest.ts",
         "./vixum": "./src/vixum.ts"
     },
     "scripts": {
@@ -13,6 +14,7 @@
     "devDependencies": {
         "@stylexjs/unplugin": "catalog:",
         "@types/node": "catalog:",
+        "@vitest/browser-playwright": "catalog:",
         "tsrs": "catalog:",
         "vite": "catalog:"
     }

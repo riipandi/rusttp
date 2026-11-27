@@ -1,6 +1,6 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import react from '@vitejs/plugin-react'
-import { playwright } from '@vitest/browser-playwright'
+import { browserProject } from 'plugins/vitest'
 import { defineConfig } from 'vitest/config'
 
 // The unit tests run in Chromium, like `uilibs`' (a real DOM, `localStorage`, and `matchMedia`).
@@ -13,12 +13,7 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     include: ['app/**/*.test.{ts,tsx}'],
-    browser: {
-      enabled: true,
-      headless: true,
-      provider: playwright(),
-      instances: [{ browser: 'chromium' }]
-    },
+    browser: browserProject(),
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

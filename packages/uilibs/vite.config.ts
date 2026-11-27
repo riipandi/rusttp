@@ -1,8 +1,8 @@
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import react from '@vitejs/plugin-react'
-import { playwright } from '@vitest/browser-playwright'
 import { resolve } from 'node:path'
 import { stylexPlugin, stylexVitestCleanup } from 'plugins/stylex'
+import { browserProject } from 'plugins/vitest'
 import { defineConfig } from 'vitest/config'
 
 // `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories and unit tests in another engine: CI
@@ -31,12 +31,7 @@ const storybookInstance = (colorScheme: 'light' | 'dark') => ({
   // Vitest's browser default (15 s) is shorter than a play with two failing 10 s waits, and it
   // reports "Test timed out" instead of the assertion that failed.
   testTimeout: 30_000,
-  browser: {
-    enabled: true,
-    headless: true,
-    provider: playwright({ contextOptions: { colorScheme } }),
-    instances: [{ browser }]
-  }
+  browser: browserProject({ browser, colorScheme })
 })
 
 // The library's pipeline: StyleX compiles in place (source-sharing)
@@ -77,16 +72,14 @@ export default defineConfig(({ mode }) => ({
         // Logic that no story exercises (storage adapters, announcements, token contrast), in a real
         // browser like the webapp's tests: `document.cookie` and `localStorage` are the thing under test.
         // `VITEST_HEADED=1` opens the window, to watch or debug one of them.
+        // `extends: true` inherits the root `stylexPlugin`, whose options carry `test: true`
+        // (stable `file__key` class names); the story projects above use `extends: false` and
+        // compile through Storybook's `viteFinal`, where the StyleX options have no `test`.
         extends: true,
         test: {
           name: 'unit',
           include: ['src/**/*.test.{ts,tsx}'],
-          browser: {
-            enabled: true,
-            headless: !process.env.VITEST_HEADED,
-            provider: playwright(),
-            instances: [{ browser }]
-          }
+          browser: browserProject({ browser, headless: !process.env.VITEST_HEADED })
         }
       }
     ]
