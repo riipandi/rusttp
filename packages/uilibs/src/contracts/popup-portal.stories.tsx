@@ -125,22 +125,9 @@ export const PortalsIntoTheScope: Story = {
   ),
   play: async ({ canvas }) => {
     const body = within(document.body)
-    await userEvent.pointer({
-      keys: '[MouseRight]',
-      target: canvas.getByText('Right-click the map')
-    })
     const page = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
     const inverted = page === 'dark' ? 'light' : 'dark'
-    for (const id of [
-      'popover',
-      'tooltip',
-      'preview-card',
-      'select',
-      'combobox',
-      'autocomplete',
-      'dropdown-menu',
-      'context-menu'
-    ]) {
+    const inScope = async (id: string) => {
       const popup = await body.findByTestId(id)
       // Each popup sits outside the scope's own DOM, inside its themed portal element.
       await waitFor(async () => {
@@ -151,5 +138,23 @@ export const PortalsIntoTheScope: Story = {
         )
       })
     }
+    // The seven popups that open by default are read before the right click: the context menu is
+    // a pointer press outside the others, and a loaded WebKit runner dismisses them while it opens.
+    for (const id of [
+      'popover',
+      'tooltip',
+      'preview-card',
+      'select',
+      'combobox',
+      'autocomplete',
+      'dropdown-menu'
+    ]) {
+      await inScope(id)
+    }
+    await userEvent.pointer({
+      keys: '[MouseRight]',
+      target: canvas.getByText('Right-click the map')
+    })
+    await inScope('context-menu')
   }
 }
