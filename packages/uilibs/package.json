@@ -46,7 +46,6 @@
         "react-resizable-panels": "catalog:"
     },
     "devDependencies": {
-        "@github-ui/storybook-addon-performance-panel": "catalog:",
         "@storybook/addon-a11y": "catalog:",
         "@storybook/addon-docs": "catalog:",
         "@storybook/addon-mcp": "catalog:",

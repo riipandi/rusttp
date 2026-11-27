@@ -19,7 +19,6 @@ export default {
       }
     },
     '@storybook/addon-vitest',
-    '@github-ui/storybook-addon-performance-panel',
     '@storybook/addon-mcp'
   ],
   framework: '@storybook/tanstack-react',
