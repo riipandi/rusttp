@@ -10,8 +10,8 @@ import { gzipSync } from 'node:zlib'
 
 // Measured after the tooltip left the root provider (plan 00005, phase 2): 458 KB raw, 146 KB gzip,
 // plus about 5%. The CSS limits are the minified production sheet after the responsive cut and the
-// single responsive stylesheet (plan 00014, phase 46: 66.9 KB raw, 17.9 KB gzip) plus about 5%.
-const limits = { rawKB: 480, gzipKB: 152, cssRawKB: 70.5, cssGzipKB: 18.8 }
+// fixed colors (plan 00014, phases 44 and 47: 65.6 KB raw, 17.7 KB gzip) plus about 5%.
+const limits = { rawKB: 480, gzipKB: 152, cssRawKB: 68.9, cssGzipKB: 18.6 }
 
 const outDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../apps/server/frontend')
 const manifest = JSON.parse(readFileSync(resolve(outDir, '.vite/manifest.json'), 'utf8'))
