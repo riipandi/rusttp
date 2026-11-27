@@ -366,7 +366,7 @@ Decision (D1 to D9 of the plan, with the answers that changed a recommendation):
 Consequences:
 
 - (positive) a regression in the a11y, focus, contrast, overflow, or docs contract fails a run; one scale of tokens and shared types replaces per-file restatements; every component has a docs page with keyboard behavior proved by a play.
-- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors, each with a unit test) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; the data grid has an open audit (`audit-00003`).
+- (negative) the library has two documented places that restate the breakpoints (`text`, `stack`, `hidden` stylesheet mirrors and the numbers in `hooks/use-media-query.ts`, one test since plan 00014) because a StyleX media const resolves only from its own file; the webapp's `useCompact()` restates its own 767px; the data grid has an open audit (`audit-00003`).
 
 Alternatives considered:
 
@@ -454,3 +454,18 @@ Alternatives considered:
 
 - A second, `uilibs`-only recovery option — rejected: a copy of the shared default.
 - Excluding `uilibs` from the React Compiler — not part of this wave; plan D8 keeps it on.
+
+### The uilibs implementation audit remediation, wave 2: tested data grid, one popup shell, a responsive cut, and fixed colors
+
+Context (2026-11-27): wave 2 of `plan-00014` (phases 17 to 52, tracks D to G) fixed the data grid, Base UI, breakpoint, and token findings of the audit. Decisions (the plan's numbering):
+
+- D7: `Text` `weight` and `align` and `Stack` `align` and `justify` take plain values; only `Text` `variant`, `Stack` `direction` and `gap`, and `Hidden` stay responsive. Nothing in the webapp passed a responsive object. A shared `styles/responsive.stylex.ts` (phase 45) was reverted: bisecting the webapp entry showed it added 3.1 KB raw and 0.9 KB gzip of JS (472.3 / 150.7 after the cut, 475.4 / 151.6 with it) because Stack's and Hidden's sets rode along with every importer of Text, and the entry budget (152 KB gzip) is the scarcer resource than a mirror's upkeep. The three mirrors stay, with one test. The entry CSS limit is 68.9 KB raw and 18.6 KB gzip (measured 65.6 and 17.7, plus about 5%).
+- D9: `backgroundPageFaded` is removed; `black`, `white`, and the four `onBackground*` colors are `fixedColors` constants. No generator for `lightColors`: the drift test guards it.
+- D17: data grid geometry is dynamic styles in the same `stylex.props` call. D18: the column drag keeps its animation (`transition: style.transition`). D19: the `*Portal` aliases are deleted, and `PopupShell` owns the portal container. D20: `PreviewCard` centers by default. D24: the Base UI scrollbar replaced the 250-line overlay; `data-overflow-vertical` is gone (Base UI's `data-has-overflow-y` is the hook), and the overlay's 6 px thumb and the plain scrollbar's 2 px thumb stay two looks (unifying them is a design call).
+- D1 found more than the audit listed, each fixed with a red test first: the auto-size floor never applied (TanStack resolves every `minSize` to 20), draggable-row and draggable-column grids drew no row separators (a visible change), an end-pinned column got width 0 in drag grids, and a disabled `data-invalid` Switch and the quiet-edge variants painted the critical edge. The audit's native-input case did not reproduce (`:disabled` outranks the attribute) and stays as a regression row; the row half of X-01 (the border variable) was the missing separator rule, not a lost style.
+- Left open: `isBreakpoint` accepts `'toString'` (`value in BREAKPOINTS`), and `autoResize` leaves a bordered Textarea 2 px short of its content; both are in `issue-00010`.
+
+Consequences:
+
+- (positive) the data grid's write path, ids, and auto size are tested on a real table, a tall dialog scrolls, one place owns popup portals and Positioner props.
+- (negative) `getDataGridTreeIndentStyle` is now `getDataGridTreeIndent` (a px number), `getPinningStyles` returns nulls, `columns` and the `*Portal` names changed (no backward compatibility); draggable grids look different (separators).
