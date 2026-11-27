@@ -375,7 +375,7 @@ function getDataGridAutoSizeState(store: object): DataGridAutoSizeReflowState {
   return state
 }
 
-function createDataGridAutoSizeController<TData extends object>(
+export function createDataGridAutoSizeController<TData extends object>(
   /**
    * A getter, not the table itself.
    *
