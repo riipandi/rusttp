@@ -7,6 +7,7 @@ import type {
 } from './data-grid'
 import {
   buildDataGridClearDetails,
+  buildDataGridFillDetails,
   buildDataGridPasteDetails,
   extendDataGridSelection,
   getDataGridActiveRegionGrid,
@@ -874,5 +875,171 @@ describe('extendDataGridSelection', () => {
       { minRowIndex: 1, maxRowIndex: 4, minColumnIndex: 0, maxColumnIndex: 0 }
     ])
     pinned.unmount()
+  })
+})
+
+const isHouse = (house: string, row: unknown) =>
+  typeof row === 'object' && row !== null && 'house' in row && row.house === house
+const parseLabel = (raw: string) => (raw.startsWith('Year ') ? Number(raw.slice(5)) : undefined)
+
+describe('buildDataGridFillDetails', () => {
+  // Down: name 0 and house 1 take any value; the house of a Ravenclaw is locked; wards 2 is
+  // opted out of selection; year 3 has a parse that a fill must NOT run (same-column values stay
+  // raw); wand 4 is read only.
+  const rowColumns: ColumnDef<DataGridFeatures, Student>[] = [
+    { id: 'name', accessorKey: 'name', meta: { cellEdit: {} } },
+    {
+      id: 'house',
+      accessorKey: 'house',
+      meta: { cellEdit: { editable: (row) => !isHouse('Ravenclaw', row) } }
+    },
+    { id: 'wards', accessorFn: () => 'ward', enableCellSelection: false },
+    { id: 'year', accessorKey: 'year', meta: { cellEdit: { parse: () => undefined } } },
+    { id: 'wand', accessorFn: () => 'holly' }
+  ]
+  const down = mountTestTable<Student>({
+    data: students,
+    columns: rowColumns,
+    getRowId: (student) => student.id
+  })
+  afterAll(down.unmount)
+  const visible = (table: ReturnType<typeof down.table>, hidden: string[] = []) =>
+    table
+      .getRowsInDisplayOrder()
+      .map((row, displayIndex) => ({ row, displayIndex }))
+      .filter(({ row }) => !hidden.includes(row.id))
+  const fillDown = (count: number, hidden?: string[]) => {
+    const table = down.table()
+    return buildDataGridFillDetails(
+      table,
+      table.getCellSelectionBounds()[0]!,
+      'row',
+      count,
+      visible(table, hidden)
+    )
+  }
+
+  it('cycles the source rows over the target rows by offset modulo the source height', () => {
+    down.select(['harry', 'name'], ['hermione', 'year'])
+    const result = fillDown(3)!
+    expect(result.details.source).toBe('fill')
+    // draco <- harry, luna <- hermione, cedric <- harry; wards and wand are not written, the
+    // locked Ravenclaw house is skipped without a rejection, and year keeps its raw 5.
+    expect(valuesOf(result.details)).toEqual([
+      ['draco', 'name', 'Harry Potter'],
+      ['draco', 'house', 'Gryffindor'],
+      ['draco', 'year', 5],
+      ['luna', 'name', 'Hermione Granger'],
+      ['luna', 'year', 5],
+      ['cedric', 'name', 'Harry Potter'],
+      ['cedric', 'house', 'Gryffindor'],
+      ['cedric', 'year', 5]
+    ])
+    expect(result.details.rejected).toEqual([])
+    expect(result.details.changes[0]).toMatchObject({
+      previousValue: 'Draco Malfoy',
+      row: students[2]
+    })
+    expect(result.target).toEqual({
+      startRowIndex: 0,
+      endRowIndex: 4,
+      startColumnIndex: 0,
+      endColumnIndex: 3
+    })
+  })
+
+  it('walks the rows the view shows, so a row it hides is skipped and not written', () => {
+    down.select(['harry', 'name'], ['hermione', 'name'])
+    const result = fillDown(2, ['draco'])!
+    expect(valuesOf(result.details)).toEqual([
+      ['luna', 'name', 'Harry Potter'],
+      ['cedric', 'name', 'Hermione Granger']
+    ])
+    expect(result.target.endRowIndex).toBe(4)
+  })
+
+  it('stops at the last row the view shows when the count runs past it', () => {
+    down.select(['harry', 'name'], ['luna', 'name'])
+    const result = fillDown(10)!
+    expect(valuesOf(result.details)).toEqual([['cedric', 'name', 'Harry Potter']])
+  })
+
+  it('is null when no row lies below the source', () => {
+    down.select(['cedric', 'name'], ['cedric', 'name'])
+    expect(fillDown(3)).toBeNull()
+  })
+
+  // Right: year 0 is the source, formatted as "Year 5"; label 1 parses only that form; house 2
+  // parses only digits; wards 3 is opted out and wand 4 is read only, so neither is written;
+  // name 5 has no parse and so receives the raw value, except on a Hufflepuff row, which is locked.
+  const columnColumns: ColumnDef<DataGridFeatures, Student>[] = [
+    {
+      id: 'year',
+      accessorKey: 'year',
+      meta: { cellEdit: { format: (value) => `Year ${String(value)}` } }
+    },
+    { id: 'label', accessorFn: () => 'old', meta: { cellEdit: { parse: parseLabel } } },
+    { id: 'house', accessorKey: 'house', meta: { cellEdit: { parse: parseYear } } },
+    { id: 'wards', accessorFn: () => 'ward', enableCellSelection: false },
+    { id: 'wand', accessorFn: () => 'holly' },
+    {
+      id: 'name',
+      accessorKey: 'name',
+      meta: { cellEdit: { editable: (row) => !isHouse('Hufflepuff', row) } }
+    }
+  ]
+  const right = mountTestTable<Student>({
+    data: students,
+    columns: columnColumns,
+    getRowId: (student) => student.id
+  })
+  afterAll(right.unmount)
+  const fillRight = (count: number) => {
+    const table = right.table()
+    return buildDataGridFillDetails(
+      table,
+      table.getCellSelectionBounds()[0]!,
+      'column',
+      count,
+      visible(table)
+    )
+  }
+
+  it('rounds a column fill through the source format and the target parse', () => {
+    right.select(['luna', 'year'], ['cedric', 'year'])
+    const result = fillRight(5)!
+    expect(valuesOf(result.details)).toEqual([
+      ['luna', 'label', 4],
+      ['luna', 'name', 4],
+      ['cedric', 'label', 6]
+    ])
+    // house parses digits only and the source formats as "Year n": a rejection, not a skip.
+    expect(result.details.rejected).toEqual([
+      { rowId: 'luna', columnId: 'house', raw: 'Year 4', reason: 'invalid' },
+      { rowId: 'cedric', columnId: 'house', raw: 'Year 6', reason: 'invalid' }
+    ])
+    expect(result.details.changes[0]).toMatchObject({ previousValue: 'old' })
+    expect(result.target).toEqual({
+      startRowIndex: 3,
+      endRowIndex: 4,
+      startColumnIndex: 0,
+      endColumnIndex: 5
+    })
+  })
+
+  it('writes only as many columns as the count reaches', () => {
+    right.select(['luna', 'year'], ['luna', 'year'])
+    const result = fillRight(1)!
+    expect(valuesOf(result.details)).toEqual([['luna', 'label', 4]])
+    expect(result.target.endColumnIndex).toBe(1)
+  })
+
+  it('is an empty batch, not null, when nothing to the right can be written', () => {
+    // The drag still grows the selection over the columns it reached.
+    right.select(['luna', 'name'], ['luna', 'name'])
+    const result = fillRight(2)!
+    expect(result.details.changes).toEqual([])
+    expect(result.details.rejected).toEqual([])
+    expect(result.target.endColumnIndex).toBe(7)
   })
 })

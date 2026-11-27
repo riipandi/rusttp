@@ -1,3 +1,4 @@
+import type { CellSelectionBounds } from '@tanstack/react-table'
 import type {
   DataGridCellChange,
   DataGridCellRejection,
@@ -682,6 +683,164 @@ function selectDataGridRegion<TData extends object>(
 }
 
 /* ------------------------------------------------------------------------- *
+ * Fill batch: pure, unit-testable. The drag session below only measures the pointer.
+ * ------------------------------------------------------------------------- */
+
+/** A row the view can show, with its index in the table's display order. */
+interface DataGridFillRow<TData extends object> {
+  row: ReturnType<DataGridTableInstance<TData>['getRowsInDisplayOrder']>[number]
+  displayIndex: number
+}
+
+type DataGridFillAxis = 'row' | 'column'
+
+/**
+ * The source region in visible space: its rows, and the visible index of its last row
+ * (-1 when the view shows none of them).
+ */
+function getDataGridFillSource<TData extends object>(
+  bound: CellSelectionBounds,
+  visibleRows: DataGridFillRow<TData>[]
+) {
+  const sourceRows = visibleRows.filter(
+    ({ displayIndex }) => displayIndex >= bound.minRowIndex && displayIndex <= bound.maxRowIndex
+  )
+  const last = sourceRows[sourceRows.length - 1]
+  return { sourceRows, sourceEndVisibleIndex: last ? visibleRows.indexOf(last) : -1 }
+}
+
+/**
+ * The rows and columns an extension of `count` along `axis` reaches: rows in visible space, and
+ * only the columns a commit would write, so the drag preview never tints a cell the release
+ * skips.
+ */
+function getDataGridFillTargets<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  bound: CellSelectionBounds,
+  axis: DataGridFillAxis,
+  count: number,
+  visibleRows: DataGridFillRow<TData>[]
+) {
+  const columnEntries = getDataGridDisplayOrderedColumns(table).map((column, displayIndex) => ({
+    column,
+    displayIndex
+  }))
+  const fillable = ({ column }: (typeof columnEntries)[number]) =>
+    column.columnDef.enableCellSelection !== false && !!getDataGridWritableCellEdit<TData>(column)
+  const { sourceRows, sourceEndVisibleIndex } = getDataGridFillSource(bound, visibleRows)
+  return axis === 'row'
+    ? {
+        rowEntries: visibleRows.slice(sourceEndVisibleIndex + 1, sourceEndVisibleIndex + 1 + count),
+        columnEntries: columnEntries
+          .slice(bound.minColumnIndex, bound.maxColumnIndex + 1)
+          .filter(fillable)
+      }
+    : {
+        rowEntries: sourceRows,
+        columnEntries: columnEntries
+          .slice(bound.maxColumnIndex + 1, bound.maxColumnIndex + 1 + count)
+          .filter(fillable)
+      }
+}
+
+/**
+ * Resolves a fill drag into a batch: the source region repeated cyclically over `count` more
+ * rows (down) or columns (right). A row fill copies raw values; a column fill is a type
+ * boundary and round-trips through the source's format and the target's parse, the paste
+ * contract, so a parse rejection lands in `rejected` while a cell that cannot be written is
+ * skipped without one. `visibleRows` are the rows the view can show, in display order. Null
+ * when the view shows no source row, or when a row fill has no row to write below it; a drag
+ * onto columns nothing can write returns an empty batch, because the selection still grows.
+ */
+function buildDataGridFillDetails<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  bound: CellSelectionBounds,
+  axis: DataGridFillAxis,
+  count: number,
+  visibleRows: DataGridFillRow<TData>[]
+): {
+  details: DataGridCellsChangeDetails<TData>
+  target: Omit<DataGridPasteTarget, 'rowCount'>
+} | null {
+  const { sourceRows, sourceEndVisibleIndex } = getDataGridFillSource(bound, visibleRows)
+  if (sourceEndVisibleIndex === -1) return null
+  const targets = getDataGridFillTargets(table, bound, axis, count, visibleRows)
+  if (!targets.rowEntries.length) return null
+  const columns = getDataGridDisplayOrderedColumns(table)
+
+  const changes: DataGridCellChange<TData>[] = []
+  const rejected: DataGridCellRejection[] = []
+
+  if (axis === 'row') {
+    for (let offset = 0; offset < targets.rowEntries.length; offset++) {
+      const targetRow = targets.rowEntries[offset]!.row
+      const sourceRow = sourceRows[offset % sourceRows.length]!.row
+      const targetCells = targetRow.getAllCellsByColumnId()
+      const sourceCells = sourceRow.getAllCellsByColumnId()
+      for (const { column } of targets.columnEntries) {
+        if (!getDataGridWritableCellEdit<TData>(column, targetRow.original)) continue
+        changes.push({
+          rowId: targetRow.id,
+          columnId: column.id,
+          row: targetRow.original,
+          previousValue: targetCells[column.id]?.getValue(),
+          value: sourceCells[column.id]?.getValue()
+        })
+      }
+    }
+  } else {
+    const regionColumns = bound.maxColumnIndex - bound.minColumnIndex + 1
+    for (const { row } of targets.rowEntries) {
+      const cells = row.getAllCellsByColumnId()
+      for (const { column: targetColumn, displayIndex } of targets.columnEntries) {
+        const offset = displayIndex - (bound.maxColumnIndex + 1)
+        const sourceColumn = columns[bound.minColumnIndex + (offset % regionColumns)]
+        if (!sourceColumn) continue
+        const targetEdit = getDataGridWritableCellEdit<TData>(targetColumn, row.original)
+        if (!targetEdit) continue
+        const sourceValue = cells[sourceColumn.id]?.getValue()
+        let value: unknown = sourceValue
+        // Crossing columns is a type boundary: round-trip through the source's format and
+        // the target's parse, exactly what pasting the same cells would do. Same-column
+        // fills keep raw values.
+        if (targetColumn.id !== sourceColumn.id && targetEdit.parse) {
+          const sourceFormat = sourceColumn.columnDef.meta?.cellEdit?.format
+          const raw = sourceFormat
+            ? sourceFormat(sourceValue, row.original)
+            : getDataGridClipboardValue(sourceValue)
+          const parsed = targetEdit.parse(raw, row.original)
+          if (parsed === undefined) {
+            rejected.push({ rowId: row.id, columnId: targetColumn.id, raw, reason: 'invalid' })
+            continue
+          }
+          value = parsed
+        }
+        changes.push({
+          rowId: row.id,
+          columnId: targetColumn.id,
+          row: row.original,
+          previousValue: cells[targetColumn.id]?.getValue(),
+          value
+        })
+      }
+    }
+  }
+
+  return {
+    details: { source: 'fill', changes, rejected },
+    target: {
+      startRowIndex: bound.minRowIndex,
+      endRowIndex:
+        axis === 'row'
+          ? targets.rowEntries[targets.rowEntries.length - 1]!.displayIndex
+          : bound.maxRowIndex,
+      startColumnIndex: bound.minColumnIndex,
+      endColumnIndex: bound.maxColumnIndex + (axis === 'column' ? count : 0)
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------- *
  * Fill handle drag session.
  * ------------------------------------------------------------------------- */
 
@@ -723,7 +882,7 @@ function startDataGridFillSession<TData extends object>(options: {
     const id = rowEl.getAttribute('data-row-id')
     if (id) domRowIds.add(id)
   }
-  const visibleRows: Array<{ row: (typeof rows)[number]; displayIndex: number }> = []
+  const visibleRows: DataGridFillRow<TData>[] = []
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!
     if (domRowIds.has(row.id)) {
@@ -731,17 +890,9 @@ function startDataGridFillSession<TData extends object>(options: {
     }
   }
   const visibleIndexById = new Map(visibleRows.map((entry, index) => [entry.row.id, index]))
-  // The source region and its last row, both in visible space.
-  const sourceRows = visibleRows.filter(
-    ({ displayIndex }) => displayIndex >= bound.minRowIndex && displayIndex <= bound.maxRowIndex
-  )
-  const sourceEndVisibleIndex = sourceRows.length
-    ? visibleIndexById.get(sourceRows[sourceRows.length - 1]!.row.id)!
-    : -1
+  const { sourceRows, sourceEndVisibleIndex } = getDataGridFillSource(bound, visibleRows)
   if (sourceEndVisibleIndex === -1) return
   const columnIndexById = new Map(columns.map((column, index) => [column.id, index]))
-  const isFillableColumn = (column: (typeof columns)[number]) =>
-    column.columnDef.enableCellSelection !== false && !!getDataGridWritableCellEdit<TData>(column)
 
   let extension: { axis: 'row' | 'column'; count: number } | null = null
   let previewCells: Element[] = []
@@ -795,32 +946,10 @@ function startDataGridFillSession<TData extends object>(options: {
     positionPreviewOutline()
   }
 
-  // Target rows and columns for the current extension: rows in visible
-  // space, and only the columns the commit would actually write, so the
-  // preview never tints a cell the release will skip.
-  const getExtensionTargets = () => {
-    if (!extension) return null
-    const columnEntries = columns.map((column, displayIndex) => ({
-      column,
-      displayIndex
-    }))
-    return extension.axis === 'row'
-      ? {
-          rowEntries: visibleRows.slice(
-            sourceEndVisibleIndex + 1,
-            sourceEndVisibleIndex + 1 + extension.count
-          ),
-          columnEntries: columnEntries
-            .slice(bound.minColumnIndex, bound.maxColumnIndex + 1)
-            .filter(({ column }) => isFillableColumn(column))
-        }
-      : {
-          rowEntries: sourceRows,
-          columnEntries: columnEntries
-            .slice(bound.maxColumnIndex + 1, bound.maxColumnIndex + 1 + extension.count)
-            .filter(({ column }) => isFillableColumn(column))
-        }
-  }
+  const getExtensionTargets = () =>
+    extension
+      ? getDataGridFillTargets(table, bound, extension.axis, extension.count, visibleRows)
+      : null
 
   const applyPreview = () => {
     clearPreview()
@@ -882,89 +1011,19 @@ function startDataGridFillSession<TData extends object>(options: {
     previewOutline.remove()
     viewport.removeAttribute('data-cell-filling')
     if (!commit || !extension || !onCellsChange) return
-    const targets = getExtensionTargets()
-    if (!targets || !targets.rowEntries.length) return
+    const result = buildDataGridFillDetails(
+      table,
+      bound,
+      extension.axis,
+      extension.count,
+      visibleRows
+    )
+    if (!result) return
+    const { details, target } = result
+    if (details.changes.length || details.rejected.length) onCellsChange(details)
 
-    const changes: DataGridCellChange<TData>[] = []
-    const rejected: DataGridCellRejection[] = []
-
-    if (extension.axis === 'row') {
-      for (let offset = 0; offset < targets.rowEntries.length; offset++) {
-        const targetRow = targets.rowEntries[offset]!.row
-        const sourceRow = sourceRows[offset % sourceRows.length]!.row
-        const targetCells = targetRow.getAllCellsByColumnId()
-        const sourceCells = sourceRow.getAllCellsByColumnId()
-        for (const { column } of targets.columnEntries) {
-          if (!getDataGridWritableCellEdit<TData>(column, targetRow.original)) {
-            continue
-          }
-          changes.push({
-            rowId: targetRow.id,
-            columnId: column.id,
-            row: targetRow.original,
-            previousValue: targetCells[column.id]?.getValue(),
-            value: sourceCells[column.id]?.getValue()
-          })
-        }
-      }
-    } else {
-      const regionColumns = bound.maxColumnIndex - bound.minColumnIndex + 1
-      for (const { row } of targets.rowEntries) {
-        const cells = row.getAllCellsByColumnId()
-        for (const { column: targetColumn, displayIndex } of targets.columnEntries) {
-          const offset = displayIndex - (bound.maxColumnIndex + 1)
-          const sourceColumn = columns[bound.minColumnIndex + (offset % regionColumns)]
-          if (!sourceColumn) continue
-          const targetEdit = getDataGridWritableCellEdit<TData>(targetColumn, row.original)
-          if (!targetEdit) continue
-          const sourceValue = cells[sourceColumn.id]?.getValue()
-          let value: unknown = sourceValue
-          // Crossing columns is a type boundary: round-trip through the
-          // source's format and the target's parse, exactly what pasting
-          // the same cells would do. Same-column fills keep raw values.
-          if (targetColumn.id !== sourceColumn.id && targetEdit.parse) {
-            const sourceFormat = sourceColumn.columnDef.meta?.cellEdit?.format
-            const raw = sourceFormat
-              ? sourceFormat(sourceValue, row.original)
-              : getDataGridClipboardValue(sourceValue)
-            const parsed = targetEdit.parse(raw, row.original)
-            if (parsed === undefined) {
-              rejected.push({
-                rowId: row.id,
-                columnId: targetColumn.id,
-                raw,
-                reason: 'invalid'
-              })
-              continue
-            }
-            value = parsed
-          }
-          changes.push({
-            rowId: row.id,
-            columnId: targetColumn.id,
-            row: row.original,
-            previousValue: cells[targetColumn.id]?.getValue(),
-            value
-          })
-        }
-      }
-    }
-
-    if (changes.length || rejected.length) {
-      onCellsChange({ source: 'fill', changes, rejected })
-    }
-
-    // Grow the selection over source plus filled cells, Excel's post-fill
-    // shape.
-    selectDataGridRegion(table, {
-      startRowIndex: bound.minRowIndex,
-      endRowIndex:
-        extension.axis === 'row'
-          ? targets.rowEntries[targets.rowEntries.length - 1]!.displayIndex
-          : bound.maxRowIndex,
-      startColumnIndex: bound.minColumnIndex,
-      endColumnIndex: bound.maxColumnIndex + (extension.axis === 'column' ? extension.count : 0)
-    })
+    // Grow the selection over source plus filled cells, Excel's post-fill shape.
+    selectDataGridRegion(table, target)
   }
 
   const handleUp = () => finish(true)
@@ -983,6 +1042,7 @@ function startDataGridFillSession<TData extends object>(options: {
 
 export {
   buildDataGridClearDetails,
+  buildDataGridFillDetails,
   buildDataGridPasteDetails,
   extendDataGridSelection,
   getDataGridActiveBound,

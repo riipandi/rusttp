@@ -486,6 +486,89 @@ export const SpreadsheetEditing: Story = {
   }
 }
 
+const centerOf = (element: Element) => {
+  const rect = element.getBoundingClientRect()
+  return { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }
+}
+
+/**
+ * Dragging the square at the corner of a selection down fills the rows it reaches with the
+ * selection's values (the batch itself is unit-tested in `data-grid-cell-ops.test.ts`).
+ */
+export const SpreadsheetFill: Story = {
+  name: 'Spreadsheet fill',
+  render: () => {
+    const [data, setData] = useState(productData.slice(0, 5))
+    const columns = useMemo<ColumnDef<DataGridFeatures, IProduct>[]>(
+      () => [
+        { accessorKey: 'id', header: 'SKU', size: 80 },
+        { accessorKey: 'name', header: 'Product', size: 260, meta: { cellEdit: {} } },
+        { accessorKey: 'category', header: 'Category', size: 140, meta: { cellEdit: {} } }
+      ],
+      []
+    )
+    const table = useTable({
+      features: dataGridFeatures,
+      columns,
+      data,
+      getRowId: (row: IProduct) => row.id
+    })
+    const handleCellsChange = (details: DataGridCellsChangeDetails<IProduct>) =>
+      setData((old) =>
+        old.map((row) => {
+          const changes = details.changes.filter((change) => change.rowId === row.id)
+          return changes.length
+            ? { ...row, ...Object.fromEntries(changes.map((c) => [c.columnId, c.value])) }
+            : row
+        })
+      )
+    return (
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        onCellsChange={handleCellsChange}
+        tableLayout={{ cellSelection: true, cellFillHandle: true, cellFillHandleVariant: 'square' }}
+      >
+        <DataGridCellSelection table={table} />
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTable aria-label='Novels' table={table} />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const cellAt = (rowIndex: number, columnId: string) => {
+      const row = canvasElement.querySelectorAll('tbody tr')[rowIndex]
+      const cell = row?.querySelector(`td[data-col-id="${columnId}"]`)
+      if (!(cell instanceof HTMLElement)) throw new Error(`No cell ${rowIndex} ${columnId}`)
+      return cell
+    }
+    const source = productData[0]!.name
+    await userEvent.click(cellAt(0, 'name'))
+    const handle = await waitFor(() => {
+      const found = canvasElement.querySelector('[data-slot="data-grid-cell-fill-handle"]')
+      if (!(found instanceof HTMLElement)) throw new Error('No fill handle')
+      return found
+    })
+    const target = cellAt(2, 'name')
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', target: handle, coords: centerOf(handle) },
+      { target, coords: centerOf(target) },
+      { keys: '[/MouseLeft]', target, coords: centerOf(target) }
+    ])
+    // The two rows below take the first row's product, the way a spreadsheet repeats one cell.
+    await waitFor(() => expect(cellAt(2, 'name')).toHaveTextContent(source))
+    await expect(cellAt(1, 'name')).toHaveTextContent(source)
+    await expect(cellAt(3, 'name')).toHaveTextContent(productData[3]!.name)
+    // The neighbouring column is outside the selection and is left alone.
+    await expect(cellAt(1, 'category')).toHaveTextContent(productData[1]!.category)
+    // The selection grew over source plus filled cells.
+    await expect(canvasElement.querySelectorAll('td[data-cell-selected]')).toHaveLength(3)
+  }
+}
+
 /**
  * With cell selection on, the grid is the one Tab stop and rows are not: Enter on the focused cell
  * opens its row (when no editor takes the key), the keyboard twin of clicking the row.
