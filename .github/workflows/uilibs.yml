@@ -9,12 +9,16 @@ on:
   push:
     paths:
       - 'packages/uilibs/**'
+      - 'packages/plugins/**'
       - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - '.github/workflows/uilibs.yml'
   pull_request:
     paths:
       - 'packages/uilibs/**'
+      - 'packages/plugins/**'
       - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - '.github/workflows/uilibs.yml'
   schedule:
     - cron: '17 3 * * *'
@@ -52,6 +56,15 @@ jobs:
       # Props tables and Playground controls against the code; reads source only, so no browser.
       - run: pnpm --filter uilibs check:docs
       - run: pnpm --filter uilibs test
+      # `.vitest` is a hidden directory, so the action needs `include-hidden-files`; without it the upload is empty.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uilibs-failure-screenshots
+          path: packages/uilibs/.vitest/attachments
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
       - run: pnpm --filter uilibs storybook:build
 
   engines:
@@ -83,3 +96,11 @@ jobs:
       - run: pnpm --filter uilibs exec vitest run --project storybook --project storybook-dark
         env:
           STORYBOOK_TEST_BROWSER: ${{ matrix.browser }}
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uilibs-failure-screenshots-${{ matrix.browser }}
+          path: packages/uilibs/.vitest/attachments
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
