@@ -68,7 +68,11 @@ import {
   DataGridTableHeadRowCell,
   DataGridTableHeadRowCellResize
 } from './data-grid-table-head'
-import { DataGridTableFillBodyCell, DataGridTableFillHeadCell } from './data-grid-table-utils'
+import {
+  DataGridTableFillBodyCell,
+  DataGridTableFillHeadCell,
+  getDataGridRowWantsBorder
+} from './data-grid-table-utils'
 import {
   dndCellDragStyle,
   dndGripCursorStyles,
@@ -194,10 +198,13 @@ function DataGridTableDndCell<TData extends object>({
 
 interface DataGridTableDndBodyRowsProps<TData extends object> {
   table: DataGridTableInstance<TData>
+  /** A tfoot directly follows this tbody: the last row keeps its border. */
+  hasFollowingFooter?: boolean
 }
 
 function DataGridTableDndBodyRows<TData extends object>({
-  table
+  table,
+  hasFollowingFooter
 }: DataGridTableDndBodyRowsProps<TData>) {
   const fragmentRef = useRef(null)
   const { isLoading, props } = useDataGrid()
@@ -230,7 +237,17 @@ function DataGridTableDndBodyRows<TData extends object>({
       {table.getRowModel().rows.map((row, rowIndex) => {
         return (
           <Fragment key={row.id} ref={fragmentRef}>
-            <DataGridTableBodyRow row={row} table={table} stripe={rowIndex % 2 === 0}>
+            <DataGridTableBodyRow
+              row={row}
+              table={table}
+              stripe={rowIndex % 2 === 0}
+              wantsBorder={getDataGridRowWantsBorder(
+                props.tableLayout,
+                rowIndex,
+                table.getRowModel().rows.length,
+                hasFollowingFooter
+              )}
+            >
               <SortableContext
                 items={table.state.columnOrder}
                 strategy={horizontalListSortingStrategy}
@@ -382,7 +399,7 @@ function DataGridTableDnd<TData extends object>({
           )}
 
           <DataGridTableBody>
-            <BodyRowsMemo table={table} />
+            <BodyRowsMemo table={table} hasFollowingFooter={!!footerContent} />
           </DataGridTableBody>
 
           {footerContent && <DataGridTableFoot>{footerContent}</DataGridTableFoot>}
@@ -470,6 +487,7 @@ function DataGridTableDndRow<TData extends object>({
   row,
   table,
   stripe,
+  wantsBorder,
   renderRowDecoration,
   dropIndicator = true
 }: {
@@ -477,6 +495,8 @@ function DataGridTableDndRow<TData extends object>({
   table: DataGridTableInstance<TData>
   /** Striping parity under `tableLayout.stripped` (see DataGridTableBodyRow). */
   stripe?: boolean
+  /** Whether this row draws a separator under it (see `getDataGridRowWantsBorder`). */
+  wantsBorder?: boolean
   renderRowDecoration?: DataGridTableDndRowDecoration<TData>
   dropIndicator?: boolean
 }) {
@@ -526,6 +546,7 @@ function DataGridTableDndRow<TData extends object>({
         row={row}
         table={table}
         stripe={stripe}
+        wantsBorder={wantsBorder}
         dndRef={setNodeRef}
         dndStyle={dndRowDragStyle(isDragging, CSS.Transform.toString(transform))}
       >
@@ -591,6 +612,8 @@ function DataGridTableDndRow<TData extends object>({
 
 interface DataGridTableDndRowsBodyProps<TData extends object> {
   table: DataGridTableInstance<TData>
+  /** A tfoot directly follows this tbody: the last row keeps its border. */
+  hasFollowingFooter?: boolean
   dataIds: UniqueIdentifier[]
   renderRowDecoration?: DataGridTableDndRowDecoration<TData>
   dropIndicator?: boolean
@@ -599,6 +622,7 @@ interface DataGridTableDndRowsBodyProps<TData extends object> {
 
 function DataGridTableDndRowsBody<TData extends object>({
   table,
+  hasFollowingFooter,
   dataIds,
   renderRowDecoration,
   dropIndicator,
@@ -637,6 +661,12 @@ function DataGridTableDndRowsBody<TData extends object>({
             row={row}
             table={table}
             stripe={rowIndex % 2 === 0}
+            wantsBorder={getDataGridRowWantsBorder(
+              props.tableLayout,
+              rowIndex,
+              table.getRowModel().rows.length,
+              hasFollowingFooter
+            )}
             renderRowDecoration={renderRowDecoration}
             dropIndicator={dropIndicator}
             key={row.id}
@@ -913,6 +943,7 @@ function DataGridTableDndRows<TData extends object>({
           <DataGridTableBody>
             <RowsBodyMemo
               table={table}
+              hasFollowingFooter={!!footerContent}
               dataIds={dataIds}
               renderRowDecoration={renderRowDecoration}
               dropIndicator={dropIndicator}

@@ -309,7 +309,11 @@ export const DraggableColumns: Story = {
   // Each header's grip is named after its column, not four identical "Drag to reorder". These
   // headers are components, so the name falls back to the column id (`meta.headerTitle` sets it).
   play: async ({ canvas, canvasElement }) => {
-    await canvas.findByRole('table', { name: 'Novels' })
+    const grid = await canvas.findByRole('table', { name: 'Novels' })
+    // `tableLayout.rowBorder` is on by default: the rows draw their separators here as well.
+    const cell = grid.querySelector('tbody tr[data-row-id] td')
+    if (!(cell instanceof HTMLElement)) throw new Error('No body cell')
+    await expect(getComputedStyle(cell).borderBottomWidth).toBe('1px')
     const names = Array.from(
       canvasElement.querySelectorAll<HTMLElement>('[aria-label^="Drag to reorder "]')
     ).map((el) => el.getAttribute('aria-label') ?? '')

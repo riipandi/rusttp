@@ -20,6 +20,7 @@ import type { DataGridFeatures, DataGridRowStatus, DataGridTableInstance } from 
 import { moveRowFocus } from './data-grid-row-stops'
 import {
   cellSelectionChromeProps,
+  getDataGridRowWantsBorder,
   getDataGridTreeIndent,
   assignRef,
   getDataGridPageRowCount,
@@ -1097,11 +1098,12 @@ function DataGridTableBodyRows<TData extends object>({
           table={table}
           pinnedBoundary={pinnedBoundary}
           stripe={props.tableLayout?.stripped ? index % 2 === 0 : undefined}
-          wantsBorder={
-            !!props.tableLayout?.rowBorder &&
-            !props.tableLayout?.stripped &&
-            (index < resolvedRows.length - 1 || hasFollowingFooter)
-          }
+          wantsBorder={getDataGridRowWantsBorder(
+            props.tableLayout,
+            index,
+            resolvedRows.length,
+            hasFollowingFooter
+          )}
         />
       ))}
     </>

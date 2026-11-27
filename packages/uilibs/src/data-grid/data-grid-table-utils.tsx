@@ -229,6 +229,20 @@ function getPinningStyles<TData extends object>(
   }
 }
 
+/**
+ * Whether the body row at `index` of `count` draws a separator under it: `rowBorder` is on, the
+ * rows are not striped (the tint separates them), and it is not the last row, unless a `tfoot`
+ * follows the body. Every body that renders rows asks here, the draggable ones included.
+ */
+function getDataGridRowWantsBorder(
+  layout: { rowBorder?: boolean; stripped?: boolean } | undefined,
+  index: number,
+  count: number,
+  hasFollowingFooter?: boolean
+): boolean {
+  return !!layout?.rowBorder && !layout.stripped && (index < count - 1 || !!hasFollowingFooter)
+}
+
 /** `getPinningStyles` without paint containment, for cells that draw selection chrome outside their box. */
 function getPinningStylesUncontained<TData extends object>(
   column: Column<DataGridFeatures, TData>
@@ -400,6 +414,7 @@ export {
   hasDataGridTableRightPinnedColumns,
   getPinningStyles,
   getPinningStylesUncontained,
+  getDataGridRowWantsBorder,
   nextColumnSize,
   isColumnResizeMirrored,
   getDataGridPageRowCount,

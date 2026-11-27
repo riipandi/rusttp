@@ -729,6 +729,66 @@ export const DraggableRows: Story = {
   }
 }
 
+const borderColumns: ColumnDef<DataGridFeatures, IBook>[] = [
+  { id: 'drag', size: 40, header: () => 'Reorder', cell: () => <DataGridTableDndRowHandle /> },
+  { accessorKey: 'title', header: 'Title', size: 240 }
+]
+
+function BorderGrid({ label, rowBorder }: { label: string; rowBorder?: boolean }) {
+  const data = demoData.slice(0, 3)
+  const table = useTable({
+    features: dataGridFeatures,
+    columns: borderColumns,
+    data,
+    getRowId: (row: IBook) => row.id
+  })
+  const dataIds = useMemo<UniqueIdentifier[]>(() => data.map((row) => row.id), [data])
+  return (
+    <DataGrid
+      table={table}
+      recordCount={data.length}
+      getRowLabel={(row) => row.title}
+      tableLayout={rowBorder === undefined ? undefined : { rowBorder }}
+    >
+      <DataGridContainer>
+        <DataGridScrollArea table={table}>
+          <DataGridTableDndRows
+            aria-label={label}
+            table={table}
+            handleDragEnd={() => {}}
+            dataIds={dataIds}
+          />
+        </DataGridScrollArea>
+      </DataGridContainer>
+    </DataGrid>
+  )
+}
+
+/**
+ * `tableLayout.rowBorder` is on by default: draggable rows draw a separator under every row but
+ * the last, like any other row, and `rowBorder: false` removes them.
+ */
+export const DraggableRowBorders: Story = {
+  name: 'Draggable rows, borders',
+  render: () => (
+    <div {...stylex.props(s.stack)}>
+      <BorderGrid label='Default borders' />
+      <BorderGrid label='No borders' rowBorder={false} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const separators = async (name: string) => {
+      const grid = await canvas.findByRole('table', { name })
+      return Array.from(grid.querySelectorAll('tbody tr[data-row-id]')).map((row) => {
+        const cell = row.querySelector('td')
+        return cell ? getComputedStyle(cell).borderBottomWidth : 'no cell'
+      })
+    }
+    await expect(await separators('Default borders')).toEqual(['1px', '1px', '0px'])
+    await expect(await separators('No borders')).toEqual(['0px', '0px', '0px'])
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Row pinning */
 /* ------------------------------------------------------------------ */
