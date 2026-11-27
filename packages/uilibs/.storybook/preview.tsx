@@ -50,19 +50,30 @@ function setAutoplay(storyId: string, play: boolean) {
 //   server's CSS version changes (a 150 ms poll), so a story that rendered right after its modules
 //   compiled could be measured unstyled (an input group 26 px high instead of 32);
 // - the web fonts, whose `swap` re-measures text mid-play.
-// The story's modules are compiled by `beforeEach`, so the server's CSS is complete there.
+// A test file's modules, and so its CSS, are all compiled when the file loads: the first story
+// compares the page's sheet with the server's (a fetch, ~10 ms) and the next ones only check that
+// the page's sheet is still the text it matched, which costs no request. A sheet that changed (the
+// runtime applied a newer version) is compared with the server again.
 const STYLEX_STYLE_ID = '__stylex_virtual__'
 const STYLEX_CSS_PATH = '/virtual:stylex.css'
 const SETTLE_TIMEOUT_MS = 10_000
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
+let matchedLength = -1
+
 async function stylesheetCaughtUp() {
-  if (!document.getElementById(STYLEX_STYLE_ID)) return
+  const style = document.getElementById(STYLEX_STYLE_ID)
+  if (!style) return
+  if (style.textContent?.length === matchedLength) return
   const deadline = Date.now() + SETTLE_TIMEOUT_MS
   for (;;) {
     const served = await (await fetch(STYLEX_CSS_PATH, { cache: 'no-store' })).text()
-    if (document.getElementById(STYLEX_STYLE_ID)?.textContent === served) return
+    const sheet = document.getElementById(STYLEX_STYLE_ID)
+    if (sheet?.textContent === served) {
+      matchedLength = served.length
+      return
+    }
     if (Date.now() > deadline)
       throw new Error('The StyleX stylesheet never caught up with the dev server.')
     await sleep(25)
