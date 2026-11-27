@@ -22,6 +22,7 @@ export function stylexPlugin(options: StylexPluginOptions): Plugin {
     ...rest,
     lightningcssOptions: {
       errorRecovery: process.env['NODE_ENV'] !== 'production',
+      minify: process.env['NODE_ENV'] === 'production',
       ...lightningcssOptions,
       exclude: (lightningcssOptions?.exclude ?? 0) | LIGHTNINGCSS_DIR_SELECTOR
     }
