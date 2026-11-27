@@ -25,6 +25,7 @@
 import { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import type { UnitStep } from '../../styles/utils.stylex'
 import { PopupShell, type PositionerProps } from '../popup-shell'
@@ -100,5 +101,10 @@ export function PopoverDescription({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BasePopover.Description>, 'className' | 'style'> & StyleProp) {
-  return <BasePopover.Description {...props} {...stylex.props(s.description, style)} />
+  return (
+    <BasePopover.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, style)}
+    />
+  )
 }

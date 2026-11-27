@@ -2,21 +2,13 @@ import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
 import { container } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+import { fontFamily, fontWeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
 export const dialogStyles = stylex.create({
   overlay: {
     inset: 0,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     position: 'fixed',
-    transitionDuration: duration.medium,
-    transitionProperty: 'opacity',
-    transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.overlay
   },
   // The scrolling outer box: a popup taller than the window scrolls as a whole, centered when it
@@ -39,11 +31,6 @@ export const dialogStyles = stylex.create({
     gap: unit.x4,
     margin: 'auto',
     maxWidth: `calc(100% - ${unit.x8})`,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     padding: unit.x6,
     position: 'relative',
     transform: {
@@ -80,13 +67,6 @@ export const dialogStyles = stylex.create({
   },
   title: {
     fontWeight: fontWeight.semibold,
-    margin: 0
-  },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    marginTop: unit.x1,
     margin: 0
   }
 })

@@ -35,7 +35,7 @@ export interface PopupShellProps {
   popupStyle?: stylex.StyleXArray<stylex.CompiledStyles | null | undefined | false>
   /** The `shadow` token the popup's ring draws; `raised` by default. */
   elevation?: 'outline' | 'raised' | 'overlay'
-  /** The closed-pose scale and nudge. `false` leaves a popup that fades only (an aligned `Select`). */
+  /** The closed pose: the fade in and out, the scale, and the nudge. `false` leaves a popup whose own recipe fades it (an aligned `Select`). */
   pose?: boolean
   /** The caller's `style`; it replaces the shared and the component's own values. */
   style?: stylex.StyleXStyles
@@ -65,6 +65,7 @@ export function PopupShell({
           {...stylex.props(
             popupFx.shift,
             popupFx.fade,
+            pose && popupFx.presence,
             pose && popupFx.pose,
             popupStyle,
             ring[elevation],

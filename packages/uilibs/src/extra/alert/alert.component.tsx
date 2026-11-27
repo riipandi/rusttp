@@ -3,6 +3,7 @@ import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { alertStyles as s, alertColors as colors } from './alert.stylex'
@@ -108,7 +109,12 @@ export function AlertDescription({
   style,
   ...props
 }: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
-  return <div {...props} {...stylex.props(s.description, style)} />
+  return (
+    <div
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }
 
 /**

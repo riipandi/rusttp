@@ -25,7 +25,7 @@ import { Drawer as BaseDrawer } from '@base-ui/react/drawer'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
-import { type } from '../../styles/type.stylex'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { drawerStyles as s } from './drawer.stylex'
@@ -149,5 +149,7 @@ export function DrawerDescription({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDrawer.Description>, 'className' | 'style'> & StyleProp) {
-  return <BaseDrawer.Description {...props} {...stylex.props(s.description, style)} />
+  return (
+    <BaseDrawer.Description {...props} {...stylex.props(type.body2, descriptionText.root, style)} />
+  )
 }

@@ -37,6 +37,7 @@
 import { Toast as BaseToast } from '@base-ui/react/toast'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { ColorRole } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
@@ -58,13 +59,13 @@ const colorNames: readonly string[] = ['neutral', 'primary', 'positive', 'warnin
 // `success` and `error` toasts (the helpers, and `toast.promise` outcomes) have a color of their own.
 const typeColors: Record<string, ToastColor> = { success: 'positive', error: 'critical' }
 
-function colorOf(data: unknown, type: string | undefined): ToastColor {
+function colorOf(data: unknown, kind: string | undefined): ToastColor {
   if (typeof data === 'object' && data !== null && 'color' in data) {
     const { color } = data
     const named = colorNames.find((name): name is ToastColor => name === color)
     if (named) return named
   }
-  return (type && typeColors[type]) || 'neutral'
+  return (kind && typeColors[kind]) || 'neutral'
 }
 
 function addToast(title: React.ReactNode, options?: ToastAddOptions) {
@@ -125,7 +126,7 @@ function ToastList({
       <div {...stylex.props(s.content)}>
         <div {...stylex.props(s.text)}>
           <BaseToast.Title {...stylex.props(s.title)} />
-          <BaseToast.Description {...stylex.props(s.description)} />
+          <BaseToast.Description {...stylex.props(type.body2, descriptionText.root)} />
         </div>
         <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
         <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />

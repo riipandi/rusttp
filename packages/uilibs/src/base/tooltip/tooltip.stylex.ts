@@ -15,11 +15,6 @@ export const tooltipStyles = stylex.create({
     fontSize: fontSize.caption1,
     lineHeight: fontLineHeight.caption1,
     maxWidth: container.small,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     paddingBlock: unit.x1_5,
     paddingInline: unit.x3
   },

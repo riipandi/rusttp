@@ -23,7 +23,7 @@ import { AlertDialog as BaseAlertDialog } from '@base-ui/react/alert-dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
-import { type } from '../../styles/type.stylex'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
@@ -69,7 +69,7 @@ export function AlertDialogContent({
       <BaseAlertDialog.Viewport {...stylex.props(s.viewport)}>
         <BaseAlertDialog.Popup
           {...props}
-          {...stylex.props(s.content, sizes[size], ring.overlay, style)}
+          {...stylex.props(popupFx.presence, s.content, sizes[size], ring.overlay, style)}
         />
       </BaseAlertDialog.Viewport>
     </BaseAlertDialog.Portal>
@@ -109,7 +109,12 @@ export function AlertDialogDescription({
   ...props
 }: Omit<React.ComponentProps<typeof BaseAlertDialog.Description>, 'className' | 'style'> &
   StyleProp) {
-  return <BaseAlertDialog.Description {...props} {...stylex.props(s.description, style)} />
+  return (
+    <BaseAlertDialog.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }
 
 type AlertDialogButtonProps = Omit<

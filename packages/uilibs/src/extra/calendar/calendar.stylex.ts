@@ -147,10 +147,6 @@ export const calendarStyles = stylex.create({
     gap: unit.x1,
     height: calendarConsts.cellSize,
     minWidth: null,
-    outline: {
-      default: 'none',
-      ':focus-visible': `${stroke.ring2} solid ${colors.foregroundPrimary}`
-    },
     outlineOffset: stroke.ring2,
     paddingInline: unit.x1_5
   },

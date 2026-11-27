@@ -1,22 +1,10 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke, container } from '../../styles/tokens.stylex'
+import { container } from '../../styles/tokens.stylex'
 import { unit, radius, zIndex } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 export const selectStyles = stylex.create({
-  label: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1,
-    fontWeight: fontWeight.medium,
-    paddingBlock: unit.x1_5,
-    paddingInline: unit.x3
-  },
-  separator: {
-    backgroundColor: colors.borderNeutralFaded,
-    height: stroke.ring1,
-    marginBlock: unit.x1
-  },
   // The box, state model, and size come from `controlBase` and `controlSizes`.
   trigger: {
     alignItems: 'center',
@@ -55,7 +43,6 @@ export const selectStyles = stylex.create({
     maxHeight: 'var(--available-height)',
     // A trigger as wide as the page would otherwise push its list past the collision padding.
     maxWidth: 'var(--available-width)',
-    opacity: { default: 1, '[data-ending-style]': 0 },
     width: 'var(--anchor-width)',
     overflowX: 'hidden',
     overflowY: 'auto',
@@ -64,12 +51,11 @@ export const selectStyles = stylex.create({
   // Closed pose (anchored mode only): the shrink + nudge rides `popupFx.pose`
   // and the `--popup-shift-*` custom properties from `popupFx.shift`.
   popupAnchored: {
-    maxHeight: `min(${container.small}, var(--available-height))`,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    }
+    maxHeight: `min(${container.small}, var(--available-height))`
+  },
+  // Aligned mode only fades out: the list sits over its trigger, so there is no closed pose to enter from.
+  popupAligned: {
+    opacity: { default: 1, '[data-ending-style]': 0 }
   },
   list: {
     paddingBlock: unit.x1

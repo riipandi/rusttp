@@ -1,8 +1,8 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors } from '../../styles/colors.stylex'
-import { stroke, container } from '../../styles/tokens.stylex'
+import { container } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+import { fontFamily, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 /** Minimum height and type of the chips field, at the same heights as `controlSizes`. */
 export const comboboxChipsSizes = stylex.create({
@@ -137,11 +137,6 @@ export const comboboxStyles = stylex.create({
     fontFamily: fontFamily.body,
     maxHeight: `min(${container.small}, var(--available-height))`,
     maxWidth: 'var(--available-width)',
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     outline: 'none',
     overflow: 'hidden',
     width: 'var(--anchor-width)'
@@ -181,26 +176,5 @@ export const comboboxStyles = stylex.create({
     position: 'absolute',
     insetInlineEnd: unit.x2,
     width: unit.x4
-  },
-  label: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.caption1,
-    fontWeight: fontWeight.medium,
-    paddingBlock: unit.x1_5,
-    paddingInline: unit.x3
-  },
-  empty: {
-    color: colors.foregroundNeutralFaded,
-    // Base UI renders the element with no children while results exist —
-    // hide it then so its padding doesn't reserve space.
-    display: { default: 'block', ':empty': 'none' },
-    fontSize: fontSize.body2,
-    paddingBlock: unit.x2,
-    textAlign: 'center'
-  },
-  separator: {
-    backgroundColor: colors.borderNeutralFaded,
-    height: stroke.ring1,
-    marginBlock: unit.x1
   }
 })

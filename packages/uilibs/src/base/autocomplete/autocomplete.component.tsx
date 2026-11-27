@@ -42,7 +42,7 @@ import {
   controlSizes,
   controlVariants
 } from '../../styles/control.stylex'
-import { highlightedItem } from '../../styles/popup.stylex'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { PopupShell, type PositionerProps } from '../popup-shell'
@@ -149,14 +149,14 @@ export function AutocompleteLabel({
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.GroupLabel>, 'className' | 'style'> &
   StyleProp) {
-  return <BaseAutocomplete.GroupLabel {...props} {...stylex.props(s.label, style)} />
+  return <BaseAutocomplete.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function AutocompleteEmpty({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Empty>, 'className' | 'style'> & StyleProp) {
-  return <BaseAutocomplete.Empty {...props} {...stylex.props(s.empty, style)} />
+  return <BaseAutocomplete.Empty {...props} {...stylex.props(popupList.empty, style)} />
 }
 
 export function AutocompleteSeparator({
@@ -164,5 +164,5 @@ export function AutocompleteSeparator({
   ...props
 }: Omit<React.ComponentProps<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
   StyleProp) {
-  return <BaseAutocomplete.Separator {...props} {...stylex.props(s.separator, style)} />
+  return <BaseAutocomplete.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

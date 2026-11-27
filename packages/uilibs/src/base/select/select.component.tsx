@@ -43,7 +43,7 @@ import {
   controlVariants
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
-import { highlightedItem } from '../../styles/popup.stylex'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
 import type { ControlSize, Glyph } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
@@ -158,7 +158,7 @@ export function SelectContent({
       pose={!alignItemWithTrigger}
       // The edge is a ring, not a border: Base UI's align-item-with-trigger math ignores borders
       // and would shift the aligned text.
-      popupStyle={[s.popup, !alignItemWithTrigger && s.popupAnchored]}
+      popupStyle={[s.popup, alignItemWithTrigger ? s.popupAligned : s.popupAnchored]}
       style={style}
       {...props}
     >
@@ -188,12 +188,12 @@ export function SelectLabel({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.GroupLabel>, 'className' | 'style'> & StyleProp) {
-  return <BaseSelect.GroupLabel {...props} {...stylex.props(s.label, style)} />
+  return <BaseSelect.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function SelectSeparator({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseSelect.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseSelect.Separator {...props} {...stylex.props(s.separator, style)} />
+  return <BaseSelect.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

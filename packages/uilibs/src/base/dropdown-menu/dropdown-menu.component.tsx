@@ -34,7 +34,7 @@ import { Check, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { glyphSize } from '../../styles/glyph'
-import { highlightedItem } from '../../styles/popup.stylex'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { mirrorInRtl } from '../../styles/utils.stylex'
 import { PopupShell, type PositionerProps } from '../popup-shell'
@@ -215,7 +215,7 @@ export function DropdownMenuSeparator({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseMenu.Separator {...props} {...stylex.props(s.separator, style)} />
+  return <BaseMenu.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }
 
 export function DropdownMenuLabel({
@@ -224,5 +224,10 @@ export function DropdownMenuLabel({
   ...props
 }: Omit<React.ComponentProps<typeof BaseMenu.GroupLabel>, 'className' | 'style'> &
   StyleProp & { inset?: boolean }) {
-  return <BaseMenu.GroupLabel {...props} {...stylex.props(s.label, inset && s.itemInset, style)} />
+  return (
+    <BaseMenu.GroupLabel
+      {...props}
+      {...stylex.props(popupList.label, inset && s.itemInset, style)}
+    />
+  )
 }

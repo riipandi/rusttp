@@ -7,6 +7,7 @@ import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-pi
 import { buttonAppearance, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
+import { focusRing } from '../../styles/utils.stylex'
 import { calendarStyles } from './calendar.stylex'
 
 type CalendarDayButtonProps = Omit<React.ComponentProps<typeof DayButton>, 'style'> & {
@@ -162,7 +163,7 @@ const CalendarDropdown = ({
       <SelectTrigger
         aria-label={ariaLabel}
         disabled={disabled}
-        style={calendarStyles.dropdownTrigger}
+        style={[focusRing.root, calendarStyles.dropdownTrigger]}
       >
         <SelectValue />
       </SelectTrigger>

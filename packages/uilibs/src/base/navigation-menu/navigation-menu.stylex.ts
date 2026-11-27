@@ -106,11 +106,6 @@ export const navigationMenuStyles = stylex.create({
     borderRadius: radius.large,
     color: colors.foregroundNeutral,
     height: 'var(--popup-height)',
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     outline: 'none',
     position: 'relative',
     transform: {

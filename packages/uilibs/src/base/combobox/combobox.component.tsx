@@ -40,7 +40,7 @@ import {
   controlVariantsWithin
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
-import { highlightedItem } from '../../styles/popup.stylex'
+import { highlightedItem, popupList } from '../../styles/popup.stylex'
 import type { ControlSize } from '../../styles/types'
 import type { StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
@@ -316,19 +316,19 @@ export function ComboboxLabel({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.GroupLabel>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.GroupLabel {...props} {...stylex.props(s.label, style)} />
+  return <BaseCombobox.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function ComboboxEmpty({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Empty>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.Empty {...props} {...stylex.props(s.empty, style)} />
+  return <BaseCombobox.Empty {...props} {...stylex.props(popupList.empty, style)} />
 }
 
 export function ComboboxSeparator({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseCombobox.Separator>, 'className' | 'style'> & StyleProp) {
-  return <BaseCombobox.Separator {...props} {...stylex.props(s.separator, style)} />
+  return <BaseCombobox.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

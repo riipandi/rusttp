@@ -17,8 +17,6 @@ export const drawerStyles = stylex.create({
     },
     position: 'fixed',
     transitionDuration: duration.slow,
-    transitionProperty: 'opacity',
-    transitionTimingFunction: easing.decelerate,
     userSelect: 'none',
     zIndex: zIndex.overlay
   },
@@ -102,12 +100,6 @@ export const drawerStyles = stylex.create({
   title: {
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.semibold,
-    margin: 0
-  },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
     margin: 0
   }
 })

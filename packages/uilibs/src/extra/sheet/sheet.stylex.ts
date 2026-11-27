@@ -8,15 +8,7 @@ import { duration, easing } from '../../styles/tokens.stylex'
 export const sheetStyles = stylex.create({
   overlay: {
     inset: 0,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     position: 'fixed',
-    transitionDuration: duration.medium,
-    transitionProperty: 'opacity',
-    transitionTimingFunction: easing.decelerate,
     zIndex: zIndex.overlay
   },
   // The scrolling outer box: a sheet taller than the window scrolls as a whole and is never cut
@@ -42,11 +34,6 @@ export const sheetStyles = stylex.create({
     fontSize: fontSize.body2,
     gap: unit.x4,
     lineHeight: fontLineHeight.body2,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     position: 'relative',
     transitionDuration: duration.medium,
     transitionProperty: {
@@ -77,13 +64,6 @@ export const sheetStyles = stylex.create({
   title: {
     color: colors.foregroundNeutral,
     fontWeight: fontWeight.semibold,
-    margin: 0
-  },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    marginTop: unit.x1,
     margin: 0
   }
 })

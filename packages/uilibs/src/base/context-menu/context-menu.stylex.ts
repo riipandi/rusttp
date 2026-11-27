@@ -20,11 +20,6 @@ export const contextMenuStyles = stylex.create({
     fontFamily: fontFamily.body,
     maxHeight: 'var(--available-height)',
     minWidth: container.xxsmall,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     outline: 'none',
     overflowX: 'hidden',
     overflowY: 'auto',

@@ -16,11 +16,6 @@ export const popoverStyles = stylex.create({
     fontFamily: fontFamily.body,
     fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
-    opacity: {
-      default: 1,
-      '[data-starting-style]': 0,
-      '[data-ending-style]': 0
-    },
     outline: 'none',
     width: container.small
   },
@@ -32,12 +27,6 @@ export const popoverStyles = stylex.create({
   title: {
     fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
-    lineHeight: fontLineHeight.body2,
-    margin: 0
-  },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
     lineHeight: fontLineHeight.body2,
     margin: 0
   }

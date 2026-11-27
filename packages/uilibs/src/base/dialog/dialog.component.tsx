@@ -23,7 +23,7 @@ import { Dialog as BaseDialog } from '@base-ui/react/dialog'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
-import { type } from '../../styles/type.stylex'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
@@ -77,6 +77,7 @@ export function DialogContent({
           {...props}
           {...stylex.props(
             stylex.defaultMarker(),
+            popupFx.presence,
             s.content,
             size === 'small' && s.contentSmall,
             ring.overlay,
@@ -118,5 +119,10 @@ export function DialogDescription({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
-  return <BaseDialog.Description {...props} {...stylex.props(s.description, style)} />
+  return (
+    <BaseDialog.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }

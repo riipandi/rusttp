@@ -92,12 +92,6 @@ export const toastStyles = stylex.create({
     lineHeight: fontLineHeight.body2,
     margin: 0
   },
-  description: {
-    color: colors.foregroundNeutralFaded,
-    fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2,
-    margin: 0
-  },
   action: {
     alignItems: 'center',
     backgroundColor: {

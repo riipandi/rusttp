@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { popupFx } from '../../styles/popup.stylex'
-import { type } from '../../styles/type.stylex'
+import { type, descriptionText } from '../../styles/type.stylex'
 import type { StyleProp } from '../../styles/types'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
@@ -52,7 +52,10 @@ export function SheetContent({
     <BaseDialog.Portal container={usePortalContainer()}>
       <SheetOverlay blurredOverlay={blurredOverlay} />
       <BaseDialog.Viewport {...stylex.props(s.viewport)}>
-        <BaseDialog.Popup {...props} {...stylex.props(s.content, sides[side], style)}>
+        <BaseDialog.Popup
+          {...props}
+          {...stylex.props(popupFx.presence, s.content, sides[side], style)}
+        >
           {children}
           {showCloseButton && (
             <BaseDialog.Close render={<CloseButton labels={labels} style={s.close} />} />
@@ -88,5 +91,10 @@ export function SheetDescription({
   style,
   ...props
 }: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
-  return <BaseDialog.Description {...props} {...stylex.props(s.description, style)} />
+  return (
+    <BaseDialog.Description
+      {...props}
+      {...stylex.props(type.body2, descriptionText.root, descriptionText.spaced, style)}
+    />
+  )
 }
