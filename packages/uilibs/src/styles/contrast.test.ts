@@ -66,14 +66,18 @@ function readTokens(source: string, start: string): Tokens {
 }
 
 const blocks = [
+  [lightSource, 'export const fixedColors = stylex.defineConsts({'],
   [lightSource, 'export const colors = stylex.defineVars({'],
   [darkSource, 'const darkColors = stylex.createTheme(colors, {'],
   [darkSource, 'const lightColors = stylex.createTheme(colors, {']
 ] as const
 
-const light = readTokens(...blocks[0])
-const dark = { ...light, ...readTokens(...blocks[1]) }
-const lightRestated = readTokens(...blocks[2])
+// `fixedColors` are constants: the same in both themes, never overridden, so both themes read them.
+const fixed = readTokens(...blocks[0])
+const lightVars = readTokens(...blocks[1])
+const light = { ...fixed, ...lightVars }
+const dark = { ...light, ...readTokens(...blocks[2]) }
+const lightRestated = readTokens(...blocks[3])
 const themes = { light, dark } as const
 
 // Every token a pair below reads as its foreground: the last test checks that none is left out.
@@ -217,13 +221,11 @@ describe.each(Object.entries(themes))('%s theme, chart palette', (_name, theme) 
 describe('the restated light theme', () => {
   // `lightColors` repeats every default of `colors.stylex.ts` for a light subtree inside a dark page.
   it('repeats every light token with its light value', () => {
-    expect(lightRestated).toEqual(light)
+    expect(lightRestated).toEqual(lightVars)
   })
 
   it('leaves no token that the dark theme sets and the light theme does not', () => {
-    const darkOnly = Object.keys(
-      readTokens(darkSource, 'const darkColors = stylex.createTheme(colors, {')
-    )
+    const darkOnly = Object.keys(readTokens(...blocks[2]))
     expect(darkOnly.filter((name) => !(name in lightRestated))).toEqual([])
   })
 })

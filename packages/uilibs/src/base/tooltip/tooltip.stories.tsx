@@ -5,7 +5,7 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
-import { colors } from '../../styles/colors.stylex'
+import { fixedColors } from '../../styles/colors.stylex'
 import { Button } from '../button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip.component'
 
@@ -20,7 +20,12 @@ type Story = StoryObj<typeof meta>
 const sides = ['top', 'right', 'bottom', 'left'] as const
 
 const styles = stylex.create({
-  blackSurface: { backgroundColor: colors.black, color: colors.white, height: 1, width: 1 },
+  blackSurface: {
+    backgroundColor: fixedColors.black,
+    color: fixedColors.white,
+    height: 1,
+    width: 1
+  },
   // Disabled native buttons don't fire pointer events, so the tooltip
   // trigger has to be the wrapping span instead of the button itself.
   trigger: {

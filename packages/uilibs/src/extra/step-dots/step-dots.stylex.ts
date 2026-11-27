@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { duration, easing, radius, unit } from '../../styles/tokens.stylex'
 
 // The active dot takes the fill of Progress (`progressColors` in `base/progress/progress.stylex`),
@@ -21,7 +21,7 @@ export const stepDotsStyles = stylex.create({
     verticalAlign: 'top'
   },
   windowed: {
-    maskImage: `linear-gradient(to right, transparent 0, ${colors.black} ${unit.x4}, ${colors.black} calc(100% - ${unit.x4}), transparent 100%)`
+    maskImage: `linear-gradient(to right, transparent 0, ${fixedColors.black} ${unit.x4}, ${fixedColors.black} calc(100% - ${unit.x4}), transparent 100%)`
   },
   track: {
     display: 'inline-flex',
@@ -69,11 +69,11 @@ export const stepDotsSizes = stylex.create({
 export const stepDotsMedia = stylex.create({
   idle: {
     backgroundColor: {
-      default: `color-mix(in srgb, ${colors.white} 50%, transparent)`,
+      default: `color-mix(in srgb, ${fixedColors.white} 50%, transparent)`,
       '@media (forced-colors: active)': 'GrayText'
     }
   },
   active: {
-    backgroundColor: { default: colors.white, '@media (forced-colors: active)': 'Highlight' }
+    backgroundColor: { default: fixedColors.white, '@media (forced-colors: active)': 'Highlight' }
   }
 })

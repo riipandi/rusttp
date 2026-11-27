@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { breakpoints, radius, unit, stroke, zIndex } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
 
@@ -90,8 +90,8 @@ export const calendarStyles = stylex.create({
     borderEndEndRadius: radius.medium,
     borderStartEndRadius: radius.medium,
     color: {
-      ':hover': colors.onBackgroundPrimary,
-      default: colors.onBackgroundPrimary
+      ':hover': fixedColors.onBackgroundPrimary,
+      default: fixedColors.onBackgroundPrimary
     }
   },
   dayBtnRangeMiddle: {
@@ -115,8 +115,8 @@ export const calendarStyles = stylex.create({
     borderStartStartRadius: radius.medium,
     borderStartEndRadius: 0,
     color: {
-      ':hover': colors.onBackgroundPrimary,
-      default: colors.onBackgroundPrimary
+      ':hover': fixedColors.onBackgroundPrimary,
+      default: fixedColors.onBackgroundPrimary
     }
   },
   dayBtnSelected: {
@@ -126,8 +126,8 @@ export const calendarStyles = stylex.create({
     },
     borderRadius: radius.medium,
     color: {
-      ':hover': colors.onBackgroundPrimary,
-      default: colors.onBackgroundPrimary
+      ':hover': fixedColors.onBackgroundPrimary,
+      default: fixedColors.onBackgroundPrimary
     }
   },
   disabled: {

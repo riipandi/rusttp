@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { useRouter } from '@tanstack/react-router'
 import * as React from 'react'
-import { colors } from 'uilibs/styles/colors.stylex'
+import { colors, fixedColors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, radius, stroke, unit, zIndex } from 'uilibs/styles/tokens.stylex'
 import { useMessages } from '#/libraries/messages'
 
@@ -17,7 +17,7 @@ const styles = stylex.create({
     paddingInline: unit.x4,
     borderRadius: radius.medium,
     backgroundColor: colors.backgroundPrimary,
-    color: colors.onBackgroundPrimary,
+    color: fixedColors.onBackgroundPrimary,
     fontSize: fontSize.body2,
     fontWeight: fontWeight.medium,
     textDecorationLine: 'none',

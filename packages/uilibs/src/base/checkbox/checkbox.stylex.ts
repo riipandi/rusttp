@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily } from '../../styles/tokens.stylex'
@@ -40,7 +40,10 @@ export const checkboxStyles = stylex.create({
   },
   indicator: {
     alignItems: 'center',
-    color: { default: colors.onBackgroundPrimary, '[data-disabled]': colors.foregroundDisabled },
+    color: {
+      default: fixedColors.onBackgroundPrimary,
+      '[data-disabled]': colors.foregroundDisabled
+    },
     display: 'flex',
     justifyContent: 'center'
   }

@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popo
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { Axis } from '../../contracts/story-axes'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
 import { Card, CardContent, CardFooter } from '../card/card.component'
 import { InputGroup, InputGroupInput } from '../input-group'
@@ -80,7 +80,7 @@ const storyStyles = stylex.create({
     color: colors.foregroundNeutralFaded
   },
   dayPriceSelected: {
-    color: colors.onBackgroundPrimary,
+    color: fixedColors.onBackgroundPrimary,
     opacity: 0.8
   }
 })

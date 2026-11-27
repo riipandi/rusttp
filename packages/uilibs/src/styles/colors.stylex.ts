@@ -6,17 +6,10 @@ import * as stylex from '@stylexjs/stylex'
  * the color scheme.
  *
  * Colors that are identical in both themes (black, white, the on-background
- * text colors) stay here as plain constants.
+ * text colors) are `fixedColors` below: constants that compile to their value,
+ * with no custom property and no theme override.
  */
 export const colors = stylex.defineVars({
-  // Colors that available on light and dark mode
-  black: 'oklch(0 0 0)',
-  white: 'oklch(1 0 0)',
-  onBackgroundCritical: 'oklch(1 0 0)',
-  onBackgroundPositive: 'oklch(1 0 0)',
-  onBackgroundPrimary: 'oklch(1 0 0)',
-  onBackgroundWarning: 'oklch(0 0 0)',
-
   // Themed color variables (light values; dark values live in themes.ts)
   backgroundCriticalFaded: 'oklch(0.98 0.02 20.28)',
   backgroundCriticalHighlightedFaded: 'oklch(0.59 0.205 20.28 / 0.06)',
@@ -28,7 +21,6 @@ export const colors = stylex.defineVars({
   backgroundNeutralHighlightedFaded: 'oklch(0 0 0 / 0.03)',
   backgroundNeutralHighlighted: 'oklch(0.9118 0 89.88)',
   backgroundNeutral: 'oklch(0.94 0 89.88)',
-  backgroundPageFaded: 'oklch(0.98 0 89.88)',
   backgroundPage: 'oklch(1 0 89.88)',
   backgroundPositiveFaded: 'oklch(0.98 0.02 151.8)',
   backgroundPositiveHighlightedFaded: 'oklch(0.55 0.13 151.8 / 0.06)',
@@ -75,6 +67,20 @@ export const colors = stylex.defineVars({
   chart6: 'oklch(0.50 0.16 305)',
   chart7: 'oklch(0.55 0.13 150)',
   chart8: 'oklch(0.50 0 89.88)'
+})
+
+/**
+ * Colors that are the same in the light and the dark theme. A constant, not a variable: it compiles
+ * to its value, so a theme cannot override it and the sheet carries no custom property for it. A
+ * text color on a solid fill of a role is `onBackground<Role>`; `contrast.test.ts` checks each pair.
+ */
+export const fixedColors = stylex.defineConsts({
+  black: 'oklch(0 0 0)',
+  white: 'oklch(1 0 0)',
+  onBackgroundCritical: 'oklch(1 0 0)',
+  onBackgroundPositive: 'oklch(1 0 0)',
+  onBackgroundPrimary: 'oklch(1 0 0)',
+  onBackgroundWarning: 'oklch(0 0 0)'
 })
 
 // -----------------------------------------------------------------------------

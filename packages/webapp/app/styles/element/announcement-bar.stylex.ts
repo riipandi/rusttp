@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from 'uilibs/styles/colors.stylex'
+import { colors, fixedColors } from 'uilibs/styles/colors.stylex'
 import { fontSize, fontWeight, unit } from 'uilibs/styles/tokens.stylex'
 import { breakpoints, layoutSize } from '#/styles/constants.stylex'
 
@@ -44,8 +44,8 @@ export const styles = stylex.create({
 
 export const barColors = stylex.create({
   neutral: { backgroundColor: colors.foregroundNeutral, color: colors.backgroundPage },
-  primary: { backgroundColor: colors.backgroundPrimary, color: colors.onBackgroundPrimary },
-  positive: { backgroundColor: colors.backgroundPositive, color: colors.onBackgroundPositive },
-  warning: { backgroundColor: colors.backgroundWarning, color: colors.onBackgroundWarning },
-  critical: { backgroundColor: colors.backgroundCritical, color: colors.onBackgroundCritical }
+  primary: { backgroundColor: colors.backgroundPrimary, color: fixedColors.onBackgroundPrimary },
+  positive: { backgroundColor: colors.backgroundPositive, color: fixedColors.onBackgroundPositive },
+  warning: { backgroundColor: colors.backgroundWarning, color: fixedColors.onBackgroundWarning },
+  critical: { backgroundColor: colors.backgroundCritical, color: fixedColors.onBackgroundCritical }
 })

@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '../../styles/colors.stylex'
+import { colors, fixedColors } from '../../styles/colors.stylex'
 import { duration, easing, motionLoop } from '../../styles/tokens.stylex'
 
 const shimmer = stylex.keyframes({
@@ -23,7 +23,7 @@ export const loaderTextStyles = stylex.create({
   },
   text: {
     backgroundClip: 'text',
-    backgroundImage: `linear-gradient(100deg, ${colors.foregroundNeutralFaded} 0 40%, ${colors.white} 50%, ${colors.foregroundNeutralFaded} 60% 100%)`,
+    backgroundImage: `linear-gradient(100deg, ${colors.foregroundNeutralFaded} 0 40%, ${fixedColors.white} 50%, ${colors.foregroundNeutralFaded} 60% 100%)`,
     backgroundSize: '300% 100%',
     color: 'transparent',
     gridArea: '1 / 1',

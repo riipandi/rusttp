@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { colors, shadow } from '../styles/colors.stylex'
+import { colors, fixedColors, shadow } from '../styles/colors.stylex'
 import {
   breakpoints,
   container,
@@ -600,7 +600,7 @@ export const dataGridColumnFilterStyles = stylex.create({
   optionBoxSelected: {
     backgroundColor: colors.backgroundPrimary,
     borderColor: colors.backgroundPrimary,
-    color: colors.onBackgroundPrimary
+    color: fixedColors.onBackgroundPrimary
   },
   optionBoxUnchecked: { opacity: 0.5 },
   optionCheckIcon: { height: unit.x4, width: unit.x4 },
