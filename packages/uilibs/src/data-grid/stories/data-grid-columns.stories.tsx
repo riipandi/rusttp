@@ -327,6 +327,12 @@ export const DraggableColumns: Story = {
     await pressUntil('{ArrowRight}', () => expect(live()).toBe('title moved over author.'), {
       when: () => live() !== 'title moved over author.'
     })
+    // The column displaced by the drag settles with dnd-kit's transition: the sortable cell's
+    // `transition` is a full shorthand, which is not a valid `transition-property`.
+    const displaced = canvasElement.querySelector('th[data-col-id="author"]')
+    if (!(displaced instanceof HTMLElement)) throw new Error('No author header')
+    await waitFor(() => expect(getComputedStyle(displaced).transitionDuration).toBe('0.2s'))
+    await expect(getComputedStyle(displaced).transitionProperty).toBe('transform')
     await pressUntil(' ', () => expect(live()).toBe('title dropped over author.'), {
       when: () => live() !== 'title dropped over author.'
     })

@@ -745,7 +745,9 @@ export const dataGridTableDndStyles = stylex.create({
     opacity: style.opacity,
     position: 'relative',
     transform: style.transform,
-    transitionProperty: style.transition,
+    // dnd-kit hands over a full `transition` shorthand ("transform 200ms ease"), which is not a
+    // valid `transition-property`.
+    transition: style.transition,
     zIndex: style.isDragging ? 1 : 0
   }),
   viewportDragging: {
