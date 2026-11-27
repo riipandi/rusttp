@@ -65,7 +65,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { zIndex } from '../../styles/tokens.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps, StyleProp, WithoutStyling } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import {
   dragAccessibility,
@@ -76,7 +76,7 @@ import {
 } from './drag-announcements'
 import { overlayWidthStyle, sortableStyles as s } from './sortable.stylex'
 
-type DivRenderProps = Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivRenderProps = PartProps<useRender.ComponentProps<'div'>>
 
 /** Props a sortable child exposes for overlay cloning (`value` + optional `style`). */
 interface SortableChildProps {
@@ -519,9 +519,9 @@ function SortableItemHandle({ style, render, cursor = true, ...props }: Sortable
 // SortableOverlay
 // ---------------------------------------------------------------------------
 
-export interface SortableOverlayProps extends Omit<
+export interface SortableOverlayProps extends WithoutStyling<
   React.ComponentProps<typeof DragOverlay>,
-  'children' | 'className' | 'style'
+  'children'
 > {
   children?: ReactNode | ((params: { value: UniqueIdentifier }) => ReactNode)
 }

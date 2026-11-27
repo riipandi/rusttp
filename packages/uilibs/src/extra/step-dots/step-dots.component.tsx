@@ -2,7 +2,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { progressColors } from '../../base/progress/progress.stylex'
-import type { ColorRole } from '../../styles/types'
+import type { ColorRole, PartProps } from '../../styles/types'
 import { stepDotsMedia, stepDotsSizes as sizes, stepDotsStyles as s } from './step-dots.stylex'
 
 export type StepDotsColor = ColorRole | 'media'
@@ -26,10 +26,7 @@ const WINDOW = 7
 /** How many `unit` steps one dot and its gap take: 6 + 6px is 3 steps, 8 + 8px is 4. */
 const stepUnits = { small: 3, medium: 4 } as const
 
-export interface StepDotsProps extends Omit<
-  useRender.ComponentProps<'div'>,
-  'className' | 'style' | 'color'
-> {
+export interface StepDotsProps extends PartProps<useRender.ComponentProps<'div'>, 'color'> {
   /** How many dots there are. A row longer than seven slides to keep the active dot in view. */
   total: number
   /** The index, from `0`, of the active dot. Default `0`. */

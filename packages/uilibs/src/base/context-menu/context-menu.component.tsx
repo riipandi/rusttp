@@ -32,7 +32,7 @@
 import { ContextMenu as BaseContextMenu } from '@base-ui/react/context-menu'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import {
   type DropdownMenuItemProps,
   DropdownMenuCheckboxItem,
@@ -54,15 +54,12 @@ export const ContextMenuRadioGroup = BaseContextMenu.RadioGroup
 export function ContextMenuTrigger({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseContextMenu.Trigger>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseContextMenu.Trigger>>) {
   return <BaseContextMenu.Trigger {...props} {...stylex.props(s.trigger, style)} />
 }
 
 export interface ContextMenuContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseContextMenu.Popup>, 'className' | 'style'>,
-    PositionerProps,
-    StyleProp {}
+  extends PartProps<React.ComponentProps<typeof BaseContextMenu.Popup>>, PositionerProps {}
 
 export function ContextMenuContent({
   style,

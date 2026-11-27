@@ -24,7 +24,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from './close-button'
@@ -38,11 +38,10 @@ export function DialogOverlay({
   blurredOverlay = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleProp & {
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Backdrop>> & {
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+}) {
   return (
     <BaseDialog.Backdrop
       {...props}
@@ -59,16 +58,15 @@ export function DialogContent({
   showCloseButton = true,
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleProp & {
-    /** Width: `medium` (default, 32rem) or the narrower `small` (24rem). */
-    size?: 'small' | 'medium'
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-    showCloseButton?: boolean
-    /** Accessible names of the built-in close button; English by default. */
-    labels?: Partial<CloseLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Popup>> & {
+  /** Width: `medium` (default, 32rem) or the narrower `small` (24rem). */
+  size?: 'small' | 'medium'
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+  showCloseButton?: boolean
+  /** Accessible names of the built-in close button; English by default. */
+  labels?: Partial<CloseLabels>
+}) {
   return (
     <BaseDialog.Portal container={usePortalContainer()}>
       <DialogOverlay blurredOverlay={blurredOverlay} />
@@ -94,31 +92,25 @@ export function DialogContent({
   )
 }
 
-export function DialogHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function DialogHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
-export function DialogFooter({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function DialogFooter({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function DialogTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Title>>) {
   return <BaseDialog.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function DialogDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Description>>) {
   return (
     <BaseDialog.Description
       {...props}

@@ -21,15 +21,12 @@ import {
   controlSizes,
   controlVariantsWithin
 } from '../../styles/control.stylex'
-import type { ControlSize } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { inputPhoneStyles as s } from './input-phone.stylex'
 
 type LibraryPhoneInputProps = React.ComponentProps<typeof BasePhoneInput.default>
 
-export interface InputPhoneProps extends Omit<
-  LibraryPhoneInputProps,
-  'onChange' | 'value' | 'style' | 'className'
-> {
+export interface InputPhoneProps extends PartProps<LibraryPhoneInputProps, 'onChange' | 'value'> {
   style?: stylex.StyleXStyles
   /** E.164 phone value, e.g. `+12135551234`. Use for a controlled field. */
   value?: Value
@@ -202,7 +199,7 @@ function NoCountrySelect() {
 function PhoneInputContainer({
   style,
   ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & {
+}: PartProps<React.ComponentProps<'div'>> & {
   style?: stylex.StyleXStyles
 }) {
   const phone = React.useContext(PhoneContext)
@@ -226,7 +223,7 @@ function PhoneInputContainer({
 function PhoneInput({
   style,
   ...props
-}: Omit<React.ComponentPropsWithRef<typeof BaseInput>, 'className' | 'style'> & {
+}: PartProps<React.ComponentPropsWithRef<typeof BaseInput>> & {
   style?: stylex.StyleXStyles
 }) {
   const phone = React.useContext(PhoneContext)

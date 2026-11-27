@@ -10,6 +10,7 @@
 import { ToggleGroup as BaseToggleGroup } from '@base-ui/react/toggle-group'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { Toggle } from '../toggle'
 import type { ToggleColor, ToggleSize, ToggleVariant, ToggleProps } from '../toggle'
 import { toggleGroupStyles as s } from './toggle-group.stylex'
@@ -34,10 +35,7 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
   orientation: 'horizontal'
 })
 
-export interface ToggleGroupProps extends Omit<
-  React.ComponentProps<typeof BaseToggleGroup>,
-  'className' | 'style'
-> {
+export interface ToggleGroupProps extends PartProps<React.ComponentProps<typeof BaseToggleGroup>> {
   variant?: ToggleVariant
   /** The fill of an item's pressed state; follows `variant` when unset (see `Toggle`). */
   selectedVariant?: ToggleVariant

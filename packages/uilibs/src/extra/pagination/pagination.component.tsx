@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button, buttonSquare } from '../../base/button'
 import { glyphSize } from '../../styles/glyph'
-import type { DenseControlSize, StyleProp } from '../../styles/types'
+import type { DenseControlSize, PartProps } from '../../styles/types'
 import { mirrorInRtl, visuallyHidden } from '../../styles/utils.stylex'
 import { paginationStyles as s } from './pagination.stylex'
 
@@ -40,7 +40,7 @@ export function Pagination({
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'nav'>, 'className' | 'style'> & StyleProp & LabelsProps) {
+}: PartProps<React.ComponentProps<'nav'>> & LabelsProps) {
   return (
     <nav
       aria-label={{ ...defaultLabels, ...labels }.pagination}
@@ -50,22 +50,15 @@ export function Pagination({
   )
 }
 
-export function PaginationContent({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'ul'>, 'className' | 'style'> & StyleProp) {
+export function PaginationContent({ style, ...props }: PartProps<React.ComponentProps<'ul'>>) {
   return <ul {...props} {...stylex.props(s.content, style)} />
 }
 
-export function PaginationItem({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'li'>, 'className' | 'style'> & StyleProp) {
+export function PaginationItem({ style, ...props }: PartProps<React.ComponentProps<'li'>>) {
   return <li {...props} {...stylex.props(style)} />
 }
 
-export interface PaginationLinkProps
-  extends Omit<React.ComponentProps<'a'>, 'className' | 'style'>, StyleProp {
+export interface PaginationLinkProps extends PartProps<React.ComponentProps<'a'>> {
   /** Marks the current page: an outline fill and `aria-current="page"`. */
   current?: boolean
   /** The `Button` size; a page link is a square of it. Default `medium`. */
@@ -143,7 +136,7 @@ export function PaginationEllipsis({
   labels,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp & LabelsProps) {
+}: PartProps<React.ComponentProps<'span'>> & LabelsProps) {
   return (
     <span {...props} {...stylex.props(s.ellipsis, style)}>
       <MoreHorizontal size={glyphSize.medium} strokeWidth={2} aria-hidden />

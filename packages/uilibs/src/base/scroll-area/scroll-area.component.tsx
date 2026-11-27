@@ -17,7 +17,7 @@
 import { ScrollArea as BaseScrollArea } from '@base-ui/react/scroll-area'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { scrollAreaStyles as s } from './scroll-area.stylex'
 import { scrollAreaScrollbarOrientations as orientations } from './scroll-area.stylex'
@@ -33,14 +33,13 @@ export function ScrollArea({
   orientation = 'vertical',
   scrollbarDisplay = 'hover',
   ...props
-}: Omit<React.ComponentProps<typeof BaseScrollArea.Root>, 'className' | 'style'> &
-  StyleProp & {
-    /** Display a fade mask on the sides of the area that can be scrolled towards. */
-    fade?: boolean
-    /** Which scrollbars are drawn: one for each axis named, with the corner where both meet. */
-    orientation?: 'vertical' | 'horizontal' | 'both'
-    scrollbarDisplay?: ScrollbarDisplay
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseScrollArea.Root>> & {
+  /** Display a fade mask on the sides of the area that can be scrolled towards. */
+  fade?: boolean
+  /** Which scrollbars are drawn: one for each axis named, with the corner where both meet. */
+  orientation?: 'vertical' | 'horizontal' | 'both'
+  scrollbarDisplay?: ScrollbarDisplay
+}) {
   return (
     <BaseScrollArea.Root {...props} {...stylex.props(s.root, style)}>
       <BaseScrollArea.Viewport
@@ -64,8 +63,9 @@ export function ScrollBar({
   display = 'hover',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseScrollArea.Scrollbar>, 'className' | 'style'> &
-  StyleProp & { display?: ScrollbarDisplay }) {
+}: PartProps<React.ComponentProps<typeof BaseScrollArea.Scrollbar>> & {
+  display?: ScrollbarDisplay
+}) {
   return (
     <BaseScrollArea.Scrollbar
       orientation={orientation}

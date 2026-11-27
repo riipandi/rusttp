@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { focusRing, unitLength, type UnitStep } from '../../styles/utils.stylex'
 import { tableAlign, tableCellSize, tableStyles as s, tableVerticalAlign } from './table.stylex'
 
@@ -48,15 +48,14 @@ export function Table({
   style,
   labels,
   ...props
-}: Omit<React.ComponentProps<'table'>, 'className' | 'style' | 'border'> &
-  StyleProp & {
-    /** Draws an edge around the table, with rounded corners. */
-    border?: boolean
-    /** Draws an edge between the columns. */
-    columnBorder?: boolean
-    /** Name of the scroll region; the caption by default. */
-    labels?: Partial<TableLabels>
-  }) {
+}: PartProps<React.ComponentProps<'table'>, 'border'> & {
+  /** Draws an edge around the table, with rounded corners. */
+  border?: boolean
+  /** Draws an edge between the columns. */
+  columnBorder?: boolean
+  /** Name of the scroll region; the caption by default. */
+  labels?: Partial<TableLabels>
+}) {
   const wrapper = React.useRef<HTMLDivElement>(null)
   const [scrolls, setScrolls] = React.useState(false)
   const [captionId, setCaptionId] = React.useState<string>()
@@ -99,24 +98,15 @@ export function Table({
   )
 }
 
-export function TableHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'thead'>, 'className' | 'style'> & StyleProp) {
+export function TableHeader({ style, ...props }: PartProps<React.ComponentProps<'thead'>>) {
   return <thead {...props} {...stylex.props(style)} />
 }
 
-export function TableBody({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'tbody'>, 'className' | 'style'> & StyleProp) {
+export function TableBody({ style, ...props }: PartProps<React.ComponentProps<'tbody'>>) {
   return <tbody {...props} {...stylex.props(style)} />
 }
 
-export function TableFooter({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'tfoot'>, 'className' | 'style'> & StyleProp) {
+export function TableFooter({ style, ...props }: PartProps<React.ComponentProps<'tfoot'>>) {
   return <tfoot {...props} {...stylex.props(s.footer, style)} />
 }
 
@@ -124,11 +114,10 @@ export function TableRow({
   highlighted = false,
   style,
   ...props
-}: Omit<React.ComponentProps<'tr'>, 'className' | 'style'> &
-  StyleProp & {
-    /** Tints the row, such as for the selected one. Visual only: pair it with `aria-selected` where the table is selectable. */
-    highlighted?: boolean
-  }) {
+}: PartProps<React.ComponentProps<'tr'>> & {
+  /** Tints the row, such as for the selected one. Visual only: pair it with `aria-selected` where the table is selectable. */
+  highlighted?: boolean
+}) {
   return <tr {...props} {...stylex.props(s.row, highlighted && s.highlighted, style)} />
 }
 
@@ -139,9 +128,7 @@ export function TableHead({
   minWidth,
   style,
   ...props
-}: Omit<React.ComponentProps<'th'>, 'className' | 'style' | 'align' | 'width'> &
-  StyleProp &
-  CellProps) {
+}: PartProps<React.ComponentProps<'th'>, 'align' | 'width'> & CellProps) {
   const columnBorder = React.useContext(ColumnBorderContext)
   return (
     <th
@@ -163,9 +150,7 @@ export function TableCell({
   minWidth,
   style,
   ...props
-}: Omit<React.ComponentProps<'td'>, 'className' | 'style' | 'align' | 'width'> &
-  StyleProp &
-  CellProps) {
+}: PartProps<React.ComponentProps<'td'>, 'align' | 'width'> & CellProps) {
   const columnBorder = React.useContext(ColumnBorderContext)
   return (
     <td
@@ -179,11 +164,7 @@ export function TableCell({
   )
 }
 
-export function TableCaption({
-  id,
-  style,
-  ...props
-}: Omit<React.ComponentProps<'caption'>, 'className' | 'style'> & StyleProp) {
+export function TableCaption({ id, style, ...props }: PartProps<React.ComponentProps<'caption'>>) {
   const setCaptionId = React.useContext(CaptionContext)
   const generatedId = React.useId()
   const captionId = id ?? generatedId

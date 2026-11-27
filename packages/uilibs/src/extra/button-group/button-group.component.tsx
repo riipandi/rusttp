@@ -8,12 +8,11 @@ import {
   useButtonGroup
 } from '../../base/button/button-group.context'
 import { Separator } from '../../base/separator'
-import type { ControlSize, StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { buttonGroupStyles as s } from './button-group.stylex'
 import { buttonGroupOrientations as orientations } from './button-group.stylex'
 
-export interface ButtonGroupProps
-  extends Omit<React.ComponentProps<'div'>, 'className' | 'style'>, StyleProp {
+export interface ButtonGroupProps extends PartProps<React.ComponentProps<'div'>> {
   orientation?: 'horizontal' | 'vertical'
   /** The size every member takes unless it sets its own; `medium` when neither is set. */
   size?: ControlSize
@@ -77,10 +76,7 @@ export function ButtonGroup({
   )
 }
 
-export function ButtonGroupText({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function ButtonGroupText({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   const group = useButtonGroup()
   return <div {...props} {...stylex.props(s.text, buttonGroupMember(group, false), style)} />
 }

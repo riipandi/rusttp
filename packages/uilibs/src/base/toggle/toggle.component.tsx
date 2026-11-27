@@ -11,7 +11,7 @@ import { Toggle as BaseToggle } from '@base-ui/react/toggle'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
-import type { ColorRole, DenseControlSize } from '../../styles/types'
+import type { ColorRole, DenseControlSize, PartProps } from '../../styles/types'
 import { toggleStyles as s } from './toggle.stylex'
 import { toggleRest, toggleSelected, toggleSizes, toggleVariants } from './toggle.stylex'
 
@@ -21,10 +21,7 @@ export type ToggleVariant = 'ghost' | 'outline' | 'solid'
 export type ToggleColor = ColorRole
 export type ToggleSize = DenseControlSize
 
-export interface ToggleProps extends Omit<
-  React.ComponentProps<typeof BaseToggle>,
-  'className' | 'style'
-> {
+export interface ToggleProps extends PartProps<React.ComponentProps<typeof BaseToggle>> {
   variant?: ToggleVariant
   /**
    * The fill of the pressed state: `ghost` a tint of `selectedColor`, `outline` an edge in it, and

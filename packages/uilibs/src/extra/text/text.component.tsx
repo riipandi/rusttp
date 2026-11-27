@@ -2,6 +2,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import type { Responsive } from '../../hooks/use-responsive-value'
+import type { PartProps } from '../../styles/types'
 import {
   textAlignStyles,
   textColorStyles,
@@ -104,7 +105,7 @@ export function resolveResponsive<T extends string>(
   return out
 }
 
-export interface TextProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
+export interface TextProps extends PartProps<useRender.ComponentProps<'div'>> {
   variant?: Responsive<TextVariant>
   color?: TextColor
   weight?: TextWeight

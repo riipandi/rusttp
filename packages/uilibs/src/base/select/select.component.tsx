@@ -44,8 +44,7 @@ import {
 } from '../../styles/control.stylex'
 import { glyphSize, markSize } from '../../styles/glyph'
 import { highlightedItem, popupList } from '../../styles/popup.stylex'
-import type { ControlSize, Glyph } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, Glyph, PartProps } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from '../button/button-group.context'
 import { PopupShell, type PositionerProps } from '../popup-shell'
 import { selectStyles as s } from './select.stylex'
@@ -65,15 +64,14 @@ export function SelectTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Trigger>, 'className' | 'style'> &
-  StyleProp & {
-    /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** A glyph before the value; it is decoration, so the name still comes from the label. */
-    icon?: Glyph
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.Trigger>> & {
+  /** Control height and type; the `ButtonGroup`'s size, else `medium` (36px). */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** A glyph before the value; it is decoration, so the name still comes from the label. */
+  icon?: Glyph
+}) {
   const group = useButtonGroup()
   const size = sizeProp ?? group?.size ?? 'medium'
   return (
@@ -119,10 +117,7 @@ function ScrollArrow({ direction }: { direction: 'up' | 'down' }) {
 }
 
 export interface SelectContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseSelect.Popup>, 'className' | 'style'>,
-    PositionerProps,
-    StyleProp {
+  extends PartProps<React.ComponentProps<typeof BaseSelect.Popup>>, PositionerProps {
   /** Lays the open list over its trigger so the selected item sits on the value. */
   alignItemWithTrigger?: boolean
 }
@@ -173,7 +168,7 @@ export function SelectItem({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.Item>>) {
   return (
     <BaseSelect.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)}>
       <BaseSelect.ItemText {...stylex.props(s.itemText)}>{children}</BaseSelect.ItemText>
@@ -187,13 +182,13 @@ export function SelectItem({
 export function SelectLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.GroupLabel>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.GroupLabel>>) {
   return <BaseSelect.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function SelectSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseSelect.Separator>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseSelect.Separator>>) {
   return <BaseSelect.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

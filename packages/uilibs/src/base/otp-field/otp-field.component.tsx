@@ -21,8 +21,7 @@ import {
   controlVariants
 } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { otpFieldSlotSizes, otpFieldStyles as s } from './otp-field.stylex'
 
 export interface OTPFieldLabels {
@@ -67,15 +66,14 @@ export function OTPField({
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   ...props
-}: Omit<React.ComponentProps<typeof BaseOTPField.Root>, 'className' | 'style' | 'size'> &
-  StyleProp & {
-    /** Slot height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-    /** Accessible names of the slots; English by default. */
-    labels?: Partial<OTPFieldLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseOTPField.Root>, 'size'> & {
+  /** Slot height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+  /** Accessible names of the slots; English by default. */
+  labels?: Partial<OTPFieldLabels>
+}) {
   const generatedId = React.useId()
   const labelId = ariaLabel != null && ariaLabelledBy == null ? generatedId : ariaLabelledBy
   const context = React.useMemo(
@@ -102,18 +100,14 @@ export function OTPField({
   )
 }
 
-export function OTPFieldGroup({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function OTPFieldGroup({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.group, style)} />
 }
 
 export function OTPFieldSlot({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseOTPField.Input>, 'className' | 'style' | 'render'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseOTPField.Input>, 'render'>) {
   const { size, variant, length, labelId, labels } = React.useContext(OTPFieldContext)
 
   return (
@@ -146,10 +140,7 @@ export function OTPFieldSlot({
   )
 }
 
-export function OTPFieldSeparator({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function OTPFieldSeparator({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return (
     <div role='separator' {...props} {...stylex.props(s.separator, style)}>
       <Minus size={glyphSize.medium} strokeWidth={1.5} aria-hidden />

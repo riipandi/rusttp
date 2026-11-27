@@ -16,7 +16,7 @@
 import { Meter as BaseMeter } from '@base-ui/react/meter'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import type { ColorRole, PartProps } from '../../styles/types'
 // Meter draws the same label, track, and fill as Progress, so it reuses that stylesheet. The two
 // differ only in role (`meter`, `progressbar`) and in the Base UI parts they wrap.
 import {
@@ -40,13 +40,12 @@ export function Meter({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMeter.Root>, 'className' | 'style' | 'color'> &
-  StyleProp & {
-    /** The role of the fill; `primary` by default. Pair a non-neutral color with a label: color alone is not meaning. */
-    color?: MeterColor
-    /** Bar thickness: `small` 2px, `medium` 4px (default). */
-    size?: MeterSize
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseMeter.Root>, 'color'> & {
+  /** The role of the fill; `primary` by default. Pair a non-neutral color with a label: color alone is not meaning. */
+  color?: MeterColor
+  /** Bar thickness: `small` 2px, `medium` 4px (default). */
+  size?: MeterSize
+}) {
   const look = React.useMemo(() => ({ color, size }), [color, size])
   return (
     <MeterLookContext.Provider value={look}>
@@ -63,7 +62,7 @@ export function Meter({
 export function MeterTrack({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMeter.Track>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMeter.Track>>) {
   const { size } = React.useContext(MeterLookContext)
   return <BaseMeter.Track {...props} {...stylex.props(s.track, meterSizes[size], style)} />
 }
@@ -71,7 +70,7 @@ export function MeterTrack({
 export function MeterIndicator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMeter.Indicator>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMeter.Indicator>>) {
   const { color } = React.useContext(MeterLookContext)
   return (
     <BaseMeter.Indicator {...props} {...stylex.props(s.indicator, meterColors[color], style)} />
@@ -81,13 +80,13 @@ export function MeterIndicator({
 export function MeterLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMeter.Label>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMeter.Label>>) {
   return <BaseMeter.Label {...props} {...stylex.props(s.label, style)} />
 }
 
 export function MeterValue({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseMeter.Value>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseMeter.Value>>) {
   return <BaseMeter.Value {...props} {...stylex.props(s.value, style)} />
 }

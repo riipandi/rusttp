@@ -2,6 +2,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import { mapResponsive, type Responsive } from '../../hooks/use-responsive-value'
+import type { PartProps } from '../../styles/types'
 import type { UnitStep } from '../../styles/utils.stylex'
 import { resolveResponsive, type ResponsiveSpec } from '../text/text.component'
 import {
@@ -28,7 +29,7 @@ export type StackJustify =
   | 'space-around'
   | 'space-evenly'
 
-export interface StackProps extends Omit<useRender.ComponentProps<'div'>, 'className' | 'style'> {
+export interface StackProps extends PartProps<useRender.ComponentProps<'div'>> {
   /** The main axis. Responsive. Default `column`. */
   direction?: Responsive<StackDirection>
   /** The space between children, in `unit` steps (`3` is 12px). Responsive. Default none. */

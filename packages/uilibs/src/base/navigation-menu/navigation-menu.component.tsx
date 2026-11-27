@@ -33,7 +33,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { markSize } from '../../styles/glyph'
 import { popupFx } from '../../styles/popup.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { ring } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
@@ -57,9 +57,8 @@ export function NavigationMenu({
   align = 'start',
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Root>, 'className' | 'style'> &
-  Pick<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'align'> &
-  StyleProp & {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Root>> &
+  Pick<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'align'> & {
     /** Accessible names of the landmarks; English by default. */
     labels?: Partial<NavigationMenuLabels>
   }) {
@@ -77,14 +76,14 @@ export function NavigationMenu({
 export function NavigationMenuList({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.List>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.List>>) {
   return <BaseNavigationMenu.List {...props} {...stylex.props(s.list, style)} />
 }
 
 export function NavigationMenuItem({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Item>>) {
   return <BaseNavigationMenu.Item {...props} {...stylex.props(s.item, style)} />
 }
 
@@ -92,8 +91,7 @@ export function NavigationMenuTrigger({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Trigger>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Trigger>>) {
   return (
     <BaseNavigationMenu.Trigger {...props} {...stylex.props(focusRing.root, s.trigger, style)}>
       {children}
@@ -110,15 +108,14 @@ export function NavigationMenuTrigger({
 export function NavigationMenuContent({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Content>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Content>>) {
   return <BaseNavigationMenu.Content {...props} {...stylex.props(s.content, style)} />
 }
 
 export function NavigationMenuLink({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Link>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Link>>) {
   return <BaseNavigationMenu.Link {...props} {...stylex.props(focusRing.root, s.link, style)} />
 }
 
@@ -129,8 +126,7 @@ export function NavigationMenuPositioner({
   align = 'start',
   alignOffset = 0,
   ...props
-}: Omit<React.ComponentProps<typeof BaseNavigationMenu.Positioner>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseNavigationMenu.Positioner>>) {
   const labels = React.useContext(NavigationMenuLabelsContext)
   return (
     <BaseNavigationMenu.Portal container={usePortalContainer()}>

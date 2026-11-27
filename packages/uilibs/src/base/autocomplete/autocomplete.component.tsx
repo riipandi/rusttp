@@ -43,8 +43,7 @@ import {
   controlVariants
 } from '../../styles/control.stylex'
 import { highlightedItem, popupList } from '../../styles/popup.stylex'
-import type { ControlSize } from '../../styles/types'
-import type { StyleProp } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { PopupShell, type PositionerProps } from '../popup-shell'
 import { autocompleteStyles as s } from './autocomplete.stylex'
 
@@ -62,13 +61,12 @@ export function AutocompleteInput({
   variant = 'outline',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style' | 'size'> &
-  StyleProp & {
-    /** Control height and type; `medium` (36px) by default. */
-    size?: ControlSize
-    /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
-    variant?: ControlVariant
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Input>, 'size'> & {
+  /** Control height and type; `medium` (36px) by default. */
+  size?: ControlSize
+  /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */
+  variant?: ControlVariant
+}) {
   return (
     <BaseAutocomplete.Input
       {...props}
@@ -84,10 +82,7 @@ export function AutocompleteInput({
 }
 
 export interface AutocompleteContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseAutocomplete.Popup>, 'className' | 'style'>,
-    PositionerProps,
-    StyleProp {}
+  extends PartProps<React.ComponentProps<typeof BaseAutocomplete.Popup>>, PositionerProps {}
 
 export function AutocompleteContent({
   style,
@@ -122,47 +117,44 @@ export function AutocompleteContent({
 export function AutocompleteList({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.List>, 'className' | 'style' | 'children'> &
-  StyleProp & {
-    /** Static items, or a render function over the filtered items. */
-    children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.List>, 'children'> & {
+  /** Static items, or a render function over the filtered items. */
+  children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
+}) {
   return <BaseAutocomplete.List {...props} {...stylex.props(s.list, style)} />
 }
 
 export function AutocompleteItem({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Item>>) {
   return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function AutocompleteGroup({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Group>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Group>>) {
   return <BaseAutocomplete.Group {...props} {...stylex.props(style)} />
 }
 
 export function AutocompleteLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.GroupLabel>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.GroupLabel>>) {
   return <BaseAutocomplete.GroupLabel {...props} {...stylex.props(popupList.label, style)} />
 }
 
 export function AutocompleteEmpty({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Empty>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Empty>>) {
   return <BaseAutocomplete.Empty {...props} {...stylex.props(popupList.empty, style)} />
 }
 
 export function AutocompleteSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Separator>>) {
   return <BaseAutocomplete.Separator {...props} {...stylex.props(popupList.separator, style)} />
 }

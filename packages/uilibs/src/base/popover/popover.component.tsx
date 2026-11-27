@@ -26,7 +26,7 @@ import { Popover as BasePopover } from '@base-ui/react/popover'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import type { UnitStep } from '../../styles/utils.stylex'
 import { PopupShell, type PositionerProps } from '../popup-shell'
 import { popoverPadding, popoverRadii, popoverStyles as s } from './popover.stylex'
@@ -36,9 +36,7 @@ export const PopoverTrigger = BasePopover.Trigger
 export const PopoverClose = BasePopover.Close
 
 export interface PopoverContentProps
-  extends
-    Omit<React.ComponentProps<typeof BasePopover.Popup>, 'className' | 'style'>,
-    PositionerProps {
+  extends PartProps<React.ComponentProps<typeof BasePopover.Popup>>, PositionerProps {
   /** The `shadow` token the popup draws: `outline`, `raised` (default), or the deepest `overlay`. */
   elevation?: 'outline' | 'raised' | 'overlay'
   /** Space inside the popup, counted in `unit` steps (`4` is 16px, the default). */
@@ -83,24 +81,21 @@ export function PopoverContent({
 }
 
 /** Layout wrapper for `PopoverTitle` + `PopoverDescription` inside `PopoverContent`. */
-export function PopoverHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function PopoverHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
 export function PopoverTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BasePopover.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BasePopover.Title>>) {
   return <BasePopover.Title {...props} {...stylex.props(s.title, style)} />
 }
 
 export function PopoverDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BasePopover.Description>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BasePopover.Description>>) {
   return (
     <BasePopover.Description
       {...props}

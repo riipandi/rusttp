@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Group as GroupPrimitive, Panel as PanelPrimitive } from 'react-resizable-panels'
 import { Separator as SeparatorPrimitive } from 'react-resizable-panels'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { resizableStyles as s } from './resizable.stylex'
 
 type Orientation = 'horizontal' | 'vertical'
@@ -30,7 +30,7 @@ export function ResizablePanelGroup({
   orientation = 'horizontal',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof GroupPrimitive>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof GroupPrimitive>>) {
   return (
     <OrientationContext.Provider value={orientation}>
       <GroupPrimitive {...props} orientation={orientation} {...stylex.props(s.group, style)} />
@@ -49,7 +49,7 @@ export function ResizablePanel({
   children,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof PanelPrimitive>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof PanelPrimitive>>) {
   return (
     <PanelPrimitive {...props}>
       <div {...stylex.props(s.panel, style)}>{children}</div>
@@ -63,8 +63,10 @@ export function ResizableHandle({
   withHandle = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof SeparatorPrimitive>, 'className' | 'style'> &
-  StyleProp & { variant?: HandleVariant; withHandle?: boolean }) {
+}: PartProps<React.ComponentProps<typeof SeparatorPrimitive>> & {
+  variant?: HandleVariant
+  withHandle?: boolean
+}) {
   const orientation = React.useContext(OrientationContext)
   const isVertical = orientation === 'vertical'
   const indicatorStyle = indicatorByVariant[variant][isVertical ? 'vertical' : 'horizontal']

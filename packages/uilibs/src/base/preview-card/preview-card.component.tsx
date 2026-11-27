@@ -19,6 +19,7 @@
 import { PreviewCard as BasePreviewCard } from '@base-ui/react/preview-card'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { PopupShell, type PositionerProps } from '../popup-shell'
 import { previewCardStyles as s } from './preview-card.stylex'
 
@@ -26,9 +27,7 @@ export const PreviewCard = BasePreviewCard.Root
 export const PreviewCardTrigger = BasePreviewCard.Trigger
 
 export interface PreviewCardContentProps
-  extends
-    Omit<React.ComponentProps<typeof BasePreviewCard.Popup>, 'className' | 'style'>,
-    PositionerProps {
+  extends PartProps<React.ComponentProps<typeof BasePreviewCard.Popup>>, PositionerProps {
   style?: stylex.StyleXStyles
 }
 

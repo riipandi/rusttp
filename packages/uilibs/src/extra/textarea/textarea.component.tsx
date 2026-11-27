@@ -3,13 +3,10 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { useCallback } from 'react'
 import { type ControlVariant, controlBase, controlVariants } from '../../styles/control.stylex'
-import type { ControlSize } from '../../styles/types'
+import type { ControlSize, PartProps } from '../../styles/types'
 import { textareaSizes, textareaStyles as s } from './textarea.stylex'
 
-export interface TextareaProps extends Omit<
-  React.ComponentProps<'textarea'>,
-  'className' | 'style'
-> {
+export interface TextareaProps extends PartProps<React.ComponentProps<'textarea'>> {
   /** Minimum height and type; `medium` (64px) by default. */
   size?: ControlSize
   /** The box: `outline` (default), `faded`, `ghost`, or `headless`. */

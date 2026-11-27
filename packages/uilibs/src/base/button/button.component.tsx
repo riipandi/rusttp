@@ -15,7 +15,7 @@ import * as React from 'react'
 import { LabelledControlContext, Spinner } from '../../extra/spinner'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
 import { glyphSize } from '../../styles/glyph'
-import type { ColorRole, DenseControlSize, Glyph } from '../../styles/types'
+import type { ColorRole, DenseControlSize, Glyph, PartProps } from '../../styles/types'
 import { buttonGroupMember, useButtonGroup } from './button-group.context'
 import {
   buttonFills,
@@ -49,9 +49,9 @@ function buttonHighlight(variant: ButtonVariant, color?: ButtonColor) {
   return buttonHighlighted[variant][color ?? (variant === 'solid' ? 'primary' : 'neutral')]
 }
 
-export interface ButtonProps extends Omit<
+export interface ButtonProps extends PartProps<
   React.ComponentProps<typeof BaseButton>,
-  'className' | 'style' | 'color' | 'render' | 'nativeButton'
+  'color' | 'render' | 'nativeButton'
 > {
   /**
    * Makes the button a link: the element, such as `<a href='…' />` or a router link, is rendered

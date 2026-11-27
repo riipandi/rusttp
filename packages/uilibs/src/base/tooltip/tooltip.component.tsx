@@ -21,6 +21,7 @@
 import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { PopupShell, type PositionerProps } from '../popup-shell'
 import { tooltipStyles as s } from './tooltip.stylex'
 
@@ -36,9 +37,7 @@ export const Tooltip = BaseTooltip.Root
 export const TooltipTrigger = BaseTooltip.Trigger
 
 export interface TooltipContentProps
-  extends
-    Omit<React.ComponentProps<typeof BaseTooltip.Popup>, 'className' | 'style' | 'color'>,
-    PositionerProps {
+  extends PartProps<React.ComponentProps<typeof BaseTooltip.Popup>, 'color'>, PositionerProps {
   /**
    * The surface: `neutral` (default) matches the other popups; `inverted` is the foreground color on
    * the page; `dark` is black with white text in both themes.

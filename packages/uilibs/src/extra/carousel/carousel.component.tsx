@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { Button } from '../../base/button'
+import type { PartProps } from '../../styles/types'
 import { focusRing, unitLength, visuallyHidden, type UnitStep } from '../../styles/utils.stylex'
 import { carouselStyles as s } from './carousel.stylex'
 
@@ -37,10 +38,7 @@ const defaultLabels: CarouselLabels = {
     first === last ? `Slide ${first} of ${total}` : `Slides ${first} to ${last} of ${total}`
 }
 
-export interface CarouselProps extends Omit<
-  React.ComponentProps<'section'>,
-  'className' | 'style' | 'onChange'
-> {
+export interface CarouselProps extends PartProps<React.ComponentProps<'section'>, 'onChange'> {
   /** How many slides fit the strip at once; each slide is `1 / visibleItems` of its width, less the gaps. Default `1`. */
   visibleItems?: number
   /** The space between slides: a count of `unit` steps (`3` is 12px) or a CSS length. Default `3`. */

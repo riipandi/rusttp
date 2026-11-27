@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import type * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import {
   badgeAnchorCorners as corners,
   badgeAnchorOverlaps as overlaps,
@@ -12,8 +12,7 @@ export type BadgeAnchorCorner = 'top-end' | 'top-start' | 'bottom-end' | 'bottom
 /** `circular` sits the badge on the rim of a round element; `rectangular` on the corner of its box. */
 export type BadgeAnchorOverlap = 'rectangular' | 'circular'
 
-export interface BadgeAnchorProps
-  extends Omit<React.ComponentProps<'span'>, 'className' | 'style'>, StyleProp {
+export interface BadgeAnchorProps extends PartProps<React.ComponentProps<'span'>> {
   /** The badge to show, usually a `Badge`. */
   badge: React.ReactNode
   /** The corner the badge sits on. Default `top-end`. */

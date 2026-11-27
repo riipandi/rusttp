@@ -8,6 +8,7 @@ import { Button, buttonSquare } from '../base/button'
 import { SelectContent, SelectTrigger, SelectValue } from '../base/select'
 import { Select, SelectItem } from '../base/select'
 import { Skeleton } from '../extra/skeleton'
+import type { PartProps } from '../styles/types'
 import { visuallyHidden } from '../styles/utils.stylex'
 import { useDataGrid, type DataGridTableInstance } from './data-grid'
 import { dataGridPaginationStyles } from './data-grid-table.stylex'
@@ -15,10 +16,7 @@ import { dataGridScrollAreaStyles } from './data-grid.stylex'
 
 type DataGridScrollAreaOrientation = 'horizontal' | 'vertical' | 'both'
 
-type DataGridScrollAreaProps = Omit<
-  BaseScrollArea.Root.Props,
-  'children' | 'className' | 'style'
-> & {
+type DataGridScrollAreaProps = PartProps<BaseScrollArea.Root.Props, 'children'> & {
   children: ReactNode
   style?: StyleXStyles
   orientation?: DataGridScrollAreaOrientation

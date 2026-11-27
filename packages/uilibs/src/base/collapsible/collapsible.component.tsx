@@ -13,6 +13,7 @@
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { collapsibleStyles as s } from './collapsible.stylex'
 
 // Behavior parts: bring your own trigger (e.g. render={<Button />}) and content styles. The panel animates open/close.
@@ -22,7 +23,7 @@ export const CollapsibleTrigger = BaseCollapsible.Trigger
 export function CollapsibleContent({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseCollapsible.Panel>, 'className' | 'style'> & {
+}: PartProps<React.ComponentProps<typeof BaseCollapsible.Panel>> & {
   style?: stylex.StyleXStyles
 }) {
   return <BaseCollapsible.Panel {...props} {...stylex.props(s.panel, style)} />

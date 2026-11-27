@@ -4,7 +4,7 @@ import * as React from 'react'
 import { type CloseLabels, CloseButton } from '../../base/dialog/close-button'
 import { popupFx } from '../../styles/popup.stylex'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { sheetStyles as s, sheetSides as sides } from './sheet.stylex'
 
@@ -18,11 +18,10 @@ export function SheetOverlay({
   blurredOverlay = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Backdrop>, 'className' | 'style'> &
-  StyleProp & {
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Backdrop>> & {
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+}) {
   return (
     <BaseDialog.Backdrop
       {...props}
@@ -39,15 +38,14 @@ export function SheetContent({
   showCloseButton = true,
   labels,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Popup>, 'className' | 'style'> &
-  StyleProp & {
-    side?: SheetSide
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-    showCloseButton?: boolean
-    /** Accessible names of the built-in close button; English by default. */
-    labels?: Partial<CloseLabels>
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Popup>> & {
+  side?: SheetSide
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+  showCloseButton?: boolean
+  /** Accessible names of the built-in close button; English by default. */
+  labels?: Partial<CloseLabels>
+}) {
   return (
     <BaseDialog.Portal container={usePortalContainer()}>
       <SheetOverlay blurredOverlay={blurredOverlay} />
@@ -66,31 +64,25 @@ export function SheetContent({
   )
 }
 
-export function SheetHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function SheetHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.header, style)} />
 }
 
-export function SheetFooter({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function SheetFooter({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function SheetTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Title>>) {
   return <BaseDialog.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function SheetDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDialog.Description>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDialog.Description>>) {
   return (
     <BaseDialog.Description
       {...props}

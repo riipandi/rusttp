@@ -7,20 +7,17 @@ import { ScrollArea } from '../../base/scroll-area'
 import { Separator } from '../../base/separator'
 import { glyphSize } from '../../styles/glyph'
 import { highlightedItem } from '../../styles/popup.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps, StyleProp } from '../../styles/types'
 import { visuallyHidden } from '../../styles/utils.stylex'
 import { commandStyles as s } from './command.stylex'
 
 /** True inside a `CommandDialog`, whose own ring is the palette's edge. */
 const InDialogContext = React.createContext(false)
 
-export interface CommandProps
-  extends
-    Omit<
-      React.ComponentProps<typeof BaseAutocomplete.Root>,
-      'className' | 'style' | 'inline' | 'open'
-    >,
-    StyleProp {
+export interface CommandProps extends PartProps<
+  React.ComponentProps<typeof BaseAutocomplete.Root>,
+  'inline' | 'open'
+> {
   children?: React.ReactNode
 }
 
@@ -95,7 +92,7 @@ export function CommandDialog({
 export function CommandInput({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Input>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Input>>) {
   return (
     <>
       <div {...stylex.props(s.inputWrap, style)}>
@@ -119,11 +116,10 @@ export function CommandInput({
 export function CommandList({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.List>, 'className' | 'style' | 'children'> &
-  StyleProp & {
-    /** Static items, or a render function over the filtered items. */
-    children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.List>, 'children'> & {
+  /** Static items, or a render function over the filtered items. */
+  children?: React.ComponentProps<typeof BaseAutocomplete.List>['children']
+}) {
   return (
     <ScrollArea fade style={s.scroll}>
       <BaseAutocomplete.List {...props} {...stylex.props(s.list, style)} />
@@ -134,7 +130,7 @@ export function CommandList({
 export function CommandEmpty({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Empty>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Empty>>) {
   return <BaseAutocomplete.Empty {...props} {...stylex.props(s.empty, style)} />
 }
 
@@ -143,8 +139,7 @@ export function CommandGroup({
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Group>, 'className' | 'style'> &
-  StyleProp & { heading?: React.ReactNode }) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Group>> & { heading?: React.ReactNode }) {
   return (
     <BaseAutocomplete.Group {...props} {...stylex.props(style)}>
       {heading && (
@@ -160,15 +155,14 @@ export function CommandGroup({
 export function CommandItem({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Item>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Item>>) {
   return <BaseAutocomplete.Item {...props} {...stylex.props(highlightedItem.root, s.item, style)} />
 }
 
 export function CommandSeparator({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseAutocomplete.Separator>, 'className' | 'style'> &
-  StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseAutocomplete.Separator>>) {
   // Base UI's separator is a `role='presentation'` element inside the list, which allows no
   // `aria-orientation`; the shared `Separator` adds one, so it is dropped here and the line keeps
   // the library's one divider look.
@@ -180,9 +174,6 @@ export function CommandSeparator({
   )
 }
 
-export function CommandShortcut({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+export function CommandShortcut({ style, ...props }: PartProps<React.ComponentProps<'span'>>) {
   return <span {...props} {...stylex.props(s.shortcut, style)} />
 }

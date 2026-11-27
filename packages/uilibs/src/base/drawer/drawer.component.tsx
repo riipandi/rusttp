@@ -26,7 +26,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { popupFx } from '../../styles/popup.stylex'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { drawerStyles as s } from './drawer.stylex'
 import { drawerDirections as directions, drawerSwipeHandles as swipeHandles } from './drawer.stylex'
@@ -71,11 +71,10 @@ export function DrawerOverlay({
   blurredOverlay = false,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Backdrop>, 'className' | 'style'> &
-  StyleProp & {
-    /** Blurs the page behind the backdrop. */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDrawer.Backdrop>> & {
+  /** Blurs the page behind the backdrop. */
+  blurredOverlay?: boolean
+}) {
   return (
     <BaseDrawer.Backdrop
       {...props}
@@ -89,11 +88,10 @@ export function DrawerContent({
   children,
   blurredOverlay = false,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Popup>, 'className' | 'style'> &
-  StyleProp & {
-    /** Blurs the page behind the backdrop (a modal drawer only). */
-    blurredOverlay?: boolean
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseDrawer.Popup>> & {
+  /** Blurs the page behind the backdrop (a modal drawer only). */
+  blurredOverlay?: boolean
+}) {
   const { modal, showSwipeHandle, swipeDirection } = React.useContext(DrawerContext)
   return (
     <BaseDrawer.Portal container={usePortalContainer()}>
@@ -108,10 +106,7 @@ export function DrawerContent({
   )
 }
 
-export function DrawerSwipeHandle({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function DrawerSwipeHandle({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   const { swipeDirection } = React.useContext(DrawerContext)
   return (
     <div
@@ -122,33 +117,27 @@ export function DrawerSwipeHandle({
   )
 }
 
-export function DrawerHeader({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function DrawerHeader({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   const { swipeDirection } = React.useContext(DrawerContext)
   const vertical = swipeDirection === 'up' || swipeDirection === 'down'
   return <div {...props} {...stylex.props(s.header, vertical && s.headerCentered, style)} />
 }
 
-export function DrawerFooter({
-  style,
-  ...props
-}: Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp) {
+export function DrawerFooter({ style, ...props }: PartProps<React.ComponentProps<'div'>>) {
   return <div {...props} {...stylex.props(s.footer, style)} />
 }
 
 export function DrawerTitle({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Title>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDrawer.Title>>) {
   return <BaseDrawer.Title {...props} {...stylex.props(type.body1, s.title, style)} />
 }
 
 export function DrawerDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseDrawer.Description>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseDrawer.Description>>) {
   return (
     <BaseDrawer.Description {...props} {...stylex.props(type.body2, descriptionText.root, style)} />
   )

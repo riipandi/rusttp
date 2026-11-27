@@ -3,7 +3,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { fileUploadStyles as styles } from './file-upload.stylex'
 
 export interface FileUploadChangeArgs {
@@ -12,10 +12,10 @@ export interface FileUploadChangeArgs {
   event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>
 }
 
-export interface FileUploadProps
-  extends
-    Omit<useRender.ComponentProps<'div'>, 'children' | 'className' | 'onChange' | 'style'>,
-    StyleProp {
+export interface FileUploadProps extends PartProps<
+  useRender.ComponentProps<'div'>,
+  'children' | 'onChange'
+> {
   /** Name of the input element */
   name: string
   /** Disable the file upload input */
@@ -168,7 +168,7 @@ export function FileUploadTrigger({
   children,
   style,
   ...props
-}: Omit<React.ComponentProps<'span'>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<'span'>>) {
   return (
     <span {...props} {...stylex.props(styles.trigger, style)}>
       {children}

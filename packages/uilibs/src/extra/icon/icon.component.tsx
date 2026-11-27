@@ -23,6 +23,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import type { PartProps } from '../../styles/types'
 import { iconColors, iconStyles as s } from './icon.stylex'
 
 export type IconColor =
@@ -34,10 +35,7 @@ export type IconColor =
   | 'critical'
   | 'disabled'
 
-export interface IconProps extends Omit<
-  useRender.ComponentProps<'span'>,
-  'className' | 'style' | 'color'
-> {
+export interface IconProps extends PartProps<useRender.ComponentProps<'span'>, 'color'> {
   /** Icon svg component (e.g. a Keyline icon) or a raw svg element. */
   svg: React.ReactElement<React.SVGProps<SVGSVGElement>> | React.ComponentType | null
   /** Icon size in pixels (number) or any CSS size (string). Defaults to `1em`. */

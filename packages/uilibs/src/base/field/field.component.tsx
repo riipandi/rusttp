@@ -24,17 +24,17 @@ import { Fieldset as BaseFieldset } from '@base-ui/react/fieldset'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { type } from '../../styles/type.stylex'
-import type { StyleProp } from '../../styles/types'
+import type { PartProps } from '../../styles/types'
 import { Separator } from '../separator'
 import { fieldStyles as s, fieldOrientations as orientations } from './field.stylex'
 import { fieldLabelStyles as labelStyles, fieldLegendKinds as legendKinds } from './field.stylex'
 
-type DivProps = Omit<React.ComponentProps<'div'>, 'className' | 'style'> & StyleProp
+type DivProps = PartProps<React.ComponentProps<'div'>>
 
 export function FieldSet({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseFieldset.Root>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseFieldset.Root>>) {
   return <BaseFieldset.Root {...props} {...stylex.props(s.set, style)} />
 }
 
@@ -44,11 +44,10 @@ export function FieldLegend({
   kind = 'legend',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseFieldset.Legend>, 'className' | 'style'> &
-  StyleProp & {
-    /** `legend` is a heading; `label` sizes the legend like a field label. */
-    kind?: FieldLegendKind
-  }) {
+}: PartProps<React.ComponentProps<typeof BaseFieldset.Legend>> & {
+  /** `legend` is a heading; `label` sizes the legend like a field label. */
+  kind?: FieldLegendKind
+}) {
   return <BaseFieldset.Legend {...props} {...stylex.props(s.legend, legendKinds[kind], style)} />
 }
 
@@ -68,8 +67,7 @@ export function Field({
   orientation = 'vertical',
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseField.Root>, 'className' | 'style'> &
-  StyleProp & { orientation?: FieldOrientation }) {
+}: PartProps<React.ComponentProps<typeof BaseField.Root>> & { orientation?: FieldOrientation }) {
   return <BaseField.Root {...props} {...stylex.props(s.field, orientations[orientation], style)} />
 }
 
@@ -80,7 +78,7 @@ export function FieldContent({ style, ...props }: DivProps) {
 export function FieldLabel({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseField.Label>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseField.Label>>) {
   return (
     <BaseField.Label
       {...props}
@@ -96,7 +94,7 @@ export function FieldTitle({ style, ...props }: DivProps) {
 export function FieldDescription({
   style,
   ...props
-}: Omit<React.ComponentProps<typeof BaseField.Description>, 'className' | 'style'> & StyleProp) {
+}: PartProps<React.ComponentProps<typeof BaseField.Description>>) {
   return <BaseField.Description {...props} {...stylex.props(s.description, style)} />
 }
 
@@ -109,8 +107,7 @@ export function FieldSeparator({ children, style, ...props }: DivProps) {
   )
 }
 
-export interface FieldErrorProps
-  extends Omit<React.ComponentProps<typeof BaseField.Error>, 'className' | 'style'>, StyleProp {
+export interface FieldErrorProps extends PartProps<React.ComponentProps<typeof BaseField.Error>> {
   /**
    * External errors to render directly (e.g. from react-hook-form or TanStack
    * Form). When set, the message renders unconditionally; otherwise the error

@@ -7,6 +7,7 @@ import type { DayButton, DropdownOption, Locale, WeekNumber } from 'react-day-pi
 import { buttonAppearance, type ButtonVariant } from '../../base/button'
 import { Select, SelectItem, SelectValue } from '../../base/select/select.component'
 import { SelectContent, SelectTrigger } from '../../base/select/select.component'
+import type { PartProps } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { calendarStyles } from './calendar.stylex'
 
@@ -199,13 +200,10 @@ const labelDayWithNumber: NonNullable<
 >['labelDayButton'] = (date, modifiers, options, dateLib) =>
   `${(dateLib ?? new DateLib(options)).format(date, 'd')}, ${labelDayButton(date, modifiers, options, dateLib)}`
 
-// DayPicker's props are a union by `mode`, so `Omit` is applied to each member.
-type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never
+// DayPicker's props are a union by `mode`, so `PartProps` is applied to each member.
+type DistributivePartProps<T> = T extends unknown ? PartProps<T> : never
 
-type CalendarProps = DistributiveOmit<
-  React.ComponentProps<typeof DayPicker>,
-  'className' | 'style'
-> & {
+type CalendarProps = DistributivePartProps<React.ComponentProps<typeof DayPicker>> & {
   /** The fill of the previous and next buttons. */
   buttonVariant?: ButtonVariant
   style?: StyleXStyles
