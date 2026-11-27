@@ -430,3 +430,27 @@ Consequences:
 Alternatives considered:
 
 - A grid role for clickable rows — rejected: it makes every cell a focus target and changes the whole keyboard model (parked, RI-5).
+
+### The uilibs implementation audit remediation, wave 1: waits as configuration, one StyleX plugin default, and CI that keeps its evidence
+
+Context (2026-11-27): the `uilibs implementation audit` (commit `05ccbe1`, 81 findings, merged into 26 recommendations) found that the 10 s wait rule of `frontend.md` was a convention that 40 waits and about 10 `pressUntil` calls did not follow, that "Invalid empty selector" was the dev-time media-const race and not a Storybook-plus-Vitest clash, and that CI kept no failure evidence. The owner approved `plan-00014-uilibs-implementation-audit-remediation` with every recommended decision; wave 1 is phases 1 to 16 (tracks A, B, C).
+
+Decision (D1 to D5, D15 of the plan):
+
+- D1: a defect found only by reading starts with a failing test; a test that cannot fail closes its finding as a false positive.
+- D2: the story wait is `configure({ asyncUtilTimeout: 10_000 })` in the preview's `beforeAll`; a probe showed it reaches the instrumented `waitFor` and `findBy*` (red at the default, green after), so the wrapper fallback was not needed. Rejected: per-call literals (22 existed, 40 waits were missed) and a lint rule (with the default a missing timeout is safe).
+- D3: `pressUntil` defaults to 10 s and the story projects' `testTimeout` is 30 s, because Vitest's browser default of 15 s cut a play with two failing waits into "Test timed out" (reproduced).
+- D4: the shared `stylexPlugin` sets `errorRecovery` outside production and `minify` in production, once for every package; the webapp's own branch is gone. The cold-server script was the red evidence (the first CSS collect threw); a cold Vitest story run never reproduced it in four tries, and five story runs beside a live `storybook dev` showed none, so the advice not to run both together is dropped. The webapp CSS fell from 92.3 KB to 69.3 KB (gzip 19.7 to 18.3 KB), `:dir()` kept, and `just size` now counts the entry CSS.
+- D5: no `retry` in the nightly engines: with 10 s waits and uploaded failure screenshots, a red nightly is read and not rerun. Trigger to revisit: a second nightly failure the screenshots do not explain.
+- D15: `actions/upload-artifact` and `actions/cache`, first-party and pinned by SHA, are approved; `include-hidden-files` is needed because `.vitest` is a dot directory.
+- Also in the wave: the per-story stylesheet fetch is replaced by a once-per-page match (measured 19% of story time over three files, above the plan's 10% bar); the static Storybook build leaves out the component manifests (18 MB to 16 MB, no builder paths in the binary), while `storybook dev` keeps serving `/mcp`; `expectDisabledLook` names the marks it checks; the viewport frame follows the dev sheet; story latency and failure rates are args.
+
+Consequences:
+
+- (positive) a slow WebKit runner no longer turns a settling popup into a flake by default, a CI failure leaves screenshots, the dev media-const error is gone for `uilibs`, and the CSS is no longer the one render-blocking asset the budget ignores.
+- (negative) a story that really fails takes up to 10 s to say so; the CI check names changed (`Checks`, `Tests (storybook)`, `Tests (storybook-dark)`, `Tests (unit)`), so required checks in GitHub must be re-pointed, and `Stories (webkit)` from the pull request workflow must not be required.
+
+Alternatives considered:
+
+- A second, `uilibs`-only recovery option — rejected: a copy of the shared default.
+- Excluding `uilibs` from the React Compiler — not part of this wave; plan D8 keeps it on.
