@@ -1,24 +1,24 @@
 ---
 status: in-progress
 created: 2026-11-27T14:20:00+07:00
-updated: 2026-11-27T14:39:33+07:00
+updated: 2026-11-27T15:24:36+07:00
 phases:
-    - { id: 1, title: "W1-A Ten seconds is the default story wait (S-01)", status: pending, note: "—" }
-    - { id: 2, title: "W1-A Shared overlay helpers replace the 400 ms sleeps (S-02, S-06)", status: pending, note: "—" }
-    - { id: 3, title: "W1-A A guard test keeps sleeps out of stories (extra E1)", status: pending, note: "—" }
-    - { id: 4, title: "W1-A The disabled-look check names its marks (S-16)", status: pending, note: "—" }
-    - { id: 5, title: "W1-A The viewport frame follows the dev sheet (S-17)", status: pending, note: "—" }
-    - { id: 6, title: "W1-A Story timers and randomness are deterministic (S-20)", status: pending, note: "—" }
-    - { id: 7, title: "W1-A Measure the per-story stylesheet wait, then decide (S-09)", status: pending, note: "—" }
-    - { id: 8, title: "W1-A The static build drops the component manifests (S-05)", status: pending, note: "—" }
-    - { id: 9, title: "W1-B The shared StyleX plugin recovers from the dev media-const race (V-01, S-10, V-06, V-08a)", status: pending, note: "—" }
-    - { id: 10, title: "W1-B The StyleX sheet is minified in production (V-02)", status: pending, note: "—" }
-    - { id: 11, title: "W1-B The size budget counts the entry CSS (V-04)", status: pending, note: "—" }
-    - { id: 12, title: "W1-B Plugin order, timings notice, watcher paths (V-08d, V-09, V-12)", status: pending, note: "—" }
-    - { id: 13, title: "W1-C CI keeps failure screenshots and watches the plugin and catalog (S-03, S-04)", status: pending, note: "—" }
-    - { id: 14, title: "W1-C CI runs its legs in parallel and caches the browser (S-07)", status: pending, note: "—" }
-    - { id: 15, title: "W1-C WebKit runs on pull requests that touch stories (S-08)", status: pending, note: "—" }
-    - { id: 16, title: "W1 Agent docs sync for wave 1 (S-18, V-06 doc side)", status: pending, note: "—" }
+    - { id: 1, title: "W1-A Ten seconds is the default story wait (S-01)", status: committed, note: "`5388448`: probe red at the default 1 s for waitFor and findByText, green with configure in beforeAll (no D2 fallback); a play with two failing waits shows Test timed out in 15000ms at the Vitest default and the assertion at 30 s (D3); 13 literals removed; Chromium 1310 stories plus 147 unit green, contracts and base/dialog green in Firefox and WebKit" }
+    - { id: 2, title: "W1-A Shared overlay helpers replace the 400 ms sleeps (S-02, S-06)", status: committed, note: "`ace5d1a`: overlay.ts; three 400 ms sleeps gone; closed/untilClosed copies replaced in six files; four opened getters kept (each names its own dialog); mutation under 4x CPU throttle: dropping untilOpaque fails the a11y gate (color-contrast 2.84)" }
+    - { id: 3, title: "W1-A A guard test keeps sleeps out of stories (extra E1)", status: committed, note: "`a54ab64`: story-sleeps.test.ts, per-file allowlist (6 files, 7 calls); scratch sleep in select.stories fails it, reverted" }
+    - { id: 4, title: "W1-A The disabled-look check names its marks (S-16)", status: committed, note: "`94b33e0`: expectDisabledLook names text, edge, fill, cursor; red: scratch button with fill but full-strength text passed the old helper; 21 call sites, 46 files green in both themes" }
+    - { id: 5, title: "W1-A The viewport frame follows the dev sheet (S-17)", status: committed, note: "`81d0ee9`: red: frame kept the old copy when the page sheet changed; green after; FOLLOW-UP fcb521e: the copy moved from onLoad into an effect and one full WebKit run failed Stack Responsive (expected row to be column), a load-dependent race that did not reproduce in isolation (hypothesis); styles are copied before the children render again, the observer keeps later changes; full WebKit green after" }
+    - { id: 6, title: "W1-A Story timers and randomness are deterministic (S-20)", status: committed, note: "`b908a1c`: latency and failRate are args; Math.random gone from stories; persistOrder fails deterministically, default 0, so the Sortable rollback demo needs failRate 0.25 or more" }
+    - { id: 7, title: "W1-A Measure the per-story stylesheet wait, then decide (S-09)", status: committed, note: "`9516a18`: measured over 33 stories, 3 runs: the fetch was about 0.31 s of 1.59 s story time (19%, over the 10% bar), so changed; residual risk: a module compiled lazily after the first story is missed" }
+    - { id: 8, title: "W1-A The static build drops the component manifests (S-05)", status: committed, note: "`7bcf28f`: no manifests/ in the static build, 18 MB to 16 MB here (the plan said 20), no builder paths in it, 735 index entries, /mcp docs-list still works in dev, 2 storybook server tests pass" }
+    - { id: 9, title: "W1-B The shared StyleX plugin recovers from the dev media-const race (V-01, S-10, V-06, V-08a)", status: committed, note: "`3656bf3`: cold-server script red (first collect threw) then green (864 B, no throw), production still strict; cold Vitest runs never reproduced it (4 of 4 clean), so the script is the only red evidence; broken scratch rule still fails the webapp build" }
+    - { id: 10, title: "W1-B The StyleX sheet is minified in production (V-02)", status: committed, note: "`4eae4a0`: CSS 92,343 to 69,286 B (gzip 19,719 to 18,339), :dir( 2, :lang( 0, JS unchanged" }
+    - { id: 11, title: "W1-B The size budget counts the entry CSS (V-04)", status: committed, note: "`1d952ba`: entry CSS limits 73 KB raw and 19.3 KB gzip (measured 69.3 and 18.4); limits of 68 and 17.3 each failed, reverted" }
+    - { id: 12, title: "W1-B Plugin order, timings notice, watcher paths (V-08d, V-09, V-12)", status: committed, note: "`46c0103`: old startsWith predicate ignored frontend-old (red), data-tsd-source 6 before and after, no PLUGIN_TIMINGS, a Rust file change rebuilds and a storybook output change does not" }
+    - { id: 13, title: "W1-C CI keeps failure screenshots and watches the plugin and catalog (S-03, S-04)", status: committed, note: "`a607b3e`: upload-artifact v7.0.2 pinned by SHA with include-hidden-files; paths include plugins and pnpm-workspace.yaml; actionlint clean; run on GitHub unchecked until a push" }
+    - { id: 14, title: "W1-C CI runs its legs in parallel and caches the browser (S-07)", status: committed, note: "`6afe9c5`: checks job plus a three-runner tests matrix, ms-playwright cached by version (actions/cache v6.1.0 pinned); check names changed; wall time unchecked until a push" }
+    - { id: 15, title: "W1-C WebKit runs on pull requests that touch stories (S-08)", status: committed, note: "`8190e37`: uilibs-webkit.yml on pull requests for stories, contracts, .storybook; not a required check; runs unchecked until a push" }
+    - { id: 16, title: "W1 Agent docs sync for wave 1 (S-18, V-06 doc side)", status: committed, note: "`3e292d0`: docs sync; the Storybook plus Vitest advice dropped after five story runs beside a live storybook dev showed no Invalid empty selector; wave 1 validation: Chromium 1459 of 1459, Firefox 1310 of 1310, WebKit 1306 passed and 4 skipped after fcb521e, typecheck, lint, format, check-ui-docs, storybook:build, webapp build, just size (473.5 KB and 151.0 KB gzip; CSS 69.3 and 18.4), just test-web 75 of 75" }
     - { id: 17, title: "W2-D Data grid unit tests run on a real TanStack table (U-05)", status: pending, note: "—" }
     - { id: 18, title: "W2-D Paste and clear are covered (U-01)", status: pending, note: "—" }
     - { id: 19, title: "W2-D Selection, active region and clipboard value are covered (U-01)", status: pending, note: "—" }
