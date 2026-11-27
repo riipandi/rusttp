@@ -1,12 +1,13 @@
 import { createRoot } from 'react-dom/client'
 import { describe, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
+import { viewport } from '../styles/tokens.stylex'
 import { resolveResponsiveValue, useResponsiveValue, type Responsive } from './use-responsive-value'
 
 const reached = (width: number) => ({
-  medium: width >= 660,
-  large: width >= 900,
-  xlarge: width >= 1280
+  medium: width >= viewport.medium,
+  large: width >= viewport.large,
+  xlarge: width >= viewport.xlarge
 })
 
 describe('resolveResponsiveValue', () => {
@@ -42,22 +43,27 @@ function Probe({ value }: { value: Responsive<string> }) {
 }
 
 describe('useResponsiveValue', () => {
-  it('follows the viewport as it changes', async () => {
+  it('follows the viewport across both sides of every breakpoint', async () => {
     const host = document.body.appendChild(document.createElement('div'))
     const root = createRoot(host)
-    const value = { small: 'phone', medium: 'tablet', xlarge: 'desktop' }
+    const value = { small: 'phone', medium: 'tablet', large: 'laptop', xlarge: 'desktop' }
+    const { innerWidth, innerHeight } = window
     try {
       for (const [width, expected] of [
-        [390, 'phone'],
-        [1000, 'tablet'],
-        [1400, 'desktop'],
-        [390, 'phone']
+        [viewport.medium - 1, 'phone'],
+        [viewport.medium, 'tablet'],
+        [viewport.large - 1, 'tablet'],
+        [viewport.large, 'laptop'],
+        [viewport.xlarge - 1, 'laptop'],
+        [viewport.xlarge, 'desktop'],
+        [viewport.medium - 1, 'phone']
       ] as const) {
         await page.viewport(width, 800)
         root.render(<Probe value={value} />)
         await expect.poll(() => host.textContent).toBe(expected)
       }
     } finally {
+      await page.viewport(innerWidth, innerHeight)
       root.unmount()
       host.remove()
     }

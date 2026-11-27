@@ -8,7 +8,7 @@ import { browser } from 'react-dom'
  * below `medium`, so it is an upper bound only (`max-small` is `<660px`): as a lower bound it would
  * equal `medium`.
  */
-const BREAKPOINTS = {
+export const BREAKPOINTS = {
   small: 660,
   medium: 660,
   large: 900,
