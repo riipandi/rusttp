@@ -54,6 +54,15 @@ export default defineConfig(({ mode }) => ({
   ],
   envPrefix: ['VITE_', 'PUBLIC_'],
   test: {
+    // A gap finder over all three projects, with no threshold: `just test-ui-coverage` lists which
+    // files no story and no unit test reaches (v8 coverage needs Chromium, the default engine).
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.{test,stories}.{ts,tsx}', 'src/**/*.stylex.ts'],
+      reportsDirectory: '.vitest/coverage',
+      reporter: ['text', 'html']
+    },
     projects: [
       {
         extends: false,
@@ -68,13 +77,14 @@ export default defineConfig(({ mode }) => ({
       {
         // Logic that no story exercises (storage adapters, announcements, token contrast), in a real
         // browser like the webapp's tests: `document.cookie` and `localStorage` are the thing under test.
+        // `VITEST_HEADED=1` opens the window, to watch or debug one of them.
         extends: true,
         test: {
           name: 'unit',
           include: ['src/**/*.test.{ts,tsx}'],
           browser: {
             enabled: true,
-            headless: true,
+            headless: !process.env.VITEST_HEADED,
             provider: playwright(),
             instances: [{ browser: 'chromium' }]
           }
