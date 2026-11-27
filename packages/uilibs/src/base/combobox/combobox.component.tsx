@@ -155,7 +155,6 @@ export function ComboboxInput({
       {showClear && (
         <BaseCombobox.Clear
           aria-label={labels?.clear ?? 'Clear value'}
-          tabIndex={-1}
           {...stylex.props(
             focusRing.root,
             s.iconButton,
@@ -168,7 +167,6 @@ export function ComboboxInput({
       {showTrigger && (
         <BaseCombobox.Trigger
           aria-label={labels?.open ?? 'Open list'}
-          tabIndex={-1}
           {...stylex.props(focusRing.root, s.iconButton, s.inputTrigger)}
         >
           <TriggerChevron />
