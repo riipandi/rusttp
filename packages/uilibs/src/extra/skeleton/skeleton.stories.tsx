@@ -11,8 +11,7 @@ import { skeletonRadius } from './skeleton.stylex'
 
 const meta = {
   title: 'Extra Components/Skeleton',
-  component: Skeleton,
-  tags: [] // ['autodocs']
+  component: Skeleton
 } satisfies Meta<typeof Skeleton>
 
 type Story = StoryObj<typeof meta>

@@ -14,7 +14,6 @@ const meta = {
   title: 'Visualizations/SparkChart',
   component: undefined,
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

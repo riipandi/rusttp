@@ -17,8 +17,7 @@ import { avatarFills, avatarSizes } from './avatar.stylex'
 
 const meta = {
   title: 'Base Components/Avatar',
-  component: Avatar,
-  tags: [] // ['autodocs']
+  component: Avatar
 } satisfies Meta<typeof Avatar>
 
 type Story = StoryObj<typeof meta>

@@ -24,8 +24,7 @@ import {
 
 const meta = {
   title: 'Base Components/Autocomplete',
-  component: Autocomplete,
-  tags: [] // ['autodocs']
+  component: Autocomplete
 } satisfies Meta<typeof Autocomplete>
 
 type Story = StoryObj<typeof meta>

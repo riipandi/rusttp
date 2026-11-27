@@ -18,8 +18,7 @@ import { Input } from './input.component'
 
 const meta = {
   title: 'Base Components/Input',
-  component: Input,
-  tags: [] // ['autodocs']
+  component: Input
 } satisfies Meta<typeof Input>
 
 type Story = StoryObj<typeof meta>

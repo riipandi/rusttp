@@ -13,8 +13,7 @@ import { alertColors } from './alert.stylex'
 
 const meta = {
   title: 'Extra Components/Alert',
-  component: Alert,
-  tags: [] // ['autodocs']
+  component: Alert
 } satisfies Meta<typeof Alert>
 
 type Story = StoryObj<typeof meta>

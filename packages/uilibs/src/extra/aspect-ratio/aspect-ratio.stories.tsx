@@ -8,8 +8,7 @@ import { AspectRatio } from './aspect-ratio.component'
 
 const meta = {
   title: 'Extra Components/AspectRatio',
-  component: AspectRatio,
-  tags: [] // ['autodocs']
+  component: AspectRatio
 } satisfies Meta<typeof AspectRatio>
 
 type Story = StoryObj<typeof meta>

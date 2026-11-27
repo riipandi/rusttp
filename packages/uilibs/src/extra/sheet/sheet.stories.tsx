@@ -32,8 +32,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Sheet',
-  component: Sheet,
-  tags: [] // ['autodocs']
+  component: Sheet
 } satisfies Meta<typeof Sheet>
 
 type Story = StoryObj<typeof meta>

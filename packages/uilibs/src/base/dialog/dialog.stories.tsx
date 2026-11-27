@@ -22,8 +22,7 @@ import {
 
 const meta = {
   title: 'Base Components/Dialog',
-  component: Dialog,
-  tags: [] // ['autodocs']
+  component: Dialog
 } satisfies Meta<typeof Dialog>
 
 type Story = StoryObj<typeof meta>

@@ -18,8 +18,7 @@ import { ScrollArea } from './scroll-area.component'
 
 const meta = {
   title: 'Base Components/ScrollArea',
-  component: ScrollArea,
-  tags: [] // ['autodocs']
+  component: ScrollArea
 } satisfies Meta<typeof ScrollArea>
 
 type Story = StoryObj<typeof meta>

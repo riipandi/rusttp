@@ -20,8 +20,7 @@ import { InputPassword } from './input-password.component'
 
 const meta = {
   title: 'Extra Components/InputPassword',
-  component: InputPassword,
-  tags: [] // ['autodocs']
+  component: InputPassword
 } satisfies Meta<typeof InputPassword>
 
 type Story = StoryObj<typeof meta>

@@ -27,8 +27,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Table',
-  component: Table,
-  tags: [] // ['autodocs']
+  component: Table
 } satisfies Meta<typeof Table>
 
 type Story = StoryObj<typeof meta>

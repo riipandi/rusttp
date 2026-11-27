@@ -9,7 +9,6 @@ import type { AvailabilityStatus } from './chart.samples'
 const meta = {
   title: 'Visualizations/Tracker',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

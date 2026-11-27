@@ -19,7 +19,6 @@ import {
 const meta = {
   title: 'Visualizations/AreaChart',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

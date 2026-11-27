@@ -29,8 +29,7 @@ import { Sortable, SortableItem, SortableItemHandle, SortableOverlay } from './'
 import type { SortableCommitMeta, SortableRootProps } from './'
 
 const meta = {
-  title: 'Extra Components/Sortable',
-  tags: [] // ['autodocs']
+  title: 'Extra Components/Sortable'
 } satisfies Meta
 
 export default meta

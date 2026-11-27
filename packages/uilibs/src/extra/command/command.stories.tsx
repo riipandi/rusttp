@@ -16,8 +16,7 @@ import { CommandGroup, CommandInput, CommandItem } from './command.component'
 
 const meta = {
   title: 'Extra Components/Command',
-  component: Command,
-  tags: [] // ['autodocs']
+  component: Command
 } satisfies Meta<typeof Command>
 
 type Story = StoryObj<typeof meta>

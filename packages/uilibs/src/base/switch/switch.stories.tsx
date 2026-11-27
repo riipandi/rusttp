@@ -10,8 +10,7 @@ import { switchRootSizes } from './switch.stylex'
 
 const meta = {
   title: 'Base Components/Switch',
-  component: Switch,
-  tags: [] // ['autodocs']
+  component: Switch
 } satisfies Meta<typeof Switch>
 
 type Story = StoryObj<typeof meta>

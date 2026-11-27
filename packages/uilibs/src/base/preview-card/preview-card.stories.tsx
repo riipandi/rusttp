@@ -13,8 +13,7 @@ import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from './preview-c
 
 const meta = {
   title: 'Base Components/PreviewCard',
-  component: PreviewCard,
-  tags: [] // ['autodocs']
+  component: PreviewCard
 } satisfies Meta<typeof PreviewCard>
 
 type Story = StoryObj<typeof meta>

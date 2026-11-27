@@ -16,8 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from './toggle-group.component'
 
 const meta = {
   title: 'Base Components/ToggleGroup',
-  component: ToggleGroup,
-  tags: [] // ['autodocs']
+  component: ToggleGroup
 } satisfies Meta<typeof ToggleGroup>
 
 type Story = StoryObj<typeof meta>

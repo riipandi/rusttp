@@ -20,7 +20,6 @@ import {
 const meta = {
   title: 'Visualizations/ComboChart',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

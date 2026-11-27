@@ -29,7 +29,6 @@ import {
 const meta = {
   title: 'Visualizations/Accessibility',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

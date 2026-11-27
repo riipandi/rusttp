@@ -28,8 +28,7 @@ import {
 
 const meta = {
   title: 'Base Components/Menubar',
-  component: Menubar,
-  tags: [] // ['autodocs']
+  component: Menubar
 } satisfies Meta<typeof Menubar>
 
 type Story = StoryObj<typeof meta>

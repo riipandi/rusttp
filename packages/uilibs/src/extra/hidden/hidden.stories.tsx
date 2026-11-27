@@ -8,8 +8,7 @@ import { Hidden } from './hidden.component'
 
 const meta = {
   title: 'Extra Components/Hidden',
-  component: Hidden,
-  tags: [] // ['autodocs']
+  component: Hidden
 } satisfies Meta<typeof Hidden>
 
 type Story = StoryObj<typeof meta>

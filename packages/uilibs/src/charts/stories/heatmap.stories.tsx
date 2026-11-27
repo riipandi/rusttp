@@ -18,7 +18,6 @@ const meta = {
   title: 'Visualizations/Heatmap',
   component: undefined,
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

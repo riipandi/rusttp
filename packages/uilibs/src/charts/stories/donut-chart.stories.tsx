@@ -14,7 +14,6 @@ import { canvasDecorator, chartMotion, chartTheme, houses, houseConfig } from '.
 const meta = {
   title: 'Visualizations/DonutChart',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

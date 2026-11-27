@@ -20,7 +20,6 @@ import { stackStyles as s } from './_mocks.stylex'
 const meta = {
   title: 'Data Grid/Infinite',
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   decorators: [
     (Story) => (
       <div {...stylex.props(atoms.padding['20px'], atoms.width['100%'])}>

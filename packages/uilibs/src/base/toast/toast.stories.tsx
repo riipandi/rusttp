@@ -8,8 +8,7 @@ import { toast, ToastProvider, Toaster, useToast, type ToastColor } from './toas
 
 const meta = {
   title: 'Base Components/Toast',
-  component: ToastProvider,
-  tags: [] // ['autodocs']
+  component: ToastProvider
 } satisfies Meta<typeof ToastProvider>
 
 type Story = StoryObj<typeof meta>

@@ -13,8 +13,7 @@ import { radioSizes } from './radio.stylex'
 
 const meta = {
   title: 'Base Components/Radio',
-  component: RadioGroup,
-  tags: [] // ['autodocs']
+  component: RadioGroup
 } satisfies Meta<typeof RadioGroup>
 
 type Story = StoryObj<typeof meta>

@@ -9,8 +9,7 @@ import { Form } from './form.component'
 
 const meta = {
   title: 'Base Components/Form',
-  component: Form,
-  tags: [] // ['autodocs']
+  component: Form
 } satisfies Meta<typeof Form>
 
 type Story = StoryObj<typeof meta>

@@ -22,8 +22,7 @@ import { popoverPadding, popoverRadii } from './popover.stylex'
 
 const meta = {
   title: 'Base Components/Popover',
-  component: Popover,
-  tags: [] // ['autodocs']
+  component: Popover
 } satisfies Meta<typeof Popover>
 
 type Story = StoryObj<typeof meta>

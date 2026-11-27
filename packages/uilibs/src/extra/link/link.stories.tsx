@@ -19,8 +19,7 @@ import { linkColors, linkVariants } from './link.stylex'
 
 const meta = {
   title: 'Extra Components/Link',
-  component: Link,
-  tags: [] // ['autodocs']
+  component: Link
 } satisfies Meta<typeof Link>
 
 type Story = StoryObj<typeof meta>

@@ -21,8 +21,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Breadcrumb',
-  component: Breadcrumb,
-  tags: [] // ['autodocs']
+  component: Breadcrumb
 } satisfies Meta<typeof Breadcrumb>
 
 type Story = StoryObj<typeof meta>

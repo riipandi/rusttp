@@ -13,8 +13,7 @@ import { Carousel } from './carousel.component'
 
 const meta = {
   title: 'Extra Components/Carousel',
-  component: Carousel,
-  tags: [] // ['autodocs']
+  component: Carousel
 } satisfies Meta<typeof Carousel>
 
 type Story = StoryObj<typeof meta>

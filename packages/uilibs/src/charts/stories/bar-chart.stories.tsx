@@ -28,7 +28,6 @@ import {
 const meta = {
   title: 'Visualizations/BarChart',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

@@ -10,7 +10,6 @@ import { canvasDecorator, chartTheme, mulberry32, seriesColors, seriesNames } fr
 const meta = {
   title: 'Visualizations/ScatterPlot',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

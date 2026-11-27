@@ -15,8 +15,7 @@ import {
 
 const meta = {
   title: 'Base Components/NavigationMenu',
-  component: NavigationMenu,
-  tags: [] // ['autodocs']
+  component: NavigationMenu
 } satisfies Meta<typeof NavigationMenu>
 
 type Story = StoryObj<typeof meta>

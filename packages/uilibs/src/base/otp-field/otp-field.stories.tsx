@@ -19,8 +19,7 @@ import { OTPField, OTPFieldGroup, OTPFieldSeparator, OTPFieldSlot } from './otp-
 
 const meta = {
   title: 'Base Components/OTPField',
-  component: OTPField,
-  tags: [] // ['autodocs']
+  component: OTPField
 } satisfies Meta<typeof OTPField>
 
 type Story = StoryObj<typeof meta>

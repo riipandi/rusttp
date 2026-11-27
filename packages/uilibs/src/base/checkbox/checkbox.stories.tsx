@@ -11,8 +11,7 @@ import { checkboxSizes } from './checkbox.stylex'
 
 const meta = {
   title: 'Base Components/Checkbox',
-  component: Checkbox,
-  tags: [] // ['autodocs']
+  component: Checkbox
 } satisfies Meta<typeof Checkbox>
 
 type Story = StoryObj<typeof meta>

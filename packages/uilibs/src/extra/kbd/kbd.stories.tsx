@@ -7,8 +7,7 @@ import { Kbd, KbdGroup } from './kbd.component'
 
 const meta = {
   title: 'Extra Components/Kbd',
-  component: Kbd,
-  tags: [] // ['autodocs']
+  component: Kbd
 } satisfies Meta<typeof Kbd>
 
 type Story = StoryObj<typeof meta>

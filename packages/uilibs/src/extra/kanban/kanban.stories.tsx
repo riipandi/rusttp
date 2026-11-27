@@ -19,8 +19,7 @@ import { KanbanColumn, KanbanColumnContent, KanbanColumnHandle } from './'
 import type { KanbanRootProps } from './'
 
 const meta = {
-  title: 'Extra Components/Kanban',
-  tags: [] // ['autodocs']
+  title: 'Extra Components/Kanban'
 } satisfies Meta<typeof Kanban>
 
 export default meta

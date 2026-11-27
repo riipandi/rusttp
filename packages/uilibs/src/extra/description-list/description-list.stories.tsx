@@ -10,8 +10,7 @@ import { DescriptionDetails, DescriptionList, DescriptionTerm } from './descript
 
 const meta = {
   title: 'Extra Components/DescriptionList',
-  component: DescriptionList,
-  tags: [] // ['autodocs']
+  component: DescriptionList
 } satisfies Meta<typeof DescriptionList>
 
 type Story = StoryObj<typeof meta>

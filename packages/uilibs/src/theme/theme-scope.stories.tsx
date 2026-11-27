@@ -11,8 +11,7 @@ import { ThemeScope, type ThemeScopeColorMode } from './theme-scope'
 
 const meta = {
   title: 'Extra Components/ThemeScope',
-  component: ThemeScope,
-  tags: [] // ['autodocs']
+  component: ThemeScope
 } satisfies Meta<typeof ThemeScope>
 
 type Story = StoryObj<typeof meta>

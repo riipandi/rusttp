@@ -17,8 +17,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Pagination',
-  component: Pagination,
-  tags: [] // ['autodocs']
+  component: Pagination
 } satisfies Meta<typeof Pagination>
 
 type Story = StoryObj<typeof meta>

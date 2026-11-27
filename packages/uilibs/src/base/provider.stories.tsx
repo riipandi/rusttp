@@ -11,8 +11,7 @@ import { Slider } from './slider'
 
 const meta = {
   title: 'Base Components/UIProvider',
-  component: UIProvider,
-  tags: [] // ['autodocs']
+  component: UIProvider
 } satisfies Meta<typeof UIProvider>
 
 type Story = StoryObj<typeof meta>

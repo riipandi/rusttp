@@ -11,8 +11,7 @@ import { Meter, MeterLabel, MeterValue } from './meter.component'
 
 const meta = {
   title: 'Base Components/Meter',
-  component: Meter,
-  tags: [] // ['autodocs']
+  component: Meter
 } satisfies Meta<typeof Meter>
 
 type Story = StoryObj<typeof meta>

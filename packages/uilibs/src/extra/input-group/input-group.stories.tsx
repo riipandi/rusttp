@@ -27,8 +27,7 @@ import {
 
 const meta = {
   title: 'Extra Components/InputGroup',
-  component: InputGroup,
-  tags: [] // ['autodocs']
+  component: InputGroup
 } satisfies Meta<typeof InputGroup>
 
 type Story = StoryObj<typeof meta>

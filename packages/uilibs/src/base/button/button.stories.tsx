@@ -21,7 +21,6 @@ import { buttonFills, buttonSizes, buttonSquare } from './button.stylex'
 const meta = {
   title: 'Base Components/Button',
   component: Button,
-  tags: [], // ['autodocs']
   args: { onClick: fn() }
 } satisfies Meta<typeof Button>
 

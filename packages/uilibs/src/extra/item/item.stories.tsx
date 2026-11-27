@@ -24,8 +24,7 @@ import { itemMediaKinds, itemSizes, itemVariants } from './item.stylex'
 
 const meta = {
   title: 'Extra Components/Item',
-  component: Item,
-  tags: [] // ['autodocs']
+  component: Item
 } satisfies Meta<typeof Item>
 
 type Story = StoryObj<typeof meta>

@@ -18,8 +18,7 @@ import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-gro
 
 const meta = {
   title: 'Extra Components/ButtonGroup',
-  component: ButtonGroup,
-  tags: [] // ['autodocs']
+  component: ButtonGroup
 } satisfies Meta<typeof ButtonGroup>
 
 type Story = StoryObj<typeof meta>

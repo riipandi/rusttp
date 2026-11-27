@@ -11,8 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 
 const meta = {
   title: 'Base Components/Tooltip',
-  component: TooltipProvider,
-  tags: [] // ['autodocs']
+  component: TooltipProvider
 } satisfies Meta<typeof TooltipProvider>
 
 type Story = StoryObj<typeof meta>

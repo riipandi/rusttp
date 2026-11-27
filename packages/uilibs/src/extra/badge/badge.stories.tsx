@@ -10,8 +10,7 @@ import { badgeSizes, badgeSolidColors, badgeVariants } from './badge.stylex'
 
 const meta = {
   title: 'Extra Components/Badge',
-  component: Badge,
-  tags: [] // ['autodocs']
+  component: Badge
 } satisfies Meta<typeof Badge>
 
 type Story = StoryObj<typeof meta>

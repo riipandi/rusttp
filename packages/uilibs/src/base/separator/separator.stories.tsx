@@ -10,8 +10,7 @@ import { Separator } from './separator.component'
 
 const meta = {
   title: 'Base Components/Separator',
-  component: Separator,
-  tags: [] // ['autodocs']
+  component: Separator
 } satisfies Meta<typeof Separator>
 
 type Story = StoryObj<typeof meta>

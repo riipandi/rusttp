@@ -14,8 +14,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Text',
-  component: Text,
-  tags: [] // ['autodocs']
+  component: Text
 } satisfies Meta<typeof Text>
 
 type Story = StoryObj<typeof meta>

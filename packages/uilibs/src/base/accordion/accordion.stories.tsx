@@ -8,8 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 
 const meta = {
   title: 'Base Components/Accordion',
-  component: Accordion,
-  tags: [] // ['autodocs']
+  component: Accordion
 } satisfies Meta<typeof Accordion>
 
 type Story = StoryObj<typeof meta>

@@ -20,8 +20,7 @@ import { Textarea } from './textarea.component'
 
 const meta = {
   title: 'Extra Components/Textarea',
-  component: Textarea,
-  tags: [] // ['autodocs']
+  component: Textarea
 } satisfies Meta<typeof Textarea>
 
 type Story = StoryObj<typeof meta>

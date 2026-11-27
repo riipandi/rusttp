@@ -26,8 +26,7 @@ import {
 
 const meta = {
   title: 'Base Components/DropdownMenu',
-  component: DropdownMenu,
-  tags: [] // ['autodocs']
+  component: DropdownMenu
 } satisfies Meta<typeof DropdownMenu>
 
 type Story = StoryObj<typeof meta>

@@ -25,8 +25,7 @@ import { alertDialogSizes } from './alert-dialog.stylex'
 
 const meta = {
   title: 'Base Components/AlertDialog',
-  component: AlertDialog,
-  tags: [] // ['autodocs']
+  component: AlertDialog
 } satisfies Meta<typeof AlertDialog>
 
 type Story = StoryObj<typeof meta>

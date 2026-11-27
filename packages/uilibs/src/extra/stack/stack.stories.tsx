@@ -8,8 +8,7 @@ import { Stack } from './stack.component'
 
 const meta = {
   title: 'Extra Components/Stack',
-  component: Stack,
-  tags: [] // ['autodocs']
+  component: Stack
 } satisfies Meta<typeof Stack>
 
 type Story = StoryObj<typeof meta>

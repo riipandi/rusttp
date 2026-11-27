@@ -11,8 +11,7 @@ import { iconColors } from './icon.stylex'
 
 const meta = {
   title: 'Extra Components/Icon',
-  component: Icon,
-  tags: [] // ['autodocs']
+  component: Icon
 } satisfies Meta<typeof Icon>
 
 type Story = StoryObj<typeof meta>

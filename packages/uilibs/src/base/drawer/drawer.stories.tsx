@@ -20,8 +20,7 @@ import { drawerDirections } from './drawer.stylex'
 
 const meta = {
   title: 'Base Components/Drawer',
-  component: Drawer,
-  tags: [] // ['autodocs']
+  component: Drawer
 } satisfies Meta<typeof Drawer>
 
 type Story = StoryObj<typeof meta>

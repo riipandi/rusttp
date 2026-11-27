@@ -10,7 +10,6 @@ import { canvasDecorator, seriesColors, seriesNames } from './chart.samples'
 const meta = {
   title: 'Visualizations/ProgressCircle',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

@@ -29,8 +29,7 @@ import {
 
 const meta = {
   title: 'Base Components/Select',
-  component: Select,
-  tags: [] // ['autodocs']
+  component: Select
 } satisfies Meta<typeof Select>
 
 type Story = StoryObj<typeof meta>

@@ -10,7 +10,6 @@ import { canvasDecorator, houses, houseConfig } from './chart.samples'
 const meta = {
   title: 'Visualizations/CategoryBar',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

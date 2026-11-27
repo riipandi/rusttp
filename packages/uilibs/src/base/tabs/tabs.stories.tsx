@@ -18,8 +18,7 @@ import { tabsSizes } from './tabs.stylex'
 
 const meta = {
   title: 'Base Components/Tabs',
-  component: Tabs,
-  tags: [] // ['autodocs']
+  component: Tabs
 } satisfies Meta<typeof Tabs>
 
 type Story = StoryObj<typeof meta>

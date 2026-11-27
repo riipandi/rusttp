@@ -37,8 +37,7 @@ import {
 
 const meta = {
   title: 'Base Components/Combobox',
-  component: Combobox,
-  tags: [] // ['autodocs']
+  component: Combobox
 } satisfies Meta<typeof Combobox>
 
 type Story = StoryObj<typeof meta>

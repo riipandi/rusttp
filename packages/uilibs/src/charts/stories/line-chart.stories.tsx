@@ -21,7 +21,6 @@ import {
 const meta = {
   title: 'Visualizations/LineChart',
   component: undefined,
-  tags: [], // ['autodocs']
   decorators: [canvasDecorator]
 } satisfies Meta
 

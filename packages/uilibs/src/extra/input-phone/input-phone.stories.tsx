@@ -17,8 +17,7 @@ import { InputPhone } from './input-phone.component'
 
 const meta = {
   title: 'Extra Components/InputPhone',
-  component: InputPhone,
-  tags: [] // ['autodocs']
+  component: InputPhone
 } satisfies Meta<typeof InputPhone>
 
 type Story = StoryObj<typeof meta>

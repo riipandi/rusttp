@@ -19,8 +19,7 @@ import { NumberField, NumberFieldGroup } from './number-field.component'
 
 const meta = {
   title: 'Base Components/NumberField',
-  component: NumberField,
-  tags: [] // ['autodocs']
+  component: NumberField
 } satisfies Meta<typeof NumberField>
 
 type Story = StoryObj<typeof meta>

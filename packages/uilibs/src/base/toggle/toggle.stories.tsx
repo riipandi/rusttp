@@ -15,8 +15,7 @@ import { toggleSizes, toggleVariants } from './toggle.stylex'
 
 const meta = {
   title: 'Base Components/Toggle',
-  component: Toggle,
-  tags: [] // ['autodocs']
+  component: Toggle
 } satisfies Meta<typeof Toggle>
 
 type Story = StoryObj<typeof meta>

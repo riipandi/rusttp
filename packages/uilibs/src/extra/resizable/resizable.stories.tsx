@@ -16,7 +16,6 @@ const meta = {
   title: 'Extra Components/Resizable',
   component: ResizablePanelGroup,
   parameters: { layout: 'fullscreen' },
-  tags: [], // ['autodocs']
   // `canvas: 'auto'` lets a story that draws several groups size its own cells.
   decorators: [
     (Story, { parameters }) => (

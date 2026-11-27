@@ -19,8 +19,7 @@ import {
 
 const meta = {
   title: 'Base Components/Field',
-  component: Field,
-  tags: [] // ['autodocs']
+  component: Field
 } satisfies Meta<typeof Field>
 
 type Story = StoryObj<typeof meta>

@@ -10,8 +10,7 @@ import { spinnerColors } from './spinner.stylex'
 
 const meta = {
   title: 'Extra Components/Spinner',
-  component: Spinner,
-  tags: [] // ['autodocs']
+  component: Spinner
 } satisfies Meta<typeof Spinner>
 
 type Story = StoryObj<typeof meta>

@@ -18,8 +18,7 @@ import {
 
 const meta = {
   title: 'Extra Components/Empty',
-  component: Empty,
-  tags: [] // ['autodocs']
+  component: Empty
 } satisfies Meta<typeof Empty>
 
 type Story = StoryObj<typeof meta>

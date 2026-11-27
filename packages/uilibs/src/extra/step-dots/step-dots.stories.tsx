@@ -12,8 +12,7 @@ import { StepDots } from './step-dots.component'
 
 const meta = {
   title: 'Extra Components/StepDots',
-  component: StepDots,
-  tags: [] // ['autodocs']
+  component: StepDots
 } satisfies Meta<typeof StepDots>
 
 type Story = StoryObj<typeof meta>
