@@ -5,8 +5,8 @@ import { resolve } from 'node:path'
 import { stylexPlugin, stylexVitestCleanup } from 'plugins/stylex'
 import { defineConfig } from 'vitest/config'
 
-// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories in another engine: CI does it
-// nightly, and it is the local check too (the default run is Chromium, and so is the CI push gate).
+// `STORYBOOK_TEST_BROWSER=firefox|webkit` runs the same stories and unit tests in another engine: CI
+// does it nightly, and it is the local check too (the default run is Chromium, and so is the CI push gate).
 const browser: 'chromium' | 'firefox' | 'webkit' =
   process.env.STORYBOOK_TEST_BROWSER === 'firefox' ||
   process.env.STORYBOOK_TEST_BROWSER === 'webkit'
@@ -86,7 +86,7 @@ export default defineConfig(({ mode }) => ({
             enabled: true,
             headless: !process.env.VITEST_HEADED,
             provider: playwright(),
-            instances: [{ browser: 'chromium' }]
+            instances: [{ browser }]
           }
         }
       }

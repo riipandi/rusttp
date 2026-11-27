@@ -3,7 +3,7 @@
 # The uilibs gate: typecheck, the docs check and the Storybook build in one job, and the three
 # test projects (every story with its axe check in light and dark, and the unit project) in
 # parallel, one runner each. Pushes and pull requests run it in Chromium when the library
-# changes; a nightly run repeats the stories in Firefox and WebKit.
+# changes; a nightly run repeats the stories and the unit tests in Firefox and WebKit.
 name: uilibs
 
 on:
@@ -132,9 +132,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter uilibs exec playwright install --with-deps ${{ matrix.browser }}
-      # The story projects only: the unit project runs in Chromium. `webkit` skips the stories tagged
-      # `skip-webkit` (the Menubar `Playground`, F-12), see `vite.config.ts`.
-      - run: pnpm --filter uilibs exec vitest run --project storybook --project storybook-dark
+      # Every project, as the push gate runs them in Chromium: the unit tests touch cookies, storage,
+      # and CSS parsing, which differ by engine. `webkit` skips the stories tagged `skip-webkit`
+      # (the Menubar `Playground`, F-12), see `vite.config.ts`.
+      - run: pnpm --filter uilibs exec vitest run
         env:
           STORYBOOK_TEST_BROWSER: ${{ matrix.browser }}
       - if: failure()
