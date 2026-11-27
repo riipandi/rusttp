@@ -1,8 +1,8 @@
 ---
-status: open
+status: resolved
 created: 2026-11-27T17:35:00+07:00
-updated: 2026-11-27T17:35:00+07:00
-summary: "Five findings that plan 00014 test phases surfaced beyond the audit: three fixed (auto-size floor, draggable-grid row separators, end-pinned width in drag grids), two open (isBreakpoint accepts inherited keys, bordered Textarea autoResize 2 px short)."
+updated: 2026-11-27T19:10:00+07:00
+summary: "Five findings that plan 00014 test phases surfaced beyond the audit: all resolved in plan 00014 (auto-size floor, draggable-grid row separators, end-pinned width in drag grids, isBreakpoint inherited keys, bordered Textarea autoResize 2 px short)."
 count: 5
 ---
 
@@ -37,18 +37,18 @@ count: 5
 
 ## isBreakpoint accepts inherited object keys
 
-- status: open
+- status: resolved (2026-11-27, plan-00014 phase 61b, `df78ae8`)
   area: frontend/uilibs hooks
-  summary: `isBreakpoint` in `src/hooks/use-media-query.ts` tests `value in BREAKPOINTS`, so a query segment such as `'toString'` passes as a breakpoint and yields `(min-width: undefinedpx)`. Found while table-testing `parseQuery` (plan-00014 phase 43); a segment is a string a consumer writes, so a typo is not caught.
-  plan: none
-  evidence: the `parseQuery` table in `use-media-query.test.ts` and the reading of the code; not run against `'toString'`.
-  trigger: the next change to `useMediaQuery`, or the first consumer bug; then use `Object.hasOwn(BREAKPOINTS, value)` with a failing test first.
+  summary: `isBreakpoint` in `src/hooks/use-media-query.ts` tested `value in BREAKPOINTS`, so a query segment such as `'toString'` passed as a breakpoint and yielded `(min-width: function toString() { [native code] }px)`. Found while table-testing `parseQuery` (plan-00014 phase 43).
+  plan: plan-00014, phase 61b
+  evidence: red first: four new `parseQuery` rows (`toString`, `constructor`, `max-hasOwnProperty`, `medium:max-toString`) failed with that query and `(max-width: NaNpx)`; after `Object.hasOwn(BREAKPOINTS, value)` all 24 rows pass; the hidden, stack and text stories (the consumers) pass in both themes.
+  trigger: None, closed.
 
-## autoResize leaves a bordered Textarea 2 px short of its content
+## autoResize left a bordered Textarea 2 px short of its content
 
-- status: open
+- status: resolved (2026-11-27, plan-00014 phase 61c, `7b7f0d8`)
   area: frontend/uilibs Textarea
-  summary: `autoResize` sets `height = scrollHeight` on a box with a border, so the box is 2 px short (`scrollHeight` 116, `clientHeight` 114) and a last line can clip. Pre-existing; found while fixing the controlled-value resize (plan-00014 phase 38).
-  plan: none
-  evidence: measured in the Controlled resize story by the track thread; not fixed.
-  trigger: a visible clipped last line, or the next change to `textarea.component.tsx`; then size the box with the border added (or use `field-sizing: content`) with a failing story first.
+  summary: `autoResize` set `height = scrollHeight` on a box with a border, so the box was 2 px short (`scrollHeight` 116, `clientHeight` 114) and a last line could clip. Pre-existing; found while fixing the controlled-value resize (plan-00014 phase 38).
+  plan: plan-00014, phase 61c
+  evidence: red first: two story asserts failed (116 vs 114 and 156 vs 154); the box is now sized with its border; light and dark screenshots viewed.
+  trigger: None, closed.
