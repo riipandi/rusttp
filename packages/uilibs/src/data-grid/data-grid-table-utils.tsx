@@ -243,6 +243,20 @@ function getDataGridRowWantsBorder(
   return !!layout?.rowBorder && !layout.stripped && (index < count - 1 || !!hasFollowingFooter)
 }
 
+/**
+ * Where the resize filler strip goes among a row's cells: before the first cell pinned to the end
+ * (its index), else after the last cell (`items.length`). The `colgroup` places its filler col the
+ * same way, and under `table-layout: fixed` a cell takes the width of the col at its position, so
+ * a filler cell anywhere else hands the end-pinned column the filler's width.
+ */
+function getDataGridFillIndex<T>(
+  items: T[],
+  columnOf: (item: T) => { getIsPinned: () => false | 'start' | 'end' }
+): number {
+  const index = items.findIndex((item) => columnOf(item).getIsPinned() === 'end')
+  return index === -1 ? items.length : index
+}
+
 /** `getPinningStyles` without paint containment, for cells that draw selection chrome outside their box. */
 function getPinningStylesUncontained<TData extends object>(
   column: Column<DataGridFeatures, TData>
@@ -415,6 +429,7 @@ export {
   getPinningStyles,
   getPinningStylesUncontained,
   getDataGridRowWantsBorder,
+  getDataGridFillIndex,
   nextColumnSize,
   isColumnResizeMirrored,
   getDataGridPageRowCount,

@@ -789,6 +789,50 @@ export const DraggableRowBorders: Story = {
   }
 }
 
+/** A column pinned to the end keeps its width in a grid with draggable rows. */
+export const DraggableRowsEndPinned: Story = {
+  name: 'Draggable rows, end pinned column',
+  render: () => {
+    const data = demoData.slice(0, 3)
+    const table = useTable({
+      features: dataGridFeatures,
+      columns: borderColumns,
+      data,
+      getRowId: (row: IBook) => row.id,
+      initialState: { columnPinning: { start: [], end: ['title'] } }
+    })
+    const dataIds = useMemo<UniqueIdentifier[]>(() => data.map((row) => row.id), [data])
+    return (
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        getRowLabel={(row) => row.title}
+        tableLayout={{ columnsPinnable: true, columnsResizable: true }}
+      >
+        <DataGridContainer>
+          <DataGridScrollArea table={table}>
+            <DataGridTableDndRows
+              aria-label='Pinned end'
+              table={table}
+              handleDragEnd={() => {}}
+              dataIds={dataIds}
+            />
+          </DataGridScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+    )
+  },
+  play: async ({ canvas }) => {
+    const grid = await canvas.findByRole('table', { name: 'Pinned end' })
+    const width = Number.parseFloat(grid.style.getPropertyValue('--col-title-size'))
+    for (const selector of ['thead th', 'tbody tr td']) {
+      const cell = grid.querySelector(`${selector}[data-col-id="title"]`)
+      if (!(cell instanceof HTMLElement)) throw new Error(`No ${selector} title cell`)
+      await expect(cell.getBoundingClientRect().width).toBeCloseTo(width, 0)
+    }
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Row pinning */
 /* ------------------------------------------------------------------ */

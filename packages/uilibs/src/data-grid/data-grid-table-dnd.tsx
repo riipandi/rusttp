@@ -71,7 +71,9 @@ import {
 import {
   DataGridTableFillBodyCell,
   DataGridTableFillHeadCell,
-  getDataGridRowWantsBorder
+  getDataGridFillIndex,
+  getDataGridRowWantsBorder,
+  getDataGridTableOrderedVisibleColumns
 } from './data-grid-table-utils'
 import {
   dndCellDragStyle,
@@ -209,6 +211,8 @@ function DataGridTableDndBodyRows<TData extends object>({
   const fragmentRef = useRef(null)
   const { isLoading, props } = useDataGrid()
   const pagination = table.state.pagination
+  const skeletonColumns = getDataGridTableOrderedVisibleColumns(table)
+  const skeletonFillIndex = getDataGridFillIndex(skeletonColumns, (column) => column)
 
   if (props.loadingMode === 'skeleton' && isLoading && pagination?.pageSize) {
     return (
@@ -218,12 +222,17 @@ function DataGridTableDndBodyRows<TData extends object>({
           (_, rowIndex) => `skeleton-row-${rowIndex}`
         ).map((rowKey, rowIndex) => (
           <DataGridTableBodyRowSkeleton key={rowKey} stripe={rowIndex % 2 === 0} wantsBorder>
-            {table.getVisibleFlatColumns().map((column) => (
-              <DataGridTableBodyRowSkeletonCell column={column} table={table} key={column.id}>
-                {column.columnDef.meta?.skeleton}
-              </DataGridTableBodyRowSkeletonCell>
+            {skeletonColumns.map((column, index) => (
+              <Fragment key={column.id}>
+                {index === skeletonFillIndex ? <DataGridTableFillBodyCell table={table} /> : null}
+                <DataGridTableBodyRowSkeletonCell column={column} table={table}>
+                  {column.columnDef.meta?.skeleton}
+                </DataGridTableBodyRowSkeletonCell>
+              </Fragment>
             ))}
-            <DataGridTableFillBodyCell table={table} />
+            {skeletonFillIndex === skeletonColumns.length ? (
+              <DataGridTableFillBodyCell table={table} />
+            ) : null}
           </DataGridTableBodyRowSkeleton>
         ))}
       </>
@@ -252,11 +261,19 @@ function DataGridTableDndBodyRows<TData extends object>({
                 items={table.state.columnOrder}
                 strategy={horizontalListSortingStrategy}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <DataGridTableDndCell cell={cell} table={table} key={cell.id} />
+                {row.getVisibleCells().map((cell, index, cells) => (
+                  <Fragment key={cell.id}>
+                    {index === getDataGridFillIndex(cells, (c) => c.column) ? (
+                      <DataGridTableFillBodyCell table={table} />
+                    ) : null}
+                    <DataGridTableDndCell cell={cell} table={table} />
+                  </Fragment>
                 ))}
               </SortableContext>
-              <DataGridTableFillBodyCell table={table} />
+              {getDataGridFillIndex(row.getVisibleCells(), (c) => c.column) ===
+              row.getVisibleCells().length ? (
+                <DataGridTableFillBodyCell table={table} />
+              ) : null}
             </DataGridTableBodyRow>
             {row.getIsExpanded() && <DataGridTableBodyRowExpandded row={row} />}
           </Fragment>
@@ -384,11 +401,19 @@ function DataGridTableDnd<TData extends object>({
                     items={table.state.columnOrder}
                     strategy={horizontalListSortingStrategy}
                   >
-                    {headerGroup.headers.map((header) => (
-                      <DataGridTableDndHeader header={header} table={table} key={header.id} />
+                    {headerGroup.headers.map((header, index, headers) => (
+                      <Fragment key={header.id}>
+                        {index === getDataGridFillIndex(headers, (h) => h.column) ? (
+                          <DataGridTableFillHeadCell table={table} />
+                        ) : null}
+                        <DataGridTableDndHeader header={header} table={table} />
+                      </Fragment>
                     ))}
                   </SortableContext>
-                  <DataGridTableFillHeadCell table={table} />
+                  {getDataGridFillIndex(headerGroup.headers, (h) => h.column) ===
+                  headerGroup.headers.length ? (
+                    <DataGridTableFillHeadCell table={table} />
+                  ) : null}
                 </DataGridTableHeadRow>
               )
             })}
@@ -552,39 +577,43 @@ function DataGridTableDndRow<TData extends object>({
       >
         {row.getVisibleCells().map((cell, index, cells) => {
           return (
-            <DataGridTableBodyRowCell cell={cell} table={table} key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              {decoration && index === cells.length - 1 ? (
-                // Rides inside the last cell rather than in a `td` of its own.
-                // An absolutely positioned `td` is still a cell as far as table
-                // layout is concerned, so it added a NINTH column with no width
-                // of its own, and under `table-layout: fixed` that new column
-                // swallowed the whole surplus the real columns had been sharing
-                // — every column snapped back to its declared size and the row's
-                // content visibly narrowed the moment a drag began. A plain
-                // element adds no column. It still anchors to the ROW, because
-                // the row is the nearest positioned ancestor, so the decoration
-                // spans the full width and is not clipped by the cell.
-                <div
-                  aria-hidden='true'
-                  data-slot='data-grid-table-row-decoration'
-                  {...stylex.props(rowStyles.rowDecoration)}
-                >
-                  {decoration}
-                </div>
+            <Fragment key={cell.id}>
+              {index === getDataGridFillIndex(cells, (c) => c.column) ? (
+                <DataGridTableFillBodyCell table={table} />
               ) : null}
-              {dropEdge && index === cells.length - 1 ? (
-                // Same anchoring trick as the decoration above: a plain
-                // element inside the last cell, so it adds no column and
-                // cannot disturb `table-layout: fixed`. It spans the row
-                // because the row is the nearest positioned ancestor.
-                <div
-                  aria-hidden='true'
-                  data-slot='data-grid-table-row-drop-indicator'
-                  data-edge={dropEdge}
-                  {...stylex.props(rowStyles.dropIndicator)}
-                >
-                  {/* Two solid pixels down the leading edge, the same marker
+              <DataGridTableBodyRowCell cell={cell} table={table}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                {decoration && index === cells.length - 1 ? (
+                  // Rides inside the last cell rather than in a `td` of its own.
+                  // An absolutely positioned `td` is still a cell as far as table
+                  // layout is concerned, so it added a NINTH column with no width
+                  // of its own, and under `table-layout: fixed` that new column
+                  // swallowed the whole surplus the real columns had been sharing
+                  // — every column snapped back to its declared size and the row's
+                  // content visibly narrowed the moment a drag began. A plain
+                  // element adds no column. It still anchors to the ROW, because
+                  // the row is the nearest positioned ancestor, so the decoration
+                  // spans the full width and is not clipped by the cell.
+                  <div
+                    aria-hidden='true'
+                    data-slot='data-grid-table-row-decoration'
+                    {...stylex.props(rowStyles.rowDecoration)}
+                  >
+                    {decoration}
+                  </div>
+                ) : null}
+                {dropEdge && index === cells.length - 1 ? (
+                  // Same anchoring trick as the decoration above: a plain
+                  // element inside the last cell, so it adds no column and
+                  // cannot disturb `table-layout: fixed`. It spans the row
+                  // because the row is the nearest positioned ancestor.
+                  <div
+                    aria-hidden='true'
+                    data-slot='data-grid-table-row-drop-indicator'
+                    data-edge={dropEdge}
+                    {...stylex.props(rowStyles.dropIndicator)}
+                  >
+                    {/* Two solid pixels down the leading edge, the same marker
                         the tree drag uses for its drop target. A wash across
                         the row has to stay faint enough not to read as a
                         selected row, and in the achromatic styles primary
@@ -597,13 +626,17 @@ function DataGridTableDndRow<TData extends object>({
                         seam as well only competes with the row borders it sits
                         between. `data-edge` still carries the direction for
                         anyone styling their own. */}
-                  <span {...stylex.props(rowStyles.dropIndicatorBar)} />
-                </div>
-              ) : null}
-            </DataGridTableBodyRowCell>
+                    <span {...stylex.props(rowStyles.dropIndicatorBar)} />
+                  </div>
+                ) : null}
+              </DataGridTableBodyRowCell>
+            </Fragment>
           )
         })}
-        <DataGridTableFillBodyCell table={table} />
+        {getDataGridFillIndex(row.getVisibleCells(), (c) => c.column) ===
+        row.getVisibleCells().length ? (
+          <DataGridTableFillBodyCell table={table} />
+        ) : null}
       </DataGridTableBodyRow>
       {row.getIsExpanded() && <DataGridTableBodyRowExpandded row={row} />}
     </SortableRowContext.Provider>
@@ -630,6 +663,8 @@ function DataGridTableDndRowsBody<TData extends object>({
 }: DataGridTableDndRowsBodyProps<TData>) {
   const { isLoading, props } = useDataGrid()
   const pagination = table.state.pagination
+  const skeletonColumns = getDataGridTableOrderedVisibleColumns(table)
+  const skeletonFillIndex = getDataGridFillIndex(skeletonColumns, (column) => column)
 
   if (props.loadingMode === 'skeleton' && isLoading && pagination?.pageSize) {
     return (
@@ -639,12 +674,17 @@ function DataGridTableDndRowsBody<TData extends object>({
           (_, rowIndex) => `skeleton-row-${rowIndex}`
         ).map((rowKey, rowIndex) => (
           <DataGridTableBodyRowSkeleton key={rowKey} stripe={rowIndex % 2 === 0} wantsBorder>
-            {table.getVisibleFlatColumns().map((column) => (
-              <DataGridTableBodyRowSkeletonCell column={column} table={table} key={column.id}>
-                {column.columnDef.meta?.skeleton}
-              </DataGridTableBodyRowSkeletonCell>
+            {skeletonColumns.map((column, index) => (
+              <Fragment key={column.id}>
+                {index === skeletonFillIndex ? <DataGridTableFillBodyCell table={table} /> : null}
+                <DataGridTableBodyRowSkeletonCell column={column} table={table}>
+                  {column.columnDef.meta?.skeleton}
+                </DataGridTableBodyRowSkeletonCell>
+              </Fragment>
             ))}
-            <DataGridTableFillBodyCell table={table} />
+            {skeletonFillIndex === skeletonColumns.length ? (
+              <DataGridTableFillBodyCell table={table} />
+            ) : null}
           </DataGridTableBodyRowSkeleton>
         ))}
       </>
@@ -916,21 +956,29 @@ function DataGridTableDndRows<TData extends object>({
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<DataGridFeatures, TData>) => {
               return (
                 <DataGridTableHeadRow key={headerGroup.id} rowId={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map((header, index, headers) => {
                     const { column } = header
 
                     return (
-                      <DataGridTableHeadRowCell header={header} table={table} key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                        {props.tableLayout?.columnsResizable && column.getCanResize() && (
-                          <DataGridTableHeadRowCellResize header={header} table={table} />
-                        )}
-                      </DataGridTableHeadRowCell>
+                      <Fragment key={header.id}>
+                        {index === getDataGridFillIndex(headers, (h) => h.column) ? (
+                          <DataGridTableFillHeadCell table={table} />
+                        ) : null}
+                        <DataGridTableHeadRowCell header={header} table={table}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                          {props.tableLayout?.columnsResizable && column.getCanResize() && (
+                            <DataGridTableHeadRowCellResize header={header} table={table} />
+                          )}
+                        </DataGridTableHeadRowCell>
+                      </Fragment>
                     )
                   })}
-                  <DataGridTableFillHeadCell table={table} />
+                  {getDataGridFillIndex(headerGroup.headers, (h) => h.column) ===
+                  headerGroup.headers.length ? (
+                    <DataGridTableFillHeadCell table={table} />
+                  ) : null}
                 </DataGridTableHeadRow>
               )
             })}

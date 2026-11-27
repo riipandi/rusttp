@@ -353,8 +353,7 @@ export const DraggableColumns: Story = {
 
 /**
  * A draggable column keeps its pinned geometry: the sortable cell's drag style must not replace
- * the offset and width the pinning gives it. (Pinned to the end it is not shown: the draggable
- * table orders its filler column after the end-pinned cells while its `colgroup` orders it before.)
+ * the offset and width the pinning gives it.
  */
 export const DraggablePinnedColumns: Story = {
   name: 'Draggable pinned columns',
@@ -372,7 +371,7 @@ export const DraggablePinnedColumns: Story = {
       columns,
       5,
       columns.map((column) => column.id ?? ''),
-      { columnPinning: { start: ['title', 'author'], end: [] } }
+      { columnPinning: { start: ['title', 'author'], end: ['price'] } }
     )
     tableHolder.current = table
     return (
@@ -414,6 +413,11 @@ export const DraggablePinnedColumns: Story = {
       await expect(Number.parseFloat(getComputedStyle(second).left)).toBeCloseTo(size('title'), 0)
       await expect(first.getBoundingClientRect().width).toBeCloseTo(size('title'), 0)
       await expect(second.getBoundingClientRect().width).toBeCloseTo(size('author'), 0)
+      // An end-pinned column keeps its width: the filler strip sits before it, as in its colgroup.
+      const last = cells('price', row)
+      await expect(getComputedStyle(last).position).toBe('sticky')
+      await expect(getComputedStyle(last).right).toBe('0px')
+      await expect(last.getBoundingClientRect().width).toBeCloseTo(size('price'), 0)
     }
     // An unpinned column stays in the flow.
     await expect(getComputedStyle(cells('country', 'thead')).position).not.toBe('sticky')
