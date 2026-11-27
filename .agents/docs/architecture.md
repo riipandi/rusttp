@@ -463,9 +463,24 @@ Context (2026-11-27): wave 2 of `plan-00014` (phases 17 to 52, tracks D to G) fi
 - D9: `backgroundPageFaded` is removed; `black`, `white`, and the four `onBackground*` colors are `fixedColors` constants. No generator for `lightColors`: the drift test guards it.
 - D17: data grid geometry is dynamic styles in the same `stylex.props` call. D18: the column drag keeps its animation (`transition: style.transition`). D19: the `*Portal` aliases are deleted, and `PopupShell` owns the portal container. D20: `PreviewCard` centers by default. D24: the Base UI scrollbar replaced the 250-line overlay; `data-overflow-vertical` is gone (Base UI's `data-has-overflow-y` is the hook), and the overlay's 6 px thumb and the plain scrollbar's 2 px thumb stay two looks (unifying them is a design call).
 - D1 found more than the audit listed, each fixed with a red test first: the auto-size floor never applied (TanStack resolves every `minSize` to 20), draggable-row and draggable-column grids drew no row separators (a visible change), an end-pinned column got width 0 in drag grids, and a disabled `data-invalid` Switch and the quiet-edge variants painted the critical edge. The audit's native-input case did not reproduce (`:disabled` outranks the attribute) and stays as a regression row; the row half of X-01 (the border variable) was the missing separator rule, not a lost style.
-- Left open: `isBreakpoint` accepts `'toString'` (`value in BREAKPOINTS`), and `autoResize` leaves a bordered Textarea 2 px short of its content; both are in `issue-00010`.
+- Left open at the wave 2 close and fixed in wave 3 (phases 61b and 61c, each with a failing test first): `isBreakpoint` accepted `'toString'` (`value in BREAKPOINTS`), and `autoResize` left a bordered Textarea 2 px short of its content; both are resolved in `issue-00010`.
 
 Consequences:
 
 - (positive) the data grid's write path, ids, and auto size are tested on a real table, a tall dialog scrolls, one place owns popup portals and Positioner props.
 - (negative) `getDataGridTreeIndentStyle` is now `getDataGridTreeIndent` (a px number), `getPinningStyles` returns nulls, `columns` and the `*Portal` names changed (no backward compatibility); draggable grids look different (separators).
+
+### The uilibs implementation audit remediation, wave 3: static recipes, shared part types, and a leaner Storybook config
+
+Context (2026-11-27): wave 3 of `plan-00014` (phases 54 to 69, tracks H and I) cleaned the style recipes, the part types, the stories, and the Storybook and Vite configuration. Decisions:
+
+- `ring` is a static recipe per elevation (`ring.outline|raised|overlay|page`), not a function with an inline `--x-boxShadow`; `PopupShell` indexes it by elevation. Shared recipes replaced the copies: `popupFx.presence`, `popupFx.scrim`, `popupList`, `descriptionText`, and the chart legend swatch is a static map. The plan expected fewer rules; the compile counted 1710 to 1718 (one dynamic rule became three or eight static ones), and the gain is no inline style and no `@property`. The webapp sheet moved 65614 to 65719 B at phase 54 and ended at 63.8 KB.
+- The scroll area fade keeps an ltr and an rtl rule (four 4-stop layers) rather than one custom property, because StyleX emits a conditional custom property's default rule unlayered.
+- `PartProps` and `WithoutStyling` (`styles/types.ts`) replace 219 repeated `Omit` forms; `StyleProp` replaces every spelled-out `style?: StyleXStyles`; a guard test fails on either. Types are unchanged (mutual-assignability check on 386 exported props).
+- Stories use `screen`; the Storybook theme key is one file; the `#/` alias, the color matcher, two default settings, `addon-links`, the performance panel addon, and the static preview script are removed; one `browserProject` helper in `plugins/vitest` replaces four copies of the Playwright block (`plugins` lists `@vitest/browser-playwright` as a devDependency through the existing catalog entry).
+- The React Compiler leg is opt-in (`STORYBOOK_COMPILER=1`) and nightly only: it makes the compiler report what it skips, fails only on a failing story, and found one story bug (`TreeGrid`'s memo missed its table holder).
+
+Consequences:
+
+- (positive) a popup edge no longer writes an inline style, part types are one definition with a guard, the Storybook dev load has no deprecation, color-control, or loaded-twice warnings, and the compiler's skips are listed each night.
+- (negative) more static rules than before; `plugins` gained a dev dependency edge; the compiler leg lists seven skipped files (`toggle`, `data-grid`, `data-grid-cell-editor`, `data-grid-table-pager`, `data-grid-table-virtual`, `button-group`, `carousel`) that are not fixed.
