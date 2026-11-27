@@ -17,7 +17,7 @@ export const BREAKPOINTS = {
 
 type Breakpoint = keyof typeof BREAKPOINTS
 
-const isBreakpoint = (value: string): value is Breakpoint => value in BREAKPOINTS
+const isBreakpoint = (value: string): value is Breakpoint => Object.hasOwn(BREAKPOINTS, value)
 
 /**
  - `"medium"`       → `(min-width: 660px)`

@@ -18,6 +18,11 @@ describe('parseQuery', () => {
     ['max-foo', 'max-foo'],
     ['wide', 'wide'],
     ['', ''],
+    // A key every object inherits is not a breakpoint, bare or after `max-`.
+    ['toString', 'toString'],
+    ['constructor', 'constructor'],
+    ['max-hasOwnProperty', 'max-hasOwnProperty'],
+    ['medium:max-toString', '(min-width: 660px)'],
     // A raw query is handed to `matchMedia` as written.
     ['(prefers-reduced-motion: reduce)', '(prefers-reduced-motion: reduce)']
   ])('turns %j into %j', (query, expected) => {
