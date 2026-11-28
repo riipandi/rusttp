@@ -5,6 +5,11 @@ import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
+const glyphIn = stylex.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 }
+})
+
 export const toastStyles = stylex.create({
   // A zero-height box on the chosen edge; `toastPositions` sets the corner.
   viewport: {
@@ -95,10 +100,19 @@ export const toastStyles = stylex.create({
   // The status glyph: one title line tall, so the mark centres on the title's first line.
   glyph: {
     alignItems: 'center',
+    // A new glyph fades in; under reduced motion it simply appears.
+    animationDuration: duration.fast,
+    animationFillMode: 'backwards',
+    animationName: { default: glyphIn, '@media (prefers-reduced-motion: reduce)': 'none' },
+    animationTimingFunction: easing.decelerate,
     display: 'flex',
     flexShrink: 0,
     height: fontLineHeight.body2,
     justifyContent: 'center'
+  },
+  loadingText: {
+    color: colors.foregroundNeutral,
+    fontWeight: fontWeight.semibold
   },
   text: {
     display: 'flex',

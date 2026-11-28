@@ -38,6 +38,7 @@ import { Toast as BaseToast } from '@base-ui/react/toast'
 import { CircleAlert, CircleCheck, Info, TriangleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { Spinner } from '../../extra/spinner'
 import { glyphSize } from '../../styles/glyph'
 import { type, descriptionText } from '../../styles/type.stylex'
 import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
@@ -123,6 +124,8 @@ export function ToastProvider(props: React.ComponentProps<typeof BaseToast.Provi
 export interface ToasterLabels extends CloseLabels {
   /** Name of a toast that has no title (a `toast.promise` outcome set as a description). Defaults to `Notification`. */
   notification: string
+  /** Name of the spinner in a loading toast (`toast.promise` while it is pending). Defaults to `Loading`. */
+  loading: string
 }
 
 function ToastList({
@@ -138,6 +141,7 @@ function ToastList({
   return toasts.map((t) => {
     const color = colorOf(t.data, t.type)
     const StatusGlyph = colorGlyphs[color]
+    const loading = t.type === 'loading'
     return (
       <BaseToast.Root
         key={t.id}
@@ -148,15 +152,25 @@ function ToastList({
         {...stylex.props(s.root, top ? s.rootTop : s.rootBottom, colors[color])}
       >
         <div {...stylex.props(s.content)}>
-          {StatusGlyph ? (
-            // The title carries the meaning, so the glyph is decoration.
-            <span {...stylex.props(s.glyph)}>
-              <StatusGlyph size={glyphSize.large} aria-hidden />
+          {loading || StatusGlyph ? (
+            // One slot for the whole life of a toast: the spinner while it is pending, the outcome
+            // glyph after. The key remounts it on the hand-over so the new glyph fades in.
+            // A status glyph is decoration (the title carries the meaning); the spinner is named.
+            <span key={loading ? 'loading' : 'status'} {...stylex.props(s.glyph)}>
+              {loading ? (
+                <Spinner labels={labels?.loading ? { loading: labels.loading } : undefined} />
+              ) : (
+                StatusGlyph && <StatusGlyph size={glyphSize.large} aria-hidden />
+              )}
             </span>
           ) : null}
           <div {...stylex.props(s.text)}>
             <BaseToast.Title {...stylex.props(s.title)} />
-            <BaseToast.Description {...stylex.props(type.body2, descriptionText.root)} />
+            <BaseToast.Description
+              // A loading toast is the one live message on screen: its text reads as a title, not
+              // as the quiet detail under one.
+              {...stylex.props(type.body2, descriptionText.root, loading && s.loadingText)}
+            />
           </div>
           <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
           <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />

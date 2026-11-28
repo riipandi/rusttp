@@ -42,6 +42,12 @@ A colored toast shows its status in the edge, a faded tint of the surface, the t
 
 <Canvas of={Stories.Colors} />
 
+### Promise
+
+`toast.promise` raises a loading toast: a spinner takes the place of the status glyph, and the text reads as a title. When the promise settles, the same toast becomes a success or an error toast and the outcome glyph fades in (under reduced motion it just appears).
+
+<Canvas of={Stories.ToastPromise} />
+
 ### Action
 
 <Canvas of={Stories.Action} />
@@ -71,11 +77,11 @@ Each toast is a `dialog` named by its title; a toast without a title is named by
 
 ### Toaster
 
-| Prop             | Description                                                                                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `position`       | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right` <br /> Where the stack sits on the screen. Default `bottom-right`.                             |
-| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default: toward the stack's own edges, `['down', 'right']` for `bottom-right`. |
-| `labels`         | `{ close, notification }` <br /> Names of the close button and of a toast without a title. Default `Close` and `Notification`.                                                       |
+| Prop             | Description                                                                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `position`       | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right` <br /> Where the stack sits on the screen. Default `bottom-right`.                                |
+| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default: toward the stack's own edges, `['down', 'right']` for `bottom-right`.    |
+| `labels`         | `{ close, notification, loading }` <br /> Names of the close button, of a toast without a title, and of the spinner in a loading toast. Default `Close`, `Notification`, and `Loading`. |
 
 | Data attribute  | Description                                               |
 | --------------- | --------------------------------------------------------- |

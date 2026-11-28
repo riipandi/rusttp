@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { type ComponentProps, useState } from 'react'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { pressUntil } from '../../contracts/keyboard'
 import { Button } from '../button'
 import {
@@ -142,12 +142,35 @@ export const ToastPromise: StoryObj<{ latency: number }> = {
   ),
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Seal the cryptex' }))
-    await screen.findByText('Sealing the cryptex…')
+    const loading = await screen.findByText('Sealing the cryptex…')
+    const root = loading.closest('[role="dialog"]')
+    if (!(root instanceof HTMLElement)) throw new Error('Toast root not found')
 
-    // The promise resolves into the success toast.
-    await waitFor(() => expect(screen.getByText('Cryptex sealed')).toBeInTheDocument(), {
-      timeout: 4000
-    })
+    // Pending: a named spinner stands in the glyph slot, and the text reads as a title.
+    const spinner = within(root).getByRole('status', { name: 'Loading' })
+    const slot = spinner.parentElement
+    if (!slot) throw new Error('Glyph slot not found')
+    const pendingWidth = root.getBoundingClientRect().width
+    const pending = getComputedStyle(loading)
+    const pendingText = { color: pending.color, weight: pending.fontWeight }
+    await expect(pendingText.color).toBe(getComputedStyle(root).color)
+
+    // Settled: the same toast keeps its width, the spinner is gone, and the success glyph is in
+    // the slot with a fade.
+    const sealed = await screen.findByText('Cryptex sealed', {}, { timeout: 4000 })
+    // The outcome is the quiet detail again: lighter and fainter than the pending text.
+    await expect(getComputedStyle(sealed).color).not.toBe(pendingText.color)
+    await expect(Number(getComputedStyle(sealed).fontWeight)).toBeLessThan(
+      Number(pendingText.weight)
+    )
+    await expect(within(root).queryByRole('status', { name: 'Loading' })).toBeNull()
+    await expect(root.getBoundingClientRect().width).toBe(pendingWidth)
+    const glyph = root.querySelector('svg:not(button svg)')
+    await expect(glyph).not.toBeNull()
+    const fade = getComputedStyle(glyph!.parentElement!)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    await expect(fade.animationName === 'none').toBe(reduce)
+    await expect(reducedMotionRules(glyph!.parentElement!).some(none('animationName'))).toBe(true)
   }
 }
 
@@ -302,6 +325,26 @@ export const Position: Story = {
     // The last toast stays open, as in `Open`: the a11y gate runs after `play` and reads it.
   }
 }
+
+/** Every style rule inside a `prefers-reduced-motion` media query that applies to the element. */
+function reducedMotionRules(element: Element) {
+  const found: CSSStyleRule[] = []
+  const walk = (rules: CSSRuleList, reduced: boolean) => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) {
+        if (reduced && element.matches(rule.selectorText)) found.push(rule)
+      } else if (rule instanceof CSSMediaRule) {
+        walk(rule.cssRules, reduced || rule.conditionText.includes('prefers-reduced-motion'))
+      } else if (rule instanceof CSSGroupingRule) {
+        walk(rule.cssRules, reduced)
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules, false)
+  return found
+}
+
+const none = (property: 'animationName') => (rule: CSSStyleRule) => rule.style[property] === 'none'
 
 const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
