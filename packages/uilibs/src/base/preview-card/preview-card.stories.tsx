@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
-import { Axis } from '../../contracts/story-axes'
+import { PlacementStage, expectPlacedOn } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontSize, fontWeight } from '../../styles/tokens.stylex'
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar'
@@ -151,8 +151,9 @@ export const Centered: Story = {
   }
 }
 
-/** Each side opens its own card; the popup flips when the canvas leaves it no room, so the side is not asserted. */
+/** Each trigger sits in the middle of a stage, so every card opens on the side it names. */
 export const Sides: Story = {
+  globals: { viewport: { value: 'desktop', isRotated: false } },
   parameters: {
     docs: {
       source: {
@@ -164,14 +165,14 @@ export const Sides: Story = {
     }
   },
   render: () => (
-    <Axis axis='side' rows={sides}>
+    <PlacementStage axis='side' rows={sides}>
       {(side) => (
         <PreviewCard>
           <PreviewCardTrigger render={<Button variant='outline' />}>{side}</PreviewCardTrigger>
           <PreviewCardContent side={side}>Preview floats to the {side}</PreviewCardContent>
         </PreviewCard>
       )}
-    </Axis>
+    </PlacementStage>
   ),
   play: async ({ canvasElement }) => {
     for (const side of sides) {
@@ -179,7 +180,8 @@ export const Sides: Story = {
         name: side
       })
       await userEvent.hover(trigger)
-      await screen.findByText(`Preview floats to the ${side}`)
+      const card = await screen.findByText(`Preview floats to the ${side}`)
+      await expectPlacedOn(card, trigger, side)
       await userEvent.unhover(trigger)
       await waitFor(() => expect(screen.queryByText(`Preview floats to the ${side}`)).toBeNull())
     }

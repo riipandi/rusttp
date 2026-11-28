@@ -15,7 +15,7 @@ import { Input } from '../../base/input'
 import { backdropOf, cellOf, expectDockedTo, expectTypeRole } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
 import { expectScrollsIntoView, untilGone } from '../../contracts/overlay'
-import { Axis } from '../../contracts/story-axes'
+import { Axis, PlacementStage } from '../../contracts/story-axes'
 import { useIsMobile } from '../../hooks/use-media-query'
 import { Label } from '../label'
 import {
@@ -179,7 +179,7 @@ export const Sides: Story = {
     }
   },
   render: () => (
-    <Axis axis='side' rows={sides}>
+    <PlacementStage axis='side' rows={sides}>
       {(side) => (
         <Sheet>
           <SheetTrigger render={<Button variant='outline' />}>{side}</SheetTrigger>
@@ -193,7 +193,7 @@ export const Sides: Story = {
           </SheetContent>
         </Sheet>
       )}
-    </Axis>
+    </PlacementStage>
   ),
   // Docked popups do not flip: each sheet sits flush against its own edge.
   play: async ({ canvasElement }) => {

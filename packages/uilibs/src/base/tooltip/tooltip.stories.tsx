@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf, expectDisabledLook } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
-import { Axis } from '../../contracts/story-axes'
+import { Axis, PlacementStage, expectPlacedOn } from '../../contracts/story-axes'
 import { fixedColors } from '../../styles/colors.stylex'
 import { Button } from '../button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip.component'
@@ -124,8 +124,9 @@ export const Open: Story = {
   }
 }
 
-/** Each side opens its own tooltip; the popup flips when the canvas leaves it no room, so the side is not asserted. */
+/** Each trigger sits in the middle of a stage, so every tooltip opens on the side it names. */
 export const Sides: Story = {
+  globals: { viewport: { value: 'desktop', isRotated: false } },
   parameters: {
     docs: {
       source: {
@@ -140,14 +141,14 @@ export const Sides: Story = {
   },
   render: () => (
     <TooltipProvider>
-      <Axis axis='side' rows={sides}>
+      <PlacementStage axis='side' rows={sides}>
         {(side) => (
           <Tooltip>
             <TooltipTrigger render={<Button variant='outline' />}>{side}</TooltipTrigger>
             <TooltipContent side={side}>Reveals the {side} of the map</TooltipContent>
           </Tooltip>
         )}
-      </Axis>
+      </PlacementStage>
     </TooltipProvider>
   ),
   play: async ({ canvasElement }) => {
@@ -157,6 +158,7 @@ export const Sides: Story = {
       })
       await userEvent.hover(trigger)
       await waitFor(() => expect(screen.getByText(`Reveals the ${side} of the map`)).toBeVisible())
+      await expectPlacedOn(screen.getByText(`Reveals the ${side} of the map`), trigger, side)
       await userEvent.unhover(trigger)
       await waitFor(() => expect(screen.queryByText(`Reveals the ${side} of the map`)).toBeNull())
     }
