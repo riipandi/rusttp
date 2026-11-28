@@ -251,35 +251,67 @@ export const KeepsText: Story = {
 
 const height = (el: HTMLElement) => el.getBoundingClientRect().height
 
-/** A size or a variant on the group is the default of every member; a member can still set its own. */
+/**
+ * A size or a variant on the group is the default of every member; a member can still set its own,
+ * which makes a mixed group the caller's choice (the second group).
+ */
 export const Defaults: Story = {
   name: 'Group sets size and variant',
   render: () => (
-    <ButtonGroup aria-label='Defaults' size='small' variant='outline'>
-      <Button>Reparo</Button>
-      <Button size='large'>Reducto</Button>
-      <Button variant='ghost'>Riddikulus</Button>
-      <Input aria-label='Counter-curse' placeholder='Counter-curse' />
-      <Select defaultValue='Nox'>
-        <SelectTrigger aria-label='Spell'>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value='Nox'>Nox</SelectItem>
-          <SelectItem value='Lumos'>Lumos</SelectItem>
-        </SelectContent>
-      </Select>
-    </ButtonGroup>
+    <Axis axis='group' rows={['buttons', 'fields', 'own size'] as const} wide>
+      {(row) => {
+        if (row === 'buttons') {
+          return (
+            <ButtonGroup aria-label='Defaults' size='small' variant='outline'>
+              <Button>Reparo</Button>
+              <Button>Reducto</Button>
+              <Button variant='ghost'>Riddikulus</Button>
+            </ButtonGroup>
+          )
+        }
+        if (row === 'fields') {
+          return (
+            <ButtonGroup aria-label='Fields' size='small' variant='outline'>
+              <Input aria-label='Counter-curse' placeholder='Counter-curse' />
+              <Select defaultValue='Nox'>
+                <SelectTrigger aria-label='Spell'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='Nox'>Nox</SelectItem>
+                  <SelectItem value='Lumos'>Lumos</SelectItem>
+                </SelectContent>
+              </Select>
+            </ButtonGroup>
+          )
+        }
+        return (
+          <ButtonGroup aria-label='Override' size='small' variant='outline'>
+            <Button>Reparo</Button>
+            <Button size='large'>Reducto</Button>
+            <Button>Riddikulus</Button>
+          </ButtonGroup>
+        )
+      }}
+    </Axis>
   ),
   play: async ({ canvas }) => {
     const group = canvas.getByRole('group', { name: 'Defaults' })
+    // Every member took the group's small size: one height for all of them.
     await expect(height(within(group).getByRole('button', { name: 'Reparo' }))).toBe(32)
-    await expect(height(within(group).getByRole('button', { name: 'Reducto' }))).toBe(40)
-    await expect(height(within(group).getByRole('textbox'))).toBe(32)
-    await expect(height(within(group).getByRole('combobox', { name: 'Spell' }))).toBe(32)
+    await expect(height(within(group).getByRole('button', { name: 'Reducto' }))).toBe(32)
+    await expect(height(within(group).getByRole('button', { name: 'Riddikulus' }))).toBe(32)
+    const fields = canvas.getByRole('group', { name: 'Fields' })
+    await expect(height(within(fields).getByRole('textbox'))).toBe(32)
+    await expect(height(within(fields).getByRole('combobox', { name: 'Spell' }))).toBe(32)
     // The ghost button took its own variant, not the group's outline: no tint, no border of its own.
     const ghost = getComputedStyle(within(group).getByRole('button', { name: 'Riddikulus' }))
     await expect(ghost.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+
+    // A member's own size wins over the group's: the group does not stretch it back.
+    const override = canvas.getByRole('group', { name: 'Override' })
+    await expect(height(within(override).getByRole('button', { name: 'Reparo' }))).toBe(32)
+    await expect(height(within(override).getByRole('button', { name: 'Reducto' }))).toBe(40)
   }
 }
 
