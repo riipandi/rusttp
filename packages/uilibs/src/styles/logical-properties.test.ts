@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
 // Side-placed parts name a physical side by their API (`side='left'`), the data grid copies the
-// focused cell's computed padding onto its editor, and a toast keeps the screen side its `position`
-// names, so these files hold physical properties on purpose.
+// focused cell's computed padding onto its editor, a toast keeps the screen side its `position`
+// names, and the Tabs indicator follows Base UI's `--active-tab-left`, an offset from the left edge in
+// both directions, so these files hold physical properties on purpose.
 const physicalFiles = [
   'base/drawer/drawer',
   'extra/sheet/sheet',
   'data-grid/data-grid',
-  'base/toast/toast'
+  'base/toast/toast',
+  'base/tabs/tabs'
 ]
 
 // Every other physical line is listed here, exactly, as `<file>: <trimmed line>`. A new physical side

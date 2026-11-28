@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
+import { duration, easing } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 
 export const tabsStyles = stylex.create({
@@ -23,6 +24,8 @@ export const tabsStyles = stylex.create({
     gap: unit.x1,
     height: { default: null, '[data-orientation="vertical"]': 'fit-content' },
     padding: unit.x1,
+    // The indicator is placed against the list's padding box.
+    position: 'relative',
     width: 'fit-content'
   },
   // `bordered`: the underline list sits on a border rail.
@@ -48,11 +51,53 @@ export const tabsStyles = stylex.create({
     backgroundColor: colors.backgroundElevationBase,
     boxShadow: shadow.raised
   },
-  triggerRaised: {
+  // The active mark: one element that slides to the selected tab (Base UI measures the tab into
+  // `--active-tab-*`). `left` is physical on purpose: the offset is measured from the left edge in
+  // both directions. Reduced motion moves it instantly.
+  indicator: {
+    boxSizing: 'border-box',
+    pointerEvents: 'none',
+    position: 'absolute',
+    transitionDuration: duration.medium,
+    transitionProperty: {
+      default: 'left, width',
+      '[data-orientation="vertical"]': 'top, height',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
+    transitionTimingFunction: easing.standard,
+    zIndex: 0
+  },
+  // The pill list's active pill. Forced colors drop the fill: the pill keeps an edge instead.
+  indicatorPill: {
+    backgroundColor: colors.backgroundPage,
+    borderColor: { default: 'transparent', '@media (forced-colors: active)': 'Highlight' },
+    borderRadius: radius.small,
+    borderStyle: 'solid',
+    borderWidth: { default: 0, '@media (forced-colors: active)': stroke.ring1 },
+    height: 'var(--active-tab-height)',
+    left: 'var(--active-tab-left)',
+    top: 'var(--active-tab-top)',
+    width: 'var(--active-tab-width)'
+  },
+  indicatorRaised: {
+    backgroundColor: colors.backgroundNeutral
+  },
+  // The underline list's bar: under the active tab, or on a vertical list's inline-start edge.
+  indicatorUnderline: {
     backgroundColor: {
-      default: 'transparent',
-      '[data-active]': colors.backgroundNeutral
-    }
+      default: colors.backgroundPrimary,
+      '@media (forced-colors: active)': 'Highlight'
+    },
+    bottom: { default: 0, '[data-orientation="vertical"]': 'auto' },
+    height: { default: stroke.ring2, '[data-orientation="vertical"]': 'var(--active-tab-height)' },
+    insetInlineStart: { default: 'auto', '[data-orientation="vertical"]': 0 },
+    left: { default: 'var(--active-tab-left)', '[data-orientation="vertical"]': 'auto' },
+    top: { default: 'auto', '[data-orientation="vertical"]': 'var(--active-tab-top)' },
+    width: { default: 'var(--active-tab-width)', '[data-orientation="vertical"]': stroke.ring2 }
+  },
+  // The bar sits over the rail's own line.
+  indicatorBordered: {
+    bottom: { default: `calc(-1 * ${stroke.ring1})`, '[data-orientation="vertical"]': 'auto' }
   },
   // `itemWidth='equal'`: the list spans its parent and every trigger takes an equal share of it. A
   // vertical list stays as wide as its widest trigger, so the shares there are the triggers' own.
@@ -66,18 +111,11 @@ export const tabsStyles = stylex.create({
   },
   trigger: {
     alignItems: 'center',
-    backgroundColor: {
-      default: 'transparent',
-      '[data-active]': colors.backgroundPage
-    },
-    borderColor: { default: 'transparent', '@media (forced-colors: active)': 'Highlight' },
+    // The active mark is the list's indicator, which slides under the label.
+    backgroundColor: 'transparent',
     borderRadius: radius.small,
-    borderStyle: { default: 'none', '@media (forced-colors: active)': 'solid' },
-    // Forced colors drop the active pill's background: the active tab gets an edge instead.
-    borderWidth: {
-      default: 0,
-      '@media (forced-colors: active)': { default: 0, '[data-active]': stroke.ring1 }
-    },
+    borderStyle: 'none',
+    borderWidth: 0,
     color: {
       default: colors.foregroundNeutralFaded,
       '[data-active]:not([data-disabled])': colors.foregroundNeutral,
@@ -92,17 +130,15 @@ export const tabsStyles = stylex.create({
     // A tab's ring sits inside its pill, which would clip an outside ring.
     outlineOffset: `calc(-1 * ${stroke.ring2})`,
     paddingInline: unit.x3,
+    // Above the indicator.
+    position: 'relative',
     userSelect: 'none',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    zIndex: 1
   },
-  // Underline style: the active tab draws a bar over the list's bottom border.
+  // Underline style: the tab keeps the bar's room (its bottom edge) and the indicator draws over it.
   triggerUnderline: {
-    backgroundColor: 'transparent',
-    borderBottomColor: {
-      default: 'transparent',
-      '[data-active]': colors.backgroundPrimary,
-      '@media (forced-colors: active)': { default: 'Canvas', '[data-active]': 'Highlight' }
-    },
+    borderBottomColor: 'transparent',
     borderBottomStyle: 'solid',
     borderBottomWidth: stroke.ring2,
     borderRadius: radius.none,
@@ -111,7 +147,6 @@ export const tabsStyles = stylex.create({
   // The `xsmall` pill is 20px tall, under the 24px target (WCAG 2.5.8): a hit area makes up the rest
   // inside the list's own padding, so it reaches neither the list's edge nor a neighbor.
   triggerHitArea: {
-    position: 'relative',
     '::after': {
       content: '""',
       insetBlock: `calc(-1 * ${unit.x0_5})`,
@@ -121,10 +156,45 @@ export const tabsStyles = stylex.create({
   },
   // With no rail to overlap, the bar takes no negative margin.
   triggerBorderless: { marginBottom: 0 },
+  // The new panel fades in and rises 4px from the side the tab came from (Base UI sets
+  // `data-starting-style` on its first frame); reduced motion keeps the fade and drops the rise (the
+  // media query sits inside each pose so it wins over the direction's attribute selector).
   content: {
     color: colors.foregroundNeutral,
     fontSize: fontSize.body2,
-    lineHeight: fontLineHeight.body2
+    lineHeight: fontLineHeight.body2,
+    opacity: { default: 1, '[data-starting-style]': 0 },
+    transform: {
+      default: 'none',
+      '[data-starting-style]': {
+        '[data-activation-direction="none"]': {
+          default: 'translateY(4px)',
+          '@media (prefers-reduced-motion: reduce)': 'none'
+        },
+        '[data-activation-direction="left"]': {
+          default: 'translateX(-4px)',
+          '@media (prefers-reduced-motion: reduce)': 'none'
+        },
+        '[data-activation-direction="right"]': {
+          default: 'translateX(4px)',
+          '@media (prefers-reduced-motion: reduce)': 'none'
+        },
+        '[data-activation-direction="up"]': {
+          default: 'translateY(-4px)',
+          '@media (prefers-reduced-motion: reduce)': 'none'
+        },
+        '[data-activation-direction="down"]': {
+          default: 'translateY(4px)',
+          '@media (prefers-reduced-motion: reduce)': 'none'
+        }
+      }
+    },
+    transitionDuration: duration.medium,
+    transitionProperty: {
+      default: 'opacity, transform',
+      '@media (prefers-reduced-motion: reduce)': 'opacity'
+    },
+    transitionTimingFunction: easing.decelerate
   }
 })
 

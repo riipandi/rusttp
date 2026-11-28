@@ -2,7 +2,7 @@ import { Bell as BellIcon, User } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   cellOf,
   denseControlHeights,
@@ -362,5 +362,150 @@ export const Widths: Story = {
     const cell = cellOf(canvasElement, 'width', 'equal')
     const list = cell.querySelector('[role="tablist"]')
     await expect(list?.getBoundingClientRect().width).toBe(cell.getBoundingClientRect().width)
+  }
+}
+
+/** Every style rule inside a media query that mentions `query` and applies to the element. */
+function mediaRules(element: Element, query: string) {
+  const found: CSSStyleRule[] = []
+  const walk = (rules: CSSRuleList, inside: boolean) => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) {
+        if (inside && element.matches(rule.selectorText)) found.push(rule)
+      } else if (rule instanceof CSSMediaRule) {
+        walk(rule.cssRules, inside || rule.conditionText.includes(query))
+      } else if (rule instanceof CSSGroupingRule) {
+        walk(rule.cssRules, inside)
+      }
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules, false)
+  return found
+}
+
+// Within a pixel: the indicator and its tab are laid out separately.
+const near = (a: number, b: number) => expect(Math.abs(a - b)).toBeLessThanOrEqual(1)
+
+const motionCases = [
+  'pills',
+  'pills-raised',
+  'bordered',
+  'borderless',
+  'vertical',
+  'equal'
+] as const
+
+/**
+ * One indicator slides to the selected tab, and the panel fades in. The pill lists draw the active
+ * pill with it and the underline lists draw the bar; the tab itself keeps no active background.
+ */
+export const Motion: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Tabs defaultValue='one'>
+  <TabsList aria-label='Wizards'>
+    <TabsTrigger value='one'>Ron</TabsTrigger>
+    <TabsTrigger value='two'>Hermione</TabsTrigger>
+  </TabsList>
+  <TabsContent value='one'>Ron plays chess.</TabsContent>
+  <TabsContent value='two'>Hermione reads.</TabsContent>
+</Tabs>`
+      }
+    }
+  },
+  render: () => (
+    <Axis axis='case' rows={motionCases} wide>
+      {(name) => (
+        <Tabs defaultValue='one' orientation={name === 'vertical' ? 'vertical' : 'horizontal'}>
+          <TabsList
+            variant={name === 'vertical' || name === 'equal' ? 'pills' : name}
+            itemWidth={name === 'equal' ? 'equal' : undefined}
+            aria-label={`Wizards ${name}`}
+          >
+            <TabsTrigger value='one'>Ron</TabsTrigger>
+            <TabsTrigger value='two'>Hermione</TabsTrigger>
+            <TabsTrigger value='three'>Dumbledore</TabsTrigger>
+          </TabsList>
+          <TabsContent value='one'>Ron plays chess.</TabsContent>
+          <TabsContent value='two'>Hermione reads.</TabsContent>
+          <TabsContent value='three'>Dumbledore sucks a lemon drop.</TabsContent>
+        </Tabs>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const name of motionCases) {
+      const cell = cellOf(canvasElement, 'case', name)
+      const list = cell.querySelector('[role="tablist"]')
+      const indicator = list?.querySelector(':scope > span[role="presentation"]')
+      if (!list || !(indicator instanceof HTMLElement)) throw new Error(`No indicator for ${name}`)
+      const tabs = Array.from(list.querySelectorAll('[role="tab"]'))
+      const [first, , last] = tabs
+      if (!first || !last) throw new Error(`No tabs for ${name}`)
+      const underline = name === 'bordered' || name === 'borderless'
+      const vertical = name === 'vertical'
+
+      // The indicator is the active mark: the pill fills the tab's box, the bar sits on its edge.
+      const settle = async (tab: Element) => {
+        await waitFor(async () => {
+          const mark = indicator.getBoundingClientRect()
+          const box = tab.getBoundingClientRect()
+          if (underline) {
+            await near(mark.left, box.left)
+            await near(mark.right, box.right)
+            await near(mark.bottom, box.bottom)
+            await near(mark.height, 2)
+          } else {
+            await near(mark.left, box.left)
+            await near(mark.right, box.right)
+            await near(mark.top, box.top)
+            await near(mark.bottom, box.bottom)
+          }
+        })
+      }
+      await waitFor(() => expect(indicator).toBeVisible())
+      await settle(first)
+      const before = indicator.getBoundingClientRect()
+      await expect(getComputedStyle(first).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+
+      // One transition on the axis the list runs along; reduced motion has none.
+      const style = getComputedStyle(indicator)
+      await expect(style.transitionProperty).toBe(vertical ? 'top, height' : 'left, width')
+      await expect(style.transitionDuration).toBe('0.2s')
+      await expect(
+        mediaRules(indicator, 'prefers-reduced-motion').some(
+          (rule) => rule.style.transitionProperty === 'none'
+        )
+      ).toBe(true)
+      // Forced colors drop backgrounds: the indicator keeps an edge in a system color.
+      await expect(
+        mediaRules(indicator, 'forced-colors').some(
+          (rule) => rule.style.backgroundColor === 'highlight' || rule.style.borderWidth === '1px'
+        )
+      ).toBe(true)
+
+      await userEvent.click(last)
+      await settle(last)
+      const after = indicator.getBoundingClientRect()
+      await expect(last).toHaveAttribute('aria-selected', 'true')
+      // It moved along the list; an `equal` list moves it without resizing, the others resize it.
+      await expect(
+        Math.abs(vertical ? after.top - before.top : after.left - before.left)
+      ).toBeGreaterThan(20)
+      if (!vertical && name !== 'equal')
+        await expect(Math.abs(after.width - before.width)).toBeGreaterThan(8)
+      if (name === 'equal') await near(after.width, before.width)
+
+      // The tab keeps no active background of its own, the new panel fades in, and reduced
+      // motion keeps the fade and drops the rise.
+      const panel = within(cell).getByRole('tabpanel')
+      await expect(getComputedStyle(panel).transitionProperty).toBe('opacity, transform')
+      await expect(
+        mediaRules(panel, 'prefers-reduced-motion').some(
+          (rule) => rule.style.transitionProperty === 'opacity'
+        )
+      ).toBe(true)
+    }
   }
 }
