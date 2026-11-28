@@ -21,6 +21,7 @@
         "test:coverage": "vitest run --coverage",
         "check:docs": "node scripts/check-docs.ts",
         "check:docs:test": "node --test scripts/check-docs.test.ts",
+        "check:docs:render": "node scripts/check-docs-render.ts",
         "rebrand": "node scripts/rebrand.ts",
         "typecheck": "tsrs --noEmit --fast"
     },

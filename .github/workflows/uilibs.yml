@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-# The uilibs gate: typecheck, the docs check and the Storybook build in one job, and the three
-# test projects (every story with its axe check in light and dark, and the unit project) in
-# parallel, one runner each. Pushes and pull requests run it in Chromium when the library
+# The uilibs gate: typecheck, the docs check, the Storybook build and the docs render guard in one
+# job, and the three test projects (every story with its axe check in light and dark, and the
+# unit project) in parallel, one runner each. Pushes and pull requests run it in Chromium when the library
 # changes; a nightly run repeats the stories and the unit tests in Firefox and WebKit, and runs the
 # stories once more in Chromium through the React Compiler, as the webapp ships the library.
 name: uilibs
@@ -38,7 +38,7 @@ jobs:
     name: Checks
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -59,6 +59,22 @@ jobs:
       # The checker's own test: it must report a drifted fixture, so a silent checker fails here.
       - run: pnpm --filter uilibs check:docs:test
       - run: pnpm --filter uilibs storybook:build
+
+      # The docs render guard opens every docs page of the build in Chromium and toggles the theme
+      # (the story gate never opens a docs page). The browser download is cached by the Playwright
+      # version; the system libraries are not part of the cache, so a hit still installs them.
+      - id: playwright
+        run: echo "version=$(pnpm --filter uilibs exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm --filter uilibs exec playwright install --with-deps chromium
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: pnpm --filter uilibs exec playwright install-deps chromium
+      - run: pnpm --filter uilibs check:docs:render
 
   tests:
     name: Tests (${{ matrix.project }})
