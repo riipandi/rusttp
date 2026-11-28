@@ -77,8 +77,8 @@ Styled wrappers over Base UI parts. Import from `uilibs/base/<folder>`. `UIProvi
 | [Separator](?path=/docs/base-components-separator--docs)            | A visual divider.                                                                                  |
 | [Slider](?path=/docs/base-components-slider--docs)                  | A value or a range along a track.                                                                  |
 | [Switch](?path=/docs/base-components-switch--docs)                  | An on/off control.                                                                                 |
-| [Tabs](?path=/docs/base-components-tabs--docs)                      | Content split into tabbed panels.                                                                  |
-| [Toast](?path=/docs/base-components-toast--docs)                    | Stacked notifications.                                                                             |
+| [Tabs](?path=/docs/base-components-tabs--docs)                      | Content split into tabbed panels, with a sliding indicator.                                        |
+| [Toast](?path=/docs/base-components-toast--docs)                    | Stacked notifications; `position` picks the corner.                                                |
 | [Toggle](?path=/docs/base-components-toggle--docs)                  | A button that is pressed or unpressed.                                                             |
 | [Toggle Group](?path=/docs/base-components-togglegroup--docs)       | Toggles that share one state.                                                                      |
 | [Toolbar](?path=/docs/base-components-toolbar--docs)                | A container that moves focus between its controls.                                                 |
@@ -132,7 +132,7 @@ Compositions, and components Base UI does not provide. Import from `uilibs/extra
 
 ## Data Grid
 
-[Data Grid](?path=/docs/data-grid-basics--docs) is for large or interactive data; a few static rows are a Table. It is a virtualized TanStack Table grid: column pinning and reordering, inline editing, drag-and-drop rows, infinite loading, footers, and a pager. A table needs a name (`aria-label` or `aria-labelledby`), a row's controls are named through `getRowLabel`, and with `onRowClick` the rows are keyboard targets; each resizable column has a keyboard separator. Import from `uilibs/data-grid`.
+[Data Grid](?path=/docs/data-grid-basics--docs) is for large or interactive data; a few static rows are a Table. It is a virtualized TanStack Table grid: column pinning and reordering, inline editing, drag-and-drop rows, infinite loading, footers, and a pager. A table needs a name (`aria-label` or `aria-labelledby`), a row's controls are named through `getRowLabel`, and with `onRowClick` the rows are keyboard targets; each resizable column has a keyboard separator. In a Card use `CardContent flush` and `dataGridCardEdge`. Import from `uilibs/data-grid`.
 
 ## Charts
 
