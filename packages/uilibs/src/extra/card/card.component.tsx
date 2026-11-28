@@ -63,8 +63,13 @@ export function CardAction({ style, ...props }: DivProps) {
   return <div {...props} {...stylex.props(s.action, style)} />
 }
 
-export function CardContent({ style, ...props }: DivProps) {
-  return <div {...props} {...stylex.props(s.content, style)} />
+export interface CardContentProps extends DivProps {
+  /** Removes the inline padding, so a table or an image runs to the card's edge. */
+  flush?: boolean
+}
+
+export function CardContent({ flush = false, style, ...props }: CardContentProps) {
+  return <div {...props} {...stylex.props(s.content, flush && s.contentFlush, style)} />
 }
 
 export function CardFooter({ style, ...props }: DivProps) {

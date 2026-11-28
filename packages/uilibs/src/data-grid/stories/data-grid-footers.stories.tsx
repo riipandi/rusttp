@@ -11,11 +11,12 @@ import {
   DataGridTable,
   DataGridTableFootRow,
   DataGridTableFootRowCell,
+  dataGridCardEdge,
   dataGridFeatures,
   type DataGridFeatures
 } from '../'
 import { Badge } from '../../extra/badge'
-import { Card, CardContent } from '../../extra/card'
+import { Card, CardContent, CardHeader } from '../../extra/card'
 import { unit } from '../../styles/tokens.stylex'
 import { demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
@@ -49,21 +50,6 @@ const footerStyles = stylex.create({
     flexDirection: 'column',
     gap: unit.x0_5
   },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    paddingBlock: unit.x3,
-    width: '100%'
-  },
-  cardHeader: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
-  },
-  cardBody: { padding: 0 },
   total: { fontWeight: 700, fontVariantNumeric: 'tabular-nums' },
   numeric: { fontVariantNumeric: 'tabular-nums' }
 })
@@ -158,14 +144,14 @@ export const ColumnTotalsFooter: Story = {
       <DataGrid
         table={table}
         recordCount={demoData.length}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{ columnsPinnable: true, columnsResizable: true, columnsVisibility: true }}
       >
-        <Card style={footerStyles.card}>
-          <div {...stylex.props(footerStyles.cardHeader)}>
+        <Card>
+          <CardHeader>
             <span {...stylex.props(s.strong)}>Book Prices</span>
-          </div>
-          <CardContent style={footerStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} footerContent={footer} />
@@ -233,14 +219,14 @@ export const SummaryStatsFooter: Story = {
       <DataGrid
         table={table}
         recordCount={demoData.length}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{ columnsPinnable: true, columnsResizable: true }}
       >
-        <Card style={footerStyles.card}>
-          <div {...stylex.props(footerStyles.cardHeader)}>
+        <Card>
+          <CardHeader>
             <span {...stylex.props(s.strong)}>Price Statistics</span>
-          </div>
-          <CardContent style={footerStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} footerContent={footer} />
@@ -294,14 +280,14 @@ export const PerColumnAggregateFooter: Story = {
       <DataGrid
         table={table}
         recordCount={demoData.length}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{ columnsPinnable: true, columnsResizable: true, columnsVisibility: true }}
       >
-        <Card style={footerStyles.card}>
-          <div {...stylex.props(footerStyles.cardHeader)}>
+        <Card>
+          <CardHeader>
             <span {...stylex.props(s.strong)}>Column Aggregates</span>
-          </div>
-          <CardContent style={footerStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} footerContent={footer} />

@@ -17,11 +17,12 @@ import {
   DataGridPagination,
   DataGridScrollArea,
   DataGridTable,
+  dataGridCardEdge,
   dataGridFeatures,
   type DataGridFeatures
 } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
-import { Card } from '../../extra/card'
+import { Card, CardContent } from '../../extra/card'
 import { CountryFlag, demoData, type IBook } from './_mocks'
 import { stackStyles as s } from './_mocks.stylex'
 
@@ -242,16 +243,18 @@ export const CellBorder: Story = {
       <DataGrid
         table={table}
         recordCount={demoData?.length || 0}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{ cellBorder: true }}
       >
         <div {...stylex.props(s.stack)}>
-          <Card style={s.cardFlush}>
-            <DataGridContainer>
-              <DataGridScrollArea table={table}>
-                <DataGridTable aria-label='Novels' table={table} />
-              </DataGridScrollArea>
-            </DataGridContainer>
+          <Card>
+            <CardContent flush>
+              <DataGridContainer>
+                <DataGridScrollArea table={table}>
+                  <DataGridTable aria-label='Novels' table={table} />
+                </DataGridScrollArea>
+              </DataGridContainer>
+            </CardContent>
           </Card>
           <DataGridPagination table={table} />
         </div>
@@ -370,19 +373,21 @@ export const WithoutTableBorders: Story = {
       <DataGrid
         table={table}
         recordCount={demoData?.length || 0}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{
           headerBackground: false,
           rowBorder: false
         }}
       >
         <div {...stylex.props(s.stack)}>
-          <Card style={s.cardFlush}>
-            <DataGridContainer>
-              <DataGridScrollArea table={table}>
-                <DataGridTable aria-label='Novels' table={table} />
-              </DataGridScrollArea>
-            </DataGridContainer>
+          <Card>
+            <CardContent flush>
+              <DataGridContainer>
+                <DataGridScrollArea table={table}>
+                  <DataGridTable aria-label='Novels' table={table} />
+                </DataGridScrollArea>
+              </DataGridContainer>
+            </CardContent>
           </Card>
           <DataGridPagination table={table} />
         </div>

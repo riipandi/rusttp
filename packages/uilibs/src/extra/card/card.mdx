@@ -30,7 +30,7 @@ import {
 - **CardTitle:** the heading, an `h3`.
 - **CardDescription:** supporting text under the title, a `p`.
 - **CardAction:** optional slot for a header control, pinned to the top-right corner of the header.
-- **CardContent:** the main area.
+- **CardContent:** the main area. `flush` removes its inline padding for a table or an image that runs to the card's edge.
 - **CardFooter:** the bottom row, for actions or metadata.
 
 ```jsx
@@ -110,9 +110,12 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | --------------- | ----------------------------------------------- |
 | `data-selected` | Set by this library while `selected` is `true`. |
 
+`CardContent` also takes `flush`, a `boolean` that removes its inline padding so a table or an image runs to the card's border. Default `false`.
+
 ## Caveats
 
 - `selected` is visual only. Name the choice for assistive technology yourself, with a `role` and `aria-selected` or a control inside the card.
 - `CardTitle` always renders an `h3`; the level cannot be changed through a prop.
+- A data grid in a card uses `CardContent flush` with `dataGridCardEdge`: see [Data Grid](?path=/docs/data-grid-basics--docs).
 - `CardAction` belongs inside `CardHeader`, which gives it the right-hand grid column.
 - A stretched link makes the whole card one target. Do not nest a second link in it, and keep one link per card: two covers would fight over the same area.

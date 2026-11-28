@@ -16,6 +16,7 @@ import {
   DataGridColumnFilter,
   DataGridColumnHeader,
   DataGridContainer,
+  dataGridCardEdge,
   dataGridFeatures,
   DataGridPagination,
   DataGridProvider,
@@ -72,6 +73,29 @@ Create `table` with `useTable` and `dataGridFeatures`, and give every part that 
 `tableLayout.dense` tightens the cell padding.
 
 <Canvas of={Stories.DenseLayout} />
+
+### In a Card
+
+A grid in a [Card](?path=/docs/extra-components-card--docs) has one padding: put it in `CardContent` with `flush`, so the rows and their separators run to the card's border, and pass `dataGridCardEdge` as `tableStyles.edgeCell`, so the first and last cell pad by the card's own spacing and the text starts where the card title does. The "Add row" label follows the same edge. Leave `DataGridContainer` without `border`, since the card already draws one. A grid outside a Card keeps its default cell padding.
+
+<Canvas of={Stories.CellBorder} />
+
+```jsx
+<DataGrid table={table} tableStyles={{ edgeCell: dataGridCardEdge }}>
+  <Card>
+    <CardHeader>
+      <CardTitle>Catalog</CardTitle>
+    </CardHeader>
+    <CardContent flush>
+      <DataGridContainer>
+        <DataGridScrollArea table={table}>
+          <DataGridTable aria-label='Novels' table={table} />
+        </DataGridScrollArea>
+      </DataGridContainer>
+    </CardContent>
+  </Card>
+</DataGrid>
+```
 
 ## Accessibility
 
@@ -326,6 +350,7 @@ A virtualized table with controlled scrolling and infinite loading.
 ### Hooks and helpers
 
 - `useDataGrid`: reads the grid context (`props`, `recordCount`, `isLoading`, `labels`) inside a `DataGrid`.
+- `dataGridCardEdge`: the `tableStyles.edgeCell` for a grid in a `Card` (see "In a Card"); it pads by the card's `--card-spacing`.
 - `dataGridFeatures`: the TanStack feature bundle the grid renders against. `mergeDataGridLabels` merges `labels` overrides over the English defaults.
 - Column and cell: `getColumnHeaderLabel`, `toDataGridDomId`, `getDataGridCellSelectionCellAttrs`, `getPinningStyles`, `getDataGridTreeIndent`, `getDataGridScrollAreaViewport`.
 - Rows and headers: `getDataGridTableRowSections`, `getDataGridTableResolvedRows`, `getDataGridTableMergedHeaderGroups`, `hasDataGridTableRightPinnedColumns`.

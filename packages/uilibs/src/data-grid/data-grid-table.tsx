@@ -58,7 +58,12 @@ function DataGridTableAddRow<TData extends object>({
           variant='ghost'
           size='small'
           data-dense={props.tableLayout?.dense ? '' : undefined}
-          style={[s.addRowButton, props.tableLayout?.dense && s.addRowButtonDense]}
+          style={[
+            s.addRowButton,
+            props.tableLayout?.dense && s.addRowButtonDense,
+            // The label starts where the first column's text does.
+            props.tableStyles?.edgeCell
+          ]}
           onClick={(event) => {
             // Creating often unmounts this affordance (a draft row takes
             // its place); focus would fall to the body and strand the

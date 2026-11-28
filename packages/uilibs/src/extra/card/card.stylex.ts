@@ -53,6 +53,10 @@ export const cardStyles = stylex.create({
   content: {
     paddingInline: `var(--card-spacing, ${unit.x5})`
   },
+  // `padding: 0` loses to the longhand above, so the flush variant is the longhand too.
+  contentFlush: {
+    paddingInline: 0
+  },
   footer: {
     alignItems: 'center',
     display: 'flex',
