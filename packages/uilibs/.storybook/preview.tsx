@@ -140,10 +140,15 @@ function assertNoHorizontalOverflow(
     .slice(0, 3)
     .map(({ element, right }) => {
       const slot = element.getAttribute('data-slot') ?? element.getAttribute('role')
-      return `<${element.localName}${slot ? ` ${slot}` : ''}> ends at ${Math.round(right)}px`
+      const text = element.textContent?.trim().slice(0, 24)
+      return `<${element.localName}${slot ? ` ${slot}` : ''}${text ? ` "${text}"` : ''}> ends at ${Math.round(right)}px`
     })
+  // Text width depends on the face that rendered it: a loaded font and its fallback differ by pixels.
+  const fonts = Array.from(document.fonts)
+    .filter((face) => face.status !== 'unloaded')
+    .map((face) => `${face.family} ${face.status}`)
   throw new Error(
-    `The story is ${scrollWidth - clientWidth}px wider than the ${clientWidth}px viewport. Widest: ${wide.join(', ')}. ` +
+    `The story is ${scrollWidth - clientWidth}px wider than the ${clientWidth}px viewport. Widest: ${wide.join(', ')}. Fonts: ${fonts.join(', ') || 'none loaded'}. ` +
       "Fix the layout, or set `parameters: { overflow: 'allowed' }` if the content scrolls on purpose."
   )
 }

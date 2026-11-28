@@ -2,9 +2,12 @@ import { Check } from '@keyline-icons/react'
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import atoms from '@stylexjs/atoms'
 import * as stylex from '@stylexjs/stylex'
-import { expect, waitFor } from 'storybook/test'
+import * as React from 'react'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
+import { Button } from '../button/button.component'
 import {
   Avatar,
   AvatarBadge,
@@ -90,6 +93,64 @@ export const Fallback: Story = {
   play: async ({ canvas }) => {
     await waitFor(() => expect(canvas.getByText('GH')).toBeInTheDocument())
     await expect(canvas.queryByText('HP')).toBeNull()
+  }
+}
+
+/** A portrait drawn inline, so the story waits on no network: 80 by 80, a gold seeker on crimson. */
+const portrait =
+  'data:image/svg+xml,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">' +
+      '<rect width="80" height="80" fill="#7f0909"/><circle cx="40" cy="40" r="16" fill="#ffc500"/></svg>'
+  )
+
+/** The picture fades in over the fallback once it has loaded, and not at all under reduced motion. */
+export const FadeIn: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<Avatar>
+  <AvatarImage src={src} alt='@harry.potter' />
+  <AvatarFallback>HP</AvatarFallback>
+</Avatar>`
+      }
+    }
+  },
+  render: () => {
+    const [src, setSrc] = React.useState<string>()
+    return (
+      <div {...stylex.props(atoms.display.flex, atoms.alignItems.center, atoms.gap['16px'])}>
+        <Avatar>
+          <AvatarImage src={src} alt='@harry.potter' />
+          <AvatarFallback>HP</AvatarFallback>
+        </Avatar>
+        <Button variant='outline' onClick={() => setSrc(portrait)}>
+          Load the portrait
+        </Button>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const runs = watchTransitions(canvasElement, 'opacity')
+    await expect(canvas.getByText('HP')).toBeInTheDocument()
+    await userEvent.click(canvas.getByRole('button', { name: 'Load the portrait' }))
+    const image = await canvas.findByRole('img', { name: '@harry.potter' })
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const style = getComputedStyle(image)
+    await expect(style.transitionProperty).toBe(reduce ? 'none' : 'opacity')
+    if (!reduce) {
+      await expect(style.transitionDuration).toBe('0.2s')
+      // The fade starts from an invisible picture and ends on a solid one.
+      await waitFor(() => expect(runs.some((run) => run.target === image)).toBe(true))
+      await expect(Number(runs.find((run) => run.target === image)?.value)).toBeLessThan(0.5)
+    }
+    await waitFor(() => expect(getComputedStyle(image).opacity).toBe('1'))
+    await expect(canvas.queryByText('HP')).toBeNull()
+
+    // The shipped reduced-motion rule: no transition, the picture just appears.
+    const rules = mediaRules(image, 'prefers-reduced-motion')
+    await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }
 

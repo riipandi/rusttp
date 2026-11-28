@@ -35,23 +35,43 @@
  */
 
 import { Toast as BaseToast } from '@base-ui/react/toast'
+import { CircleAlert, CircleCheck, Info, TriangleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { Spinner } from '../../extra/spinner'
+import { glyphSize } from '../../styles/glyph'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
-import { toastStyles as s, toastColors as colors } from './toast.stylex'
+import { toastStyles as s, toastColors as colors, toastPositions } from './toast.stylex'
 
 /** The manager behind the imperative `toast` API — pass to `useToast` consumers if needed. */
 export const toastManager = BaseToast.createToastManager()
 
 export type ToastColor = ColorRole
 
+/** The screen corner or edge centre the stack sits in. */
+export type ToasterPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right'
+
 type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
   /** The color role of the toast's accent; `neutral` unless the type implies one. */
   color?: ToastColor
+}
+
+// The mark each status carries beside the title; a neutral toast has none.
+const colorGlyphs: Partial<Record<ToastColor, Glyph>> = {
+  primary: Info,
+  positive: CircleCheck,
+  warning: TriangleAlert,
+  critical: CircleAlert
 }
 
 const colorNames: readonly string[] = ['neutral', 'primary', 'positive', 'warning', 'critical']
@@ -104,40 +124,67 @@ export function ToastProvider(props: React.ComponentProps<typeof BaseToast.Provi
 export interface ToasterLabels extends CloseLabels {
   /** Name of a toast that has no title (a `toast.promise` outcome set as a description). Defaults to `Notification`. */
   notification: string
+  /** Name of the spinner in a loading toast (`toast.promise` while it is pending). Defaults to `Loading`. */
+  loading: string
 }
 
 function ToastList({
   swipeDirection,
+  top,
   labels
 }: {
   swipeDirection: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
+  top: boolean
   labels?: Partial<ToasterLabels>
 }) {
   const { toasts } = BaseToast.useToastManager()
-  return toasts.map((t) => (
-    <BaseToast.Root
-      key={t.id}
-      toast={t}
-      swipeDirection={swipeDirection}
-      // A toast is a dialog and needs a name; the title gives it one when there is a title.
-      aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
-      {...stylex.props(s.root, colors[colorOf(t.data, t.type)])}
-    >
-      <div {...stylex.props(s.content)}>
-        <div {...stylex.props(s.text)}>
-          <BaseToast.Title {...stylex.props(s.title)} />
-          <BaseToast.Description {...stylex.props(type.body2, descriptionText.root)} />
+  return toasts.map((t) => {
+    const color = colorOf(t.data, t.type)
+    const StatusGlyph = colorGlyphs[color]
+    const loading = t.type === 'loading'
+    return (
+      <BaseToast.Root
+        key={t.id}
+        toast={t}
+        swipeDirection={swipeDirection}
+        // A toast is a dialog and needs a name; the title gives it one when there is a title.
+        aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
+        {...stylex.props(s.root, top ? s.rootTop : s.rootBottom, colors[color])}
+      >
+        <div {...stylex.props(s.content)}>
+          {loading || StatusGlyph ? (
+            // One slot for the whole life of a toast: the spinner while it is pending, the outcome
+            // glyph after. The key remounts it on the hand-over so the new glyph fades in.
+            // A status glyph is decoration (the title carries the meaning); the spinner is named.
+            <span key={loading ? 'loading' : 'status'} {...stylex.props(s.glyph)}>
+              {loading ? (
+                <Spinner labels={labels?.loading ? { loading: labels.loading } : undefined} />
+              ) : (
+                StatusGlyph && <StatusGlyph size={glyphSize.large} aria-hidden />
+              )}
+            </span>
+          ) : null}
+          <div {...stylex.props(s.text)}>
+            <BaseToast.Title {...stylex.props(s.title)} />
+            <BaseToast.Description
+              // A loading toast is the one live message on screen: its text reads as a title, not
+              // as the quiet detail under one.
+              {...stylex.props(type.body2, descriptionText.root, loading && s.loadingText)}
+            />
+          </div>
+          <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
+          <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
         </div>
-        <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
-        <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
-      </div>
-    </BaseToast.Root>
-  ))
+      </BaseToast.Root>
+    )
+  })
 }
 
 /** `style` is the viewport's StyleX style, merged last. */
 export interface ToasterProps extends StyleProp {
-  /** Direction(s) a toast can be swiped to dismiss. */
+  /** Where the stack sits on the screen. Default `bottom-right`. */
+  position?: ToasterPosition
+  /** Direction(s) a toast can be swiped to dismiss. Default: toward the stack's own edges, so `['down', 'right']` for `bottom-right`. */
   swipeDirection?: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
   /** Accessible names of the close button and of a toast without a title; English by default. */
   labels?: Partial<ToasterLabels>
@@ -146,13 +193,25 @@ export interface ToasterProps extends StyleProp {
 /**
  * Mount once (inside ToastProvider) — renders the toast stack. Toasts pile up
  * behind the newest one; hovering or focusing the stack expands it. Swipe
- * down/right (touch or mouse) to dismiss.
+ * toward the stack's edge (touch or mouse) to dismiss.
  */
-export function Toaster({ swipeDirection = ['down', 'right'], labels, style }: ToasterProps) {
+export function Toaster({
+  position = 'bottom-right',
+  swipeDirection,
+  labels,
+  style
+}: ToasterProps) {
+  const top = position.startsWith('top')
+  const vertical = top ? 'up' : 'down'
+  const side = position.endsWith('left') ? 'left' : position.endsWith('right') ? 'right' : null
   return (
     <BaseToast.Portal container={usePortalContainer()}>
-      <BaseToast.Viewport {...stylex.props(s.viewport, style)}>
-        <ToastList swipeDirection={swipeDirection} labels={labels} />
+      <BaseToast.Viewport {...stylex.props(s.viewport, toastPositions[position], style)}>
+        <ToastList
+          swipeDirection={swipeDirection ?? (side ? [vertical, side] : vertical)}
+          top={top}
+          labels={labels}
+        />
       </BaseToast.Viewport>
     </BaseToast.Portal>
   )

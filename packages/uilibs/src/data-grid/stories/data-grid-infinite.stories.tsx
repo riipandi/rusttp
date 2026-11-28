@@ -6,13 +6,19 @@ import { useTable } from '@tanstack/react-table'
 import type { Column, ColumnDef, SortingState } from '@tanstack/react-table'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
-import { DataGrid, DataGridColumnHeader, DataGridContainer, DataGridTableVirtual } from '../'
+import {
+  DataGrid,
+  DataGridColumnHeader,
+  DataGridContainer,
+  DataGridTableVirtual,
+  dataGridCardEdge
+} from '../'
 import { dataGridFeatures } from '../'
 import type { DataGridFeatures, DataGridTableInstance } from '../'
 import { Avatar, AvatarFallback } from '../../base/avatar'
 import { Button } from '../../base/button'
 import { pressUntil } from '../../contracts/keyboard'
-import { Card, CardContent } from '../../extra/card'
+import { Card, CardContent, CardHeader } from '../../extra/card'
 import { colors } from '../../styles/colors.stylex'
 import { unit } from '../../styles/tokens.stylex'
 import { stackStyles as s } from './_mocks.stylex'
@@ -53,29 +59,13 @@ const infiniteStyles = stylex.create({
   numeric: {
     fontVariantNumeric: 'tabular-nums'
   },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    paddingBlock: unit.x3,
-    width: '100%'
-  },
-  cardOverflow: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    overflow: 'hidden',
-    paddingBlock: unit.x3
-  },
+  cardOverflow: { overflow: 'hidden' },
   header: {
     alignItems: 'center',
     display: 'flex',
     gap: unit.x2,
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
-  },
-  cardBody: { padding: 0 }
+    justifyContent: 'space-between'
+  }
 })
 
 /**
@@ -237,9 +227,9 @@ export const LocalInfiniteScroll: StoryObj<LatencyArgs> = {
     tableHolder.current = table
 
     return (
-      <DataGrid table={table} recordCount={limit}>
-        <Card style={infiniteStyles.card}>
-          <CardContent style={infiniteStyles.cardBody}>
+      <DataGrid table={table} recordCount={limit} tableStyles={{ edgeCell: dataGridCardEdge }}>
+        <Card>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
@@ -287,14 +277,15 @@ export const RowClickVirtualized: Story = {
       <DataGrid
         table={table}
         recordCount={localAllData.length}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         getRowLabel={(row) => row.title}
         onRowClick={(row) => setOpened(`${row.id} ${row.title}`)}
       >
-        <Card style={infiniteStyles.card}>
-          <div {...stylex.props(infiniteStyles.header)}>
+        <Card>
+          <CardHeader style={infiniteStyles.header}>
             <span {...stylex.props(s.muted)}>Opened: {opened}</span>
-          </div>
-          <CardContent style={infiniteStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
@@ -412,9 +403,13 @@ export const RemoteInfiniteScroll: StoryObj<LatencyArgs> = {
     tableHolder.current = table
 
     return (
-      <DataGrid table={table} recordCount={data.length}>
-        <Card style={infiniteStyles.card}>
-          <div {...stylex.props(infiniteStyles.header)}>
+      <DataGrid
+        table={table}
+        recordCount={data.length}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
+      >
+        <Card>
+          <CardHeader style={infiniteStyles.header}>
             <span {...stylex.props(s.strong)}>
               {data.length} of {REMOTE_TOTAL} records
             </span>
@@ -427,8 +422,8 @@ export const RemoteInfiniteScroll: StoryObj<LatencyArgs> = {
                 setData(Array.from({ length: REMOTE_PAGE }, (_, index) => simulateRow(index)))
               }}
             />
-          </div>
-          <CardContent style={infiniteStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual
@@ -529,6 +524,7 @@ export const ColumnVirtualization: Story = {
       <DataGrid
         table={table}
         recordCount={matrixRows.length}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{
           width: 'fixed',
           dense: true,
@@ -538,7 +534,7 @@ export const ColumnVirtualization: Story = {
         }}
       >
         <Card style={infiniteStyles.cardOverflow}>
-          <div {...stylex.props(infiniteStyles.header)}>
+          <CardHeader style={infiniteStyles.header}>
             <span {...stylex.props(s.strong)}>Performance Matrix</span>
             <span {...stylex.props(s.muted)}>
               Metric {String(targetColumnIndex + 1).padStart(2, '0')} of {METRIC_COLUMN_COUNT}
@@ -563,8 +559,8 @@ export const ColumnVirtualization: Story = {
                 Next
               </Button>
             </div>
-          </div>
-          <CardContent style={infiniteStyles.cardBody}>
+          </CardHeader>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollAreaProxy>
                 <DataGridTableVirtual

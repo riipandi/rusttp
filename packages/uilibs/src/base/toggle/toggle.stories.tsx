@@ -9,6 +9,7 @@ import {
   expectControlHeights,
   expectDisabledLook
 } from '../../contracts/control-sizes'
+import { expectPressSink, mediaRules } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { Toggle } from './toggle.component'
 import { toggleSizes, toggleVariants } from './toggle.stylex'
@@ -234,6 +235,23 @@ export const Sizes: Story = {
     </Axis>
   ),
   play: async ({ canvasElement }) => await expectControlHeights(canvasElement, denseControlHeights)
+}
+
+/** A press sinks the toggle by 2%; reduced motion keeps the colors and drops the sink. */
+export const Press: Story = {
+  render: () => <Toggle aria-label='Toggle charm'>Charm</Toggle>,
+  play: async ({ canvas }) => {
+    const toggle = canvas.getByRole('button', { name: 'Toggle charm' })
+    const style = getComputedStyle(toggle)
+    await expect(style.transitionProperty).toBe('background-color, border-color, color, transform')
+    await expect(style.transform).toBe('none')
+    await expectPressSink(toggle)
+    await expect(
+      mediaRules(toggle, 'prefers-reduced-motion').some(
+        (rule) => rule.style.transitionProperty === 'background-color, border-color, color'
+      )
+    ).toBe(true)
+  }
 }
 
 /** Tab reaches a toggle, Space and Enter press it, and Tab skips a disabled one. */

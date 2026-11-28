@@ -27,6 +27,7 @@ import {
   DataGridTableRowExpand,
   DataGridTableDndRowHandle,
   DataGridTableDndRows,
+  dataGridCardEdge,
   dataGridFeatures,
   type DataGridFeatures,
   type DataGridTableInstance
@@ -75,31 +76,12 @@ const statusStyles = stylex.create({
     paddingBlock: unit.x3,
     paddingInline: unit.x8
   },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    paddingBlock: unit.x3,
-    width: '100%'
-  },
   cardHeader: {
     alignItems: 'center',
     display: 'flex',
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
+    justifyContent: 'space-between'
   },
-  cardBody: {
-    padding: 0
-  },
-  edgeCell: { paddingInline: unit.x5 },
-  cardFooter: {
-    paddingBlock: unit.x3
-  },
-  cardOverflow: {
-    overflow: 'hidden',
-    paddingBlock: unit.x3
-  }
+  cardOverflow: { overflow: 'hidden' }
 })
 
 /* ------------------------------------------------------------------ */
@@ -439,7 +421,6 @@ export const ExpandableRows: Story = {
         table={table}
         recordCount={detailData.length}
         tableLayout={{ headerBackground: false }}
-        tableStyles={{ edgeCell: s.edgeCell }}
       >
         <DataGridContainer>
           <DataGridScrollArea table={table}>
@@ -901,9 +882,9 @@ export const RowPinningSupport: Story = {
         table={table}
         recordCount={demoData.length}
         tableLayout={{ rowsPinnable: true, columnsResizable: true }}
-        tableStyles={{ edgeCell: s.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
       >
-        <Card style={statusStyles.card}>
+        <Card>
           <CardHeader style={statusStyles.cardHeader}>
             <div {...stylex.props(s.cellFlex)}>
               <span {...stylex.props(s.strong)}>Catalog</span>
@@ -921,14 +902,14 @@ export const RowPinningSupport: Story = {
               <Button variant='ghost' size='small' icon={RefreshCw} aria-label='Reset' />
             )}
           </CardHeader>
-          <CardContent style={statusStyles.cardBody}>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
-          <CardFooter style={statusStyles.cardFooter}>
+          <CardFooter>
             <DataGridPagination table={table} />
           </CardFooter>
         </Card>
@@ -1120,6 +1101,7 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
       table={table}
       recordCount={treeData.length}
       getRowLabel={(node) => node.name}
+      tableStyles={{ edgeCell: dataGridCardEdge }}
       tableLayout={{
         columnsResizable: true,
         columnsMovable: true,
@@ -1128,11 +1110,13 @@ function TreeGrid({ pageSize }: { pageSize?: number }) {
     >
       <div {...stylex.props(s.stack)}>
         <Card style={statusStyles.cardOverflow}>
-          <DataGridContainer>
-            <DataGridScrollArea table={table}>
-              <DataGridTable aria-label='Authors and novels' table={table} />
-            </DataGridScrollArea>
-          </DataGridContainer>
+          <CardContent flush>
+            <DataGridContainer>
+              <DataGridScrollArea table={table}>
+                <DataGridTable aria-label='Authors and novels' table={table} />
+              </DataGridScrollArea>
+            </DataGridContainer>
+          </CardContent>
         </Card>
         <DataGridPagination table={table} sizes={[4, 8, 16]} />
       </div>

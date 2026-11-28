@@ -484,3 +484,26 @@ Consequences:
 
 - (positive) a popup edge no longer writes an inline style, part types are one definition with a guard, the Storybook dev load has no deprecation, color-control, or loaded-twice warnings, and the compiler's skips are listed each night.
 - (negative) more static rules than before; `plugins` gained a dev dependency edge; the compiler leg lists seven skipped files (`toggle`, `data-grid`, `data-grid-cell-editor`, `data-grid-table-pager`, `data-grid-table-virtual`, `button-group`, `carousel`) that are not fixed.
+
+### The Storybook defects and the uilibs polish: never-stale static docs, a docs guard, and motion by rule
+
+Context (2026-11-28): the owner's 13 items (`plan-00015`) were inspected in the tree and in a running Storybook. The Docs `of` error was not in the tree: the static Storybook was served with memory-serve's defaults, so an unhashed `index.json` outlived a rebuild by a week while the hashed chunks were new. The docs theme bug did reproduce, as a code defect: Storybook reloads the preview with a URL that never carries the default `system`.
+
+Decisions:
+
+- D1: `/storybook` is served `no-cache` for every file (a 304 through the ETag); rejected: `no-cache` for a list of unhashed files (a list to maintain), `enable_hashed_routes` (the original route keeps its headers).
+- D2: a Node script, `check:docs:render`, opens every docs entry of a built Storybook; rejected: a story (docs entries are not tests) and the story gate (it never opens a docs page, which is how the error shipped).
+- D4, D5: the `UIProvider` story moved to `Contracts` as `ProviderDirection` rather than disappearing (its play is the only proof that `direction` reaches Base UI); the docs container reads the theme from the preview store, not the iframe URL (D5 expected no code change and the reproduction overturned it).
+- D6, D7, D8: `Toaster` takes `position`; a status shows in edge, tint, title, and glyph; a loading toast shows the library `Spinner` in the glyph slot. Toast now imports `Spinner` from `extra`, the second exception to the `base`/`extra` rule.
+- D9: Tabs get one sliding `Tabs.Indicator` and a panel entrance, no new prop.
+- D10, D11: a text child splits a `ButtonGroup` into runs (a contract change); the library did not change for the mixed-size story, the demo did.
+- D12, D13: corners are concentric by token (Toolbar 12, Toggle 8); the Resizable rail is quiet at rest, but the `line` handle keeps `borderControl`, because `borderNeutral` measured 1.32:1 against the 3:1 floor (the D13 fallback fired).
+- D14, D15, D16: Calendar is `fit-content`; Arabic has a second `@font-face` of the same family (no token change); a grid in a Card is `CardContent flush` plus one exported edge style.
+- D17: position stories use `PlacementStage` and assert the side; the anchored ones run at the desktop viewport, because a 288 px popup flips at 390 px (rejected: a scrolling stage, since collision is measured against the viewport).
+- D18: motion only where a state change jumps, from tokens, with a reduced-motion branch, proved by reading the shipped CSS (`contracts/motion.ts`). Meter was listed and needed nothing (it shares Progress's transition).
+- D19: parallel tracks wrote their docs debt to scratch files and the shared agent docs changed once, in one commit.
+
+Consequences:
+
+- (positive) a rebuild cannot serve a stale index, a broken docs page fails CI, the docs theme follows the toolbar, and every defect the owner screenshotted has an assertion; the entry JS is unchanged (472.6 KB) and the entry CSS grew 0.6 KB (64.1 to 64.7 KB measured at the wave closes, within its 68.9 limit).
+- (negative) every revalidating request costs a 304 on a dev tool; three position stories no longer run the 390 px overflow gate; a standalone Toggle went from 10 to 8 px; the stylesheet walk behind the reduced-motion assertions is still copied in three older stories (`toast`, `theme-switcher`, `data-grid-rows`).

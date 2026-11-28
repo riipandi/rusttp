@@ -28,17 +28,17 @@ export const toggleGroupOrientations = stylex.create({
 
 export const toggleGroupJoinedItems = stylex.create({
   horizontal: {
-    borderEndStartRadius: { default: 0, ':first-child': radius.large },
-    borderEndEndRadius: { default: 0, ':last-child': radius.large },
-    borderStartStartRadius: { default: 0, ':first-child': radius.large },
-    borderStartEndRadius: { default: 0, ':last-child': radius.large },
+    borderEndStartRadius: { default: 0, ':first-child': radius.medium },
+    borderEndEndRadius: { default: 0, ':last-child': radius.medium },
+    borderStartStartRadius: { default: 0, ':first-child': radius.medium },
+    borderStartEndRadius: { default: 0, ':last-child': radius.medium },
     paddingInline: unit.x2
   },
   vertical: {
-    borderEndStartRadius: { default: 0, ':last-child': radius.large },
-    borderEndEndRadius: { default: 0, ':last-child': radius.large },
-    borderStartStartRadius: { default: 0, ':first-child': radius.large },
-    borderStartEndRadius: { default: 0, ':first-child': radius.large },
+    borderEndStartRadius: { default: 0, ':last-child': radius.medium },
+    borderEndEndRadius: { default: 0, ':last-child': radius.medium },
+    borderStartStartRadius: { default: 0, ':first-child': radius.medium },
+    borderStartEndRadius: { default: 0, ':first-child': radius.medium },
     paddingInline: unit.x2
   }
 })

@@ -13,6 +13,7 @@ import {
   DataGridPagination,
   DataGridScrollArea,
   DataGridTable,
+  dataGridCardEdge,
   dataGridFeatures,
   type DataGridFeatures,
   type DataGridLabels,
@@ -48,29 +49,12 @@ export default meta
 /* ------------------------------------------------------------------ */
 
 const statesStyles = stylex.create({
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    paddingBlock: unit.x3,
-    width: '100%'
-  },
-  cardOverflow: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    overflow: 'hidden',
-    paddingBlock: unit.x3
-  },
   header: {
     alignItems: 'center',
     display: 'flex',
     gap: unit.x2,
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
+    justifyContent: 'space-between'
   },
-  cardBody: { padding: 0 },
   muted: {
     color: s.muted.color
   },
@@ -81,10 +65,6 @@ const statesStyles = stylex.create({
     height: 16,
     width: 16
   },
-  // Breathing room against the container edges (edgeCell: first
-  // ps-5 / last pe-5; a symmetric inline padding reads the same on fixed
-  // columns and stays within StyleXStyles' static-only shape).
-  edgeCell: { paddingInline: unit.x5 },
   searchGroup: { width: 192 }
 })
 
@@ -245,7 +225,7 @@ export const CardContainer: Story = {
       <DataGrid
         table={table}
         recordCount={demoData.length}
-        tableStyles={{ edgeCell: statesStyles.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{
           columnsPinnable: true,
           columnsResizable: true,
@@ -253,7 +233,7 @@ export const CardContainer: Story = {
           columnsVisibility: true
         }}
       >
-        <Card style={statesStyles.card}>
+        <Card>
           <CardHeader style={statesStyles.header}>
             <CardTitle>Books</CardTitle>
             <Button size='small' variant='outline'>
@@ -261,7 +241,7 @@ export const CardContainer: Story = {
               Add book
             </Button>
           </CardHeader>
-          <CardContent style={statesStyles.cardBody}>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} />
@@ -831,9 +811,14 @@ export const ServerSidePagination: StoryObj<{ latency: number }> = {
     })
 
     return (
-      <DataGrid table={table} recordCount={total} isLoading={isFetching}>
+      <DataGrid
+        table={table}
+        recordCount={total}
+        isLoading={isFetching}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
+      >
         <div {...stylex.props(s.stack)}>
-          <Card style={statesStyles.card}>
+          <Card>
             <CardHeader style={statesStyles.header}>
               <InputGroup style={statesStyles.searchGroup}>
                 <InputGroupAddon align='inline-start'>
@@ -865,7 +850,7 @@ export const ServerSidePagination: StoryObj<{ latency: number }> = {
                 ))}
               </div>
             </CardHeader>
-            <CardContent style={statesStyles.cardBody}>
+            <CardContent flush>
               <DataGridContainer>
                 <DataGridScrollArea table={table}>
                   <DataGridTable aria-label='Novels' table={table} />

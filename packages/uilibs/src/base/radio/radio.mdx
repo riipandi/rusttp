@@ -46,6 +46,12 @@ The label wraps the whole card, so clicking anywhere on it selects the option.
 
 <Canvas of={Stories.ChoiceCard} />
 
+### Motion
+
+The dot scales up from 60% and fades in over 150ms when its option is selected, and out when another is. Under `prefers-reduced-motion` the dot only fades.
+
+<Canvas of={Stories.Motion} />
+
 ## Accessibility
 
 `RadioGroup` is a `radiogroup`, and each `RadioGroupItem` is a `radio` with `aria-checked`. An item has no text, so its name comes from a wrapping `label`, a `FieldLabel`, or `aria-label`; name the group with `aria-label`. The `Keyboard` story walks the table below, and `States` checks the disabled and invalid markup.

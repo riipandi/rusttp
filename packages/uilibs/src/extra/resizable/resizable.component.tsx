@@ -77,6 +77,7 @@ export function ResizableHandle({
       {...stylex.props(
         stylex.defaultMarker(),
         s.handle,
+        !withHandle && s.handleLine,
         isVertical && s.handleVerticalGroup,
         variant === 'capsule' && s.handleCapsule,
         style

@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily } from '../../styles/tokens.stylex'
+import { duration, easing, fontFamily } from '../../styles/tokens.stylex'
 
 export const checkboxStyles = stylex.create({
   root: {
@@ -43,7 +43,27 @@ export const checkboxStyles = stylex.create({
       '[data-disabled]': colors.foregroundDisabled
     },
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    // The mark scales up from 60% and fades in, and out again, through Base UI's starting and
+    // ending styles; reduced motion keeps the fade and drops the scale.
+    opacity: { default: 1, '[data-starting-style]': 0, '[data-ending-style]': 0 },
+    transform: {
+      default: 'none',
+      '[data-starting-style]': {
+        default: 'scale(0.6)',
+        '@media (prefers-reduced-motion: reduce)': 'none'
+      },
+      '[data-ending-style]': {
+        default: 'scale(0.6)',
+        '@media (prefers-reduced-motion: reduce)': 'none'
+      }
+    },
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'opacity, transform',
+      '@media (prefers-reduced-motion: reduce)': 'opacity'
+    },
+    transitionTimingFunction: easing.decelerate
   }
 })
 

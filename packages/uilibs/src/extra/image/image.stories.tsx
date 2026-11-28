@@ -5,6 +5,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Image, type ImageBorderRadius, type ImageDisplayMode } from './image.component'
@@ -240,6 +241,58 @@ export const Recovery: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Load the picture' }))
     await waitFor(() => expect(canvasElement.querySelector('img')).not.toBeNull())
     await expect(canvas.queryByText('Not found')).toBeNull()
+  }
+}
+
+/** The picture fades in once it has loaded, and not at all under reduced motion. */
+export const FadeIn: Story = {
+  parameters: {
+    docs: {
+      source: { code: `<Image src={src} alt='The Marauder’s Map' aspectRatio={2} />` }
+    }
+  },
+  args: { src: banner, alt: '' },
+  render: () => {
+    const [src, setSrc] = React.useState<string>()
+    return (
+      <div {...stylex.props(styles.stack)}>
+        <div {...stylex.props(styles.small)}>
+          {src ? <Image src={src} alt='The Marauder’s Map' aspectRatio={2} /> : null}
+        </div>
+        <Button variant='outline' onClick={() => setSrc(banner)}>
+          Load the picture
+        </Button>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const runs = watchTransitions(canvasElement, 'opacity')
+    // An inline picture can load before the first frame, which skips the fade just as a cached one
+    // does. Reading its style as `load` fires makes the invisible state real, as a slow network does.
+    canvasElement.addEventListener(
+      'load',
+      (event) => event.target instanceof Element && getComputedStyle(event.target).opacity,
+      true
+    )
+    await userEvent.click(canvas.getByRole('button', { name: 'Load the picture' }))
+    await waitFor(() => expect(canvasElement.querySelector('img')).not.toBeNull())
+    const img = imgOf(canvasElement)
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!reduce) {
+      // The fade starts from an invisible picture.
+      await waitFor(() => expect(runs.some((run) => run.target === img)).toBe(true))
+      await expect(Number(runs.find((run) => run.target === img)?.value)).toBeLessThan(0.5)
+    }
+    // And ends on a solid one; the transition belongs to the loaded picture.
+    await waitFor(() => expect(getComputedStyle(img).opacity).toBe('1'))
+    const style = getComputedStyle(img)
+    await expect(style.transitionProperty).toBe(reduce ? 'none' : 'opacity')
+    if (!reduce) await expect(style.transitionDuration).toBe('0.2s')
+
+    // The shipped reduced-motion rule: no transition, the picture just appears.
+    const rules = mediaRules(img, 'prefers-reduced-motion')
+    await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }
 

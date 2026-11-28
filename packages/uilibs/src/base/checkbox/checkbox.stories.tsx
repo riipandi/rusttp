@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
-import { expect, fn, userEvent } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
+import { mediaRules, pose } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { Label } from '../../extra/label'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field'
@@ -353,6 +354,39 @@ export const States: Story = {
     await expect(disabled).toHaveAttribute('aria-checked', 'true')
 
     await expect(box('invalid')).toHaveAttribute('data-invalid')
+  }
+}
+
+/** The check scales and fades in and out, and reduced motion keeps the fade and drops the scale. */
+export const Motion: Story = {
+  render: () => <Checkbox defaultChecked aria-label='Accept the Hogwarts letter' />,
+  play: async ({ canvas }) => {
+    const box = canvas.getByRole('checkbox', { name: 'Accept the Hogwarts letter' })
+    const mark = () => box.querySelector<HTMLElement>(':scope > span')
+    const indicator = mark()
+    if (!indicator) throw new Error('A checked box renders its indicator')
+
+    const style = getComputedStyle(indicator)
+    await expect(style.transitionProperty).toBe('opacity, transform')
+    await expect(style.transitionDuration).toBe('0.15s')
+    // Base UI holds the starting and ending poses for one frame; both are the small, clear mark.
+    for (const attribute of ['data-starting-style', 'data-ending-style']) {
+      await expect(pose(indicator, attribute)).toEqual({
+        opacity: '0',
+        transform: 'matrix(0.6, 0, 0, 0.6, 0, 0)'
+      })
+    }
+    await expect(
+      mediaRules(indicator, 'prefers-reduced-motion').some(
+        (rule) => rule.style.transitionProperty === 'opacity'
+      )
+    ).toBe(true)
+
+    // The exit finishes: the mark leaves the box once its transition is done, and comes back.
+    await userEvent.click(box)
+    await waitFor(() => expect(mark()).toBeNull())
+    await userEvent.click(box)
+    await waitFor(() => expect(mark()).not.toBeNull())
   }
 }
 

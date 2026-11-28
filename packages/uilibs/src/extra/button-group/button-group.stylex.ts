@@ -24,6 +24,12 @@ export const buttonGroupStyles = stylex.create({
     gap: unit.x2,
     paddingInline: unit.x2
   },
+  textNode: {
+    alignItems: 'center',
+    display: 'inline-flex',
+    fontSize: fontSize.body2,
+    paddingInline: unit.x2
+  },
   separator: {
     alignSelf: 'stretch',
     backgroundColor: colors.borderNeutralFaded

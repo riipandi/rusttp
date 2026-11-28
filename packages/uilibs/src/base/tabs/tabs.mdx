@@ -18,7 +18,7 @@ Built on Base UI [Tabs](https://base-ui.com/react/components/tabs). Props not li
 ## Anatomy
 
 - **Tabs:** the root. It holds the selected tab and the orientation.
-- **TabsList:** the row of triggers. It sets the look of every trigger in it.
+- **TabsList:** the row of triggers. It sets the look of every trigger in it and draws the indicator (Base UI `Tabs.Indicator`): the active pill, or the underline bar.
 - **TabsTrigger:** one tab. Base UI calls this part `Tab`. It shares a `value` with its panel.
 - **TabsContent:** the panel for one tab. Base UI calls this part `Panel`.
 
@@ -48,6 +48,12 @@ Built on Base UI [Tabs](https://base-ui.com/react/components/tabs). Props not li
 ### Equal widths
 
 <Canvas of={Stories.Widths} />
+
+### Motion
+
+One indicator slides to the selected tab: the pill of `pills` and `pills-raised`, the bar of `bordered` and `borderless` (on a vertical list it moves down the list, along the inline-start edge). The tab itself has no active background. The new panel fades in and rises 4px from the side the tab came from. Under `prefers-reduced-motion` the indicator moves at once and the panel only fades; in forced colors the indicator keeps a system-color edge.
+
+<Canvas of={Stories.Motion} />
 
 ## Accessibility
 
@@ -91,6 +97,11 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 | ------------------ | --------------------------- |
 | `data-orientation` | `horizontal` or `vertical`. |
 
+| CSS variable                                | Description                                                      |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| `--active-tab-left`, `--active-tab-top`     | Base UI's offset of the selected tab; the indicator moves to it. |
+| `--active-tab-width`, `--active-tab-height` | The size of the selected tab.                                    |
+
 ### TabsTrigger
 
 | Data attribute     | Description                        |
@@ -101,15 +112,17 @@ Every part also takes `style`: StyleX styles that replace `className` and `style
 
 ### TabsContent
 
-| Data attribute        | Description                            |
-| --------------------- | -------------------------------------- |
-| `data-hidden`         | Present while the panel is hidden.     |
-| `data-orientation`    | `horizontal` or `vertical`.            |
-| `data-starting-style` | Present as the panel begins to appear. |
-| `data-ending-style`   | Present as the panel disappears.       |
+| Data attribute              | Description                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `data-activation-direction` | `left`, `right`, `up`, `down`, or `none`: the side the panel enters from.       |
+| `data-hidden`               | Present while the panel is hidden.                                              |
+| `data-orientation`          | `horizontal` or `vertical`.                                                     |
+| `data-starting-style`       | Present as the panel begins to appear; the fade and the 4px rise start from it. |
+| `data-ending-style`         | Present as the panel disappears.                                                |
 
 ## Caveats
 
 - `TabsTrigger` reads `variant`, `size`, and `itemWidth` from the `TabsList` it sits in, so it must be inside one.
 - `TabsContent` is a tab stop and draws the focus ring.
+- The indicator appears after Base UI measures the selected tab, so the first paint of a list can draw it a frame after the labels.
 - A `size='xsmall'` pill tab is 20px tall; its hit area adds 2px above and below to reach 24px. An underline tab at `xsmall` is already 28px.

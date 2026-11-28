@@ -13,6 +13,7 @@ import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
@@ -695,6 +696,40 @@ export const Keyboard: Story = {
   }
 }
 
+/** A day eases its fill on hover and on pick, and swaps it at once under reduced motion. */
+export const Motion: Story = {
+  parameters: {
+    docs: { source: { code: `<Calendar mode='single' defaultMonth={jan} />` } }
+  },
+  render: () => <Calendar mode='single' defaultMonth={jan} labels={nav('motion')} />,
+  play: async ({ canvas, canvasElement }) => {
+    const runs = watchTransitions(canvasElement, 'background-color')
+    const day = (date: number) => canvas.getByRole('button', { name: new RegExp(`^${date}, `) })
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const style = getComputedStyle(day(12))
+    await expect(style.transitionProperty).toBe(reduce ? 'none' : 'background-color, color')
+    if (!reduce) await expect(style.transitionDuration).toBe('0.15s')
+
+    // Hover fills the day; the fill eases in, so the transition runs on that very button.
+    const { userEvent: pointer } = await import('vitest/browser')
+    await pointer.hover(day(12))
+    await waitFor(() =>
+      expect(getComputedStyle(day(12)).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    )
+    if (!reduce) await waitFor(() => expect(runs.some((run) => run.target === day(12))).toBe(true))
+
+    // So does picking one.
+    await userEvent.click(day(13))
+    await waitFor(() => expect(day(13)).toHaveAttribute('data-selected-single', 'true'))
+    if (!reduce) await waitFor(() => expect(runs.some((run) => run.target === day(13))).toBe(true))
+
+    // The shipped reduced-motion rule: no transition.
+    const rules = mediaRules(day(12), 'prefers-reduced-motion')
+    await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
+  }
+}
+
 export const WeekNumbers: Story = {
   parameters: {
     docs: {
@@ -738,13 +773,22 @@ export const Direction: Story = {
   }
 }
 
-const arrowFlip = (canvas: { getByRole: (role: 'button', o: { name: RegExp }) => HTMLElement }) =>
-  [/previous month/i, /next month/i].map(
-    (name) =>
-      new DOMMatrix(
-        getComputedStyle(canvas.getByRole('button', { name }).querySelector('svg')!).transform
-      ).a
+/** The two month arrows' horizontal scale; found by position, since a locale renames them. */
+const arrowFlip = (canvasElement: HTMLElement) =>
+  [...canvasElement.querySelectorAll('nav button svg')].map(
+    (svg) => new DOMMatrix(getComputedStyle(svg).transform).a
   )
+
+/** The root sizes to its content, not to the parent: a 32 px day cell at every canvas width. */
+const hugsContent = async (canvasElement: HTMLElement) => {
+  const root = canvasElement.querySelector<HTMLElement>('[data-slot="calendar"]')!
+  const today = root.querySelector<HTMLElement>('[data-today]')!
+  await expect(root.getBoundingClientRect().width).toBeLessThan(
+    root.parentElement!.getBoundingClientRect().width
+  )
+  await expect(today.getBoundingClientRect().width).toBe(32)
+  await expect(today.getBoundingClientRect().height).toBe(32)
+}
 
 /**
  * `dir='rtl'` on a wrapper, with no `lang` anywhere, mirrors the month arrows. The flip is a
@@ -766,19 +810,37 @@ export const RightToLeft: Story = {
       <Calendar mode='single' />
     </div>
   ),
-  play: async ({ canvas }) => {
-    await expect(arrowFlip(canvas)).toEqual([-1, -1])
+  play: async ({ canvasElement }) => {
+    await expect(arrowFlip(canvasElement)).toEqual([-1, -1])
+    await hugsContent(canvasElement)
   }
 }
 
-/** The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows. */
+/**
+ * The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows.
+ * The text itself comes from `locale` (`lang` sets only the attribute), and the glyphs from the
+ * Arabic `@font-face` of `Mona Sans Variable` in `assets/fontface.css`, not from the OS.
+ */
 export const ArabicLeftToRight: Story = {
   render: () => (
     <div dir='ltr'>
-      <Calendar mode='single' lang='ar' />
+      <Calendar mode='single' lang='ar' locale={arSA} />
     </div>
   ),
-  play: async ({ canvas }) => {
-    await expect(arrowFlip(canvas)).toEqual([1, 1])
+  play: async ({ canvasElement }) => {
+    await expect(arrowFlip(canvasElement)).toEqual([1, 1])
+    await hugsContent(canvasElement)
+    const heading = canvasElement.querySelector<HTMLElement>('[role="status"]')!
+    await expect(heading.textContent).toMatch(/\p{Script=Arabic}/u)
+    await document.fonts.load('1em "Mona Sans Variable"', heading.textContent)
+    // The Arabic face must not take Latin text from Mona Sans: a Latin letter still finds a face.
+    await expect(
+      (await document.fonts.load('400 1em "Mona Sans Variable"', 'A')).length
+    ).toBeGreaterThan(0)
+    // Chromium and Firefox serialize the range as `U+600-6FF`, WebKit as `U+0600-06FF`.
+    const arabicFace = [...document.fonts].find(
+      (face) => face.family.includes('Mona Sans Variable') && /^U\+0*600-/i.test(face.unicodeRange)
+    )
+    await expect(arabicFace?.status).toBe('loaded')
   }
 }

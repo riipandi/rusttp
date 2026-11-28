@@ -13,6 +13,7 @@ import {
   DataGridPagination,
   DataGridScrollArea,
   DataGridTable,
+  dataGridCardEdge,
   dataGridFeatures,
   type DataGridCellsChangeDetails,
   type DataGridCellStatus,
@@ -47,31 +48,50 @@ export default meta
 /* Shared styles */
 /* ------------------------------------------------------------------ */
 
+/** Where the text of an element starts, padding excluded. */
+const textLeft = (element: Element) => {
+  const range = document.createRange()
+  range.selectNodeContents(element)
+  return range.getBoundingClientRect().left
+}
+
+/**
+ * A grid in a Card has one padding: its text starts where the card's own text starts, its rows and
+ * separators run to the card's border, and the "Add row" label starts with the first column.
+ */
+const expectOnePadding = async (
+  canvas: {
+    findByRole: (role: 'table', o: { name: string }) => Promise<HTMLElement>
+    getByTestId: (id: string) => HTMLElement
+  },
+  textStart: () => Promise<HTMLElement>
+) => {
+  const table = await canvas.findByRole('table', { name: 'Novels' })
+  const edge = (await textStart()).getBoundingClientRect().left
+  const card = canvas.getByTestId('card')
+  const { left, right } = card.getBoundingClientRect()
+  const border = parseFloat(getComputedStyle(card).borderLeftWidth)
+  // The container, not the table: the table is wider than a narrow card and scrolls inside it.
+  const gridBox = table.closest('[data-slot="data-grid"]')!.getBoundingClientRect()
+  await expect(textLeft(table.querySelector('tbody td')!)).toBeCloseTo(edge, 0)
+  await expect(textLeft(table.querySelector('thead th')!)).toBeCloseTo(edge, 0)
+  await expect(gridBox.left).toBeCloseTo(left + border, 0)
+  await expect(gridBox.right).toBeCloseTo(right - border, 0)
+  const addRow = table.querySelector('[data-slot="data-grid-table-add-row"] button')
+  if (addRow) await expect(textLeft(addRow)).toBeCloseTo(edge, 0)
+}
+
 const editingStyles = stylex.create({
   toolbar: {
     alignItems: 'center',
     display: 'flex',
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
+    justifyContent: 'space-between'
   },
   searchGroup: { width: 192 },
-  cardBody: { padding: 0 },
-  // Breathing room against the container edges (edgeCell: first
-  // ps-4 / last pe-4; a symmetric inline padding reads the same on fixed
-  // columns and stays within StyleXStyles' static-only shape).
-  edgeCell: { paddingInline: unit.x5 },
   right: {
     display: 'block',
     fontVariantNumeric: 'tabular-nums',
     textAlign: 'end',
-    width: '100%'
-  },
-  frame: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0,
-    paddingBlock: unit.x3,
     width: '100%'
   },
   frameHeader: {
@@ -79,21 +99,7 @@ const editingStyles = stylex.create({
     display: 'flex',
     flexWrap: 'wrap',
     gap: unit.x3,
-    justifyContent: 'space-between',
-    paddingBlock: unit.x3,
-    paddingInline: unit.x5
-  },
-  frameFooter: { paddingBlock: unit.x3 },
-  // Spreadsheet card chrome: the hint (header) and pagination (footer) are
-  // stack children of a full-bleed table, so their inline padding matches
-  // the grid's edgeCell inset.
-  hint: {
-    paddingBlockStart: unit.x3,
-    paddingInline: unit.x5
-  },
-  bar: {
-    paddingBlockEnd: unit.x3,
-    paddingInline: unit.x5
+    justifyContent: 'space-between'
   },
   statusCell: { fontWeight: 500 }
 })
@@ -174,7 +180,7 @@ export const CrudFeatures: Story = {
       <DataGrid
         table={table}
         recordCount={filtered.length}
-        tableStyles={{ edgeCell: editingStyles.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         onRowCreate={() => {
           const id = String(rowIdRef.current++)
           setDraft({
@@ -186,7 +192,7 @@ export const CrudFeatures: Story = {
         }}
         rowCreateLabel='Add row'
       >
-        <Card style={editingStyles.frame}>
+        <Card data-testid='card'>
           <CardHeader style={editingStyles.toolbar}>
             <InputGroup style={editingStyles.searchGroup}>
               <InputGroupAddon align='inline-start'>
@@ -216,14 +222,14 @@ export const CrudFeatures: Story = {
               Create
             </Button>
           </CardHeader>
-          <CardContent style={editingStyles.cardBody}>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
-          <CardFooter style={editingStyles.frameFooter}>
+          <CardFooter>
             <DataGridPagination table={table} />
           </CardFooter>
         </Card>
@@ -232,6 +238,10 @@ export const CrudFeatures: Story = {
   },
   play: async ({ canvas }) => {
     await expect(await canvas.findByRole('textbox', { name: 'Search novels' })).toBeVisible()
+    await expectOnePadding(
+      canvas,
+      async () => (await canvas.findByRole('textbox', { name: 'Search novels' })).parentElement!
+    )
   }
 }
 
@@ -290,14 +300,14 @@ export const CrudInFrameContainer: Story = {
       <DataGrid
         table={table}
         recordCount={rows.length}
-        tableStyles={{ edgeCell: editingStyles.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         onRowCreate={() => {
           setRows((old) => [...old, { ...old[0]!, id: String(Date.now()), title: 'New novel' }])
         }}
       >
         {/* The source renders this inside its Frame component; a muted card frame
             carries the same header/content/footer intent here. */}
-        <Card style={editingStyles.frame}>
+        <Card data-testid='card'>
           <CardHeader style={editingStyles.frameHeader}>
             <CardTitle>Catalog</CardTitle>
             <Button size='small' variant='outline'>
@@ -305,19 +315,22 @@ export const CrudInFrameContainer: Story = {
               New novel
             </Button>
           </CardHeader>
-          <CardContent style={editingStyles.cardBody}>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
           </CardContent>
-          <CardFooter style={editingStyles.frameFooter}>
+          <CardFooter>
             <DataGridPagination table={table} />
           </CardFooter>
         </Card>
       </DataGrid>
     )
+  },
+  play: async ({ canvas }) => {
+    await expectOnePadding(canvas, () => canvas.findByRole('heading', { name: 'Catalog' }))
   }
 }
 
@@ -454,7 +467,7 @@ export const SpreadsheetEditing: Story = {
         onCellsChange={handleCellsChange}
         getRowStatus={(row) => rowMeta[row.id]}
         getCellStatus={getCellStatus}
-        tableStyles={{ edgeCell: editingStyles.edgeCell }}
+        tableStyles={{ edgeCell: dataGridCardEdge }}
         tableLayout={{
           dense: true,
           cellSelection: true,
@@ -467,18 +480,22 @@ export const SpreadsheetEditing: Story = {
         }}
       >
         <DataGridCellSelection table={table} />
-        <Card style={editingStyles.frame}>
-          <div {...stylex.props(s.stack)}>
-            <span {...stylex.props(s.muted, editingStyles.hint)}>
+        <Card>
+          <CardContent>
+            <span {...stylex.props(s.muted)}>
               Drag, Shift+arrows or Ctrl/Cmd+A to select · type to edit · paste from a spreadsheet
             </span>
+          </CardContent>
+          <CardContent flush>
             <DataGridContainer>
               <DataGridScrollArea table={table}>
                 <DataGridTable aria-label='Novels' table={table} />
               </DataGridScrollArea>
             </DataGridContainer>
-            <DataGridPagination table={table} style={editingStyles.bar} />
-          </div>
+          </CardContent>
+          <CardFooter>
+            <DataGridPagination table={table} />
+          </CardFooter>
         </Card>
       </DataGrid>
     )

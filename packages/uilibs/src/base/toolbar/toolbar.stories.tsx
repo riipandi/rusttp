@@ -21,6 +21,8 @@ const styles = stylex.create({
 
 export default meta
 
+const px = (value: string) => Number.parseFloat(value)
+
 export const Playground: Story = {
   parameters: {
     controls: { disable: false, include: ['disabled', 'loopFocus'] },
@@ -69,7 +71,7 @@ export const WithToggleGroup: Story = {
     docs: {
       source: {
         code: `<Toolbar>
-  <ToggleGroup variant='outline' spacing='joined' defaultValue={['left']}>
+  <ToggleGroup variant='outline' size='small' spacing='joined' defaultValue={['left']}>
     <ToolbarButton render={<ToggleGroupItem value='left' aria-label='Align left' />}>
       <AlignLeft />
     </ToolbarButton>
@@ -86,7 +88,7 @@ export const WithToggleGroup: Story = {
   name: 'With a toggle group',
   render: () => (
     <Toolbar>
-      <ToggleGroup variant='outline' spacing='joined' defaultValue={['left']}>
+      <ToggleGroup variant='outline' size='small' spacing='joined' defaultValue={['left']}>
         <ToolbarButton render={<ToggleGroupItem value='left' aria-label='Align left' />}>
           <AlignLeft {...stylex.props(styles.icon)} />
         </ToolbarButton>
@@ -100,7 +102,24 @@ export const WithToggleGroup: Story = {
       <ToolbarSeparator />
       <ToolbarButton render={<Button variant='ghost' size='small' />}>Accio</ToolbarButton>
     </Toolbar>
-  )
+  ),
+  play: async ({ canvas }) => {
+    const toolbar = canvas.getByRole('toolbar')
+    const first = canvas.getByRole('button', { name: 'Align left' })
+    const last = canvas.getByRole('button', { name: 'Align right' })
+    const accio = canvas.getByRole('button', { name: 'Accio' })
+    const outer = getComputedStyle(toolbar)
+    const inner = getComputedStyle(first)
+    // Concentric corners: a nested corner is the outer radius less the padding between them.
+    await expect(px(outer.borderTopLeftRadius)).toBe(
+      px(inner.borderTopLeftRadius) + px(outer.paddingLeft)
+    )
+    await expect(px(outer.borderTopRightRadius)).toBe(
+      px(getComputedStyle(last).borderTopRightRadius) + px(outer.paddingRight)
+    )
+    // The group's items and the button beside it are one control height.
+    await expect(first.getBoundingClientRect().height).toBe(accio.getBoundingClientRect().height)
+  }
 }
 
 /** Tab enters the toolbar in one stop, the arrows move focus along its items and loop, Home and End do nothing, and Space presses the focused toggle. */

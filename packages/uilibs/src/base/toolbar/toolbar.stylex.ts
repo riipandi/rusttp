@@ -8,7 +8,7 @@ export const toolbarStyles = stylex.create({
   root: {
     alignItems: 'center',
     borderColor: colors.borderNeutralFaded,
-    borderRadius: radius.large,
+    borderRadius: radius.xlarge,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
     display: 'flex',

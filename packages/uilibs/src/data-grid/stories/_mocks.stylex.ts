@@ -70,14 +70,5 @@ export const stackStyles = stylex.create({
   },
   textEnd: {
     textAlign: 'end'
-  },
-  cardFlush: {
-    gap: 0,
-    paddingBlock: unit.x3
-  },
-  // First/last cell breathing room for full-bleed card tables; aligns cell
-  // text with the card chrome's inline padding (--card-spacing).
-  edgeCell: {
-    paddingInline: unit.x5
   }
 })

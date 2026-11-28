@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { colors, fixedColors } from '../../styles/colors.stylex'
-import { breakpoints, radius, unit, stroke, zIndex } from '../../styles/tokens.stylex'
+import { breakpoints, duration, radius, unit, stroke, zIndex } from '../../styles/tokens.stylex'
 import { fontLineHeight, fontSize, fontWeight } from '../../styles/tokens.stylex'
 
 export const calendarConsts = stylex.defineConsts({
@@ -71,6 +71,12 @@ export const calendarStyles = stylex.create({
     lineHeight: 1,
     minWidth: calendarConsts.cellSize,
     position: 'relative',
+    // Hover and pick ease the fill in; under reduced motion it swaps at once.
+    transitionDuration: duration.fast,
+    transitionProperty: {
+      default: 'background-color, color',
+      '@media (prefers-reduced-motion: reduce)': 'none'
+    },
     width: '100%',
     zIndex: zIndex.raised
   },
@@ -249,8 +255,10 @@ export const calendarStyles = stylex.create({
   root: {
     backgroundColor: colors.backgroundElevationBase,
     borderRadius: radius.large,
+    maxWidth: '100%',
     padding: unit.x2,
-    position: 'relative'
+    position: 'relative',
+    width: 'fit-content'
   },
   today: {
     backgroundColor: colors.backgroundNeutralFaded,

@@ -12,6 +12,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { controlPress, controlSizes } from '../../styles/control.stylex'
 import type { ColorRole, DenseControlSize, PartProps } from '../../styles/types'
+import { buttonPress } from '../button/button.stylex'
 import { toggleStyles as s } from './toggle.stylex'
 import { toggleRest, toggleSelected, toggleSizes, toggleVariants } from './toggle.stylex'
 
@@ -46,6 +47,7 @@ export function Toggle({
       {...props}
       {...stylex.props(
         controlPress.root,
+        buttonPress.root,
         s.root,
         toggleVariants[variant],
         toggleRest[variant === 'solid' ? 'solid' : 'quiet'],

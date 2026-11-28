@@ -5,11 +5,15 @@ import { unit, radius, zIndex } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
 import { duration, easing } from '../../styles/tokens.stylex'
 
+const glyphIn = stylex.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 }
+})
+
 export const toastStyles = stylex.create({
+  // A zero-height box on the chosen edge; `toastPositions` sets the corner.
   viewport: {
-    bottom: unit.x4,
     position: 'fixed',
-    right: unit.x4,
     width: container.medium,
     zIndex: zIndex.toast
   },
@@ -24,7 +28,6 @@ export const toastStyles = stylex.create({
     borderRadius: radius.medium,
     borderStyle: 'solid',
     borderWidth: stroke.ring1,
-    bottom: 0,
     boxShadow: shadow.overlay,
     boxSizing: 'border-box',
     color: colors.foregroundNeutral,
@@ -49,15 +52,6 @@ export const toastStyles = stylex.create({
     padding: unit.x4,
     position: 'absolute',
     right: 0,
-    // Later conditions win at equal specificity: the closed pose overrides
-    // the expanded/collapsed stack pose while entering or leaving.
-    transform: {
-      default: `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) + min(var(--toast-index), 10) * -1 * var(--toast-gap))) scale(calc(max(0.8, 1 - var(--toast-index) * 0.05)))`,
-      '[data-expanded]': `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) - var(--toast-offset-y) - var(--toast-index) * var(--toast-gap)))`,
-      '[data-starting-style]': `translateY(calc(100% + ${unit.x4}))`,
-      '[data-ending-style]': `translateY(calc(100% + ${unit.x4}))`
-    },
-    transformOrigin: 'center bottom',
     transitionDuration: { default: duration.slow, '[data-swiping]': '0s' },
     transitionProperty: {
       default: 'transform, opacity, height',
@@ -66,6 +60,29 @@ export const toastStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     width: '100%',
     zIndex: `calc(${zIndex.toast} - var(--toast-index))`
+  },
+  // The stack grows away from the edge a toast is anchored to: bottom toasts pile up, top toasts
+  // pile down, and each enters from and leaves toward its own edge. Later conditions win at equal
+  // specificity: the closed pose overrides the expanded/collapsed stack pose while entering or leaving.
+  rootBottom: {
+    bottom: 0,
+    transform: {
+      default: `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) + min(var(--toast-index), 10) * -1 * var(--toast-gap))) scale(calc(max(0.8, 1 - var(--toast-index) * 0.05)))`,
+      '[data-expanded]': `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) - var(--toast-offset-y) - var(--toast-index) * var(--toast-gap)))`,
+      '[data-starting-style]': `translateY(calc(100% + ${unit.x4}))`,
+      '[data-ending-style]': `translateY(calc(100% + ${unit.x4}))`
+    },
+    transformOrigin: 'center bottom'
+  },
+  rootTop: {
+    top: 0,
+    transform: {
+      default: `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) + min(var(--toast-index), 10) * var(--toast-gap))) scale(calc(max(0.8, 1 - var(--toast-index) * 0.05)))`,
+      '[data-expanded]': `translateX(var(--toast-swipe-movement-x, 0px)) translateY(calc(var(--toast-swipe-movement-y, 0px) + var(--toast-offset-y) + var(--toast-index) * var(--toast-gap)))`,
+      '[data-starting-style]': `translateY(calc(-100% - ${unit.x4}))`,
+      '[data-ending-style]': `translateY(calc(-100% - ${unit.x4}))`
+    },
+    transformOrigin: 'center top'
   },
   content: {
     alignItems: 'flex-start',
@@ -79,6 +96,23 @@ export const toastStyles = stylex.create({
     transitionDuration: duration.fast,
     transitionProperty: 'opacity',
     width: '100%'
+  },
+  // The status glyph: one title line tall, so the mark centres on the title's first line.
+  glyph: {
+    alignItems: 'center',
+    // A new glyph fades in; under reduced motion it simply appears.
+    animationDuration: duration.fast,
+    animationFillMode: 'backwards',
+    animationName: { default: glyphIn, '@media (prefers-reduced-motion: reduce)': 'none' },
+    animationTimingFunction: easing.decelerate,
+    display: 'flex',
+    flexShrink: 0,
+    height: fontLineHeight.body2,
+    justifyContent: 'center'
+  },
+  loadingText: {
+    color: colors.foregroundNeutral,
+    fontWeight: fontWeight.semibold
   },
   text: {
     display: 'flex',
@@ -120,10 +154,39 @@ export const toastStyles = stylex.create({
   }
 })
 
+// Physical sides on purpose: a toast keeps the screen side it is given in both directions.
+export const toastPositions = stylex.create({
+  'top-left': { left: unit.x4, top: unit.x4 },
+  'top-center': { insetInline: 0, marginInline: 'auto', top: unit.x4 },
+  'top-right': { right: unit.x4, top: unit.x4 },
+  'bottom-left': { bottom: unit.x4, left: unit.x4 },
+  'bottom-center': { bottom: unit.x4, insetInline: 0, marginInline: 'auto' },
+  'bottom-right': { bottom: unit.x4, right: unit.x4 }
+})
+
+// A status shows in four quiet places: the edge, a faded tint of the surface, and the color of the
+// title and the glyph (which take the toast's `color`). The description and the buttons keep their
+// neutral text so it holds its contrast on the tint.
 export const toastColors = stylex.create({
   neutral: {},
-  primary: { borderColor: colors.borderPrimary },
-  positive: { borderColor: colors.borderPositive },
-  warning: { borderColor: colors.borderWarning },
-  critical: { borderColor: colors.borderCritical }
+  primary: {
+    backgroundColor: colors.backgroundPrimaryFaded,
+    borderColor: colors.borderPrimary,
+    color: colors.foregroundPrimary
+  },
+  positive: {
+    backgroundColor: colors.backgroundPositiveFaded,
+    borderColor: colors.borderPositive,
+    color: colors.foregroundPositive
+  },
+  warning: {
+    backgroundColor: colors.backgroundWarningFaded,
+    borderColor: colors.borderWarning,
+    color: colors.foregroundWarning
+  },
+  critical: {
+    backgroundColor: colors.backgroundCriticalFaded,
+    borderColor: colors.borderCritical,
+    color: colors.foregroundCritical
+  }
 })

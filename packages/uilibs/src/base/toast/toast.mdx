@@ -38,7 +38,15 @@ Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not 
 
 ### Colors
 
+A colored toast shows its status in the edge, a faded tint of the surface, the title, and a glyph before it (`primary` an info mark, `positive` a check, `warning` a triangle, `critical` an alert circle). The description and the buttons keep their neutral text, so it holds 4.5:1 on the tint. A `neutral` toast has no glyph.
+
 <Canvas of={Stories.Colors} />
+
+### Promise
+
+`toast.promise` raises a loading toast: a spinner takes the place of the status glyph, and the text reads as a title. When the promise settles, the same toast becomes a success or an error toast and the outcome glyph fades in (under reduced motion it just appears).
+
+<Canvas of={Stories.ToastPromise} />
 
 ### Action
 
@@ -46,7 +54,7 @@ Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not 
 
 ### Position
 
-`Toaster` takes `style`, so a corner is a style override.
+`Toaster` takes a `position`: a corner or the centre of the top or bottom edge. The stack grows away from that edge, a toast enters from it, and a swipe toward it dismisses. The sides are physical (`left` stays the left of the screen in a right-to-left page).
 
 <Canvas of={Stories.Position} />
 
@@ -65,14 +73,15 @@ Each toast is a `dialog` named by its title; a toast without a title is named by
 
 ## API reference
 
-`Toaster` takes `style`: StyleX styles for the viewport, merged last. See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.
+`Toaster` takes `style`: StyleX styles for the viewport, merged last (to move the stack, use `position`). See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.
 
 ### Toaster
 
-| Prop             | Description                                                                                                                        |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default `['down', 'right']`. |
-| `labels`         | `{ close, notification }` <br /> Names of the close button and of a toast without a title. Default `Close` and `Notification`.     |
+| Prop             | Description                                                                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `position`       | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right` <br /> Where the stack sits on the screen. Default `bottom-right`.                                |
+| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default: toward the stack's own edges, `['down', 'right']` for `bottom-right`.    |
+| `labels`         | `{ close, notification, loading }` <br /> Names of the close button, of a toast without a title, and of the spinner in a loading toast. Default `Close`, `Notification`, and `Loading`. |
 
 | Data attribute  | Description                                               |
 | --------------- | --------------------------------------------------------- |
@@ -86,9 +95,9 @@ Each toast is a `dialog` named by its title; a toast without a title is named by
 
 The options of `toast`, `toast.success`, and `toast.error` are Base UI's toast options without `title` and `data`, plus one:
 
-| Prop    | Description                                                                                                                                                       |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The accent color. `success` and `error` toasts imply `positive` and `critical`. Default `neutral`. |
+| Prop    | Description                                                                                                                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The status color: edge, tint, title, and glyph. `success` and `error` toasts imply `positive` and `critical`. Default `neutral`. |
 
 ## Caveats
 

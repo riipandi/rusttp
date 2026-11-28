@@ -37,6 +37,12 @@ Built on [AspectRatio](?path=/docs/extra-components-aspectratio--docs), so `aspe
 
 <Canvas of={Stories.BorderRadii} />
 
+### Fade in
+
+The picture fades in over 200 ms once it has loaded, so a slow picture does not pop in. A new `src` resets it. Under `prefers-reduced-motion` the picture just appears.
+
+<Canvas of={Stories.FadeIn} />
+
 ### Fallback
 
 A source that fails keeps the box and its ratio, with or without a `fallback`.

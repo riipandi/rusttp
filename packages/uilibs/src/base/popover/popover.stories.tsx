@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
-import { Axis } from '../../contracts/story-axes'
+import { Axis, PlacementStage, expectPlacedOn } from '../../contracts/story-axes'
 import { shadow } from '../../styles/colors.stylex'
 import { fontSize, fontWeight, unit } from '../../styles/tokens.stylex'
 import { Button } from '../button'
@@ -124,8 +124,9 @@ export const Playground: StoryObj<PlaygroundArgs> = {
 
 const sides = ['top', 'right', 'bottom', 'left'] as const
 
-/** Each side opens its own popover; the popup flips when the canvas leaves it no room, so the side is not asserted. */
+/** Each trigger sits in the middle of a stage, so every popover opens on the side it names. */
 export const Placement: Story = {
+  globals: { viewport: { value: 'desktop', isRotated: false } },
   parameters: {
     docs: {
       source: {
@@ -139,7 +140,7 @@ export const Placement: Story = {
     }
   },
   render: () => (
-    <Axis axis='side' rows={sides}>
+    <PlacementStage axis='side' rows={sides}>
       {(side) => (
         <Popover>
           <PopoverTrigger render={<Button variant='outline' />}>{side}</PopoverTrigger>
@@ -148,15 +149,17 @@ export const Placement: Story = {
           </PopoverContent>
         </Popover>
       )}
-    </Axis>
+    </PlacementStage>
   ),
   play: async ({ canvasElement }) => {
     for (const side of sides) {
-      await userEvent.click(
-        within(cellOf(canvasElement, 'side', side)).getByRole('button', { name: side })
-      )
+      const trigger = within(cellOf(canvasElement, 'side', side)).getByRole('button', {
+        name: side
+      })
+      await userEvent.click(trigger)
       const popover = await screen.findByRole('dialog', { name: `Levitate ${side}` })
       await expect(popover).toHaveTextContent(`to the ${side} of the trigger`)
+      await expectPlacedOn(popover, trigger, side)
       await userEvent.keyboard('{Escape}')
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     }

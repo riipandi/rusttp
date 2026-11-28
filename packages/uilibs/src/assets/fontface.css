@@ -11,6 +11,24 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/*
+ * Mona Sans has no Arabic. A second face under the same family name, limited to the Arabic blocks by
+ * `unicode-range`, lets the browser take Arabic characters from Noto Sans Arabic and Latin from Mona
+ * Sans without a token change; the file loads only on a page that renders Arabic text.
+ * Its weight range must equal the Latin face's (200 900): faces of one family are matched by weight
+ * first, so a wider range makes this face win for every weight and the Latin text falls back.
+ * noto-sans-arabic-arabic-wght-normal (pinned major — immutable TTL on jsDelivr)
+ */
+@font-face {
+  font-family: 'Mona Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-arabic:vf@5/arabic-wght-normal.woff2)
+    format('woff2-variations');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
 /* jetbrains-mono-latin-wght-normal (pinned major — immutable TTL on jsDelivr) */
 @font-face {
   font-family: 'JetBrains Mono Variable';

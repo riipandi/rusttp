@@ -9,7 +9,7 @@ const hover = ':hover:not(:disabled)'
 export const toggleStyles = stylex.create({
   root: {
     alignItems: 'center',
-    borderRadius: radius.large,
+    borderRadius: radius.medium,
     borderStyle: 'none',
     display: 'inline-flex',
     fontFamily: fontFamily.body,

@@ -47,6 +47,12 @@ Built on Base UI [Button](https://base-ui.com/react/components/button); with `re
 
 <Canvas of={Stories.States} />
 
+### Press
+
+While the pointer or `Space` holds it, the button sinks to 98% in 100ms. A disabled or loading button does not move, and `prefers-reduced-motion` drops the sink and keeps the color transitions.
+
+<Canvas of={Stories.Press} />
+
 ### As a link
 
 `render` takes the element, such as `<a href='…' />` or a router link, and gives it the button's look. The element keeps its own role, so it is announced as a link, and the handlers and `ref` of the button reach it. Pass the text as children of the `Button`, not of the element: a button with no children reads as icon-only and turns square.

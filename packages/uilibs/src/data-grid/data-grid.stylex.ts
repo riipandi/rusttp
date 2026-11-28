@@ -53,6 +53,16 @@ export const dataGridStyles = stylex.create({
 })
 
 /**
+ * The `tableStyles.edgeCell` recipe for a grid in a `Card`: the first and last cell pad by the
+ * card's own `--card-spacing`, so grid text starts on the card title's edge while the rows and
+ * their separators run to the card's border. Pair it with `CardContent flush` and a
+ * `DataGridContainer` without `border`.
+ */
+export const dataGridCardEdge = stylex.create({
+  edge: { paddingInline: `var(--card-spacing, ${unit.x5})` }
+}).edge
+
+/**
  * Base UI ScrollArea chrome for the grid viewports. Scrollbars track the
  * design system: 8px horizontal / 6px vertical tracks, each losing 1px to
  * the transparent edge border plus 2px to padding, so thumbs land at 5px

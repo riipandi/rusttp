@@ -48,6 +48,12 @@ A `parent` checkbox checks or clears every child and shows the indeterminate mar
 
 <Canvas of={Stories.GroupWithParent} />
 
+### Motion
+
+The check scales up from 60% and fades in over 150ms, and out again when cleared; the box fill follows the same duration. Under `prefers-reduced-motion` the mark only fades.
+
+<Canvas of={Stories.Motion} />
+
 ## Accessibility
 
 A `Checkbox` is a `checkbox` that reports `aria-checked` as `true`, `false` or `mixed`. It has no text, so its name comes from a wrapping `Label`, a `FieldLabel`, or `aria-label`; a group is named by `aria-label` on `CheckboxGroup`. The `Keyboard` story walks the table below, and `States` and `Group with a parent` check the states and names.

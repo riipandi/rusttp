@@ -21,6 +21,7 @@ import {
   buttonFills,
   buttonHighlighted,
   buttonModifiers,
+  buttonPress,
   buttonSizes,
   buttonSquare,
   buttonStyles
@@ -41,7 +42,7 @@ function buttonFill(variant: ButtonVariant, color?: ButtonColor) {
  * own size.
  */
 export function buttonAppearance(variant: ButtonVariant, color?: ButtonColor) {
-  return [controlPress.root, buttonStyles.root, buttonFill(variant, color)]
+  return [controlPress.root, buttonPress.root, buttonStyles.root, buttonFill(variant, color)]
 }
 
 /** The hover fill of a fill in a color, held at rest. */
@@ -130,6 +131,7 @@ export function Button({
   )
   const appearance = stylex.props(
     controlPress.root,
+    buttonPress.root,
     buttonStyles.root,
     buttonFill(variant, color),
     highlighted && !disabled && !loading && buttonHighlight(variant, color),

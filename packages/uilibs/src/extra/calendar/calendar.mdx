@@ -51,13 +51,19 @@ A `DayButton` of your own replaces the day cell. Compose the `calendarStyles` fo
 
 <Canvas of={Stories.CustomDays} />
 
+### Motion
+
+A day eases its fill over 150 ms on hover and on pick. Under `prefers-reduced-motion` the fill swaps at once.
+
+<Canvas of={Stories.Motion} />
+
 ### Week numbers
 
 <Canvas of={Stories.WeekNumbers} />
 
 ### Right to left
 
-Set `dir='rtl'` on the document or a wrapper: the month arrows mirror and the grid reads right to left. A `lang` is not needed, and Arabic text in a `dir='ltr'` page keeps its arrows.
+Set `dir='rtl'` on the document or a wrapper: the month arrows mirror and the grid reads right to left. A `lang` is not needed, and Arabic text in a `dir='ltr'` page keeps its arrows. The text comes from `locale` (`arSA` for Arabic), not from `lang`; its glyphs come from the Arabic face of `Mona Sans Variable` in `assets/fontface.css`.
 
 <Canvas of={Stories.RightToLeft} />
 

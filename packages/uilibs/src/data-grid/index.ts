@@ -32,6 +32,7 @@ export type {
   DataGridTableInstance,
   DataGridTableStyleSlots
 } from './data-grid'
+export { dataGridCardEdge } from './data-grid.stylex'
 export { mergeDataGridLabels } from './data-grid-labels'
 export type { DataGridLabels } from './data-grid-labels'
 export { DataGridScrollArea } from './data-grid-table-pager'

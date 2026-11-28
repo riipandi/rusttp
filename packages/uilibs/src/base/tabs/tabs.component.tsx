@@ -60,6 +60,7 @@ export function TabsList({
   variant = 'pills',
   size = 'medium',
   itemWidth,
+  children,
   ...props
 }: PartProps<React.ComponentProps<typeof BaseTabs.List>> & {
   variant?: TabsVariant
@@ -68,6 +69,7 @@ export function TabsList({
   itemWidth?: TabsItemWidth
 }) {
   const context = React.useMemo(() => ({ variant, size, itemWidth }), [variant, size, itemWidth])
+  const underline = variant === 'bordered' || variant === 'borderless'
   return (
     <TabsListContext.Provider value={context}>
       <BaseTabs.List
@@ -80,7 +82,17 @@ export function TabsList({
           itemWidth === 'equal' && s.listEqual,
           style
         )}
-      />
+      >
+        {children}
+        <BaseTabs.Indicator
+          {...stylex.props(
+            s.indicator,
+            underline ? s.indicatorUnderline : s.indicatorPill,
+            variant === 'bordered' && s.indicatorBordered,
+            variant === 'pills-raised' && s.indicatorRaised
+          )}
+        />
+      </BaseTabs.List>
     </TabsListContext.Provider>
   )
 }
@@ -99,7 +111,6 @@ export function TabsTrigger({
         s.trigger,
         underline && s.triggerUnderline,
         variant === 'borderless' && s.triggerBorderless,
-        variant === 'pills-raised' && s.triggerRaised,
         itemWidth === 'equal' && s.triggerEqual,
         underline ? tabsUnderlineSizes[size] : tabsSizes[size],
         !underline && size === 'xsmall' && s.triggerHitArea,
