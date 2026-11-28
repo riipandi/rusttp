@@ -42,12 +42,21 @@ import type { ColorRole, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
-import { toastStyles as s, toastColors as colors } from './toast.stylex'
+import { toastStyles as s, toastColors as colors, toastPositions } from './toast.stylex'
 
 /** The manager behind the imperative `toast` API — pass to `useToast` consumers if needed. */
 export const toastManager = BaseToast.createToastManager()
 
 export type ToastColor = ColorRole
+
+/** The screen corner or edge centre the stack sits in. */
+export type ToasterPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right'
 
 type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
   /** The color role of the toast's accent; `neutral` unless the type implies one. */
@@ -108,9 +117,11 @@ export interface ToasterLabels extends CloseLabels {
 
 function ToastList({
   swipeDirection,
+  top,
   labels
 }: {
   swipeDirection: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
+  top: boolean
   labels?: Partial<ToasterLabels>
 }) {
   const { toasts } = BaseToast.useToastManager()
@@ -121,7 +132,7 @@ function ToastList({
       swipeDirection={swipeDirection}
       // A toast is a dialog and needs a name; the title gives it one when there is a title.
       aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
-      {...stylex.props(s.root, colors[colorOf(t.data, t.type)])}
+      {...stylex.props(s.root, top ? s.rootTop : s.rootBottom, colors[colorOf(t.data, t.type)])}
     >
       <div {...stylex.props(s.content)}>
         <div {...stylex.props(s.text)}>
@@ -137,7 +148,9 @@ function ToastList({
 
 /** `style` is the viewport's StyleX style, merged last. */
 export interface ToasterProps extends StyleProp {
-  /** Direction(s) a toast can be swiped to dismiss. */
+  /** Where the stack sits on the screen. Default `bottom-right`. */
+  position?: ToasterPosition
+  /** Direction(s) a toast can be swiped to dismiss. Default: toward the stack's own edges, so `['down', 'right']` for `bottom-right`. */
   swipeDirection?: React.ComponentProps<typeof BaseToast.Root>['swipeDirection']
   /** Accessible names of the close button and of a toast without a title; English by default. */
   labels?: Partial<ToasterLabels>
@@ -146,13 +159,25 @@ export interface ToasterProps extends StyleProp {
 /**
  * Mount once (inside ToastProvider) — renders the toast stack. Toasts pile up
  * behind the newest one; hovering or focusing the stack expands it. Swipe
- * down/right (touch or mouse) to dismiss.
+ * toward the stack's edge (touch or mouse) to dismiss.
  */
-export function Toaster({ swipeDirection = ['down', 'right'], labels, style }: ToasterProps) {
+export function Toaster({
+  position = 'bottom-right',
+  swipeDirection,
+  labels,
+  style
+}: ToasterProps) {
+  const top = position.startsWith('top')
+  const vertical = top ? 'up' : 'down'
+  const side = position.endsWith('left') ? 'left' : position.endsWith('right') ? 'right' : null
   return (
     <BaseToast.Portal container={usePortalContainer()}>
-      <BaseToast.Viewport {...stylex.props(s.viewport, style)}>
-        <ToastList swipeDirection={swipeDirection} labels={labels} />
+      <BaseToast.Viewport {...stylex.props(s.viewport, toastPositions[position], style)}>
+        <ToastList
+          swipeDirection={swipeDirection ?? (side ? [vertical, side] : vertical)}
+          top={top}
+          labels={labels}
+        />
       </BaseToast.Viewport>
     </BaseToast.Portal>
   )

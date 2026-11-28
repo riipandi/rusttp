@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-// Side-placed parts name a physical side by their API (`side='left'`), and the data grid copies the
-// focused cell's computed padding onto its editor, so these files hold physical properties on purpose.
-const physicalFiles = ['base/drawer/drawer', 'extra/sheet/sheet', 'data-grid/data-grid']
+// Side-placed parts name a physical side by their API (`side='left'`), the data grid copies the
+// focused cell's computed padding onto its editor, and a toast keeps the screen side its `position`
+// names, so these files hold physical properties on purpose.
+const physicalFiles = [
+  'base/drawer/drawer',
+  'extra/sheet/sheet',
+  'data-grid/data-grid',
+  'base/toast/toast'
+]
 
 // Every other physical line is listed here, exactly, as `<file>: <trimmed line>`. A new physical side
 // fails the test until it is added with a reason; a line that no longer exists fails it too.
@@ -16,9 +22,6 @@ const physicalLines = [
   // The data grid's column resize indicator sits on the edge the pointer is dragging.
   'data-grid/data-grid-table: left: 0,',
   'data-grid/data-grid-table: left: 0,',
-  // The viewport sits in the bottom-right corner on purpose, and the stacked toasts share that edge.
-  'base/toast/toast: right: unit.x4,',
-  'base/toast/toast: right: 0,',
   // The arrow follows `data-side`, which is a physical side.
   'base/tooltip/tooltip: left: {',
   'base/tooltip/tooltip: right: {'

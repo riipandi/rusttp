@@ -1,10 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
-import type { ComponentProps } from 'react'
+import { type ComponentProps, useState } from 'react'
 import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { pressUntil } from '../../contracts/keyboard'
 import { Button } from '../button'
-import { toast, ToastProvider, Toaster, useToast, type ToastColor } from './toast.component'
+import {
+  toast,
+  ToastProvider,
+  Toaster,
+  useToast,
+  type ToastColor,
+  type ToasterPosition
+} from './toast.component'
 
 const meta = {
   title: 'Base Components/Toast',
@@ -19,11 +26,15 @@ const styles = stylex.create({
     flexWrap: 'wrap',
     gap: 8
   },
-  topLeft: {
-    bottom: null,
-    right: null,
-    left: 16,
-    top: 16
+  // The buttons sit mid-page, clear of the toast in every corner.
+  stage: {
+    alignContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: '24rem'
   }
 })
 
@@ -52,9 +63,18 @@ function DurationButton() {
 
 export default meta
 
+const positions: readonly ToasterPosition[] = [
+  'top-left',
+  'top-center',
+  'top-right',
+  'bottom-left',
+  'bottom-center',
+  'bottom-right'
+]
+
 // The text and color are options of the `toast()` call, not props of the provider.
 type PlaygroundArgs = Pick<ComponentProps<typeof ToastProvider>, 'timeout' | 'limit'> &
-  Pick<ComponentProps<typeof Toaster>, 'swipeDirection'> & {
+  Pick<ComponentProps<typeof Toaster>, 'position' | 'swipeDirection'> & {
     title: string
     description: string
     color: ToastColor
@@ -64,7 +84,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
   parameters: {
     controls: {
       disable: false,
-      include: ['title', 'description', 'color', 'timeout', 'limit', 'swipeDirection']
+      include: ['title', 'description', 'color', 'timeout', 'limit', 'position', 'swipeDirection']
     }
   },
   argTypes: {
@@ -73,6 +93,7 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     color: { control: 'radio', options: ['neutral', 'primary', 'positive', 'warning', 'critical'] },
     timeout: { control: 'number' },
     limit: { control: 'number' },
+    position: { control: 'select', options: positions },
     swipeDirection: { control: 'select', options: ['up', 'down', 'left', 'right'] }
   },
   args: {
@@ -81,14 +102,15 @@ export const Playground: StoryObj<PlaygroundArgs> = {
     color: 'neutral',
     timeout: 5000,
     limit: 3,
+    position: 'bottom-right',
     swipeDirection: 'down'
   },
-  render: ({ title, description, color, timeout, limit, swipeDirection }) => (
+  render: ({ title, description, color, timeout, limit, position, swipeDirection }) => (
     <ToastProvider timeout={timeout} limit={limit}>
       <Button variant='outline' onClick={() => toast(title, { description, color })}>
         Show Ministry notice
       </Button>
-      <Toaster swipeDirection={swipeDirection} />
+      <Toaster position={position} swipeDirection={swipeDirection} />
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
@@ -217,25 +239,68 @@ export const Action: Story = {
   )
 }
 
+// One Toaster, moved by the button that raises the toast: a toast is `fixed` to the viewport, so a
+// stage around the buttons would change nothing.
+function PositionDemo() {
+  const [position, setPosition] = useState<ToasterPosition>('bottom-right')
+  return (
+    <ToastProvider>
+      <div {...stylex.props(styles.stage)}>
+        {positions.map((name) => (
+          <Button
+            key={name}
+            variant='outline'
+            onClick={() => {
+              toast.close()
+              setPosition(name)
+              toast(`Owl delivered to ${name}`, { timeout: 0 })
+            }}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
+      <Toaster position={position} />
+    </ToastProvider>
+  )
+}
+
 export const Position: Story = {
   parameters: {
     docs: {
       source: {
         code: `<ToastProvider>
   <Button onClick={() => toast("Owl delivered to the Headmaster's tower")}>Show owl delivery</Button>
-  <Toaster style={…} />
+  <Toaster position='top-left' />
 </ToastProvider>`
       }
     }
   },
-  render: () => (
-    <ToastProvider>
-      <Button variant='outline' onClick={() => toast("Owl delivered to the Headmaster's tower")}>
-        Show owl delivery
-      </Button>
-      <Toaster style={styles.topLeft} />
-    </ToastProvider>
-  )
+  render: () => <PositionDemo />,
+  play: async ({ canvas }) => {
+    const inset = 16
+    for (const name of positions) {
+      await userEvent.click(canvas.getByRole('button', { name }))
+      const title = await screen.findByText(`Owl delivered to ${name}`)
+      const root = title.closest('[role="dialog"]')
+      if (!(root instanceof HTMLElement)) throw new Error('Toast root not found')
+      const { clientWidth, clientHeight } = document.documentElement
+      // The toast slides in from its edge: wait for it to settle, then read where it rests.
+      await waitFor(async () => {
+        const box = root.getBoundingClientRect()
+        await expect(box.top).toBeGreaterThanOrEqual(0)
+        await expect(box.bottom).toBeLessThanOrEqual(clientHeight)
+        await expect(box.left).toBeGreaterThanOrEqual(0)
+        await expect(box.right).toBeLessThanOrEqual(clientWidth)
+        if (name.startsWith('top')) await expect(box.top).toBeCloseTo(inset, 0)
+        else await expect(box.bottom).toBeCloseTo(clientHeight - inset, 0)
+        if (name.endsWith('left')) await expect(box.left).toBeCloseTo(inset, 0)
+        else if (name.endsWith('right')) await expect(box.right).toBeCloseTo(clientWidth - inset, 0)
+        else await expect(box.left + box.width / 2).toBeCloseTo(clientWidth / 2, 0)
+      })
+    }
+    // The last toast stays open, as in `Open`: the a11y gate runs after `play` and reads it.
+  }
 }
 
 const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const

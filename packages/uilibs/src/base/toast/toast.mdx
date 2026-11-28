@@ -46,7 +46,7 @@ Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not 
 
 ### Position
 
-`Toaster` takes `style`, so a corner is a style override.
+`Toaster` takes a `position`: a corner or the centre of the top or bottom edge. The stack grows away from that edge, a toast enters from it, and a swipe toward it dismisses. The sides are physical (`left` stays the left of the screen in a right-to-left page).
 
 <Canvas of={Stories.Position} />
 
@@ -65,14 +65,15 @@ Each toast is a `dialog` named by its title; a toast without a title is named by
 
 ## API reference
 
-`Toaster` takes `style`: StyleX styles for the viewport, merged last. See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.
+`Toaster` takes `style`: StyleX styles for the viewport, merged last (to move the stack, use `position`). See [Styling](?path=/docs/styling--docs). `ToastProvider` takes the Base UI provider props and no `style`.
 
 ### Toaster
 
-| Prop             | Description                                                                                                                        |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default `['down', 'right']`. |
-| `labels`         | `{ close, notification }` <br /> Names of the close button and of a toast without a title. Default `Close` and `Notification`.     |
+| Prop             | Description                                                                                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `position`       | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right` <br /> Where the stack sits on the screen. Default `bottom-right`.                             |
+| `swipeDirection` | `up`, `down`, `left`, `right` or an array of them <br /> Directions a toast can be swiped to dismiss. Default: toward the stack's own edges, `['down', 'right']` for `bottom-right`. |
+| `labels`         | `{ close, notification }` <br /> Names of the close button and of a toast without a title. Default `Close` and `Notification`.                                                       |
 
 | Data attribute  | Description                                               |
 | --------------- | --------------------------------------------------------- |
