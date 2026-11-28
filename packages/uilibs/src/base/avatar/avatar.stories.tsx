@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { cellOf } from '../../contracts/control-sizes'
-import { reducedMotionRules, watchTransitions } from '../../contracts/reduced-motion'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { Button } from '../button/button.component'
 import {
@@ -149,7 +149,7 @@ export const FadeIn: Story = {
     await expect(canvas.queryByText('HP')).toBeNull()
 
     // The shipped reduced-motion rule: no transition, the picture just appears.
-    const rules = reducedMotionRules(image)
+    const rules = mediaRules(image, 'prefers-reduced-motion')
     await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }

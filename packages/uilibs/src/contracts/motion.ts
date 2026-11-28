@@ -63,3 +63,19 @@ export async function expectPressSink(element: Element) {
     { transform: 'none', reduced: true }
   ])
 }
+
+/**
+ * Each transition of `property` (CSS name, such as `opacity`) that starts under `root`, with the
+ * value read as it starts: `0` for a fade-in. Call it before the action that triggers the change.
+ */
+export function watchTransitions(root: HTMLElement, property: string) {
+  const runs: { target: Element; value: string }[] = []
+  root.addEventListener('transitionrun', (event) => {
+    if (event.propertyName !== property || !(event.target instanceof Element)) return
+    runs.push({
+      target: event.target,
+      value: getComputedStyle(event.target).getPropertyValue(property)
+    })
+  })
+  return runs
+}

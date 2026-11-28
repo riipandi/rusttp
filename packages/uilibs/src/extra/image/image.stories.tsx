@@ -5,7 +5,7 @@ import * as React from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { Button } from '../../base/button'
 import { cellOf } from '../../contracts/control-sizes'
-import { reducedMotionRules, watchTransitions } from '../../contracts/reduced-motion'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import { Image, type ImageBorderRadius, type ImageDisplayMode } from './image.component'
@@ -291,7 +291,7 @@ export const FadeIn: Story = {
     if (!reduce) await expect(style.transitionDuration).toBe('0.2s')
 
     // The shipped reduced-motion rule: no transition, the picture just appears.
-    const rules = reducedMotionRules(img)
+    const rules = mediaRules(img, 'prefers-reduced-motion')
     await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }

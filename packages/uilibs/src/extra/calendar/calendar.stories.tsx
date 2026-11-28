@@ -13,7 +13,7 @@ import { Field, FieldGroup, FieldLabel } from '../../base/field/field.component'
 import { Popover, PopoverContent, PopoverTrigger } from '../../base/popover/popover.component'
 import { cellOf } from '../../contracts/control-sizes'
 import { pressUntil } from '../../contracts/keyboard'
-import { reducedMotionRules, watchTransitions } from '../../contracts/reduced-motion'
+import { mediaRules, watchTransitions } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke, unit } from '../../styles/tokens.stylex'
@@ -725,7 +725,7 @@ export const Motion: Story = {
     if (!reduce) await waitFor(() => expect(runs.some((run) => run.target === day(13))).toBe(true))
 
     // The shipped reduced-motion rule: no transition.
-    const rules = reducedMotionRules(day(12))
+    const rules = mediaRules(day(12), 'prefers-reduced-motion')
     await expect(rules.some((rule) => rule.style.transitionProperty === 'none')).toBe(true)
   }
 }
