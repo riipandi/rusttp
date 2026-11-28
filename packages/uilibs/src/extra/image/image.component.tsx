@@ -26,7 +26,8 @@ export interface ImageProps extends PartProps<React.ComponentProps<'img'>, 'alt'
 
 /**
  * A picture that keeps its box when it cannot load: the box holds its ratio, and `fallback` fills
- * it in place of the picture. It sits on `AspectRatio`, so `aspectRatio` is the same ratio.
+ * it in place of the picture. It sits on `AspectRatio`, so `aspectRatio` is the same ratio. The
+ * picture fades in once it has loaded (instantly under reduced motion).
  * `style` applies to the box, and `ref` and the other props go to the `img`.
  */
 export function Image({
@@ -42,6 +43,8 @@ export function Image({
   // The failed source, not a flag: a new `src` gets a new try without an effect to reset it.
   const [failedSrc, setFailedSrc] = React.useState<string>()
   const failed = failedSrc === src
+  // The loaded source, for the same reason: the fade follows the `src` the picture shows.
+  const [loadedSrc, setLoadedSrc] = React.useState<string>()
   const filled = aspectRatio !== undefined
   const box = [s.root, imageRadii[borderRadius], style]
 
@@ -61,11 +64,20 @@ export function Image({
       {...props}
       src={src}
       alt={alt}
+      onLoad={(event) => {
+        props.onLoad?.(event)
+        setLoadedSrc(src)
+      }}
       onError={(event) => {
         props.onError?.(event)
         setFailedSrc(src)
       }}
-      {...stylex.props(s.image, filled && s.imageFill, imageDisplayModes[displayMode])}
+      {...stylex.props(
+        s.image,
+        loadedSrc === src && s.imageLoaded,
+        filled && s.imageFill,
+        imageDisplayModes[displayMode]
+      )}
     />
   )
 

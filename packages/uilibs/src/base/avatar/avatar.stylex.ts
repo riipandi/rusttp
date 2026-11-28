@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import { colors, fixedColors } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
-import { fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
+import { duration, easing, fontFamily, fontWeight, fontSize } from '../../styles/tokens.stylex'
 
 export const avatarStyles = stylex.create({
   root: {
@@ -21,10 +21,16 @@ export const avatarStyles = stylex.create({
   },
   // The image and fallback take the root's corners, so `squared` reaches them.
   squared: { borderRadius: radius.medium },
+  // The image mounts once it has loaded, so it fades in from `data-starting-style`; the fallback
+  // it replaces leaves at once. Reduced motion shows the picture without the fade.
   image: {
     borderRadius: 'inherit',
     height: '100%',
     objectFit: 'cover',
+    opacity: { default: 1, '[data-starting-style]': 0, '[data-ending-style]': 0 },
+    transitionDuration: duration.medium,
+    transitionProperty: { default: 'opacity', '@media (prefers-reduced-motion: reduce)': 'none' },
+    transitionTimingFunction: easing.decelerate,
     width: '100%'
   },
   fallback: {
