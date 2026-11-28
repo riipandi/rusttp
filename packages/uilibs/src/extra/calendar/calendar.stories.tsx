@@ -798,9 +798,9 @@ export const ArabicLeftToRight: Story = {
     const heading = canvasElement.querySelector<HTMLElement>('[role="status"]')!
     await expect(heading.textContent).toMatch(/\p{Script=Arabic}/u)
     await document.fonts.load('1em "Mona Sans Variable"', heading.textContent)
+    // Chromium and Firefox serialize the range as `U+600-6FF`, WebKit as `U+0600-06FF`.
     const arabicFace = [...document.fonts].find(
-      (face) =>
-        face.family.includes('Mona Sans Variable') && face.unicodeRange.startsWith('U+600-6FF')
+      (face) => face.family.includes('Mona Sans Variable') && /^U\+0*600-/i.test(face.unicodeRange)
     )
     await expect(arabicFace?.status).toBe('loaded')
   }
