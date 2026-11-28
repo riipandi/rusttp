@@ -738,12 +738,10 @@ export const Direction: Story = {
   }
 }
 
-const arrowFlip = (canvas: { getByRole: (role: 'button', o: { name: RegExp }) => HTMLElement }) =>
-  [/previous month/i, /next month/i].map(
-    (name) =>
-      new DOMMatrix(
-        getComputedStyle(canvas.getByRole('button', { name }).querySelector('svg')!).transform
-      ).a
+/** The two month arrows' horizontal scale; found by position, since a locale renames them. */
+const arrowFlip = (canvasElement: HTMLElement) =>
+  [...canvasElement.querySelectorAll('nav button svg')].map(
+    (svg) => new DOMMatrix(getComputedStyle(svg).transform).a
   )
 
 /** The root sizes to its content, not to the parent: a 32 px day cell at every canvas width. */
@@ -777,21 +775,33 @@ export const RightToLeft: Story = {
       <Calendar mode='single' />
     </div>
   ),
-  play: async ({ canvas, canvasElement }) => {
-    await expect(arrowFlip(canvas)).toEqual([-1, -1])
+  play: async ({ canvasElement }) => {
+    await expect(arrowFlip(canvasElement)).toEqual([-1, -1])
     await hugsContent(canvasElement)
   }
 }
 
-/** The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows. */
+/**
+ * The language alone does not flip anything: Arabic text in a left-to-right page keeps its arrows.
+ * The text itself comes from `locale` (`lang` sets only the attribute), and the glyphs from the
+ * Arabic `@font-face` of `Mona Sans Variable` in `assets/fontface.css`, not from the OS.
+ */
 export const ArabicLeftToRight: Story = {
   render: () => (
     <div dir='ltr'>
-      <Calendar mode='single' lang='ar' />
+      <Calendar mode='single' lang='ar' locale={arSA} />
     </div>
   ),
-  play: async ({ canvas, canvasElement }) => {
-    await expect(arrowFlip(canvas)).toEqual([1, 1])
+  play: async ({ canvasElement }) => {
+    await expect(arrowFlip(canvasElement)).toEqual([1, 1])
     await hugsContent(canvasElement)
+    const heading = canvasElement.querySelector<HTMLElement>('[role="status"]')!
+    await expect(heading.textContent).toMatch(/\p{Script=Arabic}/u)
+    await document.fonts.load('1em "Mona Sans Variable"', heading.textContent)
+    const arabicFace = [...document.fonts].find(
+      (face) =>
+        face.family.includes('Mona Sans Variable') && face.unicodeRange.startsWith('U+600-6FF')
+    )
+    await expect(arabicFace?.status).toBe('loaded')
   }
 }
