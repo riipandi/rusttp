@@ -1,6 +1,6 @@
 # Agents Documentation Index
 
-updated: 2026-11-27T14:25:00+07:00
+updated: 2026-11-28T19:14:14+07:00
 
 Agent-only documentation. Start at the repo root `AGENTS.md` (workflow rules), then the core documents below. Everything else is reference, history, or contract — navigate from here.
 
@@ -46,7 +46,9 @@ The other entries in `.agents/skills/` are links to skills shipped by pnpm packa
 
 A plan is a contract: frontmatter `status`, decisions with rejected alternatives, phases with commits. Never start, resume, or continue one without the owner's explicit instruction. Completed plans archive flat to `.agents/docs/archive/`.
 
-No live plan.
+| File | Status | Subject |
+| --- | --- | --- |
+| `plan-00015-uilibs-storybook-and-ui-polish.md` | in-progress (approved by riipandi 2026-11-28; branch `fix/uilibs-storybook-polish`) | 13 owner items (Storybook Docs `of` error from a stale-cached static build, ButtonGroup, Calendar, Toast, Tabs, ToggleGroup, Resizable, data grid in a Card, Arabic face, position stories, micro animations): 23 phases, 3 waves, 7 tracks. |
 
 Archived: `plan-00014-uilibs-implementation-audit-remediation.md` (done 2026-11-27), `plan-00013-uilibs-grid-and-gate-leftovers.md` (done 2026-11-26), `plan-00012-uilibs-data-grid-audit-remediation.md` (done 2026-11-26), `plan-00001-uilibs-improvement.md`, `plan-00002-webapp-forms-formisch.md` (both done, 2026-11-20), `plan-00003-admin-sidebar-followups.md` (done, 2026-11-21), and `plan-00004-ui-audit-remediation.md`, `plan-00005-ui-leftovers-remediation.md`, `plan-00006-webapp-unit-tests.md`, `plan-00007-agent-docs-restructure.md`, `plan-00008-uilibs-stories-by-prop.md` (all done, 2026-11-22) `plan-00009-uilibs-reshaped-props-docs.md` (done 2026-11-24), and `plan-00010-uilibs-playground-controls.md` (done 2026-11-24) are in `.agents/docs/archive/`.
 
