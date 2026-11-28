@@ -1,5 +1,5 @@
 import { Canvas, Meta } from '@storybook/addon-docs/blocks'
-import * as ProviderStories from '../../src/base/provider.stories'
+import * as ProviderStories from '../../src/contracts/rtl.stories'
 
 <Meta title='Theming' parameters={{ viewMode: 'docs', previewTabs: { canvas: { hidden: true } } }} />
 
@@ -196,7 +196,7 @@ To force a whole subtree to a fixed palette without a scope, apply `darkColors` 
 
 Two things make a form read right to left, and `UIProvider` is only one of them. The `dir` attribute, on the document or a subtree, turns the layout, the logical StyleX properties (`marginInlineStart`, `insetInlineEnd`), and the text. `UIProvider direction='rtl'` tells the Base UI parts that read a direction in script, so a slider's `ArrowLeft` moves toward the maximum.
 
-<Canvas of={ProviderStories.RightToLeft} />
+<Canvas of={ProviderStories.ProviderDirection} />
 
 - Set both. `dir` alone leaves a slider's keys running left to right; `direction` alone leaves the layout and the text as they were.
 - The Storybook toolbar's direction toggle sets both for any story.

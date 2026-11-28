@@ -26,12 +26,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '../base/dropdown-menu'
-import { Field, FieldDescription, FieldLabel } from '../base/field'
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '../base/field'
 import { Input } from '../base/input'
 import { NumberField, NumberFieldGroup } from '../base/number-field'
 import { OTPField, OTPFieldGroup, OTPFieldSlot } from '../base/otp-field'
 import { Progress, ProgressLabel, ProgressValue } from '../base/progress'
+import { UIProvider } from '../base/provider'
 import { ScrollArea } from '../base/scroll-area'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../base/select'
+import { Slider } from '../base/slider'
 import { Switch } from '../base/switch'
 import { ToggleGroup, ToggleGroupItem } from '../base/toggle-group'
 import { DataGrid, DataGridContainer, DataGridScrollArea, DataGridTable } from '../data-grid'
@@ -64,6 +67,7 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../extra/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../extra/table'
 import { container, unit } from '../styles/tokens.stylex'
+import { pressUntil } from './keyboard'
 
 const meta = {
   title: 'Contracts/Right to left',
@@ -85,7 +89,8 @@ const styles = stylex.create({
   frame: { maxWidth: container.large, width: '100%' },
   scroll: { height: unit.x16, width: container.xxsmall },
   wide: { width: 800 },
-  stack: { display: 'flex', flexDirection: 'column', gap: unit.x4, maxWidth: container.large }
+  stack: { display: 'flex', flexDirection: 'column', gap: unit.x4, maxWidth: container.large },
+  form: { maxWidth: container.small }
 })
 
 /** The document carries `dir`, so a portaled popup sits in the same direction as the page. */
@@ -561,5 +566,113 @@ export const PinnedColumns: Story = {
     // The start column sits on the right, so its divider is on the left.
     await expect(offset(start)).toBe('1')
     await expect(offset(end)).toBe('-1')
+  }
+}
+
+const houses = [
+  { label: 'Gryffindor', value: 'gryffindor' },
+  { label: 'Hufflepuff', value: 'hufflepuff' },
+  { label: 'Ravenclaw', value: 'ravenclaw' },
+  { label: 'Slytherin', value: 'slytherin' }
+]
+
+/**
+ * A right-to-left form needs two things, and `UIProvider` is one of them. The `dir` attribute on
+ * the document (or a subtree) makes the layout, the logical StyleX properties, and the text run
+ * right to left. `UIProvider direction='rtl'` tells the Base UI parts that read a direction in
+ * script: a slider's arrow keys, a menu's submenu keys, a tab list's roving focus.
+ */
+export const ProviderDirection: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<div dir='rtl'>
+  <UIProvider direction='rtl'>
+    <FieldGroup>
+      <Field>
+        <FieldLabel>Wizard name</FieldLabel>
+        <Input defaultValue='هيرميون' />
+      </Field>
+      <Field>
+        <FieldLabel>House</FieldLabel>
+        <Select items={houses} defaultValue='ravenclaw'>…</Select>
+      </Field>
+      <Field>
+        <FieldLabel>Spell power</FieldLabel>
+        <Slider defaultValue={[25]} aria-label='Spell power' />
+        <FieldDescription>…</FieldDescription>
+      </Field>
+    </FieldGroup>
+  </UIProvider>
+</div>`
+      }
+    }
+  },
+  render: () => (
+    <div dir='rtl' lang='ar'>
+      <UIProvider direction='rtl'>
+        <FieldGroup style={styles.form}>
+          <Field>
+            <FieldLabel>Wizard name</FieldLabel>
+            <Input defaultValue='هيرميون' />
+          </Field>
+          <Field>
+            <FieldLabel>House</FieldLabel>
+            <Select items={houses} defaultValue='ravenclaw'>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {houses.map(({ label, value }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field>
+            <FieldLabel>Spell power</FieldLabel>
+            <Slider defaultValue={[25]} aria-label='Spell power' />
+            <FieldDescription>The thumb starts at the right edge</FieldDescription>
+          </Field>
+        </FieldGroup>
+      </UIProvider>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    // The text runs right to left, and the select's chevron sits at the end, which is the left.
+    const input = canvas.getByRole('textbox', { name: 'Wizard name' })
+    await expect(getComputedStyle(input).direction).toBe('rtl')
+    const select = canvas.getByRole('combobox', { name: 'House' })
+    const chevron = select.querySelector('svg')
+    if (!chevron) throw new Error('No chevron in the select trigger')
+    await expect(centerX(chevron.getBoundingClientRect())).toBeLessThan(
+      centerX(select.getBoundingClientRect())
+    )
+
+    // The slider's minimum is at the right: a value of 25 puts the thumb right of the middle.
+    const thumb = canvas.getByRole('slider', { name: 'Spell power' })
+    // The input sits in the thumb, and the thumb in the control that spans the track.
+    const control = thumb.closest('[data-orientation]')?.parentElement
+    if (!control) throw new Error('No slider control around the thumb')
+    await expect(centerX(thumb.getBoundingClientRect())).toBeGreaterThan(
+      centerX(control.getBoundingClientRect())
+    )
+
+    // `direction='rtl'` reaches Base UI: ArrowLeft moves the thumb toward the maximum.
+    thumb.focus()
+    await expect(thumb).toHaveFocus()
+    await pressUntil('{ArrowLeft}', () => expect(thumb).toHaveAttribute('aria-valuenow', '26'), {
+      when: () => thumb.getAttribute('aria-valuenow') === '25'
+    })
+
+    // The select still opens from the keyboard and lists every house.
+    select.focus()
+    await pressUntil('{Enter}', () => expect(screen.getByRole('listbox')).toBeVisible(), {
+      when: () => !screen.queryByRole('listbox')
+    })
+    await expect(screen.getAllByRole('option')).toHaveLength(houses.length)
+    await pressUntil('{Escape}', () => expect(screen.queryByRole('listbox')).toBeNull())
   }
 }

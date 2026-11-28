@@ -21,6 +21,8 @@ const styles = stylex.create({
 
 export default meta
 
+const px = (value: string) => Number.parseFloat(value)
+
 export const Playground: Story = {
   parameters: {
     controls: { disable: false, include: ['disabled', 'loopFocus'] },
@@ -106,7 +108,6 @@ export const WithToggleGroup: Story = {
     const first = canvas.getByRole('button', { name: 'Align left' })
     const last = canvas.getByRole('button', { name: 'Align right' })
     const accio = canvas.getByRole('button', { name: 'Accio' })
-    const px = (value: string) => Number.parseFloat(value)
     const outer = getComputedStyle(toolbar)
     const inner = getComputedStyle(first)
     // Concentric corners: a nested corner is the outer radius less the padding between them.
