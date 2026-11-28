@@ -38,6 +38,8 @@ Built on Base UI [Toast](https://base-ui.com/react/components/toast). Props not 
 
 ### Colors
 
+A colored toast shows its status in the edge, a faded tint of the surface, the title, and a glyph before it (`primary` an info mark, `positive` a check, `warning` a triangle, `critical` an alert circle). The description and the buttons keep their neutral text, so it holds 4.5:1 on the tint. A `neutral` toast has no glyph.
+
 <Canvas of={Stories.Colors} />
 
 ### Action
@@ -87,9 +89,9 @@ Each toast is a `dialog` named by its title; a toast without a title is named by
 
 The options of `toast`, `toast.success`, and `toast.error` are Base UI's toast options without `title` and `data`, plus one:
 
-| Prop    | Description                                                                                                                                                       |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The accent color. `success` and `error` toasts imply `positive` and `critical`. Default `neutral`. |
+| Prop    | Description                                                                                                                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color` | `neutral`, `primary`, `positive`, `warning`, `critical` <br /> The status color: edge, tint, title, and glyph. `success` and `error` toasts imply `positive` and `critical`. Default `neutral`. |
 
 ## Caveats
 

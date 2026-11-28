@@ -35,10 +35,12 @@
  */
 
 import { Toast as BaseToast } from '@base-ui/react/toast'
+import { CircleAlert, CircleCheck, Info, TriangleAlert } from '@keyline-icons/react'
 import * as stylex from '@stylexjs/stylex'
 import * as React from 'react'
+import { glyphSize } from '../../styles/glyph'
 import { type, descriptionText } from '../../styles/type.stylex'
-import type { ColorRole, StyleProp } from '../../styles/types'
+import type { ColorRole, Glyph, StyleProp } from '../../styles/types'
 import { focusRing } from '../../styles/utils.stylex'
 import { usePortalContainer } from '../../theme/theme-scope.context'
 import { type CloseLabels, CloseButton } from '../dialog/close-button'
@@ -61,6 +63,14 @@ export type ToasterPosition =
 type ToastAddOptions = Omit<Parameters<typeof toastManager.add>[0], 'title' | 'data'> & {
   /** The color role of the toast's accent; `neutral` unless the type implies one. */
   color?: ToastColor
+}
+
+// The mark each status carries beside the title; a neutral toast has none.
+const colorGlyphs: Partial<Record<ToastColor, Glyph>> = {
+  primary: Info,
+  positive: CircleCheck,
+  warning: TriangleAlert,
+  critical: CircleAlert
 }
 
 const colorNames: readonly string[] = ['neutral', 'primary', 'positive', 'warning', 'critical']
@@ -125,25 +135,35 @@ function ToastList({
   labels?: Partial<ToasterLabels>
 }) {
   const { toasts } = BaseToast.useToastManager()
-  return toasts.map((t) => (
-    <BaseToast.Root
-      key={t.id}
-      toast={t}
-      swipeDirection={swipeDirection}
-      // A toast is a dialog and needs a name; the title gives it one when there is a title.
-      aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
-      {...stylex.props(s.root, top ? s.rootTop : s.rootBottom, colors[colorOf(t.data, t.type)])}
-    >
-      <div {...stylex.props(s.content)}>
-        <div {...stylex.props(s.text)}>
-          <BaseToast.Title {...stylex.props(s.title)} />
-          <BaseToast.Description {...stylex.props(type.body2, descriptionText.root)} />
+  return toasts.map((t) => {
+    const color = colorOf(t.data, t.type)
+    const StatusGlyph = colorGlyphs[color]
+    return (
+      <BaseToast.Root
+        key={t.id}
+        toast={t}
+        swipeDirection={swipeDirection}
+        // A toast is a dialog and needs a name; the title gives it one when there is a title.
+        aria-label={t.title ? undefined : (labels?.notification ?? 'Notification')}
+        {...stylex.props(s.root, top ? s.rootTop : s.rootBottom, colors[color])}
+      >
+        <div {...stylex.props(s.content)}>
+          {StatusGlyph ? (
+            // The title carries the meaning, so the glyph is decoration.
+            <span {...stylex.props(s.glyph)}>
+              <StatusGlyph size={glyphSize.large} aria-hidden />
+            </span>
+          ) : null}
+          <div {...stylex.props(s.text)}>
+            <BaseToast.Title {...stylex.props(s.title)} />
+            <BaseToast.Description {...stylex.props(type.body2, descriptionText.root)} />
+          </div>
+          <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
+          <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
         </div>
-        <BaseToast.Action {...stylex.props(focusRing.root, s.action)} />
-        <BaseToast.Close render={<CloseButton labels={labels} style={s.close} />} />
-      </div>
-    </BaseToast.Root>
-  ))
+      </BaseToast.Root>
+    )
+  })
 }
 
 /** `style` is the viewport's StyleX style, merged last. */

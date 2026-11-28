@@ -92,6 +92,14 @@ export const toastStyles = stylex.create({
     transitionProperty: 'opacity',
     width: '100%'
   },
+  // The status glyph: one title line tall, so the mark centres on the title's first line.
+  glyph: {
+    alignItems: 'center',
+    display: 'flex',
+    flexShrink: 0,
+    height: fontLineHeight.body2,
+    justifyContent: 'center'
+  },
   text: {
     display: 'flex',
     flex: 1,
@@ -142,10 +150,29 @@ export const toastPositions = stylex.create({
   'bottom-right': { bottom: unit.x4, right: unit.x4 }
 })
 
+// A status shows in four quiet places: the edge, a faded tint of the surface, and the color of the
+// title and the glyph (which take the toast's `color`). The description and the buttons keep their
+// neutral text so it holds its contrast on the tint.
 export const toastColors = stylex.create({
   neutral: {},
-  primary: { borderColor: colors.borderPrimary },
-  positive: { borderColor: colors.borderPositive },
-  warning: { borderColor: colors.borderWarning },
-  critical: { borderColor: colors.borderCritical }
+  primary: {
+    backgroundColor: colors.backgroundPrimaryFaded,
+    borderColor: colors.borderPrimary,
+    color: colors.foregroundPrimary
+  },
+  positive: {
+    backgroundColor: colors.backgroundPositiveFaded,
+    borderColor: colors.borderPositive,
+    color: colors.foregroundPositive
+  },
+  warning: {
+    backgroundColor: colors.backgroundWarningFaded,
+    borderColor: colors.borderWarning,
+    color: colors.foregroundWarning
+  },
+  critical: {
+    backgroundColor: colors.backgroundCriticalFaded,
+    borderColor: colors.borderCritical,
+    color: colors.foregroundCritical
+  }
 })

@@ -305,6 +305,29 @@ export const Position: Story = {
 
 const colorNames = ['neutral', 'primary', 'positive', 'warning', 'critical'] as const
 
+// The sRGB bytes of `layers` painted over each other, read back from a canvas: it resolves `oklch()`
+// and alpha the way the page does, in every engine.
+function paint(...layers: string[]) {
+  const context = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+  if (!context) throw new Error('No canvas context')
+  for (const layer of layers) {
+    context.fillStyle = layer
+    context.fillRect(0, 0, 1, 1)
+  }
+  return Array.from(context.getImageData(0, 0, 1, 1).data.slice(0, 3))
+}
+
+function contrast(foreground: number[], background: number[]) {
+  const [fg, bg] = [foreground, background].map((rgb) => {
+    const [r = 0, g = 0, b = 0] = rgb.map((v) => {
+      const c = v / 255
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+    })
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  })
+  return (Math.max(fg ?? 0, bg ?? 0) + 0.05) / (Math.min(fg ?? 0, bg ?? 0) + 0.05)
+}
+
 export const Colors: Story = {
   parameters: {
     docs: {
@@ -325,7 +348,13 @@ export const Colors: Story = {
           <Button
             key={color}
             variant='outline'
-            onClick={() => toast(`Owl post: ${color}`, { color, timeout: 0 })}
+            onClick={() =>
+              toast(`Owl post: ${color}`, {
+                color,
+                description: 'The owl waits by the window.',
+                timeout: 0
+              })
+            }
           >
             {color}
           </Button>
@@ -335,21 +364,45 @@ export const Colors: Story = {
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
-    const edge = async (color: (typeof colorNames)[number]) => {
+    // A status shows in the edge, the surface tint, the title, and a leading glyph.
+    const read = async (color: (typeof colorNames)[number]) => {
       await userEvent.click(canvas.getByRole('button', { name: color }))
       const title = await screen.findByText(`Owl post: ${color}`)
+      const description = screen.getByText('The owl waits by the window.')
       const root = title.closest('[role="dialog"]')
       if (!root) throw new Error('Toast root not found')
-      const edgeColor = getComputedStyle(root).borderTopColor
+      const style = getComputedStyle(root)
+      const glyph = root.querySelector('svg:not(button svg)')
+      const surface = paint(style.backgroundColor)
+      const reading = {
+        edge: style.borderTopColor,
+        surface: style.backgroundColor,
+        title: getComputedStyle(title).color,
+        glyph: glyph ? getComputedStyle(glyph).color : null,
+        titleContrast: contrast(paint(getComputedStyle(title).color), surface),
+        descriptionContrast: contrast(paint(getComputedStyle(description).color), surface)
+      }
       toast.close()
       await waitFor(() => expect(screen.queryByText(`Owl post: ${color}`)).toBeNull())
-      return edgeColor
+      return reading
     }
-    // A colored toast has its own accent; the neutral one keeps the quiet edge.
-    const neutral = await edge('neutral')
+    const neutral = await read('neutral')
+    // The neutral toast is the quiet one: no glyph.
+    await expect(neutral.glyph).toBeNull()
+    const seen = new Set<string>()
     for (const color of colorNames.slice(1)) {
-      await expect(await edge(color)).not.toBe(neutral)
+      const reading = await read(color)
+      await expect(reading.edge).not.toBe(neutral.edge)
+      await expect(reading.surface).not.toBe(neutral.surface)
+      await expect(reading.title).not.toBe(neutral.title)
+      // The glyph is in the title's color, and the text keeps its contrast on the tint.
+      await expect(reading.glyph).toBe(reading.title)
+      await expect(reading.titleContrast).toBeGreaterThanOrEqual(4.5)
+      await expect(reading.descriptionContrast).toBeGreaterThanOrEqual(4.5)
+      seen.add(`${reading.surface}|${reading.title}`)
     }
+    // Four roles, four different tints and title colors.
+    await expect(seen.size).toBe(colorNames.length - 1)
   }
 }
 
