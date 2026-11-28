@@ -1,31 +1,31 @@
 ---
-status: in-progress
+status: done
 created: 2026-11-28T18:53:20+07:00
-updated: 2026-11-28T19:14:14+07:00
+updated: 2026-11-28T22:33:35+07:00
 phases:
-    - { id: 1, title: "W1-A The static Storybook revalidates its unhashed files (item 1, cause of the Docs `of` error)", status: pending, note: "—" }
-    - { id: 2, title: "W1-A The data grid docs entry is named Docs (item 11)", status: pending, note: "—" }
-    - { id: 3, title: "W1-A The UIProvider story leaves the component list (item 7)", status: pending, note: "—" }
-    - { id: 4, title: "W1-A The docs container follows the live theme (item 13)", status: pending, note: "—" }
-    - { id: 5, title: "W1-A A guard renders every docs entry and toggles the theme (items 1, 13)", status: pending, note: "—" }
-    - { id: 6, title: "W1-B The Toaster takes a position; the Position story shows it (items 3, 6)", status: pending, note: "—" }
-    - { id: 7, title: "W1-B A toast carries its status in tint, glyph, and title (item 3)", status: pending, note: "—" }
-    - { id: 8, title: "W1-B A loading toast shows a spinner that hands over to its outcome (item 4)", status: pending, note: "—" }
-    - { id: 9, title: "W1-B Tabs slide their indicator and fade their panel (item 2)", status: pending, note: "—" }
-    - { id: 10, title: "W1-C A text child splits a ButtonGroup into joined runs (item 1, ButtonGroup)", status: pending, note: "—" }
-    - { id: 11, title: "W1-C The ButtonGroup defaults story stops mixing sizes (item 1, ButtonGroup)", status: pending, note: "—" }
-    - { id: 12, title: "W1-C Toolbar, Toggle, and ToggleGroup corners are concentric (item 5)", status: pending, note: "—" }
-    - { id: 13, title: "W1-C The Resizable handle is quieter at rest (item 10)", status: pending, note: "—" }
-    - { id: 14, title: "W1-D A Calendar is as wide as its content (item 1, Calendar)", status: pending, note: "—" }
-    - { id: 15, title: "W1-D Arabic text has an Arabic face, and the Arabic story has Arabic text (item 8)", status: pending, note: "—" }
-    - { id: 16, title: "W1-D A data grid inside a Card has one padding (item 12)", status: pending, note: "—" }
-    - { id: 17, title: "W2-E Position stories share one centered stage (item 6)", status: pending, note: "—" }
-    - { id: 18, title: "W2-F Micro animations for the form controls (item 9)", status: pending, note: "—" }
-    - { id: 19, title: "W2-G Micro animations for display and navigation parts (item 9)", status: pending, note: "—" }
-    - { id: 20, title: "W3 Docs sync (docs/)", status: pending, note: "—" }
-    - { id: 21, title: "W3 Agent docs sync for waves 1 and 2", status: pending, note: "—" }
-    - { id: 22, title: "W3 Ledger close and handover", status: pending, note: "—" }
-    - { id: 23, title: "W3 Final validation", status: pending, note: "—" }
+    - { id: 1, title: "W1-A The static Storybook revalidates its unhashed files (item 1, cause of the Docs `of` error)", status: committed, note: "`dcb049f`: red: the new test failed with `max-age=300, private`; green 3/3, `curl` on the running binary shows `no-cache` and a 304; with the old headers the Dialog Docs `of` error survives a rebuild, with the fix it renders" }
+    - { id: 2, title: "W1-A The data grid docs entry is named Docs (item 11)", status: committed, note: "`5438812`: red: 80 docs entries, `data-grid` not named Docs; green 80/80, id `data-grid-basics--docs`, old id left only in the plan" }
+    - { id: 3, title: "W1-A The UIProvider story leaves the component list (item 7)", status: committed, note: "`a778bbe`: no `base-components-uiprovider--*` entry; `ProviderDirection` in the RTL contracts 30/30 in both themes; mutation `direction='ltr'` fails its play; the hash is a778bbe because track C amended the commit once (a toolbar lint fix rode in)" }
+    - { id: 4, title: "W1-A The docs container follows the live theme (item 13)", status: committed, note: "`992bacb`: D5 OVERTURNED: item 13 reproduced on the cache-fixed build (code defect: the iframe URL never carries the default `system`); the container reads the preview store; toggle matrix 6 failures before, 0 of 36 after, both OS schemes" }
+    - { id: 5, title: "W1-A A guard renders every docs entry and toggles the theme (items 1, 13)", status: committed, note: "`fb91e93`: `check:docs:render`: stale-index copy reports AlertDialog, Dialog, Sheet; a pre-phase-4 container reports the System step; current build 80 of 80 in about 35 s; wired into the `checks` job; `actionlint` not installed (issue-00011)" }
+    - { id: 6, title: "W1-B The Toaster takes a position; the Position story shows it (items 3, 6)", status: committed, note: "`1c62d4c`: red: top-left toast at `expected 770 to be close to 16`; six positions, default swipe follows the edge; `Position` buttons moved mid-page; `base/toast/toast` added to `physicalFiles`" }
+    - { id: 7, title: "W1-B A toast carries its status in tint, glyph, and title (item 3)", status: committed, note: "`e313fac`: red: same surface for every colour; tint, glyph, title colour; 4.5:1 asserted for title and description on the tint; dark tints are close to the surface (token L 0.24 equals the overlay), no token changed" }
+    - { id: 8, title: "W1-B A loading toast shows a spinner that hands over to its outcome (item 4)", status: committed, note: "`8661d7b`: red: no `status` Loading element; spinner in the glyph slot, width unchanged across the hand-over; `labels.loading` added; Toast now imports `Spinner` from `extra` (rule text updated)" }
+    - { id: 9, title: "W1-B Tabs slide their indicator and fade their panel (item 2)", status: committed, note: "`b523a92`: red: `No indicator for pills`; six variants measured; Firefox and WebKit pass; reduced motion and forced colors asserted from the shipped rules; `base/tabs/tabs` added to `physicalFiles`" }
+    - { id: 10, title: "W1-C A text child splits a ButtonGroup into joined runs (item 1, ButtonGroup)", status: committed, note: "`b6718f0`: red: `expected '0px' to be '8px'`; text wrapped in a centred span, runs get their own positions" }
+    - { id: 11, title: "W1-C The ButtonGroup defaults story stops mixing sizes (item 1, ButtonGroup)", status: committed, note: "`33164da`: red: `expected 40 to be 32`; three `Axis` rows (a five-member group overflowed 390 px)" }
+    - { id: 12, title: "W1-C Toolbar, Toggle, and ToggleGroup corners are concentric (item 5)", status: committed, note: "`9728d06`: red: `expected 10 to be 14`; Toolbar 12, Toggle and joined ends 8, story toggles `small`; a standalone Toggle is now 8 px" }
+    - { id: 13, title: "W1-C The Resizable handle is quieter at rest (item 10)", status: committed, note: "`c63d6e1`: red: contrast `4.29` vs `< 2`; D13 FALLBACK FIRED: `borderNeutral` is 1.32:1, so `line` keeps `borderControl` at rest and only the rail behind the grips is quiet; hover and drag measured in Playwright" }
+    - { id: 14, title: "W1-D A Calendar is as wide as its content (item 1, Calendar)", status: committed, note: "`1636211`: red: `expected 390 to be less than 390`; `width: fit-content; maxWidth: 100%`" }
+    - { id: 15, title: "W1-D Arabic text has an Arabic face, and the Arabic story has Arabic text (item 8)", status: committed, note: "`4823823`, `1891b7b`: red: `expected undefined to be 'loaded'`; Arabic `@font-face` plus `locale={arSA}`; WebKit serializes the range as `U+0600-06FF`, fixed by `1891b7b`; Arabic weekday names in 32 px cells nearly touch (not fixed)" }
+    - { id: 16, title: "W1-D A data grid inside a Card has one padding (item 12)", status: committed, note: "`f22aa60`: red: `expected 61 to be close to 41`; `CardContent flush` and `dataGridCardEdge`; the Add row takes the edge; basics stories now sit 8 px lower (Card's own gap)" }
+    - { id: 17, title: "W2-E Position stories share one centered stage (item 6)", status: committed, note: "`8198ba6`: red: tooltip play `the popup is not on the top of its trigger`; `PlacementStage` and `expectPlacedOn`; the three anchored stories run at desktop width (issue-00011)" }
+    - { id: 18, title: "W2-F Micro animations for the form controls (item 9)", status: committed, note: "`9a3bfae`: red: `expected 'all' to be 'opacity, transform'`; Checkbox and Radio marks, Button and Toggle press; DEVIATION: Meter needs no code (shares Progress's transition), a guard assertion instead" }
+    - { id: 19, title: "W2-G Micro animations for display and navigation parts (item 9)", status: committed, note: "`a1c81dc`, `6651b45`: red: three stories failed on `all`; Avatar and Image fade, Calendar day ease; `6651b45` merged the duplicated reduced-motion reader into `contracts/motion.ts`" }
+    - { id: 20, title: "W3 Docs sync (docs/)", status: done, note: "n/a: `rg -i \"uilibs|storybook|data grid|toast|calendar|tabs\" docs` is empty; no commit" }
+    - { id: 21, title: "W3 Agent docs sync for waves 1 and 2", status: committed, note: "`fbc0065`: frontend, backend, shape, architecture, the catalog, and the uilibs AGENTS.md; all seven docs-debt files folded in with Meter corrected" }
+    - { id: 22, title: "W3 Ledger close and handover", status: committed, note: "the closing commit `docs: close plan 00015 and write the handover`: issue-00011 filed (4 items), handover-00018, this plan and handover-00017 archived" }
+    - { id: 23, title: "W3 Final validation", status: done, note: "no fix needed, no commit. Chromium 1664 then 1678 (after wave 2), Firefox and WebKit over the touched areas 487 and 236, `just verify`, storybook:build, check:docs:render 80 of 80, entry JS 472.6 KB / 150.9 KB gzip, CSS 64.7 KB / 17.8 KB gzip; the final pass is recorded in the handover" }
 ---
 
 # Fix the Storybook defects and polish the uilibs UI — 13 items, 23 phases, three waves
