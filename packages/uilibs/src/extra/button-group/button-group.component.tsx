@@ -46,7 +46,8 @@ function flatten(children: React.ReactNode, path = ''): Member[] {
  * member: the group tells it its position through context, and the Button, Input, Select, and
  * InputGroup inside it square the corners they share and drop (or replace with a divider) the edge
  * they share. Because it travels through the React tree, a Button that a trigger renders, or that
- * sits in a Tooltip, is joined too. Fragments are opened up and text is left as it is.
+ * sits in a Tooltip, is joined too. Fragments are opened up. Text has no edge to join: it is
+ * centred between its neighbours and splits the group into runs, each joined on its own.
  */
 export function ButtonGroup({
   orientation = 'horizontal',
@@ -57,15 +58,37 @@ export function ButtonGroup({
   ...props
 }: ButtonGroupProps) {
   const members = flatten(children)
-  const count = members.filter((member) => React.isValidElement(member.node)).length
-  let index = -1
+  // A run is the consecutive element members between two text children.
+  const runs = members.map((member, at) => {
+    if (!React.isValidElement(member.node)) return null
+    let start = at
+    while (start > 0 && React.isValidElement(members[start - 1]?.node)) start -= 1
+    let end = at
+    while (end < members.length - 1 && React.isValidElement(members[end + 1]?.node)) end += 1
+    return { index: at - start, count: end - start + 1 }
+  })
   return (
     <div role='group' {...props} {...stylex.props(s.root, orientations[orientation], style)}>
-      {members.map(({ key, node }) => {
-        if (!React.isValidElement(node)) return node
-        index += 1
+      {members.map(({ key, node }, at) => {
+        const run = runs[at]
+        if (!run) {
+          // Whitespace between children is not content: keep it as it is.
+          return typeof node === 'string' && node.trim() === '' ? (
+            node
+          ) : (
+            <span key={key} {...stylex.props(s.textNode)}>
+              {node}
+            </span>
+          )
+        }
         const position: ButtonGroupPosition | null =
-          count === 1 ? null : index === 0 ? 'first' : index === count - 1 ? 'last' : 'middle'
+          run.count === 1
+            ? null
+            : run.index === 0
+              ? 'first'
+              : run.index === run.count - 1
+                ? 'last'
+                : 'middle'
         return (
           <ButtonGroupContext.Provider key={key} value={{ orientation, position, size, variant }}>
             {node}

@@ -210,6 +210,11 @@ export const FilledDividers: Story = {
   }
 }
 
+const middleLine = (el: Element) => {
+  const { top, height } = el.getBoundingClientRect()
+  return top + height / 2
+}
+
 /** Text between children is kept, not dropped. */
 export const KeepsText: Story = {
   name: 'Keeps text children',
@@ -221,8 +226,26 @@ export const KeepsText: Story = {
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('Accept')
-    await expect(canvas.getByRole('group', { name: 'Choices' })).toHaveTextContent('or')
+    const group = canvas.getByRole('group', { name: 'Choices' })
+    await expect(group).toHaveTextContent('Accept')
+    await expect(group).toHaveTextContent('or')
+    // Text has no edge to join, so it splits the group: each button is a standalone control with
+    // all four corners round, and the text sits on the buttons' middle line.
+    const accept = within(group).getByRole('button', { name: 'Accept' })
+    const decline = within(group).getByRole('button', { name: 'Decline' })
+    for (const button of [accept, decline]) {
+      const style = getComputedStyle(button)
+      for (const corner of [
+        style.borderTopLeftRadius,
+        style.borderTopRightRadius,
+        style.borderBottomLeftRadius,
+        style.borderBottomRightRadius
+      ]) {
+        await expect(corner).toBe('8px')
+      }
+      await expect(style.borderLeftWidth).toBe('1px')
+    }
+    await expect(middleLine(within(group).getByText('or'))).toBeCloseTo(middleLine(accept), 0)
   }
 }
 

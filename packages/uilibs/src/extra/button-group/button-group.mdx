@@ -18,7 +18,7 @@ A plain `div` with `role='group'`, not built on Base UI; `ButtonGroupSeparator` 
 
 ## Anatomy
 
-- **ButtonGroup:** the root. Each element child is one member; the group gives it its position through context.
+- **ButtonGroup:** the root. Each element child is one member; the group gives it its position through context. A text child is centred between its neighbours and splits the members into runs.
 - **ButtonGroupText:** optional static label, such as a prefix.
 - **ButtonGroupSeparator:** optional divider between children. Filled Buttons get a divider without it.
 - **Button:** a member that joins the group: Button, Input, Select trigger, or InputGroup.
@@ -85,5 +85,5 @@ It takes the `Separator` props, `color` and `inset` among them.
 - Each element child is one member, and a member is joined as a whole: a wrapper such as a menu or a Tooltip is fine, because its Button reads the group from the React tree, but a wrapper with two Buttons gives both the same position. Only Button, Input, Select trigger, InputGroup, and ButtonGroupText join; any other control is styled by hand.
 - The group travels through the React tree, portals included: a Button inside a popup that a member opens takes the group's `size` and `variant` and joins at the member's position. Keep action buttons out of a member's popup, or render them outside the group.
 - A bordered member (outline Button, Input) shares its neighbour's edge; a filled Button (`solid` or `faded`) gets a divider instead.
-- Fragments are opened up and text children are kept. A Fragment's children are members like the others.
+- Fragments are opened up. A bare text or number child is centred between its neighbours and is not a member: it splits the group into runs, and each run of element children is joined on its own, so `Accept or Decline` is two standalone buttons around the word. Use `ButtonGroupText` for a bordered label that joins. A Fragment's children are members like the others.
 - Give the group an `aria-label` when its purpose is not clear from the buttons.
