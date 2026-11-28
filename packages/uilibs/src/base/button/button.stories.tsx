@@ -12,6 +12,7 @@ import {
   expectDisabledLook,
   expectGlyphSizes
 } from '../../contracts/control-sizes'
+import { expectPressSink, mediaRules } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { colors, fixedColors } from '../../styles/colors.stylex'
 import { radius, unit } from '../../styles/tokens.stylex'
@@ -332,6 +333,24 @@ export const States: Story = {
     await expect(args.onClick).not.toHaveBeenCalled()
     // The spinner is hidden from assistive technology: one name, no second live region.
     await expect(canvas.queryByRole('status')).toBeNull()
+  }
+}
+
+/** A press sinks the button by 2%; reduced motion keeps the colors and drops the sink. */
+export const Press: Story = {
+  render: (args) => <Button onClick={args.onClick}>Open the cryptex</Button>,
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'Open the cryptex' })
+    const style = getComputedStyle(button)
+    await expect(style.transitionProperty).toBe('background-color, border-color, color, transform')
+    await expect(style.transitionDuration).toBe('0.15s, 0.15s, 0.15s, 0.1s')
+    await expect(style.transform).toBe('none')
+    await expectPressSink(button)
+    await expect(
+      mediaRules(button, 'prefers-reduced-motion').some(
+        (rule) => rule.style.transitionProperty === 'background-color, border-color, color'
+      )
+    ).toBe(true)
   }
 }
 

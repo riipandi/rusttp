@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 import { cellOf, expectBoxSizes, expectDisabledLook } from '../../contracts/control-sizes'
+import { mediaRules, pose } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { colors } from '../../styles/colors.stylex'
 import { fontFamily, fontSize, radius, stroke } from '../../styles/tokens.stylex'
@@ -285,6 +286,47 @@ export const Sizes: Story = {
       medium: [16, 16],
       large: [20, 20]
     })
+}
+
+const dot = (radio: HTMLElement) => radio.querySelector<HTMLElement>(':scope > span')
+
+/** The dot scales and fades in and out, and reduced motion keeps the fade and drops the scale. */
+export const Motion: Story = {
+  render: () => (
+    <RadioGroup defaultValue='Gryffindor' aria-label='House'>
+      {['Gryffindor', 'Slytherin'].map((house) => (
+        <label key={house} {...stylex.props(styles.label)}>
+          <RadioGroupItem value={house} /> {house}
+        </label>
+      ))}
+    </RadioGroup>
+  ),
+  play: async ({ canvas }) => {
+    const gryffindor = canvas.getByRole('radio', { name: 'Gryffindor' })
+    const slytherin = canvas.getByRole('radio', { name: 'Slytherin' })
+    const indicator = dot(gryffindor)
+    if (!indicator) throw new Error('A checked radio renders its dot')
+
+    const style = getComputedStyle(indicator)
+    await expect(style.transitionProperty).toBe('opacity, transform')
+    await expect(style.transitionDuration).toBe('0.15s')
+    for (const attribute of ['data-starting-style', 'data-ending-style']) {
+      await expect(pose(indicator, attribute)).toEqual({
+        opacity: '0',
+        transform: 'matrix(0.6, 0, 0, 0.6, 0, 0)'
+      })
+    }
+    await expect(
+      mediaRules(indicator, 'prefers-reduced-motion').some(
+        (rule) => rule.style.transitionProperty === 'opacity'
+      )
+    ).toBe(true)
+
+    // The old dot leaves when its exit is done, and the new one arrives.
+    await userEvent.click(slytherin)
+    await waitFor(() => expect(dot(gryffindor)).toBeNull())
+    await expect(dot(slytherin)).not.toBeNull()
+  }
 }
 
 /** Tab enters the group on the checked option, the arrow keys move focus and select, and Space selects the focused one. */

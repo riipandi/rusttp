@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import * as stylex from '@stylexjs/stylex'
 import { expect } from 'storybook/test'
+import { mediaRules } from '../../contracts/motion'
 import { Axis } from '../../contracts/story-axes'
 import { container } from '../../styles/tokens.stylex'
 import {
@@ -45,6 +46,17 @@ export const Playground: Story = {
     await expect(el).toHaveAttribute('aria-valuenow', '24')
     await expect(el).toHaveAttribute('aria-valuemax', '64')
     await expect(canvas.getByText('24 ml of 64 ml')).toBeInTheDocument()
+
+    // A new value slides the fill; reduced motion jumps to it.
+    // Base UI sizes the indicator with an inline width.
+    const fill = el.querySelector('[style*="width"]')
+    if (!fill) throw new Error('No indicator')
+    await expect(getComputedStyle(fill).transitionProperty).toBe('width')
+    await expect(
+      mediaRules(fill, 'prefers-reduced-motion').some(
+        (rule) => rule.style.transitionProperty === 'none'
+      )
+    ).toBe(true)
   }
 }
 

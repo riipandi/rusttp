@@ -3,6 +3,7 @@ import { colors, fixedColors, shadow } from '../../styles/colors.stylex'
 import { stroke } from '../../styles/tokens.stylex'
 import { unit, radius } from '../../styles/tokens.stylex'
 import { fontFamily, fontWeight, fontSize, fontLineHeight } from '../../styles/tokens.stylex'
+import { duration } from '../../styles/tokens.stylex'
 
 export const buttonStyles = stylex.create({
   root: {
@@ -43,6 +44,29 @@ export const buttonStyles = stylex.create({
     justifyContent: 'center',
     pointerEvents: 'none',
     position: 'absolute'
+  }
+})
+
+// The press sinks a button (or a Toggle) by 2% while the pointer or Space holds it. It composes after
+// `controlPress`, whose transition list it extends with `transform`; reduced motion keeps the color
+// transitions and drops the sink. A disabled or loading control does not move.
+export const buttonPress = stylex.create({
+  root: {
+    transform: {
+      default: 'none',
+      ':active:not(:disabled):not([data-disabled])': {
+        default: 'scale(0.98)',
+        '@media (prefers-reduced-motion: reduce)': 'none'
+      }
+    },
+    transitionDuration: {
+      default: `${duration.fast}, ${duration.fast}, ${duration.fast}, ${duration.rapid}`,
+      '@media (prefers-reduced-motion: reduce)': duration.fast
+    },
+    transitionProperty: {
+      default: 'background-color, border-color, color, transform',
+      '@media (prefers-reduced-motion: reduce)': 'background-color, border-color, color'
+    }
   }
 })
 

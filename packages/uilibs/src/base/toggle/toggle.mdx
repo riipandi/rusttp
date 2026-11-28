@@ -41,6 +41,12 @@ Built on Base UI [Toggle](https://base-ui.com/react/components/toggle). Props no
 
 <Canvas of={Stories.States} />
 
+### Press
+
+A `Toggle` sinks to 98% in 100ms while it is held, as a `Button` does, and `prefers-reduced-motion` drops the sink.
+
+<Canvas of={Stories.Press} />
+
 ## Accessibility
 
 A `Toggle` is a `button` with `aria-pressed`. A toggle with only an icon has no name, so give it an `aria-label`. The `Keyboard` story walks the table below, and `States` checks the pressed and disabled markup.
