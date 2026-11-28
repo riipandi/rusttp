@@ -163,6 +163,84 @@ export const Variants: Story = {
   }
 }
 
+/** A CSS color as sRGB over the colors behind it, the way the eye sees it: the browser does the parsing. */
+function over(...layers: string[]) {
+  const context = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+  if (!context) throw new Error('No 2D canvas')
+  for (const layer of layers) {
+    context.fillStyle = layer
+    context.fillRect(0, 0, 1, 1)
+  }
+  return Array.from(context.getImageData(0, 0, 1, 1).data.slice(0, 3))
+}
+
+function luminance(rgb: number[]) {
+  const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+    const value = channel / 255
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+function contrast(a: number[], b: number[]) {
+  const [light = 0, dark = 0] = [luminance(a), luminance(b)].toSorted((x, y) => y - x)
+  return (light + 0.05) / (dark + 0.05)
+}
+
+/**
+ * At rest the rail behind a grip is a hairline in the panel edges' register, and the part that says
+ * "drag me" meets 3:1 against the panels: the grip, or the line when there is no grip. Hover and
+ * drag are CSS states that synthetic events cannot raise; the screenshots cover them.
+ */
+export const RestingContrast: Story = {
+  name: 'Handle contrast at rest',
+  parameters: { canvas: 'auto' },
+  render: () => (
+    <Axis axis='variant' rows={handleVariants}>
+      {(variant) => (
+        <div {...stylex.props(styles.box)}>
+          <ResizablePanelGroup style={styles.frame}>
+            <ResizablePanel defaultSize='50%' style={styles.content}>
+              Panel A
+            </ResizablePanel>
+            <ResizableHandle
+              withHandle={variant !== 'line'}
+              variant={variant === 'line' ? undefined : variant}
+              aria-label={`Resize ${variant}`}
+            />
+            <ResizablePanel defaultSize='50%' style={styles.content}>
+              Panel B
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      )}
+    </Axis>
+  ),
+  play: async ({ canvas }) => {
+    for (const variant of handleVariants) {
+      const handle = canvas.getByRole('separator', { name: `Resize ${variant}` })
+      const frame = handle.parentElement
+      const panel = handle.previousElementSibling?.firstElementChild
+      if (!frame || !panel) throw new Error('Handle is not between two panels')
+      const behind = [
+        getComputedStyle(frame).backgroundColor,
+        getComputedStyle(panel).backgroundColor
+      ]
+      const against = (part: Element) =>
+        contrast(over(...behind, getComputedStyle(part).backgroundColor), over(...behind))
+      if (variant === 'line') {
+        // The line is its own affordance: it has no grip to carry the 3:1.
+        await expect(against(handle)).toBeGreaterThanOrEqual(3)
+      } else {
+        const grip = handle.lastElementChild
+        if (!grip) throw new Error('Grip not found')
+        await expect(against(grip)).toBeGreaterThanOrEqual(3)
+        await expect(against(handle)).toBeLessThan(2)
+      }
+    }
+  }
+}
+
 /** Each group flows along its own axis, and the arrow keys grow the first panel along it. */
 export const Orientations: Story = {
   parameters: {

@@ -24,9 +24,11 @@ export const resizableStyles = stylex.create({
   },
   handle: {
     alignItems: 'center',
+    // The rail rests in the panel edges' register and rises on hover; the grip (`handleIndicator`)
+    // and, with no grip, the line (`handleLine`) rest on the 3:1 control edge.
     backgroundColor: {
-      default: colors.borderControl,
-      ':hover': colors.foregroundNeutralFaded,
+      default: colors.borderNeutral,
+      ':hover': colors.borderControl,
       ':active': colors.foregroundPrimary,
       ':focus-visible': colors.foregroundPrimary,
       '@media (forced-colors: active)': 'CanvasText'
@@ -53,6 +55,15 @@ export const resizableStyles = stylex.create({
     transitionTimingFunction: easing.decelerate,
     userSelect: 'none',
     width: stroke.ring1
+  },
+  handleLine: {
+    backgroundColor: {
+      default: colors.borderControl,
+      ':hover': colors.foregroundNeutralFaded,
+      ':active': colors.foregroundPrimary,
+      ':focus-visible': colors.foregroundPrimary,
+      '@media (forced-colors: active)': 'CanvasText'
+    }
   },
   handleVerticalGroup: {
     cursor: 'row-resize',
