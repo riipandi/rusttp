@@ -746,6 +746,17 @@ const arrowFlip = (canvas: { getByRole: (role: 'button', o: { name: RegExp }) =>
       ).a
   )
 
+/** The root sizes to its content, not to the parent: a 32 px day cell at every canvas width. */
+const hugsContent = async (canvasElement: HTMLElement) => {
+  const root = canvasElement.querySelector<HTMLElement>('[data-slot="calendar"]')!
+  const today = root.querySelector<HTMLElement>('[data-today]')!
+  await expect(root.getBoundingClientRect().width).toBeLessThan(
+    root.parentElement!.getBoundingClientRect().width
+  )
+  await expect(today.getBoundingClientRect().width).toBe(32)
+  await expect(today.getBoundingClientRect().height).toBe(32)
+}
+
 /**
  * `dir='rtl'` on a wrapper, with no `lang` anywhere, mirrors the month arrows. The flip is a
  * `:dir(rtl)` rule, which the build must keep as `:dir()` (issue-00007): rewritten to a `:lang()`
@@ -766,8 +777,9 @@ export const RightToLeft: Story = {
       <Calendar mode='single' />
     </div>
   ),
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     await expect(arrowFlip(canvas)).toEqual([-1, -1])
+    await hugsContent(canvasElement)
   }
 }
 
@@ -778,7 +790,8 @@ export const ArabicLeftToRight: Story = {
       <Calendar mode='single' lang='ar' />
     </div>
   ),
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     await expect(arrowFlip(canvas)).toEqual([1, 1])
+    await hugsContent(canvasElement)
   }
 }

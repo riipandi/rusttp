@@ -249,8 +249,10 @@ export const calendarStyles = stylex.create({
   root: {
     backgroundColor: colors.backgroundElevationBase,
     borderRadius: radius.large,
+    maxWidth: '100%',
     padding: unit.x2,
-    position: 'relative'
+    position: 'relative',
+    width: 'fit-content'
   },
   today: {
     backgroundColor: colors.backgroundNeutralFaded,
